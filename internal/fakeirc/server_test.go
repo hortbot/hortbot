@@ -69,6 +69,8 @@ func TestServerBroadcast(t *testing.T) {
 	}
 
 	h.SendToServer(ctx, m)
+	h.Sleep()
+	h.Sleep()
 
 	h.CloseConn(conn)
 	h.StopServer()
