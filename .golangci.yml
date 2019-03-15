@@ -1,0 +1,27 @@
+linters-settings:
+  golint:
+    min-confidence: 0.0
+
+linters:
+  enable-all: true
+  disable:
+    # slow
+    - gosimple
+    - staticcheck
+    - stylecheck
+    - unparam
+    - unused
+    # bad
+    - maligned
+    - lll
+    - gochecknoglobals
+    - gochecknoinits
+
+
+  # fast: true
+  # enable:
+  #   - golint
+
+issues:
+  # exclude-use-default: false
+  max-per-linter: 0
