@@ -44,7 +44,11 @@ func TestPoolRunStop(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
-		assert.Assert(t, pool.NumConns() == 0)
+
+		// TODO: Make WaitUntilReady wait for the initial connection to occur.
+		h.Sleep()
+		h.Sleep()
+		assert.Assert(t, pool.NumConns() == 1)
 
 		pool.Stop()
 
@@ -53,7 +57,10 @@ func TestPoolRunStop(t *testing.T) {
 		h.StopServer()
 		h.Wait()
 
-		h.AssertMessages(serverMessages)
+		h.AssertMessages(serverMessages,
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+		)
 		h.AssertMessages(clientMessages)
 
 		assert.Assert(t, pool.NumJoined() == 0)
@@ -225,6 +232,8 @@ func TestPoolSyncJoined(t *testing.T) {
 		assert.Assert(t, pool.IsJoined("#barfoo"))
 		assert.DeepEqual(t, []string{"#barfoo"}, pool.Joined())
 
+		h.Sleep()
+		h.Sleep()
 		h.SendToServer(ctx, m)
 
 		pool.Prune()

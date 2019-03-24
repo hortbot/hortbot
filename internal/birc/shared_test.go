@@ -1,7 +1,6 @@
 package birc_test
 
 import (
-	"bytes"
 	"context"
 	"testing"
 	"time"
@@ -9,8 +8,8 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/fakeirc"
+	"github.com/hortbot/hortbot/internal/testutil"
 	"github.com/jakebailey/irc"
-	"github.com/rs/zerolog"
 )
 
 func testContext() (context.Context, context.CancelFunc) {
@@ -89,11 +88,7 @@ func doTestHelper(
 	ctx, cancel := testContext()
 	defer cancel()
 
-	logger := zerolog.New(zerolog.NewConsoleWriter(func(w *zerolog.ConsoleWriter) {
-		w.Out = testWriter{t}
-		w.TimeFormat = time.RFC3339
-	})).With().Timestamp().Caller().Logger()
-	ctx = logger.WithContext(ctx)
+	ctx = testutil.Logger(ctx, t)
 
 	h := fakeirc.NewHelper(ctx, t, opts...)
 	defer h.StopServer()
@@ -117,13 +112,4 @@ func errFromErrChan(ctx context.Context, errChan chan error) error {
 	case <-ctx.Done():
 		return ctx.Err()
 	}
-}
-
-type testWriter struct {
-	t *testing.T
-}
-
-func (tw testWriter) Write(p []byte) (n int, err error) {
-	tw.t.Logf("%s", bytes.TrimSpace(p))
-	return len(p), nil
 }
