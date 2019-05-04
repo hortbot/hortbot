@@ -7,11 +7,12 @@ import (
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/birc/breq"
+	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/x/errgroupx"
 	"github.com/hortbot/hortbot/internal/x/ircx"
 	"github.com/jakebailey/irc"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog"
+	"go.uber.org/zap"
 )
 
 var (
@@ -179,13 +180,13 @@ func (c *Connection) Incoming() <-chan *irc.Message {
 func (c *Connection) reciever(ctx context.Context) error {
 	defer close(c.recvChan)
 
-	logger := zerolog.Ctx(ctx)
+	logger := ctxlog.FromContext(ctx)
 
 	for {
 		m := &irc.Message{}
 		if err := c.conn.Decode(m); err != nil {
 			if pe, ok := err.(*irc.ParseError); ok {
-				logger.Warn().Err(pe).Msg("recieved bad message from IRC server, ignoring")
+				logger.Warn("recieved bad message from IRC server, ignoring", zap.Error(pe))
 				continue
 			}
 			return err
@@ -197,7 +198,7 @@ func (c *Connection) reciever(ctx context.Context) error {
 
 			go func() {
 				if err := c.send(ctx, &pong); err != nil {
-					logger.Error().Err(err).Msg("error sending pong")
+					logger.Error("error sending pong", zap.Error(err))
 				}
 			}()
 		}
@@ -219,7 +220,7 @@ func (c *Connection) reciever(ctx context.Context) error {
 }
 
 func (c *Connection) sender(ctx context.Context) error {
-	logger := zerolog.Ctx(ctx)
+	logger := ctxlog.FromContext(ctx)
 
 	var sendFrom <-chan breq.Send
 
@@ -249,7 +250,7 @@ func (c *Connection) sender(ctx context.Context) error {
 			return errors.Wrap(err, "sending to conn")
 		}
 
-		logger.Debug().Interface("m", req.M).Msg("sent")
+		logger.Debug("sent", zap.Any("m", req.M))
 	}
 }
 

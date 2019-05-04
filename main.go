@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/birc"
-	"github.com/rs/zerolog"
+	"github.com/hortbot/hortbot/internal/ctxlog"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
 )
@@ -20,10 +22,18 @@ func lookupEnv(key string) string {
 func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
 
-	logger := zerolog.New(zerolog.NewConsoleWriter(func(w *zerolog.ConsoleWriter) {
-		w.TimeFormat = time.RFC3339
-	})).With().Timestamp().Caller().Logger()
-	ctx = logger.WithContext(ctx)
+	logConfig := zap.NewDevelopmentConfig()
+	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	logger, err := logConfig.Build()
+	if err != nil {
+		panic(err)
+	}
+
+	undoStdlog := zap.RedirectStdLog(logger)
+	defer undoStdlog()
+
+	ctx = ctxlog.WithLogger(ctx, logger)
 
 	conn := birc.NewPool(birc.PoolConfig{
 		Config: birc.Config{
@@ -51,18 +61,18 @@ func main() {
 
 	go func() {
 		for m := range conn.Incoming() {
-			logger.Info().Msg(m.Raw)
+			logger.Info(m.Raw)
 		}
 	}()
 
 	go func() {
 		defer func() {
-			logger.Info().Strs("joined", conn.Joined()).Msg("after sync")
+			logger.Info("after sync", zap.Strings("joined", conn.Joined()))
 		}()
 
 		select {
 		case <-time.After(5 * time.Second):
-			logger.Info().Strs("joined", conn.Joined()).Msg("before sync")
+			logger.Info("before sync", zap.Strings("joined", conn.Joined()))
 		case <-ctx.Done():
 			return
 		}
@@ -70,7 +80,7 @@ func main() {
 		select {
 		case <-time.After(30 * time.Second):
 			if err := conn.SyncJoined(ctx, "#zikaeroh"); err != nil {
-				logger.Error().Err(err).Msg("error syncing")
+				logger.Error("error syncing", zap.Error(err))
 				return
 			}
 		case <-ctx.Done():
@@ -79,7 +89,7 @@ func main() {
 	}()
 
 	if err := conn.Run(ctx); err != nil {
-		logger.Info().Err(err).Msg("exiting")
+		logger.Info("exiting", zap.Error(err))
 	}
 }
 

@@ -8,11 +8,12 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/birc/breq"
+	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/x/errgroupx"
 	"github.com/hortbot/hortbot/internal/x/ircx"
 	"github.com/jakebailey/irc"
 	"github.com/pkg/errors"
-	"github.com/rs/zerolog"
+	"go.uber.org/zap"
 )
 
 const (
@@ -402,7 +403,7 @@ func (p *Pool) part(ctx context.Context, channel string) error {
 	conn := p.chanToConn[channel]
 
 	if conn == nil {
-		zerolog.Ctx(ctx).Warn().Str("channel", channel).Msg("couldn't find conn for channel")
+		ctxlog.FromContext(ctx).Warn("couldn't find conn for channel", zap.String("channel", channel))
 		return nil
 	}
 
@@ -484,12 +485,12 @@ func (p *Pool) prune(ctx context.Context) {
 		return
 	}
 
-	logger := zerolog.Ctx(ctx)
-	logger.Debug().Int("count", len(toPrune)).Msg("pruning subconns")
+	logger := ctxlog.FromContext(ctx)
+	logger.Debug("pruning subconns", zap.Int("count", len(toPrune)))
 
 	for _, conn := range toPrune {
 		if err := conn.Close(); err != nil {
-			logger.Error().Err(err).Msg("error pruning subconn")
+			logger.Error("error pruning subconn", zap.Error(err))
 		}
 		delete(p.conns, conn)
 	}
@@ -513,15 +514,14 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		id := p.nextConnID()
 
-		logger := zerolog.Ctx(ctx).With().Uint64("subconn_id", id).Logger()
-		ctx = logger.WithContext(ctx)
+		ctx, logger := ctxlog.FromContextWith(ctx, zap.Uint64("subconn_id", id))
 
-		logger.Info().Msg("spawning subconn")
+		logger.Info("spawning subconn")
 
 		config := *p.subConfig
 		conn := newConnection(&config)
 		defer func() {
-			logger.Info().Err(conn.Close()).Msg("closed subconn")
+			logger.Info("closed subconn", zap.Error(conn.Close()))
 		}()
 
 		conn.sendFrom(p.sendChan)
@@ -560,7 +560,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		go func() {
 			if err := conn.WaitUntilReady(ctx); err != nil {
-				logger.Warn().Err(err).Msg("waiting for connection to become ready")
+				logger.Warn("waiting for connection to become ready", zap.Error(err))
 				return
 			}
 
