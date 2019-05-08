@@ -1,0 +1,7 @@
+BEGIN;
+
+DROP TABLE IF EXISTS simple_commands CASCADE;
+
+DROP TABLE IF EXISTS channels CASCADE;
+
+COMMIT;

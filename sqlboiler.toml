@@ -1,0 +1,13 @@
+output = "internal/db/models"
+
+[psql]
+
+# postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
+
+dbname = "postgres"
+host = "localhost"
+user = "postgres"
+pass = "mysecretpassword"
+sslmode = "disable"
+blacklist = ["schema_migrations"]
+
