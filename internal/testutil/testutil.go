@@ -2,22 +2,23 @@ package testutil
 
 import (
 	"bytes"
-	"context"
 	"io"
-	"testing"
 
-	"github.com/hortbot/hortbot/internal/ctxlog"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-func Logger(ctx context.Context, t *testing.T) context.Context {
-	logger := buildLogger(testWriter{t})
-	return ctxlog.WithLogger(ctx, logger)
+type Tester interface {
+	Helper()
+	Logf(format string, args ...interface{})
+}
+
+func Logger(t Tester) *zap.Logger {
+	return buildLogger(testWriter{t})
 }
 
 type testWriter struct {
-	t *testing.T
+	t Tester
 }
 
 func (tw testWriter) Write(p []byte) (n int, err error) {

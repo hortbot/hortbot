@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/testutil"
@@ -55,9 +56,11 @@ func TestMain(m *testing.M) {
 		}
 	}()
 
+	dbStr := connStr(resource.GetHostPort("5432/tcp"))
+
 	err = pool.Retry(func() error {
 		var err error
-		db, err = sql.Open("postgres", connStr(resource.GetHostPort("5432/tcp")))
+		db, err = sql.Open("postgres", dbStr)
 		if err != nil {
 			return err
 		}
@@ -75,7 +78,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestBot(t *testing.T) {
-	ctx := testutil.Logger(context.Background(), t)
+	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
 	userID, name := getNextUserID()
 
@@ -87,13 +90,21 @@ func TestBot(t *testing.T) {
 
 	assert.NilError(t, channel.Insert(ctx, db, boil.Infer()))
 
+	command := &models.SimpleCommand{
+		ChannelID: channel.ID,
+		Name:      "pan",
+		Message:   "FOUND THE (_PARAMETER_CAPS_), HAVE YE?",
+	}
+
+	assert.NilError(t, command.Insert(ctx, db, boil.Infer()))
+
 	config := &Config{
 		DB: db,
 	}
 
 	b := NewBot(config)
 
-	m := ircx.PrivMsg("#foobar", "hi there")
+	m := ircx.PrivMsg("#foobar", "+pan COMMAND")
 	m.Tags = map[string]string{
 		"id":      uuid.Must(uuid.NewV4()).String(),
 		"room-id": strconv.FormatInt(channel.UserID, 10),
@@ -104,4 +115,35 @@ func TestBot(t *testing.T) {
 
 func connStr(addr string) string {
 	return fmt.Sprintf(`postgres://postgres:mysecretpassword@%s/postgres?sslmode=disable`, addr)
+}
+
+func BenchmarkBot(b *testing.B) {
+	ctx := context.Background()
+
+	userID, name := getNextUserID()
+
+	channel := &models.Channel{
+		UserID: userID,
+		Name:   name,
+		Prefix: "+",
+	}
+
+	assert.NilError(b, channel.Insert(ctx, db, boil.Infer()))
+
+	config := &Config{
+		DB: db,
+	}
+
+	bot := NewBot(config)
+
+	m := ircx.PrivMsg("#foobar", "hi there")
+	m.Tags = map[string]string{
+		"id":      uuid.Must(uuid.NewV4()).String(),
+		"room-id": strconv.FormatInt(channel.UserID, 10),
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		bot.Handle(ctx, m)
+	}
 }

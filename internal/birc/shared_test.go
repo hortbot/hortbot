@@ -7,6 +7,7 @@ import (
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/birc"
+	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/fakeirc"
 	"github.com/hortbot/hortbot/internal/testutil"
 	"github.com/jakebailey/irc"
@@ -88,7 +89,7 @@ func doTestHelper(
 	ctx, cancel := testContext()
 	defer cancel()
 
-	ctx = testutil.Logger(ctx, t)
+	ctx = ctxlog.WithLogger(ctx, testutil.Logger(t))
 
 	h := fakeirc.NewHelper(ctx, t, opts...)
 	defer h.StopServer()

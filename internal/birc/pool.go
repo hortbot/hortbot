@@ -514,7 +514,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		id := p.nextConnID()
 
-		ctx, logger := ctxlog.FromContextWith(ctx, zap.Uint64("subconn_id", id))
+		ctx, logger := ctxlog.FromContextWith(ctx, zap.Uint64("subconnID", id))
 
 		logger.Info("spawning subconn")
 

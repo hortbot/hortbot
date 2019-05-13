@@ -6,7 +6,6 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
-	github.com/davecgh/go-spew v1.1.1
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/fortytw2/leaktest v1.3.0
@@ -31,11 +30,11 @@ require (
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190503192946-f4e77d36d62c // indirect
+	golang.org/x/net v0.0.0-20190509222800-a4d6f7feada5 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190507160741-ecd444e8653b // indirect
-	golang.org/x/tools v0.0.0-20190508025753-952990169864 // indirect
-	google.golang.org/genproto v0.0.0-20190502173448-54afdca5d873 // indirect
+	golang.org/x/sys v0.0.0-20190509141414-a5b02f93d862 // indirect
+	golang.org/x/tools v0.0.0-20190511041617-99f201b6807e // indirect
+	google.golang.org/genproto v0.0.0-20190508193815-b515fa19cec8 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	gotest.tools v2.2.0+incompatible
