@@ -3,10 +3,12 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 	"time"
 	"unicode"
 
+	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/dedupe"
@@ -147,4 +149,61 @@ func (b *Bot) handle(ctx context.Context, m *Message) {
 	_ = command
 
 	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("rest", rest))
+
+	nodes, err := cbp.Parse(command.Message)
+	if err != nil {
+		logger.Error("command did not parse, which should not happen", zap.Error(err))
+		return
+	}
+
+	walker := func(ctx context.Context, action string) (string, error) {
+		switch action {
+		case "PARAMETER":
+			return rest, nil
+		case "PARAMETER_CAPS":
+			return strings.ToUpper(rest), nil
+		}
+
+		return "", fmt.Errorf("unknown action: %s", action)
+	}
+
+	response, err := walk(ctx, nodes, walker)
+	if err != nil {
+		logger.Debug("error while walking command tree", zap.Error(err))
+		return
+	}
+
+	logger.Info("responsing to command", zap.String("response", response))
+}
+
+func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, action string) (string, error)) (string, error) {
+	// Process all commands, converting them to text nodes.
+	for i, node := range nodes {
+		if node.Text != "" {
+			continue
+		}
+
+		action, err := walk(ctx, node.Children, fn)
+		if err != nil {
+			return "", err
+		}
+
+		s, err := fn(ctx, action)
+		if err != nil {
+			return "", err
+		}
+
+		nodes[i] = cbp.Node{
+			Text: s,
+		}
+	}
+
+	var sb strings.Builder
+
+	// Merge all strings.
+	for _, node := range nodes {
+		sb.WriteString(node.Text)
+	}
+
+	return sb.String(), nil
 }
