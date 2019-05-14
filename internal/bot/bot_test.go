@@ -12,15 +12,12 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/ctxlog"
-	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/testutil"
+	"github.com/hortbot/hortbot/internal/testutil/pgtest"
 	"github.com/hortbot/hortbot/internal/x/ircx"
-	"github.com/ory/dockertest"
 	"github.com/volatiletech/sqlboiler/boil"
 	"gotest.tools/assert"
-
-	_ "github.com/lib/pq"
 )
 
 var nextUserID int64
@@ -44,35 +41,12 @@ func TestMain(m *testing.M) {
 		os.Exit(status)
 	}()
 
-	pool, err := dockertest.NewPool("")
+	var closer func()
+	var err error
+
+	db, closer, err = pgtest.New()
 	must(err)
-
-	resource, err := pool.Run("zikaeroh/postgres-initialized", "latest", nil)
-	must(err)
-
-	defer func() {
-		if err := pool.Purge(resource); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	dbStr := connStr(resource.GetHostPort("5432/tcp"))
-
-	err = pool.Retry(func() error {
-		var err error
-		db, err = sql.Open("postgres", dbStr)
-		if err != nil {
-			return err
-		}
-
-		return db.Ping()
-	})
-	must(err)
-
-	defer db.Close()
-
-	err = migrations.Up(db, nil)
-	must(err)
+	defer closer()
 
 	status = m.Run()
 }

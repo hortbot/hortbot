@@ -33,8 +33,8 @@ require (
 	golang.org/x/net v0.0.0-20190509222800-a4d6f7feada5 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190509141414-a5b02f93d862 // indirect
-	golang.org/x/tools v0.0.0-20190511041617-99f201b6807e // indirect
-	google.golang.org/genproto v0.0.0-20190508193815-b515fa19cec8 // indirect
+	golang.org/x/tools v0.0.0-20190513233021-7d589f28aaf4 // indirect
+	google.golang.org/genproto v0.0.0-20190513181449-d00d292a067c // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 	gotest.tools v2.2.0+incompatible

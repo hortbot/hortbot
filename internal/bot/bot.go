@@ -131,6 +131,15 @@ func (b *Bot) handle(ctx context.Context, m *Message) {
 		commandName = commandName[:i]
 	}
 
+	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("rest", rest))
+
+	if bc, ok := builtins[commandName]; ok {
+		if err := bc(ctx, m, rest); err != nil {
+			logger.Debug("error in builtin command", zap.Error(err))
+		}
+		return
+	}
+
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(channel.ID),
 		models.SimpleCommandWhere.Name.EQ(commandName),
@@ -145,10 +154,6 @@ func (b *Bot) handle(ctx context.Context, m *Message) {
 		logger.Error("error getting simple command from database", zap.Error(err))
 		return
 	}
-
-	_ = command
-
-	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("rest", rest))
 
 	nodes, err := cbp.Parse(command.Message)
 	if err != nil {

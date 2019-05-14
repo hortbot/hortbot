@@ -10,7 +10,7 @@ import (
 
 	redislib "github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/dedupe/redis"
-	"github.com/ory/dockertest"
+	"github.com/hortbot/hortbot/internal/testutil/redistest"
 	"gotest.tools/assert"
 )
 
@@ -35,29 +35,12 @@ func TestMain(m *testing.M) {
 		os.Exit(status)
 	}()
 
-	pool, err := dockertest.NewPool("")
+	var closer func()
+	var err error
+
+	client, closer, err = redistest.New()
 	must(err)
-
-	resource, err := pool.Run("redis", "latest", nil)
-	must(err)
-
-	defer func() {
-		if err := pool.Purge(resource); err != nil {
-			log.Println(err)
-		}
-	}()
-
-	err = pool.Retry(func() error {
-		client = redislib.NewClient(&redislib.Options{
-			Addr: resource.GetHostPort("6379/tcp"),
-		})
-
-		_, err := client.Ping().Result()
-		return err
-	})
-	must(err)
-
-	defer client.Close()
+	defer closer()
 
 	status = m.Run()
 }

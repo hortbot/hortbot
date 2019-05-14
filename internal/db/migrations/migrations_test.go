@@ -2,13 +2,12 @@ package migrations_test
 
 import (
 	"database/sql"
-	"fmt"
 	"sort"
 	"testing"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/ory/dockertest"
+	"github.com/hortbot/hortbot/internal/testutil/pgtest"
 	"gotest.tools/assert"
 	"gotest.tools/assert/cmp"
 )
@@ -56,35 +55,13 @@ func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB)) {
 		t.Skip("requires starting a docker container")
 	}
 
-	pool, err := dockertest.NewPool("")
+	db, closer, err := pgtest.NewNoMigrate()
 	assert.NilError(t, err)
-
-	resource, err := pool.Run("zikaeroh/postgres-initialized", "latest", nil)
-	assert.NilError(t, err)
-
-	var db *sql.DB
-	err = pool.Retry(func() error {
-		var err error
-		db, err = sql.Open("postgres", connStr(resource.GetHostPort("5432/tcp")))
-		if err != nil {
-			return err
-		}
-
-		return db.Ping()
-	})
-	assert.NilError(t, err)
-
-	defer func() {
-		assert.NilError(t, pool.Purge(resource))
-	}()
+	defer closer()
 
 	assert.NilError(t, migrations.Up(db, nil))
 
 	fn(t, db)
-}
-
-func connStr(addr string) string {
-	return fmt.Sprintf(`postgres://postgres:mysecretpassword@%s/postgres?sslmode=disable`, addr)
 }
 
 func assertTableNames(t *testing.T, db *sql.DB, names ...string) {
