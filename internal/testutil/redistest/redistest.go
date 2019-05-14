@@ -18,7 +18,7 @@ func New() (client *redis.Client, closer func(), retErr error) {
 
 	defer func() {
 		if retErr != nil {
-			pool.Purge(resource)
+			pool.Purge(resource) //nolint:errcheck
 		}
 	}()
 
@@ -42,6 +42,6 @@ func New() (client *redis.Client, closer func(), retErr error) {
 
 	return client, func() {
 		client.Close()
-		pool.Purge(resource)
+		pool.Purge(resource) //nolint:errcheck
 	}, nil
 }

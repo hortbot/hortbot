@@ -87,10 +87,6 @@ func TestBot(t *testing.T) {
 	b.Handle(ctx, m)
 }
 
-func connStr(addr string) string {
-	return fmt.Sprintf(`postgres://postgres:mysecretpassword@%s/postgres?sslmode=disable`, addr)
-}
-
 func BenchmarkBot(b *testing.B) {
 	ctx := context.Background()
 

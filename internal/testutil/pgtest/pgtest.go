@@ -31,7 +31,7 @@ func newDB(doMigrate bool) (db *sql.DB, closer func(), retErr error) {
 
 	defer func() {
 		if retErr != nil {
-			pool.Purge(resource)
+			pool.Purge(resource) //nolint:errcheck
 		}
 	}()
 
@@ -64,7 +64,7 @@ func newDB(doMigrate bool) (db *sql.DB, closer func(), retErr error) {
 
 	return db, func() {
 		db.Close()
-		pool.Purge(resource)
+		pool.Purge(resource) //nolint:errcheck
 	}, nil
 }
 
