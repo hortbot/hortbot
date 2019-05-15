@@ -16,6 +16,7 @@ linters:
     - lll
     - gochecknoglobals
     - gochecknoinits
+    - goconst
 
 
   # fast: true

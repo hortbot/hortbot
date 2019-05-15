@@ -29,6 +29,7 @@ type Channel struct {
 	UpdatedAt      time.Time   `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 	UserID         int64       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 	Name           string      `boil:"name" json:"name" toml:"name" yaml:"name"`
+	BotName        string      `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
 	Prefix         string      `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
 	Bullet         null.String `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
 	ShouldModerate bool        `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
@@ -43,6 +44,7 @@ var ChannelColumns = struct {
 	UpdatedAt      string
 	UserID         string
 	Name           string
+	BotName        string
 	Prefix         string
 	Bullet         string
 	ShouldModerate string
@@ -52,6 +54,7 @@ var ChannelColumns = struct {
 	UpdatedAt:      "updated_at",
 	UserID:         "user_id",
 	Name:           "name",
+	BotName:        "bot_name",
 	Prefix:         "prefix",
 	Bullet:         "bullet",
 	ShouldModerate: "should_moderate",
@@ -136,6 +139,7 @@ var ChannelWhere = struct {
 	UpdatedAt      whereHelpertime_Time
 	UserID         whereHelperint64
 	Name           whereHelperstring
+	BotName        whereHelperstring
 	Prefix         whereHelperstring
 	Bullet         whereHelpernull_String
 	ShouldModerate whereHelperbool
@@ -145,6 +149,7 @@ var ChannelWhere = struct {
 	UpdatedAt:      whereHelpertime_Time{field: `updated_at`},
 	UserID:         whereHelperint64{field: `user_id`},
 	Name:           whereHelperstring{field: `name`},
+	BotName:        whereHelperstring{field: `bot_name`},
 	Prefix:         whereHelperstring{field: `prefix`},
 	Bullet:         whereHelpernull_String{field: `bullet`},
 	ShouldModerate: whereHelperbool{field: `should_moderate`},
@@ -171,8 +176,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "prefix", "bullet", "should_moderate"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "prefix", "bullet", "should_moderate"}
+	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "prefix", "bullet", "should_moderate"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "prefix", "bullet", "should_moderate"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

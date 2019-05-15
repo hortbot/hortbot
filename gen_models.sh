@@ -2,6 +2,9 @@
 
 cd "${0%/*}"
 
+echo "Generating migration data"
+go generate ./internal/db/migrations
+
 echo "Starting database"
 DOCKER_ID=$(docker run --rm -p 5432:5432 -d zikaeroh/postgres-initialized)
 
@@ -20,6 +23,3 @@ migrate -database 'postgres://postgres:mysecretpassword@localhost:5432/postgres?
 
 echo "Generating models"
 sqlboiler psql --wipe --no-hooks --no-rows-affected --no-tests
-
-echo "Generating migration data"
-go generate ./internal/db/migrations

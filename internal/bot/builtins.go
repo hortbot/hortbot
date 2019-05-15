@@ -7,10 +7,10 @@ import (
 
 var errNotImplemented = errors.New("not implemented")
 
-var builtins = map[string]func(ctx context.Context, m *Message, args string) error{
+var builtins = map[string]func(ctx context.Context, c *Context, args string) error{
 	"command": command,
 }
 
-func command(ctx context.Context, m *Message, args string) error {
+func command(ctx context.Context, c *Context, args string) error {
 	return errNotImplemented
 }

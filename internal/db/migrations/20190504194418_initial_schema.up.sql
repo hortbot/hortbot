@@ -1,3 +1,7 @@
+-- This file is subject to change until the first real deployment of the bot.
+-- Do not rely on these schema migrations remaining consistent until this
+-- message has been removed.
+
 BEGIN;
 
 CREATE TABLE channels (
@@ -7,6 +11,7 @@ CREATE TABLE channels (
 
     user_id bigint NOT NULL,
     name text NOT NULL,
+    bot_name text NOT NULL,
     prefix text NOT NULL,
     bullet text,
     should_moderate boolean NOT NULL
