@@ -1,6 +1,6 @@
 #!/bin/sh -e
 
-cd "${0%/*}"
+cd "${0%/*}/.."
 
 echo "Generating migration data"
 go generate ./internal/db/migrations
@@ -19,7 +19,7 @@ echo "Waiting for container to be ready"
 while ! curl http://localhost:5432 2>&1 | grep -q '52'; do sleep 1; done
 
 echo "Migrating database up"
-migrate -database 'postgres://postgres:mysecretpassword@localhost:5432/postgres?sslmode=disable' -path internal/db/migrations up
+./scripts/migrate -database 'postgres://postgres:mysecretpassword@localhost:5432/postgres?sslmode=disable' -path internal/db/migrations up
 
 echo "Generating models"
-sqlboiler psql --wipe --no-hooks --no-rows-affected --no-tests
+gobin -m -run github.com/volatiletech/sqlboiler ./scripts/sqlboiler-psql --wipe --no-hooks --no-rows-affected --no-tests

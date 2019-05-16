@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec gobin -m -tags 'postgres' -run github.com/golang-migrate/migrate/v4/cmd/migrate "$@"
