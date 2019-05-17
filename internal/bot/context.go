@@ -2,6 +2,7 @@ package bot
 
 import (
 	"database/sql"
+	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/jakebailey/irc"
@@ -23,7 +24,15 @@ type Context struct {
 }
 
 func (c *Context) formatResponse(response string) string {
-	// TODO: /me
+	response = strings.TrimSpace(response)
+
+	if len(response) >= 4 {
+		switch response[:4] {
+		case "/me ":
+		case ".me ":
+			return response
+		}
+	}
 
 	bullet := c.Channel.Bullet.String
 	if bullet == "" {
@@ -31,4 +40,8 @@ func (c *Context) formatResponse(response string) string {
 	}
 
 	return bullet + " " + response
+}
+
+func (c *Context) Reply(response string) error {
+	return c.Sender.SendMessage("#"+c.ChannelName, c.formatResponse(response))
 }

@@ -27,7 +27,7 @@ type Bot struct {
 	bullet string
 }
 
-func NewBot(config *Config) *Bot {
+func New(config *Config) *Bot {
 	b := &Bot{
 		db:     config.DB,
 		dedupe: config.Dedupe,

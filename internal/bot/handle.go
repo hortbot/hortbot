@@ -219,8 +219,7 @@ func (b *Bot) trySimpleCommand(ctx context.Context, c *Context) (bool, error) {
 		return true, err
 	}
 
-	// TODO: handle null bullet
-	err = c.Sender.SendMessage("#"+c.ChannelName, c.formatResponse(response))
+	err = c.Reply(response)
 	return true, err
 }
 

@@ -5,7 +5,7 @@ go 1.12
 require (
 	cloud.google.com/go v0.39.0 // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
-	github.com/aws/aws-sdk-go v1.19.31 // indirect
+	github.com/aws/aws-sdk-go v1.19.32 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
 	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
@@ -27,6 +27,7 @@ require (
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.3.1
 	github.com/google/go-cmp v0.3.0
+	github.com/gorilla/mux v1.7.2 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/pgx v3.4.0+incompatible // indirect
@@ -37,7 +38,7 @@ require (
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.0.2
 	github.com/mjibson/esc v0.2.0
-	github.com/mongodb/mongo-go-driver v1.0.1 // indirect
+	github.com/mongodb/mongo-go-driver v1.0.2 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.4+incompatible
@@ -53,17 +54,17 @@ require (
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.2.0+incompatible
 	github.com/xanzy/go-gitlab v0.17.0 // indirect
-	go.mongodb.org/mongo-driver v1.0.1 // indirect
+	go.mongodb.org/mongo-driver v1.0.2 // indirect
 	go.uber.org/atomic v1.4.0 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	golang.org/x/net v0.0.0-20190514140710-3ec191127204 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190516014833-cab07311ab81 // indirect
-	golang.org/x/tools v0.0.0-20190516015132-d1a3278ee749 // indirect
+	golang.org/x/sys v0.0.0-20190516110030-61b9204099cb // indirect
+	golang.org/x/tools v0.0.0-20190517003510-bffc5affc6df // indirect
 	google.golang.org/appengine v1.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20190515210553-995ef27e003f // indirect
+	google.golang.org/genproto v0.0.0-20190516172635-bb713bdc0e52 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
 )
