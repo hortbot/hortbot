@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
@@ -15,6 +16,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/dedupe"
+	dedupemem "github.com/hortbot/hortbot/internal/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/testutil"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -30,13 +32,14 @@ func TestScripts(t *testing.T) {
 		file := file
 		name := strings.TrimSuffix(filepath.Base(file), ".txt")
 		t.Run(name, func(t *testing.T) {
-			ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
-			testScriptFile(ctx, t, file)
+			testScriptFile(t, file)
 		})
 	}
 }
 
-func testScriptFile(ctx context.Context, t *testing.T, filename string) {
+func testScriptFile(t *testing.T, filename string) {
+	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
+
 	assert.NilError(t, migrations.Reset(db, nil))
 
 	f, err := os.Open(filename)
@@ -54,6 +57,7 @@ func testScriptFile(ctx context.Context, t *testing.T, filename string) {
 	var b *bot.Bot
 	counts := make(map[string]int)
 	var actions []func()
+	var cleanup []func()
 
 	ensureBot := func() {
 		if b != nil {
@@ -86,7 +90,28 @@ func testScriptFile(ctx context.Context, t *testing.T, filename string) {
 		case "bot_config":
 			actions = append(actions, func() {
 				assert.Assert(t, b == nil, "bot has already been created, cannot configure")
-				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bc))
+
+				var bcj struct {
+					Name   string
+					Dedupe string
+				}
+
+				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bcj))
+
+				bc.Name = bcj.Name
+
+				switch bcj.Dedupe {
+				case "", "never":
+					bc.Dedupe = dedupe.NeverSeen
+
+				case "memory":
+					d := dedupemem.New(time.Minute, 5*time.Minute)
+					cleanup = append(cleanup, d.Stop)
+					bc.Dedupe = d
+
+				default:
+					t.Fatalf("unknown dedupe type %s", bcj.Dedupe)
+				}
 			})
 
 		case "channel":
@@ -138,4 +163,10 @@ func testScriptFile(ctx context.Context, t *testing.T, filename string) {
 	for _, fn := range actions {
 		fn()
 	}
+
+	for i := len(cleanup) - 1; i >= 0; i-- {
+		cleanup[i]()
+	}
+
+	assert.Equal(t, sender.SendMessageCallCount(), counts["send"])
 }
