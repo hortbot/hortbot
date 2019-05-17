@@ -8,7 +8,7 @@ import (
 	"github.com/jakebailey/irc"
 )
 
-type Context struct {
+type Session struct {
 	M *irc.Message
 
 	ID          string
@@ -23,7 +23,7 @@ type Context struct {
 	Channel *models.Channel
 }
 
-func (c *Context) formatResponse(response string) string {
+func (s *Session) formatResponse(response string) string {
 	response = strings.TrimSpace(response)
 
 	if len(response) >= 4 {
@@ -34,14 +34,14 @@ func (c *Context) formatResponse(response string) string {
 		}
 	}
 
-	bullet := c.Channel.Bullet.String
+	bullet := s.Channel.Bullet.String
 	if bullet == "" {
-		bullet = c.Bot.bullet
+		bullet = s.Bot.bullet
 	}
 
 	return bullet + " " + response
 }
 
-func (c *Context) Reply(response string) error {
-	return c.Sender.SendMessage("#"+c.ChannelName, c.formatResponse(response))
+func (s *Session) Reply(response string) error {
+	return s.Sender.SendMessage("#"+s.ChannelName, s.formatResponse(response))
 }

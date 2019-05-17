@@ -58,7 +58,7 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 		return
 	}
 
-	c := &Context{
+	s := &Session{
 		M:       m,
 		ID:      id,
 		Bot:     b,
@@ -72,7 +72,7 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 		return
 	}
 
-	c.RoomID, err = strconv.ParseInt(roomID, 10, 64)
+	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
 		logger.Debug("error parsing room ID", zap.Error(err))
 		return
@@ -86,16 +86,16 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 		return
 	}
 
-	c.ChannelName = channelName[1:]
+	s.ChannelName = channelName[1:]
 
 	ctx, logger = ctxlog.FromContextWith(ctx,
-		zap.Int64("roomID", c.RoomID),
-		zap.String("channel", c.ChannelName),
+		zap.Int64("roomID", s.RoomID),
+		zap.String("channel", s.ChannelName),
 	)
 
 	err = transact(b.db, func(tx *sql.Tx) error {
-		c.Tx = tx
-		return b.handle(ctx, c)
+		s.Tx = tx
+		return b.handle(ctx, s)
 	})
 
 	if err != nil {
@@ -103,10 +103,10 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 	}
 }
 
-func (b *Bot) handle(ctx context.Context, c *Context) error {
+func (b *Bot) handle(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
-	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(c.RoomID)).One(ctx, c.Tx)
+	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Debug("channel not found in database")
@@ -115,12 +115,12 @@ func (b *Bot) handle(ctx context.Context, c *Context) error {
 		return err
 	}
 
-	c.Channel = channel
+	s.Channel = channel
 
 	// TODO: should this be done here at all, or earlier during a rejoin?
-	if channel.Name != c.ChannelName {
-		channel.Name = c.ChannelName
-		if err := channel.Update(ctx, c.Tx, boil.Infer()); err != nil {
+	if channel.Name != s.ChannelName {
+		channel.Name = s.ChannelName
+		if err := channel.Update(ctx, s.Tx, boil.Infer()); err != nil {
 			logger.Error("error updating channel name in database", zap.Error(err))
 			return err
 		}
@@ -136,7 +136,7 @@ func (b *Bot) handle(ctx context.Context, c *Context) error {
 
 	// TODO: precheck for links, banned phrases, etc
 
-	wasCommand, err := b.trySimpleCommand(ctx, c)
+	wasCommand, err := b.trySimpleCommand(ctx, s)
 	if err != nil {
 		return err
 	}
@@ -149,10 +149,10 @@ func (b *Bot) handle(ctx context.Context, c *Context) error {
 	return nil
 }
 
-func (b *Bot) trySimpleCommand(ctx context.Context, c *Context) (bool, error) {
-	tx := c.Tx
-	message := c.Message
-	channel := c.Channel
+func (b *Bot) trySimpleCommand(ctx context.Context, s *Session) (bool, error) {
+	tx := s.Tx
+	message := s.Message
+	channel := s.Channel
 	prefix := channel.Prefix
 
 	if !strings.HasPrefix(message, prefix) {
@@ -174,7 +174,7 @@ func (b *Bot) trySimpleCommand(ctx context.Context, c *Context) (bool, error) {
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
 	if bc, ok := builtins[commandName]; ok {
-		err := bc(ctx, c, params)
+		err := bc(ctx, s, params)
 		if err != nil {
 			logger.Debug("error in builtin command", zap.Error(err))
 		}
@@ -219,7 +219,7 @@ func (b *Bot) trySimpleCommand(ctx context.Context, c *Context) (bool, error) {
 		return true, err
 	}
 
-	err = c.Reply(response)
+	err = s.Reply(response)
 	return true, err
 }
 
