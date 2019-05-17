@@ -9,7 +9,7 @@ CREATE TABLE channels (
     created_at timestamptz DEFAULT NOW() NOT NULL,
     updated_at timestamptz DEFAULT NOW() NOT NULL,
 
-    user_id bigint NOT NULL,
+    user_id bigint NOT NULL UNIQUE,
     name text NOT NULL,
     bot_name text NOT NULL,
     prefix text NOT NULL,
@@ -29,7 +29,9 @@ CREATE TABLE simple_commands (
 
     name text NOT NULL,
     message text NOT NULL,
-    access_level bigint NOT NULL
+    access_level bigint NOT NULL,
+
+    UNIQUE (channel_id, name)
 );
 
 CREATE INDEX simple_commands_channel_id_idx ON simple_commands (channel_id);
