@@ -18,32 +18,45 @@ var builtins = map[string]func(ctx context.Context, s *Session, args string) err
 }
 
 func simpleCommand(ctx context.Context, s *Session, args string) error {
-	params := strings.SplitN(args, " ", 2)
-
-	if len(params) != 2 {
+	usage := func() error {
 		return s.Replyf("usage: %scommand add|delete|restrict ...", s.Channel.Prefix)
 	}
 
+	params := strings.SplitN(args, " ", 2)
+
+	if len(params) == 0 {
+		return usage()
+	}
+
 	subcommand := params[0]
-	args = strings.TrimSpace(params[1])
+
+	if len(params) == 2 {
+		args = params[1]
+	} else {
+		args = ""
+	}
 
 	switch subcommand {
 	case "add":
+		usage := func() error {
+			return s.Replyf("usage: %scommand add <name> <text>", s.Channel.Prefix)
+		}
+
 		params := strings.SplitN(args, " ", 2)
 		if len(params) != 2 {
-			return s.Replyf("usage: %scommand add <name> <text>", s.Channel.Prefix)
+			return usage()
 		}
 
 		name := params[0]
 		text := strings.TrimSpace(params[1])
 
 		if text == "" {
-			return s.Reply("a command's text cannot be empty")
+			return usage()
 		}
 
 		_, err := cbp.Parse(text)
 		if err != nil {
-			return s.Reply(err.Error())
+			return s.Replyf("error parsing command")
 		}
 
 		command, err := models.SimpleCommands(
@@ -85,8 +98,6 @@ func simpleCommand(ctx context.Context, s *Session, args string) error {
 		return errNotImplemented
 
 	default:
-		return s.Replyf("%scommand %s is unknown", s.Channel.Prefix, subcommand)
+		return usage()
 	}
-
-	return nil
 }
