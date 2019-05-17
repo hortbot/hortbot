@@ -146,6 +146,7 @@ func testScriptFile(t *testing.T, filename string) {
 			sent := strings.SplitN(directive[1], " ", 2)
 
 			actions = append(actions, func() {
+				assert.Assert(t, sender.SendMessageCallCount() > callNum)
 				target, message := sender.SendMessageArgsForCall(callNum)
 				assert.Equal(t, target, sent[0])
 				assert.Equal(t, message, sent[1])

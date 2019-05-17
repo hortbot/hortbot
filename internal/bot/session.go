@@ -2,6 +2,7 @@ package bot
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -44,4 +45,9 @@ func (s *Session) formatResponse(response string) string {
 
 func (s *Session) Reply(response string) error {
 	return s.Sender.SendMessage("#"+s.ChannelName, s.formatResponse(response))
+}
+
+func (s *Session) Replyf(format string, args ...interface{}) error {
+	response := fmt.Sprintf(format, args...)
+	return s.Reply(response)
 }
