@@ -4,6 +4,5 @@ channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "ho
 handle @id=0750e971-2c51-48ee-9449-fbeaa14ad418;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send #foobar [HB] command pan added
 
-# Default test behavior, allow handling of duplicate messages
 handle @id=bae06ce0-fcde-43ae-98b4-cee267c9f6ed;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
