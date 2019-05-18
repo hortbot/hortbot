@@ -5,7 +5,7 @@ import (
 	"github.com/ory/dockertest"
 )
 
-func New() (client *redis.Client, closer func(), retErr error) {
+func New() (client *redis.Client, cleanup func(), retErr error) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
 		return nil, nil, err

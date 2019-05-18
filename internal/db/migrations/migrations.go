@@ -23,35 +23,48 @@ func assetNames() []string {
 }
 
 // Up brings the database up to date to the latest migration.
-func Up(db *sql.DB, logger func(format string, v ...interface{})) error {
-	m, err := newMigrate(db, logger)
+func Up(connStr string, logger func(format string, v ...interface{})) error {
+	m, err := newMigrate(connStr, logger)
 	if err != nil {
 		return err
 	}
+	defer m.Close()
 
 	return ignoreNoChange(m.Up())
 }
 
 // Down brings the database down by applying the down migrations.
-func Down(db *sql.DB, logger func(format string, v ...interface{})) error {
-	m, err := newMigrate(db, logger)
+func Down(connStr string, logger func(format string, v ...interface{})) error {
+	m, err := newMigrate(connStr, logger)
 	if err != nil {
 		return err
 	}
+	defer m.Close()
 
 	return ignoreNoChange(m.Down())
 }
 
 // Reset resets the database by bringing the database down, then up again.
-func Reset(db *sql.DB, logger func(format string, v ...interface{})) error {
-	if err := Down(db, logger); err != nil {
+func Reset(connStr string, logger func(format string, v ...interface{})) error {
+	m, err := newMigrate(connStr, logger)
+	if err != nil {
 		return err
 	}
 
-	return Up(db, logger)
+	if err := ignoreNoChange(m.Down()); err != nil {
+		return err
+	}
+	defer m.Close()
+
+	return ignoreNoChange(m.Up())
 }
 
-func newMigrate(db *sql.DB, logger func(format string, v ...interface{})) (*migrate.Migrate, error) {
+func newMigrate(connStr string, logger func(format string, v ...interface{})) (*migrate.Migrate, error) {
+	db, err := sql.Open("postgres", connStr)
+	if err != nil {
+		return nil, err
+	}
+
 	resource := bindata.Resource(assetNames(), func(name string) ([]byte, error) {
 		return _escFSByte(false, "/"+name)
 	})

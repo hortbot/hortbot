@@ -12,10 +12,10 @@ import (
 type Session struct {
 	M *irc.Message
 
-	ID          string
-	RoomID      int64
-	ChannelName string
-	Message     string
+	ID         string
+	RoomID     int64
+	IRCChannel string
+	Message    string
 
 	Bot    *Bot
 	Tx     *sql.Tx
@@ -44,7 +44,7 @@ func (s *Session) formatResponse(response string) string {
 }
 
 func (s *Session) Reply(response string) error {
-	return s.Sender.SendMessage("#"+s.ChannelName, s.formatResponse(response))
+	return s.Sender.SendMessage("#"+s.IRCChannel, s.formatResponse(response))
 }
 
 func (s *Session) Replyf(format string, args ...interface{}) error {

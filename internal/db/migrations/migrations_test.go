@@ -21,8 +21,8 @@ var allTables = []string{
 func TestUp(t *testing.T) {
 	t.Parallel()
 
-	withDatabase(t, func(t *testing.T, db *sql.DB) {
-		assert.NilError(t, migrations.Up(db, t.Logf))
+	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
+		assert.NilError(t, migrations.Up(connStr, t.Logf))
 		assertTableNames(t, db, allTables...)
 	})
 }
@@ -30,9 +30,9 @@ func TestUp(t *testing.T) {
 func TestUpDown(t *testing.T) {
 	t.Parallel()
 
-	withDatabase(t, func(t *testing.T, db *sql.DB) {
-		assert.NilError(t, migrations.Up(db, t.Logf))
-		assert.NilError(t, migrations.Down(db, t.Logf))
+	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
+		assert.NilError(t, migrations.Up(connStr, t.Logf))
+		assert.NilError(t, migrations.Down(connStr, t.Logf))
 		assertTableNames(t, db, "schema_migrations")
 	})
 }
@@ -40,28 +40,28 @@ func TestUpDown(t *testing.T) {
 func TestReset(t *testing.T) {
 	t.Parallel()
 
-	withDatabase(t, func(t *testing.T, db *sql.DB) {
-		assert.NilError(t, migrations.Up(db, t.Logf))
+	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
+		assert.NilError(t, migrations.Up(connStr, t.Logf))
 		assertTableNames(t, db, allTables...)
-		assert.NilError(t, migrations.Reset(db, t.Logf))
+		assert.NilError(t, migrations.Reset(connStr, t.Logf))
 		assertTableNames(t, db, allTables...)
 	})
 }
 
-func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB)) {
+func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string)) {
 	t.Helper()
 
 	if testing.Short() {
 		t.Skip("requires starting a docker container")
 	}
 
-	db, closer, err := pgtest.NewNoMigrate()
+	db, connStr, cleanup, err := pgtest.NewNoMigrate()
 	assert.NilError(t, err)
-	defer closer()
+	defer cleanup()
 
-	assert.NilError(t, migrations.Up(db, nil))
+	assert.NilError(t, migrations.Up(connStr, nil))
 
-	fn(t, db)
+	fn(t, db, connStr)
 }
 
 func assertTableNames(t *testing.T, db *sql.DB, names ...string) {

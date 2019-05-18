@@ -16,27 +16,52 @@ import (
 	"go.uber.org/zap"
 )
 
+var (
+	errNilMessage     = errors.New("bot: nil message")
+	errInvalidMessage = errors.New("bot: invalid message")
+	errNotImplemented = errors.New("bot: not implemented")
+)
+
 func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
-	if m == nil {
+	logger := ctxlog.FromContext(ctx)
+
+	err := b.handle(ctx, m)
+
+	switch err {
+	case nil:
+		// Do nothing
+	case errNilMessage:
 		panic("nil message")
+	case errInvalidMessage:
+		logger.Warn("invalid message", zap.Any("message", m))
+	case errNotImplemented:
+		logger.Debug("not implemented", zap.Any("message", m))
+	default:
+		logger.Error("unhandled error during handle", zap.Error(err), zap.Any("message", m))
+	}
+}
+
+func (b *Bot) handle(ctx context.Context, m *irc.Message) error {
+	if m == nil {
+		return errNilMessage
 	}
 
 	if m.Command != "PRIVMSG" {
 		// TODO: handle other types of messages
-		return
+		return nil
 	}
 
 	if len(m.Tags) == 0 {
-		return
+		return errInvalidMessage
 	}
 
 	if len(m.Params) == 0 {
-		return
+		return errInvalidMessage
 	}
 
 	id := m.Tags["id"]
 	if id == "" {
-		return
+		return errInvalidMessage
 	}
 
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("id", id))
@@ -50,12 +75,12 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 	seen, err := b.dedupe.CheckAndMark(id)
 	if err != nil {
 		logger.Error("error checking for duplicate", zap.Error(err))
-		return
+		return err
 	}
 
 	if seen {
 		logger.Debug("message already seen")
-		return
+		return nil
 	}
 
 	s := &Session{
@@ -69,13 +94,13 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 	roomID := m.Tags["room-id"]
 	if roomID == "" {
 		logger.Debug("no room ID")
-		return
+		return errInvalidMessage
 	}
 
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
 		logger.Debug("error parsing room ID", zap.Error(err))
-		return
+		return err
 	}
 
 	// TODO: atomic locking on the channel
@@ -83,27 +108,29 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' {
 		logger.Debug("bad channel name", zap.Strings("params", m.Params))
-		return
+		return errInvalidMessage
 	}
 
-	s.ChannelName = channelName[1:]
+	s.IRCChannel = channelName[1:]
 
 	ctx, logger = ctxlog.FromContextWith(ctx,
 		zap.Int64("roomID", s.RoomID),
-		zap.String("channel", s.ChannelName),
+		zap.String("channel", s.IRCChannel),
 	)
 
 	err = transact(b.db, func(tx *sql.Tx) error {
 		s.Tx = tx
-		return b.handle(ctx, s)
+		return b.handleSession(ctx, s)
 	})
 
 	if err != nil {
 		logger.Error("error during handle", zap.Error(err))
 	}
+
+	return err
 }
 
-func (b *Bot) handle(ctx context.Context, s *Session) error {
+func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
 	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)
@@ -118,11 +145,11 @@ func (b *Bot) handle(ctx context.Context, s *Session) error {
 	s.Channel = channel
 
 	// TODO: should this be done here at all, or earlier during a rejoin?
-	if channel.Name != s.ChannelName {
-		logger.Error("channel name mismatch", zap.String("fromMessage", s.ChannelName), zap.String("fromDB", channel.Name))
+	if channel.Name != s.IRCChannel {
+		logger.Error("channel name mismatch", zap.String("fromMessage", s.IRCChannel), zap.String("fromDB", channel.Name))
 		return errors.New("channel name mismatch") // TODO
 
-		// channel.Name = s.ChannelName
+		// channel.Name = s.IRCChannel
 		// if err := channel.Update(ctx, s.Tx, boil.Infer()); err != nil {
 		// 	logger.Error("error updating channel name in database", zap.Error(err))
 		// 	return err
@@ -250,7 +277,6 @@ func transact(db *sql.DB, fn func(*sql.Tx) error) (err error) {
 		return tx.Rollback()
 	}
 
-	rollback = false
 	return tx.Commit()
 }
 

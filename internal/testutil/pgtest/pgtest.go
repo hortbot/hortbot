@@ -10,23 +10,23 @@ import (
 	_ "github.com/lib/pq" // For postgres.
 )
 
-func New() (db *sql.DB, close func(), retErr error) {
+func New() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 	return newDB(true)
 }
 
-func NewNoMigrate() (db *sql.DB, close func(), retErr error) {
+func NewNoMigrate() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 	return newDB(false)
 }
 
-func newDB(doMigrate bool) (db *sql.DB, closer func(), retErr error) {
+func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr error) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		return nil, nil, err
+		return nil, "", nil, err
 	}
 
 	resource, err := pool.Run("zikaeroh/postgres-initialized", "latest", nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, "", nil, err
 	}
 
 	defer func() {
@@ -35,7 +35,7 @@ func newDB(doMigrate bool) (db *sql.DB, closer func(), retErr error) {
 		}
 	}()
 
-	connStr := pgConnStr(resource.GetHostPort("5432/tcp"))
+	connStr = pgConnStr(resource.GetHostPort("5432/tcp"))
 
 	err = pool.Retry(func() error {
 		var err error
@@ -47,7 +47,7 @@ func newDB(doMigrate bool) (db *sql.DB, closer func(), retErr error) {
 		return db.Ping()
 	})
 	if err != nil {
-		return nil, nil, err
+		return nil, "", nil, err
 	}
 
 	defer func() {
@@ -57,12 +57,12 @@ func newDB(doMigrate bool) (db *sql.DB, closer func(), retErr error) {
 	}()
 
 	if doMigrate {
-		if err := migrations.Up(db, nil); err != nil {
-			return nil, nil, err
+		if err := migrations.Up(connStr, nil); err != nil {
+			return nil, "", nil, err
 		}
 	}
 
-	return db, func() {
+	return db, connStr, func() {
 		db.Close()
 		pool.Purge(resource) //nolint:errcheck
 	}, nil

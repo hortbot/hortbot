@@ -23,6 +23,12 @@ import (
 	"gotest.tools/assert"
 )
 
+func init() {
+	bot.AddBuiltin("panic", func(ctx context.Context, s *bot.Session, args string) error {
+		panic(args)
+	})
+}
+
 func TestScripts(t *testing.T) {
 	files, err := filepath.Glob(filepath.Join("testdata", "script", "*.txt"))
 	assert.NilError(t, err)
@@ -40,7 +46,9 @@ func TestScripts(t *testing.T) {
 func testScriptFile(t *testing.T, filename string) {
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
-	assert.NilError(t, migrations.Reset(db, nil))
+	defer func() {
+		assert.NilError(t, migrations.Reset(pgConnStr, nil))
+	}()
 
 	f, err := os.Open(filename)
 	assert.NilError(t, err)

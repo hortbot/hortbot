@@ -27,6 +27,7 @@ func must(err error) {
 }
 
 var db *sql.DB
+var pgConnStr string
 
 func TestMain(m *testing.M) {
 	var status int
@@ -34,12 +35,12 @@ func TestMain(m *testing.M) {
 		os.Exit(status)
 	}()
 
-	var closer func()
+	var cleanup func()
 	var err error
 
-	db, closer, err = pgtest.New()
+	db, pgConnStr, cleanup, err = pgtest.New()
 	must(err)
-	defer closer()
+	defer cleanup()
 
 	status = m.Run()
 }

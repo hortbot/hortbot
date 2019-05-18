@@ -50,7 +50,7 @@ func BenchmarkBot(b *testing.B) {
 
 	bb := bot.New(config)
 
-	m := ircx.PrivMsg("#foobar", "+pan working command")
+	m := ircx.PrivMsg("#"+name, "+pan working command")
 	m.Tags = map[string]string{
 		"id":      uuid.Must(uuid.NewV4()).String(),
 		"room-id": strconv.FormatInt(channel.UserID, 10),

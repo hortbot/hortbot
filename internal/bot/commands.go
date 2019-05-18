@@ -2,10 +2,7 @@ package bot
 
 import (
 	"context"
-	"errors"
 )
-
-var errNotImplemented = errors.New("not implemented")
 
 type cmdFunc func(ctx context.Context, s *Session, args string) error
 

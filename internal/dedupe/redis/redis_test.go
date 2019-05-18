@@ -35,12 +35,12 @@ func TestMain(m *testing.M) {
 		os.Exit(status)
 	}()
 
-	var closer func()
+	var cleanup func()
 	var err error
 
-	client, closer, err = redistest.New()
+	client, cleanup, err = redistest.New()
 	must(err)
-	defer closer()
+	defer cleanup()
 
 	status = m.Run()
 }
