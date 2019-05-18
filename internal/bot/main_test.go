@@ -8,7 +8,9 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/testutil/pgtest"
+	"gotest.tools/assert"
 )
 
 const botName = "hortbot"
@@ -43,4 +45,8 @@ func TestMain(m *testing.M) {
 	defer cleanup()
 
 	status = m.Run()
+}
+
+func resetDatabase(t testing.TB) {
+	assert.NilError(t, migrations.Reset(pgConnStr, nil))
 }

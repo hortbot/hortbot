@@ -13,7 +13,6 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/ctxlog"
-	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/dedupe"
 	dedupemem "github.com/hortbot/hortbot/internal/dedupe/memory"
@@ -46,9 +45,7 @@ func TestScripts(t *testing.T) {
 func testScriptFile(t *testing.T, filename string) {
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
-	defer func() {
-		assert.NilError(t, migrations.Reset(pgConnStr, nil))
-	}()
+	resetDatabase(t)
 
 	f, err := os.Open(filename)
 	assert.NilError(t, err)
