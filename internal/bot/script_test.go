@@ -128,7 +128,7 @@ func testScriptFile(t *testing.T, filename string) {
 				}
 			})
 
-		case "channel":
+		case "insert_channel":
 			var channel models.Channel
 			assert.NilError(t, json.Unmarshal([]byte(directive[1]), &channel))
 
@@ -136,7 +136,7 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.NilError(t, channel.Insert(ctx, db, boil.Infer()))
 			})
 
-		case "simple_command":
+		case "insert_simple_command":
 			var sc models.SimpleCommand
 			assert.NilError(t, json.Unmarshal([]byte(directive[1]), &sc))
 

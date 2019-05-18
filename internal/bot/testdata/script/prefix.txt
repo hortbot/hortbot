@@ -1,5 +1,5 @@
 bot_config {"Prefix": "$"}
-channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 
 handle hortbot @id=8c985895-a6e0-44b3-8153-c760a3e3a762;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+prefix !
 send hortbot #foobar [HB] prefix changed to !

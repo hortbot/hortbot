@@ -1,5 +1,5 @@
 bot_config {"Bullet": "WOW"}
-channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 
 handle hortbot @id=b2493833-7fbf-4a6c-815f-f07eb501ebcf;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar WOW command pan added

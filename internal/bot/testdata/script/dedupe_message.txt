@@ -1,6 +1,6 @@
 bot_config {"Dedupe": "memory"}
-channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
-simple_command {"channel_id": 1, "name": "pan", "message": "FOUND THE (_PARAMETER_CAPS_), HAVE YE?"}
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
+insert_simple_command {"channel_id": 1, "name": "pan", "message": "FOUND THE (_PARAMETER_CAPS_), HAVE YE?"}
 
 handle hortbot @id=9b2d2c0d-8a99-44b0-abe0-c4c9eeeb99aa;room-id=1 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
