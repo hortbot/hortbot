@@ -7,7 +7,10 @@ import (
 	"github.com/hortbot/hortbot/internal/dedupe"
 )
 
-const DefaultBullet = "[HB]"
+const (
+	DefaultPrefix = "!"
+	DefaultBullet = "[HB]"
+)
 
 type Config struct {
 	DB     *sql.DB
@@ -15,6 +18,7 @@ type Config struct {
 	Sender MessageSender
 
 	Name   string
+	Prefix string
 	Bullet string
 }
 
@@ -24,6 +28,7 @@ type Bot struct {
 	sender MessageSender
 
 	name   string
+	prefix string
 	bullet string
 }
 
@@ -33,6 +38,7 @@ func New(config *Config) *Bot {
 		dedupe: config.Dedupe,
 		sender: config.Sender,
 		name:   strings.ToLower(config.Name),
+		prefix: config.Prefix,
 		bullet: config.Bullet,
 	}
 
@@ -44,6 +50,10 @@ func New(config *Config) *Bot {
 
 	if b.bullet == "" {
 		b.bullet = DefaultBullet
+	}
+
+	if b.prefix == "" {
+		b.prefix = DefaultPrefix
 	}
 
 	return b

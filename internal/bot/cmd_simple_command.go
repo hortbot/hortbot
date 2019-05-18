@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/cbp"
@@ -11,13 +10,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var errNotImplemented = errors.New("not implemented")
-
-var builtins = map[string]func(ctx context.Context, s *Session, args string) error{
-	"command": simpleCommand,
-}
-
-func simpleCommand(ctx context.Context, s *Session, args string) error {
+func cmdSimpleCommand(ctx context.Context, s *Session, args string) error {
 	usage := func() error {
 		return s.Replyf("usage: %scommand add|delete|restrict ...", s.Channel.Prefix)
 	}
@@ -72,7 +65,7 @@ func simpleCommand(ctx context.Context, s *Session, args string) error {
 
 		if update {
 			command.Message = text
-			if err := command.Update(ctx, s.Tx, boil.Infer()); err != nil {
+			if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.Message)); err != nil {
 				return err
 			}
 

@@ -7,8 +7,8 @@ send #foobar [HB] command pan added
 handle @id=bae06ce0-fcde-43ae-98b4-cee267c9f6ed;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
-handle @id=7aa66995-5678-4dd7-84ad-cd3c1ca2151c;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVEN'T YE?
+handle @id=7aa66995-5678-4dd7-84ad-cd3c1ca2151c;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_), HAVE YE?
 send #foobar [HB] command pan updated
 
 handle @id=3bcfb9d0-f978-4082-9b29-9b65bda5c823;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
-send #foobar [HB] FOUND THE WORKING COMMAND, HAVEN'T YE?
+send #foobar [HB] FOUND THE working command, HAVE YE?

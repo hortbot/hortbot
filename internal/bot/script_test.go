@@ -87,18 +87,29 @@ func testScriptFile(t *testing.T, filename string) {
 				t.SkipNow()
 			}
 
+		case "boil_debug":
+			old := boil.DebugMode
+			boil.DebugMode = true
+			defer func() {
+				boil.DebugMode = old
+			}()
+
 		case "bot_config":
 			actions = append(actions, func() {
 				assert.Assert(t, b == nil, "bot has already been created, cannot configure")
 
 				var bcj struct {
 					Name   string
+					Prefix string
+					Bullet string
 					Dedupe string
 				}
 
 				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bcj))
 
 				bc.Name = bcj.Name
+				bc.Prefix = bcj.Prefix
+				bc.Bullet = bcj.Bullet
 
 				switch bcj.Dedupe {
 				case "", "never":

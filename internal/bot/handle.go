@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -12,7 +13,6 @@ import (
 	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/jakebailey/irc"
-	"github.com/volatiletech/sqlboiler/boil"
 	"go.uber.org/zap"
 )
 
@@ -119,11 +119,14 @@ func (b *Bot) handle(ctx context.Context, s *Session) error {
 
 	// TODO: should this be done here at all, or earlier during a rejoin?
 	if channel.Name != s.ChannelName {
-		channel.Name = s.ChannelName
-		if err := channel.Update(ctx, s.Tx, boil.Infer()); err != nil {
-			logger.Error("error updating channel name in database", zap.Error(err))
-			return err
-		}
+		logger.Error("channel name mismatch", zap.String("fromMessage", s.ChannelName), zap.String("fromDB", channel.Name))
+		return errors.New("channel name mismatch") // TODO
+
+		// channel.Name = s.ChannelName
+		// if err := channel.Update(ctx, s.Tx, boil.Infer()); err != nil {
+		// 	logger.Error("error updating channel name in database", zap.Error(err))
+		// 	return err
+		// }
 	}
 
 	if channel.BotName != b.name {
