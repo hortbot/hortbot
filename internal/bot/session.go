@@ -10,7 +10,8 @@ import (
 )
 
 type Session struct {
-	M *irc.Message
+	Origin string
+	M      *irc.Message
 
 	ID         string
 	RoomID     int64

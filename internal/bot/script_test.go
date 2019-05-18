@@ -104,7 +104,6 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.Assert(t, b == nil, "bot has already been created, cannot configure")
 
 				var bcj struct {
-					Name   string
 					Prefix string
 					Bullet string
 					Dedupe string
@@ -112,7 +111,6 @@ func testScriptFile(t *testing.T, filename string) {
 
 				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bcj))
 
-				bc.Name = bcj.Name
 				bc.Prefix = bcj.Prefix
 				bc.Bullet = bcj.Bullet
 
@@ -147,12 +145,18 @@ func testScriptFile(t *testing.T, filename string) {
 			})
 
 		case "handle":
-			m, err := irc.ParseMessage(directive[1])
+			args := strings.SplitN(directive[1], " ", 2)
+			assert.Assert(t, len(args) == 2)
+
+			origin := args[0]
+			mRaw := args[1]
+
+			m, err := irc.ParseMessage(mRaw)
 			assert.NilError(t, err)
 
 			actions = append(actions, func() {
 				ensureBot()
-				b.Handle(ctx, m)
+				b.Handle(ctx, origin, m)
 			})
 
 		case "send":

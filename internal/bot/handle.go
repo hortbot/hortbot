@@ -22,10 +22,10 @@ var (
 	errNotImplemented = errors.New("bot: not implemented")
 )
 
-func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
+func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	logger := ctxlog.FromContext(ctx)
 
-	err := b.handle(ctx, m)
+	err := b.handle(ctx, origin, m)
 
 	switch err {
 	case nil:
@@ -41,7 +41,7 @@ func (b *Bot) Handle(ctx context.Context, m *irc.Message) {
 	}
 }
 
-func (b *Bot) handle(ctx context.Context, m *irc.Message) error {
+func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	if m == nil {
 		return errNilMessage
 	}
@@ -84,6 +84,7 @@ func (b *Bot) handle(ctx context.Context, m *irc.Message) error {
 	}
 
 	s := &Session{
+		Origin:  origin,
 		M:       m,
 		ID:      id,
 		Bot:     b,
@@ -156,10 +157,10 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 		// }
 	}
 
-	if channel.BotName != b.name {
+	if channel.BotName != s.Origin {
 		logger.Warn("bot name mismatch",
 			zap.String("expected", channel.BotName),
-			zap.String("got", b.name),
+			zap.String("origin", s.Origin),
 		)
 		return nil
 	}

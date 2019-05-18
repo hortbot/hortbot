@@ -45,7 +45,6 @@ func BenchmarkBot(b *testing.B) {
 		DB:     db,
 		Dedupe: dedupe.NeverSeen,
 		Sender: sender,
-		Name:   botName,
 	}
 
 	bb := bot.New(config)
@@ -58,6 +57,6 @@ func BenchmarkBot(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bb.Handle(ctx, m)
+		bb.Handle(ctx, botName, m)
 	}
 }
