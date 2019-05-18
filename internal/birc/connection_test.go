@@ -59,6 +59,9 @@ func TestConnectionBasic(t *testing.T) {
 		h.SendToServer(ctx, &irc.Message{Command: "PING"})
 
 		h.Sleep()
+		h.Sleep()
+		h.Sleep()
+
 		quitErr := conn.Quit(ctx)
 		if quitErr != birc.ErrConnectionClosed {
 			assert.NilError(t, quitErr)

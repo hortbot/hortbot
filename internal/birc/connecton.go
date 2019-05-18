@@ -45,7 +45,8 @@ type Connection struct {
 	joinedMu sync.RWMutex
 	joined   map[string]bool
 
-	ready chan struct{}
+	ready      chan struct{}
+	reconnnect bool
 }
 
 // NewConnection creates a new Connection.
@@ -133,10 +134,21 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 
 	g.Go(c.reciever)
 	g.Go(c.sender)
+	g.Go(func(ctx context.Context) error {
+		<-ctx.Done()
+		return c.Close()
+	})
 
 	close(c.ready)
 
-	return g.Wait() // TODO: Convert io.EOF to something else?
+	err = g.Wait()
+
+	// Ensure ErrReconnect is returned if the exit was caused by a RECONNECT.
+	if c.reconnnect {
+		return ErrReconnect
+	}
+
+	return err // TODO: Convert io.EOF to something else?
 }
 
 // Close closes the IRC connection. This function is safe to call more than
@@ -214,6 +226,7 @@ func (c *Connection) reciever(ctx context.Context) error {
 		// but we can return early here to attempt to prevent any future uses
 		// of this connection that would just fail.
 		if m.Command == "RECONNECT" {
+			c.reconnnect = true
 			return ErrReconnect
 		}
 	}
