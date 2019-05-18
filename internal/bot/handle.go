@@ -143,18 +143,14 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 		return err
 	}
 
-	s.Channel = channel
+	if !channel.Active {
+		logger.Warn("channel is not active")
+		return nil
+	}
 
-	// TODO: should this be done here at all, or earlier during a rejoin?
 	if channel.Name != s.IRCChannel {
 		logger.Error("channel name mismatch", zap.String("fromMessage", s.IRCChannel), zap.String("fromDB", channel.Name))
 		return errors.New("channel name mismatch") // TODO
-
-		// channel.Name = s.IRCChannel
-		// if err := channel.Update(ctx, s.Tx, boil.Infer()); err != nil {
-		// 	logger.Error("error updating channel name in database", zap.Error(err))
-		// 	return err
-		// }
 	}
 
 	if channel.BotName != s.Origin {
@@ -164,6 +160,8 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 		)
 		return nil
 	}
+
+	s.Channel = channel
 
 	// TODO: precheck for links, banned phrases, etc
 

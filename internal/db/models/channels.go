@@ -30,6 +30,7 @@ type Channel struct {
 	UserID         int64       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
 	Name           string      `boil:"name" json:"name" toml:"name" yaml:"name"`
 	BotName        string      `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
+	Active         bool        `boil:"active" json:"active" toml:"active" yaml:"active"`
 	Prefix         string      `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
 	Bullet         null.String `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
 	ShouldModerate bool        `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
@@ -45,6 +46,7 @@ var ChannelColumns = struct {
 	UserID         string
 	Name           string
 	BotName        string
+	Active         string
 	Prefix         string
 	Bullet         string
 	ShouldModerate string
@@ -55,6 +57,7 @@ var ChannelColumns = struct {
 	UserID:         "user_id",
 	Name:           "name",
 	BotName:        "bot_name",
+	Active:         "active",
 	Prefix:         "prefix",
 	Bullet:         "bullet",
 	ShouldModerate: "should_moderate",
@@ -101,6 +104,15 @@ func (w whereHelperstring) LTE(x string) qm.QueryMod { return qmhelper.Where(w.f
 func (w whereHelperstring) GT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
 func (w whereHelperstring) GTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
+type whereHelperbool struct{ field string }
+
+func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+
 type whereHelpernull_String struct{ field string }
 
 func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
@@ -124,15 +136,6 @@ func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
-type whereHelperbool struct{ field string }
-
-func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperbool) NEQ(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
 var ChannelWhere = struct {
 	ID             whereHelperint64
 	CreatedAt      whereHelpertime_Time
@@ -140,6 +143,7 @@ var ChannelWhere = struct {
 	UserID         whereHelperint64
 	Name           whereHelperstring
 	BotName        whereHelperstring
+	Active         whereHelperbool
 	Prefix         whereHelperstring
 	Bullet         whereHelpernull_String
 	ShouldModerate whereHelperbool
@@ -150,6 +154,7 @@ var ChannelWhere = struct {
 	UserID:         whereHelperint64{field: `user_id`},
 	Name:           whereHelperstring{field: `name`},
 	BotName:        whereHelperstring{field: `bot_name`},
+	Active:         whereHelperbool{field: `active`},
 	Prefix:         whereHelperstring{field: `prefix`},
 	Bullet:         whereHelpernull_String{field: `bullet`},
 	ShouldModerate: whereHelperbool{field: `should_moderate`},
@@ -176,8 +181,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "prefix", "bullet", "should_moderate"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "prefix", "bullet", "should_moderate"}
+	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "should_moderate"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "should_moderate"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
