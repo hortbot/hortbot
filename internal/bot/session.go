@@ -44,7 +44,7 @@ func (s *Session) formatResponse(response string) string {
 }
 
 func (s *Session) Reply(response string) error {
-	return s.Sender.SendMessage("#"+s.IRCChannel, s.formatResponse(response))
+	return s.Sender.SendMessage(s.Channel.BotName, "#"+s.IRCChannel, s.formatResponse(response))
 }
 
 func (s *Session) Replyf(format string, args ...interface{}) error {

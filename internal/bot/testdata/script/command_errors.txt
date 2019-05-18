@@ -2,17 +2,17 @@ bot_config {"Name": "hortbot"}
 channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 
 handle @id=a8104228-d913-4446-88ce-607850a5c84c;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command
-send #foobar [HB] usage: +command add|delete|restrict ...
+send hortbot #foobar [HB] usage: +command add|delete|restrict ...
 
 handle @id=068ac8b2-ab72-4c79-97da-12d7e1ee2317;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add
-send #foobar [HB] usage: +command add <name> <text>
+send hortbot #foobar [HB] usage: +command add <name> <text>
 
 handle @id=98be033d-2b2e-4088-b52b-c161ae5c2fe8;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan
-send #foobar [HB] usage: +command add <name> <text>
+send hortbot #foobar [HB] usage: +command add <name> <text>
 
 handle @id=98be033d-2b2e-4088-b52b-c161ae5c2fe8;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan     
-send #foobar [HB] usage: +command add <name> <text>
+send hortbot #foobar [HB] usage: +command add <name> <text>
 
 handle @id=cfcc6a5d-97ab-469a-b574-2dd2eb9fba0d;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS, HAVE YE?
-send #foobar [HB] error parsing command
+send hortbot #foobar [HB] error parsing command
 

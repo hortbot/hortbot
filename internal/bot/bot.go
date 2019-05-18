@@ -62,5 +62,5 @@ func New(config *Config) *Bot {
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 . MessageSender
 
 type MessageSender interface {
-	SendMessage(target, message string) error
+	SendMessage(origin, target, message string) error
 }

@@ -2,13 +2,13 @@ bot_config {"Name": "hortbot", "Bullet": "WOW"}
 channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 
 handle @id=b2493833-7fbf-4a6c-815f-f07eb501ebcf;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send #foobar WOW command pan added
+send hortbot #foobar WOW command pan added
 
 handle @id=59ed3f3c-7588-45dc-bc65-b6521e12dd3a;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+bullet COOL
-send #foobar COOL bullet changed to COOL
+send hortbot #foobar COOL bullet changed to COOL
 
 handle @id=b1baef69-005b-4c2a-99e3-4bc39868bba1;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+bullet reset
-send #foobar WOW bullet reset to default
+send hortbot #foobar WOW bullet reset to default
 
 handle @id=be2fd393-d224-4257-bd7e-29fd35ffb823;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+bullet
-send #foobar WOW bullet is WOW
+send hortbot #foobar WOW bullet is WOW

@@ -8,11 +8,12 @@ import (
 )
 
 type FakeMessageSender struct {
-	SendMessageStub        func(string, string) error
+	SendMessageStub        func(string, string, string) error
 	sendMessageMutex       sync.RWMutex
 	sendMessageArgsForCall []struct {
 		arg1 string
 		arg2 string
+		arg3 string
 	}
 	sendMessageReturns struct {
 		result1 error
@@ -24,17 +25,18 @@ type FakeMessageSender struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeMessageSender) SendMessage(arg1 string, arg2 string) error {
+func (fake *FakeMessageSender) SendMessage(arg1 string, arg2 string, arg3 string) error {
 	fake.sendMessageMutex.Lock()
 	ret, specificReturn := fake.sendMessageReturnsOnCall[len(fake.sendMessageArgsForCall)]
 	fake.sendMessageArgsForCall = append(fake.sendMessageArgsForCall, struct {
 		arg1 string
 		arg2 string
-	}{arg1, arg2})
-	fake.recordInvocation("SendMessage", []interface{}{arg1, arg2})
+		arg3 string
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("SendMessage", []interface{}{arg1, arg2, arg3})
 	fake.sendMessageMutex.Unlock()
 	if fake.SendMessageStub != nil {
-		return fake.SendMessageStub(arg1, arg2)
+		return fake.SendMessageStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1
@@ -49,17 +51,17 @@ func (fake *FakeMessageSender) SendMessageCallCount() int {
 	return len(fake.sendMessageArgsForCall)
 }
 
-func (fake *FakeMessageSender) SendMessageCalls(stub func(string, string) error) {
+func (fake *FakeMessageSender) SendMessageCalls(stub func(string, string, string) error) {
 	fake.sendMessageMutex.Lock()
 	defer fake.sendMessageMutex.Unlock()
 	fake.SendMessageStub = stub
 }
 
-func (fake *FakeMessageSender) SendMessageArgsForCall(i int) (string, string) {
+func (fake *FakeMessageSender) SendMessageArgsForCall(i int) (string, string, string) {
 	fake.sendMessageMutex.RLock()
 	defer fake.sendMessageMutex.RUnlock()
 	argsForCall := fake.sendMessageArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeMessageSender) SendMessageReturns(result1 error) {

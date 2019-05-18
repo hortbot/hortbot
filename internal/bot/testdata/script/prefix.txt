@@ -2,13 +2,13 @@ bot_config {"Name": "hortbot", "Prefix": "$"}
 channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 
 handle @id=8c985895-a6e0-44b3-8153-c760a3e3a762;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+prefix !
-send #foobar [HB] prefix changed to !
+send hortbot #foobar [HB] prefix changed to !
 
 handle @id=326d20f0-e0e3-4e2a-9bae-c94f6ef168d9;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+prefix reset
 # No reply
 
 handle @id=4ac3bc1a-26de-47b2-8ee9-1a68263429a5;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!prefix reset
-send #foobar [HB] prefix reset to $
+send hortbot #foobar [HB] prefix reset to $
 
 handle @id=6e9e4435-a465-46e2-b885-e40c868b9738;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$prefix
-send #foobar [HB] prefix is $
+send hortbot #foobar [HB] prefix is $
