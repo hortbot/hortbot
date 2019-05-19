@@ -11,6 +11,8 @@ const (
 	DefaultBullet = "[HB]"
 )
 
+var isTesting = false
+
 type Config struct {
 	DB     *sql.DB
 	Dedupe dedupe.Deduplicator

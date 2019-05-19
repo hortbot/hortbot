@@ -18,9 +18,10 @@ type Session struct {
 	IRCChannel string
 	Message    string
 
-	User      string
-	UserID    int64
-	UserLevel AccessLevel
+	User        string
+	UserDisplay string
+	UserID      int64
+	UserLevel   AccessLevel
 
 	Bot    *Bot
 	Tx     *sql.Tx
@@ -59,4 +60,43 @@ func (s *Session) Replyf(format string, args ...interface{}) error {
 
 func (s *Session) ReplyUsage(usage string) error {
 	return s.Replyf("usage: %s%s", s.Channel.Prefix, usage)
+}
+
+func (s *Session) parseUserLevel() AccessLevel {
+	// TODO: admin list
+
+	if s.User == s.IRCChannel {
+		return LevelBroadcaster
+	}
+
+	// Tags are present, safe to not check for nil
+
+	tags := s.M.Tags
+
+	if isTesting && tags["testing-admin"] != "" {
+		return LevelAdmin
+	}
+
+	if tags["mod"] == "1" {
+		return LevelModerator
+	}
+
+	badges := parseBadges(tags["badges"])
+
+	switch {
+	case badges["broadcaster"] != "":
+		return LevelBroadcaster
+	case badges["moderator"] != "":
+		return LevelModerator
+	case badges["subscriber"] != "", badges["vip"] != "", tags["subscriber"] == "1":
+		return LevelSubscriber
+	}
+
+	if tags["user-type"] == "mod" {
+		return LevelModerator
+	}
+
+	// TODO: regulars
+
+	return LevelEveryone
 }

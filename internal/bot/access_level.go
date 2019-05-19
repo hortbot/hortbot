@@ -41,7 +41,7 @@ func (a AccessLevel) CanAccess(resource AccessLevel) bool {
 		return true
 	}
 
-	if a == 0 || resource == 0 {
+	if a <= LevelUnknown || resource <= LevelUnknown {
 		return false
 	}
 

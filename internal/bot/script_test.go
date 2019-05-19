@@ -23,12 +23,6 @@ import (
 	"gotest.tools/assert"
 )
 
-func init() {
-	bot.AddBuiltin("panic", func(ctx context.Context, s *bot.Session, args string) error {
-		panic(args)
-	})
-}
-
 func TestScripts(t *testing.T) {
 	files, err := filepath.Glob(filepath.Join("testdata", "script", "*.txt"))
 	assert.NilError(t, err)
@@ -174,7 +168,7 @@ func testScriptFile(t *testing.T, filename string) {
 			assert.Assert(t, len(sent) == 3, "line %d", lineNum)
 
 			actions = append(actions, func() {
-				assert.Assert(t, sender.SendMessageCallCount() > callNum, "line %d", lineNum)
+				assert.Assert(t, sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
 				origin, target, message := sender.SendMessageArgsForCall(callNum)
 				assert.Equal(t, origin, sent[0], "line %d", lineNum)
 				assert.Equal(t, target, sent[1], "line %d", lineNum)

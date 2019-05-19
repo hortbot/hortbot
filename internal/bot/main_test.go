@@ -8,6 +8,7 @@ import (
 	"sync/atomic"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/testutil/pgtest"
 	"gotest.tools/assert"
@@ -49,4 +50,8 @@ func TestMain(m *testing.M) {
 
 func resetDatabase(t testing.TB) {
 	assert.NilError(t, migrations.Reset(pgConnStr, nil))
+}
+
+func init() {
+	bot.Testing()
 }

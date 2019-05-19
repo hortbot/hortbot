@@ -88,9 +88,16 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		Origin:  origin,
 		M:       m,
 		ID:      id,
+		User:    m.Prefix.Name,
+		Message: strings.TrimSpace(m.Trailing), // TODO: handle ACTION
 		Bot:     b,
-		Message: strings.TrimSpace(m.Trailing),
 		Sender:  b.sender,
+	}
+
+	if displayName, ok := m.Tags["display-name"]; ok {
+		s.UserDisplay = displayName
+	} else {
+		s.UserDisplay = s.User
 	}
 
 	roomID := m.Tags["room-id"]
@@ -114,6 +121,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	}
 
 	s.IRCChannel = channelName[1:]
+
+	s.UserLevel = s.parseUserLevel()
 
 	// TODO: read out user name, ID, and access level
 
@@ -168,7 +177,7 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 
 	// TODO: precheck for links, banned phrases, etc
 
-	wasCommand, err := b.trySimpleCommand(ctx, s)
+	wasCommand, err := b.tryCommand(ctx, s)
 	if err != nil {
 		return err
 	}
@@ -181,7 +190,7 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	return nil
 }
 
-func (b *Bot) trySimpleCommand(ctx context.Context, s *Session) (bool, error) {
+func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 	tx := s.Tx
 	message := s.Message
 	channel := s.Channel
@@ -206,8 +215,8 @@ func (b *Bot) trySimpleCommand(ctx context.Context, s *Session) (bool, error) {
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
 	if bc, ok := builtins[commandName]; ok {
-		err := bc(ctx, s, params)
-		if err != nil {
+		err := bc.run(ctx, s, params)
+		if err != nil && err != errNotAuthorized {
 			logger.Debug("error in builtin command", zap.Error(err))
 		}
 		return true, err
