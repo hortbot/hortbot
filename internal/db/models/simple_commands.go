@@ -29,7 +29,9 @@ type SimpleCommand struct {
 	ChannelID   int64     `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
 	Name        string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	Message     string    `boil:"message" json:"message" toml:"message" yaml:"message"`
-	AccessLevel int64     `boil:"access_level" json:"access_level" toml:"access_level" yaml:"access_level"`
+	Editor      string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
+	AccessLevel string    `boil:"access_level" json:"access_level" toml:"access_level" yaml:"access_level"`
+	Count       int64     `boil:"count" json:"count" toml:"count" yaml:"count"`
 
 	R *simpleCommandR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L simpleCommandL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -42,7 +44,9 @@ var SimpleCommandColumns = struct {
 	ChannelID   string
 	Name        string
 	Message     string
+	Editor      string
 	AccessLevel string
+	Count       string
 }{
 	ID:          "id",
 	CreatedAt:   "created_at",
@@ -50,7 +54,9 @@ var SimpleCommandColumns = struct {
 	ChannelID:   "channel_id",
 	Name:        "name",
 	Message:     "message",
+	Editor:      "editor",
 	AccessLevel: "access_level",
+	Count:       "count",
 }
 
 // Generated where
@@ -62,7 +68,9 @@ var SimpleCommandWhere = struct {
 	ChannelID   whereHelperint64
 	Name        whereHelperstring
 	Message     whereHelperstring
-	AccessLevel whereHelperint64
+	Editor      whereHelperstring
+	AccessLevel whereHelperstring
+	Count       whereHelperint64
 }{
 	ID:          whereHelperint64{field: `id`},
 	CreatedAt:   whereHelpertime_Time{field: `created_at`},
@@ -70,7 +78,9 @@ var SimpleCommandWhere = struct {
 	ChannelID:   whereHelperint64{field: `channel_id`},
 	Name:        whereHelperstring{field: `name`},
 	Message:     whereHelperstring{field: `message`},
-	AccessLevel: whereHelperint64{field: `access_level`},
+	Editor:      whereHelperstring{field: `editor`},
+	AccessLevel: whereHelperstring{field: `access_level`},
+	Count:       whereHelperint64{field: `count`},
 }
 
 // SimpleCommandRels is where relationship names are stored.
@@ -94,8 +104,8 @@ func (*simpleCommandR) NewStruct() *simpleCommandR {
 type simpleCommandL struct{}
 
 var (
-	simpleCommandColumns               = []string{"id", "created_at", "updated_at", "channel_id", "name", "message", "access_level"}
-	simpleCommandColumnsWithoutDefault = []string{"channel_id", "name", "message", "access_level"}
+	simpleCommandColumns               = []string{"id", "created_at", "updated_at", "channel_id", "name", "message", "editor", "access_level", "count"}
+	simpleCommandColumnsWithoutDefault = []string{"channel_id", "name", "message", "editor", "access_level", "count"}
 	simpleCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	simpleCommandPrimaryKeyColumns     = []string{"id"}
 )

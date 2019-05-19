@@ -18,6 +18,10 @@ type Session struct {
 	IRCChannel string
 	Message    string
 
+	User      string
+	UserID    int64
+	UserLevel AccessLevel
+
 	Bot    *Bot
 	Tx     *sql.Tx
 	Sender MessageSender

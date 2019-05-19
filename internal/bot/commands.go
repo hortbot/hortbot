@@ -5,6 +5,19 @@ import (
 	"strings"
 )
 
+type builtinCommand struct {
+	minLevel int
+	fn       func(ctx context.Context, s *Session, args string) error
+}
+
+func (b builtinCommand) run(ctx context.Context, s *Session, args string) error {
+	if b.minLevel == 0 {
+		return errNotAuthorized
+	}
+
+	return b.fn(ctx, s, args)
+}
+
 type cmdFunc func(ctx context.Context, s *Session, args string) error
 
 var builtins = map[string]cmdFunc{

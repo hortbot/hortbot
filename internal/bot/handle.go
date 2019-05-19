@@ -20,6 +20,7 @@ var (
 	errNilMessage     = errors.New("bot: nil message")
 	errInvalidMessage = errors.New("bot: invalid message")
 	errNotImplemented = errors.New("bot: not implemented")
+	errNotAuthorized  = errors.New("bot: user is not authorized to use this command")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -113,6 +114,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	}
 
 	s.IRCChannel = channelName[1:]
+
+	// TODO: read out user name, ID, and access level
 
 	ctx, logger = ctxlog.FromContextWith(ctx,
 		zap.Int64("roomID", s.RoomID),

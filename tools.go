@@ -8,4 +8,5 @@ import (
 	_ "github.com/mjibson/esc"
 	_ "github.com/volatiletech/sqlboiler"
 	_ "github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql"
+	_ "golang.org/x/tools/cmd/stringer"
 )

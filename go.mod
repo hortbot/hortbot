@@ -23,6 +23,7 @@ require (
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-redis/redis v6.15.2+incompatible
+	github.com/gobuffalo/flect v0.1.3
 	github.com/gocql/gocql v0.0.0-20190423091413-b99afaf3b163 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.3.1
@@ -62,7 +63,7 @@ require (
 	golang.org/x/net v0.0.0-20190514140710-3ec191127204 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190516110030-61b9204099cb // indirect
-	golang.org/x/tools v0.0.0-20190517003510-bffc5affc6df // indirect
+	golang.org/x/tools v0.0.0-20190517003510-bffc5affc6df
 	google.golang.org/appengine v1.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20190516172635-bb713bdc0e52 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect

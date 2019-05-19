@@ -212,28 +212,29 @@ var _escData = map[string]*_escFile{
 	"/20190504194418_initial_schema.down.sql": {
 		name:    "20190504194418_initial_schema.down.sql",
 		local:   "20190504194418_initial_schema.down.sql",
-		size:    103,
-		modtime: 1557163117,
+		size:    138,
+		modtime: 1558238270,
 		compressed: `
 H4sIAAAAAAAC/3Jydff0s+bicgnyD1AIcXTycVXwdFNwjfAMDglWKM7MLchJjU/Oz81NzEspVnB2DHZ2
-dHHFpTw5IzEvLzUHWZ2zv6+vZ4g1FyAAAP//rNXPS2cAAAA=
+dHGFK48MQFadmJycWlwcn5NalpqDy8TkjMS8vNQcZKOc/X19PUOsuQABAAD//9y93AOKAAAA
 `,
 	},
 
 	"/20190504194418_initial_schema.up.sql": {
 		name:    "20190504194418_initial_schema.up.sql",
 		local:   "20190504194418_initial_schema.up.sql",
-		size:    1160,
-		modtime: 1558207380,
+		size:    1339,
+		modtime: 1558242532,
 		compressed: `
-H4sIAAAAAAAC/9SST2/aQBDF7/4U7xikkC/AyYRNZBVM6xi1nKzFHvBW+wd5BkT66SsbiFOcVOqxV799
-b974N+Mx8towtsYSDIMPm59UCiSgrLXfEQ5ejIXUhK1pWNCQtqhob8OrIy8I207cBHmIxmPMAnxoX9lX
-BN9KTOCyJqfhzK7RYoJnNOS08cbvUAbPhqWNuo4y3CY5YtY7Qq0ZGyLfesKRqocomqrnJJ1E0WOm4lwh
-j6dz1fX1ZBl3EQCYChuzM17wrFKVxbmaYbrGTD3Fq3mO+AXJTKV5kq/xNUsWcbbGF7W+77xlQ1qoKrRA
-jCMW7fby682bLr/fjZAuc6Sr+fxsOeyrf7GcPUxN0fe8qlilybeVOud67QhCJ7mZtwlSfKbpUsyxRRIs
-aX8j7hvamtOHkQdrSTrl/IHrcLBV4UJFjZZhYDTqGSTpTP14Y1BcVitMdWrPoGdzEVrnn/jYuL2logzO
-aV/9RxQvu70Dmaknlan0Ub28W9xUA+dn/K6X/yHakpgLS0eyt3dzST1fD+76XvfdpNEQ180/L3pLB26Z
-Dqn0T0aTv4e1M6/8BzFdobbOcrFI8kn0OwAA//9NWebWiAQAAA==
+H4sIAAAAAAAC/9RTTW/iMBS851e8G0Uq/QM9heJW0ULopkG7nCLHfhCv/IHsFwT761f5gFCgK+1xj/G8
+mTf2TCYTyCsVYKM0ggoQ6vIXCgJyICputwi1JaWBKoSN8oHAI9cgcafd0aAlcJsWLB09RZMJzBxY10zp
+IzjbQAEhiAoNB6O2npNyNoBHw5VVdgvC2aACNVKnVSo0SgZD4FuEigcoEW3DcXuUT1E0ZW9J+hxFLxmL
+cwZ5PJ2z1q9FHeAhAgBQEkq1VZbgjaUsi3M2g+kaZuw1Xs1ziD8gmbE0T/I1vGfJIs7W8I2tH1uu8MgJ
+ZcEJSBkMxM2Ofp+56fLHwxjSZQ7paj7vKPVO/gul4wT0xeDzhMIqTb6vWKdruUEgPNDVvtJR8RXGBal9
+E4nTyO0VuPO4UYe7krXWSC3SHYTK1VoWxkn0nG4Fo/GQQZLO2M9zBkV/tULJQ1ODIZseuGDm63cGXAgM
+odC4R91kw9LVog9yhHv0R2dx1LkahboMwqsS/emkd+jOB6V3XAoeaJjh0ig7urTc1SYos9NYCGcMt/I/
+ak//phcFytgry1j6wj4uHlzJG+ZXvTn9cXcglIqcv1+2i+Q+fXyeE662dF313lBXeHgYrvTYmhzfNuwq
+rmKgtF1bpreBDiPj57+LNTtPlb2RaQ01dpaLRZI/R38CAAD//+Rvhkc7BQAA
 `,
 	},
 

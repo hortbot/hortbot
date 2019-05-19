@@ -50,3 +50,12 @@ func makeCacheKey(cols boil.Columns, nzDefaults []string) string {
 	strmangle.PutBuffer(buf)
 	return str
 }
+
+// Enum values for access_level
+const (
+	AccessLevelEveryone    = "everyone"
+	AccessLevelSubscriber  = "subscriber"
+	AccessLevelModerator   = "moderator"
+	AccessLevelBroadcaster = "broadcaster"
+	AccessLevelAdmin       = "admin"
+)

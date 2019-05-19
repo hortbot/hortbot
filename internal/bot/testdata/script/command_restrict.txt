@@ -1,0 +1,28 @@
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict
+send hortbot #foobar [HB] usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan
+send hortbot #foobar [HB] command pan is restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan everyone
+send hortbot #foobar [HB] command pan restricted to everyone and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan subs
+send hortbot #foobar [HB] command pan restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan mods
+send hortbot #foobar [HB] command pan restricted to moderators and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan owner
+send hortbot #foobar [HB] command pan restricted to broadcasters and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
+send hortbot #foobar [HB] command pan restricted to admins and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict what all
+send hortbot #foobar [HB] command what not found

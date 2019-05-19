@@ -2,6 +2,8 @@ BEGIN;
 
 DROP TABLE IF EXISTS simple_commands CASCADE;
 
+DROP TYPE IF EXISTS access_level;
+
 DROP TABLE IF EXISTS channels CASCADE;
 
 COMMIT;
