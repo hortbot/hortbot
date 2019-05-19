@@ -1,17 +1,17 @@
 insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
-handle hortbot @id=a8104228-d913-4446-88ce-607850a5c84c;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command
 send hortbot #foobar [HB] usage: +command add|delete|restrict ...
 
-handle hortbot @id=068ac8b2-ab72-4c79-97da-12d7e1ee2317;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add
 send hortbot #foobar [HB] usage: +command add <name> <text>
 
-handle hortbot @id=98be033d-2b2e-4088-b52b-c161ae5c2fe8;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan
 send hortbot #foobar [HB] usage: +command add <name> <text>
 
-handle hortbot @id=98be033d-2b2e-4088-b52b-c161ae5c2fe8;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan     
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan     
 send hortbot #foobar [HB] usage: +command add <name> <text>
 
-handle hortbot @id=cfcc6a5d-97ab-469a-b574-2dd2eb9fba0d;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS, HAVE YE?
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS, HAVE YE?
 send hortbot #foobar [HB] error parsing command
 

@@ -52,3 +52,7 @@ func (s *Session) Replyf(format string, args ...interface{}) error {
 	response := fmt.Sprintf(format, args...)
 	return s.Reply(response)
 }
+
+func (s *Session) ReplyUsage(usage string) error {
+	return s.Replyf("usage: %s%s", s.Channel.Prefix, usage)
+}

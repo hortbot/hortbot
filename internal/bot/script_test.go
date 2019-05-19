@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/ctxlog"
@@ -153,6 +154,9 @@ func testScriptFile(t *testing.T, filename string) {
 
 			origin := args[0]
 			mRaw := args[1]
+
+			u := uuid.Must(uuid.NewV4())
+			mRaw = strings.ReplaceAll(mRaw, "__UUID__", u.String())
 
 			m, err := irc.ParseMessage(mRaw)
 			assert.NilError(t, err, "line %d", lineNum)

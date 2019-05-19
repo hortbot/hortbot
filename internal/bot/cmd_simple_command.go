@@ -14,18 +14,15 @@ func cmdSimpleCommand(ctx context.Context, s *Session, args string) error {
 	args = strings.TrimSpace(args)
 
 	usage := func() error {
-		return s.Replyf("usage: %scommand add|delete|restrict ...", s.Channel.Prefix)
+		return s.ReplyUsage("command add|delete|restrict ...")
 	}
 
 	subcommand, args := splitSpace(args)
 
 	switch subcommand {
-	case "":
-		return usage()
-
 	case "add":
 		usage := func() error {
-			return s.Replyf("usage: %scommand add <name> <text>", s.Channel.Prefix)
+			return s.ReplyUsage("command add <name> <text>")
 		}
 
 		name, text := splitSpace(args)
@@ -72,7 +69,33 @@ func cmdSimpleCommand(ctx context.Context, s *Session, args string) error {
 		return s.Replyf("command %s added", name)
 
 	case "delete":
-		return errNotImplemented
+		usage := func() error {
+			return s.ReplyUsage("command delete <name>")
+		}
+
+		if args == "" {
+			return usage()
+		}
+
+		command, err := models.SimpleCommands(
+			models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+			models.SimpleCommandWhere.Name.EQ(args),
+		).One(ctx, s.Tx)
+
+		if err == sql.ErrNoRows {
+			return s.Replyf("command %s not found", args)
+		}
+
+		if err != nil {
+			return err
+		}
+
+		err = command.Delete(ctx, s.Tx)
+		if err != nil {
+			return err
+		}
+
+		return s.Replyf("command %s deleted", args)
 
 	case "restrict":
 		return errNotImplemented

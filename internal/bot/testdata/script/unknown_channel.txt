@@ -1,1 +1,1 @@
-handle hortbot @id=9b2d2c0d-8a99-44b0-abe0-c4c9eeeb99aa;room-id=1 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
