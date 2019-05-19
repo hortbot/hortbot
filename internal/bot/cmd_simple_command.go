@@ -11,39 +11,26 @@ import (
 )
 
 func cmdSimpleCommand(ctx context.Context, s *Session, args string) error {
+	args = strings.TrimSpace(args)
+
 	usage := func() error {
 		return s.Replyf("usage: %scommand add|delete|restrict ...", s.Channel.Prefix)
 	}
 
-	params := strings.SplitN(args, " ", 2)
-
-	if len(params) == 0 {
-		return usage()
-	}
-
-	subcommand := params[0]
-
-	if len(params) == 2 {
-		args = params[1]
-	} else {
-		args = ""
-	}
+	subcommand, args := splitSpace(args)
 
 	switch subcommand {
+	case "":
+		return usage()
+
 	case "add":
 		usage := func() error {
 			return s.Replyf("usage: %scommand add <name> <text>", s.Channel.Prefix)
 		}
 
-		params := strings.SplitN(args, " ", 2)
-		if len(params) != 2 {
-			return usage()
-		}
+		name, text := splitSpace(args)
 
-		name := params[0]
-		text := strings.TrimSpace(params[1])
-
-		if text == "" {
+		if name == "" || text == "" {
 			return usage()
 		}
 

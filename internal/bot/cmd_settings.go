@@ -17,7 +17,7 @@ func cmdBullet(ctx context.Context, s *Session, args string) error {
 		if s.Channel.Bullet.Valid {
 			bullet = s.Channel.Bullet.String
 		} else {
-			bullet = s.Bot.bullet
+			bullet = s.Bot.bullet + " (default)"
 		}
 
 		return s.Replyf("bullet is %s", bullet)

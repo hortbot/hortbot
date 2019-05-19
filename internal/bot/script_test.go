@@ -73,7 +73,10 @@ func testScriptFile(t *testing.T, filename string) {
 
 	scanner := bufio.NewScanner(f)
 
+	lineNum := 0
+
 	for scanner.Scan() {
+		lineNum++
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
 
@@ -87,9 +90,9 @@ func testScriptFile(t *testing.T, filename string) {
 		case "skip":
 			if len(directive) > 1 {
 				reason := strings.TrimSpace(directive[1])
-				t.Skip(reason)
+				t.Skipf("line %d: %s", lineNum, reason)
 			} else {
-				t.SkipNow()
+				t.Skipf("line %d", lineNum)
 			}
 
 		case "boil_debug":
@@ -109,7 +112,7 @@ func testScriptFile(t *testing.T, filename string) {
 					Dedupe string
 				}
 
-				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bcj))
+				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bcj), "line %d", lineNum)
 
 				bc.Prefix = bcj.Prefix
 				bc.Bullet = bcj.Bullet
@@ -124,35 +127,35 @@ func testScriptFile(t *testing.T, filename string) {
 					bc.Dedupe = d
 
 				default:
-					t.Fatalf("unknown dedupe type %s", bcj.Dedupe)
+					t.Fatalf("line %d: unknown dedupe type %s", lineNum, bcj.Dedupe)
 				}
 			})
 
 		case "insert_channel":
 			var channel models.Channel
-			assert.NilError(t, json.Unmarshal([]byte(directive[1]), &channel))
+			assert.NilError(t, json.Unmarshal([]byte(directive[1]), &channel), "line %d", lineNum)
 
 			actions = append(actions, func() {
-				assert.NilError(t, channel.Insert(ctx, db, boil.Infer()))
+				assert.NilError(t, channel.Insert(ctx, db, boil.Infer()), "line %d", lineNum)
 			})
 
 		case "insert_simple_command":
 			var sc models.SimpleCommand
-			assert.NilError(t, json.Unmarshal([]byte(directive[1]), &sc))
+			assert.NilError(t, json.Unmarshal([]byte(directive[1]), &sc), "line %d", lineNum)
 
 			actions = append(actions, func() {
-				assert.NilError(t, sc.Insert(ctx, db, boil.Infer()))
+				assert.NilError(t, sc.Insert(ctx, db, boil.Infer()), "line %d", lineNum)
 			})
 
 		case "handle":
 			args := strings.SplitN(directive[1], " ", 2)
-			assert.Assert(t, len(args) == 2)
+			assert.Assert(t, len(args) == 2, "line %d", lineNum)
 
 			origin := args[0]
 			mRaw := args[1]
 
 			m, err := irc.ParseMessage(mRaw)
-			assert.NilError(t, err)
+			assert.NilError(t, err, "line %d", lineNum)
 
 			actions = append(actions, func() {
 				ensureBot()
@@ -164,18 +167,18 @@ func testScriptFile(t *testing.T, filename string) {
 			counts["send"]++
 
 			sent := strings.SplitN(directive[1], " ", 3)
-			assert.Assert(t, len(sent) == 3)
+			assert.Assert(t, len(sent) == 3, "line %d", lineNum)
 
 			actions = append(actions, func() {
-				assert.Assert(t, sender.SendMessageCallCount() > callNum)
+				assert.Assert(t, sender.SendMessageCallCount() > callNum, "line %d", lineNum)
 				origin, target, message := sender.SendMessageArgsForCall(callNum)
-				assert.Equal(t, origin, sent[0])
-				assert.Equal(t, target, sent[1])
-				assert.Equal(t, message, sent[2])
+				assert.Equal(t, origin, sent[0], "line %d", lineNum)
+				assert.Equal(t, target, sent[1], "line %d", lineNum)
+				assert.Equal(t, message, sent[2], "line %d", lineNum)
 			})
 
 		default:
-			t.Fatalf("unknown directive %s", directive[0])
+			t.Fatalf("line %d: unknown directive %s", lineNum, directive[0])
 		}
 	}
 

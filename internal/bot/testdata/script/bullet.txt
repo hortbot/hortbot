@@ -11,4 +11,4 @@ handle hortbot @id=b1baef69-005b-4c2a-99e3-4bc39868bba1;room-id=1 :foobar!foobar
 send hortbot #foobar WOW bullet reset to default
 
 handle hortbot @id=be2fd393-d224-4257-bd7e-29fd35ffb823;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+bullet
-send hortbot #foobar WOW bullet is WOW
+send hortbot #foobar WOW bullet is WOW (default)
