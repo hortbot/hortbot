@@ -5,3 +5,6 @@ send hortbot #foobar [HB] foobar
 
 handle hortbot @id=__UUID__;room-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_display_name
 send hortbot #foobar [HB] FooBar
+
+handle hortbot @id=__UUID__;room-id=1;display-name= :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_display_name
+send hortbot #foobar [HB] foobar

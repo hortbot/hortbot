@@ -116,7 +116,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		Sender:  b.sender,
 	}
 
-	if displayName, ok := m.Tags["display-name"]; ok {
+	if displayName := m.Tags["display-name"]; displayName != "" {
 		s.UserDisplay = displayName
 	} else {
 		s.UserDisplay = s.User
