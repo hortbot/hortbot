@@ -8,7 +8,16 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 )
 
+var testingAction func(ctx context.Context, action string) (string, error, bool)
+
 func (s *Session) doAction(ctx context.Context, action string) (string, error) {
+	if isTesting && testingAction != nil {
+		s, err, ok := testingAction(ctx, action)
+		if ok {
+			return s, err
+		}
+	}
+
 	switch action {
 	case "PARAMETER":
 		return s.CommandParams, nil

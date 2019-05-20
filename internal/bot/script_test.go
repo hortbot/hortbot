@@ -197,7 +197,10 @@ func testScriptFile(t *testing.T, filename string) {
 
 	assert.NilError(t, scanner.Err())
 
-	assert.Assert(t, len(actions) != 0)
+	if len(actions) == 0 {
+		t.Error("no actions were provided")
+		t.FailNow()
+	}
 
 	for _, fn := range actions {
 		fn()

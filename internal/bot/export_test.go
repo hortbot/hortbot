@@ -8,7 +8,7 @@ func Testing() {
 	isTesting = true
 }
 
-func AddBuiltin(name string, fn func(ctx context.Context, s *Session, args string) error, minLevel AccessLevel) {
+func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, args string) error, minLevel AccessLevel) {
 	if name == "" {
 		panic("empty builtin name")
 	}
@@ -25,4 +25,8 @@ func AddBuiltin(name string, fn func(ctx context.Context, s *Session, args strin
 		fn:       fn,
 		minLevel: minLevel,
 	}
+}
+
+func TestingAction(fn func(ctx context.Context, action string) (string, error, bool)) {
+	testingAction = fn
 }

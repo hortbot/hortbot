@@ -1,0 +1,7 @@
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add error (_TESTING_ERROR_)
+send hortbot #foobar [HB] command error added, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
