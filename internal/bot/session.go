@@ -17,6 +17,7 @@ type Session struct {
 	RoomID     int64
 	IRCChannel string
 	Message    string
+	Me         bool
 
 	User        string
 	UserDisplay string
@@ -37,8 +38,7 @@ func (s *Session) formatResponse(response string) string {
 
 	if len(response) >= 4 {
 		switch response[:4] {
-		case "/me ":
-		case ".me ":
+		case "/me ", ".me ":
 			return response
 		}
 	}

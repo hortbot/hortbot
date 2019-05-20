@@ -82,12 +82,36 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return nil
 	}
 
+	message := m.Trailing
+
+	if message == "" {
+		return nil
+	}
+
+	me := false
+	if c, a, ok := irc.ParseCTCP(message); ok {
+		if c != "ACTION" {
+			logger.Warn("unknown CTCP", zap.String("ctcpCommand", c), zap.String("ctcpArgs", a))
+			return nil
+		}
+
+		message = a
+		me = true
+	}
+
+	message = strings.TrimSpace(message)
+
+	if message == "" {
+		return nil
+	}
+
 	s := &Session{
 		Origin:  origin,
 		M:       m,
 		ID:      id,
 		User:    m.Prefix.Name,
-		Message: strings.TrimSpace(m.Trailing), // TODO: handle ACTION
+		Message: message,
+		Me:      me,
 		Bot:     b,
 		Sender:  b.sender,
 	}
@@ -186,6 +210,10 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 }
 
 func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
+	if s.Me {
+		return false, nil
+	}
+
 	tx := s.Tx
 	message := s.Message
 	channel := s.Channel

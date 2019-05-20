@@ -7,6 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/aws/aws-sdk-go v1.19.32 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
+	github.com/bmatcuk/doublestar v1.1.1
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
 	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect

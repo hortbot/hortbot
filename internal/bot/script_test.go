@@ -10,6 +10,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bmatcuk/doublestar"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
@@ -24,7 +25,7 @@ import (
 )
 
 func TestScripts(t *testing.T) {
-	files, err := filepath.Glob(filepath.Join("testdata", "script", "*.txt"))
+	files, err := doublestar.Glob(filepath.Join("testdata", "script", "**", "*.txt"))
 	assert.NilError(t, err)
 	assert.Assert(t, len(files) != 0)
 
@@ -83,6 +84,7 @@ func testScriptFile(t *testing.T, filename string) {
 		}
 
 		directive := strings.SplitN(line, " ", 2)
+		me := false
 
 		switch directive[0] {
 		case "skip":
@@ -145,6 +147,9 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.NilError(t, sc.Insert(ctx, db, boil.Infer()), "line %d", lineNum)
 			})
 
+		case "handle_me":
+			me = true
+			fallthrough
 		case "handle":
 			args := strings.SplitN(directive[1], " ", 2)
 			assert.Assert(t, len(args) == 2, "line %d", lineNum)
@@ -161,6 +166,10 @@ func testScriptFile(t *testing.T, filename string) {
 				var err error
 				m, err = irc.ParseMessage(mRaw)
 				assert.NilError(t, err, "line %d", lineNum)
+
+				if me {
+					m.Trailing, _ = irc.EncodeCTCP("ACTION", m.Trailing)
+				}
 			}
 			actions = append(actions, func() {
 				ensureBot()
