@@ -113,7 +113,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	// TODO: atomic locking on the channel
 
 	channelName := m.Params[0]
-	if channelName == "" || channelName[0] != '#' {
+	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
 		logger.Debug("bad channel name", zap.Strings("params", m.Params))
 		return errInvalidMessage
 	}
@@ -176,11 +176,8 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	// TODO: precheck for links, banned phrases, etc
 
 	wasCommand, err := b.tryCommand(ctx, s)
-	if err != nil {
-		return err
-	}
 	if wasCommand {
-		return nil
+		return err
 	}
 
 	// TODO: autoreplies

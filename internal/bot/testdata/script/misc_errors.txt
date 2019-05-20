@@ -1,0 +1,40 @@
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_error
+no_send
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+
+# Good message, for reference:
+# handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+
+handle hortbot PRIVMSG #foobar :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG # :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG :+pan working command
+no_send
+
+handle hortbot @id=__UUID__ :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv WHAT #foobar :+pan working command
+no_send
+
+handle hortbot @id=;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id= :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=idk :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
+
+handle snortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #barfoo :+pan working command
+no_send
