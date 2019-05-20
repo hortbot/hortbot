@@ -237,6 +237,11 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 		return true, err
 	}
 
+	commandLevel := NewAccessLevel(command.AccessLevel)
+	if !s.UserLevel.CanAccess(commandLevel) {
+		return true, errNotAuthorized
+	}
+
 	nodes, err := cbp.Parse(command.Message)
 	if err != nil {
 		logger.Error("command did not parse, which should not happen", zap.Error(err))

@@ -5,7 +5,7 @@ handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMS
 send hortbot #foobar [HB] prefix changed to !
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+prefix reset
-# No reply
+no_send
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!prefix reset
 send hortbot #foobar [HB] prefix reset to $

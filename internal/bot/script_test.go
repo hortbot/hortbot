@@ -69,9 +69,12 @@ func testScriptFile(t *testing.T, filename string) {
 	scanner := bufio.NewScanner(f)
 
 	lineNum := 0
+	sentBefore := 0
 
 	for scanner.Scan() {
 		lineNum++
+		lineNum := lineNum // Shadow lineNum, otherwise the closures below will get the last line's number
+
 		line := scanner.Text()
 		line = strings.TrimSpace(line)
 
@@ -157,6 +160,7 @@ func testScriptFile(t *testing.T, filename string) {
 
 			actions = append(actions, func() {
 				ensureBot()
+				sentBefore = sender.SendMessageCallCount()
 				b.Handle(ctx, origin, m)
 			})
 
@@ -173,6 +177,17 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.Equal(t, origin, sent[0], "line %d", lineNum)
 				assert.Equal(t, target, sent[1], "line %d", lineNum)
 				assert.Equal(t, message, sent[2], "line %d", lineNum)
+			})
+
+		case "no_send":
+			actions = append(actions, func() {
+				sentAfter := sender.SendMessageCallCount()
+
+				if sentBefore != sentAfter {
+					origin, target, message := sender.SendMessageArgsForCall(sentAfter - 1)
+					t.Errorf("sent message: origin=%s, target=%s, message=%s: line %d", origin, target, message, lineNum)
+					t.FailNow()
+				}
 			})
 
 		default:
