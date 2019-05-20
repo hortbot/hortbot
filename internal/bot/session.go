@@ -28,6 +28,8 @@ type Session struct {
 	Sender MessageSender
 
 	Channel *models.Channel
+
+	CommandParams string
 }
 
 func (s *Session) formatResponse(response string) string {

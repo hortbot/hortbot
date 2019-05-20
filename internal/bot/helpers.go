@@ -1,6 +1,9 @@
 package bot
 
-import "strings"
+import (
+	"database/sql"
+	"strings"
+)
 
 func splitFirstSep(s string, sep string) (string, string) {
 	parts := strings.SplitN(s, sep, 2)
@@ -15,8 +18,8 @@ func splitFirstSep(s string, sep string) (string, string) {
 	}
 }
 
-func splitSpace(args string) (string, string) {
-	a, b := splitFirstSep(args, " ")
+func splitSpace(s string) (string, string) {
+	a, b := splitFirstSep(s, " ")
 	return a, strings.TrimSpace(b)
 }
 
@@ -31,4 +34,31 @@ func parseBadges(badgeTag string) map[string]string {
 	}
 
 	return d
+}
+
+func transact(db *sql.DB, fn func(*sql.Tx) error) (err error) {
+	var tx *sql.Tx
+	tx, err = db.Begin()
+	if err != nil {
+		return err
+	}
+
+	rollback := true
+
+	defer func() {
+		if rollback {
+			if rerr := tx.Rollback(); err == nil && rerr != nil {
+				err = rerr
+			}
+		}
+	}()
+
+	err = fn(tx)
+	rollback = false
+
+	if err != nil {
+		return tx.Rollback()
+	}
+
+	return tx.Commit()
 }

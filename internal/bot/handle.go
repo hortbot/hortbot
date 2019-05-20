@@ -4,10 +4,8 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
-	"unicode"
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/ctxlog"
@@ -200,18 +198,13 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 		return false, nil
 	}
 
-	commandName := message[len(prefix):]
-	params := ""
-
-	if i := strings.IndexFunc(commandName, unicode.IsSpace); i != -1 {
-		params = strings.TrimSpace(commandName[i+1:])
-		commandName = commandName[:i]
-	}
+	commandName, params := splitSpace(message[len(prefix):])
 
 	if commandName == "" {
 		return false, nil
 	}
 
+	s.CommandParams = params
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
 	if bc, ok := builtins[commandName]; ok {
@@ -248,18 +241,7 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 		return true, err
 	}
 
-	walker := func(ctx context.Context, action string) (string, error) {
-		switch action {
-		case "PARAMETER":
-			return params, nil
-		case "PARAMETER_CAPS":
-			return strings.ToUpper(params), nil
-		}
-
-		return "", fmt.Errorf("unknown action: %s", action)
-	}
-
-	response, err := walk(ctx, nodes, walker)
+	response, err := walk(ctx, nodes, s.doAction)
 	if err != nil {
 		logger.Debug("error while walking command tree", zap.Error(err))
 		return true, err
@@ -267,63 +249,4 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 
 	err = s.Reply(response)
 	return true, err
-}
-
-func transact(db *sql.DB, fn func(*sql.Tx) error) (err error) {
-	var tx *sql.Tx
-	tx, err = db.Begin()
-	if err != nil {
-		return err
-	}
-
-	rollback := true
-
-	defer func() {
-		if rollback {
-			if rerr := tx.Rollback(); err == nil && rerr != nil {
-				err = rerr
-			}
-		}
-	}()
-
-	err = fn(tx)
-	rollback = false
-
-	if err != nil {
-		return tx.Rollback()
-	}
-
-	return tx.Commit()
-}
-
-func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, action string) (string, error)) (string, error) {
-	// Process all commands, converting them to text nodes.
-	for i, node := range nodes {
-		if node.Text != "" {
-			continue
-		}
-
-		action, err := walk(ctx, node.Children, fn)
-		if err != nil {
-			return "", err
-		}
-
-		s, err := fn(ctx, action)
-		if err != nil {
-			return "", err
-		}
-
-		nodes[i] = cbp.Node{
-			Text: s,
-		}
-	}
-
-	var sb strings.Builder
-
-	// Merge all strings.
-	for _, node := range nodes {
-		sb.WriteString(node.Text)
-	}
-
-	return sb.String(), nil
 }
