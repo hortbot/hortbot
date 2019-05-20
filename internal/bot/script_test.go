@@ -152,12 +152,16 @@ func testScriptFile(t *testing.T, filename string) {
 			origin := args[0]
 			mRaw := args[1]
 
-			u := uuid.Must(uuid.NewV4())
-			mRaw = strings.ReplaceAll(mRaw, "__UUID__", u.String())
+			var m *irc.Message
 
-			m, err := irc.ParseMessage(mRaw)
-			assert.NilError(t, err, "line %d", lineNum)
+			if mRaw != "nil" {
+				u := uuid.Must(uuid.NewV4())
+				mRaw = strings.ReplaceAll(mRaw, "__UUID__", u.String())
 
+				var err error
+				m, err = irc.ParseMessage(mRaw)
+				assert.NilError(t, err, "line %d", lineNum)
+			}
 			actions = append(actions, func() {
 				ensureBot()
 				sentBefore = sender.SendMessageCallCount()

@@ -30,7 +30,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	case nil:
 		// Do nothing
 	case errNilMessage:
-		panic("nil message")
+		logger.Error("nil message")
 	case errInvalidMessage:
 		logger.Warn("invalid message", zap.Any("message", m))
 	case errNotImplemented:

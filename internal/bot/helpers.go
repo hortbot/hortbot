@@ -57,7 +57,7 @@ func transact(db *sql.DB, fn func(*sql.Tx) error) (err error) {
 	rollback = false
 
 	if err != nil {
-		tx.Rollback()
+		tx.Rollback() //nolint:errcheck
 		return err
 	}
 
