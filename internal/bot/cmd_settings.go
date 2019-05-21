@@ -2,8 +2,10 @@ package bot
 
 import (
 	"context"
+	"sort"
 	"strings"
 
+	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -66,4 +68,97 @@ func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 	}
 
 	return s.Replyf("prefix changed to %s", args)
+}
+
+func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string) error {
+	args = strings.TrimSpace(args)
+
+	switch cmd {
+	case "owner", "mod", "regular":
+	default:
+		panic("unreachable: " + cmd)
+	}
+
+	usage := func() error {
+		return s.ReplyUsage(cmd + " <list|add|remove> ...")
+	}
+
+	getter := func() []string {
+		switch cmd {
+		case "owner":
+			return s.Channel.CustomOwners
+		case "mod":
+			return s.Channel.CustomMods
+		case "regular":
+			return s.Channel.CustomRegulars
+		default:
+			panic("unreachable")
+		}
+	}
+
+	setter := func(v []string) error {
+		switch cmd {
+		case "owner":
+			s.Channel.CustomOwners = v
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.CustomOwners))
+
+		case "mod":
+			s.Channel.CustomMods = v
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.CustomMods))
+
+		case "regular":
+			s.Channel.CustomRegulars = v
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.CustomRegulars))
+
+		default:
+			panic("unreachable")
+		}
+	}
+
+	subcommand, args := splitSpace(args)
+	user, _ := splitSpace(args)
+
+	cmds := flect.Pluralize(cmd)
+	existing := getter()
+
+	switch subcommand {
+	case "list":
+		if len(existing) == 0 {
+			return s.Replyf("there are no %s", cmds)
+		}
+
+		sort.Strings(existing)
+
+		return s.Replyf("%s: %s", cmds, strings.Join(existing, ", "))
+
+	case "add":
+		if _, found := stringSliceIndex(existing, user); found {
+			return s.Replyf("%s is already in %s", user, cmds)
+		}
+
+		existing = append(existing, user)
+
+		if err := setter(existing); err != nil {
+			return err
+		}
+
+		return s.Replyf("%s added to %s", user, cmds)
+
+	case "remove":
+		i, found := stringSliceIndex(existing, user)
+		if !found {
+			return s.Replyf("%s is not in %s", user, cmds)
+		}
+
+		existing[i] = existing[len(existing)-1]
+		existing = existing[:len(existing)-1]
+
+		if err := setter(existing); err != nil {
+			return err
+		}
+
+		return s.Replyf("%s removed from %s", user, cmds)
+	}
+
+	return usage()
 }

@@ -63,3 +63,12 @@ func transact(db *sql.DB, fn func(*sql.Tx) error) (err error) {
 
 	return tx.Commit()
 }
+
+func stringSliceIndex(strs []string, s string) (int, bool) {
+	for i, v := range strs {
+		if s == v {
+			return i, true
+		}
+	}
+	return -1, false
+}

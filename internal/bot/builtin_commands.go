@@ -26,6 +26,9 @@ func init() {
 		"command": {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"bullet":  {fn: cmdBullet, minLevel: LevelBroadcaster},
 		"prefix":  {fn: cmdPrefix, minLevel: LevelBroadcaster},
+		"owner":   {fn: cmdOwnerModRegular, minLevel: LevelBroadcaster},
+		"mod":     {fn: cmdOwnerModRegular, minLevel: LevelBroadcaster},
+		"regular": {fn: cmdOwnerModRegular, minLevel: LevelModerator},
 	}
 }
 
