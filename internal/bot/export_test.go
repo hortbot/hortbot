@@ -8,7 +8,7 @@ func Testing() {
 	isTesting = true
 }
 
-func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, args string) error, minLevel AccessLevel) {
+func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd string, args string) error, minLevel AccessLevel) {
 	if name == "" {
 		panic("empty builtin name")
 	}
@@ -21,7 +21,11 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, args s
 		panic("unknown level for added builtin " + name)
 	}
 
-	builtins[name] = builtinCommand{
+	if _, ok := builtinCommands[name]; ok {
+		panic(name + " already exists")
+	}
+
+	builtinCommands[name] = builtinCommand{
 		fn:       fn,
 		minLevel: minLevel,
 	}

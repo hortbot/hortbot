@@ -98,7 +98,23 @@ func (s *Session) parseUserLevel() AccessLevel {
 		return LevelModerator
 	}
 
-	// TODO: regulars
+	for _, owner := range s.Channel.CustomOwners {
+		if s.User == owner {
+			return LevelBroadcaster
+		}
+	}
+
+	for _, mod := range s.Channel.CustomMods {
+		if s.User == mod {
+			return LevelModerator
+		}
+	}
+
+	for _, reg := range s.Channel.CustomRegulars {
+		if s.User == reg {
+			return LevelSubscriber
+		}
+	}
 
 	return LevelEveryone
 }

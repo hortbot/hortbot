@@ -17,35 +17,35 @@ func init() {
 	})
 
 	bot.TestingBuiltin("testing_panic",
-		func(ctx context.Context, s *bot.Session, args string) error {
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			panic(args)
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_access_level",
-		func(ctx context.Context, s *bot.Session, args string) error {
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return s.Reply(s.UserLevel.String())
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_name",
-		func(ctx context.Context, s *bot.Session, args string) error {
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return s.Reply(s.User)
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_display_name",
-		func(ctx context.Context, s *bot.Session, args string) error {
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return s.Reply(s.UserDisplay)
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_error",
-		func(ctx context.Context, s *bot.Session, args string) error {
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return fmt.Errorf("%s", args)
 		},
 		bot.LevelEveryone,

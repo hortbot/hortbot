@@ -9,7 +9,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-func cmdBullet(ctx context.Context, s *Session, args string) error {
+func cmdBullet(ctx context.Context, s *Session, cmd string, args string) error {
 	args = strings.TrimSpace(args)
 
 	if args == "" {
@@ -42,7 +42,7 @@ func cmdBullet(ctx context.Context, s *Session, args string) error {
 	return s.Replyf("bullet changed to %s", args)
 }
 
-func cmdPrefix(ctx context.Context, s *Session, args string) error {
+func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 	args = strings.TrimSpace(args)
 
 	if args == "" {

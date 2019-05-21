@@ -144,8 +144,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	s.IRCChannel = channelName[1:]
 
-	s.UserLevel = s.parseUserLevel()
-
 	// TODO: read out user name, ID, and access level
 
 	ctx, logger = ctxlog.FromContextWith(ctx,
@@ -196,10 +194,11 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	}
 
 	s.Channel = channel
+	s.UserLevel = s.parseUserLevel()
 
 	// TODO: precheck for links, banned phrases, etc
 
-	wasCommand, err := b.tryCommand(ctx, s)
+	wasCommand, err := b.tryCommand(ctx, s, s.Message)
 	if wasCommand {
 		return err
 	}
@@ -209,13 +208,12 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	return nil
 }
 
-func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
+func (b *Bot) tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
 	if s.Me {
 		return false, nil
 	}
 
 	tx := s.Tx
-	message := s.Message
 	channel := s.Channel
 	prefix := channel.Prefix
 
@@ -224,6 +222,7 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 	}
 
 	commandName, params := splitSpace(message[len(prefix):])
+	commandName = strings.ToLower(commandName)
 
 	if commandName == "" {
 		return false, nil
@@ -232,14 +231,6 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 	s.CommandParams = params
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
-	if bc, ok := builtins[commandName]; ok {
-		err := bc.run(ctx, s, params)
-		if err != nil && err != errNotAuthorized {
-			logger.Debug("error in builtin command", zap.Error(err))
-		}
-		return true, err
-	}
-
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(channel.ID),
 		models.SimpleCommandWhere.Name.EQ(commandName),
@@ -247,6 +238,10 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 
 	switch err {
 	case sql.ErrNoRows:
+		if ok, err := b.tryBuiltinCommand(ctx, s, commandName, params); ok {
+			return true, err
+		}
+
 		logger.Debug("unknown command", zap.String("name", commandName))
 		return false, nil
 	case nil:
@@ -274,4 +269,23 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session) (bool, error) {
 
 	err = s.Reply(response)
 	return true, err
+}
+
+func (b *Bot) tryBuiltinCommand(ctx context.Context, s *Session, name string, params string) (bool, error) {
+	builtin := name == "builtin"
+	if builtin {
+		name, params = splitSpace(params)
+		name = strings.ToLower(name)
+	}
+
+	if bc, ok := builtinCommands[name]; ok {
+		err := bc.run(ctx, s, name, params)
+		if err != nil && err != errNotAuthorized {
+			logger := ctxlog.FromContext(ctx)
+			logger.Debug("error in builtin command", zap.Error(err))
+		}
+		return true, err
+	}
+
+	return builtin, nil
 }

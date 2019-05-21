@@ -20,20 +20,23 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
+	"github.com/volatiletech/sqlboiler/types"
 )
 
 // Channel is an object representing the database table.
 type Channel struct {
-	ID             int64       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt      time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt      time.Time   `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	UserID         int64       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
-	Name           string      `boil:"name" json:"name" toml:"name" yaml:"name"`
-	BotName        string      `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
-	Active         bool        `boil:"active" json:"active" toml:"active" yaml:"active"`
-	Prefix         string      `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
-	Bullet         null.String `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
-	ShouldModerate bool        `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
+	ID             int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt      time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt      time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UserID         int64             `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	Name           string            `boil:"name" json:"name" toml:"name" yaml:"name"`
+	BotName        string            `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
+	Active         bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
+	Prefix         string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
+	Bullet         null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
+	CustomOwners   types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
+	CustomMods     types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
+	CustomRegulars types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -49,7 +52,9 @@ var ChannelColumns = struct {
 	Active         string
 	Prefix         string
 	Bullet         string
-	ShouldModerate string
+	CustomOwners   string
+	CustomMods     string
+	CustomRegulars string
 }{
 	ID:             "id",
 	CreatedAt:      "created_at",
@@ -60,7 +65,9 @@ var ChannelColumns = struct {
 	Active:         "active",
 	Prefix:         "prefix",
 	Bullet:         "bullet",
-	ShouldModerate: "should_moderate",
+	CustomOwners:   "custom_owners",
+	CustomMods:     "custom_mods",
+	CustomRegulars: "custom_regulars",
 }
 
 // Generated where
@@ -136,6 +143,27 @@ func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
+type whereHelpertypes_StringArray struct{ field string }
+
+func (w whereHelpertypes_StringArray) EQ(x types.StringArray) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.EQ, x)
+}
+func (w whereHelpertypes_StringArray) NEQ(x types.StringArray) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.NEQ, x)
+}
+func (w whereHelpertypes_StringArray) LT(x types.StringArray) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpertypes_StringArray) LTE(x types.StringArray) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpertypes_StringArray) GT(x types.StringArray) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpertypes_StringArray) GTE(x types.StringArray) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+
 var ChannelWhere = struct {
 	ID             whereHelperint64
 	CreatedAt      whereHelpertime_Time
@@ -146,7 +174,9 @@ var ChannelWhere = struct {
 	Active         whereHelperbool
 	Prefix         whereHelperstring
 	Bullet         whereHelpernull_String
-	ShouldModerate whereHelperbool
+	CustomOwners   whereHelpertypes_StringArray
+	CustomMods     whereHelpertypes_StringArray
+	CustomRegulars whereHelpertypes_StringArray
 }{
 	ID:             whereHelperint64{field: `id`},
 	CreatedAt:      whereHelpertime_Time{field: `created_at`},
@@ -157,7 +187,9 @@ var ChannelWhere = struct {
 	Active:         whereHelperbool{field: `active`},
 	Prefix:         whereHelperstring{field: `prefix`},
 	Bullet:         whereHelpernull_String{field: `bullet`},
-	ShouldModerate: whereHelperbool{field: `should_moderate`},
+	CustomOwners:   whereHelpertypes_StringArray{field: `custom_owners`},
+	CustomMods:     whereHelpertypes_StringArray{field: `custom_mods`},
+	CustomRegulars: whereHelpertypes_StringArray{field: `custom_regulars`},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -181,9 +213,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "should_moderate"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "should_moderate"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
+	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "custom_owners", "custom_mods", "custom_regulars"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "custom_owners", "custom_mods", "custom_regulars"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

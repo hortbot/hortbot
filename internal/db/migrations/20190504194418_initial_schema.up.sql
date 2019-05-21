@@ -15,7 +15,10 @@ CREATE TABLE channels (
     active boolean NOT NULL,
     prefix text NOT NULL,
     bullet text,
-    should_moderate boolean NOT NULL
+
+    custom_owners text[] DEFAULT '{}' NOT NULL,
+    custom_mods text[] DEFAULT '{}' NOT NULL,
+    custom_regulars text[] DEFAULT '{}' NOT NULL
 );
 
 CREATE INDEX channels_user_id_idx on channels (user_id);

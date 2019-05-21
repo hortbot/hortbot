@@ -22,6 +22,7 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20190507143103-cc8cbe209b64 // indirect
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.3
