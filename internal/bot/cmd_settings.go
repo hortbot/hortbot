@@ -25,6 +25,11 @@ func cmdBullet(ctx context.Context, s *Session, cmd string, args string) error {
 		return s.Replyf("bullet is %s", bullet)
 	}
 
+	switch args[0] {
+	case '/', '.':
+		return s.Reply("bullet cannot be a command")
+	}
+
 	reset := strings.EqualFold(args, "reset")
 
 	if reset {
