@@ -11,3 +11,9 @@ send hortbot #foobar [HB] command pan updated
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pAn FOUND THE mIxEd (_PARAMETER_), HAVE YE?
+send hortbot #foobar [HB] command pan updated
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+send hortbot #foobar [HB] FOUND THE mIxEd working command, HAVE YE?
