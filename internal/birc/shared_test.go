@@ -11,6 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/fakeirc"
 	"github.com/hortbot/hortbot/internal/testutil"
 	"github.com/jakebailey/irc"
+	"github.com/pkg/errors"
 )
 
 func testContext() (context.Context, context.CancelFunc) {
@@ -111,6 +112,6 @@ func errFromErrChan(ctx context.Context, errChan chan error) error {
 	case err := <-errChan:
 		return err
 	case <-ctx.Done():
-		return ctx.Err()
+		return errors.WithMessage(ctx.Err(), "errFromErrChan cancel")
 	}
 }

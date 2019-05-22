@@ -44,6 +44,7 @@ func TestPoolRunStop(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		// TODO: Make WaitUntilReady wait for the initial connection to occur.
 		h.Sleep()
@@ -95,6 +96,7 @@ func TestPoolJoinOne(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.Equal(t, pool.NumJoined(), 0)
 		assert.Assert(t, !pool.IsJoined("#foobar"))
@@ -151,6 +153,7 @@ func TestPoolChannelMessage(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.Join(ctx, "#foobar"))
 		assert.NilError(t, pool.Join(ctx, "#barfoo"))
@@ -214,6 +217,7 @@ func TestPoolSyncJoined(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.SyncJoined(ctx, "#foobar", "#barfoo"))
 		assert.Equal(t, pool.NumJoined(), 2)
@@ -286,6 +290,7 @@ func TestPoolSendMessage(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.Join(ctx, "#foobar"))
 		assert.NilError(t, pool.SendMessage(ctx, "#foobar", "test"))
@@ -337,6 +342,7 @@ func TestPoolPrune(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.Join(ctx, "#foobar"))
 		h.Sleep()
@@ -413,9 +419,14 @@ func TestPoolPruneAuto(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.Join(ctx, "#foobar"))
+		h.Sleep()
+
 		assert.NilError(t, pool.Join(ctx, "#barfoo"))
+		h.Sleep()
+
 		assert.Equal(t, pool.NumConns(), 2)
 		assert.Equal(t, pool.NumJoined(), 2)
 		assert.Assert(t, pool.IsJoined("#foobar"))
@@ -493,6 +504,7 @@ func TestPoolQuitRejoin(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.Join(ctx, "#foobar"))
 
@@ -552,6 +564,7 @@ func TestPoolPing(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.Join(ctx, "#foobar"))
 		assert.NilError(t, pool.Ping(ctx, "test"))
@@ -602,6 +615,7 @@ func TestPoolNotJoinedSend(t *testing.T) {
 		clientMessages := h.CollectFromChannel(pool.Incoming())
 
 		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, pool.SendMessage(ctx, "#foobar", "test"))
 		h.Sleep()

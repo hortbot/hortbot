@@ -54,6 +54,7 @@ func TestConnectionBasic(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, conn.SendMessage(ctx, "#foobar", "test"))
 		h.SendToServer(ctx, &irc.Message{Command: "PING"})
@@ -111,6 +112,7 @@ func TestConnectionJoinQuit(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.Assert(t, conn.NumJoined() == 0)
 		assert.Assert(t, !conn.IsJoined("#foobar"))
@@ -167,6 +169,7 @@ func TestConnectionJoinPart(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.Assert(t, conn.NumJoined() == 0)
 		assert.Assert(t, !conn.IsJoined("#foobar"))
@@ -231,6 +234,7 @@ func TestConnectionEmptyJoinPart(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, conn.Join(ctx, ""))
 		assert.NilError(t, conn.Part(ctx, ""))
@@ -277,6 +281,7 @@ func TestConnectionJoinTwice(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.Assert(t, conn.NumJoined() == 0)
 		assert.Assert(t, !conn.IsJoined("#foobar"))
@@ -350,6 +355,7 @@ func TestConnectionInitialChannels(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
 		if quitErr != birc.ErrConnectionClosed {
@@ -398,6 +404,7 @@ func TestConnectionCapabilities(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
 		if quitErr != birc.ErrConnectionClosed {
@@ -496,6 +503,7 @@ func TestConnectionReconnect(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		reconn := &irc.Message{Command: "RECONNECT"}
 
@@ -538,6 +546,7 @@ func TestConnectionReadOnly(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.Equal(t, birc.ErrReadOnly, conn.SendMessage(ctx, "#foobar", "test"))
 
@@ -582,6 +591,7 @@ func TestConnectionSendPing(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
 
 		assert.NilError(t, conn.Ping(ctx, "foo.bar"))
 
