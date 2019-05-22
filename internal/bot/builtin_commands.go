@@ -24,6 +24,7 @@ func init() {
 
 	builtinCommands = map[string]builtinCommand{
 		"command": {fn: cmdSimpleCommand, minLevel: LevelModerator},
+		"coemand": {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"bullet":  {fn: cmdBullet, minLevel: LevelBroadcaster},
 		"prefix":  {fn: cmdPrefix, minLevel: LevelBroadcaster},
 		"owner":   {fn: cmdOwnerModRegular, minLevel: LevelBroadcaster},

@@ -20,16 +20,34 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 	subcommand, args := splitSpace(args)
 
 	switch subcommand {
-	case "add": // TODO: variants of add (adda, adds, addm, addb) which preset the access level.
-		return cmdSimpleCommandAdd(ctx, s, args, models.AccessLevelSubscriber)
+	case "add":
+		return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, false)
 
-	case "delete":
+	case "addb", "addbroadcaster", "addbroadcasters", "addo", "addowner", "addowners", "addstreamer", "addstreamers":
+		return cmdSimpleCommandAdd(ctx, s, args, LevelBroadcaster, true)
+
+	case "addm", "addmod", "addmods":
+		return cmdSimpleCommandAdd(ctx, s, args, LevelModerator, true)
+
+	case "adds", "addsub", "addsubs":
+		return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, true)
+
+	case "adde", "adda", "addeveryone", "addall":
+		return cmdSimpleCommandAdd(ctx, s, args, LevelEveryone, true)
+
+	case "delete", "remove":
 		return cmdSimpleCommandDelete(ctx, s, args)
 
 	case "restrict":
 		return cmdSimpleCommandRestrict(ctx, s, args)
 
-	case "editor":
+	case "editor", "author":
+		return errNotImplemented
+
+	case "rename":
+		return errNotImplemented
+
+	case "close":
 		return errNotImplemented
 
 	default:
@@ -37,7 +55,7 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 	}
 }
 
-func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level string) error {
+func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level AccessLevel, forceLevel bool) error {
 	usage := func() error {
 		return s.ReplyUsage("command add <name> <text>")
 	}
@@ -69,27 +87,47 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level str
 		models.SimpleCommandWhere.Name.EQ(name),
 	).One(ctx, s.Tx)
 
-	update := err != sql.ErrNoRows
-
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
 
+	update := err != sql.ErrNoRows
+
+	if !s.UserLevel.CanAccess(level) {
+		a := "add"
+		if update {
+			a = "update"
+		}
+
+		return s.Replyf("your level is %s; you cannot %s a command with level %s", s.UserLevel.PGEnum(), a, level.PGEnum())
+	}
+
 	if update {
+		if !s.UserLevel.CanAccess(NewAccessLevel(command.AccessLevel)) {
+			al := flect.Pluralize(command.AccessLevel)
+			return s.Replyf("command %s is restricted to %s; only %s and above can update it", name, al, al)
+		}
+
 		command.Message = text
 		command.Editor = s.User
+
+		if forceLevel {
+			command.AccessLevel = level.PGEnum()
+		}
+
 		if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Message, models.SimpleCommandColumns.Editor)); err != nil {
 			return err
 		}
 
-		return s.Replyf("command %s updated%s", name, warning)
+		al := flect.Pluralize(command.AccessLevel)
+		return s.Replyf("command %s updated, restricted to %s and above%s", name, al, warning)
 	}
 
 	command = &models.SimpleCommand{
 		Name:        name,
 		ChannelID:   s.Channel.ID,
 		Message:     text,
-		AccessLevel: level,
+		AccessLevel: level.PGEnum(),
 		Editor:      s.User,
 	}
 
@@ -97,7 +135,8 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level str
 		return err
 	}
 
-	return s.Replyf("command %s added, restricted to %s and above%s", name, flect.Pluralize(command.AccessLevel), warning)
+	al := flect.Pluralize(command.AccessLevel)
+	return s.Replyf("command %s added, restricted to %s and above%s", name, al, warning)
 }
 
 func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error {

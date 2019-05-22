@@ -29,9 +29,11 @@ func TestScripts(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, len(files) != 0)
 
+	prefix := filepath.Join("testdata", "script")
+
 	for _, file := range files {
 		file := file
-		name := strings.TrimSuffix(filepath.Base(file), ".txt")
+		name := strings.TrimSuffix(strings.TrimPrefix(file, prefix)[1:], ".txt")
 		t.Run(name, func(t *testing.T) {
 			testScriptFile(t, file)
 		})

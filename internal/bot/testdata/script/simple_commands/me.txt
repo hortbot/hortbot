@@ -7,7 +7,7 @@ handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMS
 send hortbot #foobar /me FOUND THE WORKING COMMAND, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan .me FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send hortbot #foobar [HB] command pan updated
+send hortbot #foobar [HB] command pan updated, restricted to subscribers and above
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar .me FOUND THE WORKING COMMAND, HAVE YE?

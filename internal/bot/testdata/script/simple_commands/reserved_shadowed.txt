@@ -13,4 +13,4 @@ handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMS
 send hortbot #foobar WOW bullet changed to WOW
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add bullet FOUND THE (_PARAMETER_), HAVE YE?
-send hortbot #foobar WOW command bullet updated; warning: bullet is a builtin command and will now only be accessible via +builtin bullet
+send hortbot #foobar WOW command bullet updated, restricted to subscribers and above; warning: bullet is a builtin command and will now only be accessible via +builtin bullet

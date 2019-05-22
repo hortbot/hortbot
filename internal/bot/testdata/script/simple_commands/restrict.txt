@@ -26,3 +26,6 @@ send hortbot #foobar [HB] command pan restricted to admins and above
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict what all
 send hortbot #foobar [HB] command what not found
+
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan what
+send hortbot #foobar [HB] usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
