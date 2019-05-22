@@ -16,7 +16,7 @@ send hortbot #foobar [HB] there are no owners
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add random
 send hortbot #foobar [HB] random added to owners
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add abcdef
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add @AbCdEf
 send hortbot #foobar [HB] abcdef added to owners
 
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add random
@@ -53,7 +53,7 @@ send hortbot #foobar [HB] random added to mods
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod add random
 send hortbot #foobar [HB] random is already in mods
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod add abcdef
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod add @AbCdEf
 send hortbot #foobar [HB] abcdef added to mods
 
 handle hortbot @id=__UUID__;room-id=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
@@ -87,7 +87,7 @@ send hortbot #foobar [HB] random added to regulars
 handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular add random
 send hortbot #foobar [HB] random is already in regulars
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular add abcdef
+handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular add @AbCdEf
 send hortbot #foobar [HB] abcdef added to regulars
 
 handle hortbot @id=__UUID__;room-id=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level

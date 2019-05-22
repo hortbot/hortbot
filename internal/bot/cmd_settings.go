@@ -122,6 +122,8 @@ func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string
 
 	subcommand, args := splitSpace(args)
 	user, _ := splitSpace(args)
+	user = strings.TrimPrefix(user, "@")
+	user = strings.ToLower(user)
 
 	cmds := flect.Pluralize(cmd)
 	existing := getter()
