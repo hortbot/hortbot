@@ -38,7 +38,7 @@ func cmdBullet(ctx context.Context, s *Session, cmd string, args string) error {
 		s.Channel.Bullet = null.StringFrom(args)
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.Bullet)); err != nil {
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Bullet)); err != nil {
 		return err
 	}
 
@@ -64,7 +64,7 @@ func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 		s.Channel.Prefix = args
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.Prefix)); err != nil {
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Prefix)); err != nil {
 		return err
 	}
 
@@ -105,15 +105,15 @@ func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string
 		switch cmd {
 		case "owner":
 			s.Channel.CustomOwners = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.CustomOwners))
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomOwners))
 
 		case "mod":
 			s.Channel.CustomMods = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.CustomMods))
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomMods))
 
 		case "regular":
 			s.Channel.CustomRegulars = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.CustomRegulars))
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomRegulars))
 
 		default:
 			panic("unreachable")

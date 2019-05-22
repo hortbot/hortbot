@@ -96,10 +96,15 @@ func testScriptFile(t *testing.T, filename string) {
 			}
 
 		case "boil_debug":
-			old := boil.DebugMode
+			oldMode := boil.DebugMode
+			oldWriter := boil.DebugWriter
+
 			boil.DebugMode = true
+			boil.DebugWriter = testutil.Writer{T: t}
+
 			defer func() {
-				boil.DebugMode = old
+				boil.DebugMode = oldMode
+				boil.DebugWriter = oldWriter
 			}()
 
 		case "bot_config":

@@ -14,16 +14,16 @@ type Tester interface {
 }
 
 func Logger(t Tester) *zap.Logger {
-	return buildLogger(testWriter{t})
+	return buildLogger(Writer{T: t})
 }
 
-type testWriter struct {
-	t Tester
+type Writer struct {
+	T Tester
 }
 
-func (tw testWriter) Write(p []byte) (n int, err error) {
-	tw.t.Helper()
-	tw.t.Logf("%s", bytes.TrimSpace(p))
+func (tw Writer) Write(p []byte) (n int, err error) {
+	tw.T.Helper()
+	tw.T.Logf("%s", bytes.TrimSpace(p))
 	return len(p), nil
 }
 

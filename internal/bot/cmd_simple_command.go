@@ -78,7 +78,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level str
 	if update {
 		command.Message = text
 		command.Editor = s.User
-		if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.Message, models.SimpleCommandColumns.Editor)); err != nil {
+		if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Message, models.SimpleCommandColumns.Editor)); err != nil {
 			return err
 		}
 
@@ -181,7 +181,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 	command.AccessLevel = newLevel
 	command.Editor = s.User
 
-	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.AccessLevel, models.SimpleCommandColumns.Editor)); err != nil {
+	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.AccessLevel, models.SimpleCommandColumns.Editor)); err != nil {
 		return err
 	}
 
