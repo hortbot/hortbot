@@ -9,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
 func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) error {
@@ -41,13 +42,13 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 	case "restrict":
 		return cmdSimpleCommandRestrict(ctx, s, args)
 
-	case "editor", "author":
-		return errNotImplemented
+	case "editor", "author", "count":
+		return cmdSimpleCommandProperty(ctx, s, args, subcommand)
 
 	case "rename":
 		return errNotImplemented
 
-	case "close":
+	case "clone":
 		return errNotImplemented
 
 	default:
@@ -85,6 +86,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
 		models.SimpleCommandWhere.Name.EQ(name),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err != nil && err != sql.ErrNoRows {
@@ -144,19 +146,22 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error 
 		return s.ReplyUsage("command delete <name>")
 	}
 
-	if args == "" {
+	name, _ := splitSpace(args)
+
+	if name == "" {
 		return usage()
 	}
 
-	args = strings.ToLower(args)
+	name = strings.ToLower(name)
 
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
-		models.SimpleCommandWhere.Name.EQ(args),
+		models.SimpleCommandWhere.Name.EQ(name),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s not found", args)
+		return s.Replyf("command %s not found", name)
 	}
 
 	if err != nil {
@@ -168,7 +173,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error 
 		return err
 	}
 
-	return s.Replyf("command %s deleted", args)
+	return s.Replyf("command %s deleted", name)
 }
 
 func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) error {
@@ -185,6 +190,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
 		models.SimpleCommandWhere.Name.EQ(name),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -225,6 +231,42 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 	}
 
 	return s.Replyf("command %s restricted to %s and above", name, flect.Pluralize(command.AccessLevel))
+}
+
+func cmdSimpleCommandProperty(ctx context.Context, s *Session, args string, prop string) error {
+	name, _ := splitSpace(args)
+
+	if name == "" {
+		return s.ReplyUsage("command " + prop + " <name>")
+	}
+
+	command, err := models.SimpleCommands(
+		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+		models.SimpleCommandWhere.Name.EQ(name),
+	).One(ctx, s.Tx)
+
+	if err == sql.ErrNoRows {
+		return s.Replyf("command %s not found", name)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	switch prop {
+	case "editor", "author":
+		return s.Replyf("command %s was last modified by %s", name, command.Editor) // TODO: include the date/time?
+	case "count":
+		u := "times"
+
+		if command.Count == 1 {
+			u = "time"
+		}
+
+		return s.Replyf("command %s has been used %d %s", name, command.Count, u)
+	}
+
+	panic("unreachable")
 }
 
 func init() {

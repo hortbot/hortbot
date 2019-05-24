@@ -11,6 +11,8 @@ import (
 	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/jakebailey/irc"
+	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
 )
 
@@ -166,7 +168,10 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
-	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)
+	channel, err := models.Channels(
+		models.ChannelWhere.UserID.EQ(s.RoomID),
+		qm.For("UPDATE"),
+	).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Debug("channel not found in database")
@@ -234,6 +239,7 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session, message string) (bool,
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(channel.ID),
 		models.SimpleCommandWhere.Name.EQ(commandName),
+		qm.For("UPDATE"),
 	).One(ctx, tx)
 
 	switch err {
@@ -258,6 +264,13 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session, message string) (bool,
 	nodes, err := cbp.Parse(command.Message)
 	if err != nil {
 		logger.Error("command did not parse, which should not happen", zap.Error(err))
+		return true, err
+	}
+
+	command.Count++
+
+	// Do not modify UpdatedAt, which should be only used for "real" modifications.
+	if err := command.Update(ctx, tx, boil.Whitelist(models.SimpleCommandColumns.Count)); err != nil {
 		return true, err
 	}
 
