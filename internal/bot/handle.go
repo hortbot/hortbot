@@ -168,10 +168,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
-	channel, err := models.Channels(
-		models.ChannelWhere.UserID.EQ(s.RoomID),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
+	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Debug("channel not found in database")
