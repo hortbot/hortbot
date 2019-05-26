@@ -1,40 +1,40 @@
 insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
-handle hortbot @id=__UUID__;room-id=1;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelAdmin
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelBroadcaster
 
-handle hortbot @id=__UUID__;room-id=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelEveryone
 
-handle hortbot @id=__UUID__;room-id=1;mod=0 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=0 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelEveryone
 
-handle hortbot @id=__UUID__;room-id=1;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelModerator
 
-handle hortbot @id=__UUID__;room-id=1;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelSubscriber
 
-handle hortbot @id=__UUID__;room-id=1;user-type= :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;user-type= :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelEveryone
 
-handle hortbot @id=__UUID__;room-id=1;user-type=mod :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;user-type=mod :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelModerator
 
-handle hortbot @id=__UUID__;room-id=1;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelBroadcaster
 
-handle hortbot @id=__UUID__;room-id=1;badges=broadcaster/1,subscriber/0 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1,subscriber/0 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelBroadcaster
 
-handle hortbot @id=__UUID__;room-id=1;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelSubscriber
 
-handle hortbot @id=__UUID__;room-id=1;badges=vip/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=vip/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelSubscriber
 
-handle hortbot @id=__UUID__;room-id=1;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelModerator

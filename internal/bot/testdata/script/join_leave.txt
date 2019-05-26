@@ -1,0 +1,40 @@
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix !
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!prefix +
+send hortbot #foobar [HB] prefix changed to +
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
+send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix +
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
+send hortbot #hortbot [HB] foobar, hortbot will now leave your channel
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
+send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix +
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=3 :nobody!nobody@nobody.tmi.twitch.tv PRIVMSG #hortbot :!leave
+no_send

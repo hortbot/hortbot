@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 	"strings"
 	"testing"
 	"time"
@@ -41,6 +42,14 @@ func TestScripts(t *testing.T) {
 }
 
 func testScriptFile(t *testing.T, filename string) {
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("panic: %v", r)
+			t.Logf("%s", debug.Stack())
+			t.FailNow()
+		}
+	}()
+
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
 	resetDatabase(t)

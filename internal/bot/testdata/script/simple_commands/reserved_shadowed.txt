@@ -1,16 +1,16 @@
 insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add command test
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add command test
 send hortbot #foobar [HB] command name command is reserved
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add bullet FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add bullet FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar [HB] command bullet added, restricted to subscribers and above; warning: bullet is a builtin command and will now only be accessible via +builtin bullet
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+bullet WOW
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+bullet WOW
 send hortbot #foobar [HB] FOUND THE WOW, HAVE YE?
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+builtin bullet WOW
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+builtin bullet WOW
 send hortbot #foobar WOW bullet changed to WOW
 
-handle hortbot @id=__UUID__;room-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add bullet FOUND THE (_PARAMETER_), HAVE YE?
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add bullet FOUND THE (_PARAMETER_), HAVE YE?
 send hortbot #foobar WOW command bullet updated, restricted to subscribers and above; warning: bullet is a builtin command and will now only be accessible via +builtin bullet

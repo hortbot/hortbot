@@ -11,8 +11,6 @@ const (
 	DefaultBullet = "[HB]"
 )
 
-var isTesting = false
-
 type Config struct {
 	DB     *sql.DB
 	Dedupe dedupe.Deduplicator
@@ -29,6 +27,8 @@ type Bot struct {
 
 	prefix string
 	bullet string
+
+	testingHelper testingHelper
 }
 
 func New(config *Config) *Bot {
@@ -48,6 +48,10 @@ func New(config *Config) *Bot {
 
 	if b.prefix == "" {
 		b.prefix = DefaultPrefix
+	}
+
+	if isTesting {
+		b.testingHelper = testingHelper{}
 	}
 
 	return b

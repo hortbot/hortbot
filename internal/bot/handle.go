@@ -69,6 +69,9 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	defer func() {
 		if r := recover(); r != nil {
+			if _, ok := r.(testingPanic); ok {
+				panic(r)
+			}
 			logger.Error("panic during handle", zap.Any("value", r), zap.Stack("stack"))
 		}
 	}()
@@ -132,8 +135,30 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
-		logger.Debug("error parsing room ID", zap.Error(err))
+		logger.Debug("error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
 		return err
+	}
+
+	if s.RoomID == 0 {
+		logger.Debug("room ID cannot be zero")
+		return errInvalidMessage
+	}
+
+	userID := m.Tags["user-id"]
+	if userID == "" {
+		logger.Debug("no user ID")
+		return errInvalidMessage
+	}
+
+	s.UserID, err = strconv.ParseInt(userID, 10, 64)
+	if err != nil {
+		logger.Debug("error parsing user ID", zap.String("parsed", userID), zap.Error(err))
+		return err
+	}
+
+	if s.UserID == 0 {
+		logger.Debug("user ID cannot be zero")
+		return errInvalidMessage
 	}
 
 	// TODO: atomic locking on the channel
@@ -146,7 +171,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	s.IRCChannel = channelName[1:]
 
-	// TODO: read out user name, ID, and access level
+	b.testingHelper.checkUserNameID(s.User, s.UserID)
+	b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
 
 	ctx, logger = ctxlog.FromContextWith(ctx,
 		zap.Int64("roomID", s.RoomID),
@@ -167,6 +193,10 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
+
+	if s.Origin == s.IRCChannel {
+		return handleFromOrigin(ctx, s)
+	}
 
 	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)
 	if err != nil {
@@ -200,7 +230,7 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 
 	// TODO: precheck for links, banned phrases, etc
 
-	wasCommand, err := b.tryCommand(ctx, s, s.Message)
+	wasCommand, err := tryCommand(ctx, s, s.Message)
 	if wasCommand {
 		return err
 	}
@@ -210,7 +240,7 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	return nil
 }
 
-func (b *Bot) tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
+func tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
 	if s.Me {
 		return false, nil
 	}
@@ -241,7 +271,7 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session, message string) (bool,
 
 	switch err {
 	case sql.ErrNoRows:
-		if ok, err := b.tryBuiltinCommand(ctx, s, commandName, params); ok {
+		if ok, err := tryBuiltinCommand(ctx, s, commandName, params); ok {
 			return true, err
 		}
 
@@ -281,7 +311,7 @@ func (b *Bot) tryCommand(ctx context.Context, s *Session, message string) (bool,
 	return true, err
 }
 
-func (b *Bot) tryBuiltinCommand(ctx context.Context, s *Session, name string, params string) (bool, error) {
+func tryBuiltinCommand(ctx context.Context, s *Session, name string, params string) (bool, error) {
 	builtin := name == "builtin"
 	if builtin {
 		name, params = splitSpace(params)

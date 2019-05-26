@@ -43,16 +43,17 @@ func (s *Session) formatResponse(response string) string {
 		}
 	}
 
-	bullet := s.Channel.Bullet.String
-	if bullet == "" {
-		bullet = s.Bot.bullet
+	bullet := s.Bot.bullet
+
+	if s.Channel != nil && s.Channel.Bullet.Valid {
+		bullet = s.Channel.Bullet.String
 	}
 
 	return bullet + " " + response
 }
 
 func (s *Session) Reply(response string) error {
-	return s.Sender.SendMessage(s.Channel.BotName, "#"+s.IRCChannel, s.formatResponse(response))
+	return s.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
 }
 
 func (s *Session) Replyf(format string, args ...interface{}) error {

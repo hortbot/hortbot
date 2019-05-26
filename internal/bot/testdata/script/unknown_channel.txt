@@ -1,2 +1,2 @@
-handle hortbot @id=__UUID__;room-id=1 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 no_send
