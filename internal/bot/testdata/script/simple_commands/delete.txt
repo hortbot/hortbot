@@ -13,7 +13,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command delete pan
-send hortbot #foobar [HB] command pan not found
+send hortbot #foobar [HB] command pan does not exist
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command delete
 send hortbot #foobar [HB] usage: +command delete <name>

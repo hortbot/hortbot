@@ -14,7 +14,7 @@ import (
 
 func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("command add|delete|restrict ...")
+		return s.ReplyUsage("command add|delete|restrict|...")
 	}
 
 	args = strings.TrimSpace(args)
@@ -46,7 +46,7 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 		return cmdSimpleCommandProperty(ctx, s, args, subcommand)
 
 	case "rename":
-		return errNotImplemented
+		return cmdSimpleCommandRename(ctx, s, args)
 
 	case "clone":
 		return errNotImplemented
@@ -161,7 +161,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error 
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s not found", name)
+		return s.Replyf("command %s does not exist", name)
 	}
 
 	if err != nil {
@@ -194,7 +194,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s not found", name)
+		return s.Replyf("command %s does not exist", name)
 	}
 
 	if err != nil {
@@ -246,7 +246,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, args string, prop
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s not found", name)
+		return s.Replyf("command %s does not exist", name)
 	}
 
 	if err != nil {
@@ -267,6 +267,60 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, args string, prop
 	}
 
 	panic("unreachable")
+}
+
+func cmdSimpleCommandRename(ctx context.Context, s *Session, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("command rename <old> <new>")
+	}
+
+	oldName, args := splitSpace(args)
+	newName, _ := splitSpace(args)
+
+	if oldName == "" || newName == "" {
+		return usage()
+	}
+
+	oldName = strings.ToLower(oldName)
+	newName = strings.ToLower(newName)
+
+	if oldName == newName {
+		return s.Replyf("%s is already called %s!", oldName, oldName)
+	}
+
+	command, err := models.SimpleCommands(
+		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+		models.SimpleCommandWhere.Name.EQ(oldName),
+	).One(ctx, s.Tx)
+
+	if err == sql.ErrNoRows {
+		return s.Replyf("command %s does not exist", oldName)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	exists, err := models.SimpleCommands(
+		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+		models.SimpleCommandWhere.Name.EQ(newName),
+	).Exists(ctx, s.Tx)
+
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return s.Replyf("command %s already exists", newName)
+	}
+
+	command.Name = newName
+
+	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Name)); err != nil {
+		return err
+	}
+
+	return s.Replyf("command %s has been renamed to %s", oldName, newName)
 }
 
 func init() {
