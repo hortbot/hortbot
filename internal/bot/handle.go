@@ -195,6 +195,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
+	s.UserLevel = s.parseUserLevel()
+
 	if s.Origin == s.IRCChannel {
 		return handleFromOrigin(ctx, s)
 	}
