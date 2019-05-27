@@ -56,6 +56,11 @@ func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 		return s.Replyf("prefix is %s", s.Channel.Prefix)
 	}
 
+	switch args[0] {
+	case '/', '.':
+		return s.Replyf("prefix cannot begin with %c", args[0])
+	}
+
 	reset := strings.EqualFold(args, "reset")
 
 	if reset {

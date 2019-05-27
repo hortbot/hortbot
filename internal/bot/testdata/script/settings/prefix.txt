@@ -12,3 +12,9 @@ send hortbot #foobar [HB] prefix reset to $
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$prefix
 send hortbot #foobar [HB] prefix is $
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$prefix /me
+send hortbot #foobar [HB] prefix cannot begin with /
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$prefix .me
+send hortbot #foobar [HB] prefix cannot begin with .
