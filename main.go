@@ -74,17 +74,32 @@ func main() {
 
 	conn := birc.NewPool(pc)
 
-	sender := bot.MessageSenderFunc(func(origin, target, message string) error {
-		return conn.SendMessage(ctx, target, message)
-	})
+	sender := bot.SenderFuncs{
+		SendMessageFunc: func(origin, target, message string) error {
+			return conn.SendMessage(ctx, target, message)
+		},
+	}
+
+	syncJoined := make(chan struct{}, 1)
+
+	notifier := bot.NotifierFuncs{
+		NotifyChannelUpdatesFunc: func(botName string) {
+			logger.Debug("notified update to channels for bot", zap.String("botName", botName))
+			select {
+			case syncJoined <- struct{}{}:
+			default:
+			}
+		},
+	}
 
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
 	bc := &bot.Config{
-		DB:     db,
-		Dedupe: ddp,
-		Sender: sender,
+		DB:       db,
+		Dedupe:   ddp,
+		Sender:   sender,
+		Notifier: notifier,
 	}
 
 	b := bot.New(bc)
@@ -114,15 +129,19 @@ func main() {
 			case <-ctx.Done():
 				return ctx.Err()
 
-			case <-time.After(time.Minute):
-				channels, err := listChannels(ctx, db)
-				if err != nil {
-					return err
-				}
+			case <-syncJoined:
+				time.Sleep(time.Second) // The notification comes in before the transaction is complete.
 
-				if err := conn.SyncJoined(ctx, channels...); err != nil {
-					return err
-				}
+			case <-time.After(time.Minute):
+			}
+
+			channels, err := listChannels(ctx, db)
+			if err != nil {
+				return err
+			}
+
+			if err := conn.SyncJoined(ctx, channels...); err != nil {
+				return err
 			}
 		}
 	})

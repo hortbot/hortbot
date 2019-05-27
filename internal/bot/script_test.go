@@ -60,12 +60,14 @@ func testScriptFile(t *testing.T, filename string) {
 	assert.NilError(t, err)
 	defer f.Close()
 
-	sender := &botfakes.FakeMessageSender{}
+	sender := &botfakes.FakeSender{}
+	notifier := &botfakes.FakeNotifier{}
 
 	bc := bot.Config{
-		DB:     db,
-		Dedupe: dedupe.NeverSeen,
-		Sender: sender,
+		DB:       db,
+		Dedupe:   dedupe.NeverSeen,
+		Sender:   sender,
+		Notifier: notifier,
 	}
 
 	var b *bot.Bot
@@ -83,7 +85,40 @@ func testScriptFile(t *testing.T, filename string) {
 	scanner := bufio.NewScanner(f)
 
 	lineNum := 0
+
 	sentBefore := 0
+	needNoSend := false
+
+	notifyBefore := 0
+	needNoNofity := false
+
+	noSend := func(lineNum int) {
+		actions = append(actions, func() {
+			sentAfter := sender.SendMessageCallCount()
+
+			if sentBefore != sentAfter {
+				origin, target, message := sender.SendMessageArgsForCall(sentAfter - 1)
+				t.Errorf("sent message: origin=%s, target=%s, message=%s: line %d", origin, target, message, lineNum)
+				t.FailNow()
+			}
+		})
+
+		needNoSend = false
+	}
+
+	noNotify := func(lineNum int) {
+		actions = append(actions, func() {
+			notifyAfter := notifier.NotifyChannelUpdatesCallCount()
+
+			if notifyBefore != notifyAfter {
+				botName := notifier.NotifyChannelUpdatesArgsForCall(notifyAfter - 1)
+				t.Errorf("notified channel updates for %s: line %d", botName, lineNum)
+				t.FailNow()
+			}
+		})
+
+		needNoNofity = false
+	}
 
 	for scanner.Scan() {
 		lineNum++
@@ -169,6 +204,17 @@ func testScriptFile(t *testing.T, filename string) {
 			me = true
 			fallthrough
 		case "handle":
+			if needNoSend {
+				noSend(lineNum)
+			}
+
+			if needNoNofity {
+				noNotify(lineNum)
+			}
+
+			needNoSend = true
+			needNoNofity = true
+
 			args := strings.SplitN(directive[1], " ", 2)
 			assert.Assert(t, len(args) == 2, "line %d", lineNum)
 
@@ -191,7 +237,10 @@ func testScriptFile(t *testing.T, filename string) {
 			}
 			actions = append(actions, func() {
 				ensureBot()
+
 				sentBefore = sender.SendMessageCallCount()
+				notifyBefore = notifier.NotifyChannelUpdatesCallCount()
+
 				b.Handle(ctx, origin, m)
 			})
 
@@ -210,16 +259,26 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.Equal(t, message, sent[2], "line %d", lineNum)
 			})
 
-		case "no_send":
-			actions = append(actions, func() {
-				sentAfter := sender.SendMessageCallCount()
+			needNoSend = false
 
-				if sentBefore != sentAfter {
-					origin, target, message := sender.SendMessageArgsForCall(sentAfter - 1)
-					t.Errorf("sent message: origin=%s, target=%s, message=%s: line %d", origin, target, message, lineNum)
-					t.FailNow()
-				}
+		case "no_send":
+			noSend(lineNum)
+
+		case "notify_channel_update":
+			callNum := counts["notify_channel_update"]
+			counts["notify_channel_update"]++
+
+			actions = append(actions, func() {
+				expected := directive[1]
+				assert.Assert(t, notifier.NotifyChannelUpdatesCallCount() > callNum, "NotifyChannelUpdates not called: line %d", lineNum)
+				botName := notifier.NotifyChannelUpdatesArgsForCall(callNum)
+				assert.Equal(t, botName, expected, "line %d", lineNum)
 			})
+
+			needNoNofity = false
+
+		case "no_notify_channel_update":
+			noNotify(lineNum)
 
 		default:
 			t.Fatalf("line %d: unknown directive %s", lineNum, directive[0])

@@ -111,14 +111,15 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	}
 
 	s := &Session{
-		Origin:  origin,
-		M:       m,
-		ID:      id,
-		User:    m.Prefix.Name,
-		Message: message,
-		Me:      me,
-		Bot:     b,
-		Sender:  b.sender,
+		Origin:   origin,
+		M:        m,
+		ID:       id,
+		User:     strings.ToLower(m.Prefix.Name),
+		Message:  message,
+		Me:       me,
+		Bot:      b,
+		Sender:   b.sender,
+		Notifier: b.notifier,
 	}
 
 	if displayName := m.Tags["display-name"]; displayName != "" {

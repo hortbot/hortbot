@@ -34,9 +34,9 @@ func handleJoin(ctx context.Context, s *Session) error {
 		return err
 	}
 
-	if err == sql.ErrNoRows {
-		botName := strings.TrimLeft(s.Origin, "#")
+	botName := strings.TrimLeft(s.Origin, "#")
 
+	if err == sql.ErrNoRows {
 		channel = &models.Channel{
 			UserID:  s.UserID,
 			Name:    s.User,
@@ -49,7 +49,7 @@ func handleJoin(ctx context.Context, s *Session) error {
 			return err
 		}
 
-		// TODO: Notify IRC service of update?
+		s.Notifier.NotifyChannelUpdates(channel.BotName)
 
 		return s.Replyf("%s, %s will join your channel soon with prefix %s", s.UserDisplay, botName, channel.Prefix)
 	}
@@ -59,10 +59,13 @@ func handleJoin(ctx context.Context, s *Session) error {
 	}
 
 	channel.Active = true
+	channel.BotName = botName
 
-	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
+	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active, models.ChannelColumns.BotName)); err != nil {
 		return err
 	}
+
+	s.Notifier.NotifyChannelUpdates(channel.BotName)
 
 	return s.Replyf("%s, %s will join your channel soon with prefix %s", s.UserDisplay, channel.BotName, channel.Prefix)
 }
@@ -87,7 +90,7 @@ func handleLeave(ctx context.Context, s *Session) error {
 		return err
 	}
 
-	// TODO: Notify IRC service of update?
+	s.Notifier.NotifyChannelUpdates(channel.BotName)
 
 	return s.Replyf("%s, %s will now leave your channel", s.UserDisplay, channel.BotName)
 }

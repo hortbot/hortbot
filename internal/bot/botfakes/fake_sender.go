@@ -7,7 +7,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 )
 
-type FakeMessageSender struct {
+type FakeSender struct {
 	SendMessageStub        func(string, string, string) error
 	sendMessageMutex       sync.RWMutex
 	sendMessageArgsForCall []struct {
@@ -25,7 +25,7 @@ type FakeMessageSender struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeMessageSender) SendMessage(arg1 string, arg2 string, arg3 string) error {
+func (fake *FakeSender) SendMessage(arg1 string, arg2 string, arg3 string) error {
 	fake.sendMessageMutex.Lock()
 	ret, specificReturn := fake.sendMessageReturnsOnCall[len(fake.sendMessageArgsForCall)]
 	fake.sendMessageArgsForCall = append(fake.sendMessageArgsForCall, struct {
@@ -45,26 +45,26 @@ func (fake *FakeMessageSender) SendMessage(arg1 string, arg2 string, arg3 string
 	return fakeReturns.result1
 }
 
-func (fake *FakeMessageSender) SendMessageCallCount() int {
+func (fake *FakeSender) SendMessageCallCount() int {
 	fake.sendMessageMutex.RLock()
 	defer fake.sendMessageMutex.RUnlock()
 	return len(fake.sendMessageArgsForCall)
 }
 
-func (fake *FakeMessageSender) SendMessageCalls(stub func(string, string, string) error) {
+func (fake *FakeSender) SendMessageCalls(stub func(string, string, string) error) {
 	fake.sendMessageMutex.Lock()
 	defer fake.sendMessageMutex.Unlock()
 	fake.SendMessageStub = stub
 }
 
-func (fake *FakeMessageSender) SendMessageArgsForCall(i int) (string, string, string) {
+func (fake *FakeSender) SendMessageArgsForCall(i int) (string, string, string) {
 	fake.sendMessageMutex.RLock()
 	defer fake.sendMessageMutex.RUnlock()
 	argsForCall := fake.sendMessageArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
-func (fake *FakeMessageSender) SendMessageReturns(result1 error) {
+func (fake *FakeSender) SendMessageReturns(result1 error) {
 	fake.sendMessageMutex.Lock()
 	defer fake.sendMessageMutex.Unlock()
 	fake.SendMessageStub = nil
@@ -73,7 +73,7 @@ func (fake *FakeMessageSender) SendMessageReturns(result1 error) {
 	}{result1}
 }
 
-func (fake *FakeMessageSender) SendMessageReturnsOnCall(i int, result1 error) {
+func (fake *FakeSender) SendMessageReturnsOnCall(i int, result1 error) {
 	fake.sendMessageMutex.Lock()
 	defer fake.sendMessageMutex.Unlock()
 	fake.SendMessageStub = nil
@@ -87,7 +87,7 @@ func (fake *FakeMessageSender) SendMessageReturnsOnCall(i int, result1 error) {
 	}{result1}
 }
 
-func (fake *FakeMessageSender) Invocations() map[string][][]interface{} {
+func (fake *FakeSender) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.sendMessageMutex.RLock()
@@ -99,7 +99,7 @@ func (fake *FakeMessageSender) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeMessageSender) recordInvocation(key string, args []interface{}) {
+func (fake *FakeSender) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -111,4 +111,4 @@ func (fake *FakeMessageSender) recordInvocation(key string, args []interface{}) 
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ bot.MessageSender = new(FakeMessageSender)
+var _ bot.Sender = new(FakeSender)

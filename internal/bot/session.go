@@ -24,9 +24,10 @@ type Session struct {
 	UserID      int64
 	UserLevel   AccessLevel
 
-	Bot    *Bot
-	Tx     *sql.Tx
-	Sender MessageSender
+	Bot      *Bot
+	Tx       *sql.Tx
+	Sender   Sender
+	Notifier Notifier
 
 	Channel *models.Channel
 

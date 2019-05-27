@@ -7,7 +7,6 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/dedupe"
@@ -42,12 +41,11 @@ func BenchmarkBot(b *testing.B) {
 
 	assert.NilError(b, command.Insert(ctx, db, boil.Infer()))
 
-	sender := &botfakes.FakeMessageSender{}
-
 	config := &bot.Config{
-		DB:     db,
-		Dedupe: dedupe.NeverSeen,
-		Sender: sender,
+		DB:       db,
+		Dedupe:   dedupe.NeverSeen,
+		Sender:   nopSender{},
+		Notifier: nopNotifier{},
 	}
 
 	bb := bot.New(config)
@@ -63,3 +61,11 @@ func BenchmarkBot(b *testing.B) {
 		bb.Handle(ctx, botName, m)
 	}
 }
+
+type nopSender struct{}
+
+func (nopSender) SendMessage(origin, target, message string) error { return nil }
+
+type nopNotifier struct{}
+
+func (nopNotifier) NotifyChannelUpdates(botName string) {}

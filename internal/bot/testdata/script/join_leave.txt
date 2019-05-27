@@ -4,6 +4,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix !
+notify_channel_update hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!prefix +
 send hortbot #foobar [HB] prefix changed to +
@@ -18,9 +19,11 @@ send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
 send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix +
+no_notify_channel_update
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
 send hortbot #hortbot [HB] foobar, hortbot will now leave your channel
+notify_channel_update hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 no_send
@@ -31,6 +34,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix +
+notify_channel_update hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
@@ -38,3 +42,4 @@ send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=2;user-id=3 :nobody!nobody@nobody.tmi.twitch.tv PRIVMSG #hortbot :!leave
 no_send
+no_notify_channel_update

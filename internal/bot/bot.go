@@ -12,18 +12,20 @@ const (
 )
 
 type Config struct {
-	DB     *sql.DB
-	Dedupe dedupe.Deduplicator
-	Sender MessageSender
+	DB       *sql.DB
+	Dedupe   dedupe.Deduplicator
+	Sender   Sender
+	Notifier Notifier
 
 	Prefix string
 	Bullet string
 }
 
 type Bot struct {
-	db     *sql.DB
-	dedupe dedupe.Deduplicator
-	sender MessageSender
+	db       *sql.DB
+	dedupe   dedupe.Deduplicator
+	sender   Sender
+	notifier Notifier
 
 	prefix string
 	bullet string
@@ -32,15 +34,25 @@ type Bot struct {
 }
 
 func New(config *Config) *Bot {
-	b := &Bot{
-		db:     config.DB,
-		dedupe: config.Dedupe,
-		sender: config.Sender,
-		prefix: config.Prefix,
-		bullet: config.Bullet,
+	switch {
+	case config.DB == nil:
+		panic("db is nil")
+	case config.Dedupe == nil:
+		panic("dedupe is nil")
+	case config.Sender == nil:
+		panic("sender is nil")
+	case config.Notifier == nil:
+		panic("notifier is nil")
 	}
 
-	// TODO: verify other dependencies
+	b := &Bot{
+		db:       config.DB,
+		dedupe:   config.Dedupe,
+		sender:   config.Sender,
+		notifier: config.Notifier,
+		prefix:   config.Prefix,
+		bullet:   config.Bullet,
+	}
 
 	if b.bullet == "" {
 		b.bullet = DefaultBullet
@@ -55,16 +67,4 @@ func New(config *Config) *Bot {
 	}
 
 	return b
-}
-
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 . MessageSender
-
-type MessageSender interface {
-	SendMessage(origin, target, message string) error
-}
-
-type MessageSenderFunc func(origin, target, message string) error
-
-func (f MessageSenderFunc) SendMessage(origin, target, message string) error {
-	return f(origin, target, message)
 }
