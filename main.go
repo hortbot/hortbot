@@ -14,21 +14,10 @@ import (
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
 )
 
-func lookupEnv(key string) string {
-	v, _ := os.LookupEnv(key)
-	return v
-}
-
 func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
 
-	logConfig := zap.NewDevelopmentConfig()
-	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-
-	logger, err := logConfig.Build()
-	if err != nil {
-		panic(err)
-	}
+	logger := buildLogger(true)
 
 	undoStdlog := zap.RedirectStdLog(logger)
 	defer undoStdlog()
@@ -108,4 +97,28 @@ func withSignalCancel(ctx context.Context, sig ...os.Signal) context.Context {
 	}()
 
 	return ctx
+}
+
+func lookupEnv(key string) string {
+	v, _ := os.LookupEnv(key)
+	return v
+}
+
+func buildLogger(debug bool) *zap.Logger {
+	var logConfig zap.Config
+
+	if debug {
+		logConfig = zap.NewDevelopmentConfig()
+	} else {
+		logConfig = zap.NewProductionConfig()
+	}
+
+	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	logger, err := logConfig.Build()
+	if err != nil {
+		panic(err)
+	}
+
+	return logger
 }
