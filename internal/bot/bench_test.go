@@ -18,6 +18,9 @@ import (
 )
 
 func BenchmarkBot(b *testing.B) {
+	db, undb := anyDB()
+	defer undb()
+
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
 
 	userID, name := getNextUserID()

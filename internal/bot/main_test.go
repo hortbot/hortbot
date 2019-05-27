@@ -14,6 +14,8 @@ import (
 	"gotest.tools/assert"
 )
 
+const pgConns = 4
+
 const botName = "hortbot"
 
 var nextUserID int64
@@ -29,8 +31,29 @@ func must(err error) {
 	}
 }
 
-var db *sql.DB
-var pgConnStr string
+type sqlDB struct {
+	db      *sql.DB
+	connStr string
+}
+
+var dbs chan sqlDB
+
+func freshDB(t testing.TB) (*sql.DB, func()) {
+	db := <-dbs
+
+	assert.NilError(t, migrations.Reset(db.connStr, nil))
+
+	return db.db, func() {
+		dbs <- db
+	}
+}
+
+func anyDB() (*sql.DB, func()) {
+	db := <-dbs
+	return db.db, func() {
+		dbs <- db
+	}
+}
 
 func TestMain(m *testing.M) {
 	var status int
@@ -38,18 +61,33 @@ func TestMain(m *testing.M) {
 		os.Exit(status)
 	}()
 
-	var cleanup func()
-	var err error
+	cleanups := make([]func(), pgConns)
+	defer func() {
+		for _, f := range cleanups {
+			if f != nil {
+				defer f()
+			}
+		}
+	}()
 
-	db, pgConnStr, cleanup, err = pgtest.New()
-	must(err)
-	defer cleanup()
+	dbs = make(chan sqlDB, pgConns)
+
+	for i := 0; i < pgConns; i++ {
+		i := i
+
+		go func() {
+			db, connStr, cleanup, err := pgtest.New()
+			must(err)
+
+			cleanups[i] = cleanup
+			dbs <- sqlDB{
+				db:      db,
+				connStr: connStr,
+			}
+		}()
+	}
 
 	status = m.Run()
-}
-
-func resetDatabase(t testing.TB) {
-	assert.NilError(t, migrations.Reset(pgConnStr, nil))
 }
 
 func init() {

@@ -36,6 +36,7 @@ func TestScripts(t *testing.T) {
 		file := file
 		name := strings.TrimSuffix(strings.TrimPrefix(file, prefix)[1:], ".txt")
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			testScriptFile(t, file)
 		})
 	}
@@ -52,7 +53,8 @@ func testScriptFile(t *testing.T, filename string) {
 
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
-	resetDatabase(t)
+	db, undb := freshDB(t)
+	defer undb()
 
 	f, err := os.Open(filename)
 	assert.NilError(t, err)
