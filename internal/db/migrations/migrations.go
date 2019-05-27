@@ -8,7 +8,7 @@ import (
 	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
 )
 
-//go:generate gobin -m -run github.com/mjibson/esc -o=migrations.esc.go -pkg=migrations -ignore=\.go$ -private .
+//go:generate gobin -m -run github.com/mjibson/esc -o=migrations.esc.go -pkg=migrations -ignore=\.go$ -modtime=0 -private .
 
 // assetNames provides a go-bindata like interface to use with esc until
 // golang-migrate supports http.FileSystem.
