@@ -223,6 +223,11 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 		return usage()
 	}
 
+	oldLevel := NewAccessLevel(command.AccessLevel)
+	if !s.UserLevel.CanAccess(oldLevel) {
+		return s.Replyf("your level is %s; you cannot restrict a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
+	}
+
 	command.AccessLevel = newLevel
 	command.Editor = s.User
 

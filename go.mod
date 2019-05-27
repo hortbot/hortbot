@@ -51,6 +51,7 @@ require (
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.4 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/stevenroose/gonfig v0.1.4
 	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible

@@ -62,3 +62,9 @@ func New(config *Config) *Bot {
 type MessageSender interface {
 	SendMessage(origin, target, message string) error
 }
+
+type MessageSenderFunc func(origin, target, message string) error
+
+func (f MessageSenderFunc) SendMessage(origin, target, message string) error {
+	return f(origin, target, message)
+}

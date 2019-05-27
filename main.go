@@ -2,82 +2,134 @@ package main
 
 import (
 	"context"
+	"database/sql"
+	"fmt"
 	"os"
 	"os/signal"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/birc"
+	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/ctxlog"
+	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/dedupe/memory"
+	"github.com/hortbot/hortbot/internal/x/errgroupx"
+	"github.com/stevenroose/gonfig"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
+	_ "github.com/lib/pq"                 // For postgres
 )
+
+var config = struct {
+	Debug bool
+
+	Nick string
+	Pass string
+
+	DB string
+}{}
 
 func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
 
-	logger := buildLogger(true)
+	if err := gonfig.Load(&config, gonfig.Conf{
+		EnvPrefix: "HB_",
+	}); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	// TODO: validate config
+
+	logger := buildLogger(config.Debug)
 
 	undoStdlog := zap.RedirectStdLog(logger)
 	defer undoStdlog()
 
 	ctx = ctxlog.WithLogger(ctx, logger)
 
-	conn := birc.NewPool(birc.PoolConfig{
+	db, err := sql.Open("postgres", config.DB)
+	if err != nil {
+		logger.Fatal("error opening database connection", zap.Error(err))
+	}
+
+	channels, err := listChannels(ctx, db)
+	if err != nil {
+		logger.Fatal("error listing initial channels", zap.Error(err))
+	}
+
+	pc := birc.PoolConfig{
 		Config: birc.Config{
 			UserConfig: birc.UserConfig{
-				Nick: lookupEnv("HB_NICK"),
-				Pass: lookupEnv("HB_PASS"),
+				Nick: config.Nick,
+				Pass: config.Pass,
 			},
-			InitialChannels: []string{
-				"#coestar",
-				"#zikaeroh",
-				"#erei",
-				// "#guude",
-				// "#last_grey_wolf",
-				// "#yolopanther",
-				// "#hortbot",
-				// "#botzik",
-				// "#pause",
-				// "#flackblag",
-				// "#northernlion",
-			},
-			Caps: []string{birc.TwitchCapCommands, birc.TwitchCapTags},
+			InitialChannels: channels,
+			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},
 		},
-		// MaxChannelsPerSubConn: 1,
+	}
+
+	conn := birc.NewPool(pc)
+
+	sender := bot.MessageSenderFunc(func(origin, target, message string) error {
+		return conn.SendMessage(ctx, target, message)
 	})
 
-	go func() {
-		for m := range conn.Incoming() {
-			logger.Info(m.Raw)
-		}
-	}()
+	ddp := memory.New(time.Minute, 5*time.Minute)
+	defer ddp.Stop()
 
-	go func() {
-		defer func() {
-			logger.Info("after sync", zap.Strings("joined", conn.Joined()))
-		}()
+	bc := &bot.Config{
+		DB:     db,
+		Dedupe: ddp,
+		Sender: sender,
+	}
 
-		select {
-		case <-time.After(5 * time.Second):
-			logger.Info("before sync", zap.Strings("joined", conn.Joined()))
-		case <-ctx.Done():
-			return
-		}
+	b := bot.New(bc)
 
-		select {
-		case <-time.After(30 * time.Second):
-			if err := conn.SyncJoined(ctx, "#zikaeroh"); err != nil {
-				logger.Error("error syncing", zap.Error(err))
-				return
+	g := errgroupx.FromContext(ctx)
+
+	g.Go(func(ctx context.Context) error {
+		inc := conn.Incoming()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+
+			case m := <-inc:
+				g.Go(func(ctx context.Context) error {
+					b.Handle(ctx, config.Nick, m)
+					return nil
+				})
 			}
-		case <-ctx.Done():
-			return
 		}
-	}()
+	})
 
-	if err := conn.Run(ctx); err != nil {
+	g.Go(func(ctx context.Context) error {
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+
+			case <-time.After(time.Minute):
+				channels, err := listChannels(ctx, db)
+				if err != nil {
+					return err
+				}
+
+				if err := conn.SyncJoined(ctx, channels...); err != nil {
+					return err
+				}
+			}
+		}
+	})
+
+	g.Go(conn.Run)
+
+	if err := g.WaitIgnoreStop(); err != nil {
 		logger.Info("exiting", zap.Error(err))
 	}
 }
@@ -99,11 +151,6 @@ func withSignalCancel(ctx context.Context, sig ...os.Signal) context.Context {
 	return ctx
 }
 
-func lookupEnv(key string) string {
-	v, _ := os.LookupEnv(key)
-	return v
-}
-
 func buildLogger(debug bool) *zap.Logger {
 	var logConfig zap.Config
 
@@ -121,4 +168,30 @@ func buildLogger(debug bool) *zap.Logger {
 	}
 
 	return logger
+}
+
+func listChannels(ctx context.Context, db *sql.DB) ([]string, error) {
+	var channels []struct {
+		Name string
+	}
+
+	err := models.Channels(
+		qm.Select(models.ChannelColumns.Name),
+		models.ChannelWhere.Active.EQ(true),
+		models.ChannelWhere.BotName.EQ(config.Nick),
+	).Bind(ctx, db, &channels)
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]string, len(channels), len(channels)+1)
+
+	for i, c := range channels {
+		out[i] = "#" + c.Name
+	}
+
+	out = append(out, "#"+config.Nick)
+
+	return out, nil
 }
