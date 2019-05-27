@@ -43,7 +43,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
 send hortbot #foobar [HB] command pan restricted to admins and above
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command

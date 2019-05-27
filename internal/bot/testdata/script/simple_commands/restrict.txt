@@ -3,6 +3,9 @@ insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_nam
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar [HB] command pan added, restricted to subscribers and above
 
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
+send hortbot #foobar [HB] your level is moderator; you cannot restrict a command to level admin
+
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict
 send hortbot #foobar [HB] usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
 
@@ -22,6 +25,9 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] command pan restricted to broadcasters and above
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
+send hortbot #foobar [HB] your level is broadcaster; you cannot restrict a command to level admin
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
 send hortbot #foobar [HB] command pan restricted to admins and above
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict what all
@@ -32,3 +38,9 @@ send hortbot #foobar [HB] usage: +command restrict <name> everyone|regulars|subs
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
 send hortbot #foobar [HB] your level is moderator; you cannot restrict a command with level admin
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command delete pan
+send hortbot #foobar [HB] your level is moderator; you cannot delete a command with level admin
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command rename pan pan2
+send hortbot #foobar [HB] your level is moderator; you cannot rename a command with level admin

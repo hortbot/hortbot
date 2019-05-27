@@ -68,16 +68,16 @@ func (s *Session) ReplyUsage(usage string) error {
 func (s *Session) parseUserLevel() AccessLevel {
 	// TODO: admin list
 
-	if s.User == s.IRCChannel {
-		return LevelBroadcaster
-	}
-
 	// Tags are present, safe to not check for nil
 
 	tags := s.M.Tags
 
 	if isTesting && tags["testing-admin"] != "" {
 		return LevelAdmin
+	}
+
+	if s.User == s.IRCChannel {
+		return LevelBroadcaster
 	}
 
 	if tags["mod"] == "1" {

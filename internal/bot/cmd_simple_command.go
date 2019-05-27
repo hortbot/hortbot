@@ -168,6 +168,11 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error 
 		return err
 	}
 
+	level := NewAccessLevel(command.AccessLevel)
+	if !s.UserLevel.CanAccess(level) {
+		return s.Replyf("your level is %s; you cannot delete a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
+	}
+
 	err = command.Delete(ctx, s.Tx)
 	if err != nil {
 		return err
@@ -223,9 +228,12 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 		return usage()
 	}
 
-	oldLevel := NewAccessLevel(command.AccessLevel)
-	if !s.UserLevel.CanAccess(oldLevel) {
+	if !s.UserLevel.CanAccess(NewAccessLevel(command.AccessLevel)) {
 		return s.Replyf("your level is %s; you cannot restrict a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
+	}
+
+	if !s.UserLevel.CanAccess(NewAccessLevel(newLevel)) {
+		return s.Replyf("your level is %s; you cannot restrict a command to level %s", s.UserLevel.PGEnum(), newLevel)
 	}
 
 	command.AccessLevel = newLevel
@@ -304,6 +312,11 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, args string) error 
 
 	if err != nil {
 		return err
+	}
+
+	level := NewAccessLevel(command.AccessLevel)
+	if !s.UserLevel.CanAccess(level) {
+		return s.Replyf("your level is %s; you cannot rename a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
 	exists, err := models.SimpleCommands(
