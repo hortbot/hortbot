@@ -72,15 +72,15 @@ var SimpleCommandWhere = struct {
 	AccessLevel whereHelperstring
 	Count       whereHelperint64
 }{
-	ID:          whereHelperint64{field: `id`},
-	CreatedAt:   whereHelpertime_Time{field: `created_at`},
-	UpdatedAt:   whereHelpertime_Time{field: `updated_at`},
-	ChannelID:   whereHelperint64{field: `channel_id`},
-	Name:        whereHelperstring{field: `name`},
-	Message:     whereHelperstring{field: `message`},
-	Editor:      whereHelperstring{field: `editor`},
-	AccessLevel: whereHelperstring{field: `access_level`},
-	Count:       whereHelperint64{field: `count`},
+	ID:          whereHelperint64{field: "\"simple_commands\".\"id\""},
+	CreatedAt:   whereHelpertime_Time{field: "\"simple_commands\".\"created_at\""},
+	UpdatedAt:   whereHelpertime_Time{field: "\"simple_commands\".\"updated_at\""},
+	ChannelID:   whereHelperint64{field: "\"simple_commands\".\"channel_id\""},
+	Name:        whereHelperstring{field: "\"simple_commands\".\"name\""},
+	Message:     whereHelperstring{field: "\"simple_commands\".\"message\""},
+	Editor:      whereHelperstring{field: "\"simple_commands\".\"editor\""},
+	AccessLevel: whereHelperstring{field: "\"simple_commands\".\"access_level\""},
+	Count:       whereHelperint64{field: "\"simple_commands\".\"count\""},
 }
 
 // SimpleCommandRels is where relationship names are stored.
@@ -104,7 +104,7 @@ func (*simpleCommandR) NewStruct() *simpleCommandR {
 type simpleCommandL struct{}
 
 var (
-	simpleCommandColumns               = []string{"id", "created_at", "updated_at", "channel_id", "name", "message", "editor", "access_level", "count"}
+	simpleCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "name", "message", "editor", "access_level", "count"}
 	simpleCommandColumnsWithoutDefault = []string{"channel_id", "name", "message", "editor", "access_level", "count"}
 	simpleCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	simpleCommandPrimaryKeyColumns     = []string{"id"}
@@ -415,7 +415,7 @@ func (o *SimpleCommand) Insert(ctx context.Context, exec boil.ContextExecutor, c
 
 	if !cached {
 		wl, returnColumns := columns.InsertColumnSet(
-			simpleCommandColumns,
+			simpleCommandAllColumns,
 			simpleCommandColumnsWithDefault,
 			simpleCommandColumnsWithoutDefault,
 			nzDefaults,
@@ -489,7 +489,7 @@ func (o *SimpleCommand) Update(ctx context.Context, exec boil.ContextExecutor, c
 
 	if !cached {
 		wl := columns.UpdateColumnSet(
-			simpleCommandColumns,
+			simpleCommandAllColumns,
 			simpleCommandPrimaryKeyColumns,
 		)
 
@@ -640,13 +640,13 @@ func (o *SimpleCommand) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 
 	if !cached {
 		insert, ret := insertColumns.InsertColumnSet(
-			simpleCommandColumns,
+			simpleCommandAllColumns,
 			simpleCommandColumnsWithDefault,
 			simpleCommandColumnsWithoutDefault,
 			nzDefaults,
 		)
 		update := updateColumns.UpdateColumnSet(
-			simpleCommandColumns,
+			simpleCommandAllColumns,
 			simpleCommandPrimaryKeyColumns,
 		)
 
@@ -747,10 +747,6 @@ func (q simpleCommandQuery) DeleteAll(ctx context.Context, exec boil.ContextExec
 
 // DeleteAll deletes all rows in the slice, using an executor.
 func (o SimpleCommandSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil {
-		return errors.New("models: no SimpleCommand slice provided for delete all")
-	}
-
 	if len(o) == 0 {
 		return nil
 	}

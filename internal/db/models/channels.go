@@ -178,18 +178,18 @@ var ChannelWhere = struct {
 	CustomMods     whereHelpertypes_StringArray
 	CustomRegulars whereHelpertypes_StringArray
 }{
-	ID:             whereHelperint64{field: `id`},
-	CreatedAt:      whereHelpertime_Time{field: `created_at`},
-	UpdatedAt:      whereHelpertime_Time{field: `updated_at`},
-	UserID:         whereHelperint64{field: `user_id`},
-	Name:           whereHelperstring{field: `name`},
-	BotName:        whereHelperstring{field: `bot_name`},
-	Active:         whereHelperbool{field: `active`},
-	Prefix:         whereHelperstring{field: `prefix`},
-	Bullet:         whereHelpernull_String{field: `bullet`},
-	CustomOwners:   whereHelpertypes_StringArray{field: `custom_owners`},
-	CustomMods:     whereHelpertypes_StringArray{field: `custom_mods`},
-	CustomRegulars: whereHelpertypes_StringArray{field: `custom_regulars`},
+	ID:             whereHelperint64{field: "\"channels\".\"id\""},
+	CreatedAt:      whereHelpertime_Time{field: "\"channels\".\"created_at\""},
+	UpdatedAt:      whereHelpertime_Time{field: "\"channels\".\"updated_at\""},
+	UserID:         whereHelperint64{field: "\"channels\".\"user_id\""},
+	Name:           whereHelperstring{field: "\"channels\".\"name\""},
+	BotName:        whereHelperstring{field: "\"channels\".\"bot_name\""},
+	Active:         whereHelperbool{field: "\"channels\".\"active\""},
+	Prefix:         whereHelperstring{field: "\"channels\".\"prefix\""},
+	Bullet:         whereHelpernull_String{field: "\"channels\".\"bullet\""},
+	CustomOwners:   whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
+	CustomMods:     whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
+	CustomRegulars: whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -213,7 +213,7 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelColumns               = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "custom_owners", "custom_mods", "custom_regulars"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "custom_owners", "custom_mods", "custom_regulars"}
 	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "custom_owners", "custom_mods", "custom_regulars"}
 	channelPrimaryKeyColumns     = []string{"id"}
@@ -532,7 +532,7 @@ func (o *Channel) Insert(ctx context.Context, exec boil.ContextExecutor, columns
 
 	if !cached {
 		wl, returnColumns := columns.InsertColumnSet(
-			channelColumns,
+			channelAllColumns,
 			channelColumnsWithDefault,
 			channelColumnsWithoutDefault,
 			nzDefaults,
@@ -606,7 +606,7 @@ func (o *Channel) Update(ctx context.Context, exec boil.ContextExecutor, columns
 
 	if !cached {
 		wl := columns.UpdateColumnSet(
-			channelColumns,
+			channelAllColumns,
 			channelPrimaryKeyColumns,
 		)
 
@@ -757,13 +757,13 @@ func (o *Channel) Upsert(ctx context.Context, exec boil.ContextExecutor, updateO
 
 	if !cached {
 		insert, ret := insertColumns.InsertColumnSet(
-			channelColumns,
+			channelAllColumns,
 			channelColumnsWithDefault,
 			channelColumnsWithoutDefault,
 			nzDefaults,
 		)
 		update := updateColumns.UpdateColumnSet(
-			channelColumns,
+			channelAllColumns,
 			channelPrimaryKeyColumns,
 		)
 
@@ -864,10 +864,6 @@ func (q channelQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) 
 
 // DeleteAll deletes all rows in the slice, using an executor.
 func (o ChannelSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) error {
-	if o == nil {
-		return errors.New("models: no Channel slice provided for delete all")
-	}
-
 	if len(o) == 0 {
 		return nil
 	}

@@ -5,7 +5,7 @@ go 1.12
 require (
 	cloud.google.com/go v0.39.0 // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
-	github.com/aws/aws-sdk-go v1.19.37 // indirect
+	github.com/aws/aws-sdk-go v1.19.38 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.1
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
@@ -51,25 +51,22 @@ require (
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.4 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
+	github.com/spf13/viper v1.4.0 // indirect
 	github.com/stevenroose/gonfig v0.1.4
 	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
-	github.com/volatiletech/sqlboiler v3.2.0+incompatible
-	github.com/xanzy/go-gitlab v0.17.0 // indirect
+	github.com/volatiletech/sqlboiler v3.4.0+incompatible
+	github.com/xanzy/go-gitlab v0.18.0 // indirect
 	go.mongodb.org/mongo-driver v1.0.2 // indirect
-	go.uber.org/atomic v1.4.0 // indirect
-	go.uber.org/multierr v1.1.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
-	golang.org/x/net v0.0.0-20190522155817-f3200d17e092 // indirect
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190523142557-0e01d883c5c5 // indirect
-	golang.org/x/tools v0.0.0-20190523174634-38d8bcfa38af
+	golang.org/x/sys v0.0.0-20190527104216-9cd6430ef91e // indirect
+	golang.org/x/tools v0.0.0-20190525145741-7be61e1b0e51
 	google.golang.org/appengine v1.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69 // indirect
-	google.golang.org/grpc v1.21.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
 )
