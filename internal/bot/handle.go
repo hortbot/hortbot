@@ -175,6 +175,10 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	b.testingHelper.checkUserNameID(s.User, s.UserID)
 	b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
 
+	if s.User == s.Origin {
+		return nil
+	}
+
 	ctx, logger = ctxlog.FromContextWith(ctx,
 		zap.Int64("roomID", s.RoomID),
 		zap.String("channel", s.IRCChannel),
@@ -198,7 +202,7 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	s.UserLevel = s.parseUserLevel()
 
 	if s.Origin == s.IRCChannel {
-		return handleFromOrigin(ctx, s)
+		return handleManagement(ctx, s)
 	}
 
 	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)

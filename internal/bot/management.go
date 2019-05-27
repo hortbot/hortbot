@@ -10,7 +10,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-func handleFromOrigin(ctx context.Context, s *Session) error {
+func handleManagement(ctx context.Context, s *Session) error {
 	var cmd string
 
 	switch s.Message[0] {
