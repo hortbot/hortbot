@@ -42,6 +42,7 @@ func TestScripts(t *testing.T) {
 	}
 }
 
+//nolint:gocyclo
 func testScriptFile(t *testing.T, filename string) {
 	defer func() {
 		if r := recover(); r != nil {
