@@ -19,6 +19,11 @@ type Config struct {
 
 	Prefix string
 	Bullet string
+
+	Admins []string
+
+	WhitelistEnabled bool
+	Whitelist        []string
 }
 
 type Bot struct {
@@ -30,10 +35,14 @@ type Bot struct {
 	prefix string
 	bullet string
 
+	admins    map[string]bool
+	whitelist map[string]bool
+
 	testingHelper testingHelper
 }
 
 func New(config *Config) *Bot {
+	// TODO: don't panic, return errors.
 	switch {
 	case config.DB == nil:
 		panic("db is nil")
@@ -52,6 +61,7 @@ func New(config *Config) *Bot {
 		notifier: config.Notifier,
 		prefix:   config.Prefix,
 		bullet:   config.Bullet,
+		admins:   make(map[string]bool),
 	}
 
 	if b.bullet == "" {
@@ -66,5 +76,32 @@ func New(config *Config) *Bot {
 		b.testingHelper = testingHelper{}
 	}
 
+	for _, name := range config.Admins {
+		b.admins[name] = true
+	}
+
+	if config.WhitelistEnabled {
+		b.whitelist = make(map[string]bool)
+		for _, name := range config.Whitelist {
+			b.whitelist[name] = true
+		}
+	}
+
 	return b
+}
+
+func (b *Bot) isAllowed(name string) bool {
+	if b.whitelist == nil {
+		return true
+	}
+
+	if b.admins[name] {
+		return true
+	}
+
+	if b.whitelist[name] {
+		return true
+	}
+
+	return false
 }

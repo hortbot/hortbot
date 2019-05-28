@@ -1,0 +1,14 @@
+bot_config {"WhitelistEnabled": true, "Whitelist": ["whitelisted", "admin"], "Admins": ["admin"]}
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :whitelisted!whitelisted@whitelisted.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+send hortbot #foobar [HB] LevelEveryone
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
+send hortbot #foobar [HB] LevelAdmin

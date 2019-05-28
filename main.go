@@ -30,6 +30,11 @@ var config = struct {
 	Pass string
 
 	DB string
+
+	Admins []string
+
+	WhitelistEnabled bool
+	Whitelist        []string
 }{}
 
 func main() {
@@ -96,10 +101,13 @@ func main() {
 	defer ddp.Stop()
 
 	bc := &bot.Config{
-		DB:       db,
-		Dedupe:   ddp,
-		Sender:   sender,
-		Notifier: notifier,
+		DB:               db,
+		Dedupe:           ddp,
+		Sender:           sender,
+		Notifier:         notifier,
+		Admins:           config.Admins,
+		WhitelistEnabled: config.WhitelistEnabled,
+		Whitelist:        config.Whitelist,
 	}
 
 	b := bot.New(bc)

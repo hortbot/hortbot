@@ -87,6 +87,12 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return nil
 	}
 
+	user := strings.ToLower(m.Prefix.Name)
+
+	if !b.isAllowed(user) {
+		return nil
+	}
+
 	message := m.Trailing
 
 	if message == "" {
@@ -114,7 +120,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		Origin:   origin,
 		M:        m,
 		ID:       id,
-		User:     strings.ToLower(m.Prefix.Name),
+		User:     user,
 		Message:  message,
 		Me:       me,
 		Bot:      b,

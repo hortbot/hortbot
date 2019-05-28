@@ -68,7 +68,9 @@ func (s *Session) ReplyUsage(usage string) error {
 }
 
 func (s *Session) parseUserLevel() AccessLevel {
-	// TODO: admin list
+	if s.Bot.admins[s.User] {
+		return LevelAdmin
+	}
 
 	// Tags are present, safe to not check for nil
 

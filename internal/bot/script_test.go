@@ -161,15 +161,21 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.Assert(t, b == nil, "bot has already been created, cannot configure")
 
 				var bcj struct {
-					Prefix string
-					Bullet string
-					Dedupe string
+					Prefix           string
+					Bullet           string
+					Dedupe           string
+					Admins           []string
+					WhitelistEnabled bool
+					Whitelist        []string
 				}
 
 				assert.NilError(t, json.Unmarshal([]byte(directive[1]), &bcj), "line %d", lineNum)
 
 				bc.Prefix = bcj.Prefix
 				bc.Bullet = bcj.Bullet
+				bc.Admins = bcj.Admins
+				bc.WhitelistEnabled = bcj.WhitelistEnabled
+				bc.Whitelist = bcj.Whitelist
 
 				switch bcj.Dedupe {
 				case "", "never":
