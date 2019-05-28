@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"log"
 	"os"
 	"os/signal"
 	"time"
@@ -40,7 +41,9 @@ func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
 
 	if _, err := flags.Parse(&args); err != nil {
-		// Default flag parser prints messages, so just exit.
+		if !flags.WroteHelp(err) {
+			log.Fatalln(err)
+		}
 		os.Exit(1)
 	}
 
