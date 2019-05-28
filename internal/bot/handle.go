@@ -235,7 +235,22 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 	s.Channel = channel
 	s.UserLevel = s.parseUserLevel()
 
+	_, ignored := stringSliceIndex(channel.Ignored, s.User)
+
+	if ignored {
+		if s.IsAdmin() || s.IRCChannel == s.User {
+			ignored = false
+		} else {
+			s.UserLevel = LevelEveryone
+		}
+	}
+
 	// TODO: precheck for links, banned phrases, etc
+	// Ignoring does not exempt messages from filters.
+
+	if ignored {
+		return nil
+	}
 
 	wasCommand, err := tryCommand(ctx, s, s.Message)
 	if wasCommand {

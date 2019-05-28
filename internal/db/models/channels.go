@@ -34,6 +34,7 @@ type Channel struct {
 	Active         bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
 	Prefix         string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
 	Bullet         null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
+	Ignored        types.StringArray `boil:"ignored" json:"ignored" toml:"ignored" yaml:"ignored"`
 	CustomOwners   types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
 	CustomMods     types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
 	CustomRegulars types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
@@ -52,6 +53,7 @@ var ChannelColumns = struct {
 	Active         string
 	Prefix         string
 	Bullet         string
+	Ignored        string
 	CustomOwners   string
 	CustomMods     string
 	CustomRegulars string
@@ -65,6 +67,7 @@ var ChannelColumns = struct {
 	Active:         "active",
 	Prefix:         "prefix",
 	Bullet:         "bullet",
+	Ignored:        "ignored",
 	CustomOwners:   "custom_owners",
 	CustomMods:     "custom_mods",
 	CustomRegulars: "custom_regulars",
@@ -174,6 +177,7 @@ var ChannelWhere = struct {
 	Active         whereHelperbool
 	Prefix         whereHelperstring
 	Bullet         whereHelpernull_String
+	Ignored        whereHelpertypes_StringArray
 	CustomOwners   whereHelpertypes_StringArray
 	CustomMods     whereHelpertypes_StringArray
 	CustomRegulars whereHelpertypes_StringArray
@@ -187,6 +191,7 @@ var ChannelWhere = struct {
 	Active:         whereHelperbool{field: "\"channels\".\"active\""},
 	Prefix:         whereHelperstring{field: "\"channels\".\"prefix\""},
 	Bullet:         whereHelpernull_String{field: "\"channels\".\"bullet\""},
+	Ignored:        whereHelpertypes_StringArray{field: "\"channels\".\"ignored\""},
 	CustomOwners:   whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
 	CustomMods:     whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
 	CustomRegulars: whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
@@ -213,9 +218,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "custom_owners", "custom_mods", "custom_regulars"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars"}
 	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "custom_owners", "custom_mods", "custom_regulars"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

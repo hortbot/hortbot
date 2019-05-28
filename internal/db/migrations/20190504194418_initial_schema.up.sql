@@ -16,6 +16,7 @@ CREATE TABLE channels (
     prefix text NOT NULL,
     bullet text,
 
+    ignored text[] DEFAULT '{}' NOT NULL,
     custom_owners text[] DEFAULT '{}' NOT NULL,
     custom_mods text[] DEFAULT '{}' NOT NULL,
     custom_regulars text[] DEFAULT '{}' NOT NULL

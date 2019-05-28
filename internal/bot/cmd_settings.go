@@ -80,11 +80,16 @@ func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 	return s.Replyf("prefix changed to %s", args)
 }
 
-func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdOwnerModRegularIgnore(ctx context.Context, s *Session, cmd string, args string) error {
 	args = strings.TrimSpace(args)
+
+	var cmds string
 
 	switch cmd {
 	case "owner", "mod", "regular":
+		cmds = flect.Pluralize(cmd)
+	case "ignore":
+		cmds = "ignored users"
 	default:
 		panic("unreachable: " + cmd)
 	}
@@ -101,6 +106,8 @@ func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string
 			return s.Channel.CustomMods
 		case "regular":
 			return s.Channel.CustomRegulars
+		case "ignore":
+			return s.Channel.Ignored
 		default:
 			panic("unreachable")
 		}
@@ -120,17 +127,22 @@ func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string
 			s.Channel.CustomRegulars = v
 			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomRegulars))
 
+		case "ignore":
+			s.Channel.Ignored = v
+			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Ignored))
+
 		default:
 			panic("unreachable")
 		}
 	}
 
 	subcommand, args := splitSpace(args)
+	subcommand = strings.ToLower(subcommand)
+
 	user, _ := splitSpace(args)
 	user = strings.TrimPrefix(user, "@")
 	user = strings.ToLower(user)
 
-	cmds := flect.Pluralize(cmd)
 	existing := getter()
 
 	switch subcommand {
@@ -156,7 +168,7 @@ func cmdOwnerModRegular(ctx context.Context, s *Session, cmd string, args string
 
 		return s.Replyf("%s added to %s", user, cmds)
 
-	case "remove":
+	case "remove", "delete":
 		i, found := stringSliceIndex(existing, user)
 		if !found {
 			return s.Replyf("%s is not in %s", user, cmds)

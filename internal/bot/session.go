@@ -23,6 +23,7 @@ type Session struct {
 	UserDisplay string
 	UserID      int64
 	UserLevel   AccessLevel
+	Ignored     bool
 
 	Bot      *Bot
 	Tx       *sql.Tx
@@ -121,4 +122,8 @@ func (s *Session) parseUserLevel() AccessLevel {
 	}
 
 	return LevelEveryone
+}
+
+func (s *Session) IsAdmin() bool {
+	return s.UserLevel.CanAccess(LevelAdmin)
 }

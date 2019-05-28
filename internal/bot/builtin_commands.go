@@ -27,9 +27,10 @@ func init() {
 		"coemand": {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"bullet":  {fn: cmdBullet, minLevel: LevelBroadcaster},
 		"prefix":  {fn: cmdPrefix, minLevel: LevelBroadcaster},
-		"owner":   {fn: cmdOwnerModRegular, minLevel: LevelBroadcaster},
-		"mod":     {fn: cmdOwnerModRegular, minLevel: LevelBroadcaster},
-		"regular": {fn: cmdOwnerModRegular, minLevel: LevelModerator},
+		"owner":   {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
+		"mod":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
+		"regular": {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
+		"ignore":  {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
 	}
 }
 

@@ -44,7 +44,7 @@ func handleJoin(ctx context.Context, s *Session, name, id string) error {
 	displayName := s.UserDisplay
 	userID := s.UserID
 
-	if name != "" && s.UserLevel.CanAccess(LevelAdmin) {
+	if name != "" && s.IsAdmin() {
 		userID, err = strconv.ParseInt(id, 10, 64)
 		if err != nil || userID <= 0 {
 			return s.Replyf("bad user ID: '%s'", id)
@@ -103,7 +103,7 @@ func handleLeave(ctx context.Context, s *Session, name string) error {
 
 	displayName := s.UserDisplay
 
-	if name != "" && s.UserLevel.CanAccess(LevelAdmin) {
+	if name != "" && s.IsAdmin() {
 		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
 		displayName = name
 	} else {
