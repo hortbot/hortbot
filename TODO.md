@@ -2,7 +2,7 @@
 
 ## The basics
 
-- [ ] Single process mode
+- [x] Single process mode (usable but not final)
     - MVP
     - Need configuration setup
 - [ ] Multi process mode
@@ -12,6 +12,7 @@
     - Figure out global prevention
 - [ ] Website
     - Needed for OAuth stuff
+- [ ] JSON configuration transferer
 
 ## CoeBot features
 
