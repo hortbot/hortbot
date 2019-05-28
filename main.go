@@ -40,6 +40,7 @@ var config = struct {
 func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
 
+	// TODO: Replace gonfig with something else.
 	if err := gonfig.Load(&config, gonfig.Conf{
 		EnvPrefix: "HB_",
 	}); err != nil {
