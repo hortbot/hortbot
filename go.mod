@@ -34,6 +34,7 @@ require (
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/jackc/pgx v3.4.0+incompatible // indirect
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
+	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
 	github.com/kshvakov/clickhouse v1.3.6 // indirect
 	github.com/lib/pq v1.1.1
@@ -52,7 +53,6 @@ require (
 	github.com/spf13/cobra v0.0.4 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
-	github.com/stevenroose/gonfig v0.1.4
 	github.com/tidwall/pretty v0.0.0-20190325153808-1166b9ac2b65 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
@@ -63,7 +63,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190527104216-9cd6430ef91e // indirect
+	golang.org/x/sys v0.0.0-20190528012530-adf421d2caf4 // indirect
 	golang.org/x/tools v0.0.0-20190525145741-7be61e1b0e51
 	google.golang.org/appengine v1.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69 // indirect

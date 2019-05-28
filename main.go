@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"os"
 	"os/signal"
 	"time"
@@ -14,7 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/x/errgroupx"
-	"github.com/stevenroose/gonfig"
+	"github.com/jessevdk/go-flags"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -23,41 +22,36 @@ import (
 	_ "github.com/lib/pq"                 // For postgres
 )
 
-var config = struct {
-	Debug bool
+var args = struct {
+	Nick string `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
+	Pass string `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
 
-	Nick string
-	Pass string
+	DB string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
 
-	DB string
+	Admins []string `long:"admin" env:"HB_ADMINS" env-delim:"," description:"Bot admins"`
 
-	Admins []string
+	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
+	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
 
-	WhitelistEnabled bool
-	Whitelist        []string
+	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 }{}
 
 func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
 
-	// TODO: Replace gonfig with something else.
-	if err := gonfig.Load(&config, gonfig.Conf{
-		EnvPrefix: "HB_",
-	}); err != nil {
-		fmt.Fprintln(os.Stderr, err)
+	if _, err := flags.Parse(&args); err != nil {
+		// Default flag parser prints messages, so just exit.
 		os.Exit(1)
 	}
 
-	// TODO: validate config
-
-	logger := buildLogger(config.Debug)
+	logger := buildLogger(args.Debug)
 
 	undoStdlog := zap.RedirectStdLog(logger)
 	defer undoStdlog()
 
 	ctx = ctxlog.WithLogger(ctx, logger)
 
-	db, err := sql.Open("postgres", config.DB)
+	db, err := sql.Open("postgres", args.DB)
 	if err != nil {
 		logger.Fatal("error opening database connection", zap.Error(err))
 	}
@@ -70,8 +64,8 @@ func main() {
 	pc := birc.PoolConfig{
 		Config: birc.Config{
 			UserConfig: birc.UserConfig{
-				Nick: config.Nick,
-				Pass: config.Pass,
+				Nick: args.Nick,
+				Pass: args.Pass,
 			},
 			InitialChannels: channels,
 			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},
@@ -106,9 +100,9 @@ func main() {
 		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,
-		Admins:           config.Admins,
-		WhitelistEnabled: config.WhitelistEnabled,
-		Whitelist:        config.Whitelist,
+		Admins:           args.Admins,
+		WhitelistEnabled: args.WhitelistEnabled,
+		Whitelist:        args.Whitelist,
 	}
 
 	b := bot.New(bc)
@@ -125,7 +119,7 @@ func main() {
 
 			case m := <-inc:
 				g.Go(func(ctx context.Context) error {
-					b.Handle(ctx, config.Nick, m)
+					b.Handle(ctx, args.Nick, m)
 					return nil
 				})
 			}
@@ -206,7 +200,7 @@ func listChannels(ctx context.Context, db *sql.DB) ([]string, error) {
 	err := models.Channels(
 		qm.Select(models.ChannelColumns.Name),
 		models.ChannelWhere.Active.EQ(true),
-		models.ChannelWhere.BotName.EQ(config.Nick),
+		models.ChannelWhere.BotName.EQ(args.Nick),
 	).Bind(ctx, db, &channels)
 
 	if err != nil {
@@ -219,7 +213,7 @@ func listChannels(ctx context.Context, db *sql.DB) ([]string, error) {
 		out[i] = "#" + c.Name
 	}
 
-	out = append(out, "#"+config.Nick)
+	out = append(out, "#"+args.Nick)
 
 	return out, nil
 }
