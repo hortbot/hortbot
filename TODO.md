@@ -110,9 +110,9 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Purge (add an argument to this to purge the last X messages)
     - [ ] Link permit (needs detection)
     - [ ] Clear chat
-- [ ] Ignores
-    - [ ] Add/delete
-    - [ ] List
+- [x] Ignores
+    - [x] Add/delete
+    - [x] List
 - [x] ~~Raids~~ Twitch does this better now
 - [ ] Settings
     - Lots of settings here related to other items.
