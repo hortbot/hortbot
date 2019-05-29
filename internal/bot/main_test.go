@@ -14,15 +14,6 @@ import (
 	"gotest.tools/assert"
 )
 
-const botName = "hortbot"
-
-var nextUserID int64
-
-func getNextUserID() (int64, string) {
-	id := atomic.AddInt64(&nextUserID, 1)
-	return id, fmt.Sprintf("user%d", id)
-}
-
 func must(err error) {
 	if err != nil {
 		log.Panic(err)
@@ -45,6 +36,8 @@ func TestMain(m *testing.M) {
 	must(err)
 	defer cleanup()
 
+	// Create another database as a template because keeping the main connection
+	// to the original database open prevents its use as a template.
 	_, err = mainDB.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)
 	must(err)
 

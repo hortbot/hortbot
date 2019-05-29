@@ -2,44 +2,29 @@ package bot_test
 
 import (
 	"context"
+	"fmt"
 	"strconv"
+	"sync/atomic"
 	"testing"
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/ctxlog"
-	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/dedupe"
 	"github.com/hortbot/hortbot/internal/testutil"
 	"github.com/hortbot/hortbot/internal/x/ircx"
-	"github.com/volatiletech/sqlboiler/boil"
-	"gotest.tools/assert"
+	"github.com/jakebailey/irc"
 )
 
-func BenchmarkBot(b *testing.B) {
+const botName = "hortbot"
+
+func BenchmarkSimpleCommand(b *testing.B) {
 	db, undb := freshDB(b)
 	defer undb()
 
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
 
 	userID, name := getNextUserID()
-
-	channel := &models.Channel{
-		UserID:  userID,
-		Name:    name,
-		Prefix:  "+",
-		BotName: botName,
-	}
-
-	assert.NilError(b, channel.Insert(ctx, db, boil.Infer()))
-
-	command := &models.SimpleCommand{
-		ChannelID: channel.ID,
-		Name:      "pan",
-		Message:   "FOUND THE (_PARAMETER_CAPS_), HAVE YE?",
-	}
-
-	assert.NilError(b, command.Insert(ctx, db, boil.Infer()))
 
 	config := &bot.Config{
 		DB:       db,
@@ -50,16 +35,80 @@ func BenchmarkBot(b *testing.B) {
 
 	bb := bot.New(config)
 
-	m := ircx.PrivMsg("#"+name, "+pan working command")
+	m := ircx.PrivMsg("#"+botName, "!join")
 	m.Tags = map[string]string{
 		"id":      uuid.Must(uuid.NewV4()).String(),
-		"room-id": strconv.FormatInt(channel.UserID, 10),
+		"room-id": "1",
+		"user-id": strconv.FormatInt(userID, 10),
 	}
+	m.Prefix = irc.Prefix{
+		Name: name,
+		User: name,
+		Host: name + "@tmi.twitch.tv",
+	}
+
+	bb.Handle(ctx, botName, m)
+
+	m.Params = []string{"#" + name}
+	m.Trailing = "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"
+	m.Tags["room-id"] = m.Tags["user-id"]
+
+	bb.Handle(ctx, botName, m)
+
+	m.Trailing = "!pan working command"
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		bb.Handle(ctx, botName, m)
 	}
+}
+
+func BenchmarkNop(b *testing.B) {
+	db, undb := freshDB(b)
+	defer undb()
+
+	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
+
+	userID, name := getNextUserID()
+
+	config := &bot.Config{
+		DB:       db,
+		Dedupe:   dedupe.NeverSeen,
+		Sender:   nopSender{},
+		Notifier: nopNotifier{},
+	}
+
+	bb := bot.New(config)
+
+	m := ircx.PrivMsg("#"+botName, "!join")
+	m.Tags = map[string]string{
+		"id":      uuid.Must(uuid.NewV4()).String(),
+		"room-id": "1",
+		"user-id": strconv.FormatInt(userID, 10),
+	}
+	m.Prefix = irc.Prefix{
+		Name: name,
+		User: name,
+		Host: name + "@tmi.twitch.tv",
+	}
+
+	bb.Handle(ctx, botName, m)
+
+	m.Params = []string{"#" + name}
+	m.Trailing = "test"
+	m.Tags["room-id"] = m.Tags["user-id"]
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		bb.Handle(ctx, botName, m)
+	}
+}
+
+var nextUserID int64 = 1
+
+func getNextUserID() (int64, string) {
+	id := atomic.AddInt64(&nextUserID, 1)
+	return id, fmt.Sprintf("user%d", id)
 }
 
 type nopSender struct{}
