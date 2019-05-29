@@ -1,0 +1,29 @@
+dist: xenial
+
+language: go
+
+go:
+  - "1.x"
+  # - "tip"
+
+env:
+  - GO111MODULE=on
+
+services:
+  - docker
+
+cache:
+  directories:
+    - $GOPATH/pkg
+    - $HOME/.cache/go-build
+
+before_install:
+  - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+  - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+  - GO111MODULE=off go get -v -u github.com/mattn/goveralls
+
+script:
+  - go test -race -covermode=atomic -coverprofile=cover.out ./...
+  - $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out

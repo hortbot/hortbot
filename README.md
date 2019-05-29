@@ -1,5 +1,7 @@
 # hortbot
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/hortbot/hortbot)](https://goreportcard.com/report/github.com/hortbot/hortbot) [![Build Status](https://travis-ci.com/hortbot/hortbot.svg?branch=master)](https://travis-ci.com/hortbot/hortbot) [![Coverage Status](https://coveralls.io/repos/github/hortbot/hortbot/badge.svg?branch=master)](https://coveralls.io/github/hortbot/hortbot?branch=master)
+
 An IRC bot for Twitch. Very work in progress.
 
 You can find a todo list in [TODO.md](TODO.md).
