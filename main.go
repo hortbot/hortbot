@@ -49,8 +49,7 @@ func main() {
 
 	logger := buildLogger(args.Debug)
 
-	undoStdlog := zap.RedirectStdLog(logger)
-	defer undoStdlog()
+	defer zap.RedirectStdLog(logger)()
 
 	ctx = ctxlog.WithLogger(ctx, logger)
 
