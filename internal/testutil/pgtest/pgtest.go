@@ -24,7 +24,11 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 		return nil, "", nil, err
 	}
 
-	resource, err := pool.Run("zikaeroh/postgres-initialized", "latest", nil)
+	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
+		Repository: "zikaeroh/postgres-initialized",
+		Tag:        "latest",
+		Cmd:        []string{"-F"},
+	})
 	if err != nil {
 		return nil, "", nil, err
 	}

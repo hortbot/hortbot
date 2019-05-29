@@ -17,7 +17,7 @@ import (
 )
 
 func BenchmarkBot(b *testing.B) {
-	db, undb := anyDB()
+	db, undb := freshDB(b)
 	defer undb()
 
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
