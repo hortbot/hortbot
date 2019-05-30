@@ -31,25 +31,25 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Join/part (in bot's channel)
     - [ ] Part (in other channels); waiting until this can have "confirm" functionality
     - [x] ~~Topic~~
-    - [ ] Viewers
-    - [ ] Chatters
-    - [ ] Uptime
+    - [ ] Viewers (*Twitch API*)
+    - [ ] Chatters (*Twitch API*)
+    - [ ] Uptime (*Twitch API*)
     - [ ] LastFM
         - [ ] Music/np
         - [ ] Song link
-    - [ ] Bot help
+    - [ ] Bot help (*Website*)
     - [x] ~~Commercial~~
-    - [ ] Game
-    - [ ] Status
+    - [ ] Game (*Twitch API*)
+    - [ ] Status (*Twitch API*)
     - [x] ~~statusgame/steamgame~~ (Steam API is restricted)
     - [x] ~~XBox game~~
-    - [ ] Follow me
-    - [ ] Viewer stats
+    - [ ] Follow me (*Twitch API*)
+    - [ ] Viewer stats (*Twitch API*)
     - [ ] Punish stats
     - [x] ~~What should I play~~ (Steam API is restricted)
     - [ ] Google
     - [ ] Wiki
-    - [ ] Is live
+    - [ ] Is live (*Twitch API*)
     - [ ] Is here
 - [ ] Custom Commands
     - [ ] Cooldowns
@@ -58,7 +58,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Restrict
     - [x] Rename (undocumented)
     - [x] Editor (undocumented)
-    - [ ] Link to list of commands
+    - [ ] Link to list of commands (*Website*)
     - [ ] Clone
 - [ ] Repeats
     - This might need to get reworked to prevent statefulness within the bot.
@@ -143,17 +143,17 @@ Some features are not currently planned to be ported and have been crossed out.
 
 ### Actions (string replacements)
 
-- [ ] `(_GAME_)`
-- [ ] `(_STATUS_)`
-- [ ] `(_VIEWERS_)`
-- [ ] `(_STEAM_GAME_)`
-- [ ] `(_STEAM_SERVER_)`
+- [ ] `(_GAME_)` (*Twitch API*)
+- [ ] `(_STATUS_)` (*Twitch API*)
+- [ ] `(_VIEWERS_)` (*Twitch API*)
+- [ ] ~~`(_STEAM_GAME_)`~~
+- [ ] ~~`(_STEAM_SERVER_)`~~
 - [ ] `(_SONG_)`
 - [ ] `(_SONG_URL_)`
-- [ ] `(_BOT_HELP_)`
+- [ ] `(_BOT_HELP_)` (*Website*)
 - [ ] `(_USER_)`
 - [ ] `(_QUOTE_)`
-- [ ] `(_COMMERCIAL_)`
+- [ ] ~~`(_COMMERCIAL_)`~~
 - [x] `(_PARAMETER_)`
 - [x] `(_PARAMETER_CAPS_)`
 - [ ] `(_NUMCHANNELS_)`
@@ -163,8 +163,8 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_ONLINE_CHECK_)`
 - [ ] `(_SUBMODE_ON_)`
 - [ ] `(_SUBMODE_OFF_)`
-- [ ] `(_GAME_IS_<GAME>_)`
-- [ ] `(_GAME_IS_NOT_<GAME>_)`
+- [ ] `(_GAME_IS_<GAME>_)` (*Twitch API*)
+- [ ] `(_GAME_IS_NOT_<GAME>_)` (*Twitch API*)
 - [ ] `(_HOST_<CHANNEL>_)`
 - [ ] `(_UNHOST_)`
 - [ ] `(_RANDOM_<MIN>_<MAX>_)`
