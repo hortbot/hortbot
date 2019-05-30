@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/ctxlog"
@@ -46,6 +47,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	if m == nil {
 		return errNilMessage
 	}
+
+	start := time.Now()
 
 	if m.Command != "PRIVMSG" {
 		// TODO: handle other types of messages
@@ -119,6 +122,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	s := &Session{
 		Origin:   origin,
 		M:        m,
+		Start:    start,
 		ID:       id,
 		User:     user,
 		Message:  message,
@@ -167,6 +171,9 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		logger.Debug("user ID cannot be zero")
 		return errInvalidMessage
 	}
+
+	tmiSentTs, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
+	s.TMISent = time.Unix(tmiSentTs/1000, 0)
 
 	// TODO: atomic locking on the channel
 

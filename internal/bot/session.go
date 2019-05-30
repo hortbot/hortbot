@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/jakebailey/irc"
@@ -12,6 +13,9 @@ import (
 type Session struct {
 	Origin string
 	M      *irc.Message
+
+	Start   time.Time
+	TMISent time.Time
 
 	ID         string
 	RoomID     int64

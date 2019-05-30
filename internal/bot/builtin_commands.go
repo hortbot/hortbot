@@ -23,14 +23,15 @@ func init() {
 	// To prevent initialization loop.
 
 	builtinCommands = map[string]builtinCommand{
-		"command": {fn: cmdSimpleCommand, minLevel: LevelModerator},
-		"coemand": {fn: cmdSimpleCommand, minLevel: LevelModerator},
-		"bullet":  {fn: cmdBullet, minLevel: LevelBroadcaster},
-		"prefix":  {fn: cmdPrefix, minLevel: LevelBroadcaster},
-		"owner":   {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
-		"mod":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
-		"regular": {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
-		"ignore":  {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
+		"command":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
+		"coemand":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
+		"bullet":      {fn: cmdBullet, minLevel: LevelBroadcaster},
+		"prefix":      {fn: cmdPrefix, minLevel: LevelBroadcaster},
+		"owner":       {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
+		"mod":         {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
+		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
+		"ignore":      {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
+		"__roundtrip": {fn: cmdRoundtrip, minLevel: LevelAdmin},
 	}
 }
 

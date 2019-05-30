@@ -4,7 +4,11 @@ language: go
 
 go:
   - "1.x"
-  # - "tip"
+  - "tip"
+
+matrix:
+  allow_failures:
+    - go: tip
 
 env:
   - GO111MODULE=on
