@@ -29,7 +29,7 @@ func init() {
 		"prefix":      {fn: cmdPrefix, minLevel: LevelBroadcaster},
 		"owner":       {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
 		"mod":         {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
-		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
+		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
 		"ignore":      {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: LevelAdmin},
 	}

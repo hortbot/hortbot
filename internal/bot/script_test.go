@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime/debug"
 	"strings"
 	"testing"
@@ -264,6 +265,36 @@ func testScriptFile(t *testing.T, filename string) {
 				assert.Equal(t, origin, sent[0], "line %d", lineNum)
 				assert.Equal(t, target, sent[1], "line %d", lineNum)
 				assert.Equal(t, message, sent[2], "line %d", lineNum)
+			})
+
+			needNoSend = false
+
+		case "send_match":
+			callNum := counts["send"]
+			counts["send"]++
+
+			sent := strings.SplitN(directive[1], " ", 3)
+			assert.Assert(t, len(sent) == 3, "line %d", lineNum)
+
+			pattern, err := regexp.Compile(sent[2])
+			assert.NilError(t, err)
+
+			actions = append(actions, func() {
+				assert.Assert(t, sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
+				origin, target, message := sender.SendMessageArgsForCall(callNum)
+				assert.Equal(t, origin, sent[0], "line %d", lineNum)
+				assert.Equal(t, target, sent[1], "line %d", lineNum)
+				assert.Assert(t, pattern.MatchString(message), "line %d", lineNum)
+			})
+
+			needNoSend = false
+
+		case "send_any":
+			callNum := counts["send"]
+			counts["send"]++
+
+			actions = append(actions, func() {
+				assert.Assert(t, sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
 			})
 
 			needNoSend = false
