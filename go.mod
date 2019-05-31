@@ -32,6 +32,7 @@ require (
 	github.com/google/go-cmp v0.3.0
 	github.com/gorilla/mux v1.7.2 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
+	github.com/goware/urlx v0.2.0
 	github.com/jackc/pgx v3.4.0+incompatible // indirect
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -69,6 +70,7 @@ require (
 	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
+	mvdan.cc/xurls/v2 v2.0.0
 )
 
 replace gopkg.in/DATA-DOG/go-sqlmock.v1 => github.com/DATA-DOG/go-sqlmock v1.3.3
