@@ -11,6 +11,7 @@ matrix:
   allow_failures:
     - go: "tip"
       env: GO111MODULE=on
+  fast_finish: true
 
 services:
   - docker
