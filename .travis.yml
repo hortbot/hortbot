@@ -2,16 +2,15 @@ dist: xenial
 
 language: go
 
-go:
-  - "1.x"
-  - "tip"
-
 matrix:
+  include:
+    - go: "1.x"
+      env: GO111MODULE=on COVERAGE=true
+    - go: "tip"
+      env: GO111MODULE=on
   allow_failures:
-    - go: tip
-
-env:
-  - GO111MODULE=on
+    - go: "tip"
+      env: GO111MODULE=on
 
 services:
   - docker
@@ -30,4 +29,4 @@ before_install:
 
 script:
   - go test -race -covermode=atomic -coverprofile=cover.out ./...
-  - $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out
+  - if [ "$COVERAGE" = true ]; then $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out; fi
