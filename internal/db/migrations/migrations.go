@@ -6,21 +6,10 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
+	"github.com/hortbot/hortbot/internal/db/migrations/esc"
 )
 
-//go:generate gobin -m -run github.com/mjibson/esc -o=migrations.esc.go -pkg=migrations -ignore=\.go$ -modtime=0 -private .
-
-// assetNames provides a go-bindata like interface to use with esc until
-// golang-migrate supports http.FileSystem.
-func assetNames() []string {
-	names := make([]string, 0, len(_escData))
-	for name, entry := range _escData {
-		if !entry.isDir {
-			names = append(names, name[1:])
-		}
-	}
-	return names
-}
+//go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -private -modtime=0 .
 
 // Up brings the database up to date to the latest migration.
 func Up(connStr string, logger func(format string, v ...interface{})) error {
@@ -65,9 +54,7 @@ func newMigrate(connStr string, logger func(format string, v ...interface{})) (*
 		return nil, err
 	}
 
-	resource := bindata.Resource(assetNames(), func(name string) ([]byte, error) {
-		return _escFSByte(false, "/"+name)
-	})
+	resource := bindata.Resource(esc.AssetNames(), esc.Asset)
 	source, err := bindata.WithInstance(resource)
 	if err != nil {
 		return nil, err
