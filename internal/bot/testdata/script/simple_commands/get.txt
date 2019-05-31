@@ -1,0 +1,23 @@
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send_any
+notify_channel_update hortbot
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command get pan
+send hortbot #foobar [HB] command pan: FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_), HAVE YE?
+send hortbot #foobar [HB] command pan updated, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command get pan
+send hortbot #foobar [HB] command pan: FOUND THE (_PARAMETER_), HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command get pan2
+send hortbot #foobar [HB] command pan2 does not exist
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command get
+send hortbot #foobar [HB] usage: !command get <name>

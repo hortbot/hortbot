@@ -18,11 +18,15 @@ func (s *Session) doAction(ctx context.Context, action string) (string, error) {
 		}
 	}
 
+	// TODO: ORIG_PARAMS to always fetch the entire thing.
+	// TODO: Figure out how to deal with change in behavior for PARAMETER (DFS versus BFS)
+	// 	     Maybe PARAMETER[0]?
+
 	switch action {
 	case "PARAMETER":
-		return s.CommandParams, nil
+		return s.NextParameter(), nil
 	case "PARAMETER_CAPS":
-		return strings.ToUpper(s.CommandParams), nil
+		return strings.ToUpper(s.NextParameter()), nil
 	}
 
 	return "", fmt.Errorf("unknown action: %s", action)
@@ -58,4 +62,10 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 	}
 
 	return sb.String(), nil
+}
+
+func (s *Session) NextParameter() string {
+	var param string
+	param, s.CommandParams = splitFirstSep(s.CommandParams, ";")
+	return strings.TrimSpace(param)
 }

@@ -51,6 +51,9 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 	case "clone":
 		return errNotImplemented
 
+	case "get":
+		return cmdSimpleCommandGet(ctx, s, args)
+
 	default:
 		return usage()
 	}
@@ -73,6 +76,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 		return s.Replyf("command name %s is reserved", name)
 	}
 
+	// TODO: remove this warning
 	var warning string
 	if _, ok := builtinCommands[name]; ok {
 		warning = "; warning: " + name + " is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
@@ -339,6 +343,35 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, args string) error 
 	}
 
 	return s.Replyf("command %s has been renamed to %s", oldName, newName)
+}
+
+func cmdSimpleCommandGet(ctx context.Context, s *Session, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("command get <name>")
+	}
+
+	name, _ := splitSpace(args)
+
+	if name == "" {
+		return usage()
+	}
+
+	name = strings.ToLower(name)
+
+	command, err := models.SimpleCommands(
+		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+		models.SimpleCommandWhere.Name.EQ(name),
+	).One(ctx, s.Tx)
+
+	if err == sql.ErrNoRows {
+		return s.Replyf("command %s does not exist", name)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return s.Replyf("command %s: %s", name, command.Message)
 }
 
 func init() {

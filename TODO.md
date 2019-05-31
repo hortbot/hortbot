@@ -45,12 +45,12 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~XBox game~~
     - [ ] Follow me (*Twitch API*)
     - [ ] Viewer stats (*Twitch API*)
-    - [ ] Punish stats
+    - [ ] Punish stats (requires moderation)
     - [x] ~~What should I play~~ (Steam API is restricted)
     - [ ] Google
     - [ ] Wiki
     - [ ] Is live (*Twitch API*)
-    - [ ] Is here
+    - [x] ~~Is here~~ (Requires persisting twitch membership messages)
 - [ ] Custom Commands
     - [ ] Cooldowns
     - [x] Add
@@ -78,11 +78,11 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Edit
     - [ ] List
 - [ ] "Fun"
-    - [ ] Throw
-    - [x] ~~Winner~~
+    - [x] ~~Throw~~ (Use a custom command.)
+    - [x] ~~Winner~~ (Requires persisting twitch membership messages)
     - [ ] Random number
-    - [ ] Hug
-    - [ ] Conch/helix
+    - [x] ~~Hug~~ (Use a custom command.)
+    - [ ] Conch/helix (Requires quotes)
     - [ ] Urban
     - [ ] Me
     - [x] ~~Race~~

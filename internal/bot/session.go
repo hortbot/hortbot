@@ -36,7 +36,8 @@ type Session struct {
 
 	Channel *models.Channel
 
-	CommandParams string
+	CommandParams     string
+	OrigCommandParams string
 }
 
 func (s *Session) formatResponse(response string) string {

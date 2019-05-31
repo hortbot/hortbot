@@ -1,0 +1,35 @@
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send_any
+notify_channel_update hortbot
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_), HAVE YE?
+send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command; something
+send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send hortbot #foobar [HB] command pan updated, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command; something
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add wow wow (_PARAMETER_), that's a cool (_PARAMETER_)
+send hortbot #foobar [HB] command wow added, restricted to subscribers and above
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar
+send hortbot #foobar [HB] wow foo bar, that's a cool
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar ; somethingrather
+send hortbot #foobar [HB] wow foo bar, that's a cool somethingrather
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar ; somethingrather ;    
+send hortbot #foobar [HB] wow foo bar, that's a cool somethingrather

@@ -296,6 +296,8 @@ func tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
 	}
 
 	s.CommandParams = params
+	s.OrigCommandParams = params
+
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
 	command, err := models.SimpleCommands(
@@ -344,23 +346,4 @@ func tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
 
 	err = s.Reply(response)
 	return true, err
-}
-
-func tryBuiltinCommand(ctx context.Context, s *Session, name string, params string) (bool, error) {
-	builtin := name == "builtin"
-	if builtin {
-		name, params = splitSpace(params)
-		name = strings.ToLower(name)
-	}
-
-	if bc, ok := builtinCommands[name]; ok {
-		err := bc.run(ctx, s, name, params)
-		if err != nil && err != errNotAuthorized {
-			logger := ctxlog.FromContext(ctx)
-			logger.Debug("error in builtin command", zap.Error(err))
-		}
-		return true, err
-	}
-
-	return builtin, nil
 }
