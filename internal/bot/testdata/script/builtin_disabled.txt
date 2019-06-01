@@ -1,6 +1,6 @@
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
 send_any
-notify_channel_update hortbot
+notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_disabled
 
