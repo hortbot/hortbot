@@ -129,6 +129,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] `extralifeid`
     - [ ] `urban`
     - [x] ~~`gamertag`~~
+    - [x] `bullet`
     - [ ] `subsRegsMinusLinks`
     - [ ] `cooldown`
     - [x] ~~`throw~~
