@@ -6,7 +6,7 @@ handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix !
 notify_channel_update hortbot
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!prefix +
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
 send hortbot #foobar [HB] prefix changed to +
 
 

@@ -11,6 +11,26 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
+var builtinSettings builtinMap = map[string]builtinCommand{
+	"prefix": {fn: cmdPrefix, minLevel: LevelBroadcaster},
+	"bullet": {fn: cmdBullet, minLevel: LevelBroadcaster},
+}
+
+func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error {
+	subcommand, args := splitSpace(args)
+
+	if subcommand == "" {
+		return s.ReplyUsage(cmd + " <setting> <value>")
+	}
+
+	ok, err := builtinSettings.run(ctx, s, subcommand, args)
+	if !ok {
+		return s.Replyf("no such setting %s", subcommand)
+	}
+
+	return err
+}
+
 func cmdBullet(ctx context.Context, s *Session, cmd string, args string) error {
 	args = strings.TrimSpace(args)
 

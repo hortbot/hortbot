@@ -34,3 +34,5 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd st
 func TestingAction(fn func(ctx context.Context, action string) (string, error, bool)) {
 	testingAction = fn
 }
+
+var ErrBuiltinDisabled = errBuiltinDisabled

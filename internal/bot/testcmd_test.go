@@ -50,4 +50,11 @@ func init() {
 		},
 		bot.LevelEveryone,
 	)
+
+	bot.TestingBuiltin("testing_disabled",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			return bot.ErrBuiltinDisabled
+		},
+		bot.LevelEveryone,
+	)
 }
