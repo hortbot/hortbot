@@ -3,9 +3,8 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
-	cloud.google.com/go v0.39.0 // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
-	github.com/aws/aws-sdk-go v1.19.39 // indirect
+	github.com/aws/aws-sdk-go v1.19.41 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.1
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
@@ -24,13 +23,13 @@ require (
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190507143103-cc8cbe209b64 // indirect
 	github.com/fortytw2/leaktest v1.3.0
+	github.com/fsouza/fake-gcs-server v1.8.0 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.3
 	github.com/gocql/gocql v0.0.0-20190523124812-0680bfb96414 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.3.1
 	github.com/google/go-cmp v0.3.0
-	github.com/gorilla/mux v1.7.2 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
 	github.com/jackc/pgx v3.4.0+incompatible // indirect
@@ -60,14 +59,15 @@ require (
 	github.com/volatiletech/sqlboiler v3.4.0+incompatible
 	github.com/xanzy/go-gitlab v0.18.0 // indirect
 	go.mongodb.org/mongo-driver v1.0.2 // indirect
+	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/crypto v0.0.0-20190513172903-22d7a77e9e5f // indirect
+	golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 // indirect
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190528183647-3626398d7749 // indirect
-	golang.org/x/tools v0.0.0-20190529010454-aa71c3f32488
+	golang.org/x/sys v0.0.0-20190531175056-4c3a928424d2 // indirect
+	golang.org/x/tools v0.0.0-20190531223538-26e35f15edef
 	google.golang.org/appengine v1.6.0 // indirect
-	google.golang.org/genproto v0.0.0-20190522204451-c2c4e71fbf69 // indirect
+	google.golang.org/genproto v0.0.0-20190530194941-fb225487d101 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
 	mvdan.cc/xurls/v2 v2.0.0
