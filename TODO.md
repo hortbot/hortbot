@@ -117,6 +117,30 @@ Some features are not currently planned to be ported and have been crossed out.
 - [x] ~~Raids~~ Twitch does this better now
 - [ ] Settings
     - Lots of settings here related to other items.
+    - [x] ~~`topic`~~
+    - [ ] `parseYoutube`
+    - [ ] `shouldModerate`
+    - [ ] `roll`
+        - [ ] `timeoutoncriticalfail`
+        - [ ] `default`
+        - [ ] `cooldown`
+        - [ ] `userlevel`
+    - [x] ~~`songrequest`~~
+    - [ ] `extralifeid`
+    - [ ] `urban`
+    - [x] ~~`gamertag`~~
+    - [ ] `subsRegsMinusLinks`
+    - [ ] `cooldown`
+    - [x] ~~`throw~~
+    - [ ] `lastfm`
+    - [ ] `steam`
+    - [ ] `mode`
+    - [x] ~~`commerciallength`~~
+    - [ ] `tweet`
+    - [x] `prefix`
+    - [ ] `emoteset`
+    - [ ] `subscriberalerts`
+    - [ ] `resubalerts`
 - [x] User levels
     - [x] Add/remove reg/mod/owner
     - [x] List
