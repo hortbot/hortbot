@@ -7,9 +7,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/x/errgroupx"
 	"github.com/jakebailey/irc"
 	"gotest.tools/assert"
+	"gotest.tools/assert/cmp"
 )
 
 const DefaultSleepDur = 50 * time.Millisecond
@@ -77,7 +79,7 @@ func (h *Helper) CollectFromChannel(ch <-chan *irc.Message) *[]*irc.Message {
 
 func (h *Helper) CollectFromServer() *[]*irc.Message {
 	h.t.Helper()
-	return h.CollectFromChannel(h.s.Incoming())
+	return h.CollectFromChannel(h.ServerMessages())
 }
 
 func (h *Helper) CollectFromConn(conn irc.Decoder) *[]*irc.Message {
@@ -109,11 +111,7 @@ func (h *Helper) ServerMessages() <-chan *irc.Message {
 
 func (h *Helper) StopServer() {
 	h.t.Helper()
-
-	h.stopOnce.Do(func() {
-		h.t.Helper()
-		assert.NilError(h.t, h.s.Stop())
-	})
+	h.StopServerErr() //nolint:errcheck
 }
 
 func (h *Helper) StopServerErr() (err error) {
@@ -173,13 +171,5 @@ func (h *Helper) AssertMessages(gotP *[]*irc.Message, want ...*irc.Message) {
 
 	got := *gotP
 
-	if want == nil {
-		want = []*irc.Message{}
-	}
-
-	if got == nil {
-		got = []*irc.Message{}
-	}
-
-	assert.DeepEqual(h.t, want, got)
+	assert.Check(h.t, cmp.DeepEqual(want, got, cmpopts.EquateEmpty()))
 }
