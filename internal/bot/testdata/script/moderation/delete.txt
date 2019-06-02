@@ -1,0 +1,4 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=a0596cf0-f613-4cec-87a5-372807e85cb3;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_delete
+send hortbot #foobar /delete a0596cf0-f613-4cec-87a5-372807e85cb3

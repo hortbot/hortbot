@@ -1,0 +1,20 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+p
+send hortbot #foobar [HB] usage: +p <user>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :++p
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-p
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+p random
+send hortbot #foobar /timeout random 1
+send hortbot #foobar [HB] random's chat history has been purged
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+p someone
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+p someone
+no_send

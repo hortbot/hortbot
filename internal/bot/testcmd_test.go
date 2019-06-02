@@ -78,4 +78,18 @@ func init() {
 		},
 		bot.LevelEveryone,
 	)
+
+	bot.TestingBuiltin("testing_bad_command",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			return s.SendCommand("fake")
+		},
+		bot.LevelEveryone,
+	)
+
+	bot.TestingBuiltin("testing_delete",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			return s.DeleteMessage()
+		},
+		bot.LevelEveryone,
+	)
 }

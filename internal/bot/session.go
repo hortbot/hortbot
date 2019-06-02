@@ -154,3 +154,37 @@ func (s *Session) IsInCooldown() bool {
 
 	return seconds < float64(cooldown)
 }
+
+func (s *Session) SendCommand(command string, args ...string) error {
+	switch command {
+	case "slow":
+	case "slowoff":
+	case "subscribers":
+	case "subscribersoff":
+	case "r9kbeta":
+	case "r9kbetaoff":
+	case "ban":
+	case "unban":
+	case "timeout":
+	case "untimeout":
+	case "me":
+	case "delete":
+	default:
+		panic("attempt to use IRC command " + command)
+	}
+
+	var builder strings.Builder
+	builder.WriteByte('/')
+	builder.WriteString(command)
+
+	for _, arg := range args {
+		builder.WriteByte(' ')
+		builder.WriteString(arg)
+	}
+
+	return s.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, builder.String())
+}
+
+func (s *Session) DeleteMessage() error {
+	return s.SendCommand("delete", s.ID)
+}

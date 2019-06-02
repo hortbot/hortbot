@@ -1,0 +1,17 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+b
+send hortbot #foobar [HB] usage: +b <user>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :++b
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+b random
+send hortbot #foobar /ban random
+send hortbot #foobar [HB] random has been banned
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+b someone
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+b someone
+no_send
