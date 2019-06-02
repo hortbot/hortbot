@@ -69,6 +69,11 @@ func TestServerBroadcast(t *testing.T) {
 	}
 
 	h.SendToServer(ctx, m)
+
+	// This is flaky; not sure why.
+	h.Sleep()
+	h.Sleep()
+	h.Sleep()
 	h.Sleep()
 	h.Sleep()
 
