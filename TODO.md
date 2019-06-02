@@ -52,7 +52,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Is live (*Twitch API*)
     - [x] ~~Is here~~ (Requires persisting twitch membership messages)
 - [ ] Custom Commands
-    - [ ] Cooldowns
+    - [x] Cooldowns
     - [x] Add
     - [x] Delete
     - [x] Restrict
@@ -131,7 +131,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~`gamertag`~~
     - [x] `bullet`
     - [ ] `subsRegsMinusLinks`
-    - [ ] `cooldown`
+    - [x] `cooldown`
     - [x] ~~`throw~~
     - [ ] `lastfm`
     - [ ] `steam`
