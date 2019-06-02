@@ -246,25 +246,15 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 	assert.Assert(t, st.b == nil, "bot has already been created, cannot configure")
 
 	var bcj struct {
-		Prefix           string
-		Bullet           string
-		Cooldown         int
-		Admins           []string
-		WhitelistEnabled bool
-		Whitelist        []string
+		*bot.Config
 
 		Dedupe string
 		Clock  string
 	}
 
-	assert.NilError(t, json.Unmarshal([]byte(args), &bcj), "line %d", lineNum)
+	bcj.Config = &st.bc
 
-	st.bc.Prefix = bcj.Prefix
-	st.bc.Bullet = bcj.Bullet
-	st.bc.Cooldown = bcj.Cooldown
-	st.bc.Admins = bcj.Admins
-	st.bc.WhitelistEnabled = bcj.WhitelistEnabled
-	st.bc.Whitelist = bcj.Whitelist
+	assert.NilError(t, json.Unmarshal([]byte(args), &bcj), "line %d", lineNum)
 
 	switch bcj.Dedupe {
 	case "", "never":
