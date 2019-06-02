@@ -16,6 +16,7 @@ var allTables = []string{
 	"schema_migrations",
 	"channels",
 	"simple_commands",
+	"quotes",
 }
 
 func TestUp(t *testing.T) {
