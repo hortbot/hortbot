@@ -132,7 +132,7 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 		}
 	}
 
-	g.Go(c.reciever)
+	g.Go(c.receiver)
 	g.Go(c.sender)
 	g.Go(func(ctx context.Context) error {
 		<-ctx.Done()
@@ -189,7 +189,7 @@ func (c *Connection) Incoming() <-chan *irc.Message {
 	return c.recvChan
 }
 
-func (c *Connection) reciever(ctx context.Context) error {
+func (c *Connection) receiver(ctx context.Context) error {
 	defer close(c.recvChan)
 
 	logger := ctxlog.FromContext(ctx)

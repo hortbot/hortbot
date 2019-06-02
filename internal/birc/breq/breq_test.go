@@ -68,8 +68,8 @@ func TestSend(t *testing.T) {
 	}{
 		{"Cancel during send", false, false},
 		{"Stop during send", false, true},
-		{"Cancel during err recieve", true, false},
-		{"Stop during err recieve", true, true},
+		{"Cancel during err receive", true, false},
+		{"Stop during err receive", true, true},
 	}
 
 	for _, test := range cancelTests {
@@ -224,8 +224,8 @@ func TestJoinPart(t *testing.T) {
 	}{
 		{"Cancel during send", false, false},
 		{"Stop during send", false, true},
-		{"Cancel during err recieve", true, false},
-		{"Stop during err recieve", true, true},
+		{"Cancel during err receive", true, false},
+		{"Stop during err receive", true, true},
 	}
 
 	for _, test := range cancelTests {
@@ -330,8 +330,8 @@ func TestSyncJoined(t *testing.T) {
 	}{
 		{"Cancel during send", false, false},
 		{"Stop during send", false, true},
-		{"Cancel during err recieve", true, false},
-		{"Stop during err recieve", true, true},
+		{"Cancel during err receive", true, false},
+		{"Stop during err receive", true, true},
 	}
 
 	for _, test := range cancelTests {
