@@ -5,8 +5,10 @@ package models
 
 var TableNames = struct {
 	Channels       string
+	Quotes         string
 	SimpleCommands string
 }{
 	Channels:       "channels",
+	Quotes:         "quotes",
 	SimpleCommands: "simple_commands",
 }

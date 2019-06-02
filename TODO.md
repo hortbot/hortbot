@@ -86,13 +86,14 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Urban
     - [ ] Me
     - [x] ~~Race~~
-- [ ] Quotes
-    - [ ] Add
-    - [ ] Delete
-    - [ ] Get
-    - [ ] Get index
-    - [ ] Random
-    - [ ] Search
+- [x] Quotes
+    - [x] Add
+    - [x] Delete
+    - [x] Get
+    - [x] Get index
+    - [x] Random
+    - [x] Search
+    - [ ] CoeBot would delete a quote and shift quotes after it backwards; HortBot doesn't. There needs to be a command to emulate this behavior.
 - [x] ~~Poll~~
 - [x] ~~Giveaways~~
 - [ ] Raffles

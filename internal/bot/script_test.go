@@ -399,7 +399,7 @@ func (st *scriptTester) sendMatch(t *testing.T, args string) {
 		origin, target, message := st.sender.SendMessageArgsForCall(callNum)
 		assert.Equal(t, origin, sent[0], "line %d", lineNum)
 		assert.Equal(t, target, sent[1], "line %d", lineNum)
-		assert.Assert(t, pattern.MatchString(message), "line %d", lineNum)
+		assert.Assert(t, pattern.MatchString(message), "pattern=`%s`, message=`%s`: line %d", pattern, message, lineNum)
 	})
 
 	st.needNoSend = false

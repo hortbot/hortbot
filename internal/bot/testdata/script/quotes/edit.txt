@@ -1,0 +1,31 @@
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send_any
+notify_channel_updates hortbot
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
+send hortbot #foobar [HB] "This is a test." added, this is quote #1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote get 1
+send hortbot #foobar [HB] Quote #1: "This is a test."
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1 "This is a testerino."
+send hortbot #foobar [HB] Quote #1 edited.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote get 1
+send hortbot #foobar [HB] Quote #1: "This is a testerino."
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit
+send hortbot #foobar [HB] usage: !quote edit <index> <quote>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1
+send hortbot #foobar [HB] usage: !quote edit <index> <quote>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit 2 "foobar"
+send hortbot #foobar [HB] Quote #2 does not exist.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1 something
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1 something
+no_send

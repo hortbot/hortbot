@@ -18,6 +18,7 @@ var builtinSettings builtinMap = map[string]builtinCommand{
 
 func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
+	subcommand = strings.ToLower(subcommand)
 
 	if subcommand == "" {
 		return s.ReplyUsage(cmd + " <setting> <value>")

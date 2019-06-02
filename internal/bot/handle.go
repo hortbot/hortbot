@@ -266,7 +266,7 @@ func handleSession(ctx context.Context, s *Session) error {
 		return nil
 	}
 
-	wasCommand, err := tryCommand(ctx, s, s.Message)
+	wasCommand, err := tryCommand(ctx, s)
 	if wasCommand {
 		s.Channel.LastCommandAt = s.Clock.Now()
 		if uerr := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.LastCommandAt)); uerr != nil {
@@ -276,7 +276,12 @@ func handleSession(ctx context.Context, s *Session) error {
 			}
 		}
 
-		return err
+		switch err {
+		case errNotAuthorized, errBuiltinDisabled:
+			// Do nothing.
+		default:
+			return err
+		}
 	}
 
 	// TODO: autoreplies
@@ -284,7 +289,7 @@ func handleSession(ctx context.Context, s *Session) error {
 	return nil
 }
 
-func tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
+func tryCommand(ctx context.Context, s *Session) (bool, error) {
 	if s.Me {
 		return false, nil
 	}
@@ -292,6 +297,7 @@ func tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
 	tx := s.Tx
 	channel := s.Channel
 	prefix := channel.Prefix
+	message := s.Message
 
 	if !strings.HasPrefix(message, prefix) {
 		return false, nil

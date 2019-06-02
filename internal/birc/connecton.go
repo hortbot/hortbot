@@ -198,7 +198,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 		m := &irc.Message{}
 		if err := c.conn.Decode(m); err != nil {
 			if pe, ok := err.(*irc.ParseError); ok {
-				logger.Warn("recieved bad message from IRC server, ignoring", zap.Error(pe))
+				logger.Warn("received bad message from IRC server, ignoring", zap.Error(pe))
 				continue
 			}
 			return err

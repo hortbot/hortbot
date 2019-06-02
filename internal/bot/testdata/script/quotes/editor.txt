@@ -1,0 +1,37 @@
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send_any
+notify_channel_updates hortbot
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
+send hortbot #foobar [HB] "This is a test." added, this is quote #1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+send hortbot #foobar [HB] Quote #1 was last edited by foobar
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1 "This is a testerino."
+send hortbot #foobar [HB] Quote #1 edited.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+send hortbot #foobar [HB] Quote #1 was last edited by random
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 0
+send hortbot #foobar [HB] Quote #0 does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor -1
+send hortbot #foobar [HB] Quote #-1 does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 2
+send hortbot #foobar [HB] Quote #2 does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor
+send hortbot #foobar [HB] usage: !quote editor <index>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor asd
+send hortbot #foobar [HB] usage: !quote editor <index>
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=4 :random2!random2@random2.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=4;subscriber=1 :random2!random2@random2.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+send hortbot #foobar [HB] Quote #1 was last edited by random

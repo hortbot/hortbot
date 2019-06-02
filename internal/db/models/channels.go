@@ -232,13 +232,16 @@ var ChannelWhere = struct {
 
 // ChannelRels is where relationship names are stored.
 var ChannelRels = struct {
+	Quotes         string
 	SimpleCommands string
 }{
+	Quotes:         "Quotes",
 	SimpleCommands: "SimpleCommands",
 }
 
 // channelR is where relationships are stored.
 type channelR struct {
+	Quotes         QuoteSlice
 	SimpleCommands SimpleCommandSlice
 }
 
@@ -348,6 +351,27 @@ func (q channelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 	return count > 0, nil
 }
 
+// Quotes retrieves all the quote's Quotes with an executor.
+func (o *Channel) Quotes(mods ...qm.QueryMod) quoteQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"quotes\".\"channel_id\"=?", o.ID),
+	)
+
+	query := Quotes(queryMods...)
+	queries.SetFrom(query.Query, "\"quotes\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"quotes\".*"})
+	}
+
+	return query
+}
+
 // SimpleCommands retrieves all the simple_command's SimpleCommands with an executor.
 func (o *Channel) SimpleCommands(mods ...qm.QueryMod) simpleCommandQuery {
 	var queryMods []qm.QueryMod
@@ -367,6 +391,94 @@ func (o *Channel) SimpleCommands(mods ...qm.QueryMod) simpleCommandQuery {
 	}
 
 	return query
+}
+
+// LoadQuotes allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadQuotes(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`quotes`), qm.WhereIn(`channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load quotes")
+	}
+
+	var resultSlice []*Quote
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice quotes")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on quotes")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for quotes")
+	}
+
+	if singular {
+		object.R.Quotes = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &quoteR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.Quotes = append(local.R.Quotes, foreign)
+				if foreign.R == nil {
+					foreign.R = &quoteR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
 }
 
 // LoadSimpleCommands allows an eager lookup of values, cached into the
@@ -454,6 +566,59 @@ func (channelL) LoadSimpleCommands(ctx context.Context, e boil.ContextExecutor, 
 		}
 	}
 
+	return nil
+}
+
+// AddQuotes adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.Quotes.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddQuotes(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Quote) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"quotes\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, quotePrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			Quotes: related,
+		}
+	} else {
+		o.R.Quotes = append(o.R.Quotes, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &quoteR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
 	return nil
 }
 
