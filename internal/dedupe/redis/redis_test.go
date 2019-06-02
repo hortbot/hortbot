@@ -72,6 +72,21 @@ func TestMarkThenCheck(t *testing.T) {
 	assert.NilError(t, err)
 }
 
+func TestMarkMarkThenCheck(t *testing.T) {
+	t.Parallel()
+
+	id := getNextID()
+
+	d, err := redis.New(client, time.Second)
+	assert.NilError(t, err)
+
+	assert.NilError(t, d.Mark(id))
+	assert.NilError(t, d.Mark(id))
+	seen, err := d.Check(id)
+	assert.Assert(t, seen)
+	assert.NilError(t, err)
+}
+
 func TestCheckAndMark(t *testing.T) {
 	t.Parallel()
 
@@ -131,4 +146,18 @@ func TestShortExpiry(t *testing.T) {
 	d, err := redis.New(nil, time.Millisecond)
 	assert.Assert(t, d == nil)
 	assert.Assert(t, err == redis.ErrExpiryTooShort)
+}
+
+func TestBadCheckScript(t *testing.T) {
+	defer redis.ReplaceCheck("local")()
+
+	_, err := redis.New(client, time.Second)
+	assert.ErrorContains(t, err, "Error compiling script")
+}
+
+func TestBadCheckAndMarkScript(t *testing.T) {
+	defer redis.ReplaceCheckAndMark("local")()
+
+	_, err := redis.New(client, time.Second)
+	assert.ErrorContains(t, err, "Error compiling script")
 }

@@ -52,11 +52,7 @@ func New(r redis.Cmdable, expiry time.Duration) (*Dedupe, error) {
 var _ dedupe.Deduplicator = (*Dedupe)(nil)
 
 func (d *Dedupe) Mark(id string) error {
-	err := d.r.Set(id, "1", d.expiry).Err()
-	if err == redis.Nil {
-		return nil
-	}
-	return err
+	return d.r.Set(id, "1", d.expiry).Err()
 }
 
 func (d *Dedupe) Check(id string) (seen bool, err error) {
@@ -73,9 +69,5 @@ func (d *Dedupe) runScript(s *redis.Script, id string) (bool, error) {
 		err = nil
 	}
 
-	if err != nil {
-		return false, err
-	}
-
-	return b, nil
+	return b, err
 }
