@@ -5,10 +5,12 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -195,6 +197,9 @@ func (st *scriptTester) test(t *testing.T) {
 
 		case "clock_set":
 			st.clockSet(t, args)
+
+		case "join":
+			st.join(t, args)
 
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
@@ -482,4 +487,37 @@ func (st *scriptTester) clockSet(t *testing.T, args string) {
 	st.addAction(func(ctx context.Context) {
 		st.clock.Set(tm)
 	})
+}
+
+func (st *scriptTester) join(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var botName string
+	var botID int
+	var userName string
+	var userID int
+
+	n, err := fmt.Sscanf(args, "%s %d %s %d", &botName, &botID, &userName, &userID)
+	assert.NilError(t, err, "line %d", lineNum)
+	assert.Equal(t, n, 4)
+
+	m := &irc.Message{
+		Tags: map[string]string{
+			"id":      uuid.Must(uuid.NewV4()).String(),
+			"room-id": strconv.Itoa(botID),
+			"user-id": strconv.Itoa(userID),
+		},
+		Prefix: irc.Prefix{
+			Name: userName,
+			User: userName,
+			Host: userName + ".tmi.twitch.tv",
+		},
+		Command:  "PRIVMSG",
+		Params:   []string{"#" + botName},
+		Trailing: "!join",
+	}
+
+	st.handleM(t, botName, m)
+	st.sendAny(t)
+	st.notifyChannelUpdates(t, botName)
 }

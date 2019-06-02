@@ -3,6 +3,7 @@ package bot_test
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/hortbot/hortbot/internal/bot"
 )
@@ -54,6 +55,26 @@ func init() {
 	bot.TestingBuiltin("testing_disabled",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return bot.ErrBuiltinDisabled
+		},
+		bot.LevelEveryone,
+	)
+
+	bot.TestingBuiltin("testing_links",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			var builder strings.Builder
+			builder.WriteString("links: ")
+
+			last := len(s.Links) - 1
+
+			for i, link := range s.Links {
+				builder.WriteString(link.String())
+
+				if i != last {
+					builder.WriteByte(' ')
+				}
+			}
+
+			return s.Reply(builder.String())
 		},
 		bot.LevelEveryone,
 	)

@@ -16,9 +16,9 @@ import (
 	"github.com/jakebailey/irc"
 )
 
-const botName = "hortbot"
-
 func BenchmarkSimpleCommand(b *testing.B) {
+	const botName = "hortbot"
+
 	db, undb := freshDB(b)
 	defer undb()
 
@@ -64,6 +64,8 @@ func BenchmarkSimpleCommand(b *testing.B) {
 }
 
 func BenchmarkNop(b *testing.B) {
+	const botName = "hortbot"
+
 	db, undb := freshDB(b)
 	defer undb()
 

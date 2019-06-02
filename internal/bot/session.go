@@ -3,6 +3,7 @@ package bot
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
 	"strings"
 	"time"
 
@@ -14,6 +15,12 @@ import (
 type Session struct {
 	Origin string
 	M      *irc.Message
+
+	Bot      *Bot
+	Tx       *sql.Tx
+	Sender   Sender
+	Notifier Notifier
+	Clock    clock.Clock
 
 	Start   time.Time
 	TMISent time.Time
@@ -30,11 +37,7 @@ type Session struct {
 	UserLevel   AccessLevel
 	Ignored     bool
 
-	Bot      *Bot
-	Tx       *sql.Tx
-	Sender   Sender
-	Notifier Notifier
-	Clock    clock.Clock
+	Links []*url.URL
 
 	Channel *models.Channel
 
