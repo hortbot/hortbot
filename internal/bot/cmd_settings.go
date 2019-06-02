@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"strconv"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -10,8 +11,9 @@ import (
 )
 
 var builtinSettings builtinMap = map[string]builtinCommand{
-	"prefix": {fn: cmdPrefix, minLevel: LevelBroadcaster},
-	"bullet": {fn: cmdBullet, minLevel: LevelBroadcaster},
+	"prefix":   {fn: cmdPrefix, minLevel: LevelBroadcaster},
+	"bullet":   {fn: cmdBullet, minLevel: LevelBroadcaster},
+	"cooldown": {fn: cmdCooldown, minLevel: LevelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error {
@@ -96,4 +98,40 @@ func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 	}
 
 	return s.Replyf("prefix changed to %s", args)
+}
+
+func cmdCooldown(ctx context.Context, s *Session, cmd string, args string) error {
+	args = strings.TrimSpace(args)
+
+	var cooldown null.Int
+
+	if args == "" {
+		cooldown = s.Channel.Cooldown
+		if cooldown.Valid {
+			return s.Replyf("cooldown is %ds", s.Channel.Cooldown.Int)
+		}
+		return s.Replyf("cooldown is %ds (default)", s.Bot.cooldown)
+	}
+
+	reset := strings.EqualFold(args, "reset")
+
+	if !reset {
+		v, err := strconv.Atoi(args)
+		if err != nil {
+			return s.Reply("new cooldown must be an integer")
+		}
+		cooldown = null.IntFrom(v)
+	}
+
+	s.Channel.Cooldown = cooldown
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Cooldown)); err != nil {
+		return err
+	}
+
+	if reset {
+		return s.Replyf("cooldown reset to %ds (default)", cooldown.Int)
+	}
+
+	return s.Replyf("cooldown changed to %ds", cooldown.Int)
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/jakebailey/irc"
+	"github.com/leononame/clock"
 )
 
 type Session struct {
@@ -33,6 +34,7 @@ type Session struct {
 	Tx       *sql.Tx
 	Sender   Sender
 	Notifier Notifier
+	Clock    clock.Clock
 
 	Channel *models.Channel
 
@@ -133,4 +135,15 @@ func (s *Session) parseUserLevel() AccessLevel {
 
 func (s *Session) IsAdmin() bool {
 	return s.UserLevel.CanAccess(LevelAdmin)
+}
+
+func (s *Session) IsInCooldown() bool {
+	seconds := s.Clock.Since(s.Channel.LastCommandAt).Seconds()
+	cooldown := s.Bot.cooldown
+
+	if s.Channel.Cooldown.Valid {
+		cooldown = s.Channel.Cooldown.Int
+	}
+
+	return seconds < float64(cooldown)
 }

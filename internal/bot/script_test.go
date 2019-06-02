@@ -24,6 +24,7 @@ import (
 	dedupemem "github.com/hortbot/hortbot/internal/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/testutil"
 	"github.com/jakebailey/irc"
+	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
 	"gotest.tools/assert"
 )
@@ -58,6 +59,7 @@ type scriptTester struct {
 	db       *sql.DB
 	sender   *botfakes.FakeSender
 	notifier *botfakes.FakeNotifier
+	clock    *clock.Mock
 
 	bc bot.Config
 	b  *bot.Bot
@@ -100,6 +102,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.counts = make(map[string]int)
 	st.sender = &botfakes.FakeSender{}
 	st.notifier = &botfakes.FakeNotifier{}
+	st.clock = clock.NewMock()
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -187,6 +190,12 @@ func (st *scriptTester) test(t *testing.T) {
 		case "no_notify_channel_updates":
 			st.noNotifyChannelUpdates(t)
 
+		case "clock_forward":
+			st.clockForward(t, args)
+
+		case "clock_set":
+			st.clockSet(t, args)
+
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
 		}
@@ -239,16 +248,20 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 	var bcj struct {
 		Prefix           string
 		Bullet           string
-		Dedupe           string
+		Cooldown         int
 		Admins           []string
 		WhitelistEnabled bool
 		Whitelist        []string
+
+		Dedupe string
+		Clock  string
 	}
 
 	assert.NilError(t, json.Unmarshal([]byte(args), &bcj), "line %d", lineNum)
 
 	st.bc.Prefix = bcj.Prefix
 	st.bc.Bullet = bcj.Bullet
+	st.bc.Cooldown = bcj.Cooldown
 	st.bc.Admins = bcj.Admins
 	st.bc.WhitelistEnabled = bcj.WhitelistEnabled
 	st.bc.Whitelist = bcj.Whitelist
@@ -263,7 +276,18 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 		st.bc.Dedupe = d
 
 	default:
-		t.Fatalf("line %d: unknown dedupe type %s", st.lineNum, bcj.Dedupe)
+		t.Fatalf("line %d: unknown dedupe type %s", lineNum, bcj.Dedupe)
+	}
+
+	switch bcj.Clock {
+	case "", "real":
+		st.bc.Clock = clock.New()
+
+	case "mock":
+		st.bc.Clock = st.clock
+
+	default:
+		t.Fatalf("line %d: unknown clock type %s", lineNum, bcj.Clock)
 	}
 }
 
@@ -293,11 +317,11 @@ func (st *scriptTester) handle(t *testing.T, directiveArgs string, me bool) {
 	lineNum := st.lineNum
 
 	if st.needNoSend {
-		// noSend(lineNum)
+		st.noSend(t)
 	}
 
 	if st.needNoNotifyChannelUpdates {
-		// noNotify(lineNum)
+		st.noNotifyChannelUpdates(t)
 	}
 
 	st.needNoSend = true
@@ -406,6 +430,8 @@ func (st *scriptTester) sendAny(t *testing.T) {
 	st.addAction(func(context.Context) {
 		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
 	})
+
+	st.needNoSend = false
 }
 
 func (st *scriptTester) notifyChannelUpdates(t *testing.T, expected string) {
@@ -437,4 +463,33 @@ func (st *scriptTester) noNotifyChannelUpdates(t *testing.T) {
 	})
 
 	st.needNoNotifyChannelUpdates = false
+}
+
+func (st *scriptTester) clockForward(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	dur, err := time.ParseDuration(args)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.clock.Forward(dur)
+	})
+}
+
+func (st *scriptTester) clockSet(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var tm time.Time
+
+	if args == "now" {
+		tm = time.Now()
+	} else {
+		var err error
+		tm, err = time.Parse(time.RFC3339, args)
+		assert.NilError(t, err, "line %d", lineNum)
+	}
+
+	st.addAction(func(ctx context.Context) {
+		st.clock.Set(tm)
+	})
 }

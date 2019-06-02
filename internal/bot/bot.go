@@ -4,6 +4,7 @@ import (
 	"database/sql"
 
 	"github.com/hortbot/hortbot/internal/dedupe"
+	"github.com/leononame/clock"
 )
 
 const (
@@ -16,9 +17,11 @@ type Config struct {
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
+	Clock    clock.Clock
 
-	Prefix string
-	Bullet string
+	Prefix   string
+	Bullet   string
+	Cooldown int
 
 	Admins []string
 
@@ -31,9 +34,11 @@ type Bot struct {
 	dedupe   dedupe.Deduplicator
 	sender   Sender
 	notifier Notifier
+	clock    clock.Clock
 
-	prefix string
-	bullet string
+	prefix   string
+	bullet   string
+	cooldown int
 
 	admins    map[string]bool
 	whitelist map[string]bool
@@ -61,6 +66,7 @@ func New(config *Config) *Bot {
 		notifier: config.Notifier,
 		prefix:   config.Prefix,
 		bullet:   config.Bullet,
+		cooldown: config.Cooldown,
 		admins:   make(map[string]bool),
 	}
 
@@ -70,6 +76,12 @@ func New(config *Config) *Bot {
 
 	if b.prefix == "" {
 		b.prefix = DefaultPrefix
+	}
+
+	if config.Clock != nil {
+		b.clock = config.Clock
+	} else {
+		b.clock = clock.New()
 	}
 
 	if isTesting {

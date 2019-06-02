@@ -22,6 +22,7 @@ func init() {
 		"command":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"coemand":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"set":         {fn: cmdSettings, minLevel: LevelModerator},
+		"setting":     {fn: cmdSettings, minLevel: LevelModerator},
 		"owner":       {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
 		"mod":         {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
 		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},

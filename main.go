@@ -34,8 +34,12 @@ var args = struct {
 	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
 	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
 
+	DefaultCooldown int `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
+
 	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-}{}
+}{
+	DefaultCooldown: 5,
+}
 
 func main() {
 	ctx := withSignalCancel(context.Background(), os.Interrupt)
@@ -105,6 +109,7 @@ func main() {
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,
+		Cooldown:         args.DefaultCooldown,
 	}
 
 	b := bot.New(bc)
@@ -119,11 +124,13 @@ func main() {
 			case <-ctx.Done():
 				return ctx.Err()
 
-			case m := <-inc:
-				g.Go(func(ctx context.Context) error {
-					b.Handle(ctx, args.Nick, m)
+			case m, ok := <-inc:
+				if !ok {
 					return nil
-				})
+				}
+
+				// TODO: Do this in g.Go once there is a channel lock.
+				b.Handle(ctx, args.Nick, m)
 			}
 		}
 	})

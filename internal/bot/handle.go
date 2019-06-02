@@ -48,7 +48,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return errNilMessage
 	}
 
-	start := time.Now()
+	start := b.clock.Now()
 
 	if m.Command != "PRIVMSG" {
 		// TODO: handle other types of messages
@@ -130,6 +130,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		Bot:      b,
 		Sender:   b.sender,
 		Notifier: b.notifier,
+		Clock:    b.clock,
 	}
 
 	if displayName := m.Tags["display-name"]; displayName != "" {
@@ -199,7 +200,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	err = transact(b.db, func(tx *sql.Tx) error {
 		s.Tx = tx
-		return b.handleSession(ctx, s)
+		return handleSession(ctx, s)
 	})
 
 	if err != nil {
@@ -209,7 +210,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	return err
 }
 
-func (b *Bot) handleSession(ctx context.Context, s *Session) error {
+func handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
 	s.UserLevel = s.parseUserLevel()
@@ -267,6 +268,14 @@ func (b *Bot) handleSession(ctx context.Context, s *Session) error {
 
 	wasCommand, err := tryCommand(ctx, s, s.Message)
 	if wasCommand {
+		s.Channel.LastCommandAt = s.Clock.Now()
+		if uerr := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.LastCommandAt)); uerr != nil {
+			logger.Error("error while updating last command timestamp", zap.Error(uerr))
+			if err == nil {
+				return uerr
+			}
+		}
+
 		return err
 	}
 
@@ -292,6 +301,10 @@ func tryCommand(ctx context.Context, s *Session, message string) (bool, error) {
 	commandName = strings.ToLower(commandName)
 
 	if commandName == "" {
+		return false, nil
+	}
+
+	if !s.UserLevel.CanAccess(LevelModerator) && s.IsInCooldown() {
 		return false, nil
 	}
 

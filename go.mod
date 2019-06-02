@@ -37,6 +37,7 @@ require (
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
 	github.com/kshvakov/clickhouse v1.3.6 // indirect
+	github.com/leononame/clock v0.1.5
 	github.com/lib/pq v1.1.1
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.0.2
