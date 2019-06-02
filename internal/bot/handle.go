@@ -213,7 +213,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 func handleSession(ctx context.Context, s *Session) error {
 	logger := ctxlog.FromContext(ctx)
 
-	s.UserLevel = s.parseUserLevel()
+	s.SetUserLevel()
 
 	if s.Origin == s.IRCChannel {
 		return handleManagement(ctx, s)
@@ -247,7 +247,7 @@ func handleSession(ctx context.Context, s *Session) error {
 	}
 
 	s.Channel = channel
-	s.UserLevel = s.parseUserLevel()
+	s.SetUserLevel()
 
 	_, ignored := stringSliceIndex(channel.Ignored, s.User)
 

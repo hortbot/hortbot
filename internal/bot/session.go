@@ -74,6 +74,10 @@ func (s *Session) ReplyUsage(usage string) error {
 	return s.Replyf("usage: %s%s", s.Channel.Prefix, usage)
 }
 
+func (s *Session) SetUserLevel() {
+	s.UserLevel = s.parseUserLevel()
+}
+
 func (s *Session) parseUserLevel() AccessLevel {
 	if s.Bot.admins[s.User] {
 		return LevelAdmin
