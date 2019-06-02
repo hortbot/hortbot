@@ -95,3 +95,24 @@ func tableNames(t *testing.T, db *sql.DB) []string {
 
 	return names
 }
+
+func TestBadConnStr(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		fn   func(connStr string, logger func(format string, v ...interface{})) error
+	}{
+		{name: "Up", fn: migrations.Up},
+		{name: "Down", fn: migrations.Down},
+		{name: "Reset", fn: migrations.Reset},
+	}
+
+	for _, test := range tests {
+		test := test
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			assert.ErrorContains(t, test.fn(":", t.Logf), "connection info string")
+		})
+	}
+}
