@@ -180,6 +180,11 @@ func TestConnectionJoinPart(t *testing.T) {
 		assert.Assert(t, conn.IsJoined("#foobar"))
 		assert.DeepEqual(t, []string{"#foobar"}, conn.Joined())
 
+		assert.NilError(t, conn.Part(ctx))
+		assert.Assert(t, conn.NumJoined() == 1)
+		assert.Assert(t, conn.IsJoined("#foobar"))
+		assert.DeepEqual(t, []string{"#foobar"}, conn.Joined())
+
 		assert.NilError(t, conn.Part(ctx, "#foobar"))
 		assert.Assert(t, conn.NumJoined() == 0)
 		assert.Assert(t, !conn.IsJoined("#foobar"))

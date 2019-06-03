@@ -15,6 +15,7 @@ import (
 func TestPoolUnused(t *testing.T) {
 	p := birc.NewPool(birc.PoolConfig{})
 	assert.Assert(t, p != nil)
+	assert.Assert(t, !p.IsJoined(""))
 	p.Stop()
 }
 
@@ -360,6 +361,11 @@ func TestPoolPrune(t *testing.T) {
 		assert.Assert(t, !pool.IsJoined("#foobar"))
 		assert.Assert(t, pool.IsJoined("#barfoo"))
 		assert.DeepEqual(t, []string{"#barfoo"}, pool.Joined())
+
+		pool.Prune()
+		h.Sleep()
+
+		assert.Equal(t, pool.NumConns(), 1)
 
 		pool.Prune()
 		h.Sleep()
