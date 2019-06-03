@@ -121,7 +121,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - Lots of settings here related to other items.
     - [x] ~~`topic`~~
     - [ ] `parseYoutube`
-    - [ ] `shouldModerate`
+    - [x] `shouldModerate`
     - [ ] `roll`
         - [ ] `timeoutoncriticalfail`
         - [ ] `default`
