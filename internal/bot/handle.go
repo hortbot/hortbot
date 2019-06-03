@@ -303,13 +303,16 @@ func tryCommand(ctx context.Context, s *Session) (bool, error) {
 	message := s.Message
 
 	commandName, params := splitSpace(message)
-	ok, err := moderationCommands.run(ctx, s, strings.ToLower(commandName), params)
-	if err != nil {
-		return false, err
-	}
 
-	if ok {
-		return true, nil
+	if s.Channel.ShouldModerate {
+		ok, err := moderationCommands.run(ctx, s, strings.ToLower(commandName), params)
+		if err != nil {
+			return false, err
+		}
+
+		if ok {
+			return true, nil
+		}
 	}
 
 	if !strings.HasPrefix(commandName, prefix) {

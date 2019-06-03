@@ -30,7 +30,9 @@ CREATE TABLE channels (
     custom_regulars text[] DEFAULT '{}' NOT NULL,
 
     cooldown int,
-    last_command_at timestamptz NOT NULL
+    last_command_at timestamptz NOT NULL,
+
+    should_moderate boolean DEFAULT true NOT NULL
 );
 
 CREATE INDEX channels_user_id_idx on channels (user_id);

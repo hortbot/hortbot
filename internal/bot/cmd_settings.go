@@ -11,9 +11,10 @@ import (
 )
 
 var builtinSettings builtinMap = map[string]builtinCommand{
-	"prefix":   {fn: cmdPrefix, minLevel: LevelBroadcaster},
-	"bullet":   {fn: cmdBullet, minLevel: LevelBroadcaster},
-	"cooldown": {fn: cmdCooldown, minLevel: LevelModerator},
+	"prefix":         {fn: cmdSettingPrefix, minLevel: LevelBroadcaster},
+	"bullet":         {fn: cmdSettingBullet, minLevel: LevelBroadcaster},
+	"cooldown":       {fn: cmdSettingCooldown, minLevel: LevelModerator},
+	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: LevelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error {
@@ -21,7 +22,7 @@ func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error
 	subcommand = strings.ToLower(subcommand)
 
 	if subcommand == "" {
-		return s.ReplyUsage(cmd + " <setting> <value>")
+		return s.ReplyUsage("<setting> <value>")
 	}
 
 	ok, err := builtinSettings.run(ctx, s, subcommand, args)
@@ -32,9 +33,7 @@ func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error
 	return err
 }
 
-func cmdBullet(ctx context.Context, s *Session, cmd string, args string) error {
-	args = strings.TrimSpace(args)
-
+func cmdSettingBullet(ctx context.Context, s *Session, cmd string, args string) error {
 	if args == "" {
 		var bullet string
 		if s.Channel.Bullet.Valid {
@@ -70,9 +69,7 @@ func cmdBullet(ctx context.Context, s *Session, cmd string, args string) error {
 	return s.Replyf("bullet changed to %s", args)
 }
 
-func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
-	args = strings.TrimSpace(args)
-
+func cmdSettingPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 	if args == "" {
 		return s.Replyf("prefix is %s", s.Channel.Prefix)
 	}
@@ -101,9 +98,7 @@ func cmdPrefix(ctx context.Context, s *Session, cmd string, args string) error {
 	return s.Replyf("prefix changed to %s", args)
 }
 
-func cmdCooldown(ctx context.Context, s *Session, cmd string, args string) error {
-	args = strings.TrimSpace(args)
-
+func cmdSettingCooldown(ctx context.Context, s *Session, cmd string, args string) error {
 	var cooldown null.Int
 
 	if args == "" {
@@ -135,4 +130,38 @@ func cmdCooldown(ctx context.Context, s *Session, cmd string, args string) error
 	}
 
 	return s.Replyf("cooldown changed to %ds", cooldown.Int)
+}
+
+func cmdSettingShouldModerate(ctx context.Context, s *Session, cmd string, args string) error {
+	args = strings.ToLower(args)
+
+	switch args {
+	case "":
+		return s.Replyf("shouldModerate is set to %v", s.Channel.ShouldModerate)
+
+	case "on", "enabled", "true", "1", "yes":
+		if s.Channel.ShouldModerate {
+			return s.Replyf("%s is already moderating", s.Channel.BotName)
+		}
+		s.Channel.ShouldModerate = true
+
+	case "off", "disabled", "false", "0", "no":
+		if !s.Channel.ShouldModerate {
+			return s.Replyf("%s is already not moderating", s.Channel.BotName)
+		}
+		s.Channel.ShouldModerate = false
+
+	default:
+		return s.ReplyUsage("<on|off>")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ShouldModerate)); err != nil {
+		return err
+	}
+
+	if s.Channel.ShouldModerate {
+		return s.Replyf("%s will attempt to moderate in this channel", s.Channel.BotName)
+	}
+
+	return s.Replyf("%s will no longer attempt to moderate in this channel", s.Channel.BotName)
 }

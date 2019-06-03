@@ -12,56 +12,62 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
+var scCommands builtinMap = map[string]builtinCommand{
+	"add":             {fn: cmdSimpleCommandAddFunc(LevelSubscriber, false), minLevel: LevelModerator},
+	"addb":            {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addbroadcaster":  {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addbroadcasters": {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addo":            {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addowner":        {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addowners":       {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addstreamer":     {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addstreamers":    {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
+	"addm":            {fn: cmdSimpleCommandAddFunc(LevelModerator, true), minLevel: LevelModerator},
+	"addmod":          {fn: cmdSimpleCommandAddFunc(LevelModerator, true), minLevel: LevelModerator},
+	"addmods":         {fn: cmdSimpleCommandAddFunc(LevelModerator, true), minLevel: LevelModerator},
+	"adds":            {fn: cmdSimpleCommandAddFunc(LevelSubscriber, true), minLevel: LevelModerator},
+	"addsub":          {fn: cmdSimpleCommandAddFunc(LevelSubscriber, true), minLevel: LevelModerator},
+	"addsubs":         {fn: cmdSimpleCommandAddFunc(LevelSubscriber, true), minLevel: LevelModerator},
+	"adde":            {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
+	"adda":            {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
+	"addeveryone":     {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
+	"addall":          {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
+	"delete":          {fn: cmdSimpleCommandDelete, minLevel: LevelModerator},
+	"remove":          {fn: cmdSimpleCommandDelete, minLevel: LevelModerator},
+	"restrict":        {fn: cmdSimpleCommandRestrict, minLevel: LevelModerator},
+	"editor":          {fn: cmdSimpleCommandProperty, minLevel: LevelModerator},
+	"author":          {fn: cmdSimpleCommandProperty, minLevel: LevelModerator},
+	"count":           {fn: cmdSimpleCommandProperty, minLevel: LevelModerator},
+	"rename":          {fn: cmdSimpleCommandRename, minLevel: LevelModerator},
+	"get":             {fn: cmdSimpleCommandGet, minLevel: LevelModerator},
+	// TODO: clone
+}
+
 func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) error {
-	usage := func() error {
-		return s.ReplyUsage("command add|delete|restrict|...")
+	subcommand, args := splitSpace(args)
+	subcommand = strings.ToLower(subcommand)
+
+	ok, err := scCommands.run(ctx, s, subcommand, args)
+	if err != nil {
+		return err
 	}
 
-	args = strings.TrimSpace(args)
-	subcommand, args := splitSpace(args)
+	if !ok {
+		return s.ReplyUsage("add|delete|restrict|...")
+	}
 
-	switch subcommand {
-	case "add":
-		return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, false)
+	return nil
+}
 
-	case "addb", "addbroadcaster", "addbroadcasters", "addo", "addowner", "addowners", "addstreamer", "addstreamers":
-		return cmdSimpleCommandAdd(ctx, s, args, LevelBroadcaster, true)
-
-	case "addm", "addmod", "addmods":
-		return cmdSimpleCommandAdd(ctx, s, args, LevelModerator, true)
-
-	case "adds", "addsub", "addsubs":
-		return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, true)
-
-	case "adde", "adda", "addeveryone", "addall":
-		return cmdSimpleCommandAdd(ctx, s, args, LevelEveryone, true)
-
-	case "delete", "remove":
-		return cmdSimpleCommandDelete(ctx, s, args)
-
-	case "restrict":
-		return cmdSimpleCommandRestrict(ctx, s, args)
-
-	case "editor", "author", "count":
-		return cmdSimpleCommandProperty(ctx, s, args, subcommand)
-
-	case "rename":
-		return cmdSimpleCommandRename(ctx, s, args)
-
-	case "clone":
-		return errNotImplemented
-
-	case "get":
-		return cmdSimpleCommandGet(ctx, s, args)
-
-	default:
-		return usage()
+func cmdSimpleCommandAddFunc(level AccessLevel, forceLevel bool) func(ctx context.Context, s *Session, cmd string, args string) error {
+	return func(ctx context.Context, s *Session, cmd string, args string) error {
+		return cmdSimpleCommandAdd(ctx, s, args, level, forceLevel)
 	}
 }
 
 func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level AccessLevel, forceLevel bool) error {
 	usage := func() error {
-		return s.ReplyUsage("command add <name> <text>")
+		return s.ReplyUsage("<name> <text>")
 	}
 
 	name, text := splitSpace(args)
@@ -145,9 +151,9 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 	return s.Replyf("command %s added, restricted to %s and above%s", name, al, warning)
 }
 
-func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error {
+func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("command delete <name>")
+		return s.ReplyUsage("<name>")
 	}
 
 	name, _ := splitSpace(args)
@@ -185,9 +191,9 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, args string) error 
 	return s.Replyf("command %s deleted", name)
 }
 
-func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) error {
+func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("command restrict <name> everyone|regulars|subs|mods|broadcaster|admin")
+		return s.ReplyUsage("<name> everyone|regulars|subs|mods|broadcaster|admin")
 	}
 
 	name, level := splitSpace(args)
@@ -250,11 +256,11 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, args string) erro
 	return s.Replyf("command %s restricted to %s and above", name, flect.Pluralize(command.AccessLevel))
 }
 
-func cmdSimpleCommandProperty(ctx context.Context, s *Session, args string, prop string) error {
+func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args string) error {
 	name, _ := splitSpace(args)
 
 	if name == "" {
-		return s.ReplyUsage("command " + prop + " <name>")
+		return s.ReplyUsage("<name>")
 	}
 
 	command, err := models.SimpleCommands(
@@ -286,9 +292,9 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, args string, prop
 	panic("unreachable")
 }
 
-func cmdSimpleCommandRename(ctx context.Context, s *Session, args string) error {
+func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("command rename <old> <new>")
+		return s.ReplyUsage("<old> <new>")
 	}
 
 	oldName, args := splitSpace(args)
@@ -345,9 +351,9 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, args string) error 
 	return s.Replyf("command %s has been renamed to %s", oldName, newName)
 }
 
-func cmdSimpleCommandGet(ctx context.Context, s *Session, args string) error {
+func cmdSimpleCommandGet(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("command get <name>")
+		return s.ReplyUsage("<name>")
 	}
 
 	name, _ := splitSpace(args)

@@ -46,7 +46,7 @@ func cmdQuote(ctx context.Context, s *Session, cmd string, args string) error {
 
 func cmdQuoteAdd(ctx context.Context, s *Session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("quote add <quote>")
+		return s.ReplyUsage("<quote>")
 	}
 
 	var row struct {
@@ -81,7 +81,7 @@ func cmdQuoteAdd(ctx context.Context, s *Session, cmd string, args string) error
 
 func cmdQuoteDelete(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("quote " + cmd + " <index>")
+		return s.ReplyUsage("<index>")
 	}
 
 	if args == "" {
@@ -115,7 +115,7 @@ func cmdQuoteDelete(ctx context.Context, s *Session, cmd string, args string) er
 
 func cmdQuoteEdit(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("quote edit <index> <quote>")
+		return s.ReplyUsage("<index> <quote>")
 	}
 
 	idx, newQuote := splitSpace(args)
@@ -154,7 +154,7 @@ func cmdQuoteEdit(ctx context.Context, s *Session, cmd string, args string) erro
 
 func cmdQuoteGetIndex(ctx context.Context, s *Session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("quote getindex <quote>")
+		return s.ReplyUsage("<quote>")
 	}
 
 	quote, err := models.Quotes(
@@ -175,10 +175,7 @@ func cmdQuoteGetIndex(ctx context.Context, s *Session, cmd string, args string) 
 
 func cmdQuoteGet(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		if cmd == "" {
-			return s.ReplyUsage("quote <index>")
-		}
-		return s.ReplyUsage("quote get <index>")
+		return s.ReplyUsage("<index>")
 	}
 
 	if args == "" {
@@ -223,7 +220,7 @@ var likeEscaper = strings.NewReplacer(`%`, `\%`, `_`, `\_`)
 
 func cmdQuoteSearch(ctx context.Context, s *Session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("quote search <phrase>")
+		return s.ReplyUsage("<phrase>")
 	}
 
 	pattern := "%" + likeEscaper.Replace(args) + "%"
@@ -265,7 +262,7 @@ func cmdQuoteSearch(ctx context.Context, s *Session, cmd string, args string) er
 
 func cmdQuoteEditor(ctx context.Context, s *Session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("quote editor <index>")
+		return s.ReplyUsage("<index>")
 	}
 
 	if args == "" {

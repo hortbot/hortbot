@@ -40,6 +40,7 @@ type Channel struct {
 	CustomRegulars types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
 	Cooldown       null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
 	LastCommandAt  time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
+	ShouldModerate bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -61,6 +62,7 @@ var ChannelColumns = struct {
 	CustomRegulars string
 	Cooldown       string
 	LastCommandAt  string
+	ShouldModerate string
 }{
 	ID:             "id",
 	CreatedAt:      "created_at",
@@ -77,6 +79,7 @@ var ChannelColumns = struct {
 	CustomRegulars: "custom_regulars",
 	Cooldown:       "cooldown",
 	LastCommandAt:  "last_command_at",
+	ShouldModerate: "should_moderate",
 }
 
 // Generated where
@@ -212,6 +215,7 @@ var ChannelWhere = struct {
 	CustomRegulars whereHelpertypes_StringArray
 	Cooldown       whereHelpernull_Int
 	LastCommandAt  whereHelpertime_Time
+	ShouldModerate whereHelperbool
 }{
 	ID:             whereHelperint64{field: "\"channels\".\"id\""},
 	CreatedAt:      whereHelpertime_Time{field: "\"channels\".\"created_at\""},
@@ -228,6 +232,7 @@ var ChannelWhere = struct {
 	CustomRegulars: whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
 	Cooldown:       whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
 	LastCommandAt:  whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
+	ShouldModerate: whereHelperbool{field: "\"channels\".\"should_moderate\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -254,9 +259,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "should_moderate"}
 	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

@@ -43,6 +43,8 @@ type Session struct {
 
 	CommandParams     string
 	OrigCommandParams string
+
+	usageContext string
 }
 
 func (s *Session) formatResponse(response string) string {
@@ -74,7 +76,30 @@ func (s *Session) Replyf(format string, args ...interface{}) error {
 }
 
 func (s *Session) ReplyUsage(usage string) error {
-	return s.Replyf("usage: %s%s", s.Channel.Prefix, usage)
+	var builder strings.Builder
+	builder.WriteString("usage: ")
+	builder.WriteString(s.Channel.Prefix)
+	builder.WriteString(s.usageContext)
+	builder.WriteString(usage)
+
+	return s.Reply(builder.String())
+}
+
+func (s *Session) UsageContext(command string) func() {
+	if command == "" {
+		return func() {}
+	}
+
+	do := true
+
+	old := s.usageContext
+	s.usageContext += command + " "
+	return func() {
+		if do {
+			s.usageContext = old
+			do = false
+		}
+	}
 }
 
 func (s *Session) SetUserLevel() {

@@ -42,6 +42,8 @@ func (b builtinMap) run(ctx context.Context, s *Session, cmd string, args string
 		return false, nil
 	}
 
+	defer s.UsageContext(cmd)()
+
 	return true, bc.run(ctx, s, cmd, args)
 }
 
