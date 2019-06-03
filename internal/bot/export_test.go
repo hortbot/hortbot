@@ -25,7 +25,7 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd st
 		panic(name + " already exists")
 	}
 
-	builtinCommands[name] = builtinCommand{
+	builtinCommands[name] = handlerFunc{
 		fn:       fn,
 		minLevel: minLevel,
 	}

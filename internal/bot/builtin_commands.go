@@ -2,13 +2,10 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"strings"
 )
 
-var errBuiltinDisabled = errors.New("bot: builtin disabled")
-
-var builtinCommands builtinMap
+var builtinCommands handlerMap
 
 var reservedCommandNames = map[string]bool{
 	"builtin": true,
@@ -18,7 +15,7 @@ var reservedCommandNames = map[string]bool{
 
 func init() {
 	// To prevent initialization loop.
-	builtinCommands = map[string]builtinCommand{
+	builtinCommands = map[string]handlerFunc{
 		"command":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"coemand":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
 		"set":         {fn: cmdSettings, minLevel: LevelModerator},
@@ -33,11 +30,11 @@ func init() {
 	}
 }
 
-type builtinMap map[string]builtinCommand
+type handlerMap map[string]handlerFunc
 
-func (b builtinMap) run(ctx context.Context, s *Session, cmd string, args string) (bool, error) {
+func (h handlerMap) run(ctx context.Context, s *Session, cmd string, args string) (bool, error) {
 	cmd = strings.ToLower(cmd)
-	bc, ok := b[cmd]
+	bc, ok := h[cmd]
 	if !ok {
 		return false, nil
 	}
@@ -47,30 +44,15 @@ func (b builtinMap) run(ctx context.Context, s *Session, cmd string, args string
 	return true, bc.run(ctx, s, cmd, args)
 }
 
-type builtinCommand struct {
+type handlerFunc struct {
 	fn       func(ctx context.Context, s *Session, cmd string, args string) error
 	minLevel AccessLevel
 }
 
-func (b builtinCommand) run(ctx context.Context, s *Session, cmd string, args string) error {
-	if !s.UserLevel.CanAccess(b.minLevel) {
+func (h handlerFunc) run(ctx context.Context, s *Session, cmd string, args string) error {
+	if !s.UserLevel.CanAccess(h.minLevel) {
 		return errNotAuthorized
 	}
 
-	return b.fn(ctx, s, cmd, args)
-}
-
-func tryBuiltinCommand(ctx context.Context, s *Session, cmd string, args string) (bool, error) {
-	if cmd == "builtin" {
-		cmd, args = splitSpace(args)
-		cmd = strings.ToLower(cmd)
-	}
-
-	isBuiltin, err := builtinCommands.run(ctx, s, cmd, args)
-
-	if err == errBuiltinDisabled {
-		return true, nil
-	}
-
-	return isBuiltin, err
+	return h.fn(ctx, s, cmd, args)
 }

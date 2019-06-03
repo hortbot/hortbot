@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-var moderationCommands builtinMap = map[string]builtinCommand{
+var moderationCommands handlerMap = map[string]handlerFunc{
 	"+b":   {fn: cmdModBan, minLevel: LevelModerator},
 	"-b":   {fn: cmdModUnban, minLevel: LevelModerator},
 	"+t":   {fn: cmdModTimeout, minLevel: LevelModerator},

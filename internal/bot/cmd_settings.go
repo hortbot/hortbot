@@ -10,7 +10,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var builtinSettings builtinMap = map[string]builtinCommand{
+var builtinSettings handlerMap = map[string]handlerFunc{
 	"prefix":         {fn: cmdSettingPrefix, minLevel: LevelBroadcaster},
 	"bullet":         {fn: cmdSettingBullet, minLevel: LevelBroadcaster},
 	"cooldown":       {fn: cmdSettingCooldown, minLevel: LevelModerator},

@@ -12,7 +12,7 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
-var quoteCommands builtinMap = map[string]builtinCommand{
+var quoteCommands handlerMap = map[string]handlerFunc{
 	"add":      {fn: cmdQuoteAdd, minLevel: LevelModerator},
 	"delete":   {fn: cmdQuoteDelete, minLevel: LevelModerator},
 	"remove":   {fn: cmdQuoteDelete, minLevel: LevelModerator},

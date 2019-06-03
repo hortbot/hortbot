@@ -12,7 +12,7 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
-var scCommands builtinMap = map[string]builtinCommand{
+var scCommands handlerMap = map[string]handlerFunc{
 	"add":             {fn: cmdSimpleCommandAddFunc(LevelSubscriber, false), minLevel: LevelModerator},
 	"addb":            {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
 	"addbroadcaster":  {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},

@@ -19,10 +19,11 @@ import (
 )
 
 var (
-	errNilMessage     = errors.New("bot: nil message")
-	errInvalidMessage = errors.New("bot: invalid message")
-	errNotImplemented = errors.New("bot: not implemented")
-	errNotAuthorized  = errors.New("bot: user is not authorized to use this command")
+	errNilMessage      = errors.New("bot: nil message")
+	errInvalidMessage  = errors.New("bot: invalid message")
+	errNotImplemented  = errors.New("bot: not implemented")
+	errNotAuthorized   = errors.New("bot: user is not authorized to use this command")
+	errBuiltinDisabled = errors.New("bot: builtin disabled")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -380,4 +381,19 @@ func tryCommand(ctx context.Context, s *Session) (bool, error) {
 
 	err = s.Reply(response)
 	return true, err
+}
+
+func tryBuiltinCommand(ctx context.Context, s *Session, cmd string, args string) (bool, error) {
+	if cmd == "builtin" {
+		cmd, args = splitSpace(args)
+		cmd = strings.ToLower(cmd)
+	}
+
+	isBuiltin, err := builtinCommands.run(ctx, s, cmd, args)
+
+	if err == errBuiltinDisabled {
+		return true, nil
+	}
+
+	return isBuiltin, err
 }
