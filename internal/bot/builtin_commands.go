@@ -28,6 +28,7 @@ func init() {
 		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
 		"ignore":      {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
 		"quote":       {fn: cmdQuote, minLevel: LevelSubscriber},
+		"clear":       {fn: cmdModClear, minLevel: LevelModerator},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: LevelAdmin},
 	}
 }

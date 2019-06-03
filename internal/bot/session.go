@@ -169,6 +169,7 @@ func (s *Session) SendCommand(command string, args ...string) error {
 	case "untimeout":
 	case "me":
 	case "delete":
+	case "clear":
 	default:
 		panic("attempt to use IRC command " + command)
 	}

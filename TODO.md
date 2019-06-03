@@ -105,13 +105,14 @@ Some features are not currently planned to be ported and have been crossed out.
 - [x] ~~Highlights~~ (Predates twitch clips, may port for old data)
 - [x] ~~Binding of Isaac: Rebirth~~
 - [ ] Moderation
-    - [ ] Slow mode on/of
-    - [ ] Sub mode on/of
-    - [ ] Ban
-    - [ ] Timeout
-    - [ ] Purge (add an argument to this to purge the last X messages)
+    - [x] Slow mode on/of
+    - [x] Sub mode on/of
+    - [x] Ban
+    - [x] Timeout
+    - [x] Purge
+        - [ ] Add an argument to this to purge the last X messages
     - [ ] Link permit (needs detection)
-    - [ ] Clear chat
+    - [x] Clear chat
 - [x] Ignores
     - [x] Add/delete
     - [x] List

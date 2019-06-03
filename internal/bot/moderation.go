@@ -132,3 +132,7 @@ func cmdModPurge(ctx context.Context, s *Session, cmd string, args string) error
 
 	return s.Replyf("%s's chat history has been purged", user)
 }
+
+func cmdModClear(ctx context.Context, s *Session, cmd string, args string) error {
+	return s.SendCommand("clear")
+}
