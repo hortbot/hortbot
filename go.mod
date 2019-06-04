@@ -28,7 +28,7 @@ require (
 	github.com/gobuffalo/flect v0.1.3
 	github.com/gocql/gocql v0.0.0-20190523124812-0680bfb96414 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.3.1
+	github.com/golang-migrate/migrate/v4 v4.4.0
 	github.com/google/go-cmp v0.3.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
@@ -47,6 +47,7 @@ require (
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.4+incompatible
 	github.com/pelletier/go-toml v1.4.0 // indirect
+	github.com/pierrec/lz4 v2.2.3+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/remyoudompheng/bigfft v0.0.0-20190512091148-babf20351dd7 // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect
@@ -64,14 +65,14 @@ require (
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 // indirect
 	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
-	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0 // indirect
+	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190602015325-4c4f7f33c9ed // indirect
 	golang.org/x/tools v0.0.0-20190603231351-8aaa1484dc10
 	google.golang.org/appengine v1.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20190530194941-fb225487d101 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
-	gotest.tools v2.2.0+incompatible
+	gotest.tools v2.3.0+incompatible
 	mvdan.cc/xurls/v2 v2.0.0
 )
 
