@@ -39,11 +39,11 @@ func Reset(connStr string, logger func(format string, v ...interface{})) error {
 	if err != nil {
 		return err
 	}
+	defer m.Close()
 
 	if err := ignoreNoChange(m.Down()); err != nil {
 		return err
 	}
-	defer m.Close()
 
 	return ignoreNoChange(m.Up())
 }
