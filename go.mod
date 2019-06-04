@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
-	github.com/aws/aws-sdk-go v1.19.41 // indirect
+	github.com/aws/aws-sdk-go v1.19.42 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.1
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
@@ -40,7 +40,7 @@ require (
 	github.com/leononame/clock v0.1.5
 	github.com/lib/pq v1.1.1
 	github.com/magiconair/properties v1.8.1 // indirect
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.0.2
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.0
 	github.com/mjibson/esc v0.2.0
 	github.com/mongodb/mongo-go-driver v1.0.2 // indirect
 	github.com/onsi/ginkgo v1.8.0 // indirect
@@ -63,10 +63,11 @@ require (
 	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 // indirect
+	golang.org/x/net v0.0.0-20190603091049-60506f45cf65 // indirect
 	golang.org/x/oauth2 v0.0.0-20190523182746-aaccbc9213b0 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190531175056-4c3a928424d2 // indirect
-	golang.org/x/tools v0.0.0-20190531223538-26e35f15edef
+	golang.org/x/sys v0.0.0-20190602015325-4c4f7f33c9ed // indirect
+	golang.org/x/tools v0.0.0-20190603231351-8aaa1484dc10
 	google.golang.org/appengine v1.6.0 // indirect
 	google.golang.org/genproto v0.0.0-20190530194941-fb225487d101 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
@@ -76,4 +77,4 @@ require (
 
 replace gopkg.in/DATA-DOG/go-sqlmock.v1 => github.com/DATA-DOG/go-sqlmock v1.3.3
 
-replace github.com/maxbrunsfeld/counterfeiter => github.com/maxbrunsfeld/counterfeiter/v6 v6.0.2
+replace github.com/maxbrunsfeld/counterfeiter => github.com/maxbrunsfeld/counterfeiter/v6 v6.2.0

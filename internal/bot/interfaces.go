@@ -1,7 +1,8 @@
 package bot
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 . Sender
+//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
+//counterfeiter:generate . Sender
 type Sender interface {
 	SendMessage(origin, target, message string) error
 }
@@ -16,8 +17,7 @@ func (s SenderFuncs) SendMessage(origin, target, message string) error {
 	return s.SendMessageFunc(origin, target, message)
 }
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 . Notifier
-
+//counterfeiter:generate . Notifier
 type Notifier interface {
 	NotifyChannelUpdates(botName string)
 }
