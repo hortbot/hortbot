@@ -10,7 +10,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var builtinSettings handlerMap = map[string]handlerFunc{
+var settingCommands handlerMap = map[string]handlerFunc{
 	"prefix":         {fn: cmdSettingPrefix, minLevel: LevelBroadcaster},
 	"bullet":         {fn: cmdSettingBullet, minLevel: LevelBroadcaster},
 	"cooldown":       {fn: cmdSettingCooldown, minLevel: LevelModerator},
@@ -25,7 +25,7 @@ func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error
 		return s.ReplyUsage("<setting> <value>")
 	}
 
-	ok, err := builtinSettings.run(ctx, s, subcommand, args)
+	ok, err := settingCommands.run(ctx, s, subcommand, args)
 	if !ok {
 		return s.Replyf("no such setting %s", subcommand)
 	}
