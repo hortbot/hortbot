@@ -14,10 +14,13 @@ import (
 	"gotest.tools/assert/cmp"
 )
 
-const DefaultSleepDur = 50 * time.Millisecond
+const (
+	DefaultSleepDur = 50 * time.Millisecond
+	sleepEnvVarName = "TEST_HELPER_SLEEP_DUR"
+)
 
 func getSleepDur() (time.Duration, error) {
-	s, ok := os.LookupEnv("TEST_HELPER_SLEEP_DUR")
+	s, ok := os.LookupEnv(sleepEnvVarName)
 	if ok {
 		return time.ParseDuration(s)
 	}

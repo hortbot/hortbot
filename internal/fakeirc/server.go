@@ -11,9 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/x/ircx"
-
 	"github.com/hortbot/hortbot/internal/x/errgroupx"
+	"github.com/hortbot/hortbot/internal/x/ircx"
 	"github.com/jakebailey/irc"
 )
 
@@ -217,10 +216,7 @@ func (s *Server) handle(ctx context.Context, conn irc.Conn) error {
 	for {
 		m := &irc.Message{}
 		if err := conn.Decode(m); err != nil {
-			if isClose(err) {
-				return nil
-			}
-			return err
+			return ignoreClose(err)
 		}
 
 		switch m.Command {
@@ -280,22 +276,14 @@ func TLS(config *tls.Config) Option {
 	}
 }
 
-func isClose(err error) bool {
+func ignoreClose(err error) error {
 	switch {
 	case err == nil:
-		return false
 	case err == io.EOF:
-		return true
 	case strings.Contains(err.Error(), "use of closed"):
-		return true
 	default:
-		return false
+		return err
 	}
-}
 
-func ignoreClose(err error) error {
-	if err == nil || isClose(err) {
-		return nil
-	}
-	return err
+	return nil
 }

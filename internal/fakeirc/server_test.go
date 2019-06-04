@@ -9,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/fakeirc"
 	"github.com/hortbot/hortbot/internal/x/ircx"
 	"github.com/jakebailey/irc"
+	"gotest.tools/assert"
 )
 
 func TestServerUnused(t *testing.T) {
@@ -17,6 +18,7 @@ func TestServerUnused(t *testing.T) {
 	ctx, cancel := testContext()
 	defer cancel()
 	h := fakeirc.NewHelper(ctx, t)
+	assert.Assert(t, h.Addr() != "")
 
 	defer h.StopServer()
 
