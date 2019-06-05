@@ -13,25 +13,25 @@ import (
 )
 
 var scCommands handlerMap = map[string]handlerFunc{
-	"add":             {fn: cmdSimpleCommandAddFunc(LevelSubscriber, false), minLevel: LevelModerator},
-	"addb":            {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addbroadcaster":  {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addbroadcasters": {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addo":            {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addowner":        {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addowners":       {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addstreamer":     {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addstreamers":    {fn: cmdSimpleCommandAddFunc(LevelBroadcaster, true), minLevel: LevelModerator},
-	"addm":            {fn: cmdSimpleCommandAddFunc(LevelModerator, true), minLevel: LevelModerator},
-	"addmod":          {fn: cmdSimpleCommandAddFunc(LevelModerator, true), minLevel: LevelModerator},
-	"addmods":         {fn: cmdSimpleCommandAddFunc(LevelModerator, true), minLevel: LevelModerator},
-	"adds":            {fn: cmdSimpleCommandAddFunc(LevelSubscriber, true), minLevel: LevelModerator},
-	"addsub":          {fn: cmdSimpleCommandAddFunc(LevelSubscriber, true), minLevel: LevelModerator},
-	"addsubs":         {fn: cmdSimpleCommandAddFunc(LevelSubscriber, true), minLevel: LevelModerator},
-	"adde":            {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
-	"adda":            {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
-	"addeveryone":     {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
-	"addall":          {fn: cmdSimpleCommandAddFunc(LevelEveryone, true), minLevel: LevelModerator},
+	"add":             {fn: cmdSimpleCommandAddNormal, minLevel: LevelModerator},
+	"addb":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addbroadcaster":  {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addbroadcasters": {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addo":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addowner":        {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addowners":       {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addstreamer":     {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addstreamers":    {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
+	"addm":            {fn: cmdSimpleCommandAddModerator, minLevel: LevelModerator},
+	"addmod":          {fn: cmdSimpleCommandAddModerator, minLevel: LevelModerator},
+	"addmods":         {fn: cmdSimpleCommandAddModerator, minLevel: LevelModerator},
+	"adds":            {fn: cmdSimpleCommandAddSubscriber, minLevel: LevelModerator},
+	"addsub":          {fn: cmdSimpleCommandAddSubscriber, minLevel: LevelModerator},
+	"addsubs":         {fn: cmdSimpleCommandAddSubscriber, minLevel: LevelModerator},
+	"adde":            {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
+	"adda":            {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
+	"addeveryone":     {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
+	"addall":          {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
 	"delete":          {fn: cmdSimpleCommandDelete, minLevel: LevelModerator},
 	"remove":          {fn: cmdSimpleCommandDelete, minLevel: LevelModerator},
 	"restrict":        {fn: cmdSimpleCommandRestrict, minLevel: LevelModerator},
@@ -59,10 +59,24 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 	return nil
 }
 
-func cmdSimpleCommandAddFunc(level AccessLevel, forceLevel bool) func(ctx context.Context, s *Session, cmd string, args string) error {
-	return func(ctx context.Context, s *Session, cmd string, args string) error {
-		return cmdSimpleCommandAdd(ctx, s, args, level, forceLevel)
-	}
+func cmdSimpleCommandAddNormal(ctx context.Context, s *Session, cmd string, args string) error {
+	return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, false)
+}
+
+func cmdSimpleCommandAddBroadcaster(ctx context.Context, s *Session, cmd string, args string) error {
+	return cmdSimpleCommandAdd(ctx, s, args, LevelBroadcaster, true)
+}
+
+func cmdSimpleCommandAddModerator(ctx context.Context, s *Session, cmd string, args string) error {
+	return cmdSimpleCommandAdd(ctx, s, args, LevelModerator, true)
+}
+
+func cmdSimpleCommandAddSubscriber(ctx context.Context, s *Session, cmd string, args string) error {
+	return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, true)
+}
+
+func cmdSimpleCommandAddEveryone(ctx context.Context, s *Session, cmd string, args string) error {
+	return cmdSimpleCommandAdd(ctx, s, args, LevelEveryone, true)
 }
 
 func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level AccessLevel, forceLevel bool) error {
