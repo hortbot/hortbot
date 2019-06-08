@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/findlinks"
 	"github.com/jakebailey/irc"
 	"github.com/leononame/clock"
 )
@@ -37,7 +38,8 @@ type Session struct {
 	UserLevel   AccessLevel
 	Ignored     bool
 
-	Links []*url.URL
+	links    []*url.URL
+	linksSet bool
 
 	Channel *models.Channel
 
@@ -213,4 +215,12 @@ func (s *Session) SendCommand(command string, args ...string) error {
 
 func (s *Session) DeleteMessage() error {
 	return s.SendCommand("delete", s.ID)
+}
+
+func (s *Session) Links() []*url.URL {
+	if !s.linksSet {
+		s.links = findlinks.Find(s.Message)
+	}
+
+	return s.links
 }

@@ -32,6 +32,7 @@ require (
 	github.com/google/go-cmp v0.3.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
+	github.com/hako/durafmt v0.0.0-20180520121703-7b7ae1e72ead
 	github.com/jackc/pgx v3.4.0+incompatible // indirect
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4

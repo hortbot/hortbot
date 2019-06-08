@@ -11,7 +11,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/findlinks"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -261,7 +260,11 @@ func handleSession(ctx context.Context, s *Session) error {
 		}
 	}
 
-	s.Links = findlinks.Find(s.Message)
+	if s.Channel.EnableFilters {
+		if filtered, err := tryFilter(ctx, s); filtered || err != nil {
+			return err
+		}
+	}
 
 	// TODO: precheck for links, banned phrases, etc
 	// Ignoring does not exempt messages from filters.

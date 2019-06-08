@@ -2,8 +2,14 @@ package bot
 
 import (
 	"context"
+	"database/sql"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/hako/durafmt"
+	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/volatiletech/sqlboiler/boil"
 )
 
 var moderationCommands handlerMap = map[string]handlerFunc{
@@ -135,4 +141,55 @@ func cmdModPurge(ctx context.Context, s *Session, cmd string, args string) error
 
 func cmdModClear(ctx context.Context, s *Session, cmd string, args string) error {
 	return s.SendCommand("clear")
+}
+
+func cmdPermit(ctx context.Context, s *Session, cmd string, args string) error {
+	if !s.Channel.EnableFilters || !s.Channel.FilterLinks {
+		return nil
+	}
+
+	user, _ := splitSpace(args)
+	if user == "" {
+		return s.ReplyUsage("<user>")
+	}
+	user = strings.ToLower(user)
+	now := s.Clock.Now()
+
+	permit, err := models.LinkPermits(
+		models.LinkPermitWhere.ChannelID.EQ(s.Channel.ID),
+		models.LinkPermitWhere.Name.EQ(user),
+	).One(ctx, s.Tx)
+
+	update := true
+
+	switch err {
+	case nil:
+	case sql.ErrNoRows:
+		update = false
+	default:
+		return err
+	}
+
+	if !update || now.After(permit.ExpiresAt) {
+		permit = &models.LinkPermit{
+			ChannelID: s.Channel.ID,
+			Name:      user,
+		}
+	}
+
+	dur := time.Minute
+	durReadable := durafmt.Parse(dur)
+	permit.ExpiresAt = now.Add(dur)
+
+	if update {
+		if err := permit.Update(ctx, s.Tx, boil.Whitelist(models.LinkPermitColumns.UpdatedAt, models.LinkPermitColumns.ExpiresAt)); err != nil {
+			return err
+		}
+	} else {
+		if err := permit.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+			return err
+		}
+	}
+
+	return s.Replyf("%s may now post one link within %s", user, durReadable)
 }

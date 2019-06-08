@@ -148,11 +148,26 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Add/remove reg/mod/owner
     - [x] List
 - [ ] Filters
-    - [ ] Links
+    - [x] Links
+        - [ ] Permitted domains (and more)
     - [ ] Capitals
     - [ ] Banned phrases
     - [ ] Symbols
     - [ ] Emotes
+    - [ ] Options
+        - [x] `on`/`off`
+        - [ ] `status`
+        - [ ] `me`
+        - [ ] `enablewarnings`
+        - [ ] `timeoutduration`
+        - [ ] `displaywarnings`
+        - [ ] `messagelength`
+        - [x] `links`
+        - [ ] `pd`
+        - [ ] `banphrase`
+        - [ ] `caps`
+        - [ ] `emotes`
+        - [ ] `symbols`
 - [ ] Administration
 - [ ] Variables
     - [ ] Set

@@ -9,8 +9,9 @@ import (
 )
 
 var filterCommands handlerMap = map[string]handlerFunc{
-	"on":  {fn: cmdFilterOnOff(true), minLevel: LevelModerator},
-	"off": {fn: cmdFilterOnOff(false), minLevel: LevelModerator},
+	"on":    {fn: cmdFilterOnOff(true), minLevel: LevelModerator},
+	"off":   {fn: cmdFilterOnOff(false), minLevel: LevelModerator},
+	"links": {fn: cmdFilterLinks, minLevel: LevelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *Session, cmd string, args string) error {
@@ -18,7 +19,7 @@ func cmdFilter(ctx context.Context, s *Session, cmd string, args string) error {
 	subcommand = strings.ToLower(subcommand)
 
 	if subcommand == "" {
-		return s.ReplyUsage("<option> <value>")
+		return s.ReplyUsage("<option> ...")
 	}
 
 	ok, err := filterCommands.run(ctx, s, subcommand, args)
@@ -49,4 +50,35 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *Session, cmd strin
 		}
 		return s.Reply("filters are now disabled")
 	}
+}
+
+func cmdFilterLinks(ctx context.Context, s *Session, cmd string, args string) error {
+	enable := false
+
+	switch args {
+	case "on":
+		enable = true
+	case "off":
+		// Do nothing.
+	default:
+		return s.ReplyUsage("on|off")
+	}
+
+	if s.Channel.FilterLinks == enable {
+		if enable {
+			return s.Reply("link filter is already enabled")
+		}
+		return s.Reply("link filter is already disabled")
+	}
+
+	s.Channel.FilterLinks = enable
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterLinks)); err != nil {
+		return err
+	}
+
+	if enable {
+		return s.Reply("link filter is now enabled")
+	}
+	return s.Reply("link filter is now disabled")
 }
