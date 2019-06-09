@@ -10,8 +10,8 @@ import (
 
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/jessevdk/go-flags"
