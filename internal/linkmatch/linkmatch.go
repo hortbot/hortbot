@@ -43,7 +43,7 @@ func HostAndPath(pattern string, u *url.URL) bool {
 	case strings.HasSuffix(ppPath, "**"):
 		// Do nothing.
 	case strings.HasSuffix(ppPath, "*"):
-		ppPath += "*"
+		ppPath += "*/**"
 	default:
 		ppPath += "/**"
 	}
