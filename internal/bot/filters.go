@@ -8,6 +8,10 @@ import (
 )
 
 func tryFilter(ctx context.Context, s *Session) (filtered bool, err error) {
+	if !s.Channel.ShouldModerate || !s.Channel.EnableFilters {
+		return false, nil
+	}
+
 	if s.Channel.FilterLinks {
 		filtered, err = filterLinks(ctx, s)
 		if filtered || err != nil {

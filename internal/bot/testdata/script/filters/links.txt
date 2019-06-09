@@ -52,3 +52,13 @@ send hortbot #foobar [HB] Filters are now disabled.
 
 handle hortbot @id=86ad104f-4e8b-4aa1-b72a-dc382eb06147;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+send hortbot #foobar [HB] Filters are now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate off
+send hortbot #foobar [HB] hortbot will no longer attempt to moderate in this channel.
+
+handle hortbot @id=630f301e-af82-495d-b6b4-107e5769e7c2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+no_send

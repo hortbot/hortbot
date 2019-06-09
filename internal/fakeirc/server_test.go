@@ -53,6 +53,8 @@ func TestServerNoMessages(t *testing.T) {
 }
 
 func TestServerBroadcast(t *testing.T) {
+	t.Skip("flaky")
+
 	defer leaktest.Check(t)()
 
 	ctx, cancel := testContext()

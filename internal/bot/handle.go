@@ -260,10 +260,8 @@ func handleSession(ctx context.Context, s *Session) error {
 		}
 	}
 
-	if s.Channel.EnableFilters {
-		if filtered, err := tryFilter(ctx, s); filtered || err != nil {
-			return err
-		}
+	if filtered, err := tryFilter(ctx, s); filtered || err != nil {
+		return err
 	}
 
 	// TODO: precheck for links, banned phrases, etc
