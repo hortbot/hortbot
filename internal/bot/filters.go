@@ -39,7 +39,7 @@ func filterLinks(ctx context.Context, s *Session) (filtered bool, err error) {
 		}
 
 		if s.Clock.Now().Before(permit.ExpiresAt) {
-			return false, s.Replyf("Link permitted (%s)", s.UserDisplay)
+			return false, s.Replyf("Link permitted. (%s)", s.UserDisplay)
 		}
 	case sql.ErrNoRows:
 		// Fall through

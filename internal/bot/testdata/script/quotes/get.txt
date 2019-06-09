@@ -1,7 +1,7 @@
 join hortbot 2 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
-send hortbot #foobar [HB] "This is a test." added, this is quote #1
+send hortbot #foobar [HB] "This is a test." added as quote #1.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote get 1
 send hortbot #foobar [HB] Quote #1: "This is a test."
@@ -19,7 +19,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Quote #2 does not exist.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test, part 2."
-send hortbot #foobar [HB] "This is a test, part 2." added, this is quote #2
+send hortbot #foobar [HB] "This is a test, part 2." added as quote #2.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote 2
 send hortbot #foobar [HB] Quote #2: "This is a test, part 2."

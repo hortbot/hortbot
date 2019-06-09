@@ -2,19 +2,19 @@ bot_config {"Prefix": "$"}
 insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+set prefix !
-send hortbot #foobar [HB] prefix changed to !
+send hortbot #foobar [HB] Prefix changed to !
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+set prefix reset
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix reset
-send hortbot #foobar [HB] prefix reset to $
+send hortbot #foobar [HB] Prefix reset to $
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$set prefix
-send hortbot #foobar [HB] prefix is $
+send hortbot #foobar [HB] Prefix is $
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$set prefix /me
-send hortbot #foobar [HB] prefix cannot begin with /
+send hortbot #foobar [HB] Prefix cannot begin with /
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :$set prefix .me
-send hortbot #foobar [HB] prefix cannot begin with .
+send hortbot #foobar [HB] Prefix cannot begin with .

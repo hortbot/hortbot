@@ -11,16 +11,16 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] usage: +owner <list|add|remove> ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner list
-send hortbot #foobar [HB] there are no owners
+send hortbot #foobar [HB] There are no owners.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add random
-send hortbot #foobar [HB] random added to owners
+send hortbot #foobar [HB] random added to owners.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add @AbCdEf
-send hortbot #foobar [HB] abcdef added to owners
+send hortbot #foobar [HB] abcdef added to owners.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner add random
-send hortbot #foobar [HB] random is already in owners
+send hortbot #foobar [HB] random is already in owners.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelBroadcaster
@@ -29,10 +29,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] owners: abcdef, random
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner remove random
-send hortbot #foobar [HB] random removed from owners
+send hortbot #foobar [HB] random removed from owners.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+owner remove random
-send hortbot #foobar [HB] random is not in owners
+send hortbot #foobar [HB] random is not in owners.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelEveryone
@@ -45,16 +45,16 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] usage: +mod <list|add|remove> ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod list
-send hortbot #foobar [HB] there are no mods
+send hortbot #foobar [HB] There are no mods.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod add random
-send hortbot #foobar [HB] random added to mods
+send hortbot #foobar [HB] random added to mods.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod add random
-send hortbot #foobar [HB] random is already in mods
+send hortbot #foobar [HB] random is already in mods.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod add @AbCdEf
-send hortbot #foobar [HB] abcdef added to mods
+send hortbot #foobar [HB] abcdef added to mods.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelModerator
@@ -63,10 +63,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] mods: abcdef, random
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod remove random
-send hortbot #foobar [HB] random removed from mods
+send hortbot #foobar [HB] random removed from mods.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+mod remove random
-send hortbot #foobar [HB] random is not in mods
+send hortbot #foobar [HB] random is not in mods.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelEveryone
@@ -79,16 +79,16 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] usage: +regular <list|add|remove> ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular list
-send hortbot #foobar [HB] there are no regulars
+send hortbot #foobar [HB] There are no regulars.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular add random
-send hortbot #foobar [HB] random added to regulars
+send hortbot #foobar [HB] random added to regulars.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular add random
-send hortbot #foobar [HB] random is already in regulars
+send hortbot #foobar [HB] random is already in regulars.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular add @AbCdEf
-send hortbot #foobar [HB] abcdef added to regulars
+send hortbot #foobar [HB] abcdef added to regulars.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelSubscriber
@@ -97,10 +97,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] regulars: abcdef, random
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular remove random
-send hortbot #foobar [HB] random removed from regulars
+send hortbot #foobar [HB] random removed from regulars.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+regular remove random
-send hortbot #foobar [HB] random is not in regulars
+send hortbot #foobar [HB] random is not in regulars.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] LevelEveryone

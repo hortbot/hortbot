@@ -3,10 +3,10 @@ bot_config {"Clock": "mock"}
 join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
-send hortbot #foobar [HB] filters are now enabled
+send hortbot #foobar [HB] Filters are now enabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
-send hortbot #foobar [HB] link filter is now enabled
+send hortbot #foobar [HB] Link filter is now enabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!permit random
 no_send
@@ -29,7 +29,7 @@ send hortbot #foobar [HB] Random, please ask a moderator before posting links.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
-send hortbot #foobar [HB] random may now post one link within 1 minute
+send hortbot #foobar [HB] random may now post one link within 1 minute.
 
 clock_forward 2m
 
@@ -39,36 +39,36 @@ send hortbot #foobar [HB] Random, please ask a moderator before posting links.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
-send hortbot #foobar [HB] random may now post one link within 1 minute
+send hortbot #foobar [HB] random may now post one link within 1 minute.
 
 clock_forward 30s
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar [HB] Link permitted (Random)
+send hortbot #foobar [HB] Link permitted. (Random)
 
 handle hortbot @id=cdac822c-e6f5-4eda-ac42-e239cb71ab83;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete cdac822c-e6f5-4eda-ac42-e239cb71ab83
 send hortbot #foobar [HB] Random, please ask a moderator before posting links.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
-send hortbot #foobar [HB] random may now post one link within 1 minute
+send hortbot #foobar [HB] random may now post one link within 1 minute.
 
 clock_forward 30s
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
-send hortbot #foobar [HB] random may now post one link within 1 minute
+send hortbot #foobar [HB] random may now post one link within 1 minute.
 
 clock_forward 30s
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar [HB] Link permitted (Random)
+send hortbot #foobar [HB] Link permitted. (Random)
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 no_send
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links off
-send hortbot #foobar [HB] link filter is now disabled
+send hortbot #foobar [HB] Link filter is now disabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
 no_send
@@ -78,10 +78,10 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
-send hortbot #foobar [HB] link filter is now enabled
+send hortbot #foobar [HB] Link filter is now enabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off
-send hortbot #foobar [HB] filters are now disabled
+send hortbot #foobar [HB] Filters are now disabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
 no_send

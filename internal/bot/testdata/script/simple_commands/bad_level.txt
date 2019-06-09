@@ -1,25 +1,25 @@
 insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan owner
-send hortbot #foobar [HB] command pan restricted to broadcasters and above
+send hortbot #foobar [HB] Command 'pan' restricted to broadcasters and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_), HAVE YE?
-send hortbot #foobar [HB] command pan is restricted to broadcasters; only broadcasters and above can update it
+send hortbot #foobar [HB] Command 'pan' is restricted to broadcasters; only broadcasters and above can update it.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command addo test test
-send hortbot #foobar [HB] your level is moderator; you cannot add a command with level broadcaster
+send hortbot #foobar [HB] Your level is moderator; you cannot add a command with level broadcaster.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command addo test test
-send hortbot #foobar [HB] command test added, restricted to broadcasters and above
+send hortbot #foobar [HB] Command 'test' added, restricted to broadcasters and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command adds test test
-send hortbot #foobar [HB] command test is restricted to broadcasters; only broadcasters and above can update it
+send hortbot #foobar [HB] Command 'test' is restricted to broadcasters; only broadcasters and above can update it.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command addo test test
-send hortbot #foobar [HB] your level is moderator; you cannot update a command with level broadcaster
+send hortbot #foobar [HB] Your level is moderator; you cannot update a command with level broadcaster.

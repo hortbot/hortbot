@@ -18,12 +18,12 @@ var moderationCommands handlerMap = map[string]handlerFunc{
 	"+t":   {fn: cmdModTimeout, minLevel: LevelModerator},
 	"-t":   {fn: cmdModUntimeout, minLevel: LevelModerator},
 	"+p":   {fn: cmdModPurge, minLevel: LevelModerator},
-	"+m":   {fn: cmdChangeMode("slow", "chat is now in slow mode"), minLevel: LevelModerator},
-	"-m":   {fn: cmdChangeMode("slowoff", "chat is no longer in slow mode"), minLevel: LevelModerator},
-	"+s":   {fn: cmdChangeMode("subscribers", "chat is now in subscribers only mode"), minLevel: LevelModerator},
-	"-s":   {fn: cmdChangeMode("subscribersoff", "chat is no longer in subscribers only mode"), minLevel: LevelModerator},
-	"+r9k": {fn: cmdChangeMode("r9kbeta", "chat is now in r9k mode"), minLevel: LevelModerator},
-	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "chat is no longer in r9k mode"), minLevel: LevelModerator},
+	"+m":   {fn: cmdChangeMode("slow", "Chat is now in slow mode."), minLevel: LevelModerator},
+	"-m":   {fn: cmdChangeMode("slowoff", "Chat is no longer in slow mode."), minLevel: LevelModerator},
+	"+s":   {fn: cmdChangeMode("subscribers", "Chat is now in subscribers only mode."), minLevel: LevelModerator},
+	"-s":   {fn: cmdChangeMode("subscribersoff", "Chat is no longer in subscribers only mode."), minLevel: LevelModerator},
+	"+r9k": {fn: cmdChangeMode("r9kbeta", "Chat is now in r9k mode."), minLevel: LevelModerator},
+	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: LevelModerator},
 }
 
 func cmdModBan(ctx context.Context, s *Session, cmd string, args string) error {
@@ -39,7 +39,7 @@ func cmdModBan(ctx context.Context, s *Session, cmd string, args string) error {
 		return err
 	}
 
-	return s.Replyf("%s has been banned", user)
+	return s.Replyf("%s has been banned.", user)
 }
 
 func cmdModUnban(ctx context.Context, s *Session, cmd string, args string) error {
@@ -55,7 +55,7 @@ func cmdModUnban(ctx context.Context, s *Session, cmd string, args string) error
 		return err
 	}
 
-	return s.Replyf("%s has been unbanned", user)
+	return s.Replyf("%s has been unbanned.", user)
 }
 
 func cmdModTimeout(ctx context.Context, s *Session, cmd string, args string) error {
@@ -77,7 +77,7 @@ func cmdModTimeout(ctx context.Context, s *Session, cmd string, args string) err
 			return err
 		}
 
-		return s.Replyf("%s has been timed out", user)
+		return s.Replyf("%s has been timed out.", user)
 	}
 
 	if _, err := strconv.Atoi(seconds); err != nil {
@@ -88,7 +88,7 @@ func cmdModTimeout(ctx context.Context, s *Session, cmd string, args string) err
 		return err
 	}
 
-	return s.Replyf("%s has been timed out for %s seconds", user, seconds)
+	return s.Replyf("%s has been timed out for %s seconds.", user, seconds)
 }
 
 func cmdModUntimeout(ctx context.Context, s *Session, cmd string, args string) error {
@@ -104,7 +104,7 @@ func cmdModUntimeout(ctx context.Context, s *Session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf("%s is no longer timed out", user)
+	return s.Replyf("%s is no longer timed out.", user)
 }
 
 func cmdChangeMode(command, message string) func(ctx context.Context, s *Session, cmd string, args string) error {
@@ -136,7 +136,7 @@ func cmdModPurge(ctx context.Context, s *Session, cmd string, args string) error
 		return err
 	}
 
-	return s.Replyf("%s's chat history has been purged", user)
+	return s.Replyf("%s's chat history has been purged.", user)
 }
 
 func cmdModClear(ctx context.Context, s *Session, cmd string, args string) error {
@@ -191,5 +191,5 @@ func cmdPermit(ctx context.Context, s *Session, cmd string, args string) error {
 		}
 	}
 
-	return s.Replyf("%s may now post one link within %s", user, durReadable)
+	return s.Replyf("%s may now post one link within %s.", user, durReadable)
 }

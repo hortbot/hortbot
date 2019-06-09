@@ -47,7 +47,7 @@ func handleJoin(ctx context.Context, s *Session, name, id string) error {
 	if name != "" && s.IsAdmin() {
 		userID, err = strconv.ParseInt(id, 10, 64)
 		if err != nil || userID <= 0 {
-			return s.Replyf("bad user ID: '%s'", id)
+			return s.Replyf("Bad user ID: '%s'", id)
 		}
 
 		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
@@ -127,5 +127,5 @@ func handleLeave(ctx context.Context, s *Session, name string) error {
 
 	s.Notifier.NotifyChannelUpdates(channel.BotName)
 
-	return s.Replyf("%s, %s will now leave your channel", displayName, channel.BotName)
+	return s.Replyf("%s, %s will now leave your channel.", displayName, channel.BotName)
 }

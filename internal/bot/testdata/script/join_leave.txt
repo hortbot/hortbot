@@ -7,11 +7,11 @@ send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with pref
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
-send hortbot #foobar [HB] prefix changed to +
+send hortbot #foobar [HB] Prefix changed to +
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send hortbot #foobar [HB] command pan added, restricted to subscribers and above
+send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
@@ -22,7 +22,7 @@ send hortbot #hortbot [HB] foobar, hortbot is already active in your channel wit
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
-send hortbot #hortbot [HB] foobar, hortbot will now leave your channel
+send hortbot #hortbot [HB] foobar, hortbot will now leave your channel.
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
@@ -54,14 +54,14 @@ send hortbot #hortbot [HB] someone, hortbot is already active in your channel wi
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!part someone
-send hortbot #hortbot [HB] someone, hortbot will now leave your channel
+send hortbot #hortbot [HB] someone, hortbot will now leave your channel.
 notify_channel_updates hortbot
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone
-send hortbot #hortbot [HB] bad user ID: ''
+send hortbot #hortbot [HB] Bad user ID: ''
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone 0
-send hortbot #hortbot [HB] bad user ID: '0'
+send hortbot #hortbot [HB] Bad user ID: '0'
 no_notify_channel_updates

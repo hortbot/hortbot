@@ -1,16 +1,16 @@
 join hortbot 2 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown
-send hortbot #foobar [HB] cooldown is 0s (default)
+send hortbot #foobar [HB] Cooldown is 0 seconds (default).
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown 30
-send hortbot #foobar [HB] cooldown changed to 30s
+send hortbot #foobar [HB] Cooldown changed to 30 seconds.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown foo
-send hortbot #foobar [HB] new cooldown must be an integer
+send hortbot #foobar [HB] New cooldown must be an integer.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown
-send hortbot #foobar [HB] cooldown is 30s
+send hortbot #foobar [HB] Cooldown is 30 seconds.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown reset
-send hortbot #foobar [HB] cooldown reset to 0s (default)
+send hortbot #foobar [HB] Cooldown reset to 0 seconds (default).

@@ -1,7 +1,7 @@
 join hortbot 2 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_links This is a link: google.com
-send hortbot #foobar [HB] links: https://google.com
+send hortbot #foobar [HB] Links: https://google.com
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_links These are two links http://twitch.tv/something algorithms.wtf
-send hortbot #foobar [HB] links: http://twitch.tv/something https://algorithms.wtf
+send hortbot #foobar [HB] Links: http://twitch.tv/something https://algorithms.wtf

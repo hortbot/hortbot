@@ -24,7 +24,7 @@ func cmdFilter(ctx context.Context, s *Session, cmd string, args string) error {
 
 	ok, err := filterCommands.run(ctx, s, subcommand, args)
 	if !ok {
-		return s.Replyf("no such filter option %s", subcommand)
+		return s.Replyf("No such filter option '%s'.", subcommand)
 	}
 
 	return err
@@ -34,9 +34,9 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *Session, cmd strin
 	return func(ctx context.Context, s *Session, cmd string, args string) error {
 		if s.Channel.EnableFilters == enable {
 			if enable {
-				return s.Reply("filters are already enabled")
+				return s.Reply("Filters are already enabled.")
 			}
-			return s.Reply("filters are already disabled")
+			return s.Reply("Filters are already disabled.")
 		}
 
 		s.Channel.EnableFilters = enable
@@ -46,9 +46,9 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *Session, cmd strin
 		}
 
 		if enable {
-			return s.Reply("filters are now enabled")
+			return s.Reply("Filters are now enabled.")
 		}
-		return s.Reply("filters are now disabled")
+		return s.Reply("Filters are now disabled.")
 	}
 }
 
@@ -66,9 +66,9 @@ func cmdFilterLinks(ctx context.Context, s *Session, cmd string, args string) er
 
 	if s.Channel.FilterLinks == enable {
 		if enable {
-			return s.Reply("link filter is already enabled")
+			return s.Reply("Link filter is already enabled.")
 		}
-		return s.Reply("link filter is already disabled")
+		return s.Reply("Link filter is already disabled.")
 	}
 
 	s.Channel.FilterLinks = enable
@@ -78,7 +78,7 @@ func cmdFilterLinks(ctx context.Context, s *Session, cmd string, args string) er
 	}
 
 	if enable {
-		return s.Reply("link filter is now enabled")
+		return s.Reply("Link filter is now enabled.")
 	}
-	return s.Reply("link filter is now disabled")
+	return s.Reply("Link filter is now disabled.")
 }

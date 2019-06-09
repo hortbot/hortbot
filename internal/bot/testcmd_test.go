@@ -62,7 +62,7 @@ func init() {
 	bot.TestingBuiltin("testing_links",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			var builder strings.Builder
-			builder.WriteString("links: ")
+			builder.WriteString("Links: ")
 
 			links := s.Links()
 			last := len(links) - 1

@@ -93,18 +93,18 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 	name = strings.ToLower(name)
 
 	if reservedCommandNames[name] {
-		return s.Replyf("command name %s is reserved", name)
+		return s.Replyf("Command name '%s' is reserved.", name)
 	}
 
 	// TODO: remove this warning
 	var warning string
 	if _, ok := builtinCommands[name]; ok {
-		warning = "; warning: " + name + " is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
+		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
 	}
 
 	_, err := cbp.Parse(text)
 	if err != nil {
-		return s.Replyf("error parsing command%s", warning)
+		return s.Replyf("Error parsing command.%s", warning)
 	}
 
 	command, err := models.SimpleCommands(
@@ -125,13 +125,13 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 			a = "update"
 		}
 
-		return s.Replyf("your level is %s; you cannot %s a command with level %s", s.UserLevel.PGEnum(), a, level.PGEnum())
+		return s.Replyf("Your level is %s; you cannot %s a command with level %s.", s.UserLevel.PGEnum(), a, level.PGEnum())
 	}
 
 	if update {
 		if !s.UserLevel.CanAccess(NewAccessLevel(command.AccessLevel)) {
 			al := flect.Pluralize(command.AccessLevel)
-			return s.Replyf("command %s is restricted to %s; only %s and above can update it", name, al, al)
+			return s.Replyf("Command '%s' is restricted to %s; only %s and above can update it.", name, al, al)
 		}
 
 		command.Message = text
@@ -146,7 +146,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 		}
 
 		al := flect.Pluralize(command.AccessLevel)
-		return s.Replyf("command %s updated, restricted to %s and above%s", name, al, warning)
+		return s.Replyf("Command '%s' updated, restricted to %s and above.%s", name, al, warning)
 	}
 
 	command = &models.SimpleCommand{
@@ -162,7 +162,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 	}
 
 	al := flect.Pluralize(command.AccessLevel)
-	return s.Replyf("command %s added, restricted to %s and above%s", name, al, warning)
+	return s.Replyf("Command '%s' added, restricted to %s and above.%s", name, al, warning)
 }
 
 func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args string) error {
@@ -185,7 +185,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args st
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s does not exist", name)
+		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
 	if err != nil {
@@ -194,7 +194,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args st
 
 	level := NewAccessLevel(command.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
-		return s.Replyf("your level is %s; you cannot delete a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
+		return s.Replyf("Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
 	err = command.Delete(ctx, s.Tx)
@@ -202,7 +202,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args st
 		return err
 	}
 
-	return s.Replyf("command %s deleted", name)
+	return s.Replyf("Command '%s' deleted.", name)
 }
 
 func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args string) error {
@@ -223,7 +223,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args 
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s does not exist", name)
+		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
 	if err != nil {
@@ -231,7 +231,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args 
 	}
 
 	if level == "" {
-		return s.Replyf("command %s is restricted to %s and above", name, flect.Pluralize(command.AccessLevel))
+		return s.Replyf("Command '%s' is restricted to %s and above.", name, flect.Pluralize(command.AccessLevel))
 	}
 
 	level = strings.ToLower(level)
@@ -253,11 +253,11 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args 
 	}
 
 	if !s.UserLevel.CanAccess(NewAccessLevel(command.AccessLevel)) {
-		return s.Replyf("your level is %s; you cannot restrict a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
+		return s.Replyf("Your level is %s; you cannot restrict a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
 	if !s.UserLevel.CanAccess(NewAccessLevel(newLevel)) {
-		return s.Replyf("your level is %s; you cannot restrict a command to level %s", s.UserLevel.PGEnum(), newLevel)
+		return s.Replyf("Your level is %s; you cannot restrict a command to level %s.", s.UserLevel.PGEnum(), newLevel)
 	}
 
 	command.AccessLevel = newLevel
@@ -267,7 +267,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args 
 		return err
 	}
 
-	return s.Replyf("command %s restricted to %s and above", name, flect.Pluralize(command.AccessLevel))
+	return s.Replyf("Command '%s' restricted to %s and above.", name, flect.Pluralize(command.AccessLevel))
 }
 
 func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args string) error {
@@ -283,7 +283,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s does not exist", name)
+		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
 	if err != nil {
@@ -292,7 +292,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args
 
 	switch prop {
 	case "editor", "author":
-		return s.Replyf("command %s was last modified by %s", name, command.Editor) // TODO: include the date/time?
+		return s.Replyf("Command '%s' was last modified by %s.", name, command.Editor) // TODO: include the date/time?
 	case "count":
 		u := "times"
 
@@ -300,7 +300,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args
 			u = "time"
 		}
 
-		return s.Replyf("command %s has been used %d %s", name, command.Count, u)
+		return s.Replyf("Command '%s' has been used %d %s.", name, command.Count, u)
 	}
 
 	panic("unreachable")
@@ -322,7 +322,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args st
 	newName = strings.ToLower(newName)
 
 	if oldName == newName {
-		return s.Replyf("%s is already called %s!", oldName, oldName)
+		return s.Replyf("'%s' is already called '%s'!", oldName, oldName)
 	}
 
 	command, err := models.SimpleCommands(
@@ -331,7 +331,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args st
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s does not exist", oldName)
+		return s.Replyf("Command '%s' does not exist.", oldName)
 	}
 
 	if err != nil {
@@ -340,7 +340,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args st
 
 	level := NewAccessLevel(command.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
-		return s.Replyf("your level is %s; you cannot rename a command with level %s", s.UserLevel.PGEnum(), command.AccessLevel)
+		return s.Replyf("Your level is %s; you cannot rename a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
 	exists, err := models.SimpleCommands(
@@ -353,7 +353,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args st
 	}
 
 	if exists {
-		return s.Replyf("command %s already exists", newName)
+		return s.Replyf("Command '%s' already exists.", newName)
 	}
 
 	command.Name = newName
@@ -362,7 +362,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args st
 		return err
 	}
 
-	return s.Replyf("command %s has been renamed to %s", oldName, newName)
+	return s.Replyf("Command '%s' has been renamed to '%s'.", oldName, newName)
 }
 
 func cmdSimpleCommandGet(ctx context.Context, s *Session, cmd string, args string) error {
@@ -384,14 +384,14 @@ func cmdSimpleCommandGet(ctx context.Context, s *Session, cmd string, args strin
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("command %s does not exist", name)
+		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	return s.Replyf("command %s: %s", name, command.Message)
+	return s.Replyf("Command '%s': %s", name, command.Message)
 }
 
 func init() {

@@ -8,7 +8,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-b random
 send hortbot #foobar /unban random
-send hortbot #foobar [HB] random has been unbanned
+send hortbot #foobar [HB] random has been unbanned.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-b someone
 no_send

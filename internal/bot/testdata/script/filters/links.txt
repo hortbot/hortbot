@@ -11,7 +11,7 @@ send hortbot #foobar [HB] usage: !filter links on|off
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
-send hortbot #foobar [HB] filters are now enabled
+send hortbot #foobar [HB] Filters are now enabled.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
@@ -19,19 +19,19 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
-send hortbot #foobar [HB] link filter is now enabled
+send hortbot #foobar [HB] Link filter is now enabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
-send hortbot #foobar [HB] link filter is already enabled
+send hortbot #foobar [HB] Link filter is already enabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links off
-send hortbot #foobar [HB] link filter is now disabled
+send hortbot #foobar [HB] Link filter is now disabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links off
-send hortbot #foobar [HB] link filter is already disabled
+send hortbot #foobar [HB] Link filter is already disabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
-send hortbot #foobar [HB] link filter is now enabled
+send hortbot #foobar [HB] Link filter is now enabled.
 
 
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
@@ -40,7 +40,7 @@ send hortbot #foobar [HB] Random, please ask a moderator before posting links.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
-send hortbot #foobar [HB] random added to ignored users
+send hortbot #foobar [HB] random added to ignored users.
 
 handle hortbot @id=f59f9545-f301-499c-8053-d8386473033a;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete f59f9545-f301-499c-8053-d8386473033a
@@ -48,7 +48,7 @@ send hortbot #foobar [HB] Random, please ask a moderator before posting links.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off
-send hortbot #foobar [HB] filters are now disabled
+send hortbot #foobar [HB] Filters are now disabled.
 
 handle hortbot @id=86ad104f-4e8b-4aa1-b72a-dc382eb06147;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 no_send

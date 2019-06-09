@@ -20,16 +20,16 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] No quote contained that phrase.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search 100
-send hortbot #foobar [HB] Phrase found in quote 4
+send hortbot #foobar [HB] Phrase found in quote 4.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search test
-send hortbot #foobar [HB] Phrase found in quotes 1, 2, 3
+send hortbot #foobar [HB] Phrase found in quotes 1, 2, and 3.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search 0%
-send hortbot #foobar [HB] Phrase found in quotes 4, 5
+send hortbot #foobar [HB] Phrase found in quotes 4 and 5.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search _ 11
-send hortbot #foobar [HB] Phrase found in quote 5
+send hortbot #foobar [HB] Phrase found in quote 5.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search
 send hortbot #foobar [HB] usage: !quote search <phrase>

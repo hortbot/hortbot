@@ -4,4 +4,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] usage: !set <setting> <value>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set idontexist
-send hortbot #foobar [HB] no such setting idontexist
+send hortbot #foobar [HB] No such setting 'idontexist'.

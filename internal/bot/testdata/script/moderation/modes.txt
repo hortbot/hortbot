@@ -2,7 +2,7 @@ join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+m
 send hortbot #foobar /slow
-send hortbot #foobar [HB] chat is now in slow mode
+send hortbot #foobar [HB] Chat is now in slow mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+m
 no_send
@@ -13,7 +13,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-m
 send hortbot #foobar /slowoff
-send hortbot #foobar [HB] chat is no longer in slow mode
+send hortbot #foobar [HB] Chat is no longer in slow mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-m
 no_send
@@ -24,7 +24,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+s
 send hortbot #foobar /subscribers
-send hortbot #foobar [HB] chat is now in subscribers only mode
+send hortbot #foobar [HB] Chat is now in subscribers only mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+s
 no_send
@@ -35,7 +35,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-s
 send hortbot #foobar /subscribersoff
-send hortbot #foobar [HB] chat is no longer in subscribers only mode
+send hortbot #foobar [HB] Chat is no longer in subscribers only mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-s
 no_send
@@ -46,7 +46,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+r9k
 send hortbot #foobar /r9kbeta
-send hortbot #foobar [HB] chat is now in r9k mode
+send hortbot #foobar [HB] Chat is now in r9k mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+r9k
 no_send
@@ -57,7 +57,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-r9k
 send hortbot #foobar /r9kbetaoff
-send hortbot #foobar [HB] chat is no longer in r9k mode
+send hortbot #foobar [HB] Chat is no longer in r9k mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-r9k
 no_send

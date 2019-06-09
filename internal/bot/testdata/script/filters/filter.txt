@@ -10,4 +10,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] usage: !filter <option> ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter what
-send hortbot #foobar [HB] no such filter option what
+send hortbot #foobar [HB] No such filter option 'what'.

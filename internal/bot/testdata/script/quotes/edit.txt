@@ -1,7 +1,7 @@
 join hortbot 2 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
-send hortbot #foobar [HB] "This is a test." added, this is quote #1
+send hortbot #foobar [HB] "This is a test." added as quote #1.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote get 1
 send hortbot #foobar [HB] Quote #1: "This is a test."

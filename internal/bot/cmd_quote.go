@@ -76,7 +76,7 @@ func cmdQuoteAdd(ctx context.Context, s *Session, cmd string, args string) error
 		return err
 	}
 
-	return s.Replyf("%s added, this is quote #%d", args, nextNum)
+	return s.Replyf("%s added as quote #%d.", args, nextNum)
 }
 
 func cmdQuoteDelete(ctx context.Context, s *Session, cmd string, args string) error {
@@ -206,7 +206,7 @@ func cmdQuoteGet(ctx context.Context, s *Session, cmd string, args string) error
 func cmdQuoteRandom(ctx context.Context, s *Session, cmd string, args string) error {
 	quote, err := models.Quotes(qm.OrderBy("random()")).One(ctx, s.Tx)
 	if err == sql.ErrNoRows {
-		return s.Reply("there are no quotes")
+		return s.Reply("There are no quotes.")
 	}
 
 	if err != nil {
@@ -242,7 +242,7 @@ func cmdQuoteSearch(ctx context.Context, s *Session, cmd string, args string) er
 	case 0:
 		return s.Reply("No quote contained that phrase.")
 	case 1:
-		return s.Replyf("Phrase found in quote %d", quotes[0].Num)
+		return s.Replyf("Phrase found in quote %d.", quotes[0].Num)
 	}
 
 	var builder strings.Builder
@@ -252,10 +252,18 @@ func cmdQuoteSearch(ctx context.Context, s *Session, cmd string, args string) er
 	for i, q := range quotes {
 		builder.WriteString(strconv.Itoa(q.Num))
 
-		if i != last {
+		switch {
+		case i == last-1:
+			if len(quotes) != 2 {
+				builder.WriteByte(',')
+			}
+			builder.WriteString(" and ")
+		case i != last:
 			builder.WriteString(", ")
 		}
 	}
+
+	builder.WriteByte('.')
 
 	return s.Reply(builder.String())
 }
@@ -287,5 +295,5 @@ func cmdQuoteEditor(ctx context.Context, s *Session, cmd string, args string) er
 		return err
 	}
 
-	return s.Replyf("Quote #%d was last edited by %s", quote.Num, quote.Editor)
+	return s.Replyf("Quote #%d was last edited by %s.", quote.Num, quote.Editor)
 }
