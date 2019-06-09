@@ -219,7 +219,7 @@ func (s *Session) DeleteMessage() error {
 
 func (s *Session) Links() []*url.URL {
 	if !s.linksSet {
-		s.links = findlinks.Find(s.Message)
+		s.links = findlinks.Find(s.Message, "http", "https", "ftp")
 	}
 
 	return s.links

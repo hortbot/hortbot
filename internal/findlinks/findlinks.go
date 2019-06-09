@@ -9,7 +9,7 @@ import (
 
 var linkRegex = xurls.Relaxed()
 
-func Find(message string) []*url.URL {
+func Find(message string, schemeWhitelist ...string) []*url.URL {
 	matches := linkRegex.FindAllString(message, -1)
 
 	if len(matches) == 0 {
@@ -21,9 +21,20 @@ func Find(message string) []*url.URL {
 	for _, m := range matches {
 		u, err := urlx.ParseWithDefaultScheme(m, "https")
 		if err == nil {
-			urls = append(urls, u)
+			if len(schemeWhitelist) == 0 || inWhitelist(u.Scheme, schemeWhitelist) {
+				urls = append(urls, u)
+			}
 		}
 	}
 
 	return urls
+}
+
+func inWhitelist(s string, whitelist []string) bool {
+	for _, w := range whitelist {
+		if s == w {
+			return true
+		}
+	}
+	return false
 }

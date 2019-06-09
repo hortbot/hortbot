@@ -43,6 +43,7 @@ type Channel struct {
 	ShouldModerate bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
 	EnableFilters  bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
 	FilterLinks    bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
+	PermittedLinks types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -67,6 +68,7 @@ var ChannelColumns = struct {
 	ShouldModerate string
 	EnableFilters  string
 	FilterLinks    string
+	PermittedLinks string
 }{
 	ID:             "id",
 	CreatedAt:      "created_at",
@@ -86,6 +88,7 @@ var ChannelColumns = struct {
 	ShouldModerate: "should_moderate",
 	EnableFilters:  "enable_filters",
 	FilterLinks:    "filter_links",
+	PermittedLinks: "permitted_links",
 }
 
 // Generated where
@@ -224,6 +227,7 @@ var ChannelWhere = struct {
 	ShouldModerate whereHelperbool
 	EnableFilters  whereHelperbool
 	FilterLinks    whereHelperbool
+	PermittedLinks whereHelpertypes_StringArray
 }{
 	ID:             whereHelperint64{field: "\"channels\".\"id\""},
 	CreatedAt:      whereHelpertime_Time{field: "\"channels\".\"created_at\""},
@@ -243,6 +247,7 @@ var ChannelWhere = struct {
 	ShouldModerate: whereHelperbool{field: "\"channels\".\"should_moderate\""},
 	EnableFilters:  whereHelperbool{field: "\"channels\".\"enable_filters\""},
 	FilterLinks:    whereHelperbool{field: "\"channels\".\"filter_links\""},
+	PermittedLinks: whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -272,9 +277,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "should_moderate", "enable_filters", "filter_links"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "should_moderate", "enable_filters", "filter_links", "permitted_links"}
 	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "enable_filters", "filter_links"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate", "permitted_links"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

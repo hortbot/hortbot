@@ -1,0 +1,68 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter pd
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter pl
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd
+send hortbot #foobar [HB] usage: !filter pd add|delete|list ...
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pl
+send hortbot #foobar [HB] usage: !filter pl add|delete|list ...
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pl what
+send hortbot #foobar [HB] usage: !filter pl add|delete|list ...
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
+send hortbot #foobar [HB] There are no permitted link patterns.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd delete 1
+send hortbot #foobar [HB] Permitted link pattern #1 does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add example.com
+send hortbot #foobar [HB] Permitted link pattern #1 added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
+send hortbot #foobar [HB] Permitted link patterns: 1 = example.com
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add twitch.tv/*/clips
+send hortbot #foobar [HB] Permitted link pattern #2 added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
+send hortbot #foobar [HB] Permitted link patterns: 1 = example.com, 2 = twitch.tv/*/clips
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd delete 1
+send hortbot #foobar [HB] Permitted link pattern #1 deleted; was 'example.com'.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
+send hortbot #foobar [HB] Permitted link patterns: 1 = twitch.tv/*/clips
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add goo.gl/*
+send hortbot #foobar [HB] Permitted link pattern #2 added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd delete 2
+send hortbot #foobar [HB] Permitted link pattern #2 deleted; was 'goo.gl/*'.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
+send hortbot #foobar [HB] Permitted link patterns: 1 = twitch.tv/*/clips
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd delete 1
+send hortbot #foobar [HB] Permitted link pattern #1 deleted; was 'twitch.tv/*/clips'.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
+send hortbot #foobar [HB] There are no permitted link patterns.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd delete 0
+send hortbot #foobar [HB] usage: !filter pd delete <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd remove foo
+send hortbot #foobar [HB] usage: !filter pd remove <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add goo.gl/* hmm
+send hortbot #foobar [HB] usage: !filter pd add <link pattern>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add *
+send hortbot #foobar [HB] Could not parse link pattern.

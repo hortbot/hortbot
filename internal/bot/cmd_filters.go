@@ -2,8 +2,10 @@ package bot
 
 import (
 	"context"
+	"strconv"
 	"strings"
 
+	"github.com/goware/urlx"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
 )
@@ -12,6 +14,8 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"on":    {fn: cmdFilterOnOff(true), minLevel: LevelModerator},
 	"off":   {fn: cmdFilterOnOff(false), minLevel: LevelModerator},
 	"links": {fn: cmdFilterLinks, minLevel: LevelModerator},
+	"pd":    {fn: cmdFilterPermittedLinks, minLevel: LevelModerator},
+	"pl":    {fn: cmdFilterPermittedLinks, minLevel: LevelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *Session, cmd string, args string) error {
@@ -81,4 +85,88 @@ func cmdFilterLinks(ctx context.Context, s *Session, cmd string, args string) er
 		return s.Reply("Link filter is now enabled.")
 	}
 	return s.Reply("Link filter is now disabled.")
+}
+
+func cmdFilterPermittedLinks(ctx context.Context, s *Session, cmd string, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("add|delete|list ...")
+	}
+
+	subcommand, args := splitSpace(args)
+	if subcommand == "" {
+		return usage()
+	}
+
+	subcommand = strings.ToLower(subcommand)
+	args = strings.ToLower(args)
+
+	switch subcommand {
+	case "list":
+		permitted := s.Channel.PermittedLinks
+
+		if len(permitted) == 0 {
+			return s.Reply("There are no permitted link patterns.")
+		}
+
+		var builder strings.Builder
+		builder.WriteString("Permitted link patterns: ")
+
+		for i, p := range permitted {
+			if i != 0 {
+				builder.WriteString(", ")
+			}
+
+			builder.WriteString(strconv.Itoa(i + 1))
+			builder.WriteString(" = ")
+			builder.WriteString(p)
+		}
+
+		return s.Reply(builder.String())
+
+	case "add":
+		pd, args := splitSpace(args)
+		if args != "" {
+			return s.ReplyUsage(subcommand + " <link pattern>")
+		}
+
+		_, err := urlx.ParseWithDefaultScheme(pd, "https")
+		if err != nil {
+			return s.Reply("Could not parse link pattern.")
+		}
+
+		s.Channel.PermittedLinks = append(s.Channel.PermittedLinks, pd)
+
+		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.PermittedLinks)); err != nil {
+			return err
+		}
+
+		n := len(s.Channel.PermittedLinks)
+		return s.Replyf("Permitted link pattern #%d added.", n)
+
+	case "delete", "remove":
+		n, err := strconv.Atoi(args)
+		if err != nil || n <= 0 {
+			return s.ReplyUsage(subcommand + " <num>")
+		}
+
+		i := n - 1
+
+		old := s.Channel.PermittedLinks
+
+		if i >= len(old) {
+			return s.Replyf("Permitted link pattern #%d does not exist.", n)
+		}
+
+		oldP := old[i]
+		s.Channel.PermittedLinks = append(old[:i], old[i+1:]...) //nolint:gocritic
+
+		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.PermittedLinks)); err != nil {
+			return err
+		}
+
+		return s.Replyf("Permitted link pattern #%d deleted; was '%s'.", n, oldP)
+
+	default:
+		return usage()
+	}
 }

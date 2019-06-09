@@ -12,8 +12,9 @@ import (
 
 func TestFind(t *testing.T) {
 	tests := []struct {
-		message string
-		want    []*url.URL
+		message   string
+		whitelist []string
+		want      []*url.URL
 	}{
 		{},
 		{
@@ -70,10 +71,39 @@ func TestFind(t *testing.T) {
 				},
 			},
 		},
+		{
+			message:   "yo look at explicitly https://youtu.be/dQw4w9WgXcQ",
+			whitelist: []string{"http", "https", "ftp"},
+			want: []*url.URL{
+				{
+					Scheme: "https",
+					Host:   "youtu.be",
+					Path:   "/dQw4w9WgXcQ",
+				},
+			},
+		},
+		{
+			message:   "this isn't here https://youtu.be/dQw4w9WgXcQ",
+			whitelist: []string{"http"},
+		},
+		{
+			message: "yo look at git://github.com/what.git",
+			want: []*url.URL{
+				{
+					Scheme: "git",
+					Host:   "github.com",
+					Path:   "/what.git",
+				},
+			},
+		},
+		{
+			message:   "this does not match git://github.com/what.git",
+			whitelist: []string{"http", "https", "ftp"},
+		},
 	}
 
 	for _, test := range tests {
-		got := findlinks.Find(test.message)
+		got := findlinks.Find(test.message, test.whitelist...)
 		assert.Check(t, cmp.DeepEqual(test.want, got, cmpopts.EquateEmpty()), "%s", test.message)
 	}
 }

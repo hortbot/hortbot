@@ -149,7 +149,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] List
 - [ ] Filters
     - [x] Links
-        - [ ] Permitted domains (and more)
+        - [x] Permitted domains (and more)
     - [ ] Capitals
     - [ ] Banned phrases
     - [ ] Symbols
@@ -163,7 +163,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [ ] `displaywarnings`
         - [ ] `messagelength`
         - [x] `links`
-        - [ ] `pd`
+        - [x] `pd`
         - [ ] `banphrase`
         - [ ] `caps`
         - [ ] `emotes`

@@ -35,7 +35,9 @@ CREATE TABLE channels (
     should_moderate boolean DEFAULT true NOT NULL,
 
     enable_filters boolean NOT NULL,
-    filter_links boolean NOT NULL
+
+    filter_links boolean NOT NULL,
+    permitted_links text[] DEFAULT '{}' NOT NULL
 );
 
 CREATE INDEX channels_user_id_idx on channels (user_id);
