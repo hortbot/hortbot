@@ -6,7 +6,7 @@ import (
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/birc"
-	"github.com/hortbot/hortbot/internal/fakeirc"
+	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
 	"gotest.tools/assert"
 )
 

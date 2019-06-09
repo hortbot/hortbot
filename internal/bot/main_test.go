@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/testutil/pgtest"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/pgtest"
 	"gotest.tools/assert"
 )
 

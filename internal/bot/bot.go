@@ -3,7 +3,7 @@ package bot
 import (
 	"database/sql"
 
-	"github.com/hortbot/hortbot/internal/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/leononame/clock"
 )
 

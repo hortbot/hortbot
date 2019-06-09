@@ -7,9 +7,9 @@ import (
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/birc/breq"
-	"github.com/hortbot/hortbot/internal/ctxlog"
-	"github.com/hortbot/hortbot/internal/x/errgroupx"
-	"github.com/hortbot/hortbot/internal/x/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"

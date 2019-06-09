@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/hortbot/hortbot/internal/x/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/jakebailey/irc"
 	"gotest.tools/assert"
 	"gotest.tools/assert/cmp"

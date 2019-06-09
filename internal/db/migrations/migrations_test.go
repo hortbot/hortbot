@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/testutil/pgtest"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/pgtest"
 	"gotest.tools/assert"
 	"gotest.tools/assert/cmp"
 )

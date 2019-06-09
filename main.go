@@ -10,10 +10,10 @@ import (
 
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/dedupe/memory"
-	"github.com/hortbot/hortbot/internal/x/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/jessevdk/go-flags"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"

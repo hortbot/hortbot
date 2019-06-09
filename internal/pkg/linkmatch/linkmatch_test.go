@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/goware/urlx"
-	"github.com/hortbot/hortbot/internal/linkmatch"
+	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 	"gotest.tools/assert"
 )
 

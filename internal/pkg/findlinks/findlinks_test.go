@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/hortbot/hortbot/internal/findlinks"
+	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"gotest.tools/assert"
 	"gotest.tools/assert/cmp"
 )

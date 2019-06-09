@@ -11,8 +11,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/x/errgroupx"
-	"github.com/hortbot/hortbot/internal/x/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 )
 

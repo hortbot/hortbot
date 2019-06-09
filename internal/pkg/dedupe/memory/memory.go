@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 )
 
 type Dedupe struct {

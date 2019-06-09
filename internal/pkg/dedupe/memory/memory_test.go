@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/dedupe/memory"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"gotest.tools/assert"
 )
 

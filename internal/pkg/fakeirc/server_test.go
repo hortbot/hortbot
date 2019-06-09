@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/fortytw2/leaktest"
-	"github.com/hortbot/hortbot/internal/fakeirc"
-	"github.com/hortbot/hortbot/internal/x/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
+	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 	"gotest.tools/assert"
 )

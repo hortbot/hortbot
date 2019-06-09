@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/findlinks"
+	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
 	"github.com/leononame/clock"
 )

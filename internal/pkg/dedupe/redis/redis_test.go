@@ -9,8 +9,8 @@ import (
 	"time"
 
 	redislib "github.com/go-redis/redis"
-	"github.com/hortbot/hortbot/internal/dedupe/redis"
-	"github.com/hortbot/hortbot/internal/testutil/redistest"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/redistest"
 	"gotest.tools/assert"
 )
 

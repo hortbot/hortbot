@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/fortytw2/leaktest"
-	"github.com/hortbot/hortbot/internal/x/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"gotest.tools/assert"
 	"gotest.tools/assert/cmp"
 )

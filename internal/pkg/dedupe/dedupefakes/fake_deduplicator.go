@@ -4,7 +4,7 @@ package dedupefakes
 import (
 	"sync"
 
-	"github.com/hortbot/hortbot/internal/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 )
 
 type FakeDeduplicator struct {

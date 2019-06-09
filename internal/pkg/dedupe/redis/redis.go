@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/hortbot/hortbot/internal/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 )
 
 var check = redis.NewScript(`

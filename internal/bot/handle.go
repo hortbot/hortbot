@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/boil"

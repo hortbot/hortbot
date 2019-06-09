@@ -6,7 +6,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/hortbot/hortbot/internal/x/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 )
 

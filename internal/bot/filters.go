@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/linkmatch"
+	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 )
 
 func tryFilter(ctx context.Context, s *Session) (filtered bool, err error) {

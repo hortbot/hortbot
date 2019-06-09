@@ -9,10 +9,10 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/ctxlog"
-	"github.com/hortbot/hortbot/internal/dedupe"
-	"github.com/hortbot/hortbot/internal/testutil"
-	"github.com/hortbot/hortbot/internal/x/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/testutil"
+	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 )
 
