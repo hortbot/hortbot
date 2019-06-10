@@ -1,19 +1,19 @@
-package redis
+package rdb
 
 import "github.com/go-redis/redis"
-
-func ReplaceCheck(source string) func() {
-	old := check
-	check = redis.NewScript(source)
-	return func() {
-		check = old
-	}
-}
 
 func ReplaceCheckAndMark(source string) func() {
 	old := checkAndMark
 	checkAndMark = redis.NewScript(source)
 	return func() {
 		checkAndMark = old
+	}
+}
+
+func ReplaceCheckAndRefresh(source string) func() {
+	old := checkAndRefresh
+	checkAndRefresh = redis.NewScript(source)
+	return func() {
+		checkAndRefresh = old
 	}
 }

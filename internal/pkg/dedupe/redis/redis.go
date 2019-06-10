@@ -6,28 +6,14 @@ import (
 
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 )
-
-var check = redis.NewScript(`
-local exists = redis.pcall('EXISTS', KEYS[1])
-if exists == 1 then
-	redis.pcall('EXPIRE', KEYS[1], ARGV[1])
-	return true
-end
-return false
-`)
-
-var checkAndMark = redis.NewScript(`
-local v = redis.pcall('GETSET', KEYS[1], '1')
-redis.call('EXPIRE', KEYS[1], ARGV[1])
-return v ~= false
-`)
 
 var ErrExpiryTooShort = errors.New("expiry is too short")
 
 type Dedupe struct {
-	r      redis.Cmdable
-	expiry time.Duration
+	d      *rdb.DB
+	expiry int
 }
 
 func New(r redis.Cmdable, expiry time.Duration) (*Dedupe, error) {
@@ -35,39 +21,27 @@ func New(r redis.Cmdable, expiry time.Duration) (*Dedupe, error) {
 		return nil, ErrExpiryTooShort
 	}
 
-	if err := check.Load(r).Err(); err != nil {
-		return nil, err
-	}
-
-	if err := checkAndMark.Load(r).Err(); err != nil {
+	d, err := rdb.New(r, rdb.KeyPrefix("dedupe"))
+	if err != nil {
 		return nil, err
 	}
 
 	return &Dedupe{
-		r:      r,
-		expiry: expiry,
+		d:      d,
+		expiry: int(expiry.Seconds()),
 	}, nil
 }
 
 var _ dedupe.Deduplicator = (*Dedupe)(nil)
 
 func (d *Dedupe) Mark(id string) error {
-	return d.r.Set(id, "1", d.expiry).Err()
+	return d.d.Mark(d.expiry, id)
 }
 
 func (d *Dedupe) Check(id string) (seen bool, err error) {
-	return d.runScript(check, id)
+	return d.d.CheckAndRefresh(d.expiry, id)
 }
 
 func (d *Dedupe) CheckAndMark(id string) (seen bool, err error) {
-	return d.runScript(checkAndMark, id)
-}
-
-func (d *Dedupe) runScript(s *redis.Script, id string) (bool, error) {
-	b, err := s.Run(d.r, []string{id}, int(d.expiry.Seconds())).Bool()
-	if err == redis.Nil {
-		err = nil
-	}
-
-	return b, err
+	return d.d.CheckAndMark(d.expiry, id)
 }

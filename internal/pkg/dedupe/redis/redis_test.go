@@ -1,56 +1,26 @@
 package redis_test
 
 import (
-	"fmt"
-	"log"
-	"os"
-	"sync/atomic"
+	"net"
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis"
 	redislib "github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/redistest"
 	"gotest.tools/assert"
 )
 
-var nextID int64
-
-func getNextID() string {
-	id := atomic.AddInt64(&nextID, 1)
-	return fmt.Sprintf("test-%d", id)
-}
-
-var client *redislib.Client
-
-func must(err error) {
-	if err != nil {
-		log.Panic(err)
-	}
-}
-
-func TestMain(m *testing.M) {
-	var status int
-	defer func() {
-		os.Exit(status)
-	}()
-
-	var cleanup func()
-	var err error
-
-	client, cleanup, err = redistest.New()
-	must(err)
-	defer cleanup()
-
-	status = m.Run()
-}
+const id = "id"
 
 func TestCheckNotFound(t *testing.T) {
 	t.Parallel()
 
-	id := getNextID()
+	_, c, cleanup, err := getRedis()
+	assert.NilError(t, err)
+	defer cleanup()
 
-	d, err := redis.New(client, time.Second)
+	d, err := redis.New(c, time.Second)
 	assert.NilError(t, err)
 
 	seen, err := d.Check(id)
@@ -61,12 +31,16 @@ func TestCheckNotFound(t *testing.T) {
 func TestMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
-	id := getNextID()
+	s, c, cleanup, err := getRedis()
+	assert.NilError(t, err)
+	defer cleanup()
 
-	d, err := redis.New(client, time.Second)
+	d, err := redis.New(c, time.Minute)
 	assert.NilError(t, err)
 
 	assert.NilError(t, d.Mark(id))
+	s.FastForward(time.Second)
+
 	seen, err := d.Check(id)
 	assert.Assert(t, seen)
 	assert.NilError(t, err)
@@ -75,13 +49,19 @@ func TestMarkThenCheck(t *testing.T) {
 func TestMarkMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
-	id := getNextID()
+	s, c, cleanup, err := getRedis()
+	assert.NilError(t, err)
+	defer cleanup()
 
-	d, err := redis.New(client, time.Second)
+	d, err := redis.New(c, time.Minute)
 	assert.NilError(t, err)
 
 	assert.NilError(t, d.Mark(id))
+	s.FastForward(time.Second)
+
 	assert.NilError(t, d.Mark(id))
+	s.FastForward(time.Second)
+
 	seen, err := d.Check(id)
 	assert.Assert(t, seen)
 	assert.NilError(t, err)
@@ -90,14 +70,18 @@ func TestMarkMarkThenCheck(t *testing.T) {
 func TestCheckAndMark(t *testing.T) {
 	t.Parallel()
 
-	id := getNextID()
+	s, c, cleanup, err := getRedis()
+	assert.NilError(t, err)
+	defer cleanup()
 
-	d, err := redis.New(client, time.Second)
+	d, err := redis.New(c, time.Minute)
 	assert.NilError(t, err)
 
 	seen, err := d.CheckAndMark(id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
+
+	s.FastForward(time.Second)
 
 	seen, err = d.Check(id)
 	assert.Assert(t, seen)
@@ -107,14 +91,18 @@ func TestCheckAndMark(t *testing.T) {
 func TestCheckAndMarkTwice(t *testing.T) {
 	t.Parallel()
 
-	id := getNextID()
+	s, c, cleanup, err := getRedis()
+	assert.NilError(t, err)
+	defer cleanup()
 
-	d, err := redis.New(client, time.Second)
+	d, err := redis.New(c, time.Minute)
 	assert.NilError(t, err)
 
 	seen, err := d.CheckAndMark(id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
+
+	s.FastForward(time.Second)
 
 	seen, err = d.CheckAndMark(id)
 	assert.Assert(t, seen)
@@ -124,16 +112,18 @@ func TestCheckAndMarkTwice(t *testing.T) {
 func TestExpire(t *testing.T) {
 	t.Parallel()
 
-	id := getNextID()
+	s, c, cleanup, err := getRedis()
+	assert.NilError(t, err)
+	defer cleanup()
 
-	d, err := redis.New(client, time.Second)
+	d, err := redis.New(c, time.Second)
 	assert.NilError(t, err)
 
 	seen, err := d.CheckAndMark(id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
 
-	time.Sleep((3 * time.Second) / 2)
+	s.FastForward(2 * time.Second)
 
 	seen, err = d.Check(id)
 	assert.Assert(t, !seen)
@@ -148,16 +138,49 @@ func TestShortExpiry(t *testing.T) {
 	assert.Assert(t, err == redis.ErrExpiryTooShort)
 }
 
-func TestBadCheckScript(t *testing.T) {
-	defer redis.ReplaceCheck("local")()
+func TestBadDB(t *testing.T) {
+	t.Parallel()
 
-	_, err := redis.New(client, time.Second)
-	assert.ErrorContains(t, err, "Error compiling script")
+	listener, err := net.Listen("tcp", "localhost:0")
+	assert.NilError(t, err)
+	defer listener.Close()
+
+	go func() {
+		for {
+			conn, err := listener.Accept()
+			if err != nil {
+				return
+			}
+			conn.Close()
+		}
+	}()
+
+	client := redislib.NewClient(&redislib.Options{
+		Addr: listener.Addr().String(),
+	})
+
+	_, err = redis.New(client, time.Second)
+	assert.Assert(t, err != nil)
 }
 
-func TestBadCheckAndMarkScript(t *testing.T) {
-	defer redis.ReplaceCheckAndMark("local")()
+func getRedis() (s *miniredis.Miniredis, c *redislib.Client, cleanup func(), retErr error) {
+	s, err := miniredis.Run()
+	if err != nil {
+		return nil, nil, nil, err
+	}
 
-	_, err := redis.New(client, time.Second)
-	assert.ErrorContains(t, err, "Error compiling script")
+	defer func() {
+		if retErr != nil {
+			s.Close()
+		}
+	}()
+
+	c = redislib.NewClient(&redislib.Options{
+		Addr: s.Addr(),
+	})
+
+	return s, c, func() {
+		defer s.Close()
+		defer c.Close()
+	}, nil
 }
