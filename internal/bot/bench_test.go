@@ -13,11 +13,17 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
+	"gotest.tools/assert"
 )
 
 func BenchmarkSimpleCommand(b *testing.B) {
 	const botName = "hortbot"
+
+	_, rClient, rCleanup, err := miniredistest.New()
+	assert.NilError(b, err)
+	defer rCleanup()
 
 	db, undb := freshDB(b)
 	defer undb()
@@ -28,6 +34,7 @@ func BenchmarkSimpleCommand(b *testing.B) {
 
 	config := &bot.Config{
 		DB:       db,
+		Redis:    rClient,
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},

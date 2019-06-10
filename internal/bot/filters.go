@@ -2,10 +2,8 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"net/url"
 
-	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 )
 
@@ -39,24 +37,13 @@ func filterLinks(ctx context.Context, s *Session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	permit, err := models.LinkPermits(
-		models.LinkPermitWhere.ChannelID.EQ(s.Channel.ID),
-		models.LinkPermitWhere.Name.EQ(s.User),
-	).One(ctx, s.Tx)
-
-	switch err {
-	case nil:
-		if err := permit.Delete(ctx, s.Tx); err != nil {
-			return false, err
-		}
-
-		if s.Clock.Now().Before(permit.ExpiresAt) {
-			return false, s.Replyf("Link permitted. (%s)", s.UserDisplay)
-		}
-	case sql.ErrNoRows:
-		// Fall through
-	default:
+	permitted, err := s.RDB.HasLinkPermit(s.User)
+	if err != nil {
 		return false, err
+	}
+
+	if permitted {
+		return false, s.Replyf("Link permitted. (%s)", s.UserDisplay)
 	}
 
 	if err := s.DeleteMessage(); err != nil {

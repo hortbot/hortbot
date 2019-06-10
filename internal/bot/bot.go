@@ -3,7 +3,9 @@ package bot
 import (
 	"database/sql"
 
+	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/leononame/clock"
 )
 
@@ -14,6 +16,7 @@ const (
 
 type Config struct {
 	DB       *sql.DB
+	Redis    redis.Cmdable
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
@@ -31,6 +34,7 @@ type Config struct {
 
 type Bot struct {
 	db       *sql.DB
+	rdb      *rdb.DB
 	dedupe   dedupe.Deduplicator
 	sender   Sender
 	notifier Notifier
@@ -51,6 +55,8 @@ func New(config *Config) *Bot {
 	switch {
 	case config.DB == nil:
 		panic("db is nil")
+	case config.Redis == nil:
+		panic("redis is nil")
 	case config.Dedupe == nil:
 		panic("dedupe is nil")
 	case config.Sender == nil:
@@ -98,6 +104,13 @@ func New(config *Config) *Bot {
 			b.whitelist[name] = true
 		}
 	}
+
+	r, err := rdb.New(config.Redis)
+	if err != nil {
+		panic(err)
+	}
+
+	b.rdb = r
 
 	return b
 }

@@ -8,8 +8,10 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
@@ -27,7 +29,8 @@ var args = struct {
 	Nick string `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
 	Pass string `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
 
-	DB string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
+	DB    string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
+	Redis string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
 
 	Admins []string `long:"admin" env:"HB_ADMINS" env-delim:"," description:"Bot admins"`
 
@@ -36,7 +39,8 @@ var args = struct {
 
 	DefaultCooldown int `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
 
-	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
 }{
 	DefaultCooldown: 5,
 }
@@ -61,6 +65,25 @@ func main() {
 	if err != nil {
 		logger.Fatal("error opening database connection", zap.Error(err))
 	}
+
+	if args.MigrateUp {
+		for i := 0; i < 5; i++ {
+			if err := db.Ping(); err == nil {
+				break
+			}
+
+			time.Sleep(100 * time.Millisecond)
+		}
+
+		if err := migrations.Up(args.DB, nil); err != nil {
+			logger.Fatal("error migrating database", zap.Error(err))
+		}
+	}
+
+	rClient := redis.NewClient(&redis.Options{
+		Addr: args.Redis,
+	})
+	defer rClient.Close()
 
 	channels, err := listChannels(ctx, db)
 	if err != nil {
@@ -103,6 +126,7 @@ func main() {
 
 	bc := &bot.Config{
 		DB:               db,
+		Redis:            rClient,
 		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,

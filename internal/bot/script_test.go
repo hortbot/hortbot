@@ -16,6 +16,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/alicebob/miniredis"
 	"github.com/bmatcuk/doublestar"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
@@ -25,6 +26,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	dedupemem "github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -59,6 +61,7 @@ type scriptTester struct {
 	lineNum  int
 
 	db       *sql.DB
+	redis    *miniredis.Miniredis
 	sender   *botfakes.FakeSender
 	notifier *botfakes.FakeNotifier
 	clock    *clock.Mock
@@ -114,6 +117,12 @@ func (st *scriptTester) test(t *testing.T) {
 
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
+	rServer, rClient, rCleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer rCleanup()
+
+	st.redis = rServer
+
 	db, undb := freshDB(t)
 	defer undb()
 
@@ -121,6 +130,7 @@ func (st *scriptTester) test(t *testing.T) {
 
 	st.bc = bot.Config{
 		DB:       db,
+		Redis:    rClient,
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   st.sender,
 		Notifier: st.notifier,
@@ -468,6 +478,7 @@ func (st *scriptTester) clockForward(t *testing.T, args string) {
 
 	st.addAction(func(ctx context.Context) {
 		st.clock.Forward(dur)
+		st.redis.FastForward(dur)
 	})
 }
 

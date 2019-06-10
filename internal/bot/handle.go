@@ -146,6 +146,11 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return errInvalidMessage
 	}
 
+	s.RDB = &RDB{
+		d:  b.rdb,
+		ch: roomID,
+	}
+
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
 		logger.Debug("error parsing room ID", zap.String("parsed", roomID), zap.Error(err))

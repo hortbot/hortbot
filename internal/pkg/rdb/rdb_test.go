@@ -4,16 +4,15 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alicebob/miniredis"
-	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/assert"
 )
 
 func TestMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -50,7 +49,7 @@ func TestMarkThenCheck(t *testing.T) {
 func TestCheckAndMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -86,10 +85,47 @@ func TestCheckAndMarkThenCheck(t *testing.T) {
 	assert.Assert(t, !seen)
 }
 
+func TestMarkAndDelete(t *testing.T) {
+	t.Parallel()
+
+	s, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	db, err := rdb.New(c)
+	assert.NilError(t, err)
+
+	seen, err := db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !seen)
+
+	s.FastForward(time.Second)
+
+	assert.NilError(t, db.Mark(10, "#foobar", "something"))
+
+	s.FastForward(time.Second)
+
+	seen, err = db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, seen)
+
+	s.FastForward(time.Second)
+
+	seen, err = db.CheckAndDelete("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, seen)
+
+	s.FastForward(time.Second)
+
+	seen, err = db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !seen)
+}
+
 func TestRefresh(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -128,7 +164,7 @@ func TestRefresh(t *testing.T) {
 func TestPrefix(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -164,7 +200,7 @@ func TestPrefix(t *testing.T) {
 func TestPrefixCollision(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -200,7 +236,7 @@ func TestPrefixCollision(t *testing.T) {
 func TestBadCheckAndMarkScript(t *testing.T) {
 	defer rdb.ReplaceCheckAndMark("local")()
 
-	_, c, cleanup, err := getRedis()
+	_, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -211,32 +247,10 @@ func TestBadCheckAndMarkScript(t *testing.T) {
 func TestBadCheckAndRefreshScript(t *testing.T) {
 	defer rdb.ReplaceCheckAndRefresh("local")()
 
-	_, c, cleanup, err := getRedis()
+	_, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
 	_, err = rdb.New(c)
 	assert.ErrorContains(t, err, "syntax error")
-}
-
-func getRedis() (s *miniredis.Miniredis, c *redis.Client, cleanup func(), retErr error) {
-	s, err := miniredis.Run()
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	defer func() {
-		if retErr != nil {
-			s.Close()
-		}
-	}()
-
-	c = redis.NewClient(&redis.Options{
-		Addr: s.Addr(),
-	})
-
-	return s, c, func() {
-		defer s.Close()
-		defer c.Close()
-	}, nil
 }

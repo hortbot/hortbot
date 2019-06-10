@@ -19,6 +19,7 @@ type Session struct {
 
 	Bot      *Bot
 	Tx       *sql.Tx
+	RDB      *RDB
 	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock

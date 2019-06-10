@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  app:
+    image: golang
+    volumes:
+      - .:/app:ro
+      - $GOPATH/pkg/mod:/go/pkg/mod:ro
+    working_dir: /app
+    command: go run -mod=readonly -v .
+    links:
+      - db
+      - redis
+    depends_on:
+      - db
+      - redis
+    environment:
+      - HB_DEBUG=true
+      - HB_NICK=${HB_NICK:-}
+      - HB_PASS=${HB_PASS:-}
+      - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
+      - HB_MIGRATE_UP=true
+      - HB_REDIS=redis:6379
+      - HB_ADMINS=${HB_ADMINS:-}
+      - HB_WHITELIST_ENABLED=${HB_WHITELIST_ENABLED:-}
+
+  db:
+    image: zikaeroh/postgres-initialized
+
+  redis:
+    image: redis

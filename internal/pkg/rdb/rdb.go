@@ -84,6 +84,12 @@ func (d *DB) CheckAndRefresh(seconds int, key string, more ...string) (seen bool
 	return d.runScript(checkAndRefresh, k, seconds)
 }
 
+func (d *DB) CheckAndDelete(key string, more ...string) (seen bool, err error) {
+	k := d.buildKey(key, more...)
+	v, err := d.client.Del(k).Result()
+	return v == 1, err
+}
+
 func (d *DB) buildKey(key string, more ...string) string {
 	var builder strings.Builder
 

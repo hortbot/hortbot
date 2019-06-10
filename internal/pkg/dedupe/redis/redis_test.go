@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alicebob/miniredis"
 	redislib "github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
+	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/assert"
 )
 
@@ -16,7 +16,7 @@ const id = "id"
 func TestCheckNotFound(t *testing.T) {
 	t.Parallel()
 
-	_, c, cleanup, err := getRedis()
+	_, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -31,7 +31,7 @@ func TestCheckNotFound(t *testing.T) {
 func TestMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -49,7 +49,7 @@ func TestMarkThenCheck(t *testing.T) {
 func TestMarkMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -70,7 +70,7 @@ func TestMarkMarkThenCheck(t *testing.T) {
 func TestCheckAndMark(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -91,7 +91,7 @@ func TestCheckAndMark(t *testing.T) {
 func TestCheckAndMarkTwice(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -112,7 +112,7 @@ func TestCheckAndMarkTwice(t *testing.T) {
 func TestExpire(t *testing.T) {
 	t.Parallel()
 
-	s, c, cleanup, err := getRedis()
+	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
 
@@ -161,26 +161,4 @@ func TestBadDB(t *testing.T) {
 
 	_, err = redis.New(client, time.Second)
 	assert.Assert(t, err != nil)
-}
-
-func getRedis() (s *miniredis.Miniredis, c *redislib.Client, cleanup func(), retErr error) {
-	s, err := miniredis.Run()
-	if err != nil {
-		return nil, nil, nil, err
-	}
-
-	defer func() {
-		if retErr != nil {
-			s.Close()
-		}
-	}()
-
-	c = redislib.NewClient(&redislib.Options{
-		Addr: s.Addr(),
-	})
-
-	return s, c, func() {
-		defer s.Close()
-		defer c.Close()
-	}, nil
 }
