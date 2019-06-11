@@ -25,4 +25,3 @@ func ReplaceMarkOrDelete(source string) func() {
 		markOrDelete = old
 	}
 }
-

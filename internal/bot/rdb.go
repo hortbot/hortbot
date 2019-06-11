@@ -14,3 +14,7 @@ func (r *RDB) LinkPermit(user string, seconds int) error {
 func (r *RDB) HasLinkPermit(user string) (permitted bool, err error) {
 	return r.d.CheckAndDelete("link_permit", r.ch, user)
 }
+
+func (r *RDB) Confirm(user string, key string, seconds int) (confirmed bool, err error) {
+	return r.d.MarkOrDelete(seconds, "confirm", user, key)
+}

@@ -473,6 +473,10 @@ func (st *scriptTester) noNotifyChannelUpdates(t *testing.T) {
 func (st *scriptTester) clockForward(t *testing.T, args string) {
 	lineNum := st.lineNum
 
+	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
+		t.Fatalf("clock must be a mock: line %d", lineNum)
+	}
+
 	dur, err := time.ParseDuration(args)
 	assert.NilError(t, err, "line %d", lineNum)
 
@@ -484,6 +488,10 @@ func (st *scriptTester) clockForward(t *testing.T, args string) {
 
 func (st *scriptTester) clockSet(t *testing.T, args string) {
 	lineNum := st.lineNum
+
+	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
+		t.Fatalf("clock must be a mock: line %d", lineNum)
+	}
 
 	var tm time.Time
 
@@ -497,6 +505,7 @@ func (st *scriptTester) clockSet(t *testing.T, args string) {
 
 	st.addAction(func(ctx context.Context) {
 		st.clock.Set(tm)
+		st.redis.SetTime(tm)
 	})
 }
 

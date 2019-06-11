@@ -29,7 +29,7 @@ Some features are not currently planned to be ported and have been crossed out.
 
 - [ ] General commands
     - [x] Join/part (in bot's channel)
-    - [ ] Part (in other channels); waiting until this can have "confirm" functionality
+    - [x] Part (in other channels); waiting until this can have "confirm" functionality
     - [x] ~~Topic~~
     - [ ] Viewers (*Twitch API*)
     - [ ] Chatters (*Twitch API*)

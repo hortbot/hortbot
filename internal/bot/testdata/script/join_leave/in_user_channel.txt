@@ -1,0 +1,38 @@
+bot_config {"Clock": "mock"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+no_send
+
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+send hortbot #foobar [HB] foobar
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!part
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!leave
+send hortbot #foobar [HB] FooBar, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
+
+clock_forward 11s
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!leave
+send hortbot #foobar [HB] FooBar, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
+
+clock_forward 2s
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3;testing-admin=1;display-name=Admin :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!leave
+send hortbot #foobar [HB] Admin, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
+
+clock_forward 2s
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!part
+send hortbot #foobar [HB] FooBar, hortbot will now leave your channel.
+notify_channel_updates hortbot
+
+clock_forward 2s
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+no_send

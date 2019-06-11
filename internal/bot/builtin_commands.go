@@ -29,6 +29,8 @@ func init() {
 		"filter":      {fn: cmdFilter, minLevel: LevelModerator},
 		"permit":      {fn: cmdPermit, minLevel: LevelModerator},
 		"allow":       {fn: cmdPermit, minLevel: LevelModerator},
+		"leave":       {fn: cmdLeave, minLevel: LevelBroadcaster},
+		"part":        {fn: cmdLeave, minLevel: LevelBroadcaster},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: LevelAdmin},
 	}
 }

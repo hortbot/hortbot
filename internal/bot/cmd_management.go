@@ -5,7 +5,9 @@ import (
 	"database/sql"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
 )
@@ -128,4 +130,29 @@ func handleLeave(ctx context.Context, s *Session, name string) error {
 	s.Notifier.NotifyChannelUpdates(channel.BotName)
 
 	return s.Replyf("%s, %s will now leave your channel.", displayName, channel.BotName)
+}
+
+const leaveConfirmSeconds = 10
+
+var leaveConfirmReadable = durafmt.Parse(leaveConfirmSeconds * time.Second).String()
+
+func cmdLeave(ctx context.Context, s *Session, cmd string, args string) error {
+	confirmed, err := s.RDB.Confirm(s.User, "leave", leaveConfirmSeconds)
+	if err != nil {
+		return err
+	}
+
+	if !confirmed {
+		return s.Replyf("%s, if you are sure you want %s to leave this channel, run %s%s again in the next %s.", s.UserDisplay, s.Channel.BotName, s.Channel.Prefix, cmd, leaveConfirmReadable)
+	}
+
+	s.Channel.Active = false
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
+		return err
+	}
+
+	s.Notifier.NotifyChannelUpdates(s.Channel.BotName)
+
+	return s.Replyf("%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
 }
