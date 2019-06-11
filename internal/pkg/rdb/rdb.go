@@ -22,6 +22,16 @@ end
 return false
 `)
 
+var markOrDelete = redis.NewScript(`
+local exists = redis.pcall('GETSET', KEYS[1], '1')
+if exists ~= false then
+	redis.pcall('DEL', KEYS[1])
+	return true
+end
+redis.pcall('EXPIRE', KEYS[1], ARGV[1])
+return false
+`)
+
 const keySep = ":"
 
 var keyEscaper = strings.NewReplacer(keySep, keySep+keySep)
@@ -37,6 +47,10 @@ func New(client redis.Cmdable, options ...func(*DB)) (*DB, error) {
 	}
 
 	if err := checkAndRefresh.Load(client).Err(); err != nil {
+		return nil, err
+	}
+
+	if err := markOrDelete.Load(client).Err(); err != nil {
 		return nil, err
 	}
 
@@ -67,27 +81,32 @@ func (d *DB) Mark(seconds int, key string, more ...string) error {
 	return d.client.Set(k, "1", dur).Err()
 }
 
-func (d *DB) Check(key string, more ...string) (seen bool, err error) {
+func (d *DB) Check(key string, more ...string) (exists bool, err error) {
 	k := d.buildKey(key, more...)
 
 	v, err := d.client.Exists(k).Result()
 	return v == 1, err
 }
 
-func (d *DB) CheckAndMark(seconds int, key string, more ...string) (seen bool, err error) {
+func (d *DB) CheckAndMark(seconds int, key string, more ...string) (exists bool, err error) {
 	k := d.buildKey(key, more...)
 	return d.runScript(checkAndMark, k, seconds)
 }
 
-func (d *DB) CheckAndRefresh(seconds int, key string, more ...string) (seen bool, err error) {
+func (d *DB) CheckAndRefresh(seconds int, key string, more ...string) (exists bool, err error) {
 	k := d.buildKey(key, more...)
 	return d.runScript(checkAndRefresh, k, seconds)
 }
 
-func (d *DB) CheckAndDelete(key string, more ...string) (seen bool, err error) {
+func (d *DB) CheckAndDelete(key string, more ...string) (exists bool, err error) {
 	k := d.buildKey(key, more...)
 	v, err := d.client.Del(k).Result()
 	return v == 1, err
+}
+
+func (d *DB) MarkOrDelete(seconds int, key string, more ...string) (exists bool, err error) {
+	k := d.buildKey(key, more...)
+	return d.runScript(markOrDelete, k, seconds)
 }
 
 func (d *DB) buildKey(key string, more ...string) string {
@@ -113,7 +132,7 @@ func (d *DB) buildKey(key string, more ...string) string {
 	return builder.String()
 }
 
-func (d *DB) runScript(s *redis.Script, key string, args ...interface{}) (seen bool, err error) {
+func (d *DB) runScript(s *redis.Script, key string, args ...interface{}) (exists bool, err error) {
 	b, err := s.Run(d.client, []string{key}, args...).Bool()
 	if err == redis.Nil {
 		err = nil

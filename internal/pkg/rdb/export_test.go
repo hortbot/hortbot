@@ -17,3 +17,12 @@ func ReplaceCheckAndRefresh(source string) func() {
 		checkAndRefresh = old
 	}
 }
+
+func ReplaceMarkOrDelete(source string) func() {
+	old := markOrDelete
+	markOrDelete = redis.NewScript(source)
+	return func() {
+		markOrDelete = old
+	}
+}
+

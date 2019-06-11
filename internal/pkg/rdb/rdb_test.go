@@ -19,9 +19,9 @@ func TestMarkThenCheck(t *testing.T) {
 	db, err := rdb.New(c)
 	assert.NilError(t, err)
 
-	seen, err := db.Check("#foobar", "something")
+	exists, err := db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
@@ -29,21 +29,21 @@ func TestMarkThenCheck(t *testing.T) {
 
 	s.FastForward(time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
 	s.FastForward(10 * time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 }
 
 func TestCheckAndMarkThenCheck(t *testing.T) {
@@ -56,33 +56,33 @@ func TestCheckAndMarkThenCheck(t *testing.T) {
 	db, err := rdb.New(c)
 	assert.NilError(t, err)
 
-	seen, err := db.Check("#foobar", "something")
+	exists, err := db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.CheckAndMark(10, "#foobar", "something")
+	exists, err = db.CheckAndMark(10, "#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
 	s.FastForward(10 * time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 }
 
 func TestMarkAndDelete(t *testing.T) {
@@ -95,9 +95,9 @@ func TestMarkAndDelete(t *testing.T) {
 	db, err := rdb.New(c)
 	assert.NilError(t, err)
 
-	seen, err := db.Check("#foobar", "something")
+	exists, err := db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
@@ -105,21 +105,21 @@ func TestMarkAndDelete(t *testing.T) {
 
 	s.FastForward(time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.CheckAndDelete("#foobar", "something")
+	exists, err = db.CheckAndDelete("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 }
 
 func TestRefresh(t *testing.T) {
@@ -132,33 +132,72 @@ func TestRefresh(t *testing.T) {
 	db, err := rdb.New(c)
 	assert.NilError(t, err)
 
-	seen, err := db.Check("#foobar", "something")
+	exists, err := db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
-	seen, err = db.CheckAndMark(10, "#foobar", "something")
+	exists, err = db.CheckAndMark(10, "#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(5 * time.Second)
 
-	seen, err = db.CheckAndRefresh(15, "#foobar", "something")
+	exists, err = db.CheckAndRefresh(15, "#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
 	s.FastForward(10 * time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
 	s.FastForward(10 * time.Second)
 
-	seen, err = db.Check("#foobar", "something")
+	exists, err = db.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
+}
+
+func TestMarkOrDelete(t *testing.T) {
+	t.Parallel()
+
+	s, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	db, err := rdb.New(c)
+	assert.NilError(t, err)
+
+	exists, err := db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
+
+	s.FastForward(time.Second)
+
+	exists, err = db.MarkOrDelete(10, "#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
+
+	s.FastForward(time.Second)
+
+	exists, err = db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, exists)
+
+	s.FastForward(time.Second)
+
+	exists, err = db.MarkOrDelete(10, "#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, exists)
+
+	s.FastForward(time.Second)
+
+	exists, err = db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
 }
 
 func TestPrefix(t *testing.T) {
@@ -174,13 +213,13 @@ func TestPrefix(t *testing.T) {
 	db2, err := rdb.New(c, rdb.KeyPrefix("2"))
 	assert.NilError(t, err)
 
-	seen, err := db1.Check("#foobar", "something")
+	exists, err := db1.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
-	seen, err = db2.Check("#foobar", "something")
+	exists, err = db2.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
@@ -188,13 +227,13 @@ func TestPrefix(t *testing.T) {
 
 	s.FastForward(time.Second)
 
-	seen, err = db1.Check("#foobar", "something")
+	exists, err = db1.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
-	seen, err = db2.Check("#foobar", "something")
+	exists, err = db2.Check("#foobar", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 }
 
 func TestPrefixCollision(t *testing.T) {
@@ -210,13 +249,13 @@ func TestPrefixCollision(t *testing.T) {
 	db2, err := rdb.New(c)
 	assert.NilError(t, err)
 
-	seen, err := db1.Check("something")
+	exists, err := db1.Check("something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
-	seen, err = db2.Check("prefix", "something")
+	exists, err = db2.Check("prefix", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 
 	s.FastForward(time.Second)
 
@@ -224,13 +263,13 @@ func TestPrefixCollision(t *testing.T) {
 
 	s.FastForward(time.Second)
 
-	seen, err = db1.Check("something")
+	exists, err = db1.Check("something")
 	assert.NilError(t, err)
-	assert.Assert(t, seen)
+	assert.Assert(t, exists)
 
-	seen, err = db2.Check("prefix", "something")
+	exists, err = db2.Check("prefix", "something")
 	assert.NilError(t, err)
-	assert.Assert(t, !seen)
+	assert.Assert(t, !exists)
 }
 
 func TestBadCheckAndMarkScript(t *testing.T) {
@@ -246,6 +285,17 @@ func TestBadCheckAndMarkScript(t *testing.T) {
 
 func TestBadCheckAndRefreshScript(t *testing.T) {
 	defer rdb.ReplaceCheckAndRefresh("local")()
+
+	_, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	_, err = rdb.New(c)
+	assert.ErrorContains(t, err, "syntax error")
+}
+
+func TestBadMarkOrDeleteScript(t *testing.T) {
+	defer rdb.ReplaceMarkOrDelete("local")()
 
 	_, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
