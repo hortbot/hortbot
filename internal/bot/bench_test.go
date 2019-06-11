@@ -68,6 +68,7 @@ func BenchmarkSimpleCommand(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		bb.Handle(ctx, botName, m)
 	}
+	b.StopTimer()
 }
 
 func BenchmarkNop(b *testing.B) {
@@ -78,10 +79,15 @@ func BenchmarkNop(b *testing.B) {
 
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
 
+	_, rClient, rCleanup, err := miniredistest.New()
+	assert.NilError(b, err)
+	defer rCleanup()
+
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:       db,
+		Redis:    rClient,
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
@@ -111,6 +117,7 @@ func BenchmarkNop(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		bb.Handle(ctx, botName, m)
 	}
+	b.StopTimer()
 }
 
 var nextUserID int64 = 1
