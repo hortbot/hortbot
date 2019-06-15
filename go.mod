@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
-	github.com/aws/aws-sdk-go v1.19.46 // indirect
+	github.com/aws/aws-sdk-go v1.20.1 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.1
 	github.com/cenkalti/backoff v2.1.1+incompatible // indirect
@@ -27,15 +27,16 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/fsouza/fake-gcs-server v1.8.0 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
-	github.com/gobuffalo/flect v0.1.3
-	github.com/gocql/gocql v0.0.0-20190523124812-0680bfb96414 // indirect
+	github.com/gobuffalo/flect v0.1.5
+	github.com/gocql/gocql v0.0.0-20190610222256-e00e8c6226e8 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.4.0
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/go-cmp v0.3.0
+	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
-	github.com/hako/durafmt v0.0.0-20180520121703-7b7ae1e72ead
+	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
 	github.com/jackc/pgx v3.4.0+incompatible // indirect
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -68,12 +69,13 @@ require (
 	go.mongodb.org/mongo-driver v1.0.3 // indirect
 	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190607181551-461777fb6f67 // indirect
+	golang.org/x/crypto v0.0.0-20190611184440-5c40567a22f8 // indirect
+	golang.org/x/net v0.0.0-20190613194153-d28f0bde5980 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190608050228-5b15430b70e3 // indirect
-	golang.org/x/tools v0.0.0-20190608022120-eacb66d2a7c3
+	golang.org/x/sys v0.0.0-20190614160838-b47fdc937951 // indirect
+	golang.org/x/tools v0.0.0-20190614205625-5aca471b1d59
 	google.golang.org/appengine v1.6.1 // indirect
-	google.golang.org/genproto v0.0.0-20190605220351-eb0b1bdb6ae6 // indirect
+	google.golang.org/genproto v0.0.0-20190611190212-a7e196e89fd3 // indirect
 	google.golang.org/grpc v1.21.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
