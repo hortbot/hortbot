@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -265,6 +266,7 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 
 		Dedupe string
 		Clock  string
+		Rand   *int64
 	}
 
 	bcj.Config = &st.bc
@@ -293,6 +295,15 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 
 	default:
 		t.Fatalf("line %d: unknown clock type %s", lineNum, bcj.Clock)
+	}
+
+	if bcj.Rand != nil {
+		rng := rand.New(rand.NewSource(*bcj.Rand))
+
+		fakeRand := &botfakes.FakeRand{}
+		fakeRand.IntnCalls(rng.Intn)
+
+		st.bc.Rand = fakeRand
 	}
 }
 

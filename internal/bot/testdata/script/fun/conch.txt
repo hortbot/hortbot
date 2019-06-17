@@ -1,0 +1,28 @@
+bot_config {"Rand": 1}
+
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!conch
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!helix
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!helix
+send hortbot #foobar [HB] I can provide no help for your situation.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!helix
+send hortbot #foobar [HB] Signs point to yes.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!helix
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!helix
+send_any
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
+send hortbot #foobar [HB] "This is a test." added as quote #1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!helix
+send hortbot #foobar [HB] Maybe these words of wisdom can guide you: "This is a test."

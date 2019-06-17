@@ -1,5 +1,7 @@
 package bot
 
+import "math/rand"
+
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 //counterfeiter:generate . Sender
@@ -30,4 +32,15 @@ var _ Notifier = NotifierFuncs{}
 
 func (n NotifierFuncs) NotifyChannelUpdates(botName string) {
 	n.NotifyChannelUpdatesFunc(botName)
+}
+
+//counterfeiter:generate . Rand
+type Rand interface {
+	Intn(n int) int
+}
+
+type globalRand struct{}
+
+func (globalRand) Intn(n int) int {
+	return rand.Intn(n)
 }

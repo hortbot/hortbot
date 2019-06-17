@@ -132,6 +132,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		Sender:   b.sender,
 		Notifier: b.notifier,
 		Clock:    b.clock,
+		Rand:     b.rand,
 	}
 
 	if displayName := m.Tags["display-name"]; displayName != "" {

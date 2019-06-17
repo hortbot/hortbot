@@ -31,6 +31,8 @@ func init() {
 		"allow":       {fn: cmdPermit, minLevel: LevelModerator},
 		"leave":       {fn: cmdLeave, minLevel: LevelBroadcaster},
 		"part":        {fn: cmdLeave, minLevel: LevelBroadcaster},
+		"conch":       {fn: cmdConch, minLevel: LevelSubscriber},
+		"helix":       {fn: cmdConch, minLevel: LevelSubscriber},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: LevelAdmin},
 	}
 }

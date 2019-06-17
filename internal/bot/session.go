@@ -23,6 +23,7 @@ type Session struct {
 	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock
+	Rand     Rand
 
 	Start   time.Time
 	TMISent time.Time

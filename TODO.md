@@ -82,7 +82,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~Winner~~ (Requires persisting twitch membership messages)
     - [ ] Random number
     - [x] ~~Hug~~ (Use a custom command.)
-    - [ ] Conch/helix (Requires quotes)
+    - [x] Conch/helix (Requires quotes)
     - [ ] Urban
     - [ ] Me
     - [x] ~~Race~~

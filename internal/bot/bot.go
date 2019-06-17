@@ -21,6 +21,7 @@ type Config struct {
 	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock
+	Rand     Rand
 
 	Prefix   string
 	Bullet   string
@@ -39,6 +40,7 @@ type Bot struct {
 	sender   Sender
 	notifier Notifier
 	clock    clock.Clock
+	rand     Rand
 
 	prefix   string
 	bullet   string
@@ -103,6 +105,12 @@ func New(config *Config) *Bot {
 		for _, name := range config.Whitelist {
 			b.whitelist[name] = true
 		}
+	}
+
+	if config.Rand != nil {
+		b.rand = config.Rand
+	} else {
+		b.rand = globalRand{}
 	}
 
 	r, err := rdb.New(config.Redis)

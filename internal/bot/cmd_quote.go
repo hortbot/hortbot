@@ -203,14 +203,23 @@ func cmdQuoteGet(ctx context.Context, s *Session, cmd string, args string) error
 	return s.Replyf("Quote #%d: %s", quote.Num, quote.Quote)
 }
 
-func cmdQuoteRandom(ctx context.Context, s *Session, cmd string, args string) error {
-	quote, err := models.Quotes(qm.OrderBy("random()")).One(ctx, s.Tx)
+func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channelID int64) (*models.Quote, error) {
+	quote, err := models.Quotes(models.QuoteWhere.ChannelID.EQ(channelID), qm.OrderBy("random()")).One(ctx, cx)
 	if err == sql.ErrNoRows {
-		return s.Reply("There are no quotes.")
+		return nil, nil
 	}
 
+	return quote, err
+}
+
+func cmdQuoteRandom(ctx context.Context, s *Session, cmd string, args string) error {
+	quote, err := getRandomQuote(ctx, s.Tx, s.Channel.ID)
 	if err != nil {
 		return err
+	}
+
+	if quote == nil {
+		return s.Reply("There are no quotes.")
 	}
 
 	return s.Replyf("Quote #%d: %s", quote.Num, quote.Quote)
