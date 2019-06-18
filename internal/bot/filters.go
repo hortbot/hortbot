@@ -29,7 +29,7 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(LevelSubscriber) {
+	if s.UserLevel.CanAccess(levelSubscriber) {
 		return false, nil
 	}
 

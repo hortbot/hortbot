@@ -10,17 +10,17 @@ import (
 )
 
 var moderationCommands handlerMap = map[string]handlerFunc{
-	"+b":   {fn: cmdModBan, minLevel: LevelModerator},
-	"-b":   {fn: cmdModUnban, minLevel: LevelModerator},
-	"+t":   {fn: cmdModTimeout, minLevel: LevelModerator},
-	"-t":   {fn: cmdModUntimeout, minLevel: LevelModerator},
-	"+p":   {fn: cmdModPurge, minLevel: LevelModerator},
-	"+m":   {fn: cmdChangeMode("slow", "Chat is now in slow mode."), minLevel: LevelModerator},
-	"-m":   {fn: cmdChangeMode("slowoff", "Chat is no longer in slow mode."), minLevel: LevelModerator},
-	"+s":   {fn: cmdChangeMode("subscribers", "Chat is now in subscribers only mode."), minLevel: LevelModerator},
-	"-s":   {fn: cmdChangeMode("subscribersoff", "Chat is no longer in subscribers only mode."), minLevel: LevelModerator},
-	"+r9k": {fn: cmdChangeMode("r9kbeta", "Chat is now in r9k mode."), minLevel: LevelModerator},
-	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: LevelModerator},
+	"+b":   {fn: cmdModBan, minLevel: levelModerator},
+	"-b":   {fn: cmdModUnban, minLevel: levelModerator},
+	"+t":   {fn: cmdModTimeout, minLevel: levelModerator},
+	"-t":   {fn: cmdModUntimeout, minLevel: levelModerator},
+	"+p":   {fn: cmdModPurge, minLevel: levelModerator},
+	"+m":   {fn: cmdChangeMode("slow", "Chat is now in slow mode."), minLevel: levelModerator},
+	"-m":   {fn: cmdChangeMode("slowoff", "Chat is no longer in slow mode."), minLevel: levelModerator},
+	"+s":   {fn: cmdChangeMode("subscribers", "Chat is now in subscribers only mode."), minLevel: levelModerator},
+	"-s":   {fn: cmdChangeMode("subscribersoff", "Chat is no longer in subscribers only mode."), minLevel: levelModerator},
+	"+r9k": {fn: cmdChangeMode("r9kbeta", "Chat is now in r9k mode."), minLevel: levelModerator},
+	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: levelModerator},
 }
 
 func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {

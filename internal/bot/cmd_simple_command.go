@@ -13,33 +13,33 @@ import (
 )
 
 var scCommands handlerMap = map[string]handlerFunc{
-	"add":             {fn: cmdSimpleCommandAddNormal, minLevel: LevelModerator},
-	"addb":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addbroadcaster":  {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addbroadcasters": {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addo":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addowner":        {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addowners":       {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addstreamer":     {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addstreamers":    {fn: cmdSimpleCommandAddBroadcaster, minLevel: LevelModerator},
-	"addm":            {fn: cmdSimpleCommandAddModerator, minLevel: LevelModerator},
-	"addmod":          {fn: cmdSimpleCommandAddModerator, minLevel: LevelModerator},
-	"addmods":         {fn: cmdSimpleCommandAddModerator, minLevel: LevelModerator},
-	"adds":            {fn: cmdSimpleCommandAddSubscriber, minLevel: LevelModerator},
-	"addsub":          {fn: cmdSimpleCommandAddSubscriber, minLevel: LevelModerator},
-	"addsubs":         {fn: cmdSimpleCommandAddSubscriber, minLevel: LevelModerator},
-	"adde":            {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
-	"adda":            {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
-	"addeveryone":     {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
-	"addall":          {fn: cmdSimpleCommandAddEveryone, minLevel: LevelModerator},
-	"delete":          {fn: cmdSimpleCommandDelete, minLevel: LevelModerator},
-	"remove":          {fn: cmdSimpleCommandDelete, minLevel: LevelModerator},
-	"restrict":        {fn: cmdSimpleCommandRestrict, minLevel: LevelModerator},
-	"editor":          {fn: cmdSimpleCommandProperty, minLevel: LevelModerator},
-	"author":          {fn: cmdSimpleCommandProperty, minLevel: LevelModerator},
-	"count":           {fn: cmdSimpleCommandProperty, minLevel: LevelModerator},
-	"rename":          {fn: cmdSimpleCommandRename, minLevel: LevelModerator},
-	"get":             {fn: cmdSimpleCommandGet, minLevel: LevelModerator},
+	"add":             {fn: cmdSimpleCommandAddNormal, minLevel: levelModerator},
+	"addb":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addbroadcaster":  {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addbroadcasters": {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addo":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addowner":        {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addowners":       {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addstreamer":     {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addstreamers":    {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
+	"addm":            {fn: cmdSimpleCommandAddModerator, minLevel: levelModerator},
+	"addmod":          {fn: cmdSimpleCommandAddModerator, minLevel: levelModerator},
+	"addmods":         {fn: cmdSimpleCommandAddModerator, minLevel: levelModerator},
+	"adds":            {fn: cmdSimpleCommandAddSubscriber, minLevel: levelModerator},
+	"addsub":          {fn: cmdSimpleCommandAddSubscriber, minLevel: levelModerator},
+	"addsubs":         {fn: cmdSimpleCommandAddSubscriber, minLevel: levelModerator},
+	"adde":            {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
+	"adda":            {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
+	"addeveryone":     {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
+	"addall":          {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
+	"delete":          {fn: cmdSimpleCommandDelete, minLevel: levelModerator},
+	"remove":          {fn: cmdSimpleCommandDelete, minLevel: levelModerator},
+	"restrict":        {fn: cmdSimpleCommandRestrict, minLevel: levelModerator},
+	"editor":          {fn: cmdSimpleCommandProperty, minLevel: levelModerator},
+	"author":          {fn: cmdSimpleCommandProperty, minLevel: levelModerator},
+	"count":           {fn: cmdSimpleCommandProperty, minLevel: levelModerator},
+	"rename":          {fn: cmdSimpleCommandRename, minLevel: levelModerator},
+	"get":             {fn: cmdSimpleCommandGet, minLevel: levelModerator},
 	// TODO: clone
 }
 
@@ -60,26 +60,26 @@ func cmdSimpleCommand(ctx context.Context, s *session, cmd string, args string) 
 }
 
 func cmdSimpleCommandAddNormal(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, false)
+	return cmdSimpleCommandAdd(ctx, s, args, levelSubscriber, false)
 }
 
 func cmdSimpleCommandAddBroadcaster(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, LevelBroadcaster, true)
+	return cmdSimpleCommandAdd(ctx, s, args, levelBroadcaster, true)
 }
 
 func cmdSimpleCommandAddModerator(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, LevelModerator, true)
+	return cmdSimpleCommandAdd(ctx, s, args, levelModerator, true)
 }
 
 func cmdSimpleCommandAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, true)
+	return cmdSimpleCommandAdd(ctx, s, args, levelSubscriber, true)
 }
 
 func cmdSimpleCommandAddEveryone(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, LevelEveryone, true)
+	return cmdSimpleCommandAdd(ctx, s, args, levelEveryone, true)
 }
 
-func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level AccessLevel, forceLevel bool) error {
+func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level accessLevel, forceLevel bool) error {
 	usage := func() error {
 		return s.ReplyUsage("<name> <text>")
 	}
@@ -129,7 +129,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level Acc
 	}
 
 	if update {
-		if !s.UserLevel.CanAccess(NewAccessLevel(command.AccessLevel)) {
+		if !s.UserLevel.CanAccess(newAccessLevel(command.AccessLevel)) {
 			al := flect.Pluralize(command.AccessLevel)
 			return s.Replyf("Command '%s' is restricted to %s; only %s and above can update it.", name, al, al)
 		}
@@ -192,7 +192,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 		return err
 	}
 
-	level := NewAccessLevel(command.AccessLevel)
+	level := newAccessLevel(command.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
 		return s.Replyf("Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
@@ -252,11 +252,11 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args 
 		return usage()
 	}
 
-	if !s.UserLevel.CanAccess(NewAccessLevel(command.AccessLevel)) {
+	if !s.UserLevel.CanAccess(newAccessLevel(command.AccessLevel)) {
 		return s.Replyf("Your level is %s; you cannot restrict a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
-	if !s.UserLevel.CanAccess(NewAccessLevel(newLevel)) {
+	if !s.UserLevel.CanAccess(newAccessLevel(newLevel)) {
 		return s.Replyf("Your level is %s; you cannot restrict a command to level %s.", s.UserLevel.PGEnum(), newLevel)
 	}
 
@@ -338,7 +338,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 		return err
 	}
 
-	level := NewAccessLevel(command.AccessLevel)
+	level := newAccessLevel(command.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
 		return s.Replyf("Your level is %s; you cannot rename a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}

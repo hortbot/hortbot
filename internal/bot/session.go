@@ -32,7 +32,7 @@ type session struct {
 	User        string
 	UserDisplay string
 	UserID      int64
-	UserLevel   AccessLevel
+	UserLevel   accessLevel
 	Ignored     bool
 
 	links    []*url.URL
@@ -105,9 +105,9 @@ func (s *session) SetUserLevel() {
 	s.UserLevel = s.parseUserLevel()
 }
 
-func (s *session) parseUserLevel() AccessLevel {
+func (s *session) parseUserLevel() accessLevel {
 	if s.Deps.Admins[s.User] {
-		return LevelAdmin
+		return levelAdmin
 	}
 
 	// Tags are present, safe to not check for nil
@@ -115,57 +115,57 @@ func (s *session) parseUserLevel() AccessLevel {
 	tags := s.M.Tags
 
 	if isTesting && tags["testing-admin"] != "" {
-		return LevelAdmin
+		return levelAdmin
 	}
 
 	if s.User == s.IRCChannel {
-		return LevelBroadcaster
+		return levelBroadcaster
 	}
 
 	if tags["mod"] == "1" {
-		return LevelModerator
+		return levelModerator
 	}
 
 	badges := parseBadges(tags["badges"])
 
 	switch {
 	case badges["broadcaster"] != "":
-		return LevelBroadcaster
+		return levelBroadcaster
 	case badges["moderator"] != "":
-		return LevelModerator
+		return levelModerator
 	case badges["subscriber"] != "", badges["vip"] != "", tags["subscriber"] == "1":
-		return LevelSubscriber
+		return levelSubscriber
 	}
 
 	if tags["user-type"] == "mod" {
-		return LevelModerator
+		return levelModerator
 	}
 
 	if s.Channel != nil {
 		for _, owner := range s.Channel.CustomOwners {
 			if s.User == owner {
-				return LevelBroadcaster
+				return levelBroadcaster
 			}
 		}
 
 		for _, mod := range s.Channel.CustomMods {
 			if s.User == mod {
-				return LevelModerator
+				return levelModerator
 			}
 		}
 
 		for _, reg := range s.Channel.CustomRegulars {
 			if s.User == reg {
-				return LevelSubscriber
+				return levelSubscriber
 			}
 		}
 	}
 
-	return LevelEveryone
+	return levelEveryone
 }
 
 func (s *session) IsAdmin() bool {
-	return s.UserLevel.CanAccess(LevelAdmin)
+	return s.UserLevel.CanAccess(levelAdmin)
 }
 
 func (s *session) IsInCooldown() bool {

@@ -6,59 +6,59 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 )
 
-//go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=AccessLevel
+//go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=accessLevel
 
-type AccessLevel int
+type accessLevel int
 
 const (
-	LevelUnknown     AccessLevel = 0
-	LevelEveryone    AccessLevel = 1
-	LevelSubscriber  AccessLevel = 2
-	LevelModerator   AccessLevel = 3
-	LevelBroadcaster AccessLevel = 4
-	LevelAdmin       AccessLevel = 99
+	levelUnknown     accessLevel = 0
+	levelEveryone    accessLevel = 1
+	levelSubscriber  accessLevel = 2
+	levelModerator   accessLevel = 3
+	levelBroadcaster accessLevel = 4
+	levelAdmin       accessLevel = 99
 )
 
-func NewAccessLevel(s string) AccessLevel {
+func newAccessLevel(s string) accessLevel {
 	switch s {
 	case models.AccessLevelEveryone:
-		return LevelEveryone
+		return levelEveryone
 	case models.AccessLevelSubscriber:
-		return LevelSubscriber
+		return levelSubscriber
 	case models.AccessLevelModerator:
-		return LevelModerator
+		return levelModerator
 	case models.AccessLevelBroadcaster:
-		return LevelBroadcaster
+		return levelBroadcaster
 	case models.AccessLevelAdmin:
-		return LevelAdmin
+		return levelAdmin
 	default:
-		return LevelUnknown
+		return levelUnknown
 	}
 }
 
-func (a AccessLevel) CanAccess(resource AccessLevel) bool {
-	if a == LevelAdmin {
+func (a accessLevel) CanAccess(resource accessLevel) bool {
+	if a == levelAdmin {
 		return true
 	}
 
-	if a <= LevelUnknown || resource <= LevelUnknown {
+	if a <= levelUnknown || resource <= levelUnknown {
 		return false
 	}
 
 	return a >= resource
 }
 
-func (a AccessLevel) PGEnum() string {
+func (a accessLevel) PGEnum() string {
 	switch a {
-	case LevelEveryone:
+	case levelEveryone:
 		return models.AccessLevelEveryone
-	case LevelSubscriber:
+	case levelSubscriber:
 		return models.AccessLevelSubscriber
-	case LevelModerator:
+	case levelModerator:
 		return models.AccessLevelModerator
-	case LevelBroadcaster:
+	case levelBroadcaster:
 		return models.AccessLevelBroadcaster
-	case LevelAdmin:
+	case levelAdmin:
 		return models.AccessLevelAdmin
 	default:
 		panic(fmt.Sprintf("cannot convert %v to enum value", a))

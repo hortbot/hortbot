@@ -16,24 +16,24 @@ var reservedCommandNames = map[string]bool{
 func init() {
 	// To prevent initialization loop.
 	builtinCommands = map[string]handlerFunc{
-		"command":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
-		"coemand":     {fn: cmdSimpleCommand, minLevel: LevelModerator},
-		"set":         {fn: cmdSettings, minLevel: LevelModerator},
-		"setting":     {fn: cmdSettings, minLevel: LevelModerator},
-		"owner":       {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
-		"mod":         {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
-		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: LevelBroadcaster},
-		"ignore":      {fn: cmdOwnerModRegularIgnore, minLevel: LevelModerator},
-		"quote":       {fn: cmdQuote, minLevel: LevelSubscriber},
-		"clear":       {fn: cmdModClear, minLevel: LevelModerator},
-		"filter":      {fn: cmdFilter, minLevel: LevelModerator},
-		"permit":      {fn: cmdPermit, minLevel: LevelModerator},
-		"allow":       {fn: cmdPermit, minLevel: LevelModerator},
-		"leave":       {fn: cmdLeave, minLevel: LevelBroadcaster},
-		"part":        {fn: cmdLeave, minLevel: LevelBroadcaster},
-		"conch":       {fn: cmdConch, minLevel: LevelSubscriber},
-		"helix":       {fn: cmdConch, minLevel: LevelSubscriber},
-		"__roundtrip": {fn: cmdRoundtrip, minLevel: LevelAdmin},
+		"command":     {fn: cmdSimpleCommand, minLevel: levelModerator},
+		"coemand":     {fn: cmdSimpleCommand, minLevel: levelModerator},
+		"set":         {fn: cmdSettings, minLevel: levelModerator},
+		"setting":     {fn: cmdSettings, minLevel: levelModerator},
+		"owner":       {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},
+		"mod":         {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},
+		"regular":     {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},
+		"ignore":      {fn: cmdOwnerModRegularIgnore, minLevel: levelModerator},
+		"quote":       {fn: cmdQuote, minLevel: levelSubscriber},
+		"clear":       {fn: cmdModClear, minLevel: levelModerator},
+		"filter":      {fn: cmdFilter, minLevel: levelModerator},
+		"permit":      {fn: cmdPermit, minLevel: levelModerator},
+		"allow":       {fn: cmdPermit, minLevel: levelModerator},
+		"leave":       {fn: cmdLeave, minLevel: levelBroadcaster},
+		"part":        {fn: cmdLeave, minLevel: levelBroadcaster},
+		"conch":       {fn: cmdConch, minLevel: levelSubscriber},
+		"helix":       {fn: cmdConch, minLevel: levelSubscriber},
+		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }
 
@@ -53,7 +53,7 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 
 type handlerFunc struct {
 	fn       func(ctx context.Context, s *session, cmd string, args string) error
-	minLevel AccessLevel
+	minLevel accessLevel
 }
 
 func (h handlerFunc) run(ctx context.Context, s *session, cmd string, args string) error {

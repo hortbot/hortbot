@@ -11,10 +11,10 @@ import (
 )
 
 var settingCommands handlerMap = map[string]handlerFunc{
-	"prefix":         {fn: cmdSettingPrefix, minLevel: LevelBroadcaster},
-	"bullet":         {fn: cmdSettingBullet, minLevel: LevelBroadcaster},
-	"cooldown":       {fn: cmdSettingCooldown, minLevel: LevelModerator},
-	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: LevelModerator},
+	"prefix":         {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
+	"bullet":         {fn: cmdSettingBullet, minLevel: levelBroadcaster},
+	"cooldown":       {fn: cmdSettingCooldown, minLevel: levelModerator},
+	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: levelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {

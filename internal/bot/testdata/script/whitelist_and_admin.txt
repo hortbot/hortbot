@@ -8,7 +8,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@f
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :whitelisted!whitelisted@whitelisted.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
-send hortbot #foobar [HB] LevelEveryone
+send hortbot #foobar [HB] levelEveryone
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
-send hortbot #foobar [HB] LevelAdmin
+send hortbot #foobar [HB] levelAdmin

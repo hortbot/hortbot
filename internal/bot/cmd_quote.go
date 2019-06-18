@@ -13,15 +13,15 @@ import (
 )
 
 var quoteCommands handlerMap = map[string]handlerFunc{
-	"add":      {fn: cmdQuoteAdd, minLevel: LevelModerator},
-	"delete":   {fn: cmdQuoteDelete, minLevel: LevelModerator},
-	"remove":   {fn: cmdQuoteDelete, minLevel: LevelModerator},
-	"edit":     {fn: cmdQuoteEdit, minLevel: LevelModerator},
-	"getindex": {fn: cmdQuoteGetIndex, minLevel: LevelSubscriber},
-	"get":      {fn: cmdQuoteGet, minLevel: LevelSubscriber},
-	"random":   {fn: cmdQuoteRandom, minLevel: LevelSubscriber},
-	"search":   {fn: cmdQuoteSearch, minLevel: LevelModerator},
-	"editor":   {fn: cmdQuoteEditor, minLevel: LevelSubscriber},
+	"add":      {fn: cmdQuoteAdd, minLevel: levelModerator},
+	"delete":   {fn: cmdQuoteDelete, minLevel: levelModerator},
+	"remove":   {fn: cmdQuoteDelete, minLevel: levelModerator},
+	"edit":     {fn: cmdQuoteEdit, minLevel: levelModerator},
+	"getindex": {fn: cmdQuoteGetIndex, minLevel: levelSubscriber},
+	"get":      {fn: cmdQuoteGet, minLevel: levelSubscriber},
+	"random":   {fn: cmdQuoteRandom, minLevel: levelSubscriber},
+	"search":   {fn: cmdQuoteSearch, minLevel: levelModerator},
+	"editor":   {fn: cmdQuoteEditor, minLevel: levelSubscriber},
 }
 
 func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {

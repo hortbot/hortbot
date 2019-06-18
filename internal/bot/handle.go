@@ -254,7 +254,7 @@ func handleSession(ctx context.Context, s *session) error {
 		if s.IsAdmin() || s.IRCChannel == s.User {
 			ignored = false
 		} else {
-			s.UserLevel = LevelEveryone
+			s.UserLevel = levelEveryone
 		}
 	}
 
@@ -325,7 +325,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	}
 
-	if !s.UserLevel.CanAccess(LevelModerator) && s.IsInCooldown() {
+	if !s.UserLevel.CanAccess(levelModerator) && s.IsInCooldown() {
 		return false, nil
 	}
 
@@ -354,7 +354,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return true, err
 	}
 
-	commandLevel := NewAccessLevel(command.AccessLevel)
+	commandLevel := newAccessLevel(command.AccessLevel)
 	if !s.UserLevel.CanAccess(commandLevel) {
 		return true, errNotAuthorized
 	}

@@ -11,11 +11,11 @@ import (
 )
 
 var filterCommands handlerMap = map[string]handlerFunc{
-	"on":    {fn: cmdFilterOnOff(true), minLevel: LevelModerator},
-	"off":   {fn: cmdFilterOnOff(false), minLevel: LevelModerator},
-	"links": {fn: cmdFilterLinks, minLevel: LevelModerator},
-	"pd":    {fn: cmdFilterPermittedLinks, minLevel: LevelModerator},
-	"pl":    {fn: cmdFilterPermittedLinks, minLevel: LevelModerator},
+	"on":    {fn: cmdFilterOnOff(true), minLevel: levelModerator},
+	"off":   {fn: cmdFilterOnOff(false), minLevel: levelModerator},
+	"links": {fn: cmdFilterLinks, minLevel: levelModerator},
+	"pd":    {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
+	"pl":    {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
