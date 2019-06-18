@@ -43,7 +43,7 @@ var scCommands handlerMap = map[string]handlerFunc{
 	// TODO: clone
 }
 
-func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommand(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
@@ -59,27 +59,27 @@ func cmdSimpleCommand(ctx context.Context, s *Session, cmd string, args string) 
 	return nil
 }
 
-func cmdSimpleCommandAddNormal(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandAddNormal(ctx context.Context, s *session, cmd string, args string) error {
 	return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, false)
 }
 
-func cmdSimpleCommandAddBroadcaster(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandAddBroadcaster(ctx context.Context, s *session, cmd string, args string) error {
 	return cmdSimpleCommandAdd(ctx, s, args, LevelBroadcaster, true)
 }
 
-func cmdSimpleCommandAddModerator(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandAddModerator(ctx context.Context, s *session, cmd string, args string) error {
 	return cmdSimpleCommandAdd(ctx, s, args, LevelModerator, true)
 }
 
-func cmdSimpleCommandAddSubscriber(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
 	return cmdSimpleCommandAdd(ctx, s, args, LevelSubscriber, true)
 }
 
-func cmdSimpleCommandAddEveryone(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandAddEveryone(ctx context.Context, s *session, cmd string, args string) error {
 	return cmdSimpleCommandAdd(ctx, s, args, LevelEveryone, true)
 }
 
-func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level AccessLevel, forceLevel bool) error {
+func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level AccessLevel, forceLevel bool) error {
 	usage := func() error {
 		return s.ReplyUsage("<name> <text>")
 	}
@@ -165,7 +165,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *Session, args string, level Acc
 	return s.Replyf("Command '%s' added, restricted to %s and above.%s", name, al, warning)
 }
 
-func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<name>")
 	}
@@ -205,7 +205,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *Session, cmd string, args st
 	return s.Replyf("Command '%s' deleted.", name)
 }
 
-func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<name> everyone|regulars|subs|mods|broadcaster|admin")
 	}
@@ -270,7 +270,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *Session, cmd string, args 
 	return s.Replyf("Command '%s' restricted to %s and above.", name, flect.Pluralize(command.AccessLevel))
 }
 
-func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args string) error {
+func cmdSimpleCommandProperty(ctx context.Context, s *session, prop string, args string) error {
 	name, _ := splitSpace(args)
 
 	if name == "" {
@@ -306,7 +306,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *Session, prop string, args
 	panic("unreachable")
 }
 
-func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<old> <new>")
 	}
@@ -365,7 +365,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *Session, cmd string, args st
 	return s.Replyf("Command '%s' has been renamed to '%s'.", oldName, newName)
 }
 
-func cmdSimpleCommandGet(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSimpleCommandGet(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<name>")
 	}

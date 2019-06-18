@@ -17,7 +17,7 @@ var settingCommands handlerMap = map[string]handlerFunc{
 	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: LevelModerator},
 }
 
-func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
@@ -33,13 +33,13 @@ func cmdSettings(ctx context.Context, s *Session, cmd string, args string) error
 	return err
 }
 
-func cmdSettingBullet(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		var bullet string
 		if s.Channel.Bullet.Valid {
 			bullet = s.Channel.Bullet.String
 		} else {
-			bullet = s.Bot.bullet + " (default)"
+			bullet = s.Deps.DefaultBullet + " (default)"
 		}
 
 		return s.Replyf("Bullet is %s", bullet)
@@ -69,7 +69,7 @@ func cmdSettingBullet(ctx context.Context, s *Session, cmd string, args string) 
 	return s.Replyf("Bullet changed to %s", args)
 }
 
-func cmdSettingPrefix(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		return s.Replyf("Prefix is %s", s.Channel.Prefix)
 	}
@@ -82,7 +82,7 @@ func cmdSettingPrefix(ctx context.Context, s *Session, cmd string, args string) 
 	reset := strings.EqualFold(args, "reset")
 
 	if reset {
-		s.Channel.Prefix = s.Bot.prefix
+		s.Channel.Prefix = s.Deps.DefaultPrefix
 	} else {
 		s.Channel.Prefix = args
 	}
@@ -98,7 +98,7 @@ func cmdSettingPrefix(ctx context.Context, s *Session, cmd string, args string) 
 	return s.Replyf("Prefix changed to %s", args)
 }
 
-func cmdSettingCooldown(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string) error {
 	var cooldown null.Int
 
 	if args == "" {
@@ -106,7 +106,7 @@ func cmdSettingCooldown(ctx context.Context, s *Session, cmd string, args string
 		if cooldown.Valid {
 			return s.Replyf("Cooldown is %d seconds.", s.Channel.Cooldown.Int)
 		}
-		return s.Replyf("Cooldown is %d seconds (default).", s.Bot.cooldown)
+		return s.Replyf("Cooldown is %d seconds (default).", s.Deps.DefaultCooldown)
 	}
 
 	reset := strings.EqualFold(args, "reset")
@@ -132,7 +132,7 @@ func cmdSettingCooldown(ctx context.Context, s *Session, cmd string, args string
 	return s.Replyf("Cooldown changed to %d seconds.", cooldown.Int)
 }
 
-func cmdSettingShouldModerate(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args string) error {
 	args = strings.ToLower(args)
 
 	switch args {

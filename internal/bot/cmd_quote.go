@@ -24,7 +24,7 @@ var quoteCommands handlerMap = map[string]handlerFunc{
 	"editor":   {fn: cmdQuoteEditor, minLevel: LevelSubscriber},
 }
 
-func cmdQuote(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
@@ -44,7 +44,7 @@ func cmdQuote(ctx context.Context, s *Session, cmd string, args string) error {
 	return nil
 }
 
-func cmdQuoteAdd(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		return s.ReplyUsage("<quote>")
 	}
@@ -79,7 +79,7 @@ func cmdQuoteAdd(ctx context.Context, s *Session, cmd string, args string) error
 	return s.Replyf("%s added as quote #%d.", args, nextNum)
 }
 
-func cmdQuoteDelete(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<index>")
 	}
@@ -113,7 +113,7 @@ func cmdQuoteDelete(ctx context.Context, s *Session, cmd string, args string) er
 	return s.Replyf("Quote #%d has been deleted.", quote.Num)
 }
 
-func cmdQuoteEdit(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<index> <quote>")
 	}
@@ -152,7 +152,7 @@ func cmdQuoteEdit(ctx context.Context, s *Session, cmd string, args string) erro
 	return s.Replyf("Quote #%d edited.", num)
 }
 
-func cmdQuoteGetIndex(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		return s.ReplyUsage("<quote>")
 	}
@@ -173,7 +173,7 @@ func cmdQuoteGetIndex(ctx context.Context, s *Session, cmd string, args string) 
 	return s.Replyf("That's quote #%d.", quote.Num)
 }
 
-func cmdQuoteGet(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<index>")
 	}
@@ -212,7 +212,7 @@ func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channelID int6
 	return quote, err
 }
 
-func cmdQuoteRandom(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteRandom(ctx context.Context, s *session, cmd string, args string) error {
 	quote, err := getRandomQuote(ctx, s.Tx, s.Channel.ID)
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func cmdQuoteRandom(ctx context.Context, s *Session, cmd string, args string) er
 
 var likeEscaper = strings.NewReplacer(`%`, `\%`, `_`, `\_`)
 
-func cmdQuoteSearch(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		return s.ReplyUsage("<phrase>")
 	}
@@ -277,7 +277,7 @@ func cmdQuoteSearch(ctx context.Context, s *Session, cmd string, args string) er
 	return s.Reply(builder.String())
 }
 
-func cmdQuoteEditor(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<index>")
 	}

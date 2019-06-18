@@ -12,7 +12,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-func handleManagement(ctx context.Context, s *Session) error {
+func handleManagement(ctx context.Context, s *session) error {
 	var cmd string
 
 	switch s.Message[0] {
@@ -39,7 +39,7 @@ func handleManagement(ctx context.Context, s *Session) error {
 	return nil
 }
 
-func handleJoin(ctx context.Context, s *Session, name, id string) error {
+func handleJoin(ctx context.Context, s *session, name, id string) error {
 	var channel *models.Channel
 	var err error
 
@@ -71,7 +71,7 @@ func handleJoin(ctx context.Context, s *Session, name, id string) error {
 			Name:           name,
 			BotName:        botName,
 			Active:         true,
-			Prefix:         s.Bot.prefix,
+			Prefix:         s.Deps.DefaultPrefix,
 			ShouldModerate: true,
 		}
 
@@ -79,7 +79,7 @@ func handleJoin(ctx context.Context, s *Session, name, id string) error {
 			return err
 		}
 
-		s.Notifier.NotifyChannelUpdates(channel.BotName)
+		s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
 
 		return s.Replyf("%s, %s will join your channel soon with prefix %s", displayName, botName, channel.Prefix)
 	}
@@ -95,12 +95,12 @@ func handleJoin(ctx context.Context, s *Session, name, id string) error {
 		return err
 	}
 
-	s.Notifier.NotifyChannelUpdates(channel.BotName)
+	s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
 
 	return s.Replyf("%s, %s will join your channel soon with prefix %s", s.UserDisplay, channel.BotName, channel.Prefix)
 }
 
-func handleLeave(ctx context.Context, s *Session, name string) error {
+func handleLeave(ctx context.Context, s *session, name string) error {
 	var channel *models.Channel
 	var err error
 
@@ -127,7 +127,7 @@ func handleLeave(ctx context.Context, s *Session, name string) error {
 		return err
 	}
 
-	s.Notifier.NotifyChannelUpdates(channel.BotName)
+	s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
 
 	return s.Replyf("%s, %s will now leave your channel.", displayName, channel.BotName)
 }
@@ -136,7 +136,7 @@ const leaveConfirmSeconds = 10
 
 var leaveConfirmReadable = durafmt.Parse(leaveConfirmSeconds * time.Second).String()
 
-func cmdLeave(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	confirmed, err := s.RDB.Confirm(s.User, "leave", leaveConfirmSeconds)
 	if err != nil {
 		return err
@@ -152,7 +152,7 @@ func cmdLeave(ctx context.Context, s *Session, cmd string, args string) error {
 		return err
 	}
 
-	s.Notifier.NotifyChannelUpdates(s.Channel.BotName)
+	s.Deps.Notifier.NotifyChannelUpdates(s.Channel.BotName)
 
 	return s.Replyf("%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
 }

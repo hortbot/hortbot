@@ -18,7 +18,7 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"pl":    {fn: cmdFilterPermittedLinks, minLevel: LevelModerator},
 }
 
-func cmdFilter(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
@@ -34,8 +34,8 @@ func cmdFilter(ctx context.Context, s *Session, cmd string, args string) error {
 	return err
 }
 
-func cmdFilterOnOff(enable bool) func(ctx context.Context, s *Session, cmd string, args string) error {
-	return func(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdFilterOnOff(enable bool) func(ctx context.Context, s *session, cmd string, args string) error {
+	return func(ctx context.Context, s *session, cmd string, args string) error {
 		if s.Channel.EnableFilters == enable {
 			if enable {
 				return s.Reply("Filters are already enabled.")
@@ -56,7 +56,7 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *Session, cmd strin
 	}
 }
 
-func cmdFilterLinks(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdFilterLinks(ctx context.Context, s *session, cmd string, args string) error {
 	enable := false
 
 	switch args {
@@ -87,7 +87,7 @@ func cmdFilterLinks(ctx context.Context, s *Session, cmd string, args string) er
 	return s.Reply("Link filter is now disabled.")
 }
 
-func cmdFilterPermittedLinks(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("add|delete|list ...")
 	}

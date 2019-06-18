@@ -49,7 +49,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return errNilMessage
 	}
 
-	start := b.clock.Now()
+	start := b.deps.Clock.Now()
 
 	if m.Command != "PRIVMSG" {
 		// TODO: handle other types of messages
@@ -80,7 +80,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		}
 	}()
 
-	seen, err := b.dedupe.CheckAndMark(id)
+	seen, err := b.deps.Dedupe.CheckAndMark(id)
 	if err != nil {
 		logger.Error("error checking for duplicate", zap.Error(err))
 		return err
@@ -93,7 +93,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	user := strings.ToLower(m.Prefix.Name)
 
-	if !b.isAllowed(user) {
+	if !b.deps.IsAllowed(user) {
 		return nil
 	}
 
@@ -120,19 +120,15 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return nil
 	}
 
-	s := &Session{
-		Origin:   origin,
-		M:        m,
-		Start:    start,
-		ID:       id,
-		User:     user,
-		Message:  message,
-		Me:       me,
-		Bot:      b,
-		Sender:   b.sender,
-		Notifier: b.notifier,
-		Clock:    b.clock,
-		Rand:     b.rand,
+	s := &session{
+		Origin:  origin,
+		M:       m,
+		Deps:    b.deps,
+		Start:   start,
+		ID:      id,
+		User:    user,
+		Message: message,
+		Me:      me,
 	}
 
 	if displayName := m.Tags["display-name"]; displayName != "" {
@@ -148,7 +144,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	}
 
 	s.RDB = &RDB{
-		d:  b.rdb,
+		d:  s.Deps.RDB,
 		ch: roomID,
 	}
 
@@ -217,7 +213,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	return err
 }
 
-func handleSession(ctx context.Context, s *Session) error {
+func handleSession(ctx context.Context, s *session) error {
 	logger := ctxlog.FromContext(ctx)
 
 	s.SetUserLevel()
@@ -279,7 +275,7 @@ func handleSession(ctx context.Context, s *Session) error {
 
 	wasCommand, err := tryCommand(ctx, s)
 	if wasCommand {
-		s.Channel.LastCommandAt = s.Clock.Now()
+		s.Channel.LastCommandAt = s.Deps.Clock.Now()
 		if uerr := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.LastCommandAt)); uerr != nil {
 			logger.Error("error while updating last command timestamp", zap.Error(uerr))
 			if err == nil {
@@ -300,7 +296,7 @@ func handleSession(ctx context.Context, s *Session) error {
 	return nil
 }
 
-func tryCommand(ctx context.Context, s *Session) (bool, error) {
+func tryCommand(ctx context.Context, s *session) (bool, error) {
 	if s.Me {
 		return false, nil
 	}
@@ -390,7 +386,7 @@ func tryCommand(ctx context.Context, s *Session) (bool, error) {
 	return true, err
 }
 
-func tryBuiltinCommand(ctx context.Context, s *Session, cmd string, args string) (bool, error) {
+func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {
 	if cmd == "builtin" {
 		cmd, args = splitSpace(args)
 		cmd = strings.ToLower(cmd)

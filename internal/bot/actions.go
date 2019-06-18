@@ -10,7 +10,7 @@ import (
 
 var testingAction func(ctx context.Context, action string) (string, error, bool)
 
-func (s *Session) doAction(ctx context.Context, action string) (string, error) {
+func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	if isTesting && testingAction != nil {
 		s, err, ok := testingAction(ctx, action)
 		if ok {
@@ -64,7 +64,7 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 	return sb.String(), nil
 }
 
-func (s *Session) NextParameter() string {
+func (s *session) NextParameter() string {
 	var param string
 	param, s.CommandParams = splitFirstSep(s.CommandParams, ";")
 	return strings.TrimSpace(param)

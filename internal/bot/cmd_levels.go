@@ -10,7 +10,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-func cmdOwnerModRegularIgnore(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args string) error {
 	args = strings.TrimSpace(args)
 
 	var cmds string

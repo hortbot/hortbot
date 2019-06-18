@@ -7,7 +7,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 )
 
-func tryFilter(ctx context.Context, s *Session) (filtered bool, err error) {
+func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
 	if !s.Channel.ShouldModerate || !s.Channel.EnableFilters {
 		return false, nil
 	}
@@ -22,7 +22,7 @@ func tryFilter(ctx context.Context, s *Session) (filtered bool, err error) {
 	return false, nil
 }
 
-func filterLinks(ctx context.Context, s *Session) (filtered bool, err error) {
+func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 	links := s.Links()
 
 	if len(links) == 0 {

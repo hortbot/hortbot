@@ -39,7 +39,7 @@ func init() {
 
 type handlerMap map[string]handlerFunc
 
-func (h handlerMap) run(ctx context.Context, s *Session, cmd string, args string) (bool, error) {
+func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string) (bool, error) {
 	cmd = strings.ToLower(cmd)
 	bc, ok := h[cmd]
 	if !ok {
@@ -52,11 +52,11 @@ func (h handlerMap) run(ctx context.Context, s *Session, cmd string, args string
 }
 
 type handlerFunc struct {
-	fn       func(ctx context.Context, s *Session, cmd string, args string) error
+	fn       func(ctx context.Context, s *session, cmd string, args string) error
 	minLevel AccessLevel
 }
 
-func (h handlerFunc) run(ctx context.Context, s *Session, cmd string, args string) error {
+func (h handlerFunc) run(ctx context.Context, s *session, cmd string, args string) error {
 	if !s.UserLevel.CanAccess(h.minLevel) {
 		return errNotAuthorized
 	}

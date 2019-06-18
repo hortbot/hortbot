@@ -34,22 +34,9 @@ type Config struct {
 }
 
 type Bot struct {
-	db       *sql.DB
-	rdb      *rdb.DB
-	dedupe   dedupe.Deduplicator
-	sender   Sender
-	notifier Notifier
-	clock    clock.Clock
-	rand     Rand
-
-	prefix   string
-	bullet   string
-	cooldown int
-
-	admins    map[string]bool
-	whitelist map[string]bool
-
-	testingHelper testingHelper
+	db            *sql.DB
+	deps          *sharedDeps
+	testingHelper *testingHelper
 }
 
 func New(config *Config) *Bot {
@@ -67,50 +54,45 @@ func New(config *Config) *Bot {
 		panic("notifier is nil")
 	}
 
-	b := &Bot{
-		db:       config.DB,
-		dedupe:   config.Dedupe,
-		sender:   config.Sender,
-		notifier: config.Notifier,
-		prefix:   config.Prefix,
-		bullet:   config.Bullet,
-		cooldown: config.Cooldown,
-		admins:   make(map[string]bool),
+	deps := &sharedDeps{
+		Dedupe:          config.Dedupe,
+		Sender:          config.Sender,
+		Notifier:        config.Notifier,
+		DefaultPrefix:   config.Prefix,
+		DefaultBullet:   config.Bullet,
+		DefaultCooldown: config.Cooldown,
+		Admins:          make(map[string]bool),
 	}
 
-	if b.bullet == "" {
-		b.bullet = DefaultBullet
+	if deps.DefaultBullet == "" {
+		deps.DefaultBullet = DefaultBullet
 	}
 
-	if b.prefix == "" {
-		b.prefix = DefaultPrefix
+	if deps.DefaultPrefix == "" {
+		deps.DefaultPrefix = DefaultPrefix
 	}
 
 	if config.Clock != nil {
-		b.clock = config.Clock
+		deps.Clock = config.Clock
 	} else {
-		b.clock = clock.New()
-	}
-
-	if isTesting {
-		b.testingHelper = testingHelper{}
+		deps.Clock = clock.New()
 	}
 
 	for _, name := range config.Admins {
-		b.admins[name] = true
+		deps.Admins[name] = true
 	}
 
 	if config.WhitelistEnabled {
-		b.whitelist = make(map[string]bool)
+		deps.Whitelist = make(map[string]bool)
 		for _, name := range config.Whitelist {
-			b.whitelist[name] = true
+			deps.Whitelist[name] = true
 		}
 	}
 
 	if config.Rand != nil {
-		b.rand = config.Rand
+		deps.Rand = config.Rand
 	} else {
-		b.rand = globalRand{}
+		deps.Rand = globalRand{}
 	}
 
 	r, err := rdb.New(config.Redis)
@@ -118,23 +100,16 @@ func New(config *Config) *Bot {
 		panic(err)
 	}
 
-	b.rdb = r
+	deps.RDB = r
+
+	b := &Bot{
+		db:   config.DB,
+		deps: deps,
+	}
+
+	if isTesting {
+		b.testingHelper = &testingHelper{}
+	}
 
 	return b
-}
-
-func (b *Bot) isAllowed(name string) bool {
-	if b.whitelist == nil {
-		return true
-	}
-
-	if b.admins[name] {
-		return true
-	}
-
-	if b.whitelist[name] {
-		return true
-	}
-
-	return false
 }

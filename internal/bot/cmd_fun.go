@@ -20,8 +20,8 @@ var conchResponses = [...]string{
 	"Unable to discern.",
 }
 
-func cmdConch(ctx context.Context, s *Session, cmd string, args string) error {
-	i := s.Rand.Intn(len(conchResponses) + 1)
+func cmdConch(ctx context.Context, s *session, cmd string, args string) error {
+	i := s.Deps.Rand.Intn(len(conchResponses) + 1)
 
 	if i < len(conchResponses) {
 		return s.Reply(conchResponses[i])

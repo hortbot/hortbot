@@ -23,7 +23,7 @@ var moderationCommands handlerMap = map[string]handlerFunc{
 	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: LevelModerator},
 }
 
-func cmdModBan(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
@@ -39,7 +39,7 @@ func cmdModBan(ctx context.Context, s *Session, cmd string, args string) error {
 	return s.Replyf("%s has been banned.", user)
 }
 
-func cmdModUnban(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
@@ -55,7 +55,7 @@ func cmdModUnban(ctx context.Context, s *Session, cmd string, args string) error
 	return s.Replyf("%s has been unbanned.", user)
 }
 
-func cmdModTimeout(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.Reply("usage: +t <user> [seconds]")
 	}
@@ -88,7 +88,7 @@ func cmdModTimeout(ctx context.Context, s *Session, cmd string, args string) err
 	return s.Replyf("%s has been timed out for %s seconds.", user, seconds)
 }
 
-func cmdModUntimeout(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
@@ -104,8 +104,8 @@ func cmdModUntimeout(ctx context.Context, s *Session, cmd string, args string) e
 	return s.Replyf("%s is no longer timed out.", user)
 }
 
-func cmdChangeMode(command, message string) func(ctx context.Context, s *Session, cmd string, args string) error {
-	return func(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdChangeMode(command, message string) func(ctx context.Context, s *session, cmd string, args string) error {
+	return func(ctx context.Context, s *session, cmd string, args string) error {
 		if err := s.SendCommand(command); err != nil {
 			return err
 		}
@@ -113,7 +113,7 @@ func cmdChangeMode(command, message string) func(ctx context.Context, s *Session
 	}
 }
 
-func cmdModPurge(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.Reply("usage: +p <user>")
 	}
@@ -136,7 +136,7 @@ func cmdModPurge(ctx context.Context, s *Session, cmd string, args string) error
 	return s.Replyf("%s's chat history has been purged.", user)
 }
 
-func cmdModClear(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdModClear(ctx context.Context, s *session, cmd string, args string) error {
 	return s.SendCommand("clear")
 }
 
@@ -147,7 +147,7 @@ var (
 	permitDurReadable = durafmt.Parse(permitDur).String()
 )
 
-func cmdPermit(ctx context.Context, s *Session, cmd string, args string) error {
+func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 	if !s.Channel.EnableFilters || !s.Channel.FilterLinks {
 		return nil
 	}

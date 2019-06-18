@@ -10,20 +10,15 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
-	"github.com/leononame/clock"
 )
 
-type Session struct {
+type session struct {
 	Origin string
 	M      *irc.Message
 
-	Bot      *Bot
-	Tx       *sql.Tx
-	RDB      *RDB
-	Sender   Sender
-	Notifier Notifier
-	Clock    clock.Clock
-	Rand     Rand
+	Deps *sharedDeps
+	Tx   *sql.Tx
+	RDB  *RDB
 
 	Start   time.Time
 	TMISent time.Time
@@ -51,7 +46,7 @@ type Session struct {
 	usageContext string
 }
 
-func (s *Session) formatResponse(response string) string {
+func (s *session) formatResponse(response string) string {
 	response = strings.TrimSpace(response)
 
 	if len(response) >= 4 {
@@ -61,7 +56,7 @@ func (s *Session) formatResponse(response string) string {
 		}
 	}
 
-	bullet := s.Bot.bullet
+	bullet := s.Deps.DefaultBullet
 
 	if s.Channel != nil && s.Channel.Bullet.Valid {
 		bullet = s.Channel.Bullet.String
@@ -70,16 +65,16 @@ func (s *Session) formatResponse(response string) string {
 	return bullet + " " + response
 }
 
-func (s *Session) Reply(response string) error {
-	return s.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
+func (s *session) Reply(response string) error {
+	return s.Deps.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
 }
 
-func (s *Session) Replyf(format string, args ...interface{}) error {
+func (s *session) Replyf(format string, args ...interface{}) error {
 	response := fmt.Sprintf(format, args...)
 	return s.Reply(response)
 }
 
-func (s *Session) ReplyUsage(usage string) error {
+func (s *session) ReplyUsage(usage string) error {
 	var builder strings.Builder
 	builder.WriteString("usage: ")
 	builder.WriteString(s.Channel.Prefix)
@@ -89,7 +84,7 @@ func (s *Session) ReplyUsage(usage string) error {
 	return s.Reply(builder.String())
 }
 
-func (s *Session) UsageContext(command string) func() {
+func (s *session) UsageContext(command string) func() {
 	if command == "" {
 		return func() {}
 	}
@@ -106,12 +101,12 @@ func (s *Session) UsageContext(command string) func() {
 	}
 }
 
-func (s *Session) SetUserLevel() {
+func (s *session) SetUserLevel() {
 	s.UserLevel = s.parseUserLevel()
 }
 
-func (s *Session) parseUserLevel() AccessLevel {
-	if s.Bot.admins[s.User] {
+func (s *session) parseUserLevel() AccessLevel {
+	if s.Deps.Admins[s.User] {
 		return LevelAdmin
 	}
 
@@ -169,13 +164,13 @@ func (s *Session) parseUserLevel() AccessLevel {
 	return LevelEveryone
 }
 
-func (s *Session) IsAdmin() bool {
+func (s *session) IsAdmin() bool {
 	return s.UserLevel.CanAccess(LevelAdmin)
 }
 
-func (s *Session) IsInCooldown() bool {
-	seconds := s.Clock.Since(s.Channel.LastCommandAt).Seconds()
-	cooldown := s.Bot.cooldown
+func (s *session) IsInCooldown() bool {
+	seconds := s.Deps.Clock.Since(s.Channel.LastCommandAt).Seconds()
+	cooldown := s.Deps.DefaultCooldown
 
 	if s.Channel.Cooldown.Valid {
 		cooldown = s.Channel.Cooldown.Int
@@ -184,7 +179,7 @@ func (s *Session) IsInCooldown() bool {
 	return seconds < float64(cooldown)
 }
 
-func (s *Session) SendCommand(command string, args ...string) error {
+func (s *session) SendCommand(command string, args ...string) error {
 	switch command {
 	case "slow":
 	case "slowoff":
@@ -212,14 +207,14 @@ func (s *Session) SendCommand(command string, args ...string) error {
 		builder.WriteString(arg)
 	}
 
-	return s.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, builder.String())
+	return s.Deps.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, builder.String())
 }
 
-func (s *Session) DeleteMessage() error {
+func (s *session) DeleteMessage() error {
 	return s.SendCommand("delete", s.ID)
 }
 
-func (s *Session) Links() []*url.URL {
+func (s *session) Links() []*url.URL {
 	if !s.linksSet {
 		s.links = findlinks.Find(s.Message, "http", "https", "ftp")
 	}
