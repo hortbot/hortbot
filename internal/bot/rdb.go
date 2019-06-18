@@ -1,20 +1,13 @@
 package bot
 
-import "github.com/hortbot/hortbot/internal/pkg/rdb"
-
-type RDB struct {
-	d  *rdb.DB
-	ch string
+func (s *session) LinkPermit(user string, seconds int) error {
+	return s.Deps.RDB.Mark(seconds, "link_permit", s.RoomIDStr, user)
 }
 
-func (r *RDB) LinkPermit(user string, seconds int) error {
-	return r.d.Mark(seconds, "link_permit", r.ch, user)
+func (s *session) HasLinkPermit(user string) (permitted bool, err error) {
+	return s.Deps.RDB.CheckAndDelete("link_permit", s.RoomIDStr, user)
 }
 
-func (r *RDB) HasLinkPermit(user string) (permitted bool, err error) {
-	return r.d.CheckAndDelete("link_permit", r.ch, user)
-}
-
-func (r *RDB) Confirm(user string, key string, seconds int) (confirmed bool, err error) {
-	return r.d.MarkOrDelete(seconds, "confirm", user, key)
+func (s *session) Confirm(user string, key string, seconds int) (confirmed bool, err error) {
+	return s.Deps.RDB.MarkOrDelete(seconds, "confirm", s.RoomIDStr, user, key)
 }

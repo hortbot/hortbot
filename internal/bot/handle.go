@@ -142,11 +142,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		logger.Debug("no room ID")
 		return errInvalidMessage
 	}
-
-	s.RDB = &RDB{
-		d:  s.Deps.RDB,
-		ch: roomID,
-	}
+	s.RoomIDStr = roomID
 
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {

@@ -18,13 +18,13 @@ type session struct {
 
 	Deps *sharedDeps
 	Tx   *sql.Tx
-	RDB  *RDB
 
 	Start   time.Time
 	TMISent time.Time
 
 	ID         string
 	RoomID     int64
+	RoomIDStr  string
 	IRCChannel string
 	Message    string
 	Me         bool

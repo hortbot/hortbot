@@ -37,7 +37,7 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	permitted, err := s.RDB.HasLinkPermit(s.User)
+	permitted, err := s.HasLinkPermit(s.User)
 	if err != nil {
 		return false, err
 	}

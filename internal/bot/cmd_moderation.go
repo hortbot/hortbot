@@ -158,7 +158,7 @@ func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 	}
 	user = strings.ToLower(user)
 
-	if err := s.RDB.LinkPermit(user, permitSeconds); err != nil {
+	if err := s.LinkPermit(user, permitSeconds); err != nil {
 		return err
 	}
 
