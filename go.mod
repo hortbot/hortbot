@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
-	github.com/aws/aws-sdk-go v1.20.4 // indirect
+	github.com/aws/aws-sdk-go v1.20.6 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.1
 	github.com/cenkalti/backoff v2.2.0+incompatible // indirect
@@ -20,6 +20,7 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
+	github.com/dhui/dktest v0.3.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
@@ -69,13 +70,13 @@ require (
 	go.mongodb.org/mongo-driver v1.0.3 // indirect
 	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/crypto v0.0.0-20190618222545-ea8f1a30c443 // indirect
-	golang.org/x/net v0.0.0-20190619014844-b5b0513f8c1b // indirect
+	golang.org/x/crypto v0.0.0-20190621222207-cc06ce4a13d4 // indirect
+	golang.org/x/net v0.0.0-20190620200207-3b0461eec859 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190619223125-e40ef342dc56 // indirect
-	golang.org/x/tools v0.0.0-20190619215442-4adf7a708c2d
+	golang.org/x/sys v0.0.0-20190621203818-d432491b9138 // indirect
+	golang.org/x/tools v0.0.0-20190621195816-6e04913cbbac
 	google.golang.org/appengine v1.6.1 // indirect
-	google.golang.org/genproto v0.0.0-20190611190212-a7e196e89fd3 // indirect
+	google.golang.org/genproto v0.0.0-20190620144150-6af8c5fc6601 // indirect
 	google.golang.org/grpc v1.21.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
