@@ -17,3 +17,37 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
 send hortbot #foobar [HB] 6
+
+
+# Ignored messages do not increment count.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
+send hortbot #foobar [HB] random added to ignored users.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hi there
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hi there
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+send hortbot #foobar [HB] 8
+
+
+# Filtered messages do not increment count.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+send hortbot #foobar [HB] Filters are now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
+send hortbot #foobar [HB] Link filter is now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+send hortbot #foobar [HB] 11
+
+handle hortbot @id=a8649dd0-95e0-11e9-b475-0800200c9a66;room-id=1;user-id=3 :other!other@other.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+send hortbot #foobar /delete a8649dd0-95e0-11e9-b475-0800200c9a66
+send hortbot #foobar [HB] other, please ask a moderator before posting links.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+send hortbot #foobar [HB] 12
