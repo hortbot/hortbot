@@ -269,6 +269,11 @@ func handleSession(ctx context.Context, s *session) error {
 		return nil
 	}
 
+	s.N, err = s.incrementMessageCount()
+	if err != nil {
+		return err
+	}
+
 	wasCommand, err := tryCommand(ctx, s)
 	if wasCommand {
 		s.Channel.LastCommandAt = s.Deps.Clock.Now()

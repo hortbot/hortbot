@@ -11,3 +11,7 @@ func (s *session) HasLinkPermit(user string) (permitted bool, err error) {
 func (s *session) Confirm(user string, key string, seconds int) (confirmed bool, err error) {
 	return s.Deps.RDB.MarkOrDelete(seconds, "confirm", s.RoomIDStr, user, key)
 }
+
+func (s *session) incrementMessageCount() (int64, error) {
+	return s.Deps.RDB.Increment("message_count")
+}
