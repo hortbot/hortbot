@@ -179,6 +179,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "insert_simple_command":
 			st.insertSimpleCommand(t, args)
 
+		case "insert_repeated_command":
+			st.insertRepeatedCommand(t, args)
+
 		case "checkpoint":
 			st.checkpoint()
 
@@ -329,6 +332,17 @@ func (st *scriptTester) insertSimpleCommand(t *testing.T, args string) {
 
 	st.addAction(func(ctx context.Context) {
 		assert.NilError(t, sc.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
+	})
+}
+
+func (st *scriptTester) insertRepeatedCommand(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var rc models.RepeatedCommand
+	assert.NilError(t, json.Unmarshal([]byte(args), &rc), "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		assert.NilError(t, rc.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
 	})
 }
 

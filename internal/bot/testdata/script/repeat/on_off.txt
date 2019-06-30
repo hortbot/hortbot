@@ -1,0 +1,53 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat on
+send hortbot #foobar [HB] usage: !repeat on <name>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat off
+send hortbot #foobar [HB] usage: !repeat off <name>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat on repeatme
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat off repeatme
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there!
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat on repeatme
+send hortbot #foobar [HB] Command 'repeatme' has no repeat.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat off repeatme
+send hortbot #foobar [HB] Command 'repeatme' has no repeat.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600
+send hortbot #foobar [HB] Command 'repeatme' will now repeat every 600 seconds if at least 1 message has passed.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat on repeatme
+send hortbot #foobar [HB] Repeated command 'repeatme' is already enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat off repeatme
+send hortbot #foobar [HB] Repeated command 'repeatme' is now disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat off repeatme
+send hortbot #foobar [HB] Repeated command 'repeatme' is already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat on repeatme
+send hortbot #foobar [HB] Repeated command 'repeatme' is now enabled.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addb repeatme2 Hello there!
+send hortbot #foobar [HB] Command 'repeatme2' added, restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme2 600
+send hortbot #foobar [HB] Command 'repeatme2' will now repeat every 600 seconds if at least 1 message has passed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :!repeat on repeatme2
+send hortbot #foobar [HB] Command 'repeatme2' is restricted to broadcasters; only broadcasters and above can modify its repeat.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :!repeat off repeatme2
+send hortbot #foobar [HB] Command 'repeatme2' is restricted to broadcasters; only broadcasters and above can modify its repeat.

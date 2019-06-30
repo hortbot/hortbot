@@ -33,6 +33,7 @@ func init() {
 		"part":        {fn: cmdLeave, minLevel: levelBroadcaster},
 		"conch":       {fn: cmdConch, minLevel: levelSubscriber},
 		"helix":       {fn: cmdConch, minLevel: levelSubscriber},
+		"repeat":      {fn: cmdRepeat, minLevel: levelModerator},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }

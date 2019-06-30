@@ -3,10 +3,10 @@ package bot
 import (
 	"database/sql"
 
+	"github.com/efritz/glock"
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
-	"github.com/efritz/glock"
 )
 
 const (

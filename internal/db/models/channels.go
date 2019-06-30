@@ -252,17 +252,20 @@ var ChannelWhere = struct {
 
 // ChannelRels is where relationship names are stored.
 var ChannelRels = struct {
-	Quotes         string
-	SimpleCommands string
+	Quotes           string
+	RepeatedCommands string
+	SimpleCommands   string
 }{
-	Quotes:         "Quotes",
-	SimpleCommands: "SimpleCommands",
+	Quotes:           "Quotes",
+	RepeatedCommands: "RepeatedCommands",
+	SimpleCommands:   "SimpleCommands",
 }
 
 // channelR is where relationships are stored.
 type channelR struct {
-	Quotes         QuoteSlice
-	SimpleCommands SimpleCommandSlice
+	Quotes           QuoteSlice
+	RepeatedCommands RepeatedCommandSlice
+	SimpleCommands   SimpleCommandSlice
 }
 
 // NewStruct creates a new relationship struct
@@ -392,6 +395,27 @@ func (o *Channel) Quotes(mods ...qm.QueryMod) quoteQuery {
 	return query
 }
 
+// RepeatedCommands retrieves all the repeated_command's RepeatedCommands with an executor.
+func (o *Channel) RepeatedCommands(mods ...qm.QueryMod) repeatedCommandQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"repeated_commands\".\"channel_id\"=?", o.ID),
+	)
+
+	query := RepeatedCommands(queryMods...)
+	queries.SetFrom(query.Query, "\"repeated_commands\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"repeated_commands\".*"})
+	}
+
+	return query
+}
+
 // SimpleCommands retrieves all the simple_command's SimpleCommands with an executor.
 func (o *Channel) SimpleCommands(mods ...qm.QueryMod) simpleCommandQuery {
 	var queryMods []qm.QueryMod
@@ -491,6 +515,94 @@ func (channelL) LoadQuotes(ctx context.Context, e boil.ContextExecutor, singular
 				local.R.Quotes = append(local.R.Quotes, foreign)
 				if foreign.R == nil {
 					foreign.R = &quoteR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadRepeatedCommands allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadRepeatedCommands(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`repeated_commands`), qm.WhereIn(`channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load repeated_commands")
+	}
+
+	var resultSlice []*RepeatedCommand
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice repeated_commands")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on repeated_commands")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for repeated_commands")
+	}
+
+	if singular {
+		object.R.RepeatedCommands = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &repeatedCommandR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.RepeatedCommands = append(local.R.RepeatedCommands, foreign)
+				if foreign.R == nil {
+					foreign.R = &repeatedCommandR{}
 				}
 				foreign.R.Channel = local
 				break
@@ -633,6 +745,59 @@ func (o *Channel) AddQuotes(ctx context.Context, exec boil.ContextExecutor, inse
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &quoteR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
+	return nil
+}
+
+// AddRepeatedCommands adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.RepeatedCommands.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddRepeatedCommands(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*RepeatedCommand) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"repeated_commands\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, repeatedCommandPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			RepeatedCommands: related,
+		}
+	} else {
+		o.R.RepeatedCommands = append(o.R.RepeatedCommands, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &repeatedCommandR{
 				Channel: o,
 			}
 		} else {

@@ -1,0 +1,54 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add
+send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme
+send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 10
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there!
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600
+send hortbot #foobar [HB] Command 'repeatme' will now repeat every 600 seconds if at least 1 message has passed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 2
+send hortbot #foobar [HB] Command 'repeatme' will now repeat every 600 seconds if at least 2 messages have passed.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 29
+send hortbot #foobar [HB] Delay must be at least 30 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 0
+send hortbot #foobar [HB] Delay must be at least 30 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme -3
+send hortbot #foobar [HB] Delay must be at least 30 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme what
+send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 0
+send hortbot #foobar [HB] Message difference must be at least 1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 -1
+send hortbot #foobar [HB] Message difference must be at least 1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 huh
+send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addb repeatme2 Hello there!
+send hortbot #foobar [HB] Command 'repeatme2' added, restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme2 30
+send hortbot #foobar [HB] Command 'repeatme2' is restricted to broadcasters; only broadcasters and above can modify its repeat.

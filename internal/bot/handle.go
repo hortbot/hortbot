@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
@@ -364,27 +363,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return true, errNotAuthorized
 	}
 
-	nodes, err := cbp.Parse(command.Message)
-	if err != nil {
-		logger.Error("command did not parse, which should not happen", zap.Error(err))
-		return true, err
-	}
-
-	command.Count++
-
-	// Do not modify UpdatedAt, which should be only used for "real" modifications.
-	if err := command.Update(ctx, tx, boil.Whitelist(models.SimpleCommandColumns.Count)); err != nil {
-		return true, err
-	}
-
-	response, err := walk(ctx, nodes, s.doAction)
-	if err != nil {
-		logger.Debug("error while walking command tree", zap.Error(err))
-		return true, err
-	}
-
-	err = s.Reply(response)
-	return true, err
+	return true, runSimpleCommand(ctx, s, command)
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {
