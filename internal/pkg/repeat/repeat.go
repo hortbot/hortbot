@@ -38,7 +38,7 @@ func (r *Repeater) Stop() {
 	r.g.Wait() //nolint:errcheck
 }
 
-// Add adds a repeated task occuring at an interval, given the specified ID.
+// Add adds a repeated task occurring at an interval, given the specified ID.
 // If init is non-zero, then the task will first wait for that duration before
 // looping. If there is already a task with that ID, then it will be replaced.
 func (r *Repeater) Add(id int64, fn func(ctx context.Context), interval, init time.Duration) {
