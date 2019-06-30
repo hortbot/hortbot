@@ -17,6 +17,7 @@ var allTables = []string{
 	"channels",
 	"simple_commands",
 	"quotes",
+	"repeated_commands",
 }
 
 func TestUp(t *testing.T) {
