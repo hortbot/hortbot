@@ -179,6 +179,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "insert_simple_command":
 			st.insertSimpleCommand(t, args)
 
+		case "checkpoint":
+			st.checkpoint()
+
 		case "handle":
 			st.handle(t, args, false)
 
@@ -329,6 +332,17 @@ func (st *scriptTester) insertSimpleCommand(t *testing.T, args string) {
 	})
 }
 
+func (st *scriptTester) checkpoint() {
+	st.addAction(func(ctx context.Context) {
+		st.doCheckpoint()
+	})
+}
+
+func (st *scriptTester) doCheckpoint() {
+	st.sentBefore = st.sender.SendMessageCallCount()
+	st.notifyChannelUpdatesBefore = st.notifier.NotifyChannelUpdatesCallCount()
+}
+
 func (st *scriptTester) handle(t *testing.T, directiveArgs string, me bool) {
 	lineNum := st.lineNum
 
@@ -370,10 +384,7 @@ func (st *scriptTester) handle(t *testing.T, directiveArgs string, me bool) {
 func (st *scriptTester) handleM(t *testing.T, origin string, m *irc.Message) {
 	st.addAction(func(ctx context.Context) {
 		st.ensureBot()
-
-		st.sentBefore = st.sender.SendMessageCallCount()
-		st.notifyChannelUpdatesBefore = st.notifier.NotifyChannelUpdatesCallCount()
-
+		st.doCheckpoint()
 		st.b.Handle(ctx, origin, m)
 	})
 }
