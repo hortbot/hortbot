@@ -1,9 +1,9 @@
 package bot
 
 import (
+	"github.com/efritz/glock"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
-	"github.com/leononame/clock"
 )
 
 type sharedDeps struct {
@@ -11,7 +11,7 @@ type sharedDeps struct {
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
-	Clock    clock.Clock
+	Clock    glock.Clock
 	Rand     Rand
 
 	DefaultPrefix   string

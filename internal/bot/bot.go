@@ -6,7 +6,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
-	"github.com/leononame/clock"
+	"github.com/efritz/glock"
 )
 
 const (
@@ -20,7 +20,7 @@ type Config struct {
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
-	Clock    clock.Clock
+	Clock    glock.Clock
 	Rand     Rand
 
 	Prefix   string
@@ -75,7 +75,7 @@ func New(config *Config) *Bot {
 	if config.Clock != nil {
 		deps.Clock = config.Clock
 	} else {
-		deps.Clock = clock.New()
+		deps.Clock = glock.NewRealClock()
 	}
 
 	for _, name := range config.Admins {

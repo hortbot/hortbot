@@ -19,6 +19,7 @@ import (
 
 	"github.com/alicebob/miniredis"
 	"github.com/bmatcuk/doublestar"
+	"github.com/efritz/glock"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
@@ -29,7 +30,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
-	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
 	"gotest.tools/assert"
 )
@@ -65,7 +65,7 @@ type scriptTester struct {
 	redis    *miniredis.Miniredis
 	sender   *botfakes.FakeSender
 	notifier *botfakes.FakeNotifier
-	clock    *clock.Mock
+	clock    *glock.MockClock
 
 	bc bot.Config
 	b  *bot.Bot
@@ -108,7 +108,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.counts = make(map[string]int)
 	st.sender = &botfakes.FakeSender{}
 	st.notifier = &botfakes.FakeNotifier{}
-	st.clock = clock.NewMock()
+	st.clock = glock.NewMockClock()
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -288,7 +288,7 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 
 	switch bcj.Clock {
 	case "", "real":
-		st.bc.Clock = clock.New()
+		st.bc.Clock = glock.NewRealClock()
 
 	case "mock":
 		st.bc.Clock = st.clock
@@ -484,7 +484,7 @@ func (st *scriptTester) noNotifyChannelUpdates(t *testing.T) {
 func (st *scriptTester) clockForward(t *testing.T, args string) {
 	lineNum := st.lineNum
 
-	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
+	if _, ok := st.bc.Clock.(*glock.MockClock); !ok {
 		t.Fatalf("clock must be a mock: line %d", lineNum)
 	}
 
@@ -492,7 +492,7 @@ func (st *scriptTester) clockForward(t *testing.T, args string) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.clock.Forward(dur)
+		st.clock.Advance(dur)
 		st.redis.FastForward(dur)
 	})
 }
@@ -500,7 +500,7 @@ func (st *scriptTester) clockForward(t *testing.T, args string) {
 func (st *scriptTester) clockSet(t *testing.T, args string) {
 	lineNum := st.lineNum
 
-	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
+	if _, ok := st.bc.Clock.(*glock.MockClock); !ok {
 		t.Fatalf("clock must be a mock: line %d", lineNum)
 	}
 
@@ -515,7 +515,7 @@ func (st *scriptTester) clockSet(t *testing.T, args string) {
 	}
 
 	st.addAction(func(ctx context.Context) {
-		st.clock.Set(tm)
+		st.clock.SetCurrent(tm)
 		st.redis.SetTime(tm)
 	})
 }
