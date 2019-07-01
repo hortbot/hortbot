@@ -30,7 +30,8 @@ type RepeatedCommand struct {
 	SimpleCommandID int64     `boil:"simple_command_id" json:"simple_command_id" toml:"simple_command_id" yaml:"simple_command_id"`
 	Enabled         bool      `boil:"enabled" json:"enabled" toml:"enabled" yaml:"enabled"`
 	Delay           int       `boil:"delay" json:"delay" toml:"delay" yaml:"delay"`
-	MessageDiff     int       `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
+	MessageDiff     int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
+	LastCount       int64     `boil:"last_count" json:"last_count" toml:"last_count" yaml:"last_count"`
 
 	R *repeatedCommandR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L repeatedCommandL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -45,6 +46,7 @@ var RepeatedCommandColumns = struct {
 	Enabled         string
 	Delay           string
 	MessageDiff     string
+	LastCount       string
 }{
 	ID:              "id",
 	CreatedAt:       "created_at",
@@ -54,6 +56,7 @@ var RepeatedCommandColumns = struct {
 	Enabled:         "enabled",
 	Delay:           "delay",
 	MessageDiff:     "message_diff",
+	LastCount:       "last_count",
 }
 
 // Generated where
@@ -66,7 +69,8 @@ var RepeatedCommandWhere = struct {
 	SimpleCommandID whereHelperint64
 	Enabled         whereHelperbool
 	Delay           whereHelperint
-	MessageDiff     whereHelperint
+	MessageDiff     whereHelperint64
+	LastCount       whereHelperint64
 }{
 	ID:              whereHelperint64{field: "\"repeated_commands\".\"id\""},
 	CreatedAt:       whereHelpertime_Time{field: "\"repeated_commands\".\"created_at\""},
@@ -75,7 +79,8 @@ var RepeatedCommandWhere = struct {
 	SimpleCommandID: whereHelperint64{field: "\"repeated_commands\".\"simple_command_id\""},
 	Enabled:         whereHelperbool{field: "\"repeated_commands\".\"enabled\""},
 	Delay:           whereHelperint{field: "\"repeated_commands\".\"delay\""},
-	MessageDiff:     whereHelperint{field: "\"repeated_commands\".\"message_diff\""},
+	MessageDiff:     whereHelperint64{field: "\"repeated_commands\".\"message_diff\""},
+	LastCount:       whereHelperint64{field: "\"repeated_commands\".\"last_count\""},
 }
 
 // RepeatedCommandRels is where relationship names are stored.
@@ -102,8 +107,8 @@ func (*repeatedCommandR) NewStruct() *repeatedCommandR {
 type repeatedCommandL struct{}
 
 var (
-	repeatedCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "delay", "message_diff"}
-	repeatedCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "delay"}
+	repeatedCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "delay", "message_diff", "last_count"}
+	repeatedCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "delay", "last_count"}
 	repeatedCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at", "message_diff"}
 	repeatedCommandPrimaryKeyColumns     = []string{"id"}
 )

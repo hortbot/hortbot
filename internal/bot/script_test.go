@@ -90,9 +90,10 @@ func (st *scriptTester) addCleanup(fn func()) {
 	st.cleanups = append(st.cleanups, fn)
 }
 
-func (st *scriptTester) ensureBot() {
+func (st *scriptTester) ensureBot(ctx context.Context, t *testing.T) {
 	if st.b == nil {
 		st.b = bot.New(&st.bc)
+		assert.NilError(t, st.b.Init(ctx))
 	}
 }
 
@@ -218,6 +219,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "join":
 			st.join(t, args)
 
+		case "sleep":
+			st.sleep(t, args)
+
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
 		}
@@ -229,6 +233,10 @@ func (st *scriptTester) test(t *testing.T) {
 		t.Error("no actions were provided")
 		t.FailNow()
 	}
+
+	defer func() {
+		st.b.Stop() // Inside its on func, as st.b is set inside an action.
+	}()
 
 	for _, action := range st.actions {
 		action(ctx)
@@ -342,6 +350,7 @@ func (st *scriptTester) insertRepeatedCommand(t *testing.T, args string) {
 	assert.NilError(t, json.Unmarshal([]byte(args), &rc), "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
+		ctx = boil.SkipTimestamps(ctx)
 		assert.NilError(t, rc.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
 	})
 }
@@ -397,7 +406,7 @@ func (st *scriptTester) handle(t *testing.T, directiveArgs string, me bool) {
 
 func (st *scriptTester) handleM(t *testing.T, origin string, m *irc.Message) {
 	st.addAction(func(ctx context.Context) {
-		st.ensureBot()
+		st.ensureBot(ctx, t)
 		st.doCheckpoint()
 		st.b.Handle(ctx, origin, m)
 	})
@@ -576,4 +585,15 @@ func (st *scriptTester) join(t *testing.T, args string) {
 	st.handleM(t, botName, m)
 	st.sendAny(t)
 	st.notifyChannelUpdates(t, botName)
+}
+
+func (st *scriptTester) sleep(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	dur, err := time.ParseDuration(args)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		time.Sleep(dur)
+	})
 }

@@ -60,12 +60,12 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Editor (undocumented)
     - [ ] Link to list of commands (*Website*)
     - [ ] Clone
-- [ ] Repeats
+- [x] Repeats
     - This might need to get reworked to prevent statefulness within the bot.
-    - [ ] Add
-    - [ ] Delete
-    - [ ] On/off
-    - [ ] List
+    - [x] Add
+    - [x] Delete
+    - [x] On/off
+    - [x] List
 - [ ] Schedule
     - [ ] Add
     - [ ] Delete

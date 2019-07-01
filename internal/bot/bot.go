@@ -1,12 +1,19 @@
 package bot
 
 import (
+	"context"
 	"database/sql"
+	"log"
+	"sync"
+	"time"
 
 	"github.com/efritz/glock"
 	"github.com/go-redis/redis"
+	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
 const (
@@ -34,8 +41,12 @@ type Config struct {
 }
 
 type Bot struct {
-	db            *sql.DB
-	deps          *sharedDeps
+	stopOnce sync.Once
+
+	db   *sql.DB
+	deps *sharedDeps
+	rep  *repeat.Repeater
+
 	testingHelper *testingHelper
 }
 
@@ -105,11 +116,46 @@ func New(config *Config) *Bot {
 	b := &Bot{
 		db:   config.DB,
 		deps: deps,
+		rep:  repeat.New(nil, deps.Clock),
 	}
+
+	deps.UpdateRepeat = b.updateRepeatedCommand
 
 	if isTesting {
 		b.testingHelper = &testingHelper{}
 	}
 
 	return b
+}
+
+func (b *Bot) Init(ctx context.Context) error {
+	repeats, err := models.RepeatedCommands(
+		qm.Select(models.RepeatedCommandColumns.ID, models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.Delay),
+		models.RepeatedCommandWhere.Enabled.EQ(true),
+	).All(ctx, b.db)
+	if err != nil {
+		return err
+	}
+
+	for _, repeat := range repeats {
+		delay := time.Duration(repeat.Delay) * time.Second
+		delayNano := delay.Nanoseconds()
+
+		sinceUpdateNano := b.deps.Clock.Since(repeat.UpdatedAt).Nanoseconds()
+
+		offsetNano := delayNano - sinceUpdateNano%delayNano
+		offset := time.Duration(offsetNano) * time.Nanosecond
+
+		log.Println(repeat.ID, delay, offset)
+
+		b.updateRepeatedCommand(repeat.ID, true, delay, offset)
+	}
+
+	return nil
+}
+
+func (b *Bot) Stop() {
+	b.stopOnce.Do(func() {
+		b.rep.Stop()
+	})
 }

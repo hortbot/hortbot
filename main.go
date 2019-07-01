@@ -138,6 +138,12 @@ func main() {
 
 	b := bot.New(bc)
 
+	if err := b.Init(ctx); err != nil {
+		logger.Fatal("error initializing bot", zap.Error(err))
+	}
+
+	defer b.Stop()
+
 	g := errgroupx.FromContext(ctx)
 
 	g.Go(func(ctx context.Context) error {

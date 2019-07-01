@@ -109,6 +109,11 @@ func (d *DB) MarkOrDelete(seconds int, key string, more ...string) (exists bool,
 	return d.runScript(markOrDelete, k, seconds)
 }
 
+func (d *DB) GetInt64(key string, more ...string) (int64, error) {
+	k := d.buildKey(key, more...)
+	return d.client.Get(k).Int64()
+}
+
 func (d *DB) Increment(key string, more ...string) (int64, error) {
 	k := d.buildKey(key, more...)
 	return d.client.Incr(k).Result()

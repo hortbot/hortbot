@@ -88,7 +88,8 @@ CREATE TABLE repeated_commands (
 
     enabled boolean NOT NULL,
     delay int NOT NULL,
-    message_diff int DEFAULT 1 NOT NULL
+    message_diff bigint DEFAULT 1 NOT NULL,
+    last_count bigint NOT NULL
 );
 
 CREATE INDEX repeated_commands_channel_id_idx ON repeated_commands (channel_id);

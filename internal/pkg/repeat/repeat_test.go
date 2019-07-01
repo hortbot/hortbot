@@ -37,7 +37,7 @@ func TestAdd(t *testing.T) {
 	r := repeat.New(context.Background(), clk)
 
 	count := 0
-	fn := func(ctx context.Context) {
+	fn := func(ctx context.Context, id int64) {
 		count++
 	}
 
@@ -66,7 +66,7 @@ func TestAddWithInit(t *testing.T) {
 	r := repeat.New(context.Background(), clk)
 
 	count := 0
-	fn := func(ctx context.Context) {
+	fn := func(ctx context.Context, id int64) {
 		count++
 	}
 
@@ -98,7 +98,7 @@ func TestAddWithInitCancel(t *testing.T) {
 	r := repeat.New(ctx, clk)
 
 	count := 0
-	fn := func(ctx context.Context) {
+	fn := func(ctx context.Context, id int64) {
 		count++
 	}
 
@@ -131,7 +131,7 @@ func TestAddTwice(t *testing.T) {
 	r := repeat.New(context.Background(), clk)
 
 	count := 0
-	fn := func(ctx context.Context) {
+	fn := func(ctx context.Context, id int64) {
 		count++
 	}
 
@@ -165,7 +165,7 @@ func TestAddRemove(t *testing.T) {
 	r := repeat.New(context.Background(), clk)
 
 	count := 0
-	fn := func(ctx context.Context) {
+	fn := func(ctx context.Context, id int64) {
 		count++
 	}
 
@@ -189,4 +189,36 @@ func TestAddRemove(t *testing.T) {
 	r.Stop()
 
 	assert.Equal(t, count, 2)
+}
+
+func TestCorrectID(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	clk := glock.NewMockClock()
+
+	r := repeat.New(context.Background(), clk)
+
+	ch42 := make(chan int64, 1)
+	ch311 := make(chan int64, 1)
+
+	fn42 := func(ctx context.Context, id int64) {
+		ch42 <- id
+	}
+
+	fn311 := func(ctx context.Context, id int64) {
+		ch311 <- id
+	}
+
+	r.Add(42, fn42, time.Second, 0)
+	r.Add(311, fn311, time.Second, 0)
+
+	clk.Advance(100 * time.Millisecond)
+	clk.Advance(time.Second)
+
+	time.Sleep(10 * time.Millisecond)
+
+	r.Stop()
+
+	assert.Equal(t, <-ch42, int64(42))
+	assert.Equal(t, <-ch311, int64(311))
 }

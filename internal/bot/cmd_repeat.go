@@ -6,6 +6,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -61,10 +62,10 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		return s.Reply("Delay must be at least 30 seconds.")
 	}
 
-	messageDiff := 1
+	messageDiff := int64(1)
 
 	if messageDiffStr != "" {
-		messageDiff, err = strconv.Atoi(messageDiffStr)
+		messageDiff, err = strconv.ParseInt(messageDiffStr, 10, 64)
 		if err != nil {
 			return usage()
 		}
@@ -92,12 +93,14 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		repeat.Delay = delay
 		repeat.MessageDiff = messageDiff
 		repeat.Enabled = true
+		repeat.LastCount = s.N
 
 		columns := boil.Whitelist(
 			models.RepeatedCommandColumns.UpdatedAt,
 			models.RepeatedCommandColumns.Delay,
 			models.RepeatedCommandColumns.MessageDiff,
 			models.RepeatedCommandColumns.Enabled,
+			models.RepeatedCommandColumns.LastCount,
 		)
 
 		if err := repeat.Update(ctx, s.Tx, columns); err != nil {
@@ -110,6 +113,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 			Enabled:         true,
 			Delay:           delay,
 			MessageDiff:     messageDiff,
+			LastCount:       s.N,
 		}
 
 		if err := repeat.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -117,7 +121,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		}
 	}
 
-	// TODO: update repeater
+	s.Deps.UpdateRepeat(repeat.ID, true, time.Duration(delay)*time.Second, 0)
 
 	dUnit := "message has passed."
 	if messageDiff != 1 {
@@ -158,7 +162,7 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	// TODO: update repeater
+	s.Deps.UpdateRepeat(repeat.ID, false, 0, 0)
 
 	return s.Replyf("Command '%s' will no longer repeat.", name)
 }
@@ -200,12 +204,13 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	repeat.Enabled = enable
+	repeat.LastCount = s.N
 
-	if err := repeat.Update(ctx, s.Tx, boil.Whitelist(models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.Enabled)); err != nil {
+	if err := repeat.Update(ctx, s.Tx, boil.Whitelist(models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.Enabled, models.RepeatedCommandColumns.LastCount)); err != nil {
 		return err
 	}
 
-	// TODO: update repeater
+	s.Deps.UpdateRepeat(repeat.ID, enable, time.Duration(repeat.Delay)*time.Second, 0)
 
 	if enable {
 		return s.Replyf("Repeated command '%s' is now enabled.", name)

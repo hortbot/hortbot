@@ -1,18 +1,21 @@
 package bot
 
 import (
+	"time"
+
 	"github.com/efritz/glock"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 )
 
 type sharedDeps struct {
-	RDB      *rdb.DB
-	Dedupe   dedupe.Deduplicator
-	Sender   Sender
-	Notifier Notifier
-	Clock    glock.Clock
-	Rand     Rand
+	RDB          *rdb.DB
+	Dedupe       dedupe.Deduplicator
+	Sender       Sender
+	Notifier     Notifier
+	Clock        glock.Clock
+	Rand         Rand
+	UpdateRepeat func(id int64, add bool, interval, wait time.Duration)
 
 	DefaultPrefix   string
 	DefaultBullet   string

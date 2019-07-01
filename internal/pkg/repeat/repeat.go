@@ -41,7 +41,7 @@ func (r *Repeater) Stop() {
 // Add adds a repeated task occurring at an interval, given the specified ID.
 // If init is non-zero, then the task will first wait for that duration before
 // looping. If there is already a task with that ID, then it will be replaced.
-func (r *Repeater) Add(id int64, fn func(ctx context.Context), interval, init time.Duration) {
+func (r *Repeater) Add(id int64, fn func(ctx context.Context, id int64), interval, init time.Duration) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
@@ -74,7 +74,7 @@ func (r *Repeater) Add(id int64, fn func(ctx context.Context), interval, init ti
 				return nil
 
 			case <-tick:
-				fn(ctx)
+				fn(ctx, id)
 			}
 		}
 	})

@@ -1,0 +1,48 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there! (_MESSAGE_COUNT_)
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 30 3
+send hortbot #foobar [HB] Command 'repeatme' will now repeat every 30 seconds if at least 3 messages have passed.
+
+checkpoint
+clock_forward 10s
+no_send
+
+checkpoint
+clock_forward 22s
+sleep 20ms
+no_send
+
+checkpoint
+clock_forward 20s
+sleep 20ms
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 10s
+sleep 20ms
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 30s
+sleep 20ms
+send hortbot #foobar [HB] Hello there! 5
+
+checkpoint
+clock_forward 30s
+sleep 20ms
+no_send

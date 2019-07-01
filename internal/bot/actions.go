@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/cbp"
@@ -27,6 +28,8 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return s.NextParameter(), nil
 	case "PARAMETER_CAPS":
 		return strings.ToUpper(s.NextParameter()), nil
+	case "MESSAGE_COUNT":
+		return strconv.FormatInt(s.N, 10), nil
 	}
 
 	return "", fmt.Errorf("unknown action: %s", action)

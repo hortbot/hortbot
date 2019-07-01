@@ -305,7 +305,7 @@ func TestBadMarkOrDeleteScript(t *testing.T) {
 	assert.ErrorContains(t, err, "syntax error")
 }
 
-func TestIncrement(t *testing.T) {
+func TestIncrementInt64(t *testing.T) {
 	t.Parallel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -325,15 +325,27 @@ func TestIncrement(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, n == 2)
 
+	n, err = db.GetInt64("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, n == 2)
+
 	s.FastForward(time.Second)
 
 	n, err = db.Increment("#foobar", "something_else")
 	assert.NilError(t, err)
 	assert.Assert(t, n == 1)
 
+	n, err = db.GetInt64("#foobar", "something_else")
+	assert.NilError(t, err)
+	assert.Assert(t, n == 1)
+
 	s.FastForward(time.Second)
 
 	n, err = db.Increment("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, n == 3)
+
+	n, err = db.GetInt64("#foobar", "something")
 	assert.NilError(t, err)
 	assert.Assert(t, n == 3)
 }
