@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"database/sql"
-	"log"
 	"sync"
 	"time"
 
@@ -145,8 +144,6 @@ func (b *Bot) Init(ctx context.Context) error {
 
 		offsetNano := delayNano - sinceUpdateNano%delayNano
 		offset := time.Duration(offsetNano) * time.Nanosecond
-
-		log.Println(repeat.ID, delay, offset)
 
 		b.updateRepeatedCommand(repeat.ID, true, delay, offset)
 	}
