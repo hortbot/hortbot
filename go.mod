@@ -3,12 +3,12 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
-	cloud.google.com/go v0.40.0 // indirect
+	cloud.google.com/go v0.41.0 // indirect
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/aphistic/sweet v0.2.0 // indirect
-	github.com/aws/aws-sdk-go v1.20.12 // indirect
+	github.com/aws/aws-sdk-go v1.20.13 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.2
 	github.com/cenkalti/backoff v2.2.0+incompatible // indirect
@@ -36,7 +36,6 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.4.0
 	github.com/gomodule/redigo v2.0.0+incompatible // indirect
 	github.com/google/go-cmp v0.3.0
-	github.com/googleapis/gax-go/v2 v2.0.5 // indirect
 	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
@@ -49,7 +48,7 @@ require (
 	github.com/lib/pq v1.1.1
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-colorable v0.1.2 // indirect
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.0
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.1-0.20190702081358-96861da98277
 	github.com/mjibson/esc v0.2.0
 	github.com/mongodb/mongo-go-driver v1.0.3 // indirect
 	github.com/nakagami/firebirdsql v0.0.0-20190609025626-90ca2b3395f5 // indirect
@@ -71,22 +70,16 @@ require (
 	github.com/xanzy/go-gitlab v0.18.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
 	go.mongodb.org/mongo-driver v1.0.3 // indirect
-	go.opencensus.io v0.22.0 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
-	golang.org/x/tools v0.0.0-20190628222527-fb37f6ba8261
-	google.golang.org/api v0.7.0 // indirect
-	google.golang.org/appengine v1.6.1 // indirect
-	google.golang.org/genproto v0.0.0-20190627203621-eb59cef1c072 // indirect
-	google.golang.org/grpc v1.21.1 // indirect
+	golang.org/x/tools v0.0.0-20190701194522-38ae2c8f6412
+	google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
 	mvdan.cc/xurls/v2 v2.0.0
 )
 
 replace gopkg.in/DATA-DOG/go-sqlmock.v1 => github.com/DATA-DOG/go-sqlmock v1.3.3
-
-replace github.com/maxbrunsfeld/counterfeiter => github.com/maxbrunsfeld/counterfeiter/v6 v6.2.0
