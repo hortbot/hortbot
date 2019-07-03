@@ -3,7 +3,7 @@ package bot
 import (
 	"time"
 
-	"github.com/efritz/glock"
+	"github.com/leononame/clock"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 )
@@ -13,7 +13,7 @@ type sharedDeps struct {
 	Dedupe       dedupe.Deduplicator
 	Sender       Sender
 	Notifier     Notifier
-	Clock        glock.Clock
+	Clock        clock.Clock
 	Rand         Rand
 	UpdateRepeat func(id int64, add bool, interval, wait time.Duration)
 

@@ -7,7 +7,6 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
-	github.com/aphistic/sweet v0.2.0 // indirect
 	github.com/aws/aws-sdk-go v1.20.13 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.2
@@ -25,7 +24,6 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
-	github.com/efritz/glock v0.0.0-20181228234553-f184d69dff2c
 	github.com/ericlagergren/decimal v0.0.0-20190507143103-cc8cbe209b64 // indirect
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/fsouza/fake-gcs-server v1.8.0 // indirect
@@ -45,9 +43,9 @@ require (
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
 	github.com/kshvakov/clickhouse v1.3.7 // indirect
+	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.1.1
 	github.com/magiconair/properties v1.8.1 // indirect
-	github.com/mattn/go-colorable v0.1.2 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.1-0.20190702081358-96861da98277
 	github.com/mjibson/esc v0.2.0
 	github.com/mongodb/mongo-go-driver v1.0.3 // indirect

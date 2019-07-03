@@ -19,7 +19,7 @@ import (
 
 	"github.com/alicebob/miniredis"
 	"github.com/bmatcuk/doublestar"
-	"github.com/efritz/glock"
+	"github.com/leononame/clock"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
@@ -65,7 +65,7 @@ type scriptTester struct {
 	redis    *miniredis.Miniredis
 	sender   *botfakes.FakeSender
 	notifier *botfakes.FakeNotifier
-	clock    *glock.MockClock
+	clock    *clock.Mock
 
 	bc bot.Config
 	b  *bot.Bot
@@ -109,7 +109,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.counts = make(map[string]int)
 	st.sender = &botfakes.FakeSender{}
 	st.notifier = &botfakes.FakeNotifier{}
-	st.clock = glock.NewMockClock()
+	st.clock = clock.NewMock()
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -302,7 +302,7 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 
 	switch bcj.Clock {
 	case "", "real":
-		st.bc.Clock = glock.NewRealClock()
+		st.bc.Clock = clock.New()
 
 	case "mock":
 		st.bc.Clock = st.clock
@@ -518,7 +518,7 @@ func (st *scriptTester) noNotifyChannelUpdates(t *testing.T) {
 func (st *scriptTester) clockForward(t *testing.T, args string) {
 	lineNum := st.lineNum
 
-	if _, ok := st.bc.Clock.(*glock.MockClock); !ok {
+	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
 		t.Fatalf("clock must be a mock: line %d", lineNum)
 	}
 
@@ -526,7 +526,7 @@ func (st *scriptTester) clockForward(t *testing.T, args string) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.clock.Advance(dur)
+		st.clock.Forward(dur)
 		st.redis.FastForward(dur)
 	})
 }
@@ -534,7 +534,7 @@ func (st *scriptTester) clockForward(t *testing.T, args string) {
 func (st *scriptTester) clockSet(t *testing.T, args string) {
 	lineNum := st.lineNum
 
-	if _, ok := st.bc.Clock.(*glock.MockClock); !ok {
+	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
 		t.Fatalf("clock must be a mock: line %d", lineNum)
 	}
 
@@ -549,7 +549,7 @@ func (st *scriptTester) clockSet(t *testing.T, args string) {
 	}
 
 	st.addAction(func(ctx context.Context) {
-		st.clock.SetCurrent(tm)
+		st.clock.Set(tm)
 		st.redis.SetTime(tm)
 	})
 }

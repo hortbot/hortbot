@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/efritz/glock"
+	"github.com/leononame/clock"
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"gotest.tools/assert"
@@ -14,7 +14,7 @@ import (
 func TestDoNothing(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(context.Background(), clk)
 	r.Stop()
@@ -23,7 +23,7 @@ func TestDoNothing(t *testing.T) {
 func TestNilContext(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(nil, clk)
 	r.Stop()
@@ -32,7 +32,7 @@ func TestNilContext(t *testing.T) {
 func TestAdd(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(context.Background(), clk)
 
@@ -43,15 +43,15 @@ func TestAdd(t *testing.T) {
 
 	r.Add(0, fn, time.Second, 0)
 
-	clk.Advance(100 * time.Millisecond)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(100 * time.Millisecond)
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(100 * time.Millisecond)
 
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Stop()
 
@@ -61,7 +61,7 @@ func TestAdd(t *testing.T) {
 func TestAddWithInit(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(context.Background(), clk)
 
@@ -72,17 +72,17 @@ func TestAddWithInit(t *testing.T) {
 
 	r.Add(0, fn, time.Second, time.Second)
 
-	clk.Advance(100 * time.Millisecond)
-	clk.Advance(time.Second)
-	time.Sleep(10 * time.Millisecond)
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	time.Sleep(50 * time.Millisecond)
 
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(100 * time.Millisecond)
 
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Stop()
 
@@ -92,7 +92,7 @@ func TestAddWithInit(t *testing.T) {
 func TestAddWithInitCancel(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	ctx, cancel := context.WithCancel(context.Background())
 	r := repeat.New(ctx, clk)
@@ -104,19 +104,19 @@ func TestAddWithInitCancel(t *testing.T) {
 
 	r.Add(0, fn, time.Second, time.Second)
 	cancel()
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
-	clk.Advance(100 * time.Millisecond)
-	clk.Advance(time.Second)
-	time.Sleep(10 * time.Millisecond)
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	time.Sleep(50 * time.Millisecond)
 
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(100 * time.Millisecond)
 
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Stop()
 
@@ -126,7 +126,7 @@ func TestAddWithInitCancel(t *testing.T) {
 func TestAddTwice(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(context.Background(), clk)
 
@@ -137,20 +137,20 @@ func TestAddTwice(t *testing.T) {
 
 	r.Add(0, fn, time.Second, 0)
 
-	clk.Advance(100 * time.Millisecond)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	time.Sleep(10 * time.Millisecond)
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Add(0, fn, time.Minute, 0)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(100 * time.Millisecond)
 
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Stop()
 
@@ -160,7 +160,7 @@ func TestAddTwice(t *testing.T) {
 func TestAddRemove(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(context.Background(), clk)
 
@@ -171,20 +171,20 @@ func TestAddRemove(t *testing.T) {
 
 	r.Add(0, fn, time.Second, 0)
 
-	clk.Advance(100 * time.Millisecond)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	time.Sleep(10 * time.Millisecond)
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Remove(0)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(time.Second)
-	clk.Advance(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(100 * time.Millisecond)
 
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(50 * time.Millisecond)
 
 	r.Stop()
 
@@ -194,7 +194,7 @@ func TestAddRemove(t *testing.T) {
 func TestCorrectID(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := glock.NewMockClock()
+	clk := clock.NewMock()
 
 	r := repeat.New(context.Background(), clk)
 
@@ -212,13 +212,13 @@ func TestCorrectID(t *testing.T) {
 	r.Add(42, fn42, time.Second, 0)
 	r.Add(311, fn311, time.Second, 0)
 
-	clk.Advance(100 * time.Millisecond)
-	clk.Advance(time.Second)
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
 
-	time.Sleep(10 * time.Millisecond)
-
-	r.Stop()
+	time.Sleep(50 * time.Millisecond)
 
 	assert.Equal(t, <-ch42, int64(42))
 	assert.Equal(t, <-ch311, int64(311))
+
+	r.Stop()
 }
