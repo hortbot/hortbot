@@ -19,7 +19,6 @@ import (
 
 	"github.com/alicebob/miniredis"
 	"github.com/bmatcuk/doublestar"
-	"github.com/leononame/clock"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
@@ -30,6 +29,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
+	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
 	"gotest.tools/assert"
 )

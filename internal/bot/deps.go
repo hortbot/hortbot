@@ -3,9 +3,9 @@ package bot
 import (
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/leononame/clock"
 )
 
 type sharedDeps struct {

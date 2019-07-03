@@ -5,8 +5,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/leononame/clock"
 )
 
 type Repeater struct {

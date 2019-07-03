@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/leononame/clock"
 	"gotest.tools/assert"
 )
 

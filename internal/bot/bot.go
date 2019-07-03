@@ -6,12 +6,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
