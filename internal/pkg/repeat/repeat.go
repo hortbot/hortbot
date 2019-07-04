@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/angadn/cronexpr"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/leononame/clock"
 )
@@ -12,7 +13,8 @@ import (
 type Repeater struct {
 	clock clock.Clock
 
-	reps *taskRunner
+	reps  *taskRunner
+	crons *taskRunner
 }
 
 // New creates a new Repeater with the specified root context and clock.
@@ -25,6 +27,7 @@ func New(ctx context.Context, clock clock.Clock) *Repeater {
 	return &Repeater{
 		clock: clock,
 		reps:  newTaskRunner(ctx),
+		crons: newTaskRunner(ctx),
 	}
 }
 
@@ -32,7 +35,9 @@ func New(ctx context.Context, clock clock.Clock) *Repeater {
 // to return.
 func (r *Repeater) Stop() {
 	r.reps.stop()
+	r.crons.stop()
 	r.reps.wait()
+	r.crons.wait()
 }
 
 // Add adds a repeated task occurring at an interval, given the specified ID.
@@ -64,9 +69,33 @@ func (r *Repeater) Add(id int64, fn func(ctx context.Context, id int64), interva
 	})
 }
 
-// Remove removes a task.
+// Remove removes a repeated task.
 func (r *Repeater) Remove(id int64) {
 	r.reps.remove(id)
+}
+
+// AddCron adds a repeated task which repeats based on a cron expression.
+// Cron tasks may safely share IDs with regular repeated tasks.
+func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), expr *cronexpr.Expression) {
+	r.crons.run(id, func(ctx context.Context) {
+		for {
+			next := expr.Next(r.clock.Now())
+			dur := r.clock.Until(next)
+
+			select {
+			case <-ctx.Done():
+				return
+
+			case <-r.clock.After(dur):
+				fn(ctx, id)
+			}
+		}
+	})
+}
+
+// RemoveCron removes a repeated cron task.
+func (r *Repeater) RemoveCron(id int64) {
+	r.crons.remove(id)
 }
 
 type taskRunner struct {
