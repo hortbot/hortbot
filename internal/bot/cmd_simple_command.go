@@ -182,6 +182,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
+		qm.Load(models.SimpleCommandRels.RepeatedCommand),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -197,9 +198,26 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 		return s.Replyf("Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
+	deletedRepeat := false
+
+	if command.R.RepeatedCommand != nil {
+		s.Deps.UpdateRepeat(command.R.RepeatedCommand.ID, false, 0, 0)
+
+		err = command.R.RepeatedCommand.Delete(ctx, s.Tx)
+		if err != nil {
+			return err
+		}
+
+		deletedRepeat = true
+	}
+
 	err = command.Delete(ctx, s.Tx)
 	if err != nil {
 		return err
+	}
+
+	if deletedRepeat {
+		return s.Replyf("Command '%s' and its repeat have been deleted.", name)
 	}
 
 	return s.Replyf("Command '%s' deleted.", name)
