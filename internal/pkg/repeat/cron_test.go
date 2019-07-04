@@ -32,13 +32,9 @@ func TestCronAdd(t *testing.T) {
 	r.AddCron(0, fn, runEveryHour)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
@@ -66,9 +62,7 @@ func TestCronAddTwice(t *testing.T) {
 	r.AddCron(0, fn, runEveryHour)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -78,9 +72,7 @@ func TestCronAddTwice(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
@@ -108,9 +100,7 @@ func TestCronAddRemove(t *testing.T) {
 	r.AddCron(0, fn, runEveryHour)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -118,9 +108,7 @@ func TestCronAddRemove(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
@@ -148,9 +136,7 @@ func TestAddCronStop(t *testing.T) {
 	r.AddCron(0, fn, runEveryHour)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -158,9 +144,7 @@ func TestAddCronStop(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
@@ -191,7 +175,6 @@ func TestCorrectIDCron(t *testing.T) {
 	r.AddCron(311, fn311, cronexpr.MustParse("0 0 * * * * *"))
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Second)
 
 	time.Sleep(50 * time.Millisecond)
@@ -218,13 +201,9 @@ func TestBadCron(t *testing.T) {
 	r.AddCron(0, fn, &cronexpr.Expression{})
 
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
-	time.Sleep(50 * time.Millisecond)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
