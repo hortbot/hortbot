@@ -191,6 +191,38 @@ func TestAddRemove(t *testing.T) {
 	assert.Equal(t, count, 2)
 }
 
+func TestAddStop(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	clk := clock.NewMock()
+
+	r := repeat.New(context.Background(), clk)
+
+	count := 0
+	fn := func(ctx context.Context, id int64) {
+		count++
+	}
+
+	r.Add(0, fn, time.Second, 0)
+
+	clk.Forward(100 * time.Millisecond)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	time.Sleep(50 * time.Millisecond)
+
+	r.Stop()
+	time.Sleep(50 * time.Millisecond)
+
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(time.Second)
+	clk.Forward(100 * time.Millisecond)
+
+	time.Sleep(50 * time.Millisecond)
+
+	assert.Equal(t, count, 2)
+}
+
 func TestCorrectID(t *testing.T) {
 	defer leaktest.Check(t)()
 
