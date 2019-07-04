@@ -80,6 +80,10 @@ func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), exp
 	r.crons.run(id, func(ctx context.Context) {
 		for {
 			next := expr.Next(r.clock.Now())
+			if next.IsZero() {
+				return
+			}
+
 			dur := r.clock.Until(next)
 
 			select {

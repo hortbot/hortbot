@@ -252,20 +252,23 @@ var ChannelWhere = struct {
 
 // ChannelRels is where relationship names are stored.
 var ChannelRels = struct {
-	Quotes           string
-	RepeatedCommands string
-	SimpleCommands   string
+	Quotes            string
+	RepeatedCommands  string
+	ScheduledCommands string
+	SimpleCommands    string
 }{
-	Quotes:           "Quotes",
-	RepeatedCommands: "RepeatedCommands",
-	SimpleCommands:   "SimpleCommands",
+	Quotes:            "Quotes",
+	RepeatedCommands:  "RepeatedCommands",
+	ScheduledCommands: "ScheduledCommands",
+	SimpleCommands:    "SimpleCommands",
 }
 
 // channelR is where relationships are stored.
 type channelR struct {
-	Quotes           QuoteSlice
-	RepeatedCommands RepeatedCommandSlice
-	SimpleCommands   SimpleCommandSlice
+	Quotes            QuoteSlice
+	RepeatedCommands  RepeatedCommandSlice
+	ScheduledCommands ScheduledCommandSlice
+	SimpleCommands    SimpleCommandSlice
 }
 
 // NewStruct creates a new relationship struct
@@ -411,6 +414,27 @@ func (o *Channel) RepeatedCommands(mods ...qm.QueryMod) repeatedCommandQuery {
 
 	if len(queries.GetSelect(query.Query)) == 0 {
 		queries.SetSelect(query.Query, []string{"\"repeated_commands\".*"})
+	}
+
+	return query
+}
+
+// ScheduledCommands retrieves all the scheduled_command's ScheduledCommands with an executor.
+func (o *Channel) ScheduledCommands(mods ...qm.QueryMod) scheduledCommandQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"scheduled_commands\".\"channel_id\"=?", o.ID),
+	)
+
+	query := ScheduledCommands(queryMods...)
+	queries.SetFrom(query.Query, "\"scheduled_commands\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"scheduled_commands\".*"})
 	}
 
 	return query
@@ -613,6 +637,94 @@ func (channelL) LoadRepeatedCommands(ctx context.Context, e boil.ContextExecutor
 	return nil
 }
 
+// LoadScheduledCommands allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadScheduledCommands(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`scheduled_commands`), qm.WhereIn(`channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load scheduled_commands")
+	}
+
+	var resultSlice []*ScheduledCommand
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice scheduled_commands")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on scheduled_commands")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for scheduled_commands")
+	}
+
+	if singular {
+		object.R.ScheduledCommands = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &scheduledCommandR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.ScheduledCommands = append(local.R.ScheduledCommands, foreign)
+				if foreign.R == nil {
+					foreign.R = &scheduledCommandR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // LoadSimpleCommands allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-M or N-M relationship.
 func (channelL) LoadSimpleCommands(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
@@ -798,6 +910,59 @@ func (o *Channel) AddRepeatedCommands(ctx context.Context, exec boil.ContextExec
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &repeatedCommandR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
+	return nil
+}
+
+// AddScheduledCommands adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.ScheduledCommands.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddScheduledCommands(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*ScheduledCommand) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"scheduled_commands\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, scheduledCommandPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			ScheduledCommands: related,
+		}
+	} else {
+		o.R.ScheduledCommands = append(o.R.ScheduledCommands, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &scheduledCommandR{
 				Channel: o,
 			}
 		} else {

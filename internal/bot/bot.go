@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/angadn/cronexpr"
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
@@ -119,6 +120,7 @@ func New(config *Config) *Bot {
 	}
 
 	deps.UpdateRepeat = b.updateRepeatedCommand
+	deps.UpdateSchedule = b.updateScheduledCommand
 
 	if isTesting {
 		b.testingHelper = &testingHelper{}
@@ -146,6 +148,19 @@ func (b *Bot) Init(ctx context.Context) error {
 		offset := time.Duration(offsetNano) * time.Nanosecond
 
 		b.updateRepeatedCommand(repeat.ID, true, delay, offset)
+	}
+
+	scheduleds, err := models.ScheduledCommands(
+		qm.Select(models.ScheduledCommandColumns.ID, models.ScheduledCommandColumns.UpdatedAt, models.ScheduledCommandColumns.CronExpression),
+		models.ScheduledCommandWhere.Enabled.EQ(true),
+	).All(ctx, b.db)
+	if err != nil {
+		return err
+	}
+
+	for _, scheduled := range scheduleds {
+		expr := cronexpr.MustParse(scheduled.CronExpression)
+		b.updateScheduledCommand(scheduled.ID, true, expr)
 	}
 
 	return nil

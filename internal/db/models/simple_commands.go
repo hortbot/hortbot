@@ -85,17 +85,20 @@ var SimpleCommandWhere = struct {
 
 // SimpleCommandRels is where relationship names are stored.
 var SimpleCommandRels = struct {
-	Channel         string
-	RepeatedCommand string
+	Channel          string
+	RepeatedCommand  string
+	ScheduledCommand string
 }{
-	Channel:         "Channel",
-	RepeatedCommand: "RepeatedCommand",
+	Channel:          "Channel",
+	RepeatedCommand:  "RepeatedCommand",
+	ScheduledCommand: "ScheduledCommand",
 }
 
 // simpleCommandR is where relationships are stored.
 type simpleCommandR struct {
-	Channel         *Channel
-	RepeatedCommand *RepeatedCommand
+	Channel          *Channel
+	RepeatedCommand  *RepeatedCommand
+	ScheduledCommand *ScheduledCommand
 }
 
 // NewStruct creates a new relationship struct
@@ -228,6 +231,20 @@ func (o *SimpleCommand) RepeatedCommand(mods ...qm.QueryMod) repeatedCommandQuer
 
 	query := RepeatedCommands(queryMods...)
 	queries.SetFrom(query.Query, "\"repeated_commands\"")
+
+	return query
+}
+
+// ScheduledCommand pointed to by the foreign key.
+func (o *SimpleCommand) ScheduledCommand(mods ...qm.QueryMod) scheduledCommandQuery {
+	queryMods := []qm.QueryMod{
+		qm.Where("simple_command_id=?", o.ID),
+	}
+
+	queryMods = append(queryMods, mods...)
+
+	query := ScheduledCommands(queryMods...)
+	queries.SetFrom(query.Query, "\"scheduled_commands\"")
 
 	return query
 }
@@ -415,6 +432,96 @@ func (simpleCommandL) LoadRepeatedCommand(ctx context.Context, e boil.ContextExe
 	return nil
 }
 
+// LoadScheduledCommand allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-1 relationship.
+func (simpleCommandL) LoadScheduledCommand(ctx context.Context, e boil.ContextExecutor, singular bool, maybeSimpleCommand interface{}, mods queries.Applicator) error {
+	var slice []*SimpleCommand
+	var object *SimpleCommand
+
+	if singular {
+		object = maybeSimpleCommand.(*SimpleCommand)
+	} else {
+		slice = *maybeSimpleCommand.(*[]*SimpleCommand)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &simpleCommandR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &simpleCommandR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`scheduled_commands`), qm.WhereIn(`simple_command_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load ScheduledCommand")
+	}
+
+	var resultSlice []*ScheduledCommand
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice ScheduledCommand")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results of eager load for scheduled_commands")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for scheduled_commands")
+	}
+
+	if len(resultSlice) == 0 {
+		return nil
+	}
+
+	if singular {
+		foreign := resultSlice[0]
+		object.R.ScheduledCommand = foreign
+		if foreign.R == nil {
+			foreign.R = &scheduledCommandR{}
+		}
+		foreign.R.SimpleCommand = object
+	}
+
+	for _, local := range slice {
+		for _, foreign := range resultSlice {
+			if local.ID == foreign.SimpleCommandID {
+				local.R.ScheduledCommand = foreign
+				if foreign.R == nil {
+					foreign.R = &scheduledCommandR{}
+				}
+				foreign.R.SimpleCommand = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // SetChannel of the simpleCommand to the related item.
 // Sets o.R.Channel to related.
 // Adds o to related.R.SimpleCommands.
@@ -505,6 +612,57 @@ func (o *SimpleCommand) SetRepeatedCommand(ctx context.Context, exec boil.Contex
 
 	if related.R == nil {
 		related.R = &repeatedCommandR{
+			SimpleCommand: o,
+		}
+	} else {
+		related.R.SimpleCommand = o
+	}
+	return nil
+}
+
+// SetScheduledCommand of the simpleCommand to the related item.
+// Sets o.R.ScheduledCommand to related.
+// Adds o to related.R.SimpleCommand.
+func (o *SimpleCommand) SetScheduledCommand(ctx context.Context, exec boil.ContextExecutor, insert bool, related *ScheduledCommand) error {
+	var err error
+
+	if insert {
+		related.SimpleCommandID = o.ID
+
+		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
+			return errors.Wrap(err, "failed to insert into foreign table")
+		}
+	} else {
+		updateQuery := fmt.Sprintf(
+			"UPDATE \"scheduled_commands\" SET %s WHERE %s",
+			strmangle.SetParamNames("\"", "\"", 1, []string{"simple_command_id"}),
+			strmangle.WhereClause("\"", "\"", 2, scheduledCommandPrimaryKeyColumns),
+		)
+		values := []interface{}{o.ID, related.ID}
+
+		if boil.DebugMode {
+			fmt.Fprintln(boil.DebugWriter, updateQuery)
+			fmt.Fprintln(boil.DebugWriter, values)
+		}
+
+		if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+			return errors.Wrap(err, "failed to update foreign table")
+		}
+
+		related.SimpleCommandID = o.ID
+
+	}
+
+	if o.R == nil {
+		o.R = &simpleCommandR{
+			ScheduledCommand: related,
+		}
+	} else {
+		o.R.ScheduledCommand = related
+	}
+
+	if related.R == nil {
+		related.R = &scheduledCommandR{
 			SimpleCommand: o,
 		}
 	} else {

@@ -183,6 +183,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "insert_repeated_command":
 			st.insertRepeatedCommand(t, args)
 
+		case "insert_scheduled_command":
+			st.insertScheduledCommand(t, args)
+
 		case "checkpoint":
 			st.checkpoint()
 
@@ -352,6 +355,18 @@ func (st *scriptTester) insertRepeatedCommand(t *testing.T, args string) {
 	st.addAction(func(ctx context.Context) {
 		ctx = boil.SkipTimestamps(ctx)
 		assert.NilError(t, rc.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
+	})
+}
+
+func (st *scriptTester) insertScheduledCommand(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var sc models.ScheduledCommand
+	assert.NilError(t, json.Unmarshal([]byte(args), &sc), "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		ctx = boil.SkipTimestamps(ctx)
+		assert.NilError(t, sc.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
 	})
 }
 

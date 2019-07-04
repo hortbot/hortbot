@@ -1,5 +1,7 @@
 BEGIN;
 
+DROP TABLE IF EXISTS scheduled_commands CASCADE;
+
 DROP TABLE IF EXISTS repeated_commands CASCADE;
 
 DROP TABLE IF EXISTS quotes CASCADE;

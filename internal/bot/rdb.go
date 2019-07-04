@@ -15,7 +15,12 @@ func (s *session) Confirm(user string, key string, seconds int) (confirmed bool,
 }
 
 func (s *session) RepeatAllowed(id int64, seconds int) (bool, error) {
-	seen, err := s.Deps.RDB.CheckAndMark(seconds, s.RoomIDStr, "repeat", strconv.FormatInt(id, 10))
+	seen, err := s.Deps.RDB.CheckAndMark(seconds, s.RoomIDStr, "repeated_command", strconv.FormatInt(id, 10))
+	return !seen, err
+}
+
+func (s *session) ScheduledAllowed(id int64, seconds int) (bool, error) {
+	seen, err := s.Deps.RDB.CheckAndMark(seconds, s.RoomIDStr, "scheduled_command", strconv.FormatInt(id, 10))
 	return !seen, err
 }
 

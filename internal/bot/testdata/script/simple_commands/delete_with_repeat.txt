@@ -28,7 +28,7 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command delete repeatme
-send hortbot #foobar [HB] Command 'repeatme' and its repeat have been deleted.
+send hortbot #foobar [HB] Command 'repeatme' and its repeat/schedule have been deleted.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
 no_send

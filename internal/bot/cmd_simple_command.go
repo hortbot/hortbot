@@ -183,6 +183,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
 		qm.Load(models.SimpleCommandRels.RepeatedCommand),
+		qm.Load(models.SimpleCommandRels.ScheduledCommand),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -201,23 +202,29 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 	deletedRepeat := false
 
 	if command.R.RepeatedCommand != nil {
+		deletedRepeat = true
 		s.Deps.UpdateRepeat(command.R.RepeatedCommand.ID, false, 0, 0)
 
-		err = command.R.RepeatedCommand.Delete(ctx, s.Tx)
-		if err != nil {
+		if err := command.R.RepeatedCommand.Delete(ctx, s.Tx); err != nil {
 			return err
 		}
-
-		deletedRepeat = true
 	}
 
-	err = command.Delete(ctx, s.Tx)
-	if err != nil {
+	if command.R.ScheduledCommand != nil {
+		deletedRepeat = true
+		s.Deps.UpdateSchedule(command.R.ScheduledCommand.ID, false, nil)
+
+		if err := command.R.ScheduledCommand.Delete(ctx, s.Tx); err != nil {
+			return err
+		}
+	}
+
+	if err := command.Delete(ctx, s.Tx); err != nil {
 		return err
 	}
 
 	if deletedRepeat {
-		return s.Replyf("Command '%s' and its repeat have been deleted.", name)
+		return s.Replyf("Command '%s' and its repeat/schedule have been deleted.", name)
 	}
 
 	return s.Replyf("Command '%s' deleted.", name)

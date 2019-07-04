@@ -185,6 +185,33 @@ func TestCorrectIDCron(t *testing.T) {
 	r.Stop()
 }
 
+func TestBadCron(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	clk := clock.NewMock()
+	clk.Set(startTime)
+
+	count := 0
+	fn := func(ctx context.Context, id int64) {
+		count++
+	}
+
+	r := repeat.New(context.Background(), clk)
+
+	r.AddCron(0, fn, &cronexpr.Expression{})
+
+	clk.Forward(time.Hour)
+	clk.Forward(time.Hour)
+	clk.Forward(time.Hour)
+	clk.Forward(time.Hour)
+	clk.Forward(time.Hour)
+
+	time.Sleep(50 * time.Millisecond)
+
+	r.Stop()
+
+	assert.Equal(t, count, 0)
+}
 func mustParseTime(s string) time.Time {
 	t, err := time.Parse(time.RFC3339, s)
 	if err != nil {

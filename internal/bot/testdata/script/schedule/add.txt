@@ -1,0 +1,45 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add
+send hortbot #foobar [HB] usage: !schedule add <name> <pattern> [message difference]
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme
+send hortbot #foobar [HB] usage: !schedule add <name> <pattern> [message difference]
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme @hourly
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme @hourly 10
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there!
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme *_*_*_*_*
+send hortbot #foobar [HB] Command 'repeatme' has been scheduled with '* * * * *' and will run if at least 1 message has passed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme *_*_*_*_* 2
+send hortbot #foobar [HB] Command 'repeatme' has been scheduled with '* * * * *' and will run if at least 2 messages have passed.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme what
+send hortbot #foobar [HB] Bad cron expression: what
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme *_*_*_*_* 0
+send hortbot #foobar [HB] Message difference must be at least 1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme *_*_*_*_* -1
+send hortbot #foobar [HB] Message difference must be at least 1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme *_*_*_*_* huh
+send hortbot #foobar [HB] usage: !schedule add <name> <pattern> [message difference]
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addb repeatme2 Hello there!
+send hortbot #foobar [HB] Command 'repeatme2' added, restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme2 *_*_*_*_*
+send hortbot #foobar [HB] Command 'repeatme2' is restricted to broadcasters; only broadcasters and above can modify its schedule.

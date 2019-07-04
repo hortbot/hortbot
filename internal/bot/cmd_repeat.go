@@ -265,6 +265,7 @@ func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.
 	command, err := models.SimpleCommands(
 		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
 		models.SimpleCommandWhere.Name.EQ(name),
+		qm.Load(models.SimpleCommandRels.RepeatedCommand),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -275,17 +276,5 @@ func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.
 		return nil, nil, err
 	}
 
-	repeat, err := models.RepeatedCommands(
-		models.RepeatedCommandWhere.SimpleCommandID.EQ(command.ID),
-	).One(ctx, s.Tx)
-
-	if err == sql.ErrNoRows {
-		return command, nil, nil
-	}
-
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return command, repeat, nil
+	return command, command.R.RepeatedCommand, nil
 }

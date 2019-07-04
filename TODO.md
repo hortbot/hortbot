@@ -66,11 +66,11 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Delete
     - [x] On/off
     - [x] List
-- [ ] Schedule
-    - [ ] Add
-    - [ ] Delete
-    - [ ] On/off
-    - [ ] List
+- [x] Schedule
+    - [x] Add
+    - [x] Delete
+    - [x] On/off
+    - [x] List
 - [ ] Auto-replies
     - This may be reworked to use names for replies instead of indexes.
     - [ ] Add

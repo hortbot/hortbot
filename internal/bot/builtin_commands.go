@@ -34,6 +34,7 @@ func init() {
 		"conch":       {fn: cmdConch, minLevel: levelSubscriber},
 		"helix":       {fn: cmdConch, minLevel: levelSubscriber},
 		"repeat":      {fn: cmdRepeat, minLevel: levelModerator},
+		"schedule":    {fn: cmdSchedule, minLevel: levelModerator},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }

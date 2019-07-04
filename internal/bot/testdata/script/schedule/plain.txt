@@ -1,0 +1,64 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+clock_set 2000-10-01T03:11:00Z
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there! (_MESSAGE_COUNT_)
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme 0_*_*_*_*
+send hortbot #foobar [HB] Command 'repeatme' has been scheduled with '0 * * * *' and will run if at least 1 message has passed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 10m
+no_send
+
+checkpoint
+clock_forward 50m
+sleep 50ms
+send hortbot #foobar [HB] Hello there! 3
+
+checkpoint
+clock_forward 30m
+sleep 50ms
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule off repeatme
+send hortbot #foobar [HB] Scheduled command 'repeatme' is now disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 1h
+sleep 50ms
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule on repeatme
+send hortbot #foobar [HB] Scheduled command 'repeatme' is now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 1h
+sleep 50ms
+send hortbot #foobar [HB] Hello there! 7
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule delete repeatme
+send hortbot #foobar [HB] Command 'repeatme' is no longer scheduled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 1h
+sleep 50ms
+no_send

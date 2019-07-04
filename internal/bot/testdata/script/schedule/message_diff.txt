@@ -1,0 +1,49 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+clock_set 2000-10-01T03:11:00Z
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there! (_MESSAGE_COUNT_)
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme 0_*_*_*_* 3
+send hortbot #foobar [HB] Command 'repeatme' has been scheduled with '0 * * * *' and will run if at least 3 messages have passed.
+
+checkpoint
+clock_forward 10s
+no_send
+
+checkpoint
+clock_forward 1h
+sleep 50ms
+no_send
+
+checkpoint
+clock_forward 30m
+sleep 50ms
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 30m
+sleep 50ms
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 1h
+sleep 50ms
+send hortbot #foobar [HB] Hello there! 5
+
+checkpoint
+clock_forward 1h
+sleep 50ms
+no_send
