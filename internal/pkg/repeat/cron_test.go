@@ -33,7 +33,7 @@ func TestCronAdd(t *testing.T) {
 
 	r := repeat.New(ctx, clk)
 
-	r.AddCron(0, fn, mustParseCron("0 0 * * * *"))
+	r.AddCron(0, fn, mustParseCron("0 * * * *"))
 	time.Sleep(10 * time.Millisecond)
 
 	for i := 0; i < 5; i++ {
@@ -66,7 +66,7 @@ func TestCronAddTwice(t *testing.T) {
 
 	r := repeat.New(ctx, clk)
 
-	r.AddCron(0, fn, mustParseCron("0 0 * * * *"))
+	r.AddCron(0, fn, mustParseCron("0 * * * *"))
 	time.Sleep(10 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -112,7 +112,7 @@ func TestCronAddRemove(t *testing.T) {
 
 	r := repeat.New(ctx, clk)
 
-	r.AddCron(0, fn, mustParseCron("0 0 * * * *"))
+	r.AddCron(0, fn, mustParseCron("0 * * * *"))
 	time.Sleep(10 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -156,7 +156,7 @@ func TestAddCronStop(t *testing.T) {
 
 	r := repeat.New(ctx, clk)
 
-	r.AddCron(0, fn, mustParseCron("0 0 * * * *"))
+	r.AddCron(0, fn, mustParseCron("0 * * * *"))
 	time.Sleep(10 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -198,8 +198,8 @@ func TestCorrectIDCron(t *testing.T) {
 		ch311 <- id
 	}
 
-	r.AddCron(42, fn42, mustParseCron("0 0 * * * *"))
-	r.AddCron(311, fn311, mustParseCron("0 0 * * * *"))
+	r.AddCron(42, fn42, mustParseCron("0 * * * *"))
+	r.AddCron(311, fn311, mustParseCron("0 * * * *"))
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)

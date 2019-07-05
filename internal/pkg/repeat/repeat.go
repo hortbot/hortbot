@@ -163,7 +163,7 @@ func (t *taskRunner) wait() {
 	t.g.Wait() //nolint:errcheck
 }
 
-var cronParser = cron.NewParser(cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
+var cronParser = cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
 
 func ParseCron(s string) (cron.Schedule, error) {
 	return cronParser.Parse(s)
