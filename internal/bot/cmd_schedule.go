@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/angadn/cronexpr"
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
@@ -55,7 +55,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 
 	pattern = strings.ReplaceAll(pattern, "_", " ")
 
-	expr, err := cronexpr.Parse(pattern)
+	expr, err := repeat.ParseCron(pattern)
 	if err != nil {
 		return s.Replyf("Bad cron expression: %s", pattern)
 	}
@@ -208,7 +208,10 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 		return err
 	}
 
-	expr := cronexpr.MustParse(scheduled.CronExpression)
+	expr, err := repeat.ParseCron(scheduled.CronExpression)
+	if err != nil {
+		panic(err)
+	}
 
 	s.Deps.UpdateSchedule(scheduled.ID, enable, expr)
 

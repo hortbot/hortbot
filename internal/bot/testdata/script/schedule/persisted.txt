@@ -8,6 +8,7 @@ clock_set 2000-10-01T03:11:00Z
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
 no_send
+sleep 50ms
 
 
 checkpoint

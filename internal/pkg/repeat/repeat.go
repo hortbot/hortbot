@@ -5,9 +5,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/angadn/cronexpr"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/leononame/clock"
+	"github.com/robfig/cron/v3"
 )
 
 type Repeater struct {
@@ -76,15 +76,20 @@ func (r *Repeater) Remove(id int64) {
 
 // AddCron adds a repeated task which repeats based on a cron expression.
 // Cron tasks may safely share IDs with regular repeated tasks.
-func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), expr *cronexpr.Expression) {
+func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), expr cron.Schedule) {
 	r.crons.run(id, func(ctx context.Context) {
 		for {
-			next := expr.Next(r.clock.Now())
+			now := r.clock.Now()
+			next := expr.Next(now)
 			if next.IsZero() {
 				return
 			}
 
-			dur := r.clock.Until(next)
+			dur := next.Sub(now)
+			// fmt.Println(now, next, dur)
+			// if dur < time.Second {
+			// 	panic("wtf")
+			// }
 
 			select {
 			case <-ctx.Done():
@@ -156,4 +161,10 @@ func (t *taskRunner) stop() {
 
 func (t *taskRunner) wait() {
 	t.g.Wait() //nolint:errcheck
+}
+
+var cronParser = cron.NewParser(cron.SecondOptional | cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
+
+func ParseCron(s string) (cron.Schedule, error) {
+	return cronParser.Parse(s)
 }

@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/angadn/cronexpr"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/robfig/cron/v3"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
@@ -22,7 +22,7 @@ func (b *Bot) updateRepeatedCommand(id int64, add bool, interval, wait time.Dura
 	}
 }
 
-func (b *Bot) updateScheduledCommand(id int64, add bool, expr *cronexpr.Expression) {
+func (b *Bot) updateScheduledCommand(id int64, add bool, expr cron.Schedule) {
 	if add {
 		b.rep.AddCron(id, b.runScheduledCommand, expr)
 	} else {

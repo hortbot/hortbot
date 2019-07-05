@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/angadn/cronexpr"
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
@@ -159,7 +158,10 @@ func (b *Bot) Init(ctx context.Context) error {
 	}
 
 	for _, scheduled := range scheduleds {
-		expr := cronexpr.MustParse(scheduled.CronExpression)
+		expr, err := repeat.ParseCron(scheduled.CronExpression)
+		if err != nil {
+			panic(err)
+		}
 		b.updateScheduledCommand(scheduled.ID, true, expr)
 	}
 

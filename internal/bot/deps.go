@@ -3,10 +3,10 @@ package bot
 import (
 	"time"
 
-	"github.com/angadn/cronexpr"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/leononame/clock"
+	"github.com/robfig/cron/v3"
 )
 
 type sharedDeps struct {
@@ -17,7 +17,7 @@ type sharedDeps struct {
 	Clock          clock.Clock
 	Rand           Rand
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
-	UpdateSchedule func(id int64, add bool, expr *cronexpr.Expression)
+	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
 
 	DefaultPrefix   string
 	DefaultBullet   string
