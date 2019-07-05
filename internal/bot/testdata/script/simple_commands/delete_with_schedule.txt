@@ -1,0 +1,44 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+clock_set 2000-10-01T03:11:00Z
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there! (_MESSAGE_COUNT_)
+send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme @hourly
+send hortbot #foobar [HB] Command 'repeatme' has been scheduled with '@hourly' and will run if at least 1 message has passed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 58m
+no_send
+
+checkpoint
+clock_forward 5m
+sleep 50ms
+send hortbot #foobar [HB] Hello there! 3
+
+checkpoint
+clock_forward 62m
+sleep 50ms
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command delete repeatme
+send hortbot #foobar [HB] Command 'repeatme' and its repeat/schedule have been deleted.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+no_send
+
+checkpoint
+clock_forward 62m
+sleep 50ms
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule on repeatme
+send hortbot #foobar [HB] Command 'repeatme' does not exist.
