@@ -44,7 +44,12 @@ CREATE TABLE channels (
     filter_caps_percentage int NOT NULL,
     filter_caps_min_caps int NOT NULL,
 
-    CHECK (filter_caps_percentage BETWEEN 0 and 100)
+    filter_symbols boolean NOT NULL,
+    filter_symbols_percentage int NOT NULL,
+    filter_symbols_min_symbols int NOT NULL,
+
+    CHECK (filter_caps_percentage BETWEEN 0 and 100),
+    CHECK (filter_symbols_percentage BETWEEN 0 and 100)
 );
 
 CREATE INDEX channels_user_id_idx on channels (user_id);

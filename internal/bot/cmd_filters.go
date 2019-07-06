@@ -12,12 +12,13 @@ import (
 )
 
 var filterCommands handlerMap = map[string]handlerFunc{
-	"on":    {fn: cmdFilterOnOff(true), minLevel: levelModerator},
-	"off":   {fn: cmdFilterOnOff(false), minLevel: levelModerator},
-	"links": {fn: cmdFilterLinks, minLevel: levelModerator},
-	"pd":    {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
-	"pl":    {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
-	"caps":  {fn: cmdFilterCaps, minLevel: levelModerator},
+	"on":      {fn: cmdFilterOnOff(true), minLevel: levelModerator},
+	"off":     {fn: cmdFilterOnOff(false), minLevel: levelModerator},
+	"links":   {fn: cmdFilterLinks, minLevel: levelModerator},
+	"pd":      {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
+	"pl":      {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
+	"caps":    {fn: cmdFilterCaps, minLevel: levelModerator},
+	"symbols": {fn: cmdFilterSymbols, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -238,6 +239,69 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 
 	default:
 		return s.ReplyUsage("on|off|percent|minchars|mincaps|status")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+		return err
+	}
+
+	return s.Reply(response)
+}
+
+func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) error {
+	var response string
+	var column string
+
+	subcommand, args := splitSpace(args)
+
+	switch subcommand {
+	case "on":
+		if s.Channel.FilterSymbols {
+			return s.Reply("Symbols filter is already enabled.")
+		}
+
+		s.Channel.FilterSymbols = true
+		response = "Symbols filter is now enabled."
+		column = models.ChannelColumns.FilterSymbols
+
+	case "off":
+		if !s.Channel.FilterSymbols {
+			return s.Reply("Symbols filter is already disabled.")
+		}
+
+		s.Channel.FilterSymbols = false
+		response = "Symbols filter is now disabled."
+		column = models.ChannelColumns.FilterSymbols
+
+	case "percent":
+		percent, err := strconv.Atoi(args)
+		if err != nil || percent < 0 || percent > 100 {
+			return s.ReplyUsage("percent <0-100>")
+		}
+
+		s.Channel.FilterSymbolsPercentage = percent
+		response = fmt.Sprintf("Symbols filter percent set to %d%%.", percent)
+		column = models.ChannelColumns.FilterSymbolsPercentage
+
+	case "min":
+		min, err := strconv.Atoi(args)
+		if err != nil || min < 0 {
+			return s.ReplyUsage("min <int>")
+		}
+
+		s.Channel.FilterSymbolsMinSymbols = min
+		response = fmt.Sprintf("Symbols filter min symbols set to %d.", min)
+		column = models.ChannelColumns.FilterSymbolsMinSymbols
+
+	case "status":
+		return s.Replyf("Symbols filter=%v, percent=%v, min=%v",
+			s.Channel.FilterSymbols,
+			s.Channel.FilterSymbolsPercentage,
+			s.Channel.FilterSymbolsMinSymbols,
+		)
+
+	default:
+		return s.ReplyUsage("on|off|percent|min|status")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {

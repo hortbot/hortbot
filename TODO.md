@@ -153,7 +153,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] Permitted domains (and more)
     - [x] Capitals
     - [ ] Banned phrases
-    - [ ] Symbols
+    - [x] Symbols
     - [ ] Emotes
     - [ ] Options
         - [x] `on`/`off`

@@ -10,20 +10,23 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 )
 
+var filters = []func(context.Context, *session) (filtered bool, err error){
+	filterLinks,
+	filterCaps,
+	filterSymbols,
+}
+
 func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
 	if !s.Channel.ShouldModerate || !s.Channel.EnableFilters {
 		return false, nil
 	}
 
-	if s.Channel.FilterLinks {
-		filtered, err = filterLinks(ctx, s)
-		if filtered || err != nil {
-			return filtered, err
-		}
+	if s.UserLevel.CanAccess(levelSubscriber) {
+		return false, nil
 	}
 
-	if s.Channel.FilterCaps {
-		filtered, err = filterCaps(ctx, s)
+	for _, fn := range filters {
+		filtered, err := fn(ctx, s)
 		if filtered || err != nil {
 			return filtered, err
 		}
@@ -33,13 +36,13 @@ func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
 }
 
 func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
-	links := s.Links()
-
-	if len(links) == 0 {
+	if !s.Channel.FilterLinks {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	links := s.Links()
+
+	if len(links) == 0 {
 		return false, nil
 	}
 
@@ -109,7 +112,7 @@ func allLinksPermitted(permitted []string, urls []*url.URL) bool {
 }
 
 func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if !s.Channel.FilterCaps {
 		return false, nil
 	}
 
@@ -119,30 +122,25 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	message = strings.Map(func(r rune) rune {
-		if unicode.IsSpace(r) {
-			return -1
-		}
-		return r
-	}, message)
+	message = withoutSpaces(message)
 
 	messageLen := 0
-	capsCount := 0
+	count := 0
 
 	for _, r := range message {
 		messageLen++
 		if unicode.IsUpper(r) {
-			capsCount++
+			count++
 		}
 	}
 
-	if capsCount < s.Channel.FilterCapsMinCaps {
+	if count < s.Channel.FilterCapsMinCaps {
 		return false, nil
 	}
 
-	capsPercent := float64(capsCount) / float64(messageLen)
+	percent := float64(count) / float64(messageLen)
 
-	if int(capsPercent*100) < s.Channel.FilterCapsPercentage {
+	if int(percent*100) < s.Channel.FilterCapsPercentage {
 		return false, nil
 	}
 
@@ -151,4 +149,58 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 	}
 
 	return true, s.Replyf("%s, please don't shout or talk in all caps.", s.UserDisplay)
+}
+
+var symbolFuncs = []func(rune) bool{
+	unicode.IsControl,
+	unicode.IsMark,
+	unicode.IsPunct,
+	unicode.IsSymbol,
+}
+
+func filterSymbols(ctx context.Context, s *session) (filtered bool, err error) {
+	if !s.Channel.FilterSymbols {
+		return false, nil
+	}
+
+	message := withoutSpaces(s.Message)
+
+	messageLen := 0
+	count := 0
+
+	for _, r := range message {
+		messageLen++
+
+		for _, fn := range symbolFuncs {
+			if fn(r) {
+				count++
+				break
+			}
+		}
+	}
+
+	if count < s.Channel.FilterSymbolsMinSymbols {
+		return false, nil
+	}
+
+	percent := float64(count) / float64(messageLen)
+
+	if int(percent*100) < s.Channel.FilterSymbolsPercentage {
+		return false, nil
+	}
+
+	if err := s.DeleteMessage(); err != nil {
+		return true, err
+	}
+
+	return true, s.Replyf("%s, please don't spam symbols.", s.UserDisplay)
+}
+
+func withoutSpaces(s string) string {
+	return strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, s)
 }
