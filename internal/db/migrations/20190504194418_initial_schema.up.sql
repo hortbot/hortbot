@@ -37,7 +37,14 @@ CREATE TABLE channels (
     enable_filters boolean NOT NULL,
 
     filter_links boolean NOT NULL,
-    permitted_links text[] DEFAULT '{}' NOT NULL
+    permitted_links text[] DEFAULT '{}' NOT NULL,
+
+    filter_caps boolean NOT NULL,
+    filter_caps_min_chars int NOT NULL,
+    filter_caps_percentage int NOT NULL,
+    filter_caps_min_caps int NOT NULL,
+
+    CHECK (filter_caps_percentage BETWEEN 0 and 100)
 );
 
 CREATE INDEX channels_user_id_idx on channels (user_id);

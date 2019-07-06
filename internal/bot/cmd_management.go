@@ -67,12 +67,14 @@ func handleJoin(ctx context.Context, s *session, name, id string) error {
 
 	if err == sql.ErrNoRows {
 		channel = &models.Channel{
-			UserID:         userID,
-			Name:           name,
-			BotName:        botName,
-			Active:         true,
-			Prefix:         s.Deps.DefaultPrefix,
-			ShouldModerate: true,
+			UserID:               userID,
+			Name:                 name,
+			BotName:              botName,
+			Active:               true,
+			Prefix:               s.Deps.DefaultPrefix,
+			ShouldModerate:       true,
+			FilterCapsPercentage: 50,
+			FilterCapsMinCaps:    6,
 		}
 
 		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {

@@ -3,6 +3,9 @@ package bot
 import (
 	"context"
 	"net/url"
+	"strings"
+	"unicode"
+	"unicode/utf8"
 
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 )
@@ -14,6 +17,13 @@ func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
 
 	if s.Channel.FilterLinks {
 		filtered, err = filterLinks(ctx, s)
+		if filtered || err != nil {
+			return filtered, err
+		}
+	}
+
+	if s.Channel.FilterCaps {
+		filtered, err = filterCaps(ctx, s)
 		if filtered || err != nil {
 			return filtered, err
 		}
@@ -96,4 +106,49 @@ func allLinksPermitted(permitted []string, urls []*url.URL) bool {
 	}
 
 	return true
+}
+
+func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
+	if s.UserLevel.CanAccess(levelSubscriber) {
+		return false, nil
+	}
+
+	message := s.Message
+
+	if utf8.RuneCountInString(message) < s.Channel.FilterCapsMinChars {
+		return false, nil
+	}
+
+	message = strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return -1
+		}
+		return r
+	}, message)
+
+	messageLen := 0
+	capsCount := 0
+
+	for _, r := range message {
+		messageLen++
+		if unicode.IsUpper(r) {
+			capsCount++
+		}
+	}
+
+	if capsCount < s.Channel.FilterCapsMinCaps {
+		return false, nil
+	}
+
+	capsPercent := float64(capsCount) / float64(messageLen)
+
+	if int(capsPercent*100) < s.Channel.FilterCapsPercentage {
+		return false, nil
+	}
+
+	if err := s.DeleteMessage(); err != nil {
+		return true, err
+	}
+
+	return true, s.Replyf("%s, please don't shout or talk in all caps.", s.UserDisplay)
 }

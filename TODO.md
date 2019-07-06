@@ -148,9 +148,10 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Add/remove reg/mod/owner
     - [x] List
 - [ ] Filters
+    - [ ] Warnings, then timeouts.
     - [x] Links
         - [x] Permitted domains (and more)
-    - [ ] Capitals
+    - [x] Capitals
     - [ ] Banned phrases
     - [ ] Symbols
     - [ ] Emotes
@@ -165,7 +166,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `links`
         - [x] `pd`
         - [ ] `banphrase`
-        - [ ] `caps`
+        - [x] `caps`
         - [ ] `emotes`
         - [ ] `symbols`
 - [ ] Administration

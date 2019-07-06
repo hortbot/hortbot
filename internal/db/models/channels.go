@@ -25,70 +25,82 @@ import (
 
 // Channel is an object representing the database table.
 type Channel struct {
-	ID             int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt      time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt      time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	UserID         int64             `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
-	Name           string            `boil:"name" json:"name" toml:"name" yaml:"name"`
-	BotName        string            `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
-	Active         bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
-	Prefix         string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
-	Bullet         null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
-	Ignored        types.StringArray `boil:"ignored" json:"ignored" toml:"ignored" yaml:"ignored"`
-	CustomOwners   types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
-	CustomMods     types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
-	CustomRegulars types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
-	Cooldown       null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
-	LastCommandAt  time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
-	ShouldModerate bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
-	EnableFilters  bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
-	FilterLinks    bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
-	PermittedLinks types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
+	ID                   int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt            time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt            time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UserID               int64             `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	Name                 string            `boil:"name" json:"name" toml:"name" yaml:"name"`
+	BotName              string            `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
+	Active               bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
+	Prefix               string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
+	Bullet               null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
+	Ignored              types.StringArray `boil:"ignored" json:"ignored" toml:"ignored" yaml:"ignored"`
+	CustomOwners         types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
+	CustomMods           types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
+	CustomRegulars       types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
+	Cooldown             null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
+	LastCommandAt        time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
+	ShouldModerate       bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
+	EnableFilters        bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
+	FilterLinks          bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
+	PermittedLinks       types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
+	FilterCaps           bool              `boil:"filter_caps" json:"filter_caps" toml:"filter_caps" yaml:"filter_caps"`
+	FilterCapsMinChars   int               `boil:"filter_caps_min_chars" json:"filter_caps_min_chars" toml:"filter_caps_min_chars" yaml:"filter_caps_min_chars"`
+	FilterCapsPercentage int               `boil:"filter_caps_percentage" json:"filter_caps_percentage" toml:"filter_caps_percentage" yaml:"filter_caps_percentage"`
+	FilterCapsMinCaps    int               `boil:"filter_caps_min_caps" json:"filter_caps_min_caps" toml:"filter_caps_min_caps" yaml:"filter_caps_min_caps"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var ChannelColumns = struct {
-	ID             string
-	CreatedAt      string
-	UpdatedAt      string
-	UserID         string
-	Name           string
-	BotName        string
-	Active         string
-	Prefix         string
-	Bullet         string
-	Ignored        string
-	CustomOwners   string
-	CustomMods     string
-	CustomRegulars string
-	Cooldown       string
-	LastCommandAt  string
-	ShouldModerate string
-	EnableFilters  string
-	FilterLinks    string
-	PermittedLinks string
+	ID                   string
+	CreatedAt            string
+	UpdatedAt            string
+	UserID               string
+	Name                 string
+	BotName              string
+	Active               string
+	Prefix               string
+	Bullet               string
+	Ignored              string
+	CustomOwners         string
+	CustomMods           string
+	CustomRegulars       string
+	Cooldown             string
+	LastCommandAt        string
+	ShouldModerate       string
+	EnableFilters        string
+	FilterLinks          string
+	PermittedLinks       string
+	FilterCaps           string
+	FilterCapsMinChars   string
+	FilterCapsPercentage string
+	FilterCapsMinCaps    string
 }{
-	ID:             "id",
-	CreatedAt:      "created_at",
-	UpdatedAt:      "updated_at",
-	UserID:         "user_id",
-	Name:           "name",
-	BotName:        "bot_name",
-	Active:         "active",
-	Prefix:         "prefix",
-	Bullet:         "bullet",
-	Ignored:        "ignored",
-	CustomOwners:   "custom_owners",
-	CustomMods:     "custom_mods",
-	CustomRegulars: "custom_regulars",
-	Cooldown:       "cooldown",
-	LastCommandAt:  "last_command_at",
-	ShouldModerate: "should_moderate",
-	EnableFilters:  "enable_filters",
-	FilterLinks:    "filter_links",
-	PermittedLinks: "permitted_links",
+	ID:                   "id",
+	CreatedAt:            "created_at",
+	UpdatedAt:            "updated_at",
+	UserID:               "user_id",
+	Name:                 "name",
+	BotName:              "bot_name",
+	Active:               "active",
+	Prefix:               "prefix",
+	Bullet:               "bullet",
+	Ignored:              "ignored",
+	CustomOwners:         "custom_owners",
+	CustomMods:           "custom_mods",
+	CustomRegulars:       "custom_regulars",
+	Cooldown:             "cooldown",
+	LastCommandAt:        "last_command_at",
+	ShouldModerate:       "should_moderate",
+	EnableFilters:        "enable_filters",
+	FilterLinks:          "filter_links",
+	PermittedLinks:       "permitted_links",
+	FilterCaps:           "filter_caps",
+	FilterCapsMinChars:   "filter_caps_min_chars",
+	FilterCapsPercentage: "filter_caps_percentage",
+	FilterCapsMinCaps:    "filter_caps_min_caps",
 }
 
 // Generated where
@@ -208,46 +220,63 @@ func (w whereHelpernull_Int) GTE(x null.Int) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
 
+type whereHelperint struct{ field string }
+
+func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
+func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
+func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
+func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
+func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
+func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
+
 var ChannelWhere = struct {
-	ID             whereHelperint64
-	CreatedAt      whereHelpertime_Time
-	UpdatedAt      whereHelpertime_Time
-	UserID         whereHelperint64
-	Name           whereHelperstring
-	BotName        whereHelperstring
-	Active         whereHelperbool
-	Prefix         whereHelperstring
-	Bullet         whereHelpernull_String
-	Ignored        whereHelpertypes_StringArray
-	CustomOwners   whereHelpertypes_StringArray
-	CustomMods     whereHelpertypes_StringArray
-	CustomRegulars whereHelpertypes_StringArray
-	Cooldown       whereHelpernull_Int
-	LastCommandAt  whereHelpertime_Time
-	ShouldModerate whereHelperbool
-	EnableFilters  whereHelperbool
-	FilterLinks    whereHelperbool
-	PermittedLinks whereHelpertypes_StringArray
+	ID                   whereHelperint64
+	CreatedAt            whereHelpertime_Time
+	UpdatedAt            whereHelpertime_Time
+	UserID               whereHelperint64
+	Name                 whereHelperstring
+	BotName              whereHelperstring
+	Active               whereHelperbool
+	Prefix               whereHelperstring
+	Bullet               whereHelpernull_String
+	Ignored              whereHelpertypes_StringArray
+	CustomOwners         whereHelpertypes_StringArray
+	CustomMods           whereHelpertypes_StringArray
+	CustomRegulars       whereHelpertypes_StringArray
+	Cooldown             whereHelpernull_Int
+	LastCommandAt        whereHelpertime_Time
+	ShouldModerate       whereHelperbool
+	EnableFilters        whereHelperbool
+	FilterLinks          whereHelperbool
+	PermittedLinks       whereHelpertypes_StringArray
+	FilterCaps           whereHelperbool
+	FilterCapsMinChars   whereHelperint
+	FilterCapsPercentage whereHelperint
+	FilterCapsMinCaps    whereHelperint
 }{
-	ID:             whereHelperint64{field: "\"channels\".\"id\""},
-	CreatedAt:      whereHelpertime_Time{field: "\"channels\".\"created_at\""},
-	UpdatedAt:      whereHelpertime_Time{field: "\"channels\".\"updated_at\""},
-	UserID:         whereHelperint64{field: "\"channels\".\"user_id\""},
-	Name:           whereHelperstring{field: "\"channels\".\"name\""},
-	BotName:        whereHelperstring{field: "\"channels\".\"bot_name\""},
-	Active:         whereHelperbool{field: "\"channels\".\"active\""},
-	Prefix:         whereHelperstring{field: "\"channels\".\"prefix\""},
-	Bullet:         whereHelpernull_String{field: "\"channels\".\"bullet\""},
-	Ignored:        whereHelpertypes_StringArray{field: "\"channels\".\"ignored\""},
-	CustomOwners:   whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
-	CustomMods:     whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
-	CustomRegulars: whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
-	Cooldown:       whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
-	LastCommandAt:  whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
-	ShouldModerate: whereHelperbool{field: "\"channels\".\"should_moderate\""},
-	EnableFilters:  whereHelperbool{field: "\"channels\".\"enable_filters\""},
-	FilterLinks:    whereHelperbool{field: "\"channels\".\"filter_links\""},
-	PermittedLinks: whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
+	ID:                   whereHelperint64{field: "\"channels\".\"id\""},
+	CreatedAt:            whereHelpertime_Time{field: "\"channels\".\"created_at\""},
+	UpdatedAt:            whereHelpertime_Time{field: "\"channels\".\"updated_at\""},
+	UserID:               whereHelperint64{field: "\"channels\".\"user_id\""},
+	Name:                 whereHelperstring{field: "\"channels\".\"name\""},
+	BotName:              whereHelperstring{field: "\"channels\".\"bot_name\""},
+	Active:               whereHelperbool{field: "\"channels\".\"active\""},
+	Prefix:               whereHelperstring{field: "\"channels\".\"prefix\""},
+	Bullet:               whereHelpernull_String{field: "\"channels\".\"bullet\""},
+	Ignored:              whereHelpertypes_StringArray{field: "\"channels\".\"ignored\""},
+	CustomOwners:         whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
+	CustomMods:           whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
+	CustomRegulars:       whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
+	Cooldown:             whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
+	LastCommandAt:        whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
+	ShouldModerate:       whereHelperbool{field: "\"channels\".\"should_moderate\""},
+	EnableFilters:        whereHelperbool{field: "\"channels\".\"enable_filters\""},
+	FilterLinks:          whereHelperbool{field: "\"channels\".\"filter_links\""},
+	PermittedLinks:       whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
+	FilterCaps:           whereHelperbool{field: "\"channels\".\"filter_caps\""},
+	FilterCapsMinChars:   whereHelperint{field: "\"channels\".\"filter_caps_min_chars\""},
+	FilterCapsPercentage: whereHelperint{field: "\"channels\".\"filter_caps_percentage\""},
+	FilterCapsMinCaps:    whereHelperint{field: "\"channels\".\"filter_caps_min_caps\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -280,8 +309,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "should_moderate", "enable_filters", "filter_links", "permitted_links"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "enable_filters", "filter_links"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "should_moderate", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate", "permitted_links"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -16,6 +17,7 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"links": {fn: cmdFilterLinks, minLevel: levelModerator},
 	"pd":    {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
 	"pl":    {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
+	"caps":  {fn: cmdFilterCaps, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -169,4 +171,78 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 	default:
 		return usage()
 	}
+}
+
+func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) error {
+	var response string
+	var column string
+
+	subcommand, args := splitSpace(args)
+
+	switch subcommand {
+	case "on":
+		if s.Channel.FilterCaps {
+			return s.Reply("Caps filter is already enabled.")
+		}
+
+		s.Channel.FilterCaps = true
+		response = "Caps filter is now enabled."
+		column = models.ChannelColumns.FilterCaps
+
+	case "off":
+		if !s.Channel.FilterCaps {
+			return s.Reply("Caps filter is already disabled.")
+		}
+
+		s.Channel.FilterCaps = false
+		response = "Caps filter is now disabled."
+		column = models.ChannelColumns.FilterCaps
+
+	case "percent":
+		percent, err := strconv.Atoi(args)
+		if err != nil || percent < 0 || percent > 100 {
+			return s.ReplyUsage("percent <0-100>")
+		}
+
+		s.Channel.FilterCapsPercentage = percent
+		response = fmt.Sprintf("Caps filter percent set to %d%%.", percent)
+		column = models.ChannelColumns.FilterCapsPercentage
+
+	case "minchars":
+		minChars, err := strconv.Atoi(args)
+		if err != nil || minChars < 0 {
+			return s.ReplyUsage("minchars <int>")
+		}
+
+		s.Channel.FilterCapsMinChars = minChars
+		response = fmt.Sprintf("Caps filter min chars set to %d.", minChars)
+		column = models.ChannelColumns.FilterCapsMinChars
+
+	case "mincaps":
+		minCaps, err := strconv.Atoi(args)
+		if err != nil || minCaps < 0 {
+			return s.ReplyUsage("mincaps <int>")
+		}
+
+		s.Channel.FilterCapsMinCaps = minCaps
+		response = fmt.Sprintf("Caps filter min caps set to %d.", minCaps)
+		column = models.ChannelColumns.FilterCapsMinCaps
+
+	case "status":
+		return s.Replyf("Caps filter=%v, percent=%v, minchars=%v, mincaps=%v",
+			s.Channel.FilterCaps,
+			s.Channel.FilterCapsPercentage,
+			s.Channel.FilterCapsMinChars,
+			s.Channel.FilterCapsMinCaps,
+		)
+
+	default:
+		return s.ReplyUsage("on|off|percent|minchars|mincaps|status")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+		return err
+	}
+
+	return s.Reply(response)
 }
