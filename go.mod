@@ -8,9 +8,9 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
-	github.com/aws/aws-sdk-go v1.20.13 // indirect
+	github.com/aws/aws-sdk-go v1.20.15 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
-	github.com/bmatcuk/doublestar v1.1.2
+	github.com/bmatcuk/doublestar v1.1.3
 	github.com/cenkalti/backoff v2.2.0+incompatible // indirect
 	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
@@ -21,6 +21,7 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190707035753-2be1aa521ff4 // indirect
 	github.com/dhui/dktest v0.3.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
@@ -43,7 +44,7 @@ require (
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
-	github.com/kshvakov/clickhouse v1.3.7 // indirect
+	github.com/kshvakov/clickhouse v1.3.8 // indirect
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.1.1
 	github.com/magiconair/properties v1.8.1 // indirect
@@ -76,8 +77,9 @@ require (
 	golang.org/x/net v0.0.0-20190628185345-da137c7871d7 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190626221950-04f50cda93cb // indirect
-	golang.org/x/tools v0.0.0-20190701194522-38ae2c8f6412
+	golang.org/x/tools v0.0.0-20190706070813-72ffa07ba3db
 	google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df // indirect
+	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
 	mvdan.cc/xurls/v2 v2.0.0
