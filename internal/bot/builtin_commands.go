@@ -35,6 +35,8 @@ func init() {
 		"helix":       {fn: cmdConch, minLevel: levelSubscriber},
 		"repeat":      {fn: cmdRepeat, minLevel: levelModerator},
 		"schedule":    {fn: cmdSchedule, minLevel: levelModerator},
+		"lastfm":      {fn: cmdLastFM, minLevel: levelEveryone},
+		"songlink":    {fn: cmdSonglink, minLevel: levelEveryone},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }

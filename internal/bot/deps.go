@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
@@ -16,6 +17,7 @@ type sharedDeps struct {
 	Notifier       Notifier
 	Clock          clock.Clock
 	Rand           Rand
+	LastFM         lastfm.API
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
 	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
 

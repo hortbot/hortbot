@@ -16,6 +16,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/jessevdk/go-flags"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
@@ -41,6 +42,8 @@ var args = struct {
 
 	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
+
+	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
 }{
 	DefaultCooldown: 5,
 }
@@ -121,6 +124,14 @@ func main() {
 		},
 	}
 
+	var lastFM lastfm.API
+
+	if args.LastFMKey != "" {
+		lastFM = lastfm.New(args.LastFMKey)
+	} else {
+		logger.Warn("no LastFM API key provided, functionality will be disabled")
+	}
+
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
@@ -130,6 +141,7 @@ func main() {
 		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,
+		LastFM:           lastFM,
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

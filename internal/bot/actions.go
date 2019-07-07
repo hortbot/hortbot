@@ -30,6 +30,12 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return strings.ToUpper(s.NextParameter()), nil
 	case "MESSAGE_COUNT":
 		return strconv.FormatInt(s.N, 10), nil
+	case "SONG":
+		return s.actionSong(0, false)
+	case "SONG_URL":
+		return s.actionSong(0, true)
+	case "LAST_SONG":
+		return s.actionSong(1, false)
 	}
 
 	return "", fmt.Errorf("unknown action: %s", action)
@@ -71,4 +77,29 @@ func (s *session) NextParameter() string {
 	var param string
 	param, s.CommandParams = splitFirstSep(s.CommandParams, ";")
 	return strings.TrimSpace(param)
+}
+
+func (s *session) actionSong(i int, url bool) (string, error) {
+	// TODO: Precheck commands before running them for simple things (like using SONG without lastfm set).
+
+	tracks, err := s.Tracks()
+	if err != nil {
+		if err == errLastFMDisabled {
+			return "(Unknown)", nil
+		}
+
+		return "", err
+	}
+
+	if len(tracks) < i+1 {
+		return "(Nothing)", nil
+	}
+
+	track := tracks[i]
+
+	if url {
+		return track.URL, nil
+	}
+
+	return track.Name + " by " + track.Artist, nil
 }

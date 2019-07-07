@@ -26,6 +26,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	dedupemem "github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
+	"github.com/hortbot/hortbot/internal/pkg/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/lastfm/lastfmfakes"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
@@ -66,6 +68,7 @@ type scriptTester struct {
 	sender   *botfakes.FakeSender
 	notifier *botfakes.FakeNotifier
 	clock    *clock.Mock
+	lastFM   *lastfmfakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -97,6 +100,7 @@ func (st *scriptTester) ensureBot(ctx context.Context, t *testing.T) {
 	}
 }
 
+//nolint:gocyclo
 func (st *scriptTester) test(t *testing.T) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -110,6 +114,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.sender = &botfakes.FakeSender{}
 	st.notifier = &botfakes.FakeNotifier{}
 	st.clock = clock.NewMock()
+	st.lastFM = &lastfmfakes.FakeAPI{}
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -136,6 +141,7 @@ func (st *scriptTester) test(t *testing.T) {
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   st.sender,
 		Notifier: st.notifier,
+		LastFM:   st.lastFM,
 	}
 
 	f, err := os.Open(st.filename)
@@ -225,6 +231,12 @@ func (st *scriptTester) test(t *testing.T) {
 		case "sleep":
 			st.sleep(t, args)
 
+		case "no_lastfm":
+			st.noLastFM(t)
+
+		case "lastfm_recent_tracks":
+			st.lastFMRecentTracks(t, args)
+
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
 		}
@@ -238,14 +250,15 @@ func (st *scriptTester) test(t *testing.T) {
 	}
 
 	defer func() {
-		st.b.Stop() // Inside its on func, as st.b is set inside an action.
+		if st.b != nil {
+			st.b.Stop() // Inside its on func, as st.b is set inside an action.
+		}
 	}()
 
 	for _, action := range st.actions {
 		action(ctx)
 	}
 
-	// TODO: make constants for these
 	assert.Equal(t, st.sender.SendMessageCallCount(), st.counts[countSend])
 	assert.Equal(t, st.notifier.NotifyChannelUpdatesCallCount(), st.counts[countNotifyChannelUpdates])
 }
@@ -610,5 +623,33 @@ func (st *scriptTester) sleep(t *testing.T, args string) {
 
 	st.addAction(func(ctx context.Context) {
 		time.Sleep(dur)
+	})
+}
+
+func (st *scriptTester) noLastFM(t *testing.T) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable LastFM")
+		st.bc.LastFM = nil
+	})
+}
+
+func (st *scriptTester) lastFMRecentTracks(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var v map[string][]lastfm.Track
+
+	err := json.Unmarshal([]byte(args), &v)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.lastFM.RecentTracksCalls(func(user string, n int) ([]lastfm.Track, error) {
+			x := v[user]
+
+			if len(x) > n {
+				x = x[:n]
+			}
+
+			return x, nil
+		})
 	})
 }

@@ -15,6 +15,7 @@ var settingCommands handlerMap = map[string]handlerFunc{
 	"bullet":         {fn: cmdSettingBullet, minLevel: levelBroadcaster},
 	"cooldown":       {fn: cmdSettingCooldown, minLevel: levelModerator},
 	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: levelModerator},
+	"lastfm":         {fn: cmdSettingLastFM, minLevel: levelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -164,4 +165,35 @@ func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args 
 	}
 
 	return s.Replyf("%s will no longer attempt to moderate in this channel.", s.Channel.BotName)
+}
+
+func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) error {
+	args = strings.ToLower(args)
+
+	switch args {
+	case "":
+		lfm := s.Channel.LastFM
+
+		if lfm == "" {
+			return s.Reply("LastFM user is not set.")
+		}
+
+		return s.Replyf("LastFM user is set to %s.", lfm)
+
+	case "off":
+		s.Channel.LastFM = ""
+
+	default:
+		s.Channel.LastFM = args
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.LastFM)); err != nil {
+		return err
+	}
+
+	if args == "off" {
+		return s.Reply("LastFM support has been disabled.")
+	}
+
+	return s.Replyf("LastFM user changed to %s.", args)
 }

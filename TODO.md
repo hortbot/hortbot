@@ -34,9 +34,9 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Viewers (*Twitch API*)
     - [ ] Chatters (*Twitch API*)
     - [ ] Uptime (*Twitch API*)
-    - [ ] LastFM
-        - [ ] Music/np
-        - [ ] Song link
+    - [x] LastFM
+        - [x] Music/np
+        - [x] Song link
     - [ ] Bot help (*Website*)
     - [x] ~~Commercial~~
     - [ ] Game (*Twitch API*)
@@ -135,7 +135,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] `subsRegsMinusLinks`
     - [x] `cooldown`
     - [x] ~~`throw~~
-    - [ ] `lastfm`
+    - [x] `lastfm`
     - [ ] `steam`
     - [ ] `mode`
     - [x] ~~`commerciallength`~~
@@ -191,8 +191,9 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_VIEWERS_)` (*Twitch API*)
 - [ ] ~~`(_STEAM_GAME_)`~~
 - [ ] ~~`(_STEAM_SERVER_)`~~
-- [ ] `(_SONG_)`
-- [ ] `(_SONG_URL_)`
+- [x] `(_SONG_)`
+- [x] `(_SONG_URL_)`
+- [x] `(_LAST_SONG_)`
 - [ ] `(_BOT_HELP_)` (*Website*)
 - [ ] `(_USER_)`
 - [ ] `(_QUOTE_)`

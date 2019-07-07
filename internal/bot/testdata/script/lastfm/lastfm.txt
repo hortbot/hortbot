@@ -1,0 +1,71 @@
+lastfm_recent_tracks {"foobar": [{"NowPlaying": true, "Name": "Too Long", "Artist": "Daft Punk", "URL": "example.com"}, {"NowPlaying": false, "Name": "No", "Artist": "Wax Tailor"}]}
+
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastfm
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm foobar
+send hortbot #foobar [HB] LastFM user changed to foobar.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastfm
+send hortbot #foobar [HB] https://www.last.fm/user/foobar
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add np Now playing: (_SONG_)
+send hortbot #foobar [HB] Command 'np' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add lastsong Previously playing: (_LAST_SONG_)
+send hortbot #foobar [HB] Command 'lastsong' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add sl Song link: (_SONG_URL_)
+send hortbot #foobar [HB] Command 'sl' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+send hortbot #foobar [HB] Now playing: Too Long by Daft Punk
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastsong
+send hortbot #foobar [HB] Previously playing: No by Wax Tailor
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+send hortbot #foobar [HB] Currently playing: Too Long by Daft Punk - example.com
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
+send hortbot #foobar [HB] Song link: example.com
+
+
+lastfm_recent_tracks {"foobar": []}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+send hortbot #foobar [HB] Now playing: (Nothing)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastsong
+send hortbot #foobar [HB] Previously playing: (Nothing)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+send hortbot #foobar [HB] No songs scrobbled on LastFM.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
+send hortbot #foobar [HB] Song link: (Nothing)
+
+
+lastfm_recent_tracks {"foobar": [{"NowPlaying": false, "Name": "Too Long", "Artist": "Daft Punk", "URL": "example.com"}, {"NowPlaying": false, "Name": "No", "Artist": "Wax Tailor"}]}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+send hortbot #foobar [HB] Last played: Too Long by Daft Punk - example.com
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm off
+send hortbot #foobar [HB] LastFM support has been disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+send hortbot #foobar [HB] Now playing: (Unknown)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastsong
+send hortbot #foobar [HB] Previously playing: (Unknown)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
+send hortbot #foobar [HB] Song link: (Unknown)

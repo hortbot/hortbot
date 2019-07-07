@@ -40,6 +40,7 @@ type Channel struct {
 	CustomRegulars          types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
 	Cooldown                null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
 	LastCommandAt           time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
+	LastFM                  string            `boil:"last_fm" json:"last_fm" toml:"last_fm" yaml:"last_fm"`
 	ShouldModerate          bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
 	EnableFilters           bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
 	FilterLinks             bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
@@ -72,6 +73,7 @@ var ChannelColumns = struct {
 	CustomRegulars          string
 	Cooldown                string
 	LastCommandAt           string
+	LastFM                  string
 	ShouldModerate          string
 	EnableFilters           string
 	FilterLinks             string
@@ -99,6 +101,7 @@ var ChannelColumns = struct {
 	CustomRegulars:          "custom_regulars",
 	Cooldown:                "cooldown",
 	LastCommandAt:           "last_command_at",
+	LastFM:                  "last_fm",
 	ShouldModerate:          "should_moderate",
 	EnableFilters:           "enable_filters",
 	FilterLinks:             "filter_links",
@@ -254,6 +257,7 @@ var ChannelWhere = struct {
 	CustomRegulars          whereHelpertypes_StringArray
 	Cooldown                whereHelpernull_Int
 	LastCommandAt           whereHelpertime_Time
+	LastFM                  whereHelperstring
 	ShouldModerate          whereHelperbool
 	EnableFilters           whereHelperbool
 	FilterLinks             whereHelperbool
@@ -281,6 +285,7 @@ var ChannelWhere = struct {
 	CustomRegulars:          whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
 	Cooldown:                whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
 	LastCommandAt:           whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
+	LastFM:                  whereHelperstring{field: "\"channels\".\"last_fm\""},
 	ShouldModerate:          whereHelperbool{field: "\"channels\".\"should_moderate\""},
 	EnableFilters:           whereHelperbool{field: "\"channels\".\"enable_filters\""},
 	FilterLinks:             whereHelperbool{field: "\"channels\".\"filter_links\""},
@@ -324,8 +329,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "should_moderate", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "should_moderate", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate", "permitted_links"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

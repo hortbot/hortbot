@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
@@ -28,6 +29,7 @@ type Config struct {
 	Notifier Notifier
 	Clock    clock.Clock
 	Rand     Rand
+	LastFM   lastfm.API
 
 	Prefix   string
 	Bullet   string
@@ -68,6 +70,7 @@ func New(config *Config) *Bot {
 		Dedupe:          config.Dedupe,
 		Sender:          config.Sender,
 		Notifier:        config.Notifier,
+		LastFM:          config.LastFM,
 		DefaultPrefix:   config.Prefix,
 		DefaultBullet:   config.Bullet,
 		DefaultCooldown: config.Cooldown,

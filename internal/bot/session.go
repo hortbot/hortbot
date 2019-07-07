@@ -2,6 +2,7 @@ package bot
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/url"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
+	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/jakebailey/irc"
 )
 
@@ -38,6 +40,9 @@ type session struct {
 
 	links    []*url.URL
 	linksSet bool
+
+	tracks    []lastfm.Track
+	tracksSet bool
 
 	Channel *models.Channel
 
@@ -218,7 +223,32 @@ func (s *session) DeleteMessage() error {
 func (s *session) Links() []*url.URL {
 	if !s.linksSet {
 		s.links = findlinks.Find(s.Message, "http", "https", "ftp")
+		s.linksSet = true
 	}
 
 	return s.links
+}
+
+var errLastFMDisabled = errors.New("bot: LastFM disabled")
+
+func (s *session) Tracks() ([]lastfm.Track, error) {
+	if s.Deps.LastFM == nil {
+		return nil, errLastFMDisabled
+	}
+
+	if s.Channel.LastFM == "" {
+		return nil, errLastFMDisabled
+	}
+
+	if !s.tracksSet {
+		var err error
+		s.tracks, err = s.Deps.LastFM.RecentTracks(s.Channel.LastFM, 2)
+		if err != nil {
+			return nil, err
+		}
+
+		s.tracksSet = true
+	}
+
+	return s.tracks, nil
 }

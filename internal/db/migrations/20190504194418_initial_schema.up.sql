@@ -32,8 +32,9 @@ CREATE TABLE channels (
     cooldown int,
     last_command_at timestamptz NOT NULL,
 
-    should_moderate boolean DEFAULT true NOT NULL,
+    last_fm text NOT NULL,
 
+    should_moderate boolean DEFAULT true NOT NULL,
     enable_filters boolean NOT NULL,
 
     filter_links boolean NOT NULL,
