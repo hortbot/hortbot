@@ -20,7 +20,7 @@ Some features are not currently planned to be ported and have been crossed out.
 
 ### Functionality
 
-- [ ] Link detection and moderation
+- [x] Link detection and moderation
     - [ ] YouTube API access to grab URLs
 - [ ] Twitch API stuff
     - [ ] For many things, this requires OAuth, which means the web service.
@@ -48,7 +48,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Punish stats (requires moderation)
     - [x] ~~What should I play~~ (Steam API is restricted)
     - [ ] Google
-    - [ ] Wiki
+    - ~~[x] Wiki~~
     - [ ] Is live (*Twitch API*)
     - [x] ~~Is here~~ (Requires persisting twitch membership messages)
 - [ ] Custom Commands
@@ -104,14 +104,14 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Winner
 - [x] ~~Highlights~~ (Predates twitch clips, may port for old data)
 - [x] ~~Binding of Isaac: Rebirth~~
-- [ ] Moderation
+- [x] Moderation
     - [x] Slow mode on/of
     - [x] Sub mode on/of
     - [x] Ban
     - [x] Timeout
     - [x] Purge
         - [ ] Add an argument to this to purge the last X messages
-    - [ ] Link permit (needs detection)
+    - [x] Link permit (needs detection)
     - [x] Clear chat
 - [x] Ignores
     - [x] Add/delete
@@ -136,7 +136,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] `cooldown`
     - [x] ~~`throw~~
     - [x] `lastfm`
-    - [ ] `steam`
+    - [ ] `steam` (*Steam API*)
     - [ ] `mode`
     - [x] ~~`commerciallength`~~
     - [ ] `tweet`
@@ -189,8 +189,8 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_GAME_)` (*Twitch API*)
 - [ ] `(_STATUS_)` (*Twitch API*)
 - [ ] `(_VIEWERS_)` (*Twitch API*)
-- [ ] ~~`(_STEAM_GAME_)`~~
-- [ ] ~~`(_STEAM_SERVER_)`~~
+- [ ] ~~`(_STEAM_GAME_)`~~ (*Steam API*)
+- [ ] ~~`(_STEAM_SERVER_)`~~ (*Steam API*)
 - [x] `(_SONG_)`
 - [x] `(_SONG_URL_)`
 - [x] `(_LAST_SONG_)`
