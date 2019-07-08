@@ -9,7 +9,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] YouTube link parsing is now enabled.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Check out this cool video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-send hortbot #foobar [HB] Linked YouTube video: Rick Astley - Never Gonna Give You Up (Video)
+send hortbot #foobar [HB] Linked YouTube video: "Rick Astley - Never Gonna Give You Up (Video)"
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :arf youtu.be/4o5baMYWdtQ
-send hortbot #foobar [HB] Linked YouTube video: Arf.mp4
+send hortbot #foobar [HB] Linked YouTube video: "Arf.mp4"

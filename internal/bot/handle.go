@@ -295,7 +295,7 @@ func handleSession(ctx context.Context, s *session) error {
 		for _, u := range s.Links() {
 			title := s.Deps.YouTube.VideoTitle(u)
 			if title != "" {
-				return s.Replyf("Linked YouTube video: %s", title)
+				return s.Replyf("Linked YouTube video: \"%s\"", title)
 			}
 		}
 	}
