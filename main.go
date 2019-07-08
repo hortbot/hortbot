@@ -17,6 +17,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/youtube"
 	"github.com/jessevdk/go-flags"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
@@ -142,6 +143,7 @@ func main() {
 		Sender:           sender,
 		Notifier:         notifier,
 		LastFM:           lastFM,
+		YouTube:          youtube.New(),
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

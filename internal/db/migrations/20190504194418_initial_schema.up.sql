@@ -33,6 +33,7 @@ CREATE TABLE channels (
     last_command_at timestamptz NOT NULL,
 
     last_fm text NOT NULL,
+    parse_youtube boolean NOT NULL,
 
     should_moderate boolean DEFAULT true NOT NULL,
     enable_filters boolean NOT NULL,

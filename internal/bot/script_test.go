@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -30,6 +31,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/lastfm/lastfmfakes"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
+	"github.com/hortbot/hortbot/internal/pkg/youtube/youtubefakes"
 	"github.com/jakebailey/irc"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -69,6 +71,7 @@ type scriptTester struct {
 	notifier *botfakes.FakeNotifier
 	clock    *clock.Mock
 	lastFM   *lastfmfakes.FakeAPI
+	youtube  *youtubefakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -115,6 +118,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.notifier = &botfakes.FakeNotifier{}
 	st.clock = clock.NewMock()
 	st.lastFM = &lastfmfakes.FakeAPI{}
+	st.youtube = &youtubefakes.FakeAPI{}
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -142,6 +146,7 @@ func (st *scriptTester) test(t *testing.T) {
 		Sender:   st.sender,
 		Notifier: st.notifier,
 		LastFM:   st.lastFM,
+		YouTube:  st.youtube,
 	}
 
 	f, err := os.Open(st.filename)
@@ -236,6 +241,12 @@ func (st *scriptTester) test(t *testing.T) {
 
 		case "lastfm_recent_tracks":
 			st.lastFMRecentTracks(t, args)
+
+		case "no_youtube":
+			st.noYouTube(t)
+
+		case "youtube_video_titles":
+			st.youtubeVideoTitles(t, args)
 
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
@@ -650,6 +661,28 @@ func (st *scriptTester) lastFMRecentTracks(t *testing.T, args string) {
 			}
 
 			return x, nil
+		})
+	})
+}
+
+func (st *scriptTester) noYouTube(t *testing.T) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable YouTube")
+		st.bc.YouTube = nil
+	})
+}
+
+func (st *scriptTester) youtubeVideoTitles(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var v map[string]string
+
+	err := json.Unmarshal([]byte(args), &v)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.youtube.VideoTitleCalls(func(u *url.URL) string {
+			return v[u.String()]
 		})
 	})
 }

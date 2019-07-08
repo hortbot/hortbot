@@ -291,6 +291,15 @@ func handleSession(ctx context.Context, s *session) error {
 		}
 	}
 
+	if s.Channel.ParseYoutube && s.Deps.YouTube != nil {
+		for _, u := range s.Links() {
+			title := s.Deps.YouTube.VideoTitle(u)
+			if title != "" {
+				return s.Replyf("Linked YouTube video: %s", title)
+			}
+		}
+	}
+
 	// TODO: autoreplies
 
 	return nil

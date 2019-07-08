@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.41.0 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.12 // indirect
+	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20180125190556-5a6b3ba71ee6 // indirect
 	github.com/alicebob/miniredis v2.5.0+incompatible
 	github.com/aws/aws-sdk-go v1.20.15 // indirect
@@ -60,6 +61,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/robfig/cron/v3 v3.0.0-rc1
+	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5 // indirect

@@ -21,7 +21,7 @@ Some features are not currently planned to be ported and have been crossed out.
 ### Functionality
 
 - [x] Link detection and moderation
-    - [ ] YouTube API access to grab URLs
+    - [x] YouTube API access to grab URLs
 - [ ] Twitch API stuff
     - [ ] For many things, this requires OAuth, which means the web service.
 
@@ -120,7 +120,7 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] Settings
     - Lots of settings here related to other items.
     - [x] ~~`topic`~~
-    - [ ] `parseYoutube`
+    - [x] `parseYoutube`
     - [x] `shouldModerate`
     - [ ] `roll`
         - [ ] `timeoutoncriticalfail`
@@ -168,7 +168,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [ ] `banphrase`
         - [x] `caps`
         - [ ] `emotes`
-        - [ ] `symbols`
+        - [x] `symbols`
 - [ ] Administration
 - [ ] Variables
     - [ ] Set

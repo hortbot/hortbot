@@ -16,6 +16,7 @@ var settingCommands handlerMap = map[string]handlerFunc{
 	"cooldown":       {fn: cmdSettingCooldown, minLevel: levelModerator},
 	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: levelModerator},
 	"lastfm":         {fn: cmdSettingLastFM, minLevel: levelModerator},
+	"parseyoutube":   {fn: cmdSettingParseYoutube, minLevel: levelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -196,4 +197,40 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	return s.Replyf("LastFM user changed to %s.", args)
+}
+
+func cmdSettingParseYoutube(ctx context.Context, s *session, cmd string, args string) error {
+	args = strings.ToLower(args)
+
+	switch args {
+	case "":
+		return s.Replyf("parseYoutube is set to %v.", s.Channel.ParseYoutube)
+
+	case "on", "enabled", "true", "1", "yes":
+		if s.Channel.ParseYoutube {
+			return s.Reply("YouTube link parsing is already enabled.")
+		}
+
+		s.Channel.ParseYoutube = true
+
+	case "off", "disabled", "false", "0", "no":
+		if !s.Channel.ParseYoutube {
+			return s.Reply("YouTube link parsing is already disabled.")
+		}
+
+		s.Channel.ParseYoutube = false
+
+	default:
+		return s.ReplyUsage("<on|off>")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ParseYoutube)); err != nil {
+		return err
+	}
+
+	if s.Channel.ParseYoutube {
+		return s.Reply("YouTube link parsing is now enabled.")
+	}
+
+	return s.Reply("YouTube link parsing is now disabled.")
 }

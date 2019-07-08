@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/hortbot/hortbot/internal/pkg/youtube"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
@@ -30,6 +31,7 @@ type Config struct {
 	Clock    clock.Clock
 	Rand     Rand
 	LastFM   lastfm.API
+	YouTube  youtube.API
 
 	Prefix   string
 	Bullet   string
@@ -74,6 +76,7 @@ func New(config *Config) *Bot {
 		DefaultPrefix:   config.Prefix,
 		DefaultBullet:   config.Bullet,
 		DefaultCooldown: config.Cooldown,
+		YouTube:         config.YouTube,
 		Admins:          make(map[string]bool),
 	}
 
