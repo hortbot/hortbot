@@ -3,10 +3,10 @@ package bot
 import (
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
-	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
-	"github.com/hortbot/hortbot/internal/pkg/youtube"
 	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
 )

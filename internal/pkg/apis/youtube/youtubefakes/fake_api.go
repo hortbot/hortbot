@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"sync"
 
-	"github.com/hortbot/hortbot/internal/pkg/youtube"
+	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 )
 
 type FakeAPI struct {

@@ -4,7 +4,7 @@ package lastfmfakes
 import (
 	"sync"
 
-	"github.com/hortbot/hortbot/internal/pkg/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 )
 
 type FakeAPI struct {

@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
-	"github.com/hortbot/hortbot/internal/pkg/lastfm"
 	"github.com/jakebailey/irc"
 )
 
