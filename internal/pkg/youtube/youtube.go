@@ -22,7 +22,7 @@ func New() *YouTube {
 	return &YouTube{}
 }
 
-func (_ YouTube) VideoTitle(u *url.URL) string {
+func (YouTube) VideoTitle(u *url.URL) string {
 	short := false
 	switch {
 	case u.Host == "youtu.be":
