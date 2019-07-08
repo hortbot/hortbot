@@ -18,7 +18,7 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/alicebob/miniredis"
+	"github.com/alicebob/miniredis/v2"
 	"github.com/bmatcuk/doublestar"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
