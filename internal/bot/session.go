@@ -14,7 +14,21 @@ import (
 	"github.com/jakebailey/irc"
 )
 
+//go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=sessionType
+
+type sessionType int
+
+const (
+	sessionUnknown sessionType = iota
+	sessionNormal
+	sessionRepeat
+	sessionAutoreply
+	sessionSubNotification
+)
+
 type session struct {
+	Type sessionType
+
 	Origin string
 	M      *irc.Message
 

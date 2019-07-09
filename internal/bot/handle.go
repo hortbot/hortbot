@@ -120,6 +120,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	}
 
 	s := &session{
+		Type:    sessionNormal,
 		Origin:  origin,
 		M:       m,
 		Deps:    b.deps,

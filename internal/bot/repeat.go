@@ -34,6 +34,7 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 	start := b.deps.Clock.Now()
 
 	s := &session{
+		Type:      sessionRepeat,
 		Deps:      b.deps,
 		Start:     start,
 		UserLevel: levelEveryone,
@@ -100,6 +101,7 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 	start := b.deps.Clock.Now()
 
 	s := &session{
+		Type:      sessionRepeat,
 		Deps:      b.deps,
 		Start:     start,
 		UserLevel: levelEveryone,

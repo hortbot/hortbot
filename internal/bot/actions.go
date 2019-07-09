@@ -23,6 +23,8 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	// TODO: Figure out how to deal with change in behavior for PARAMETER (DFS versus BFS)
 	// 	     Maybe PARAMETER[0]?
 
+	// TODO: run auto-reply only things first, then check if autoreply and return.
+
 	switch action {
 	case "PARAMETER":
 		return s.NextParameter(), nil
