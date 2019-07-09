@@ -53,6 +53,7 @@ require (
 	github.com/nakagami/firebirdsql v0.0.0-20190609025626-90ca2b3395f5 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.4+incompatible
+	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/pierrec/lz4 v2.2.3+incompatible // indirect
 	github.com/pkg/errors v0.8.1
