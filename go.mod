@@ -3,12 +3,11 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
-	cloud.google.com/go v0.41.0 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.8.0
-	github.com/aws/aws-sdk-go v1.20.15 // indirect
+	github.com/aws/aws-sdk-go v1.20.16 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.3
 	github.com/cenkalti/backoff v2.2.0+incompatible // indirect
@@ -28,14 +27,13 @@ require (
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190507143103-cc8cbe209b64 // indirect
 	github.com/fortytw2/leaktest v1.3.0
-	github.com/fsouza/fake-gcs-server v1.8.0 // indirect
+	github.com/fsouza/fake-gcs-server v1.9.0 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.5
-	github.com/gocql/gocql v0.0.0-20190629212933-1335d3dd7fe2 // indirect
+	github.com/gocql/gocql v0.0.0-20190708145057-55a38e15c5db // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.4.0
 	github.com/google/go-cmp v0.3.0
-	github.com/gorilla/mux v1.7.3 // indirect
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
 	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
@@ -75,8 +73,8 @@ require (
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/tools v0.0.0-20190706070813-72ffa07ba3db
-	google.golang.org/genproto v0.0.0-20190701230453-710ae3a149df // indirect
+	golang.org/x/tools v0.0.0-20190708203411-c8855242db9c
+	google.golang.org/genproto v0.0.0-20190708153700-3bdd9d9f5532 // indirect
 	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
