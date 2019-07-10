@@ -111,31 +111,17 @@ func (s *scanner) scan() bool {
 }
 
 func findSep(s string) (found bool, open bool, end int) {
-	skipNext := false
+	var prev rune
 
 	for i, r := range s {
-		if skipNext {
-			skipNext = false
-			continue
+		switch {
+		case prev == '(' && r == '_':
+			return true, true, i - 1
+		case prev == '_' && r == ')':
+			return true, false, i - 1
 		}
 
-		if r == '(' || r == '_' {
-			skipNext = true
-
-			nextI := i + 1
-			if nextI >= len(s) {
-				break
-			}
-			r2 := s[nextI]
-
-			if r == '(' && r2 == '_' {
-				return true, true, i
-			}
-
-			if r == '_' && r2 == ')' {
-				return true, false, i
-			}
-		}
+		prev = r
 	}
 
 	return false, false, len(s)

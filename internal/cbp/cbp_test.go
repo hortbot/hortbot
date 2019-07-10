@@ -128,6 +128,30 @@ func TestParse(t *testing.T) {
 				cbp.TextNode(` cool_`),
 			},
 		},
+		{
+			name:  "_ next to (_",
+			input: `(_HEY_(_TESTING_ERROR_)_)`,
+			nodes: []cbp.Node{
+				cbp.ActionNode(
+					cbp.TextNode(`HEY_`),
+					cbp.ActionNode(
+						cbp.TextNode("TESTING_ERROR"),
+					),
+				),
+			},
+		},
+		{
+			name:  "_ next to _)",
+			input: `(_(_TESTING_ERROR_)_HEY_)`,
+			nodes: []cbp.Node{
+				cbp.ActionNode(
+					cbp.ActionNode(
+						cbp.TextNode("TESTING_ERROR"),
+					),
+					cbp.TextNode(`_HEY`),
+				),
+			},
+		},
 	}
 
 	for _, test := range tests {
