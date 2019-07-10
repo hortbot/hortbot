@@ -90,6 +90,7 @@ func (s *session) actionSong(i int, url bool) (string, error) {
 			return "(Unknown)", nil
 		}
 
+		// TODO: return a message here?
 		return "", err
 	}
 

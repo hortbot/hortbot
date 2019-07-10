@@ -1,7 +1,19 @@
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add error (_TESTING_ERROR_)
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add error (_TESTING_ERROR_)
 send hortbot #foobar [HB] Command 'error' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!error hello
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add notexist (_THISDOESNTEXIST_)
+send hortbot #foobar [HB] Command 'notexist' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!notexist hello
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add nestederror (_HEY_(_TESTING_ERROR_)_)
+send hortbot #foobar [HB] Command 'nestederror' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!nestederror hello
 no_send
