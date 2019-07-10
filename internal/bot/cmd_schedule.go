@@ -223,8 +223,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 }
 
 func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) error {
-	scheduleds, err := models.ScheduledCommands(
-		models.ScheduledCommandWhere.ChannelID.EQ(s.Channel.ID),
+	scheduleds, err := s.Channel.ScheduledCommands(
 		qm.Load(models.ScheduledCommandRels.SimpleCommand),
 	).All(ctx, s.Tx)
 	if err != nil {
@@ -265,10 +264,10 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 }
 
 func findScheduledCommand(ctx context.Context, name string, s *session) (*models.SimpleCommand, *models.ScheduledCommand, error) {
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.Load(models.SimpleCommandRels.ScheduledCommand),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {

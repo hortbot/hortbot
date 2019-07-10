@@ -27,7 +27,7 @@ func cmdConch(ctx context.Context, s *session, cmd string, args string) error {
 		return s.Reply(conchResponses[i])
 	}
 
-	quote, err := getRandomQuote(ctx, s.Tx, s.Channel.ID)
+	quote, err := getRandomQuote(ctx, s.Tx, s.Channel)
 	if err != nil {
 		return err
 	}

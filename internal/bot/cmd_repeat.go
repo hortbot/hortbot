@@ -220,8 +220,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 }
 
 func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) error {
-	repeats, err := models.RepeatedCommands(
-		models.RepeatedCommandWhere.ChannelID.EQ(s.Channel.ID),
+	repeats, err := s.Channel.RepeatedCommands(
 		qm.Load(models.RepeatedCommandRels.SimpleCommand),
 	).All(ctx, s.Tx)
 	if err != nil {
@@ -262,10 +261,10 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 }
 
 func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.SimpleCommand, *models.RepeatedCommand, error) {
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.Load(models.SimpleCommandRels.RepeatedCommand),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {

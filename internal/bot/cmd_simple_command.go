@@ -107,8 +107,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 		return s.Replyf("Error parsing command.%s", warning)
 	}
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
@@ -178,8 +177,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 
 	name = strings.ToLower(name)
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
 		qm.Load(models.SimpleCommandRels.RepeatedCommand),
@@ -241,8 +239,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args 
 		return usage()
 	}
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
@@ -302,8 +299,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *session, prop string, args
 		return s.ReplyUsage("<name>")
 	}
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 	).One(ctx, s.Tx)
 
@@ -350,9 +346,9 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 		return s.Replyf("'%s' is already called '%s'!", oldName, oldName)
 	}
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(oldName),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -368,8 +364,7 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 		return s.Replyf("Your level is %s; you cannot rename a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
-	exists, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	exists, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(newName),
 	).Exists(ctx, s.Tx)
 
@@ -403,8 +398,7 @@ func cmdSimpleCommandGet(ctx context.Context, s *session, cmd string, args strin
 
 	name = strings.ToLower(name)
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(s.Channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
 	).One(ctx, s.Tx)
 

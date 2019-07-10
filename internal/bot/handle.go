@@ -348,8 +348,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
-	command, err := models.SimpleCommands(
-		models.SimpleCommandWhere.ChannelID.EQ(channel.ID),
+	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(commandName),
 		qm.For("UPDATE"),
 	).One(ctx, tx)

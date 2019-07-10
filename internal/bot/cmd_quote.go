@@ -53,10 +53,8 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 		MaxNum null.Int
 	}
 
-	err := models.NewQuery(
+	err := s.Channel.Quotes(
 		qm.Select("max("+models.QuoteColumns.Num+") as max_num"),
-		qm.From(models.TableNames.Quotes),
-		models.QuoteWhere.ChannelID.EQ(s.Channel.ID),
 	).Bind(ctx, s.Tx, &row)
 
 	if err != nil {
@@ -93,9 +91,9 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 		return usage()
 	}
 
-	quote, err := models.Quotes(
-		models.QuoteWhere.ChannelID.EQ(s.Channel.ID),
+	quote, err := s.Channel.Quotes(
 		models.QuoteWhere.Num.EQ(num),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -129,9 +127,9 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 		return usage()
 	}
 
-	quote, err := models.Quotes(
-		models.QuoteWhere.ChannelID.EQ(s.Channel.ID),
+	quote, err := s.Channel.Quotes(
 		models.QuoteWhere.Num.EQ(num),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -157,8 +155,7 @@ func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) 
 		return s.ReplyUsage("<quote>")
 	}
 
-	quote, err := models.Quotes(
-		models.QuoteWhere.ChannelID.EQ(s.Channel.ID),
+	quote, err := s.Channel.Quotes(
 		models.QuoteWhere.Quote.EQ(args),
 	).One(ctx, s.Tx)
 
@@ -187,8 +184,7 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 		return usage()
 	}
 
-	quote, err := models.Quotes(
-		models.QuoteWhere.ChannelID.EQ(s.Channel.ID),
+	quote, err := s.Channel.Quotes(
 		models.QuoteWhere.Num.EQ(num),
 	).One(ctx, s.Tx)
 
@@ -203,8 +199,8 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 	return s.Replyf("Quote #%d: %s", quote.Num, quote.Quote)
 }
 
-func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channelID int64) (*models.Quote, error) {
-	quote, err := models.Quotes(models.QuoteWhere.ChannelID.EQ(channelID), qm.OrderBy("random()")).One(ctx, cx)
+func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *models.Channel) (*models.Quote, error) {
+	quote, err := channel.Quotes(qm.OrderBy("random()")).One(ctx, cx)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -213,7 +209,7 @@ func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channelID int6
 }
 
 func cmdQuoteRandom(ctx context.Context, s *session, cmd string, args string) error {
-	quote, err := getRandomQuote(ctx, s.Tx, s.Channel.ID)
+	quote, err := getRandomQuote(ctx, s.Tx, s.Channel)
 	if err != nil {
 		return err
 	}
@@ -238,7 +234,7 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 		Num int
 	}
 
-	err := models.Quotes(
+	err := s.Channel.Quotes(
 		qm.Select(models.QuoteColumns.Num),
 		qm.Where("quote ILIKE ?", pattern),
 	).Bind(ctx, s.Tx, &quotes)
@@ -291,8 +287,7 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 		return usage()
 	}
 
-	quote, err := models.Quotes(
-		models.QuoteWhere.ChannelID.EQ(s.Channel.ID),
+	quote, err := s.Channel.Quotes(
 		models.QuoteWhere.Num.EQ(num),
 	).One(ctx, s.Tx)
 
