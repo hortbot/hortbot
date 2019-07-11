@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.8.0
-	github.com/aws/aws-sdk-go v1.20.16 // indirect
+	github.com/aws/aws-sdk-go v1.20.19 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.3
 	github.com/cenkalti/backoff v2.2.0+incompatible // indirect
@@ -20,7 +20,7 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190707035753-2be1aa521ff4 // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190710001350-29e7b2419f38 // indirect
 	github.com/dhui/dktest v0.3.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
@@ -33,6 +33,7 @@ require (
 	github.com/gocql/gocql v0.0.0-20190708145057-55a38e15c5db // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.4.0
+	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.3.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
@@ -41,13 +42,13 @@ require (
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
-	github.com/kshvakov/clickhouse v1.3.8 // indirect
+	github.com/kshvakov/clickhouse v1.3.9 // indirect
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.1.1
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.1
 	github.com/mjibson/esc v0.2.0
-	github.com/mongodb/mongo-go-driver v1.0.3 // indirect
+	github.com/mongodb/mongo-go-driver v1.0.4 // indirect
 	github.com/nakagami/firebirdsql v0.0.0-20190609025626-90ca2b3395f5 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.4+incompatible
@@ -56,7 +57,7 @@ require (
 	github.com/pierrec/lz4 v2.2.3+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
-	github.com/robfig/cron/v3 v3.0.0-rc1
+	github.com/robfig/cron/v3 v3.0.0
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
@@ -69,11 +70,12 @@ require (
 	github.com/volatiletech/sqlboiler v3.4.0+incompatible
 	github.com/xanzy/go-gitlab v0.18.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
-	go.mongodb.org/mongo-driver v1.0.3 // indirect
+	go.mongodb.org/mongo-driver v1.0.4 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/tools v0.0.0-20190708203411-c8855242db9c
+	golang.org/x/sys v0.0.0-20190710143415-6ec70d6a5542 // indirect
+	golang.org/x/tools v0.0.0-20190711191110-9a621aea19f8
 	google.golang.org/genproto v0.0.0-20190708153700-3bdd9d9f5532 // indirect
 	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
