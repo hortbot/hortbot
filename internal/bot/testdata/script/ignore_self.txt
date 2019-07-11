@@ -1,5 +1,5 @@
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :hortbot!hortbot@hortbot.tmi.twitch.tv PRIVMSG #hortbot :hmm
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :hortbot!hortbot@hortbot.tmi.twitch.tv PRIVMSG #hortbot :hmm
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :hortbot!hortbot@hortbot.tmi.twitch.tv PRIVMSG #foobar :hmm
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hmm
 no_send

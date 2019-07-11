@@ -37,7 +37,7 @@ func (t *testingHelper) checkUserNameID(name string, id int64) {
 
 	if expectedID, ok := t.userIDs[name]; ok {
 		if id != expectedID {
-			panic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id))
+			panic(testingPanic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id)))
 		}
 		return
 	}
