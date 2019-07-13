@@ -7,6 +7,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
 )
@@ -20,6 +21,7 @@ type sharedDeps struct {
 	Rand           Rand
 	LastFM         lastfm.API
 	YouTube        youtube.API
+	ReCache        *recache.RegexpCache
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
 	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
 

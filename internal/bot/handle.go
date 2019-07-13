@@ -301,7 +301,9 @@ func handleSession(ctx context.Context, s *session) error {
 		}
 	}
 
-	// TODO: autoreplies
+	if ok, err := tryAutoreplies(ctx, s); ok || err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -333,7 +335,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	}
 
-	commandName = strings.ToLower(commandName[len(prefix):])
+	commandName = cleanCommandName(commandName[len(prefix):])
 
 	if commandName == "" {
 		return false, nil

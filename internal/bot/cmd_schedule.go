@@ -46,12 +46,11 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 
 	name, args := splitSpace(args)
 	pattern, messageDiffStr := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" || pattern == "" {
 		return usage()
 	}
-
-	name = strings.ToLower(name)
 
 	pattern = strings.ReplaceAll(pattern, "_", " ")
 
@@ -131,12 +130,11 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 
 func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string) error {
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return s.ReplyUsage("<name>")
 	}
-
-	name = strings.ToLower(name)
 
 	command, scheduled, err := findScheduledCommand(ctx, name, s)
 	if err != nil {
@@ -167,12 +165,11 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 
 func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) error {
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return s.ReplyUsage("<name>")
 	}
-
-	name = strings.ToLower(name)
 
 	enable := cmd == "on"
 

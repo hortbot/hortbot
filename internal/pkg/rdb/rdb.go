@@ -7,12 +7,20 @@ import (
 	"github.com/go-redis/redis"
 )
 
+// KEYS[1] = key
+// ARGV[1] = expire time
 var checkAndMark = redis.NewScript(`
-local exists = redis.pcall('GETSET', KEYS[1], '1')
-redis.call('EXPIRE', KEYS[1], ARGV[1])
-return exists ~= false
+local exists = redis.pcall('EXISTS', KEYS[1])
+if exists == 1 then
+	return true
+end
+redis.pcall('SET', KEYS[1], '1')
+redis.pcall('EXPIRE', KEYS[1], ARGV[1])
+return false
 `)
 
+// KEYS[1] = key
+// ARGV[1] = expire time
 var checkAndRefresh = redis.NewScript(`
 local exists = redis.pcall('EXISTS', KEYS[1])
 if exists == 1 then
@@ -22,6 +30,8 @@ end
 return false
 `)
 
+// KEYS[1] = key
+// ARGV[1] = expire time
 var markOrDelete = redis.NewScript(`
 local exists = redis.pcall('GETSET', KEYS[1], '1')
 if exists ~= false then

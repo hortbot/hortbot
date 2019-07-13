@@ -3,6 +3,7 @@ package bot
 import (
 	"database/sql"
 	"strings"
+	"unicode"
 )
 
 func splitFirstSep(s string, sep string) (string, string) {
@@ -71,4 +72,17 @@ func stringSliceIndex(strs []string, s string) (int, bool) {
 		}
 	}
 	return -1, false
+}
+
+func cleanCommandName(s string) string {
+	m := strings.Map(func(r rune) rune {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) || r == '_' {
+			return r
+		}
+		return -1
+	}, s)
+
+	// In the common case, Map won't modify the string, and neither will
+	// ToLower, so this is faster than making Map do everything.
+	return strings.ToLower(m)
 }

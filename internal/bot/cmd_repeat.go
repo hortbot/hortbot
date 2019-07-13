@@ -46,12 +46,11 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 
 	name, args := splitSpace(args)
 	delayStr, messageDiffStr := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return usage()
 	}
-
-	name = strings.ToLower(name)
 
 	delay, err := strconv.Atoi(delayStr)
 	if err != nil {
@@ -133,12 +132,11 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 
 func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) error {
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return s.ReplyUsage("<name>")
 	}
-
-	name = strings.ToLower(name)
 
 	command, repeat, err := findRepeatedCommand(ctx, name, s)
 	if err != nil {
@@ -169,12 +167,11 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 
 func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) error {
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return s.ReplyUsage("<name>")
 	}
-
-	name = strings.ToLower(name)
 
 	enable := cmd == "on"
 

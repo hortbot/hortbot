@@ -85,6 +85,45 @@ func TestCheckAndMarkThenCheck(t *testing.T) {
 	assert.Assert(t, !exists)
 }
 
+func TestCheckAndMarkTwiceThenCheck(t *testing.T) {
+	t.Parallel()
+
+	s, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	db, err := rdb.New(c)
+	assert.NilError(t, err)
+
+	exists, err := db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
+
+	s.FastForward(time.Second)
+
+	exists, err = db.CheckAndMark(10, "#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
+
+	s.FastForward(5 * time.Second)
+
+	exists, err = db.CheckAndMark(10, "#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, exists)
+
+	s.FastForward(10 * time.Second)
+
+	exists, err = db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
+
+	s.FastForward(time.Second)
+
+	exists, err = db.Check("#foobar", "something")
+	assert.NilError(t, err)
+	assert.Assert(t, !exists)
+}
+
 func TestMarkAndDelete(t *testing.T) {
 	t.Parallel()
 

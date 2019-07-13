@@ -85,12 +85,11 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 	}
 
 	name, text := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" || text == "" {
 		return usage()
 	}
-
-	name = strings.ToLower(name)
 
 	if reservedCommandNames[name] {
 		return s.Replyf("Command name '%s' is reserved.", name)
@@ -170,12 +169,11 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 	}
 
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return usage()
 	}
-
-	name = strings.ToLower(name)
 
 	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),
@@ -234,6 +232,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args 
 	}
 
 	name, level := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return usage()
@@ -294,6 +293,7 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args 
 
 func cmdSimpleCommandProperty(ctx context.Context, s *session, prop string, args string) error {
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return s.ReplyUsage("<name>")
@@ -335,12 +335,12 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 	oldName, args := splitSpace(args)
 	newName, _ := splitSpace(args)
 
+	oldName = cleanCommandName(oldName)
+	newName = cleanCommandName(newName)
+
 	if oldName == "" || newName == "" {
 		return usage()
 	}
-
-	oldName = strings.ToLower(oldName)
-	newName = strings.ToLower(newName)
 
 	if oldName == newName {
 		return s.Replyf("'%s' is already called '%s'!", oldName, oldName)
@@ -391,12 +391,11 @@ func cmdSimpleCommandGet(ctx context.Context, s *session, cmd string, args strin
 	}
 
 	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return usage()
 	}
-
-	name = strings.ToLower(name)
 
 	command, err := s.Channel.SimpleCommands(
 		models.SimpleCommandWhere.Name.EQ(name),

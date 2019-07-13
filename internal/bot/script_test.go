@@ -248,6 +248,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "youtube_video_titles":
 			st.youtubeVideoTitles(t, args)
 
+		case "dump_redis":
+			st.dumpRedis(t)
+
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
 		}
@@ -684,5 +687,13 @@ func (st *scriptTester) youtubeVideoTitles(t *testing.T, args string) {
 		st.youtube.VideoTitleCalls(func(u *url.URL) string {
 			return v[u.String()]
 		})
+	})
+}
+
+func (st *scriptTester) dumpRedis(t *testing.T) {
+	lineNum := st.lineNum
+
+	st.addAction(func(ctx context.Context) {
+		t.Logf("line %d:\n%s", lineNum, st.redis.Dump())
 	})
 }

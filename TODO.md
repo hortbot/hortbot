@@ -72,11 +72,13 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] On/off
     - [x] List
 - [ ] Auto-replies
-    - This may be reworked to use names for replies instead of indexes.
-    - [ ] Add
-    - [ ] Remove
-    - [ ] Edit
-    - [ ] List
+    - ~~This may be reworked to use names for replies instead of indexes.~~
+    - [x] Add
+    - [x] Remove
+    - [x] Edit
+    - [x] List
+    - [ ] Actions inside of autoreply responses
+    - [ ] Similarly to quotes, emulate old list behavior
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
     - [x] ~~Winner~~ (Requires persisting twitch membership messages)
@@ -86,6 +88,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Urban
     - [ ] Me
     - [x] ~~Race~~
+    - [ ] XKCD
 - [x] Quotes
     - [x] Add
     - [x] Delete

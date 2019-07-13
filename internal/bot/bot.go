@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -77,6 +78,7 @@ func New(config *Config) *Bot {
 		DefaultBullet:   config.Bullet,
 		DefaultCooldown: config.Cooldown,
 		YouTube:         config.YouTube,
+		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
 	}
 

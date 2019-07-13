@@ -120,45 +120,6 @@ var ChannelColumns = struct {
 
 // Generated where
 
-type whereHelperint64 struct{ field string }
-
-func (w whereHelperint64) EQ(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint64) NEQ(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint64) LT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint64) LTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint64) GT(x int64) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint64) GTE(x int64) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
-type whereHelpertime_Time struct{ field string }
-
-func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.EQ, x)
-}
-func (w whereHelpertime_Time) NEQ(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.NEQ, x)
-}
-func (w whereHelpertime_Time) LT(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpertime_Time) LTE(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpertime_Time) GT(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
-
-type whereHelperstring struct{ field string }
-
-func (w whereHelperstring) EQ(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperstring) NEQ(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperstring) LT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperstring) LTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperstring) GT(x string) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperstring) GTE(x string) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
 type whereHelperbool struct{ field string }
 
 func (w whereHelperbool) EQ(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
@@ -167,29 +128,6 @@ func (w whereHelperbool) LT(x bool) qm.QueryMod  { return qmhelper.Where(w.field
 func (w whereHelperbool) LTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
 func (w whereHelperbool) GT(x bool) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
 func (w whereHelperbool) GTE(x bool) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
-
-type whereHelpernull_String struct{ field string }
-
-func (w whereHelpernull_String) EQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, false, x)
-}
-func (w whereHelpernull_String) NEQ(x null.String) qm.QueryMod {
-	return qmhelper.WhereNullEQ(w.field, true, x)
-}
-func (w whereHelpernull_String) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
-func (w whereHelpernull_String) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
-func (w whereHelpernull_String) LT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LT, x)
-}
-func (w whereHelpernull_String) LTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.LTE, x)
-}
-func (w whereHelpernull_String) GT(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GT, x)
-}
-func (w whereHelpernull_String) GTE(x null.String) qm.QueryMod {
-	return qmhelper.Where(w.field, qmhelper.GTE, x)
-}
 
 type whereHelpertypes_StringArray struct{ field string }
 
@@ -234,15 +172,6 @@ func (w whereHelpernull_Int) GT(x null.Int) qm.QueryMod {
 func (w whereHelpernull_Int) GTE(x null.Int) qm.QueryMod {
 	return qmhelper.Where(w.field, qmhelper.GTE, x)
 }
-
-type whereHelperint struct{ field string }
-
-func (w whereHelperint) EQ(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.EQ, x) }
-func (w whereHelperint) NEQ(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.NEQ, x) }
-func (w whereHelperint) LT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.LT, x) }
-func (w whereHelperint) LTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.LTE, x) }
-func (w whereHelperint) GT(x int) qm.QueryMod  { return qmhelper.Where(w.field, qmhelper.GT, x) }
-func (w whereHelperint) GTE(x int) qm.QueryMod { return qmhelper.Where(w.field, qmhelper.GTE, x) }
 
 var ChannelWhere = struct {
 	ID                      whereHelperint64
@@ -306,11 +235,13 @@ var ChannelWhere = struct {
 
 // ChannelRels is where relationship names are stored.
 var ChannelRels = struct {
+	Autoreplies       string
 	Quotes            string
 	RepeatedCommands  string
 	ScheduledCommands string
 	SimpleCommands    string
 }{
+	Autoreplies:       "Autoreplies",
 	Quotes:            "Quotes",
 	RepeatedCommands:  "RepeatedCommands",
 	ScheduledCommands: "ScheduledCommands",
@@ -319,6 +250,7 @@ var ChannelRels = struct {
 
 // channelR is where relationships are stored.
 type channelR struct {
+	Autoreplies       AutoreplySlice
 	Quotes            QuoteSlice
 	RepeatedCommands  RepeatedCommandSlice
 	ScheduledCommands ScheduledCommandSlice
@@ -431,6 +363,27 @@ func (q channelQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bo
 	return count > 0, nil
 }
 
+// Autoreplies retrieves all the autoreply's Autoreplies with an executor.
+func (o *Channel) Autoreplies(mods ...qm.QueryMod) autoreplyQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"autoreplies\".\"channel_id\"=?", o.ID),
+	)
+
+	query := Autoreplies(queryMods...)
+	queries.SetFrom(query.Query, "\"autoreplies\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"autoreplies\".*"})
+	}
+
+	return query
+}
+
 // Quotes retrieves all the quote's Quotes with an executor.
 func (o *Channel) Quotes(mods ...qm.QueryMod) quoteQuery {
 	var queryMods []qm.QueryMod
@@ -513,6 +466,94 @@ func (o *Channel) SimpleCommands(mods ...qm.QueryMod) simpleCommandQuery {
 	}
 
 	return query
+}
+
+// LoadAutoreplies allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadAutoreplies(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`autoreplies`), qm.WhereIn(`channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load autoreplies")
+	}
+
+	var resultSlice []*Autoreply
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice autoreplies")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on autoreplies")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for autoreplies")
+	}
+
+	if singular {
+		object.R.Autoreplies = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &autoreplyR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.Autoreplies = append(local.R.Autoreplies, foreign)
+				if foreign.R == nil {
+					foreign.R = &autoreplyR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
 }
 
 // LoadQuotes allows an eager lookup of values, cached into the
@@ -864,6 +905,59 @@ func (channelL) LoadSimpleCommands(ctx context.Context, e boil.ContextExecutor, 
 		}
 	}
 
+	return nil
+}
+
+// AddAutoreplies adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.Autoreplies.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddAutoreplies(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Autoreply) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"autoreplies\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, autoreplyPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			Autoreplies: related,
+		}
+	} else {
+		o.R.Autoreplies = append(o.R.Autoreplies, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &autoreplyR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
 	return nil
 }
 

@@ -1,0 +1,22 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *purge_me* (_PURGE_)
+send hortbot #foobar [HB] Autoreply #1 added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *timeout_me* (_TIMEOUT_)
+send hortbot #foobar [HB] Autoreply #2 added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *ban_me* (_BAN_)
+send hortbot #foobar [HB] Autoreply #3 added.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :purge me
+send hortbot #foobar /timeout foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :timeout me
+send hortbot #foobar /timeout foobar
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :ban me
+send hortbot #foobar /ban foobar
+

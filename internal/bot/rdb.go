@@ -1,6 +1,8 @@
 package bot
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func (s *session) LinkPermit(user string, seconds int) error {
 	return s.Deps.RDB.Mark(seconds, s.RoomIDStr, "link_permit", user)
@@ -30,4 +32,9 @@ func (s *session) messageCount() (int64, error) {
 
 func (s *session) incrementMessageCount() (int64, error) {
 	return s.Deps.RDB.Increment(s.RoomIDStr, "message_count")
+}
+
+func (s *session) AutoreplyAllowed(id int64, seconds int) (bool, error) {
+	seen, err := s.Deps.RDB.CheckAndMark(seconds, s.RoomIDStr, "autoreply", strconv.FormatInt(id, 10))
+	return !seen, err
 }

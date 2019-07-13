@@ -19,6 +19,7 @@ var allTables = []string{
 	"quotes",
 	"repeated_commands",
 	"scheduled_commands",
+	"autoreplies",
 }
 
 func TestUp(t *testing.T) {
