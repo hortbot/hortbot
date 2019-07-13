@@ -26,6 +26,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
+	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube/youtubefakes"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
@@ -72,6 +74,7 @@ type scriptTester struct {
 	clock    *clock.Mock
 	lastFM   *lastfmfakes.FakeAPI
 	youtube  *youtubefakes.FakeAPI
+	xkcd     *xkcdfakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -119,6 +122,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.clock = clock.NewMock()
 	st.lastFM = &lastfmfakes.FakeAPI{}
 	st.youtube = &youtubefakes.FakeAPI{}
+	st.xkcd = &xkcdfakes.FakeAPI{}
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -147,6 +151,7 @@ func (st *scriptTester) test(t *testing.T) {
 		Notifier: st.notifier,
 		LastFM:   st.lastFM,
 		YouTube:  st.youtube,
+		XKCD:     st.xkcd,
 	}
 
 	f, err := os.Open(st.filename)
@@ -247,6 +252,12 @@ func (st *scriptTester) test(t *testing.T) {
 
 		case "youtube_video_titles":
 			st.youtubeVideoTitles(t, args)
+
+		case "no_xkcd":
+			st.noXKCD(t)
+
+		case "xkcd_comics":
+			st.xkcdComics(t, args)
 
 		case "dump_redis":
 			st.dumpRedis(t)
@@ -695,5 +706,31 @@ func (st *scriptTester) dumpRedis(t *testing.T) {
 
 	st.addAction(func(ctx context.Context) {
 		t.Logf("line %d:\n%s", lineNum, st.redis.Dump())
+	})
+}
+
+func (st *scriptTester) noXKCD(t *testing.T) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable XKCD")
+		st.bc.XKCD = nil
+	})
+}
+
+func (st *scriptTester) xkcdComics(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var v map[string]*xkcd.Comic
+
+	err := json.Unmarshal([]byte(args), &v)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.xkcd.GetComicCalls(func(id int) (*xkcd.Comic, error) {
+			c, ok := v[strconv.Itoa(id)]
+			if !ok {
+				return nil, xkcd.ErrNotFound
+			}
+			return c, nil
+		})
 	})
 }

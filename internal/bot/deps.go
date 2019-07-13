@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
@@ -13,15 +14,19 @@ import (
 )
 
 type sharedDeps struct {
-	RDB            *rdb.DB
-	Dedupe         dedupe.Deduplicator
-	Sender         Sender
-	Notifier       Notifier
-	Clock          clock.Clock
-	Rand           Rand
-	LastFM         lastfm.API
-	YouTube        youtube.API
-	ReCache        *recache.RegexpCache
+	RDB      *rdb.DB
+	Dedupe   dedupe.Deduplicator
+	Sender   Sender
+	Notifier Notifier
+	Clock    clock.Clock
+	Rand     Rand
+
+	LastFM  lastfm.API
+	YouTube youtube.API
+	XKCD    xkcd.API
+
+	ReCache *recache.RegexpCache
+
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
 	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
 

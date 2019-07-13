@@ -88,7 +88,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Urban
     - [ ] Me
     - [x] ~~Race~~
-    - [ ] XKCD
+    - [x] XKCD
 - [x] Quotes
     - [x] Add
     - [x] Delete

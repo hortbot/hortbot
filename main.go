@@ -14,6 +14,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
@@ -144,6 +145,7 @@ func main() {
 		Notifier:         notifier,
 		LastFM:           lastFM,
 		YouTube:          youtube.New(),
+		XKCD:             xkcd.New(),
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

@@ -9,6 +9,7 @@ import (
 	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
@@ -31,8 +32,10 @@ type Config struct {
 	Notifier Notifier
 	Clock    clock.Clock
 	Rand     Rand
-	LastFM   lastfm.API
-	YouTube  youtube.API
+
+	LastFM  lastfm.API
+	YouTube youtube.API
+	XKCD    xkcd.API
 
 	Prefix   string
 	Bullet   string
@@ -78,6 +81,7 @@ func New(config *Config) *Bot {
 		DefaultBullet:   config.Bullet,
 		DefaultCooldown: config.Cooldown,
 		YouTube:         config.YouTube,
+		XKCD:            config.XKCD,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
 	}

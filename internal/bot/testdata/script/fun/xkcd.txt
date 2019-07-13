@@ -1,0 +1,18 @@
+xkcd_comics {"1": {"Title": "Barrel - Part 1", "Img": "https://imgs.xkcd.com/comics/barrel_cropped_(1).jpg", "Alt": "Don't we all."}}
+
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!xkcd what
+send hortbot #foobar [HB] usage: !xkcd <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!xkcd -1
+send hortbot #foobar [HB] usage: !xkcd <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!xkcd 0
+send hortbot #foobar [HB] usage: !xkcd <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!xkcd 1
+send hortbot #foobar [HB] XKCD Comic #1 Title: Barrel - Part 1; Image: https://imgs.xkcd.com/comics/barrel_cropped_(1).jpg ; Alt-Text: Don't we all.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!xkcd 2
+send hortbot #foobar [HB] XKCD comic #2 not found.

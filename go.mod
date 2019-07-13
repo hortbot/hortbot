@@ -57,6 +57,7 @@ require (
 	github.com/pierrec/lz4 v2.2.3+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
+	github.com/rkoesters/xkcd v0.0.0-20190613072715-c0127f09e992
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
 	github.com/sirupsen/logrus v1.4.2 // indirect

@@ -38,6 +38,7 @@ func init() {
 		"lastfm":      {fn: cmdLastFM, minLevel: levelEveryone},
 		"songlink":    {fn: cmdSonglink, minLevel: levelEveryone},
 		"autoreply":   {fn: cmdAutoreply, minLevel: levelModerator},
+		"xkcd":        {fn: cmdXKCD, minLevel: levelSubscriber},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }
