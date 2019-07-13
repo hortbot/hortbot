@@ -29,6 +29,7 @@ type Quote struct {
 	ChannelID int64     `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
 	Num       int       `boil:"num" json:"num" toml:"num" yaml:"num"`
 	Quote     string    `boil:"quote" json:"quote" toml:"quote" yaml:"quote"`
+	Creator   string    `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
 	Editor    string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
 
 	R *quoteR `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -42,6 +43,7 @@ var QuoteColumns = struct {
 	ChannelID string
 	Num       string
 	Quote     string
+	Creator   string
 	Editor    string
 }{
 	ID:        "id",
@@ -50,6 +52,7 @@ var QuoteColumns = struct {
 	ChannelID: "channel_id",
 	Num:       "num",
 	Quote:     "quote",
+	Creator:   "creator",
 	Editor:    "editor",
 }
 
@@ -62,6 +65,7 @@ var QuoteWhere = struct {
 	ChannelID whereHelperint64
 	Num       whereHelperint
 	Quote     whereHelperstring
+	Creator   whereHelperstring
 	Editor    whereHelperstring
 }{
 	ID:        whereHelperint64{field: "\"quotes\".\"id\""},
@@ -70,6 +74,7 @@ var QuoteWhere = struct {
 	ChannelID: whereHelperint64{field: "\"quotes\".\"channel_id\""},
 	Num:       whereHelperint{field: "\"quotes\".\"num\""},
 	Quote:     whereHelperstring{field: "\"quotes\".\"quote\""},
+	Creator:   whereHelperstring{field: "\"quotes\".\"creator\""},
 	Editor:    whereHelperstring{field: "\"quotes\".\"editor\""},
 }
 
@@ -94,8 +99,8 @@ func (*quoteR) NewStruct() *quoteR {
 type quoteL struct{}
 
 var (
-	quoteAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "num", "quote", "editor"}
-	quoteColumnsWithoutDefault = []string{"channel_id", "num", "quote", "editor"}
+	quoteAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "num", "quote", "creator", "editor"}
+	quoteColumnsWithoutDefault = []string{"channel_id", "num", "quote", "creator", "editor"}
 	quoteColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	quotePrimaryKeyColumns     = []string{"id"}
 )

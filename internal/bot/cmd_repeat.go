@@ -93,6 +93,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		repeat.MessageDiff = messageDiff
 		repeat.Enabled = true
 		repeat.LastCount = s.N
+		repeat.Editor = s.User
 
 		columns := boil.Whitelist(
 			models.RepeatedCommandColumns.UpdatedAt,
@@ -100,6 +101,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 			models.RepeatedCommandColumns.MessageDiff,
 			models.RepeatedCommandColumns.Enabled,
 			models.RepeatedCommandColumns.LastCount,
+			models.RepeatedCommandColumns.Editor,
 		)
 
 		if err := repeat.Update(ctx, s.Tx, columns); err != nil {
@@ -113,6 +115,8 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 			Delay:           delay,
 			MessageDiff:     messageDiff,
 			LastCount:       s.N,
+			Creator:         s.User,
+			Editor:          s.User,
 		}
 
 		if err := repeat.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -202,8 +206,16 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 
 	repeat.Enabled = enable
 	repeat.LastCount = s.N
+	repeat.Editor = s.User
 
-	if err := repeat.Update(ctx, s.Tx, boil.Whitelist(models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.Enabled, models.RepeatedCommandColumns.LastCount)); err != nil {
+	columns := boil.Whitelist(
+		models.RepeatedCommandColumns.UpdatedAt,
+		models.RepeatedCommandColumns.Enabled,
+		models.RepeatedCommandColumns.LastCount,
+		models.RepeatedCommandColumns.Editor,
+	)
+
+	if err := repeat.Update(ctx, s.Tx, columns); err != nil {
 		return err
 	}
 

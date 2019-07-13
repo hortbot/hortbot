@@ -33,6 +33,8 @@ type Autoreply struct {
 	OrigPattern null.String `boil:"orig_pattern" json:"orig_pattern,omitempty" toml:"orig_pattern" yaml:"orig_pattern,omitempty"`
 	Response    string      `boil:"response" json:"response" toml:"response" yaml:"response"`
 	Count       int         `boil:"count" json:"count" toml:"count" yaml:"count"`
+	Creator     string      `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
+	Editor      string      `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
 
 	R *autoreplyR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L autoreplyL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -48,6 +50,8 @@ var AutoreplyColumns = struct {
 	OrigPattern string
 	Response    string
 	Count       string
+	Creator     string
+	Editor      string
 }{
 	ID:          "id",
 	CreatedAt:   "created_at",
@@ -58,6 +62,8 @@ var AutoreplyColumns = struct {
 	OrigPattern: "orig_pattern",
 	Response:    "response",
 	Count:       "count",
+	Creator:     "creator",
+	Editor:      "editor",
 }
 
 // Generated where
@@ -143,6 +149,8 @@ var AutoreplyWhere = struct {
 	OrigPattern whereHelpernull_String
 	Response    whereHelperstring
 	Count       whereHelperint
+	Creator     whereHelperstring
+	Editor      whereHelperstring
 }{
 	ID:          whereHelperint64{field: "\"autoreplies\".\"id\""},
 	CreatedAt:   whereHelpertime_Time{field: "\"autoreplies\".\"created_at\""},
@@ -153,6 +161,8 @@ var AutoreplyWhere = struct {
 	OrigPattern: whereHelpernull_String{field: "\"autoreplies\".\"orig_pattern\""},
 	Response:    whereHelperstring{field: "\"autoreplies\".\"response\""},
 	Count:       whereHelperint{field: "\"autoreplies\".\"count\""},
+	Creator:     whereHelperstring{field: "\"autoreplies\".\"creator\""},
+	Editor:      whereHelperstring{field: "\"autoreplies\".\"editor\""},
 }
 
 // AutoreplyRels is where relationship names are stored.
@@ -176,8 +186,8 @@ func (*autoreplyR) NewStruct() *autoreplyR {
 type autoreplyL struct{}
 
 var (
-	autoreplyAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "num", "trigger", "orig_pattern", "response", "count"}
-	autoreplyColumnsWithoutDefault = []string{"channel_id", "num", "trigger", "orig_pattern", "response", "count"}
+	autoreplyAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "num", "trigger", "orig_pattern", "response", "count", "creator", "editor"}
+	autoreplyColumnsWithoutDefault = []string{"channel_id", "num", "trigger", "orig_pattern", "response", "count", "creator", "editor"}
 	autoreplyColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	autoreplyPrimaryKeyColumns     = []string{"id"}
 )

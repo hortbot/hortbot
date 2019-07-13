@@ -152,6 +152,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 		ChannelID:   s.Channel.ID,
 		Message:     text,
 		AccessLevel: level.PGEnum(),
+		Creator:     s.User,
 		Editor:      s.User,
 	}
 
@@ -377,8 +378,9 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 	}
 
 	command.Name = newName
+	command.Editor = s.User
 
-	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Name)); err != nil {
+	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Name, models.SimpleCommandColumns.Editor)); err != nil {
 		return err
 	}
 

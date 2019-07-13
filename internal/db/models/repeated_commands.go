@@ -32,6 +32,8 @@ type RepeatedCommand struct {
 	Delay           int       `boil:"delay" json:"delay" toml:"delay" yaml:"delay"`
 	MessageDiff     int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
 	LastCount       int64     `boil:"last_count" json:"last_count" toml:"last_count" yaml:"last_count"`
+	Creator         string    `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
+	Editor          string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
 
 	R *repeatedCommandR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L repeatedCommandL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -47,6 +49,8 @@ var RepeatedCommandColumns = struct {
 	Delay           string
 	MessageDiff     string
 	LastCount       string
+	Creator         string
+	Editor          string
 }{
 	ID:              "id",
 	CreatedAt:       "created_at",
@@ -57,6 +61,8 @@ var RepeatedCommandColumns = struct {
 	Delay:           "delay",
 	MessageDiff:     "message_diff",
 	LastCount:       "last_count",
+	Creator:         "creator",
+	Editor:          "editor",
 }
 
 // Generated where
@@ -71,6 +77,8 @@ var RepeatedCommandWhere = struct {
 	Delay           whereHelperint
 	MessageDiff     whereHelperint64
 	LastCount       whereHelperint64
+	Creator         whereHelperstring
+	Editor          whereHelperstring
 }{
 	ID:              whereHelperint64{field: "\"repeated_commands\".\"id\""},
 	CreatedAt:       whereHelpertime_Time{field: "\"repeated_commands\".\"created_at\""},
@@ -81,6 +89,8 @@ var RepeatedCommandWhere = struct {
 	Delay:           whereHelperint{field: "\"repeated_commands\".\"delay\""},
 	MessageDiff:     whereHelperint64{field: "\"repeated_commands\".\"message_diff\""},
 	LastCount:       whereHelperint64{field: "\"repeated_commands\".\"last_count\""},
+	Creator:         whereHelperstring{field: "\"repeated_commands\".\"creator\""},
+	Editor:          whereHelperstring{field: "\"repeated_commands\".\"editor\""},
 }
 
 // RepeatedCommandRels is where relationship names are stored.
@@ -107,8 +117,8 @@ func (*repeatedCommandR) NewStruct() *repeatedCommandR {
 type repeatedCommandL struct{}
 
 var (
-	repeatedCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "delay", "message_diff", "last_count"}
-	repeatedCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "delay", "last_count"}
+	repeatedCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "delay", "message_diff", "last_count", "creator", "editor"}
+	repeatedCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "delay", "last_count", "creator", "editor"}
 	repeatedCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at", "message_diff"}
 	repeatedCommandPrimaryKeyColumns     = []string{"id"}
 )

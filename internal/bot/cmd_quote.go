@@ -67,6 +67,7 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 		ChannelID: s.Channel.ID,
 		Num:       nextNum,
 		Quote:     args,
+		Creator:   s.User,
 		Editor:    s.User,
 	}
 

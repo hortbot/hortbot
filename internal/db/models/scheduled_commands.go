@@ -32,6 +32,8 @@ type ScheduledCommand struct {
 	CronExpression  string    `boil:"cron_expression" json:"cron_expression" toml:"cron_expression" yaml:"cron_expression"`
 	MessageDiff     int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
 	LastCount       int64     `boil:"last_count" json:"last_count" toml:"last_count" yaml:"last_count"`
+	Creator         string    `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
+	Editor          string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
 
 	R *scheduledCommandR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L scheduledCommandL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -47,6 +49,8 @@ var ScheduledCommandColumns = struct {
 	CronExpression  string
 	MessageDiff     string
 	LastCount       string
+	Creator         string
+	Editor          string
 }{
 	ID:              "id",
 	CreatedAt:       "created_at",
@@ -57,6 +61,8 @@ var ScheduledCommandColumns = struct {
 	CronExpression:  "cron_expression",
 	MessageDiff:     "message_diff",
 	LastCount:       "last_count",
+	Creator:         "creator",
+	Editor:          "editor",
 }
 
 // Generated where
@@ -71,6 +77,8 @@ var ScheduledCommandWhere = struct {
 	CronExpression  whereHelperstring
 	MessageDiff     whereHelperint64
 	LastCount       whereHelperint64
+	Creator         whereHelperstring
+	Editor          whereHelperstring
 }{
 	ID:              whereHelperint64{field: "\"scheduled_commands\".\"id\""},
 	CreatedAt:       whereHelpertime_Time{field: "\"scheduled_commands\".\"created_at\""},
@@ -81,6 +89,8 @@ var ScheduledCommandWhere = struct {
 	CronExpression:  whereHelperstring{field: "\"scheduled_commands\".\"cron_expression\""},
 	MessageDiff:     whereHelperint64{field: "\"scheduled_commands\".\"message_diff\""},
 	LastCount:       whereHelperint64{field: "\"scheduled_commands\".\"last_count\""},
+	Creator:         whereHelperstring{field: "\"scheduled_commands\".\"creator\""},
+	Editor:          whereHelperstring{field: "\"scheduled_commands\".\"editor\""},
 }
 
 // ScheduledCommandRels is where relationship names are stored.
@@ -107,8 +117,8 @@ func (*scheduledCommandR) NewStruct() *scheduledCommandR {
 type scheduledCommandL struct{}
 
 var (
-	scheduledCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "cron_expression", "message_diff", "last_count"}
-	scheduledCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "cron_expression", "last_count"}
+	scheduledCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "cron_expression", "message_diff", "last_count", "creator", "editor"}
+	scheduledCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "cron_expression", "last_count", "creator", "editor"}
 	scheduledCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at", "message_diff"}
 	scheduledCommandPrimaryKeyColumns     = []string{"id"}
 )

@@ -91,6 +91,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		scheduled.MessageDiff = messageDiff
 		scheduled.Enabled = true
 		scheduled.LastCount = s.N
+		scheduled.Editor = s.User
 
 		columns := boil.Whitelist(
 			models.ScheduledCommandColumns.UpdatedAt,
@@ -98,6 +99,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 			models.ScheduledCommandColumns.MessageDiff,
 			models.ScheduledCommandColumns.Enabled,
 			models.ScheduledCommandColumns.LastCount,
+			models.ScheduledCommandColumns.Editor,
 		)
 
 		if err := scheduled.Update(ctx, s.Tx, columns); err != nil {
@@ -111,6 +113,8 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 			CronExpression:  pattern,
 			MessageDiff:     messageDiff,
 			LastCount:       s.N,
+			Creator:         s.User,
+			Editor:          s.User,
 		}
 
 		if err := scheduled.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -200,8 +204,16 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 
 	scheduled.Enabled = enable
 	scheduled.LastCount = s.N
+	scheduled.Editor = s.User
 
-	if err := scheduled.Update(ctx, s.Tx, boil.Whitelist(models.ScheduledCommandColumns.UpdatedAt, models.ScheduledCommandColumns.Enabled, models.ScheduledCommandColumns.LastCount)); err != nil {
+	columns := boil.Whitelist(
+		models.ScheduledCommandColumns.UpdatedAt,
+		models.ScheduledCommandColumns.Enabled,
+		models.ScheduledCommandColumns.LastCount,
+		models.ScheduledCommandColumns.Editor,
+	)
+
+	if err := scheduled.Update(ctx, s.Tx, columns); err != nil {
 		return err
 	}
 

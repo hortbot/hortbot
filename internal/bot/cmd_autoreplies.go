@@ -81,6 +81,8 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 		Trigger:     trigger,
 		OrigPattern: null.StringFrom(pattern),
 		Response:    response,
+		Creator:     s.User,
+		Editor:      s.User,
 	}
 
 	if err := autoreply.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -158,8 +160,9 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 	}
 
 	autoreply.Response = response
+	autoreply.Editor = s.User
 
-	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Response)); err != nil {
+	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Response, models.AutoreplyColumns.Editor)); err != nil {
 		return err
 	}
 
@@ -202,8 +205,9 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 
 	autoreply.Trigger = trigger
 	autoreply.OrigPattern = null.StringFrom(pattern)
+	autoreply.Editor = s.User
 
-	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Trigger, models.AutoreplyColumns.OrigPattern)); err != nil {
+	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Trigger, models.AutoreplyColumns.OrigPattern, models.AutoreplyColumns.Editor)); err != nil {
 		return err
 	}
 

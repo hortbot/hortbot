@@ -65,9 +65,11 @@ CREATE TABLE simple_commands (
 
     name text NOT NULL,
     message text NOT NULL,
-    editor text NOT NULL,
     access_level access_level NOT NULL,
     count bigint NOT NULL,
+
+    creator text NOT NULL,
+    editor text NOT NULL,
 
     UNIQUE (channel_id, name)
 );
@@ -84,6 +86,8 @@ CREATE TABLE quotes (
 
     num int NOT NULL,
     quote text NOT NULL,
+
+    creator text NOT NULL,
     editor text NOT NULL,
 
     UNIQUE (channel_id, num)
@@ -103,7 +107,10 @@ CREATE TABLE repeated_commands (
     enabled boolean NOT NULL,
     delay int NOT NULL,
     message_diff bigint DEFAULT 1 NOT NULL,
-    last_count bigint NOT NULL
+    last_count bigint NOT NULL,
+
+    creator text NOT NULL,
+    editor text NOT NULL
 );
 
 CREATE INDEX repeated_commands_channel_id_idx ON repeated_commands (channel_id);
@@ -120,7 +127,10 @@ CREATE TABLE scheduled_commands (
     enabled boolean NOT NULL,
     cron_expression text NOT NULL,
     message_diff bigint DEFAULT 1 NOT NULL,
-    last_count bigint NOT NULL
+    last_count bigint NOT NULL,
+
+    creator text NOT NULL,
+    editor text NOT NULL
 );
 
 CREATE INDEX scheduled_commands_channel_id_idx ON scheduled_commands (channel_id);
@@ -137,7 +147,10 @@ CREATE TABLE autoreplies (
     trigger text NOT NULL,
     orig_pattern text,
     response text NOT NULL,
-    count int NOT NULL
+    count int NOT NULL,
+
+    creator text NOT NULL,
+    editor text NOT NULL
 );
 
 CREATE INDEX autoreplies_channel_id_idx ON autoreplies (channel_id);
