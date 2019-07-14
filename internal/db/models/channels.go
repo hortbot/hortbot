@@ -53,6 +53,7 @@ type Channel struct {
 	FilterSymbols           bool              `boil:"filter_symbols" json:"filter_symbols" toml:"filter_symbols" yaml:"filter_symbols"`
 	FilterSymbolsPercentage int               `boil:"filter_symbols_percentage" json:"filter_symbols_percentage" toml:"filter_symbols_percentage" yaml:"filter_symbols_percentage"`
 	FilterSymbolsMinSymbols int               `boil:"filter_symbols_min_symbols" json:"filter_symbols_min_symbols" toml:"filter_symbols_min_symbols" yaml:"filter_symbols_min_symbols"`
+	FilterMe                bool              `boil:"filter_me" json:"filter_me" toml:"filter_me" yaml:"filter_me"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -87,6 +88,7 @@ var ChannelColumns = struct {
 	FilterSymbols           string
 	FilterSymbolsPercentage string
 	FilterSymbolsMinSymbols string
+	FilterMe                string
 }{
 	ID:                      "id",
 	CreatedAt:               "created_at",
@@ -116,6 +118,7 @@ var ChannelColumns = struct {
 	FilterSymbols:           "filter_symbols",
 	FilterSymbolsPercentage: "filter_symbols_percentage",
 	FilterSymbolsMinSymbols: "filter_symbols_min_symbols",
+	FilterMe:                "filter_me",
 }
 
 // Generated where
@@ -202,6 +205,7 @@ var ChannelWhere = struct {
 	FilterSymbols           whereHelperbool
 	FilterSymbolsPercentage whereHelperint
 	FilterSymbolsMinSymbols whereHelperint
+	FilterMe                whereHelperbool
 }{
 	ID:                      whereHelperint64{field: "\"channels\".\"id\""},
 	CreatedAt:               whereHelpertime_Time{field: "\"channels\".\"created_at\""},
@@ -231,6 +235,7 @@ var ChannelWhere = struct {
 	FilterSymbols:           whereHelperbool{field: "\"channels\".\"filter_symbols\""},
 	FilterSymbolsPercentage: whereHelperint{field: "\"channels\".\"filter_symbols_percentage\""},
 	FilterSymbolsMinSymbols: whereHelperint{field: "\"channels\".\"filter_symbols_min_symbols\""},
+	FilterMe:                whereHelperbool{field: "\"channels\".\"filter_me\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -266,8 +271,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate", "permitted_links"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

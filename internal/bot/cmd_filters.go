@@ -19,6 +19,7 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"pl":      {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
 	"caps":    {fn: cmdFilterCaps, minLevel: levelModerator},
 	"symbols": {fn: cmdFilterSymbols, minLevel: levelModerator},
+	"me":      {fn: cmdFilterMe, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -309,4 +310,35 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	return s.Reply(response)
+}
+
+func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error {
+	enable := false
+
+	switch args {
+	case "on":
+		enable = true
+	case "off":
+		// Do nothing.
+	default:
+		return s.ReplyUsage("on|off")
+	}
+
+	if s.Channel.FilterMe == enable {
+		if enable {
+			return s.Reply("Me filter is already enabled.")
+		}
+		return s.Reply("Me filter is already disabled.")
+	}
+
+	s.Channel.FilterMe = enable
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterMe)); err != nil {
+		return err
+	}
+
+	if enable {
+		return s.Reply("Me filter is now enabled.")
+	}
+	return s.Reply("Me filter is now disabled.")
 }

@@ -152,6 +152,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] List
 - [ ] Filters
     - [ ] Warnings, then timeouts.
+    - [x] Me
     - [x] Links
         - [x] Permitted domains (and more)
     - [x] Capitals
@@ -161,7 +162,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Options
         - [x] `on`/`off`
         - [ ] `status`
-        - [ ] `me`
+        - [x] `me`
         - [ ] `enablewarnings`
         - [ ] `timeoutduration`
         - [ ] `displaywarnings`

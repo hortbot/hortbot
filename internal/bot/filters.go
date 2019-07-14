@@ -11,6 +11,7 @@ import (
 )
 
 var filters = []func(context.Context, *session) (filtered bool, err error){
+	filterMe,
 	filterLinks,
 	filterCaps,
 	filterSymbols,
@@ -33,6 +34,18 @@ func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
 	}
 
 	return false, nil
+}
+
+func filterMe(ctx context.Context, s *session) (filtered bool, err error) {
+	if !s.Channel.FilterMe || !s.Me {
+		return false, nil
+	}
+
+	if err := s.DeleteMessage(); err != nil {
+		return true, err
+	}
+
+	return true, s.Replyf("%s, /me is not allowed in this channel.", s.UserDisplay)
 }
 
 func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
