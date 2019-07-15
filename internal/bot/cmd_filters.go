@@ -21,6 +21,7 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"symbols":       {fn: cmdFilterSymbols, minLevel: levelModerator},
 	"me":            {fn: cmdFilterMe, minLevel: levelModerator},
 	"messagelength": {fn: cmdFilterMessageLength, minLevel: levelModerator},
+	"emotes":        {fn: cmdFilterEmotes, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -361,4 +362,85 @@ func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args st
 	}
 
 	return s.Replyf("Max message length set to %d.", n)
+}
+
+func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) error {
+	var response string
+	var column string
+
+	subcommand, args := splitSpace(args)
+
+	switch subcommand {
+	case "on":
+		if s.Channel.FilterEmotes {
+			return s.Reply("Emote filter is already enabled.")
+		}
+
+		s.Channel.FilterEmotes = true
+		response = "Emote filter is now enabled."
+		column = models.ChannelColumns.FilterEmotes
+
+	case "off":
+		if !s.Channel.FilterEmotes {
+			return s.Reply("Emote filter is already disabled.")
+		}
+
+		s.Channel.FilterEmotes = false
+		response = "Emote filter is now disabled."
+		column = models.ChannelColumns.FilterEmotes
+
+	case "max":
+		max, err := strconv.Atoi(args)
+		if err != nil || max < 0 {
+			return s.ReplyUsage("max <num>")
+		}
+
+		s.Channel.FilterEmotesMax = max
+		response = fmt.Sprintf("Emote filter max emotes set to %d.", max)
+		column = models.ChannelColumns.FilterEmotesMax
+
+	case "single":
+		enabled := false
+
+		switch args {
+		case "on":
+			enabled = true
+		case "off":
+		default:
+			return s.ReplyUsage("single <on|off>")
+		}
+
+		if s.Channel.FilterEmotesSingle == enabled {
+			if enabled {
+				return s.Reply("Single emote filter is already enabled.")
+			}
+			return s.Reply("Single emote filter is already disabled.")
+		}
+
+		s.Channel.FilterEmotesSingle = enabled
+
+		if enabled {
+			response = "Single emote filter is now enabled."
+		} else {
+			response = "Single emote filter is now disabled."
+		}
+
+		column = models.ChannelColumns.FilterEmotesSingle
+
+	case "status":
+		return s.Replyf("Emote filter=%v, max=%v, single=%v",
+			s.Channel.FilterEmotes,
+			s.Channel.FilterEmotesMax,
+			s.Channel.FilterEmotesSingle,
+		)
+
+	default:
+		return s.ReplyUsage("on|off|max|single|status")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+		return err
+	}
+
+	return s.Reply(response)
 }

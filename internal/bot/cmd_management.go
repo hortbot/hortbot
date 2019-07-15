@@ -80,6 +80,7 @@ func handleJoin(ctx context.Context, s *session, name, id string) error {
 			FilterSymbolsPercentage: 50,
 			FilterSymbolsMinSymbols: 5,
 			FilterMaxLength:         500,
+			FilterEmotesMax:         4,
 		}
 
 		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {

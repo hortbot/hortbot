@@ -1,0 +1,100 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter emotes
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter emotes
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes what
+send hortbot #foobar [HB] usage: !filter emotes on|off|max|single|status
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+send hortbot #foobar [HB] Filters are now enabled.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes status
+send hortbot #foobar [HB] Emote filter=false, max=4, single=false
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes off
+send hortbot #foobar [HB] Emote filter is already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes on
+send hortbot #foobar [HB] Emote filter is now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes on
+send hortbot #foobar [HB] Emote filter is already enabled.
+
+
+handle hortbot @id=f0788780-a2b5-4486-beab-ba2c60c86384;emotes=1566876:0-6,8-14,16-22/1566875:24-30,32-38;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove coeLove coeLove coeWave coeWave
+send hortbot #foobar /delete f0788780-a2b5-4486-beab-ba2c60c86384
+send hortbot #foobar [HB] Random, please don't spam emotes - warning
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+no_send
+
+
+clock_forward 3h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes off
+send hortbot #foobar [HB] Emote filter is now disabled.
+
+handle hortbot @id=409ece9b-32ad-4e60-9427-858ec3cc8a4c;emotes=1566876:0-6,8-14,16-22/1566875:24-30,32-38;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove coeLove coeLove coeWave coeWave
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes on
+send_any
+
+
+clock_forward 3h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max
+send hortbot #foobar [HB] usage: !filter emotes max <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max what
+send hortbot #foobar [HB] usage: !filter emotes max <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max -1
+send hortbot #foobar [HB] usage: !filter emotes max <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max 10
+send hortbot #foobar [HB] Emote filter max emotes set to 10.
+
+handle hortbot @id=d2f25a82-0870-4d9c-b7c6-5a31a65cf51c;emotes=1566876:0-6,8-14,16-22/1566875:24-30,32-38;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove coeLove coeLove coeWave coeWave
+no_send
+
+
+clock_forward 3h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single
+send hortbot #foobar [HB] usage: !filter emotes single <on|off>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single what
+send hortbot #foobar [HB] usage: !filter emotes single <on|off>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single off
+send hortbot #foobar [HB] Single emote filter is already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single on
+send hortbot #foobar [HB] Single emote filter is now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single on
+send hortbot #foobar [HB] Single emote filter is already enabled.
+
+
+handle hortbot @id=969e7d72-2ee8-4aca-8ec4-a86ccb554fc6;emotes=1566876:0-6,8-14,16-22/1566875:24-30,32-38;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove coeLove coeLove coeWave coeWave
+no_send
+
+handle hortbot @id=97a7e855-31dd-44b3-b5f0-97b16b154cd7;emotes=1566876:0-6;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove
+send hortbot #foobar /delete 97a7e855-31dd-44b3-b5f0-97b16b154cd7
+send hortbot #foobar [HB] Random, single emote messages are not allowed - warning

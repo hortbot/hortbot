@@ -53,6 +53,9 @@ type Channel struct {
 	FilterCapsMinChars      int               `boil:"filter_caps_min_chars" json:"filter_caps_min_chars" toml:"filter_caps_min_chars" yaml:"filter_caps_min_chars"`
 	FilterCapsPercentage    int               `boil:"filter_caps_percentage" json:"filter_caps_percentage" toml:"filter_caps_percentage" yaml:"filter_caps_percentage"`
 	FilterCapsMinCaps       int               `boil:"filter_caps_min_caps" json:"filter_caps_min_caps" toml:"filter_caps_min_caps" yaml:"filter_caps_min_caps"`
+	FilterEmotes            bool              `boil:"filter_emotes" json:"filter_emotes" toml:"filter_emotes" yaml:"filter_emotes"`
+	FilterEmotesMax         int               `boil:"filter_emotes_max" json:"filter_emotes_max" toml:"filter_emotes_max" yaml:"filter_emotes_max"`
+	FilterEmotesSingle      bool              `boil:"filter_emotes_single" json:"filter_emotes_single" toml:"filter_emotes_single" yaml:"filter_emotes_single"`
 	FilterSymbols           bool              `boil:"filter_symbols" json:"filter_symbols" toml:"filter_symbols" yaml:"filter_symbols"`
 	FilterSymbolsPercentage int               `boil:"filter_symbols_percentage" json:"filter_symbols_percentage" toml:"filter_symbols_percentage" yaml:"filter_symbols_percentage"`
 	FilterSymbolsMinSymbols int               `boil:"filter_symbols_min_symbols" json:"filter_symbols_min_symbols" toml:"filter_symbols_min_symbols" yaml:"filter_symbols_min_symbols"`
@@ -92,6 +95,9 @@ var ChannelColumns = struct {
 	FilterCapsMinChars      string
 	FilterCapsPercentage    string
 	FilterCapsMinCaps       string
+	FilterEmotes            string
+	FilterEmotesMax         string
+	FilterEmotesSingle      string
 	FilterSymbols           string
 	FilterSymbolsPercentage string
 	FilterSymbolsMinSymbols string
@@ -126,6 +132,9 @@ var ChannelColumns = struct {
 	FilterCapsMinChars:      "filter_caps_min_chars",
 	FilterCapsPercentage:    "filter_caps_percentage",
 	FilterCapsMinCaps:       "filter_caps_min_caps",
+	FilterEmotes:            "filter_emotes",
+	FilterEmotesMax:         "filter_emotes_max",
+	FilterEmotesSingle:      "filter_emotes_single",
 	FilterSymbols:           "filter_symbols",
 	FilterSymbolsPercentage: "filter_symbols_percentage",
 	FilterSymbolsMinSymbols: "filter_symbols_min_symbols",
@@ -217,6 +226,9 @@ var ChannelWhere = struct {
 	FilterCapsMinChars      whereHelperint
 	FilterCapsPercentage    whereHelperint
 	FilterCapsMinCaps       whereHelperint
+	FilterEmotes            whereHelperbool
+	FilterEmotesMax         whereHelperint
+	FilterEmotesSingle      whereHelperbool
 	FilterSymbols           whereHelperbool
 	FilterSymbolsPercentage whereHelperint
 	FilterSymbolsMinSymbols whereHelperint
@@ -251,6 +263,9 @@ var ChannelWhere = struct {
 	FilterCapsMinChars:      whereHelperint{field: "\"channels\".\"filter_caps_min_chars\""},
 	FilterCapsPercentage:    whereHelperint{field: "\"channels\".\"filter_caps_percentage\""},
 	FilterCapsMinCaps:       whereHelperint{field: "\"channels\".\"filter_caps_min_caps\""},
+	FilterEmotes:            whereHelperbool{field: "\"channels\".\"filter_emotes\""},
+	FilterEmotesMax:         whereHelperint{field: "\"channels\".\"filter_emotes_max\""},
+	FilterEmotesSingle:      whereHelperbool{field: "\"channels\".\"filter_emotes_single\""},
 	FilterSymbols:           whereHelperbool{field: "\"channels\".\"filter_symbols\""},
 	FilterSymbolsPercentage: whereHelperint{field: "\"channels\".\"filter_symbols_percentage\""},
 	FilterSymbolsMinSymbols: whereHelperint{field: "\"channels\".\"filter_symbols_min_symbols\""},
@@ -291,8 +306,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

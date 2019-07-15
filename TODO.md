@@ -159,7 +159,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Banned phrases
     - [x] Symbols
     - [x] Max length
-    - [ ] Emotes
+    - [x] Emotes
     - [ ] Options
         - [x] `on`/`off`
         - [ ] `status`
@@ -172,7 +172,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `pd`
         - [ ] `banphrase`
         - [x] `caps`
-        - [ ] `emotes`
+        - [x] `emotes`
         - [x] `symbols`
 - [ ] Administration
 - [ ] Variables

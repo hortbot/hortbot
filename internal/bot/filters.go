@@ -15,6 +15,7 @@ var filters = []func(context.Context, *session) (filtered bool, err error){
 	filterMe,
 	filterLength,
 	filterLinks,
+	filterEmotes,
 	filterCaps,
 	filterSymbols,
 }
@@ -205,6 +206,25 @@ func filterLength(ctx context.Context, s *session) (filtered bool, err error) {
 	}
 
 	return true, filterDoPunish(ctx, s, "max_length", "please don't spam long messages")
+}
+
+func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
+	if !s.Channel.FilterEmotes {
+		return false, nil
+	}
+
+	// TODO: BTTV/FFZ emotes.
+	count := strings.Count(s.M.Tags["emotes"], "-")
+
+	if count > s.Channel.FilterEmotesMax {
+		return true, filterDoPunish(ctx, s, "emotes", "please don't spam emotes")
+	}
+
+	if count == 1 && s.Channel.FilterEmotesSingle {
+		return true, filterDoPunish(ctx, s, "emotes", "single emote messages are not allowed")
+	}
+
+	return false, nil
 }
 
 func withoutSpaces(s string) string {

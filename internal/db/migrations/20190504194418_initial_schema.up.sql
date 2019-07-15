@@ -49,6 +49,10 @@ CREATE TABLE channels (
     filter_caps_percentage int NOT NULL,
     filter_caps_min_caps int NOT NULL,
 
+    filter_emotes boolean NOT NULL,
+    filter_emotes_max int NOT NULL,
+    filter_emotes_single boolean NOT NULL,
+
     filter_symbols boolean NOT NULL,
     filter_symbols_percentage int NOT NULL,
     filter_symbols_min_symbols int NOT NULL,
