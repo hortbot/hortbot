@@ -12,6 +12,7 @@ import (
 )
 
 var filterCommands handlerMap = map[string]handlerFunc{
+	"status":        {fn: cmdFilterStatus, minLevel: levelModerator},
 	"on":            {fn: cmdFilterOnOff(true), minLevel: levelModerator},
 	"off":           {fn: cmdFilterOnOff(false), minLevel: levelModerator},
 	"links":         {fn: cmdFilterLinks, minLevel: levelModerator},
@@ -38,6 +39,47 @@ func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	return err
+}
+
+func cmdFilterStatus(ctx context.Context, s *session, cmd string, args string) error {
+	builder := &strings.Builder{}
+
+	builder.WriteString("Global: ")
+	writeBool(builder, s.Channel.EnableFilters)
+
+	builder.WriteString(", enable warnings: ")
+	writeBool(builder, s.Channel.EnableWarnings)
+
+	builder.WriteString(", timeout duration: ")
+	builder.WriteString(strconv.Itoa(s.Channel.TimeoutDuration))
+
+	builder.WriteString(", display warnings: ")
+	writeBool(builder, s.Channel.DisplayWarnings)
+
+	builder.WriteString(", max message length: ")
+	builder.WriteString(strconv.Itoa(s.Channel.FilterMaxLength))
+
+	builder.WriteString(", me: ")
+	writeBool(builder, s.Channel.FilterMe)
+
+	builder.WriteString(", links: ")
+	writeBool(builder, s.Channel.FilterLinks)
+
+	// builder.WriteString(", banned phrases: ")
+
+	builder.WriteString(", caps: ")
+	writeBool(builder, s.Channel.FilterCaps)
+	fmt.Fprintf(builder, " {%d%%, %d, %d}", s.Channel.FilterCapsPercentage, s.Channel.FilterCapsMinChars, s.Channel.FilterCapsMinCaps)
+
+	builder.WriteString(", emotes: ")
+	writeBool(builder, s.Channel.FilterEmotes)
+	fmt.Fprintf(builder, " {%d, %v}", s.Channel.FilterEmotesMax, s.Channel.FilterEmotesSingle)
+
+	builder.WriteString(", symbols: ")
+	writeBool(builder, s.Channel.FilterSymbols)
+	fmt.Fprintf(builder, " {%d%%, %d}", s.Channel.FilterSymbolsPercentage, s.Channel.FilterSymbolsMinSymbols)
+
+	return s.Reply(builder.String())
 }
 
 func cmdFilterOnOff(enable bool) func(ctx context.Context, s *session, cmd string, args string) error {

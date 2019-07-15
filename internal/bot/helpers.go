@@ -86,3 +86,11 @@ func cleanCommandName(s string) string {
 	// ToLower, so this is faster than making Map do everything.
 	return strings.ToLower(m)
 }
+
+func writeBool(b *strings.Builder, v bool) {
+	if v {
+		b.WriteString("true")
+	} else {
+		b.WriteString("false")
+	}
+}

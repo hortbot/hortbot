@@ -162,7 +162,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Emotes
     - [ ] Options
         - [x] `on`/`off`
-        - [ ] `status`
+        - [x] `status`
         - [x] `me`
         - [x] `enablewarnings`
         - [x] `timeoutduration`
