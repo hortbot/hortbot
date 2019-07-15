@@ -86,7 +86,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~Hug~~ (Use a custom command.)
     - [x] Conch/helix (Requires quotes)
     - [ ] Urban
-    - [ ] Me
+    - [x] ~~Me~~ (Use a custom command.)
     - [x] ~~Race~~
     - [x] XKCD
 - [x] Quotes
@@ -158,6 +158,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Capitals
     - [ ] Banned phrases
     - [x] Symbols
+    - [x] Max length
     - [ ] Emotes
     - [ ] Options
         - [x] `on`/`off`
@@ -166,7 +167,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `enablewarnings`
         - [x] `timeoutduration`
         - [x] `displaywarnings`
-        - [ ] `messagelength`
+        - [x] `messagelength`
         - [x] `links`
         - [x] `pd`
         - [ ] `banphrase`

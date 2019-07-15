@@ -13,6 +13,7 @@ import (
 
 var filters = []func(context.Context, *session) (filtered bool, err error){
 	filterMe,
+	filterLength,
 	filterLinks,
 	filterCaps,
 	filterSymbols,
@@ -192,6 +193,18 @@ func filterSymbols(ctx context.Context, s *session) (filtered bool, err error) {
 	}
 
 	return true, filterDoPunish(ctx, s, "symbols", "please don't spam symbols")
+}
+
+func filterLength(ctx context.Context, s *session) (filtered bool, err error) {
+	if s.Channel.FilterMaxLength <= 0 {
+		return false, nil
+	}
+
+	if utf8.RuneCountInString(s.Message) < s.Channel.FilterMaxLength {
+		return false, nil
+	}
+
+	return true, filterDoPunish(ctx, s, "max_length", "please don't spam long messages")
 }
 
 func withoutSpaces(s string) string {

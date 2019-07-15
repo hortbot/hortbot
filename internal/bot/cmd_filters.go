@@ -12,14 +12,15 @@ import (
 )
 
 var filterCommands handlerMap = map[string]handlerFunc{
-	"on":      {fn: cmdFilterOnOff(true), minLevel: levelModerator},
-	"off":     {fn: cmdFilterOnOff(false), minLevel: levelModerator},
-	"links":   {fn: cmdFilterLinks, minLevel: levelModerator},
-	"pd":      {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
-	"pl":      {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
-	"caps":    {fn: cmdFilterCaps, minLevel: levelModerator},
-	"symbols": {fn: cmdFilterSymbols, minLevel: levelModerator},
-	"me":      {fn: cmdFilterMe, minLevel: levelModerator},
+	"on":            {fn: cmdFilterOnOff(true), minLevel: levelModerator},
+	"off":           {fn: cmdFilterOnOff(false), minLevel: levelModerator},
+	"links":         {fn: cmdFilterLinks, minLevel: levelModerator},
+	"pd":            {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
+	"pl":            {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
+	"caps":          {fn: cmdFilterCaps, minLevel: levelModerator},
+	"symbols":       {fn: cmdFilterSymbols, minLevel: levelModerator},
+	"me":            {fn: cmdFilterMe, minLevel: levelModerator},
+	"messagelength": {fn: cmdFilterMessageLength, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -341,4 +342,23 @@ func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error
 		return s.Reply("Me filter is now enabled.")
 	}
 	return s.Reply("Me filter is now disabled.")
+}
+
+func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.Replyf("Max message length set to %d.", s.Channel.FilterMaxLength)
+	}
+
+	n, err := strconv.Atoi(args)
+	if err != nil || n < 0 {
+		return s.ReplyUsage("<length>")
+	}
+
+	s.Channel.FilterMaxLength = n
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterMaxLength)); err != nil {
+		return err
+	}
+
+	return s.Replyf("Max message length set to %d.", n)
 }

@@ -54,6 +54,7 @@ CREATE TABLE channels (
     filter_symbols_min_symbols int NOT NULL,
 
     filter_me boolean NOT NULL,
+    filter_max_length int NOT NULL,
 
     CHECK (filter_caps_percentage BETWEEN 0 and 100),
     CHECK (filter_symbols_percentage BETWEEN 0 and 100),
