@@ -11,12 +11,16 @@ import (
 )
 
 var settingCommands handlerMap = map[string]handlerFunc{
-	"prefix":         {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
-	"bullet":         {fn: cmdSettingBullet, minLevel: levelBroadcaster},
-	"cooldown":       {fn: cmdSettingCooldown, minLevel: levelModerator},
-	"shouldmoderate": {fn: cmdSettingShouldModerate, minLevel: levelModerator},
-	"lastfm":         {fn: cmdSettingLastFM, minLevel: levelModerator},
-	"parseyoutube":   {fn: cmdSettingParseYoutube, minLevel: levelModerator},
+	"prefix":          {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
+	"bullet":          {fn: cmdSettingBullet, minLevel: levelBroadcaster},
+	"cooldown":        {fn: cmdSettingCooldown, minLevel: levelModerator},
+	"shouldmoderate":  {fn: cmdSettingShouldModerate, minLevel: levelModerator},
+	"lastfm":          {fn: cmdSettingLastFM, minLevel: levelModerator},
+	"parseyoutube":    {fn: cmdSettingParseYoutube, minLevel: levelModerator},
+	"enablewarnings":  {fn: cmdSettingEnableWarnings, minLevel: levelModerator},
+	"displaywarnings": {fn: cmdSettingDisplayWarnings, minLevel: levelModerator},
+	"timeoutduration": {fn: cmdSettingsTimeoutDuration, minLevel: levelModerator},
+	"filter":          {fn: cmdFilter, minLevel: levelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -135,37 +139,17 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 }
 
 func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args string) error {
-	args = strings.ToLower(args)
-
-	switch args {
-	case "":
-		return s.Replyf("shouldModerate is set to %v.", s.Channel.ShouldModerate)
-
-	case "on", "enabled", "true", "1", "yes":
-		if s.Channel.ShouldModerate {
-			return s.Replyf("%s is already moderating.", s.Channel.BotName)
-		}
-		s.Channel.ShouldModerate = true
-
-	case "off", "disabled", "false", "0", "no":
-		if !s.Channel.ShouldModerate {
-			return s.Replyf("%s is already not moderating.", s.Channel.BotName)
-		}
-		s.Channel.ShouldModerate = false
-
-	default:
-		return s.ReplyUsage("<on|off>")
-	}
-
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ShouldModerate)); err != nil {
-		return err
-	}
-
-	if s.Channel.ShouldModerate {
-		return s.Replyf("%s will attempt to moderate in this channel.", s.Channel.BotName)
-	}
-
-	return s.Replyf("%s will no longer attempt to moderate in this channel.", s.Channel.BotName)
+	return updateBoolean(
+		ctx, s, cmd, args,
+		func() bool { return s.Channel.ShouldModerate },
+		func(v bool) { s.Channel.ShouldModerate = v },
+		models.ChannelColumns.ShouldModerate,
+		"shouldModerate",
+		s.Channel.BotName+" is already moderating.",
+		s.Channel.BotName+" is already not moderating.",
+		s.Channel.BotName+" will attempt to moderate in this channel.",
+		s.Channel.BotName+" will no longer attempt to moderate in this channel.",
+	)
 }
 
 func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) error {
@@ -200,37 +184,115 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 }
 
 func cmdSettingParseYoutube(ctx context.Context, s *session, cmd string, args string) error {
+	return updateBoolean(
+		ctx, s, cmd, args,
+		func() bool { return s.Channel.ParseYoutube },
+		func(v bool) { s.Channel.ParseYoutube = v },
+		models.ChannelColumns.ParseYoutube,
+		"parseYoutube",
+		"YouTube link parsing is already enabled.",
+		"YouTube link parsing is already disabled.",
+		"YouTube link parsing is now enabled.",
+		"YouTube link parsing is now disabled.",
+	)
+}
+
+func cmdSettingEnableWarnings(ctx context.Context, s *session, cmd string, args string) error {
+	return updateBoolean(
+		ctx, s, cmd, args,
+		func() bool { return s.Channel.EnableWarnings },
+		func(v bool) { s.Channel.EnableWarnings = v },
+		models.ChannelColumns.EnableWarnings,
+		"enableWarnings",
+		"Warnings are already enabled.",
+		"Warnings are already disabled.",
+		"Warnings are now enabled.",
+		"Warnings are now disabled.",
+	)
+}
+
+func cmdSettingDisplayWarnings(ctx context.Context, s *session, cmd string, args string) error {
+	return updateBoolean(
+		ctx, s, cmd, args,
+		func() bool { return s.Channel.DisplayWarnings },
+		func(v bool) { s.Channel.DisplayWarnings = v },
+		models.ChannelColumns.DisplayWarnings,
+		"displayWarnings",
+		"Warning/timeout messages are already enabled.",
+		"Warning/timeout messages are already disabled.",
+		"Warning/timeout messages are now enabled.",
+		"Warning/timeout messages are now disabled.",
+	)
+}
+
+func cmdSettingsTimeoutDuration(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		if s.Channel.TimeoutDuration == 0 {
+			return s.Reply("Timeout duration is set to Twitch default.")
+		}
+		return s.Replyf("Timeout duration is set to %d seconds.", s.Channel.TimeoutDuration)
+	}
+
+	dur, err := strconv.Atoi(args)
+	if err != nil {
+		return s.ReplyUsage("<seconds>")
+	}
+
+	if dur < 0 {
+		return s.Reply("Timeout duration must not be negative.")
+	}
+
+	s.Channel.TimeoutDuration = dur
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.TimeoutDuration)); err != nil {
+		return err
+	}
+
+	if dur == 0 {
+		return s.Reply("Timeout duration changed to Twitch default.")
+	}
+
+	return s.Replyf("Timeout duration changed to %d seconds.", dur)
+}
+
+func updateBoolean(
+	ctx context.Context, s *session, cmd string, args string,
+	get func() bool, set func(v bool), column string,
+	name, alreadyTrue, alreadyFalse, setTrue, setFalse string,
+) error {
 	args = strings.ToLower(args)
+
+	v := false
 
 	switch args {
 	case "":
-		return s.Replyf("parseYoutube is set to %v.", s.Channel.ParseYoutube)
+		return s.Replyf("%s is set to %v.", name, get())
 
 	case "on", "enabled", "true", "1", "yes":
-		if s.Channel.ParseYoutube {
-			return s.Reply("YouTube link parsing is already enabled.")
+		if get() {
+			return s.Reply(alreadyTrue)
 		}
 
-		s.Channel.ParseYoutube = true
+		v = true
 
 	case "off", "disabled", "false", "0", "no":
-		if !s.Channel.ParseYoutube {
-			return s.Reply("YouTube link parsing is already disabled.")
+		if !get() {
+			return s.Reply(alreadyFalse)
 		}
-
-		s.Channel.ParseYoutube = false
 
 	default:
 		return s.ReplyUsage("<on|off>")
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ParseYoutube)); err != nil {
+	set(v)
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
 		return err
 	}
 
-	if s.Channel.ParseYoutube {
-		return s.Reply("YouTube link parsing is now enabled.")
+	if v {
+		return s.Reply(setTrue)
 	}
 
-	return s.Reply("YouTube link parsing is now disabled.")
+	return s.Reply(setFalse)
 }

@@ -1,4 +1,8 @@
+bot_config {"Clock": "mock"}
 join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter symbols
 no_send
@@ -39,7 +43,7 @@ send hortbot #foobar [HB] Symbols filter is now enabled.
 
 handle hortbot @id=b98406ef-bfef-4407-bbc7-5ddbc176730c;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@@@@@@@@@@@@@@@@@@@@
 send hortbot #foobar /delete b98406ef-bfef-4407-bbc7-5ddbc176730c
-send hortbot #foobar [HB] Random, please don't spam symbols.
+send hortbot #foobar [HB] Random, please don't spam symbols - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@@@ lol this is all okay
@@ -61,9 +65,10 @@ send hortbot #foobar [HB] usage: !filter symbols percent <0-100>
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent 25
 send hortbot #foobar [HB] Symbols filter percent set to 25%.
 
+clock_forward 3h
 handle hortbot @id=83270ad6-b295-4702-9746-5af2c4dfc278;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@ uh huh ok cool
 send hortbot #foobar /delete 83270ad6-b295-4702-9746-5af2c4dfc278
-send hortbot #foobar [HB] Random, please don't spam symbols.
+send hortbot #foobar [HB] Random, please don't spam symbols - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent 100
@@ -72,9 +77,10 @@ send hortbot #foobar [HB] Symbols filter percent set to 100%.
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@@@@@@@@@@@o
 no_send
 
+clock_forward 3h
 handle hortbot @id=38b06336-e53f-42d2-870c-7520879e358f;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@@@@@@@@@
 send hortbot #foobar /delete 38b06336-e53f-42d2-870c-7520879e358f
-send hortbot #foobar [HB] Random, please don't spam symbols.
+send hortbot #foobar [HB] Random, please don't spam symbols - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent 50
@@ -96,24 +102,27 @@ send hortbot #foobar [HB] Symbols filter min symbols set to 11.
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@@@@@
 no_send
 
+clock_forward 3h
 handle hortbot @id=a8d73590-2581-4cb3-97ed-2e5a69d89eb8;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :@@@@@@@@@@ @@
 send hortbot #foobar /delete a8d73590-2581-4cb3-97ed-2e5a69d89eb8
-send hortbot #foobar [HB] Random, please don't spam symbols.
+send hortbot #foobar [HB] Random, please don't spam symbols - warning
 
 
 # Ignores and other
 
+clock_forward 3h
 handle hortbot @id=621e7d9a-337e-471a-b6fa-176d98d5a5eb;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :░░░░░░░░░▓▓▓▓▀█░░░░░░░░░░░░░
 send hortbot #foobar /delete 621e7d9a-337e-471a-b6fa-176d98d5a5eb
-send hortbot #foobar [HB] Random, please don't spam symbols.
+send hortbot #foobar [HB] Random, please don't spam symbols - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
 send hortbot #foobar [HB] random added to ignored users.
 
+clock_forward 3h
 handle hortbot @id=5b0a0f7d-625b-455c-8aee-0fd91c9ee67e;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :?!?!?!?!?!?!?!?!?!?!?!?!?!
 send hortbot #foobar /delete 5b0a0f7d-625b-455c-8aee-0fd91c9ee67e
-send hortbot #foobar [HB] Random, please don't spam symbols.
+send hortbot #foobar [HB] Random, please don't spam symbols - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off

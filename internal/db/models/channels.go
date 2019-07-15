@@ -43,6 +43,9 @@ type Channel struct {
 	LastFM                  string            `boil:"last_fm" json:"last_fm" toml:"last_fm" yaml:"last_fm"`
 	ParseYoutube            bool              `boil:"parse_youtube" json:"parse_youtube" toml:"parse_youtube" yaml:"parse_youtube"`
 	ShouldModerate          bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
+	DisplayWarnings         bool              `boil:"display_warnings" json:"display_warnings" toml:"display_warnings" yaml:"display_warnings"`
+	EnableWarnings          bool              `boil:"enable_warnings" json:"enable_warnings" toml:"enable_warnings" yaml:"enable_warnings"`
+	TimeoutDuration         int               `boil:"timeout_duration" json:"timeout_duration" toml:"timeout_duration" yaml:"timeout_duration"`
 	EnableFilters           bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
 	FilterLinks             bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
 	PermittedLinks          types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
@@ -78,6 +81,9 @@ var ChannelColumns = struct {
 	LastFM                  string
 	ParseYoutube            string
 	ShouldModerate          string
+	DisplayWarnings         string
+	EnableWarnings          string
+	TimeoutDuration         string
 	EnableFilters           string
 	FilterLinks             string
 	PermittedLinks          string
@@ -108,6 +114,9 @@ var ChannelColumns = struct {
 	LastFM:                  "last_fm",
 	ParseYoutube:            "parse_youtube",
 	ShouldModerate:          "should_moderate",
+	DisplayWarnings:         "display_warnings",
+	EnableWarnings:          "enable_warnings",
+	TimeoutDuration:         "timeout_duration",
 	EnableFilters:           "enable_filters",
 	FilterLinks:             "filter_links",
 	PermittedLinks:          "permitted_links",
@@ -195,6 +204,9 @@ var ChannelWhere = struct {
 	LastFM                  whereHelperstring
 	ParseYoutube            whereHelperbool
 	ShouldModerate          whereHelperbool
+	DisplayWarnings         whereHelperbool
+	EnableWarnings          whereHelperbool
+	TimeoutDuration         whereHelperint
 	EnableFilters           whereHelperbool
 	FilterLinks             whereHelperbool
 	PermittedLinks          whereHelpertypes_StringArray
@@ -225,6 +237,9 @@ var ChannelWhere = struct {
 	LastFM:                  whereHelperstring{field: "\"channels\".\"last_fm\""},
 	ParseYoutube:            whereHelperbool{field: "\"channels\".\"parse_youtube\""},
 	ShouldModerate:          whereHelperbool{field: "\"channels\".\"should_moderate\""},
+	DisplayWarnings:         whereHelperbool{field: "\"channels\".\"display_warnings\""},
+	EnableWarnings:          whereHelperbool{field: "\"channels\".\"enable_warnings\""},
+	TimeoutDuration:         whereHelperint{field: "\"channels\".\"timeout_duration\""},
 	EnableFilters:           whereHelperbool{field: "\"channels\".\"enable_filters\""},
 	FilterLinks:             whereHelperbool{field: "\"channels\".\"filter_links\""},
 	PermittedLinks:          whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
@@ -271,9 +286,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "should_moderate", "permitted_links"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

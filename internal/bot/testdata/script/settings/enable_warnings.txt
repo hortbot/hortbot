@@ -1,0 +1,16 @@
+join hortbot 99 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set enableWarnings
+send hortbot #foobar [HB] enableWarnings is set to true.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set enableWarnings on
+send hortbot #foobar [HB] Warnings are already enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set enableWarnings off
+send hortbot #foobar [HB] Warnings are now disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set enableWarnings off
+send hortbot #foobar [HB] Warnings are already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set enableWarnings
+send hortbot #foobar [HB] enableWarnings is set to false.

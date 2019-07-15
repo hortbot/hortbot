@@ -1,6 +1,8 @@
 bot_config {"Clock": "mock"}
-
 join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
@@ -25,7 +27,9 @@ no_send
 
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete e47c3f9a-c573-4044-afd1-c7750936b9d2
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
+
+clock_forward 3h
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
@@ -35,7 +39,7 @@ clock_forward 10m
 
 handle hortbot @id=a3ef435b-13b8-4701-9e6e-4fe75241a2dc;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete a3ef435b-13b8-4701-9e6e-4fe75241a2dc
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
@@ -48,7 +52,7 @@ send hortbot #foobar [HB] Link permitted. (Random)
 
 handle hortbot @id=cdac822c-e6f5-4eda-ac42-e239cb71ab83;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete cdac822c-e6f5-4eda-ac42-e239cb71ab83
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
 send hortbot #foobar [HB] random may now post one link within 5 minutes.

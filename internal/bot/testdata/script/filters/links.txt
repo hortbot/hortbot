@@ -1,4 +1,8 @@
+bot_config {"Clock": "mock"}
 join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter links
 no_send
@@ -34,17 +38,19 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Link filter is now enabled.
 
 
+clock_forward 3h
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete e47c3f9a-c573-4044-afd1-c7750936b9d2
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
 send hortbot #foobar [HB] random added to ignored users.
 
+clock_forward 3h
 handle hortbot @id=f59f9545-f301-499c-8053-d8386473033a;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete f59f9545-f301-499c-8053-d8386473033a
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off

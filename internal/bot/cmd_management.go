@@ -73,6 +73,8 @@ func handleJoin(ctx context.Context, s *session, name, id string) error {
 			Active:                  true,
 			Prefix:                  s.Deps.DefaultPrefix,
 			ShouldModerate:          true,
+			EnableWarnings:          true,
+			TimeoutDuration:         600,
 			FilterCapsPercentage:    50,
 			FilterCapsMinCaps:       6,
 			FilterSymbolsPercentage: 50,

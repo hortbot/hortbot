@@ -35,7 +35,10 @@ CREATE TABLE channels (
     last_fm text NOT NULL,
     parse_youtube boolean NOT NULL,
 
-    should_moderate boolean DEFAULT true NOT NULL,
+    should_moderate boolean NOT NULL,
+    display_warnings boolean NOT NULL,
+    enable_warnings boolean NOT NULL,
+    timeout_duration int NOT NULL,
     enable_filters boolean NOT NULL,
 
     filter_links boolean NOT NULL,
@@ -53,7 +56,8 @@ CREATE TABLE channels (
     filter_me boolean NOT NULL,
 
     CHECK (filter_caps_percentage BETWEEN 0 and 100),
-    CHECK (filter_symbols_percentage BETWEEN 0 and 100)
+    CHECK (filter_symbols_percentage BETWEEN 0 and 100),
+    CHECK (timeout_duration >= 0)
 );
 
 CREATE INDEX channels_user_id_idx on channels (user_id);

@@ -151,7 +151,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Add/remove reg/mod/owner
     - [x] List
 - [ ] Filters
-    - [ ] Warnings, then timeouts.
+    - [x] Warnings, then timeouts.
     - [x] Me
     - [x] Links
         - [x] Permitted domains (and more)
@@ -163,9 +163,9 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `on`/`off`
         - [ ] `status`
         - [x] `me`
-        - [ ] `enablewarnings`
-        - [ ] `timeoutduration`
-        - [ ] `displaywarnings`
+        - [x] `enablewarnings`
+        - [x] `timeoutduration`
+        - [x] `displaywarnings`
         - [ ] `messagelength`
         - [x] `links`
         - [x] `pd`

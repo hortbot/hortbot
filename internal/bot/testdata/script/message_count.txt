@@ -47,7 +47,6 @@ send hortbot #foobar [HB] 11
 
 handle hortbot @id=a8649dd0-95e0-11e9-b475-0800200c9a66;room-id=1;user-id=3 :other!other@other.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete a8649dd0-95e0-11e9-b475-0800200c9a66
-send hortbot #foobar [HB] other, please ask a moderator before posting links.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
 send hortbot #foobar [HB] 12

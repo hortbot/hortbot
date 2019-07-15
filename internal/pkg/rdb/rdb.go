@@ -27,6 +27,7 @@ if exists == 1 then
 	redis.pcall('EXPIRE', KEYS[1], ARGV[1])
 	return true
 end
+redis.pcall('SETEX', KEYS[1], '1', ARGV[1])
 return false
 `)
 

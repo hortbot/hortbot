@@ -1,4 +1,8 @@
+bot_config {"Clock": "mock"}
 join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
@@ -18,9 +22,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 
+clock_forward 3h
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete e47c3f9a-c573-4044-afd1-c7750936b9d2
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :my favorite overwatch character is d.va
 no_send
@@ -37,6 +42,7 @@ no_send
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :both https://clips.twitch.tv/ModernDaintyZebraMikeHogu d.va
 no_send
 
+clock_forward 3h
 handle hortbot @id=a55ea676-5ed9-414d-ae49-13cdd52b9f47;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :mixed https://clips.twitch.tv/ModernDaintyZebraMikeHogu example.com https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
 send hortbot #foobar /delete a55ea676-5ed9-414d-ae49-13cdd52b9f47
-send hortbot #foobar [HB] Random, please ask a moderator before posting links.
+send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning

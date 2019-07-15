@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"net/url"
+	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -41,11 +42,7 @@ func filterMe(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if err := s.DeleteMessage(); err != nil {
-		return true, err
-	}
-
-	return true, s.Replyf("%s, /me is not allowed in this channel.", s.UserDisplay)
+	return true, filterDoPunish(ctx, s, "me", "/me is not allowed in this channel")
 }
 
 func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
@@ -72,11 +69,7 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, s.Replyf("Link permitted. (%s)", s.UserDisplay)
 	}
 
-	if err := s.DeleteMessage(); err != nil {
-		return true, err
-	}
-
-	return true, s.Replyf("%s, please ask a moderator before posting links.", s.UserDisplay)
+	return true, filterDoPunish(ctx, s, "links", "please ask a moderator before posting links")
 }
 
 func allLinksPermitted(permitted []string, urls []*url.URL) bool {
@@ -157,11 +150,7 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if err := s.DeleteMessage(); err != nil {
-		return true, err
-	}
-
-	return true, s.Replyf("%s, please don't shout or talk in all caps.", s.UserDisplay)
+	return true, filterDoPunish(ctx, s, "caps", "please don't shout or talk in all caps")
 }
 
 var symbolFuncs = []func(rune) bool{
@@ -202,11 +191,7 @@ func filterSymbols(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if err := s.DeleteMessage(); err != nil {
-		return true, err
-	}
-
-	return true, s.Replyf("%s, please don't spam symbols.", s.UserDisplay)
+	return true, filterDoPunish(ctx, s, "symbols", "please don't spam symbols")
 }
 
 func withoutSpaces(s string) string {
@@ -216,4 +201,43 @@ func withoutSpaces(s string) string {
 		}
 		return r
 	}, s)
+}
+
+func filterDoPunish(ctx context.Context, s *session, filter, message string) error {
+	if s.Channel.EnableWarnings {
+		warned, err := s.FilterWarned(s.User, filter)
+		if err != nil {
+			return err
+		}
+
+		if !warned {
+			if err := s.DeleteMessage(); err != nil {
+				return err
+			}
+
+			if s.Channel.DisplayWarnings {
+				return s.Replyf("%s, %s - warning", s.UserDisplay, message)
+			}
+
+			return nil
+		}
+	}
+
+	var err error
+
+	if s.Channel.TimeoutDuration == 0 {
+		err = s.SendCommand("timeout", s.User)
+	} else {
+		err = s.SendCommand("timeout", s.User, strconv.Itoa(s.Channel.TimeoutDuration))
+	}
+
+	if err != nil {
+		return err
+	}
+
+	if s.Channel.DisplayWarnings {
+		return s.Replyf("%s, %s - timeout", s.UserDisplay, message)
+	}
+
+	return nil
 }

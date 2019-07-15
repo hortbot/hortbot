@@ -1,0 +1,25 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration
+send hortbot #foobar [HB] Timeout duration is set to 600 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration -1
+send hortbot #foobar [HB] Timeout duration must not be negative.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration what
+send hortbot #foobar [HB] usage: !set timeoutduration <seconds>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration
+send hortbot #foobar [HB] Timeout duration is set to 600 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration 0
+send hortbot #foobar [HB] Timeout duration changed to Twitch default.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration
+send hortbot #foobar [HB] Timeout duration is set to Twitch default.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration 60
+send hortbot #foobar [HB] Timeout duration changed to 60 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration
+send hortbot #foobar [HB] Timeout duration is set to 60 seconds.
