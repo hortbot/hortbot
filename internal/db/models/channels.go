@@ -25,121 +25,127 @@ import (
 
 // Channel is an object representing the database table.
 type Channel struct {
-	ID                      int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt               time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt               time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	UserID                  int64             `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
-	Name                    string            `boil:"name" json:"name" toml:"name" yaml:"name"`
-	BotName                 string            `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
-	Active                  bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
-	Prefix                  string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
-	Bullet                  null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
-	Ignored                 types.StringArray `boil:"ignored" json:"ignored" toml:"ignored" yaml:"ignored"`
-	CustomOwners            types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
-	CustomMods              types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
-	CustomRegulars          types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
-	Cooldown                null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
-	LastCommandAt           time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
-	LastFM                  string            `boil:"last_fm" json:"last_fm" toml:"last_fm" yaml:"last_fm"`
-	ParseYoutube            bool              `boil:"parse_youtube" json:"parse_youtube" toml:"parse_youtube" yaml:"parse_youtube"`
-	ShouldModerate          bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
-	DisplayWarnings         bool              `boil:"display_warnings" json:"display_warnings" toml:"display_warnings" yaml:"display_warnings"`
-	EnableWarnings          bool              `boil:"enable_warnings" json:"enable_warnings" toml:"enable_warnings" yaml:"enable_warnings"`
-	TimeoutDuration         int               `boil:"timeout_duration" json:"timeout_duration" toml:"timeout_duration" yaml:"timeout_duration"`
-	EnableFilters           bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
-	FilterLinks             bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
-	PermittedLinks          types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
-	FilterCaps              bool              `boil:"filter_caps" json:"filter_caps" toml:"filter_caps" yaml:"filter_caps"`
-	FilterCapsMinChars      int               `boil:"filter_caps_min_chars" json:"filter_caps_min_chars" toml:"filter_caps_min_chars" yaml:"filter_caps_min_chars"`
-	FilterCapsPercentage    int               `boil:"filter_caps_percentage" json:"filter_caps_percentage" toml:"filter_caps_percentage" yaml:"filter_caps_percentage"`
-	FilterCapsMinCaps       int               `boil:"filter_caps_min_caps" json:"filter_caps_min_caps" toml:"filter_caps_min_caps" yaml:"filter_caps_min_caps"`
-	FilterEmotes            bool              `boil:"filter_emotes" json:"filter_emotes" toml:"filter_emotes" yaml:"filter_emotes"`
-	FilterEmotesMax         int               `boil:"filter_emotes_max" json:"filter_emotes_max" toml:"filter_emotes_max" yaml:"filter_emotes_max"`
-	FilterEmotesSingle      bool              `boil:"filter_emotes_single" json:"filter_emotes_single" toml:"filter_emotes_single" yaml:"filter_emotes_single"`
-	FilterSymbols           bool              `boil:"filter_symbols" json:"filter_symbols" toml:"filter_symbols" yaml:"filter_symbols"`
-	FilterSymbolsPercentage int               `boil:"filter_symbols_percentage" json:"filter_symbols_percentage" toml:"filter_symbols_percentage" yaml:"filter_symbols_percentage"`
-	FilterSymbolsMinSymbols int               `boil:"filter_symbols_min_symbols" json:"filter_symbols_min_symbols" toml:"filter_symbols_min_symbols" yaml:"filter_symbols_min_symbols"`
-	FilterMe                bool              `boil:"filter_me" json:"filter_me" toml:"filter_me" yaml:"filter_me"`
-	FilterMaxLength         int               `boil:"filter_max_length" json:"filter_max_length" toml:"filter_max_length" yaml:"filter_max_length"`
+	ID                          int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt                   time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt                   time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	UserID                      int64             `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	Name                        string            `boil:"name" json:"name" toml:"name" yaml:"name"`
+	BotName                     string            `boil:"bot_name" json:"bot_name" toml:"bot_name" yaml:"bot_name"`
+	Active                      bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
+	Prefix                      string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
+	Bullet                      null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
+	Ignored                     types.StringArray `boil:"ignored" json:"ignored" toml:"ignored" yaml:"ignored"`
+	CustomOwners                types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
+	CustomMods                  types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
+	CustomRegulars              types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
+	Cooldown                    null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
+	LastCommandAt               time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
+	LastFM                      string            `boil:"last_fm" json:"last_fm" toml:"last_fm" yaml:"last_fm"`
+	ParseYoutube                bool              `boil:"parse_youtube" json:"parse_youtube" toml:"parse_youtube" yaml:"parse_youtube"`
+	ShouldModerate              bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
+	DisplayWarnings             bool              `boil:"display_warnings" json:"display_warnings" toml:"display_warnings" yaml:"display_warnings"`
+	EnableWarnings              bool              `boil:"enable_warnings" json:"enable_warnings" toml:"enable_warnings" yaml:"enable_warnings"`
+	TimeoutDuration             int               `boil:"timeout_duration" json:"timeout_duration" toml:"timeout_duration" yaml:"timeout_duration"`
+	EnableFilters               bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
+	FilterLinks                 bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
+	PermittedLinks              types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
+	FilterCaps                  bool              `boil:"filter_caps" json:"filter_caps" toml:"filter_caps" yaml:"filter_caps"`
+	FilterCapsMinChars          int               `boil:"filter_caps_min_chars" json:"filter_caps_min_chars" toml:"filter_caps_min_chars" yaml:"filter_caps_min_chars"`
+	FilterCapsPercentage        int               `boil:"filter_caps_percentage" json:"filter_caps_percentage" toml:"filter_caps_percentage" yaml:"filter_caps_percentage"`
+	FilterCapsMinCaps           int               `boil:"filter_caps_min_caps" json:"filter_caps_min_caps" toml:"filter_caps_min_caps" yaml:"filter_caps_min_caps"`
+	FilterEmotes                bool              `boil:"filter_emotes" json:"filter_emotes" toml:"filter_emotes" yaml:"filter_emotes"`
+	FilterEmotesMax             int               `boil:"filter_emotes_max" json:"filter_emotes_max" toml:"filter_emotes_max" yaml:"filter_emotes_max"`
+	FilterEmotesSingle          bool              `boil:"filter_emotes_single" json:"filter_emotes_single" toml:"filter_emotes_single" yaml:"filter_emotes_single"`
+	FilterSymbols               bool              `boil:"filter_symbols" json:"filter_symbols" toml:"filter_symbols" yaml:"filter_symbols"`
+	FilterSymbolsPercentage     int               `boil:"filter_symbols_percentage" json:"filter_symbols_percentage" toml:"filter_symbols_percentage" yaml:"filter_symbols_percentage"`
+	FilterSymbolsMinSymbols     int               `boil:"filter_symbols_min_symbols" json:"filter_symbols_min_symbols" toml:"filter_symbols_min_symbols" yaml:"filter_symbols_min_symbols"`
+	FilterMe                    bool              `boil:"filter_me" json:"filter_me" toml:"filter_me" yaml:"filter_me"`
+	FilterMaxLength             int               `boil:"filter_max_length" json:"filter_max_length" toml:"filter_max_length" yaml:"filter_max_length"`
+	FilterBannedPhrases         bool              `boil:"filter_banned_phrases" json:"filter_banned_phrases" toml:"filter_banned_phrases" yaml:"filter_banned_phrases"`
+	FilterBannedPhrasesPatterns types.StringArray `boil:"filter_banned_phrases_patterns" json:"filter_banned_phrases_patterns" toml:"filter_banned_phrases_patterns" yaml:"filter_banned_phrases_patterns"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var ChannelColumns = struct {
-	ID                      string
-	CreatedAt               string
-	UpdatedAt               string
-	UserID                  string
-	Name                    string
-	BotName                 string
-	Active                  string
-	Prefix                  string
-	Bullet                  string
-	Ignored                 string
-	CustomOwners            string
-	CustomMods              string
-	CustomRegulars          string
-	Cooldown                string
-	LastCommandAt           string
-	LastFM                  string
-	ParseYoutube            string
-	ShouldModerate          string
-	DisplayWarnings         string
-	EnableWarnings          string
-	TimeoutDuration         string
-	EnableFilters           string
-	FilterLinks             string
-	PermittedLinks          string
-	FilterCaps              string
-	FilterCapsMinChars      string
-	FilterCapsPercentage    string
-	FilterCapsMinCaps       string
-	FilterEmotes            string
-	FilterEmotesMax         string
-	FilterEmotesSingle      string
-	FilterSymbols           string
-	FilterSymbolsPercentage string
-	FilterSymbolsMinSymbols string
-	FilterMe                string
-	FilterMaxLength         string
+	ID                          string
+	CreatedAt                   string
+	UpdatedAt                   string
+	UserID                      string
+	Name                        string
+	BotName                     string
+	Active                      string
+	Prefix                      string
+	Bullet                      string
+	Ignored                     string
+	CustomOwners                string
+	CustomMods                  string
+	CustomRegulars              string
+	Cooldown                    string
+	LastCommandAt               string
+	LastFM                      string
+	ParseYoutube                string
+	ShouldModerate              string
+	DisplayWarnings             string
+	EnableWarnings              string
+	TimeoutDuration             string
+	EnableFilters               string
+	FilterLinks                 string
+	PermittedLinks              string
+	FilterCaps                  string
+	FilterCapsMinChars          string
+	FilterCapsPercentage        string
+	FilterCapsMinCaps           string
+	FilterEmotes                string
+	FilterEmotesMax             string
+	FilterEmotesSingle          string
+	FilterSymbols               string
+	FilterSymbolsPercentage     string
+	FilterSymbolsMinSymbols     string
+	FilterMe                    string
+	FilterMaxLength             string
+	FilterBannedPhrases         string
+	FilterBannedPhrasesPatterns string
 }{
-	ID:                      "id",
-	CreatedAt:               "created_at",
-	UpdatedAt:               "updated_at",
-	UserID:                  "user_id",
-	Name:                    "name",
-	BotName:                 "bot_name",
-	Active:                  "active",
-	Prefix:                  "prefix",
-	Bullet:                  "bullet",
-	Ignored:                 "ignored",
-	CustomOwners:            "custom_owners",
-	CustomMods:              "custom_mods",
-	CustomRegulars:          "custom_regulars",
-	Cooldown:                "cooldown",
-	LastCommandAt:           "last_command_at",
-	LastFM:                  "last_fm",
-	ParseYoutube:            "parse_youtube",
-	ShouldModerate:          "should_moderate",
-	DisplayWarnings:         "display_warnings",
-	EnableWarnings:          "enable_warnings",
-	TimeoutDuration:         "timeout_duration",
-	EnableFilters:           "enable_filters",
-	FilterLinks:             "filter_links",
-	PermittedLinks:          "permitted_links",
-	FilterCaps:              "filter_caps",
-	FilterCapsMinChars:      "filter_caps_min_chars",
-	FilterCapsPercentage:    "filter_caps_percentage",
-	FilterCapsMinCaps:       "filter_caps_min_caps",
-	FilterEmotes:            "filter_emotes",
-	FilterEmotesMax:         "filter_emotes_max",
-	FilterEmotesSingle:      "filter_emotes_single",
-	FilterSymbols:           "filter_symbols",
-	FilterSymbolsPercentage: "filter_symbols_percentage",
-	FilterSymbolsMinSymbols: "filter_symbols_min_symbols",
-	FilterMe:                "filter_me",
-	FilterMaxLength:         "filter_max_length",
+	ID:                          "id",
+	CreatedAt:                   "created_at",
+	UpdatedAt:                   "updated_at",
+	UserID:                      "user_id",
+	Name:                        "name",
+	BotName:                     "bot_name",
+	Active:                      "active",
+	Prefix:                      "prefix",
+	Bullet:                      "bullet",
+	Ignored:                     "ignored",
+	CustomOwners:                "custom_owners",
+	CustomMods:                  "custom_mods",
+	CustomRegulars:              "custom_regulars",
+	Cooldown:                    "cooldown",
+	LastCommandAt:               "last_command_at",
+	LastFM:                      "last_fm",
+	ParseYoutube:                "parse_youtube",
+	ShouldModerate:              "should_moderate",
+	DisplayWarnings:             "display_warnings",
+	EnableWarnings:              "enable_warnings",
+	TimeoutDuration:             "timeout_duration",
+	EnableFilters:               "enable_filters",
+	FilterLinks:                 "filter_links",
+	PermittedLinks:              "permitted_links",
+	FilterCaps:                  "filter_caps",
+	FilterCapsMinChars:          "filter_caps_min_chars",
+	FilterCapsPercentage:        "filter_caps_percentage",
+	FilterCapsMinCaps:           "filter_caps_min_caps",
+	FilterEmotes:                "filter_emotes",
+	FilterEmotesMax:             "filter_emotes_max",
+	FilterEmotesSingle:          "filter_emotes_single",
+	FilterSymbols:               "filter_symbols",
+	FilterSymbolsPercentage:     "filter_symbols_percentage",
+	FilterSymbolsMinSymbols:     "filter_symbols_min_symbols",
+	FilterMe:                    "filter_me",
+	FilterMaxLength:             "filter_max_length",
+	FilterBannedPhrases:         "filter_banned_phrases",
+	FilterBannedPhrasesPatterns: "filter_banned_phrases_patterns",
 }
 
 // Generated where
@@ -198,79 +204,83 @@ func (w whereHelpernull_Int) GTE(x null.Int) qm.QueryMod {
 }
 
 var ChannelWhere = struct {
-	ID                      whereHelperint64
-	CreatedAt               whereHelpertime_Time
-	UpdatedAt               whereHelpertime_Time
-	UserID                  whereHelperint64
-	Name                    whereHelperstring
-	BotName                 whereHelperstring
-	Active                  whereHelperbool
-	Prefix                  whereHelperstring
-	Bullet                  whereHelpernull_String
-	Ignored                 whereHelpertypes_StringArray
-	CustomOwners            whereHelpertypes_StringArray
-	CustomMods              whereHelpertypes_StringArray
-	CustomRegulars          whereHelpertypes_StringArray
-	Cooldown                whereHelpernull_Int
-	LastCommandAt           whereHelpertime_Time
-	LastFM                  whereHelperstring
-	ParseYoutube            whereHelperbool
-	ShouldModerate          whereHelperbool
-	DisplayWarnings         whereHelperbool
-	EnableWarnings          whereHelperbool
-	TimeoutDuration         whereHelperint
-	EnableFilters           whereHelperbool
-	FilterLinks             whereHelperbool
-	PermittedLinks          whereHelpertypes_StringArray
-	FilterCaps              whereHelperbool
-	FilterCapsMinChars      whereHelperint
-	FilterCapsPercentage    whereHelperint
-	FilterCapsMinCaps       whereHelperint
-	FilterEmotes            whereHelperbool
-	FilterEmotesMax         whereHelperint
-	FilterEmotesSingle      whereHelperbool
-	FilterSymbols           whereHelperbool
-	FilterSymbolsPercentage whereHelperint
-	FilterSymbolsMinSymbols whereHelperint
-	FilterMe                whereHelperbool
-	FilterMaxLength         whereHelperint
+	ID                          whereHelperint64
+	CreatedAt                   whereHelpertime_Time
+	UpdatedAt                   whereHelpertime_Time
+	UserID                      whereHelperint64
+	Name                        whereHelperstring
+	BotName                     whereHelperstring
+	Active                      whereHelperbool
+	Prefix                      whereHelperstring
+	Bullet                      whereHelpernull_String
+	Ignored                     whereHelpertypes_StringArray
+	CustomOwners                whereHelpertypes_StringArray
+	CustomMods                  whereHelpertypes_StringArray
+	CustomRegulars              whereHelpertypes_StringArray
+	Cooldown                    whereHelpernull_Int
+	LastCommandAt               whereHelpertime_Time
+	LastFM                      whereHelperstring
+	ParseYoutube                whereHelperbool
+	ShouldModerate              whereHelperbool
+	DisplayWarnings             whereHelperbool
+	EnableWarnings              whereHelperbool
+	TimeoutDuration             whereHelperint
+	EnableFilters               whereHelperbool
+	FilterLinks                 whereHelperbool
+	PermittedLinks              whereHelpertypes_StringArray
+	FilterCaps                  whereHelperbool
+	FilterCapsMinChars          whereHelperint
+	FilterCapsPercentage        whereHelperint
+	FilterCapsMinCaps           whereHelperint
+	FilterEmotes                whereHelperbool
+	FilterEmotesMax             whereHelperint
+	FilterEmotesSingle          whereHelperbool
+	FilterSymbols               whereHelperbool
+	FilterSymbolsPercentage     whereHelperint
+	FilterSymbolsMinSymbols     whereHelperint
+	FilterMe                    whereHelperbool
+	FilterMaxLength             whereHelperint
+	FilterBannedPhrases         whereHelperbool
+	FilterBannedPhrasesPatterns whereHelpertypes_StringArray
 }{
-	ID:                      whereHelperint64{field: "\"channels\".\"id\""},
-	CreatedAt:               whereHelpertime_Time{field: "\"channels\".\"created_at\""},
-	UpdatedAt:               whereHelpertime_Time{field: "\"channels\".\"updated_at\""},
-	UserID:                  whereHelperint64{field: "\"channels\".\"user_id\""},
-	Name:                    whereHelperstring{field: "\"channels\".\"name\""},
-	BotName:                 whereHelperstring{field: "\"channels\".\"bot_name\""},
-	Active:                  whereHelperbool{field: "\"channels\".\"active\""},
-	Prefix:                  whereHelperstring{field: "\"channels\".\"prefix\""},
-	Bullet:                  whereHelpernull_String{field: "\"channels\".\"bullet\""},
-	Ignored:                 whereHelpertypes_StringArray{field: "\"channels\".\"ignored\""},
-	CustomOwners:            whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
-	CustomMods:              whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
-	CustomRegulars:          whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
-	Cooldown:                whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
-	LastCommandAt:           whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
-	LastFM:                  whereHelperstring{field: "\"channels\".\"last_fm\""},
-	ParseYoutube:            whereHelperbool{field: "\"channels\".\"parse_youtube\""},
-	ShouldModerate:          whereHelperbool{field: "\"channels\".\"should_moderate\""},
-	DisplayWarnings:         whereHelperbool{field: "\"channels\".\"display_warnings\""},
-	EnableWarnings:          whereHelperbool{field: "\"channels\".\"enable_warnings\""},
-	TimeoutDuration:         whereHelperint{field: "\"channels\".\"timeout_duration\""},
-	EnableFilters:           whereHelperbool{field: "\"channels\".\"enable_filters\""},
-	FilterLinks:             whereHelperbool{field: "\"channels\".\"filter_links\""},
-	PermittedLinks:          whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
-	FilterCaps:              whereHelperbool{field: "\"channels\".\"filter_caps\""},
-	FilterCapsMinChars:      whereHelperint{field: "\"channels\".\"filter_caps_min_chars\""},
-	FilterCapsPercentage:    whereHelperint{field: "\"channels\".\"filter_caps_percentage\""},
-	FilterCapsMinCaps:       whereHelperint{field: "\"channels\".\"filter_caps_min_caps\""},
-	FilterEmotes:            whereHelperbool{field: "\"channels\".\"filter_emotes\""},
-	FilterEmotesMax:         whereHelperint{field: "\"channels\".\"filter_emotes_max\""},
-	FilterEmotesSingle:      whereHelperbool{field: "\"channels\".\"filter_emotes_single\""},
-	FilterSymbols:           whereHelperbool{field: "\"channels\".\"filter_symbols\""},
-	FilterSymbolsPercentage: whereHelperint{field: "\"channels\".\"filter_symbols_percentage\""},
-	FilterSymbolsMinSymbols: whereHelperint{field: "\"channels\".\"filter_symbols_min_symbols\""},
-	FilterMe:                whereHelperbool{field: "\"channels\".\"filter_me\""},
-	FilterMaxLength:         whereHelperint{field: "\"channels\".\"filter_max_length\""},
+	ID:                          whereHelperint64{field: "\"channels\".\"id\""},
+	CreatedAt:                   whereHelpertime_Time{field: "\"channels\".\"created_at\""},
+	UpdatedAt:                   whereHelpertime_Time{field: "\"channels\".\"updated_at\""},
+	UserID:                      whereHelperint64{field: "\"channels\".\"user_id\""},
+	Name:                        whereHelperstring{field: "\"channels\".\"name\""},
+	BotName:                     whereHelperstring{field: "\"channels\".\"bot_name\""},
+	Active:                      whereHelperbool{field: "\"channels\".\"active\""},
+	Prefix:                      whereHelperstring{field: "\"channels\".\"prefix\""},
+	Bullet:                      whereHelpernull_String{field: "\"channels\".\"bullet\""},
+	Ignored:                     whereHelpertypes_StringArray{field: "\"channels\".\"ignored\""},
+	CustomOwners:                whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
+	CustomMods:                  whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
+	CustomRegulars:              whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
+	Cooldown:                    whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
+	LastCommandAt:               whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
+	LastFM:                      whereHelperstring{field: "\"channels\".\"last_fm\""},
+	ParseYoutube:                whereHelperbool{field: "\"channels\".\"parse_youtube\""},
+	ShouldModerate:              whereHelperbool{field: "\"channels\".\"should_moderate\""},
+	DisplayWarnings:             whereHelperbool{field: "\"channels\".\"display_warnings\""},
+	EnableWarnings:              whereHelperbool{field: "\"channels\".\"enable_warnings\""},
+	TimeoutDuration:             whereHelperint{field: "\"channels\".\"timeout_duration\""},
+	EnableFilters:               whereHelperbool{field: "\"channels\".\"enable_filters\""},
+	FilterLinks:                 whereHelperbool{field: "\"channels\".\"filter_links\""},
+	PermittedLinks:              whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
+	FilterCaps:                  whereHelperbool{field: "\"channels\".\"filter_caps\""},
+	FilterCapsMinChars:          whereHelperint{field: "\"channels\".\"filter_caps_min_chars\""},
+	FilterCapsPercentage:        whereHelperint{field: "\"channels\".\"filter_caps_percentage\""},
+	FilterCapsMinCaps:           whereHelperint{field: "\"channels\".\"filter_caps_min_caps\""},
+	FilterEmotes:                whereHelperbool{field: "\"channels\".\"filter_emotes\""},
+	FilterEmotesMax:             whereHelperint{field: "\"channels\".\"filter_emotes_max\""},
+	FilterEmotesSingle:          whereHelperbool{field: "\"channels\".\"filter_emotes_single\""},
+	FilterSymbols:               whereHelperbool{field: "\"channels\".\"filter_symbols\""},
+	FilterSymbolsPercentage:     whereHelperint{field: "\"channels\".\"filter_symbols_percentage\""},
+	FilterSymbolsMinSymbols:     whereHelperint{field: "\"channels\".\"filter_symbols_min_symbols\""},
+	FilterMe:                    whereHelperbool{field: "\"channels\".\"filter_me\""},
+	FilterMaxLength:             whereHelperint{field: "\"channels\".\"filter_max_length\""},
+	FilterBannedPhrases:         whereHelperbool{field: "\"channels\".\"filter_banned_phrases\""},
+	FilterBannedPhrasesPatterns: whereHelpertypes_StringArray{field: "\"channels\".\"filter_banned_phrases_patterns\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -306,9 +316,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

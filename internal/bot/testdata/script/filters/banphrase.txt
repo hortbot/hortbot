@@ -1,0 +1,115 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase
+send hortbot #foobar [HB] usage: !filter banphrase on|off|add|delete|clear|list
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase what
+send hortbot #foobar [HB] usage: !filter banphrase on|off|add|delete|clear|list
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+send hortbot #foobar [HB] Filters are now enabled.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+no_send
+
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase on
+send hortbot #foobar [HB] Banned phrase filter is now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase on
+send hortbot #foobar [HB] Banned phrase filter is already enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase off
+send hortbot #foobar [HB] Banned phrase filter is now disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase off
+send hortbot #foobar [HB] Banned phrase filter is already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase on
+send hortbot #foobar [HB] Banned phrase filter is now enabled.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
+send hortbot #foobar [HB] There are 0 banned phrases.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase delete what
+send hortbot #foobar [HB] Banned phrase not found.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase add REGEX:what's.*up
+send hortbot #foobar [HB] Only admins may add regex banned words.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase add runescape
+send hortbot #foobar [HB] Banned phrase added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
+send hortbot #foobar [HB] There is 1 banned phrase.
+
+handle hortbot @id=7f18cc2a-5148-4aa6-98fd-d8828fe14e26;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :RuneScape is cool
+send hortbot #foobar /delete 7f18cc2a-5148-4aa6-98fd-d8828fe14e26
+send hortbot #foobar [HB] Random, disallowed word or phrase - warning
+
+
+clock_forward 3h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase add REGEX:\d\d\d
+send hortbot #foobar [HB] Banned phrase added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
+send hortbot #foobar [HB] There are 2 banned phrases.
+
+handle hortbot @id=ed7e8a24-df5a-4842-b6a1-22871c5af6e9;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :1234
+send hortbot #foobar /delete ed7e8a24-df5a-4842-b6a1-22871c5af6e9
+send hortbot #foobar [HB] Random, disallowed word or phrase - warning
+
+
+clock_forward 3h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase remove runescape
+send hortbot #foobar [HB] Banned phrase removed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
+send hortbot #foobar [HB] There is 1 banned phrase.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :RuneScape is cool
+no_send
+
+
+clock_forward 3h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase add hello there
+send hortbot #foobar [HB] Banned phrase added.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
+send hortbot #foobar [HB] There are 2 banned phrases.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase clear
+send hortbot #foobar [HB] Banned phrases have been cleared.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :12345
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hello there
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase add REGEX:
+send hortbot #foobar [HB] Error parsing pattern: empty pattern
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase add REGEX:(
+send hortbot #foobar [HB] Error parsing pattern: missing closing )

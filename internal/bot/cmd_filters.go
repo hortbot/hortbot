@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -23,6 +24,7 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"me":            {fn: cmdFilterMe, minLevel: levelModerator},
 	"messagelength": {fn: cmdFilterMessageLength, minLevel: levelModerator},
 	"emotes":        {fn: cmdFilterEmotes, minLevel: levelModerator},
+	"banphrase":     {fn: cmdFilterBanPhrase, minLevel: levelModerator},
 }
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -478,6 +480,114 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 
 	default:
 		return s.ReplyUsage("on|off|max|single|status")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+		return err
+	}
+
+	return s.Reply(response)
+}
+
+func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string) error {
+	var response string
+	var column string
+
+	subcommand, args := splitSpace(args)
+
+	switch subcommand {
+	case "on":
+		if s.Channel.FilterBannedPhrases {
+			return s.Reply("Banned phrase filter is already enabled.")
+		}
+
+		s.Channel.FilterBannedPhrases = true
+		column = models.ChannelColumns.FilterBannedPhrases
+		response = "Banned phrase filter is now enabled."
+
+	case "off":
+		if !s.Channel.FilterBannedPhrases {
+			return s.Reply("Banned phrase filter is already disabled.")
+		}
+
+		s.Channel.FilterBannedPhrases = false
+		column = models.ChannelColumns.FilterBannedPhrases
+		response = "Banned phrase filter is now disabled."
+
+	case "clear":
+		s.Channel.FilterBannedPhrasesPatterns = []string{}
+		column = models.ChannelColumns.FilterBannedPhrasesPatterns
+		response = "Banned phrases have been cleared."
+
+	case "add":
+		var pattern string
+		if strings.HasPrefix(args, "REGEX:") {
+			if !s.UserLevel.CanAccess(levelAdmin) {
+				return s.Reply("Only admins may add regex banned words.")
+			}
+
+			pattern = strings.TrimPrefix(args, "REGEX:")
+			if pattern == "" {
+				return s.replyBadPattern(errEmptyPattern)
+			}
+
+			_, err := s.Deps.ReCache.Compile(pattern)
+			if err != nil {
+				return s.replyBadPattern(err)
+			}
+		} else {
+			pattern = regexp.QuoteMeta(args)
+		}
+
+		s.Channel.FilterBannedPhrasesPatterns = append(s.Channel.FilterBannedPhrasesPatterns, pattern)
+		column = models.ChannelColumns.FilterBannedPhrasesPatterns
+		response = "Banned phrase added."
+
+	case "delete", "remove":
+		quoted := regexp.QuoteMeta(args)
+
+		tries := []string{
+			args,
+			".*" + quoted + ".*",
+			quoted,
+			".*" + args + ".*",
+			strings.TrimPrefix(args, "REGEX:"),
+		}
+
+		found := -1
+
+	Outer:
+		for i, pattern := range s.Channel.FilterBannedPhrasesPatterns {
+			for _, t := range tries {
+				if strings.EqualFold(pattern, t) {
+					found = i
+					break Outer
+				}
+			}
+		}
+
+		if found == -1 {
+			return s.Reply("Banned phrase not found.")
+		}
+
+		l := s.Channel.FilterBannedPhrasesPatterns
+		l = append(l[:found], l[found+1:]...)
+		s.Channel.FilterBannedPhrasesPatterns = l
+		column = models.ChannelColumns.FilterBannedPhrasesPatterns
+		response = "Banned phrase removed."
+
+	case "list":
+		// TODO: Replace with link to site (or other).
+
+		count := len(s.Channel.FilterBannedPhrasesPatterns)
+		if count == 1 {
+			return s.Reply("There is 1 banned phrase.")
+		}
+
+		return s.Replyf("There are %d banned phrases.", count)
+
+	default:
+		return s.ReplyUsage("on|off|add|delete|clear|list")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {

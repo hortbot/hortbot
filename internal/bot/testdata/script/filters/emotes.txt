@@ -98,3 +98,7 @@ no_send
 handle hortbot @id=97a7e855-31dd-44b3-b5f0-97b16b154cd7;emotes=1566876:0-6;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove
 send hortbot #foobar /delete 97a7e855-31dd-44b3-b5f0-97b16b154cd7
 send hortbot #foobar [HB] Random, single emote messages are not allowed - warning
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single off
+send hortbot #foobar [HB] Single emote filter is now disabled.

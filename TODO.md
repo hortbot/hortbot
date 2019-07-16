@@ -150,17 +150,17 @@ Some features are not currently planned to be ported and have been crossed out.
 - [x] User levels
     - [x] Add/remove reg/mod/owner
     - [x] List
-- [ ] Filters
+- [x] Filters
     - [x] Warnings, then timeouts.
     - [x] Me
     - [x] Links
         - [x] Permitted domains (and more)
     - [x] Capitals
-    - [ ] Banned phrases
+    - [x] Banned phrases
     - [x] Symbols
     - [x] Max length
     - [x] Emotes
-    - [ ] Options
+    - [x] Options
         - [x] `on`/`off`
         - [x] `status`
         - [x] `me`
@@ -170,7 +170,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `messagelength`
         - [x] `links`
         - [x] `pd`
-        - [ ] `banphrase`
+        - [x] `banphrase`
         - [x] `caps`
         - [x] `emotes`
         - [x] `symbols`

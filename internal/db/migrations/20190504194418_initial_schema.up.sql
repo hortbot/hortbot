@@ -60,6 +60,9 @@ CREATE TABLE channels (
     filter_me boolean NOT NULL,
     filter_max_length int NOT NULL,
 
+    filter_banned_phrases boolean NOT NULL,
+    filter_banned_phrases_patterns text[] DEFAULT '{}' NOT NULL,
+
     CHECK (filter_caps_percentage BETWEEN 0 and 100),
     CHECK (filter_symbols_percentage BETWEEN 0 and 100),
     CHECK (timeout_duration >= 0)

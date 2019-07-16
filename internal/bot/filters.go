@@ -18,6 +18,7 @@ var filters = []func(context.Context, *session) (filtered bool, err error){
 	filterEmotes,
 	filterCaps,
 	filterSymbols,
+	filterBannedPhrases,
 }
 
 func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
@@ -222,6 +223,25 @@ func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 
 	if count == 1 && s.Channel.FilterEmotesSingle {
 		return true, filterDoPunish(ctx, s, "emotes", "single emote messages are not allowed")
+	}
+
+	return false, nil
+}
+
+func filterBannedPhrases(ctx context.Context, s *session) (filtered bool, err error) {
+	if !s.Channel.FilterBannedPhrases {
+		return false, nil
+	}
+
+	for _, pattern := range s.Channel.FilterBannedPhrasesPatterns {
+		re, err := s.Deps.ReCache.Compile(pattern)
+		if err != nil {
+			continue
+		}
+
+		if re.MatchString(s.Message) {
+			return true, filterDoPunish(ctx, s, "banned_phrase", "disallowed word or phrase")
+		}
 	}
 
 	return false, nil
