@@ -1,0 +1,24 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_NUMCHANNELS_)
+send hortbot #foobar [HB] Command 'test' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] 1
+
+
+join hortbot 999 somebody 2
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] 2
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :somebody!somebody@somebody.tmi.twitch.tv PRIVMSG #somebody :!leave
+send hortbot #somebody [HB] somebody, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :somebody!somebody@somebody.tmi.twitch.tv PRIVMSG #somebody :!leave
+send hortbot #somebody [HB] somebody, hortbot will now leave your channel.
+notify_channel_updates hortbot
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] 1

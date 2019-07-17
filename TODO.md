@@ -194,47 +194,58 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_GAME_)` (*Twitch API*)
 - [ ] `(_STATUS_)` (*Twitch API*)
 - [ ] `(_VIEWERS_)` (*Twitch API*)
+- [ ] `(_CHATTERS_)` (*Twitch API*)
+- [ ] ~~`(_STEAM_PROFILE_)`~~ (*Steam API*)
 - [ ] ~~`(_STEAM_GAME_)`~~ (*Steam API*)
 - [ ] ~~`(_STEAM_SERVER_)`~~ (*Steam API*)
+- [ ] ~~`(_STEAM_STORE_)`~~ (*Steam API*)
 - [x] `(_SONG_)`
 - [x] `(_SONG_URL_)`
 - [x] `(_LAST_SONG_)`
 - [ ] `(_BOT_HELP_)` (*Website*)
-- [ ] `(_USER_)`
-- [ ] `(_QUOTE_)`
+- [x] `(_USER_)`
+- [x] `(_QUOTE_)`
 - [ ] ~~`(_COMMERCIAL_)`~~
 - [x] `(_PARAMETER_)`
 - [x] `(_PARAMETER_CAPS_)`
-- [ ] `(_NUMCHANNELS_)`
+- [x] `(_NUMCHANNELS_)`
 - [x] ~~`(_XBOX_GAME_)`~~
 - [x] ~~`(_XBOX_PROGRESS_)`~~
 - [x] ~~`(_XBOX_GAMERSCORE_)`~~
 - [ ] `(_ONLINE_CHECK_)`
-- [ ] `(_SUBMODE_ON_)`
-- [ ] `(_SUBMODE_OFF_)`
+- [x] `(_SUBMODE_ON_)`
+- [x] `(_SUBMODE_OFF_)`
 - [ ] `(_GAME_IS_<GAME>_)` (*Twitch API*)
 - [ ] `(_GAME_IS_NOT_<GAME>_)` (*Twitch API*)
-- [ ] `(_HOST_<CHANNEL>_)`
-- [ ] `(_UNHOST_)`
+- [x] `(_HOST_<CHANNEL>_)`
+- [x] `(_UNHOST_)`
 - [ ] `(_RANDOM_<MIN>_<MAX>_)`
 - [ ] `(_RANDOM_INT_<MIN>_<MAX>_)`
-- [ ] `(_<COMMANDNAME>_COUNT_)`
-- [ ] `(_PURGE_)`
-- [ ] `(_TIMEOUT_)`
-- [ ] `(_BAN_)`
-- [ ] `(_SUBMODE_OFF_)`
-- [ ] `(_SUBMODE_OFF_)`
-- [ ] `(_REGULARS_ONLY_)`
+- [x] `(_<COMMANDNAME>_COUNT_)`
+- [x] `(_PURGE_)`
+- [x] `(_TIMEOUT_)`
+- [x] `(_BAN_)`
+- [x] `(_SUBMODE_OFF_)`
+- [x] `(_SUBMODE_OFF_)`
+- [x] `(_REGULARS_ONLY_)`
 - [ ] `(_COMMAND_<NAME>_)` (for autoreplies)
 - [ ] Sub message specific actions
 - [ ] `(_TWEET_URL_)`
 - [ ] `(_EXTRALIFE_AMOUNT_)`
 - [ ] DATE/TIME/UNTIL variants
 - [ ] VAR actions
-- [ ] `(_SILENT_)`
+- [ ] LIST actions
+- [x] `(_SILENT_)`
+- [x] `(_CHANNEL_URL_)`
+- [ ] `(_n_)` ("args")
 
 
 ## New features
 
 - [ ] A new command language (scripting!)
 - [ ] GMod integration
+- [x] More "add" subcommands for !command, to preset restrictions.
+
+### Actions
+
+- [x] `(_DELETE_)` (new)

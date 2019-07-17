@@ -64,6 +64,8 @@ type session struct {
 	OrigCommandParams string
 
 	usageContext string
+
+	Silent bool
 }
 
 func (s *session) formatResponse(response string) string {
@@ -86,6 +88,16 @@ func (s *session) formatResponse(response string) string {
 }
 
 func (s *session) Reply(response string) error {
+	if s.Silent {
+		return nil
+	}
+
+	response = strings.TrimSpace(response)
+
+	if response == "" {
+		return nil
+	}
+
 	return s.Deps.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
 }
 
@@ -214,6 +226,8 @@ func (s *session) SendCommand(command string, args ...string) error {
 	case "me":
 	case "delete":
 	case "clear":
+	case "host":
+	case "unhost":
 	default:
 		panic("attempt to use IRC command " + command)
 	}

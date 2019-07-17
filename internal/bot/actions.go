@@ -2,15 +2,18 @@ package bot
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/cbp"
+	"github.com/hortbot/hortbot/internal/db/models"
 )
 
 var testingAction func(ctx context.Context, action string) (string, error, bool)
 
+//nolint:gocyclo
 func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	if isTesting && testingAction != nil {
 		s, err, ok := testingAction(ctx, action)
@@ -38,6 +41,68 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return s.actionSong(0, true)
 	case "LAST_SONG":
 		return s.actionSong(1, false)
+	case "QUOTE":
+		q, err := getRandomQuote(ctx, s.Tx, s.Channel)
+		if err != nil {
+			return "", err
+		}
+
+		if q == nil {
+			return "No quotes.", nil
+		}
+
+		return q.Quote, nil
+	case "USER":
+		return s.User, nil
+	case "USER_DISPLAY":
+		return s.UserDisplay, nil
+	case "CHANNEL_URL":
+		return "twitch.tv/" + s.Channel.Name, nil
+	case "SUBMODE_ON":
+		return "", s.SendCommand("subscribers")
+	case "SUBMODE_OFF":
+		return "", s.SendCommand("subscribersoff")
+	case "SILENT":
+		// TODO: handle s.Silent elsewhere.
+		s.Silent = true
+		return "", nil
+	case "NUMCHANNELS":
+		count, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, s.Tx)
+		if err != nil {
+			return "", err
+		}
+		return strconv.FormatInt(count, 10), nil
+	case "UNHOST":
+		return "", s.SendCommand("unhost")
+	case "PURGE":
+		return "", s.SendCommand("timeout", s.User, "1")
+	case "TIMEOUT":
+		return "", s.SendCommand("timeout", s.User)
+	case "BAN":
+		return "", s.SendCommand("ban", s.User)
+	case "DELETE":
+		return "", s.DeleteMessage()
+	case "REGULARS_ONLY":
+		return "", nil
+	}
+
+	switch {
+	case strings.HasPrefix(action, "HOST_"):
+		ch := strings.TrimPrefix(action, "HOST_")
+		return "", s.SendCommand("host", strings.ToLower(ch))
+	case strings.HasSuffix(action, "_COUNT"): // This case must come last.
+		name := strings.TrimSuffix(action, "_COUNT")
+		name = cleanCommandName(name)
+
+		command, err := s.Channel.SimpleCommands(models.SimpleCommandWhere.Name.EQ(name)).One(ctx, s.Tx)
+		switch err {
+		case nil:
+			return strconv.FormatInt(command.Count, 10), nil
+		case sql.ErrNoRows:
+			return "?", nil
+		default:
+			return "", err
+		}
 	}
 
 	return "", fmt.Errorf("unknown action: %s", action)
