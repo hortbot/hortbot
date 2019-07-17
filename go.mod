@@ -20,12 +20,12 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190710001350-29e7b2419f38 // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190715232110-2b613d287457 // indirect
 	github.com/dhui/dktest v0.3.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20190507143103-cc8cbe209b64 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20190714012041-d0a435755ae8 // indirect
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/fsouza/fake-gcs-server v1.9.0 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
@@ -33,7 +33,6 @@ require (
 	github.com/gocql/gocql v0.0.0-20190708145057-55a38e15c5db // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.5.0
-	github.com/golang/protobuf v1.3.2 // indirect
 	github.com/google/go-cmp v0.3.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.2.0
@@ -44,8 +43,9 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/kshvakov/clickhouse v1.3.9 // indirect
 	github.com/leononame/clock v0.1.6
-	github.com/lib/pq v1.1.1
+	github.com/lib/pq v1.2.0
 	github.com/magiconair/properties v1.8.1 // indirect
+	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.1
 	github.com/mjibson/esc v0.2.0
 	github.com/mongodb/mongo-go-driver v1.0.4 // indirect
@@ -69,15 +69,15 @@ require (
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.4.0+incompatible
-	github.com/xanzy/go-gitlab v0.18.0 // indirect
+	github.com/xanzy/go-gitlab v0.19.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
 	go.mongodb.org/mongo-driver v1.0.4 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
-	golang.org/x/tools v0.0.0-20190712213246-8b927904ee0d
-	google.golang.org/genproto v0.0.0-20190708153700-3bdd9d9f5532 // indirect
+	golang.org/x/tools v0.0.0-20190716221150-e98af2309876
+	google.golang.org/genproto v0.0.0-20190716160619-c506a9f90610 // indirect
 	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
