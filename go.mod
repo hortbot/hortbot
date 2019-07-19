@@ -5,10 +5,10 @@ go 1.12
 require (
 	cloud.google.com/go v0.43.0 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
-	github.com/Microsoft/go-winio v0.4.12 // indirect
+	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.8.0
-	github.com/aws/aws-sdk-go v1.21.0 // indirect
+	github.com/aws/aws-sdk-go v1.21.1 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.3
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
@@ -47,7 +47,7 @@ require (
 	github.com/lib/pq v1.2.0
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.1
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
 	github.com/mongodb/mongo-go-driver v1.0.4 // indirect
 	github.com/nakagami/firebirdsql v0.0.0-20190609025626-90ca2b3395f5 // indirect

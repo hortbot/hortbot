@@ -10,7 +10,7 @@ You can find a todo list in [TODO.md](TODO.md).
 
 To build:
 
-- Go 1.11+
+- Go 1.12+
 
 For development:
 
