@@ -3,14 +3,15 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
+	cloud.google.com/go v0.43.0 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.12 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.8.0
-	github.com/aws/aws-sdk-go v1.20.20 // indirect
+	github.com/aws/aws-sdk-go v1.21.0 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.3
-	github.com/cenkalti/backoff v2.2.0+incompatible // indirect
+	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
 	github.com/cznic/b v0.0.0-20181122101859-a26611c4d92d // indirect
@@ -27,10 +28,10 @@ require (
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190714012041-d0a435755ae8 // indirect
 	github.com/fortytw2/leaktest v1.3.0
-	github.com/fsouza/fake-gcs-server v1.9.0 // indirect
+	github.com/fsouza/fake-gcs-server v1.10.0 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.5
-	github.com/gocql/gocql v0.0.0-20190708145057-55a38e15c5db // indirect
+	github.com/gocql/gocql v0.0.0-20190717234527-2ba2dd7440dc // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.5.0
 	github.com/google/go-cmp v0.3.0
@@ -60,7 +61,6 @@ require (
 	github.com/rkoesters/xkcd v0.0.0-20190613072715-c0127f09e992
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
-	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
@@ -76,8 +76,7 @@ require (
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
-	golang.org/x/tools v0.0.0-20190716221150-e98af2309876
-	google.golang.org/genproto v0.0.0-20190716160619-c506a9f90610 // indirect
+	golang.org/x/tools v0.0.0-20190719005602-e377ae9d6386
 	google.golang.org/grpc v1.22.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.3.0+incompatible
