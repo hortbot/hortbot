@@ -3,6 +3,7 @@ package bot
 import (
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -21,9 +22,10 @@ type sharedDeps struct {
 	Clock    clock.Clock
 	Rand     Rand
 
-	LastFM  lastfm.API
-	YouTube youtube.API
-	XKCD    xkcd.API
+	LastFM    lastfm.API
+	YouTube   youtube.API
+	XKCD      xkcd.API
+	ExtraLife extralife.API
 
 	ReCache *recache.RegexpCache
 

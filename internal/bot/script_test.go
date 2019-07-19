@@ -24,6 +24,8 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/apis/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
@@ -72,9 +74,11 @@ type scriptTester struct {
 	sender   *botfakes.FakeSender
 	notifier *botfakes.FakeNotifier
 	clock    *clock.Mock
-	lastFM   *lastfmfakes.FakeAPI
-	youtube  *youtubefakes.FakeAPI
-	xkcd     *xkcdfakes.FakeAPI
+
+	lastFM    *lastfmfakes.FakeAPI
+	youtube   *youtubefakes.FakeAPI
+	xkcd      *xkcdfakes.FakeAPI
+	extraLife *extralifefakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -123,6 +127,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.lastFM = &lastfmfakes.FakeAPI{}
 	st.youtube = &youtubefakes.FakeAPI{}
 	st.xkcd = &xkcdfakes.FakeAPI{}
+	st.extraLife = &extralifefakes.FakeAPI{}
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -144,14 +149,15 @@ func (st *scriptTester) test(t *testing.T) {
 	st.db = db
 
 	st.bc = bot.Config{
-		DB:       db,
-		Redis:    rClient,
-		Dedupe:   dedupe.NeverSeen,
-		Sender:   st.sender,
-		Notifier: st.notifier,
-		LastFM:   st.lastFM,
-		YouTube:  st.youtube,
-		XKCD:     st.xkcd,
+		DB:        db,
+		Redis:     rClient,
+		Dedupe:    dedupe.NeverSeen,
+		Sender:    st.sender,
+		Notifier:  st.notifier,
+		LastFM:    st.lastFM,
+		YouTube:   st.youtube,
+		XKCD:      st.xkcd,
+		ExtraLife: st.extraLife,
 	}
 
 	f, err := os.Open(st.filename)
@@ -261,6 +267,12 @@ func (st *scriptTester) test(t *testing.T) {
 
 		case "dump_redis":
 			st.dumpRedis(t)
+
+		case "no_extra_life":
+			st.noExtraLife(t)
+
+		case "extra_life_amounts":
+			st.extraLifeAmounts(t, args)
 
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
@@ -731,6 +743,32 @@ func (st *scriptTester) xkcdComics(t *testing.T, args string) {
 				return nil, xkcd.ErrNotFound
 			}
 			return c, nil
+		})
+	})
+}
+
+func (st *scriptTester) noExtraLife(t *testing.T) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Extra Life")
+		st.bc.ExtraLife = nil
+	})
+}
+
+func (st *scriptTester) extraLifeAmounts(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var v map[string]float64
+
+	err := json.Unmarshal([]byte(args), &v)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.extraLife.GetDonationAmountCalls(func(id int) (float64, error) {
+			a, ok := v[strconv.Itoa(id)]
+			if !ok {
+				return 0, extralife.ErrNotFound
+			}
+			return a, nil
 		})
 	})
 }

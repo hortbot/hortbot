@@ -231,7 +231,7 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_COMMAND_<NAME>_)` (for autoreplies)
 - [ ] Sub message specific actions
 - [ ] `(_TWEET_URL_)`
-- [ ] `(_EXTRALIFE_AMOUNT_)`
+- [x] `(_EXTRALIFE_AMOUNT_)`
 - [ ] DATE/TIME/UNTIL variants
 - [ ] VAR actions
 - [ ] LIST actions

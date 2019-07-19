@@ -11,6 +11,7 @@ import (
 )
 
 var settingCommands handlerMap = map[string]handlerFunc{
+	"filter":          {fn: cmdFilter, minLevel: levelModerator},
 	"prefix":          {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
 	"bullet":          {fn: cmdSettingBullet, minLevel: levelBroadcaster},
 	"cooldown":        {fn: cmdSettingCooldown, minLevel: levelModerator},
@@ -19,8 +20,8 @@ var settingCommands handlerMap = map[string]handlerFunc{
 	"parseyoutube":    {fn: cmdSettingParseYoutube, minLevel: levelModerator},
 	"enablewarnings":  {fn: cmdSettingEnableWarnings, minLevel: levelModerator},
 	"displaywarnings": {fn: cmdSettingDisplayWarnings, minLevel: levelModerator},
-	"timeoutduration": {fn: cmdSettingsTimeoutDuration, minLevel: levelModerator},
-	"filter":          {fn: cmdFilter, minLevel: levelModerator},
+	"timeoutduration": {fn: cmdSettingTimeoutDuration, minLevel: levelModerator},
+	"extralifeid":     {fn: cmdSettingExtraLifeID, minLevel: levelModerator},
 }
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -225,7 +226,7 @@ func cmdSettingDisplayWarnings(ctx context.Context, s *session, cmd string, args
 	)
 }
 
-func cmdSettingsTimeoutDuration(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingTimeoutDuration(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		if s.Channel.TimeoutDuration == 0 {
 			return s.Reply("Timeout duration is set to Twitch default.")
@@ -253,6 +254,32 @@ func cmdSettingsTimeoutDuration(ctx context.Context, s *session, cmd string, arg
 	}
 
 	return s.Replyf("Timeout duration changed to %d seconds.", dur)
+}
+
+func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		if s.Channel.ExtraLifeID == 0 {
+			return s.Reply("Extra Life ID is not set.")
+		}
+		return s.Replyf("Extra Life ID is set to %d.", s.Channel.ExtraLifeID)
+	}
+
+	id, err := strconv.Atoi(args)
+	if err != nil || id < 0 {
+		return s.ReplyUsage("<participant ID>")
+	}
+
+	s.Channel.ExtraLifeID = id
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ExtraLifeID)); err != nil {
+		return err
+	}
+
+	if id == 0 {
+		return s.Reply("Extra Life ID has been unset.")
+	}
+
+	return s.Replyf("Extra Life ID changed to %d.", id)
 }
 
 func updateBoolean(

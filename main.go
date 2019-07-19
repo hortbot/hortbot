@@ -13,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -146,6 +147,7 @@ func main() {
 		LastFM:           lastFM,
 		YouTube:          youtube.New(),
 		XKCD:             xkcd.New(),
+		ExtraLife:        extralife.New(),
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

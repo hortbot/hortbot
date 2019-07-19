@@ -34,6 +34,7 @@ CREATE TABLE channels (
 
     last_fm text NOT NULL,
     parse_youtube boolean NOT NULL,
+    extra_life_id int NOT NULL,
 
     should_moderate boolean NOT NULL,
     display_warnings boolean NOT NULL,

@@ -9,6 +9,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 )
 
 var testingAction func(ctx context.Context, action string) (string, error, bool)
@@ -84,6 +85,20 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return "", s.DeleteMessage()
 	case "REGULARS_ONLY":
 		return "", nil
+	case "EXTRALIFE_AMOUNT":
+		if s.Deps.ExtraLife == nil || s.Channel.ExtraLifeID == 0 {
+			return "?", nil
+		}
+
+		amount, err := s.Deps.ExtraLife.GetDonationAmount(s.Channel.ExtraLifeID)
+		switch err {
+		case nil:
+			return fmt.Sprintf("$%.2f", amount), nil
+		case extralife.ErrNotFound:
+			return "Bad Extra Life participant ID", nil
+		default:
+			return "", err
+		}
 	}
 
 	switch {
