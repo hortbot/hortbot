@@ -37,10 +37,17 @@ func (n NotifierFuncs) NotifyChannelUpdates(botName string) {
 //counterfeiter:generate . Rand
 type Rand interface {
 	Intn(n int) int
+	Float64() float64
 }
 
 type globalRand struct{}
 
+var _ Rand = globalRand{}
+
 func (globalRand) Intn(n int) int {
 	return rand.Intn(n)
+}
+
+func (globalRand) Float64() float64 {
+	return rand.Float64()
 }

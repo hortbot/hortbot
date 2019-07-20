@@ -219,8 +219,8 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_GAME_IS_NOT_<GAME>_)` (*Twitch API*)
 - [x] `(_HOST_<CHANNEL>_)`
 - [x] `(_UNHOST_)`
-- [ ] `(_RANDOM_<MIN>_<MAX>_)`
-- [ ] `(_RANDOM_INT_<MIN>_<MAX>_)`
+- [x] `(_RANDOM_<MIN>_<MAX>_)`
+- [x] `(_RANDOM_INT_<MIN>_<MAX>_)`
 - [x] `(_<COMMANDNAME>_COUNT_)`
 - [x] `(_PURGE_)`
 - [x] `(_TIMEOUT_)`

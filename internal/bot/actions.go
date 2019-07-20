@@ -117,9 +117,70 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	}
 
 	switch {
+	case strings.HasPrefix(action, "RANDOM_"):
+		action = strings.TrimPrefix(action, "RANDOM_")
+
+		if strings.HasPrefix(action, "INT_") {
+			action = strings.TrimPrefix(action, "INT_")
+			minStr, maxStr := splitFirstSep(action, "_")
+			if minStr == "" || maxStr == "" {
+				return "0", nil
+			}
+
+			min, err := strconv.Atoi(minStr)
+			if err != nil {
+				return "0", nil
+			}
+
+			max, err := strconv.Atoi(maxStr)
+			if err != nil {
+				return "0", nil
+			}
+
+			switch {
+			case max < min:
+				return "0", nil
+			case max == min:
+				return strconv.Itoa(max), nil
+			}
+
+			x := s.Deps.Rand.Intn(max-min) + min
+			return strconv.Itoa(x), nil
+		}
+
+		minStr, maxStr := splitFirstSep(action, "_")
+		if minStr == "" || maxStr == "" {
+			return "0.0", nil
+		}
+
+		min, err := strconv.ParseFloat(minStr, 64)
+		if err != nil {
+			return "0.0", nil
+		}
+
+		max, err := strconv.ParseFloat(maxStr, 64)
+		if err != nil {
+			return "0.0", nil
+		}
+
+		var x float64
+
+		switch {
+		case max < min:
+			return "0.0", nil
+		case max == min:
+			x = max
+		default:
+			r := s.Deps.Rand.Float64()
+			x = r*(max-min) + min
+		}
+
+		return strconv.FormatFloat(x, 'f', 1, 64), nil
+
 	case strings.HasPrefix(action, "HOST_"):
 		ch := strings.TrimPrefix(action, "HOST_")
 		return "", s.SendCommand("host", strings.ToLower(ch))
+
 	case strings.HasSuffix(action, "_COUNT"): // This case must come last.
 		name := strings.TrimSuffix(action, "_COUNT")
 		name = cleanCommandName(name)
@@ -133,9 +194,13 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		default:
 			return "", err
 		}
+
+	default:
+		return "", fmt.Errorf("unknown action: %s", action)
 	}
 
-	return "", fmt.Errorf("unknown action: %s", action)
+	// No return here; use default in the switch case to catch
+	// unwanted fallthrough at compile time.
 }
 
 func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, action string) (string, error)) (string, error) {

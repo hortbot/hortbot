@@ -8,6 +8,16 @@ import (
 )
 
 type FakeRand struct {
+	Float64Stub        func() float64
+	float64Mutex       sync.RWMutex
+	float64ArgsForCall []struct {
+	}
+	float64Returns struct {
+		result1 float64
+	}
+	float64ReturnsOnCall map[int]struct {
+		result1 float64
+	}
 	IntnStub        func(int) int
 	intnMutex       sync.RWMutex
 	intnArgsForCall []struct {
@@ -21,6 +31,58 @@ type FakeRand struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeRand) Float64() float64 {
+	fake.float64Mutex.Lock()
+	ret, specificReturn := fake.float64ReturnsOnCall[len(fake.float64ArgsForCall)]
+	fake.float64ArgsForCall = append(fake.float64ArgsForCall, struct {
+	}{})
+	fake.recordInvocation("Float64", []interface{}{})
+	fake.float64Mutex.Unlock()
+	if fake.Float64Stub != nil {
+		return fake.Float64Stub()
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.float64Returns
+	return fakeReturns.result1
+}
+
+func (fake *FakeRand) Float64CallCount() int {
+	fake.float64Mutex.RLock()
+	defer fake.float64Mutex.RUnlock()
+	return len(fake.float64ArgsForCall)
+}
+
+func (fake *FakeRand) Float64Calls(stub func() float64) {
+	fake.float64Mutex.Lock()
+	defer fake.float64Mutex.Unlock()
+	fake.Float64Stub = stub
+}
+
+func (fake *FakeRand) Float64Returns(result1 float64) {
+	fake.float64Mutex.Lock()
+	defer fake.float64Mutex.Unlock()
+	fake.Float64Stub = nil
+	fake.float64Returns = struct {
+		result1 float64
+	}{result1}
+}
+
+func (fake *FakeRand) Float64ReturnsOnCall(i int, result1 float64) {
+	fake.float64Mutex.Lock()
+	defer fake.float64Mutex.Unlock()
+	fake.Float64Stub = nil
+	if fake.float64ReturnsOnCall == nil {
+		fake.float64ReturnsOnCall = make(map[int]struct {
+			result1 float64
+		})
+	}
+	fake.float64ReturnsOnCall[i] = struct {
+		result1 float64
+	}{result1}
 }
 
 func (fake *FakeRand) Intn(arg1 int) int {
@@ -86,6 +148,8 @@ func (fake *FakeRand) IntnReturnsOnCall(i int, result1 int) {
 func (fake *FakeRand) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.float64Mutex.RLock()
+	defer fake.float64Mutex.RUnlock()
 	fake.intnMutex.RLock()
 	defer fake.intnMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}

@@ -369,6 +369,7 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 
 		fakeRand := &botfakes.FakeRand{}
 		fakeRand.IntnCalls(rng.Intn)
+		fakeRand.Float64Calls(rng.Float64)
 
 		st.bc.Rand = fakeRand
 	}
