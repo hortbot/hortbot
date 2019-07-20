@@ -212,7 +212,7 @@ Some features are not currently planned to be ported and have been crossed out.
 - [x] ~~`(_XBOX_GAME_)`~~
 - [x] ~~`(_XBOX_PROGRESS_)`~~
 - [x] ~~`(_XBOX_GAMERSCORE_)`~~
-- [ ] `(_ONLINE_CHECK_)`
+- [ ] `(_ONLINE_CHECK_)` (*Twitch API*)
 - [x] `(_SUBMODE_ON_)`
 - [x] `(_SUBMODE_OFF_)`
 - [ ] `(_GAME_IS_<GAME>_)` (*Twitch API*)

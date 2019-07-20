@@ -76,11 +76,26 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "UNHOST":
 		return "", s.SendCommand("unhost")
 	case "PURGE":
-		return "", s.SendCommand("timeout", s.User, "1")
+		if u := s.FirstParameter(); u != "" {
+			u, _ = splitSpace(u)
+			u = strings.ToLower(u)
+			return "", s.SendCommand("timeout", strings.ToLower(u), "1")
+		}
+		return "", nil // TODO: error?
 	case "TIMEOUT":
-		return "", s.SendCommand("timeout", s.User)
+		if u := s.FirstParameter(); u != "" {
+			u, _ = splitSpace(u)
+			u = strings.ToLower(u)
+			return "", s.SendCommand("timeout", strings.ToLower(u))
+		}
+		return "", nil // TODO: error?
 	case "BAN":
-		return "", s.SendCommand("ban", s.User)
+		if u := s.FirstParameter(); u != "" {
+			u, _ = splitSpace(u)
+			u = strings.ToLower(u)
+			return "", s.SendCommand("ban", strings.ToLower(u))
+		}
+		return "", nil // TODO: error?
 	case "DELETE":
 		return "", s.DeleteMessage()
 	case "REGULARS_ONLY":
@@ -153,6 +168,11 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 	}
 
 	return sb.String(), nil
+}
+
+func (s *session) FirstParameter() string {
+	param, _ := splitFirstSep(s.OrigCommandParams, ";")
+	return param
 }
 
 func (s *session) NextParameter() string {
