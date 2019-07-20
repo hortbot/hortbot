@@ -237,7 +237,7 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 
 func (s *session) FirstParameter() string {
 	param, _ := splitFirstSep(s.OrigCommandParams, ";")
-	return param
+	return strings.TrimSpace(param)
 }
 
 func (s *session) NextParameter() string {
