@@ -16,17 +16,24 @@ var (
 	ignoreUnexportedInToken = cmpopts.IgnoreUnexported(oauth2.Token{})
 
 	tokGood = &oauth2.Token{
-		AccessToken:  "access-token",
+		AccessToken:  "access-token-good",
 		TokenType:    "TYPE",
-		RefreshToken: "refresh-token",
+		RefreshToken: "refresh-token-good",
 		Expiry:       time.Now().Add(time.Hour),
 	}
 
 	tokExpired = &oauth2.Token{
-		AccessToken:  "access-token",
+		AccessToken:  "access-token-expired",
 		TokenType:    "TYPE",
-		RefreshToken: "refresh-token",
+		RefreshToken: "refresh-token-exired",
 		Expiry:       time.Now().Add(-time.Hour),
+	}
+
+	tokExpired2 = &oauth2.Token{
+		AccessToken:  "access-token-expired2",
+		TokenType:    "TYPE",
+		RefreshToken: "refresh-token-expired2",
+		Expiry:       time.Now().Add(-time.Hour / 2),
 	}
 
 	errTest = errors.New("testing error")
@@ -62,7 +69,7 @@ func TestOverrideEmpty(t *testing.T) {
 		{
 			name:        "Error",
 			override:    "OAuth",
-			tok:         tokGood,
+			tok:         nil,
 			err:         errTest,
 			expectedTok: nil,
 			expectedErr: errTest,
@@ -77,7 +84,7 @@ func TestOverrideEmpty(t *testing.T) {
 			fake := &oauth2xfakes.FakeTokenSource{}
 			fake.TokenReturns(test.tok, test.err)
 
-			ts := oauth2x.NewTypeOverrideSource(fake, test.override)
+			ts := oauth2x.NewTypeOverride(fake, test.override)
 
 			tok, err := ts.Token()
 			assert.Assert(t, err == test.expectedErr)
@@ -107,7 +114,7 @@ func TestOnNew(t *testing.T) {
 
 	var results []*oauth2.Token
 
-	ts := oauth2x.NewOnNewTokenSource(fake, func(tok *oauth2.Token, err error) {
+	ts := oauth2x.NewOnNew(fake, func(tok *oauth2.Token, err error) {
 		assert.NilError(t, err)
 		results = append(results, tok)
 	})
@@ -148,7 +155,7 @@ func TestOnNewError(t *testing.T) {
 	var results []*oauth2.Token
 
 	onFirst := true
-	ts := oauth2x.NewOnNewTokenSource(fake, func(tok *oauth2.Token, err error) {
+	ts := oauth2x.NewOnNew(fake, func(tok *oauth2.Token, err error) {
 		if onFirst {
 			onFirst = false
 			assert.Assert(t, tok == nil)
@@ -174,6 +181,46 @@ func TestOnNewError(t *testing.T) {
 
 	assert.DeepEqual(t, results, []*oauth2.Token{
 		nil,
+		tokGood,
+	}, ignoreUnexportedInToken)
+
+	assert.Equal(t, fake.TokenCallCount(), 2)
+}
+
+func TestOnNewWithInit(t *testing.T) {
+	t.Parallel()
+
+	first := true
+	fake := &oauth2xfakes.FakeTokenSource{}
+	fake.TokenCalls(func() (*oauth2.Token, error) {
+		if first {
+			first = false
+			return tokExpired2, nil
+		}
+		return tokGood, nil
+	})
+
+	var results []*oauth2.Token
+
+	ts := oauth2x.NewOnNewWithToken(fake, func(tok *oauth2.Token, err error) {
+		assert.NilError(t, err)
+		results = append(results, tok)
+	}, tokExpired)
+
+	tok, err := ts.Token()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, tokExpired2, ignoreUnexportedInToken)
+
+	tok, err = ts.Token()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, tokGood, ignoreUnexportedInToken)
+
+	tok, err = ts.Token()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, tokGood, ignoreUnexportedInToken)
+
+	assert.DeepEqual(t, results, []*oauth2.Token{
+		tokExpired2,
 		tokGood,
 	}, ignoreUnexportedInToken)
 

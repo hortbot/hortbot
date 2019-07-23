@@ -1,3 +1,4 @@
+// Package oauth2x contains helpers for the oauth2 package.
 package oauth2x
 
 import (
@@ -8,32 +9,29 @@ import (
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 golang.org/x/oauth2.TokenSource
 
-// TypeOverrideSource is an TokenSource which overrides the TokenType of the returned token.
-type TypeOverrideSource struct {
+type overrideSource struct {
 	ts  oauth2.TokenSource
 	typ string
 }
 
-var _ oauth2.TokenSource = (*TypeOverrideSource)(nil)
+// NewTypeOverride creates a token source which overrides the tokens returned
+// by ts with a different auth type. If authType is empty, then the original
+// token source is returned.
+func NewTypeOverride(ts oauth2.TokenSource, authType string) oauth2.TokenSource {
+	if authType == "" {
+		return ts
+	}
 
-// NewTypeOverrideSource creates a new TypeOverrideSource based on the given
-// TokenSource. If tokenType is non-empty, then tokens returned by Token will
-// have their TokenType replaced.
-func NewTypeOverrideSource(ts oauth2.TokenSource, tokenType string) *TypeOverrideSource {
-	return &TypeOverrideSource{
+	return &overrideSource{
 		ts:  ts,
-		typ: tokenType,
+		typ: authType,
 	}
 }
 
-func (ts *TypeOverrideSource) Token() (*oauth2.Token, error) {
+func (ts *overrideSource) Token() (*oauth2.Token, error) {
 	tok, err := ts.ts.Token()
-	if err != nil {
-		return nil, err
-	}
-
-	if ts.typ == "" || tok == nil {
-		return tok, nil
+	if tok == nil || err != nil {
+		return tok, err
 	}
 
 	tok2 := *tok
@@ -41,9 +39,7 @@ func (ts *TypeOverrideSource) Token() (*oauth2.Token, error) {
 	return &tok2, nil
 }
 
-// OnNewTokenSource is a TokenSource which calls a function when a new token is created,
-// allowing for the token to be persisted or otherwise used outside of the OAuth2 flow.
-type OnNewTokenSource struct {
+type onNewSource struct {
 	ts    oauth2.TokenSource
 	onNew func(*oauth2.Token, error)
 
@@ -51,25 +47,32 @@ type OnNewTokenSource struct {
 	tok *oauth2.Token
 }
 
-// NewOnNewTokenSource creates a new OnNewTokenSource based on the given
-// TokenSource. When a new token is created (either when no token has yet been
-// fetched, or an old one expires), then onNew will be called with the new token
-// as well as the error returned when getting it, if any. If onNew is nil, then
-// it will not be called.
+// NewOnNew creates a token source which calls onNew when a new token is created, passing
+// the new token and an error (if any occurred while fetching it).
 //
 // onNew is called synchronously under lock and will block other uses of this
-// TokenSource. If a non-blocking operation is desired, create a new goroutine
+// token source. If a non-blocking operation is desired, create a new goroutine
 // in onNew.
-func NewOnNewTokenSource(ts oauth2.TokenSource, onNew func(*oauth2.Token, error)) *OnNewTokenSource {
-	return &OnNewTokenSource{
+func NewOnNew(ts oauth2.TokenSource, onNew func(*oauth2.Token, error)) oauth2.TokenSource {
+	return &onNewSource{
 		ts:    ts,
 		onNew: onNew,
 	}
 }
 
-var _ oauth2.TokenSource = (*OnNewTokenSource)(nil)
+// NewOnNewWithToken is the same as OnNew, but uses tok as the first token
+// instead of calling out to the wrapped token source first. If this token
+// is no longer valid, then the wrapped token source will be called, as
+// would be done for any expiry.
+func NewOnNewWithToken(ts oauth2.TokenSource, onNew func(*oauth2.Token, error), tok *oauth2.Token) oauth2.TokenSource {
+	return &onNewSource{
+		ts:    ts,
+		onNew: onNew,
+		tok:   tok,
+	}
+}
 
-func (ts *OnNewTokenSource) Token() (*oauth2.Token, error) {
+func (ts *onNewSource) Token() (*oauth2.Token, error) {
 	ts.mu.Lock()
 	defer ts.mu.Unlock()
 
