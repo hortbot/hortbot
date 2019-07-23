@@ -48,16 +48,14 @@ type onNewSource struct {
 }
 
 // NewOnNew creates a token source which calls onNew when a new token is created, passing
-// the new token and an error (if any occurred while fetching it).
+// the new token and an error (if any occurred while fetching it). If onNew is nil, then
+// the token source returned is equivalent to one returned by oauth2.ReuseTokenSource.
 //
 // onNew is called synchronously under lock and will block other uses of this
 // token source. If a non-blocking operation is desired, create a new goroutine
 // in onNew.
 func NewOnNew(ts oauth2.TokenSource, onNew func(*oauth2.Token, error)) oauth2.TokenSource {
-	return &onNewSource{
-		ts:    ts,
-		onNew: onNew,
-	}
+	return NewOnNewWithToken(ts, onNew, nil)
 }
 
 // NewOnNewWithToken is the same as OnNew, but uses tok as the first token
@@ -65,6 +63,10 @@ func NewOnNew(ts oauth2.TokenSource, onNew func(*oauth2.Token, error)) oauth2.To
 // is no longer valid, then the wrapped token source will be called, as
 // would be done for any expiry.
 func NewOnNewWithToken(ts oauth2.TokenSource, onNew func(*oauth2.Token, error), tok *oauth2.Token) oauth2.TokenSource {
+	if onNew == nil {
+		return oauth2.ReuseTokenSource(tok, ts)
+	}
+
 	return &onNewSource{
 		ts:    ts,
 		onNew: onNew,

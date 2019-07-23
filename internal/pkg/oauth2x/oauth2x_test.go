@@ -226,3 +226,33 @@ func TestOnNewWithInit(t *testing.T) {
 
 	assert.Equal(t, fake.TokenCallCount(), 2)
 }
+
+func TestOnNewNil(t *testing.T) {
+	t.Parallel()
+
+	first := true
+	fake := &oauth2xfakes.FakeTokenSource{}
+	fake.TokenCalls(func() (*oauth2.Token, error) {
+		if first {
+			first = false
+			return tokExpired, nil
+		}
+		return tokGood, nil
+	})
+
+	ts := oauth2x.NewOnNew(fake, nil)
+
+	tok, err := ts.Token()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, tokExpired, ignoreUnexportedInToken)
+
+	tok, err = ts.Token()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, tokGood, ignoreUnexportedInToken)
+
+	tok, err = ts.Token()
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, tokGood, ignoreUnexportedInToken)
+
+	assert.Equal(t, fake.TokenCallCount(), 2)
+}
