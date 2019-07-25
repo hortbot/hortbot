@@ -131,7 +131,7 @@ Some features are not currently planned to be ported and have been crossed out.
         - [ ] `cooldown`
         - [ ] `userlevel`
     - [x] ~~`songrequest`~~
-    - [ ] `extralifeid`
+    - [x] `extralifeid`
     - [ ] `urban`
     - [x] ~~`gamertag`~~
     - [x] `bullet`
@@ -187,7 +187,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Cross channel commands
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
     - [ ] Steam game (expand to other stores?)
-    - [ ] Extra Life stuff
+    - [x] Extra Life stuff
 
 ### Actions (string replacements)
 
