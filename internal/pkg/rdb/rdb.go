@@ -1,58 +1,28 @@
+// Package rdb implements a type-safe wrapper for redis with custom
+// commands for atomic operations.
 package rdb
 
 import (
 	"strings"
-	"time"
 
 	"github.com/go-redis/redis"
 )
-
-// KEYS[1] = key
-// ARGV[1] = expire time
-var checkAndMark = redis.NewScript(`
-local exists = redis.pcall('EXISTS', KEYS[1])
-if exists == 1 then
-	return true
-end
-redis.pcall('SET', KEYS[1], '1')
-redis.pcall('EXPIRE', KEYS[1], ARGV[1])
-return false
-`)
-
-// KEYS[1] = key
-// ARGV[1] = expire time
-var checkAndRefresh = redis.NewScript(`
-local exists = redis.pcall('EXISTS', KEYS[1])
-if exists == 1 then
-	redis.pcall('EXPIRE', KEYS[1], ARGV[1])
-	return true
-end
-redis.pcall('SETEX', KEYS[1], '1', ARGV[1])
-return false
-`)
-
-// KEYS[1] = key
-// ARGV[1] = expire time
-var markOrDelete = redis.NewScript(`
-local exists = redis.pcall('GETSET', KEYS[1], '1')
-if exists ~= false then
-	redis.pcall('DEL', KEYS[1])
-	return true
-end
-redis.pcall('EXPIRE', KEYS[1], ARGV[1])
-return false
-`)
 
 const keySep = ":"
 
 var keyEscaper = strings.NewReplacer(keySep, keySep+keySep)
 
+// DB is a redis wrapper.
 type DB struct {
 	client redis.Cmdable
 	prefix string
 }
 
-func New(client redis.Cmdable, options ...func(*DB)) (*DB, error) {
+// Option configures the DB created by New.
+type Option func(*DB)
+
+// New creates a new redis wrapper from the specified Cmdable.
+func New(client redis.Cmdable, options ...Option) (*DB, error) {
 	if err := checkAndMark.Load(client).Err(); err != nil {
 		return nil, err
 	}
@@ -76,7 +46,10 @@ func New(client redis.Cmdable, options ...func(*DB)) (*DB, error) {
 	return d, nil
 }
 
-func KeyPrefix(prefix string) func(*DB) {
+// KeyPrefix sets the DB's key prefix, which allows multiple calls to RDB's
+// methods to operate in different namespaces. No prefix can conflict with
+// another, including the empty string (the default).
+func KeyPrefix(prefix string) Option {
 	if prefix != "" {
 		prefix = keyEscaper.Replace(prefix)
 	}
@@ -84,50 +57,6 @@ func KeyPrefix(prefix string) func(*DB) {
 	return func(d *DB) {
 		d.prefix = prefix
 	}
-}
-
-func (d *DB) Mark(seconds int, key string, more ...string) error {
-	k := d.buildKey(key, more...)
-	dur := time.Duration(seconds) * time.Second
-	return d.client.Set(k, "1", dur).Err()
-}
-
-func (d *DB) Check(key string, more ...string) (exists bool, err error) {
-	k := d.buildKey(key, more...)
-
-	v, err := d.client.Exists(k).Result()
-	return v == 1, err
-}
-
-func (d *DB) CheckAndMark(seconds int, key string, more ...string) (exists bool, err error) {
-	k := d.buildKey(key, more...)
-	return d.runScript(checkAndMark, k, seconds)
-}
-
-func (d *DB) CheckAndRefresh(seconds int, key string, more ...string) (exists bool, err error) {
-	k := d.buildKey(key, more...)
-	return d.runScript(checkAndRefresh, k, seconds)
-}
-
-func (d *DB) CheckAndDelete(key string, more ...string) (exists bool, err error) {
-	k := d.buildKey(key, more...)
-	v, err := d.client.Del(k).Result()
-	return v == 1, err
-}
-
-func (d *DB) MarkOrDelete(seconds int, key string, more ...string) (exists bool, err error) {
-	k := d.buildKey(key, more...)
-	return d.runScript(markOrDelete, k, seconds)
-}
-
-func (d *DB) GetInt64(key string, more ...string) (int64, error) {
-	k := d.buildKey(key, more...)
-	return d.client.Get(k).Int64()
-}
-
-func (d *DB) Increment(key string, more ...string) (int64, error) {
-	k := d.buildKey(key, more...)
-	return d.client.Incr(k).Result()
 }
 
 func (d *DB) buildKey(key string, more ...string) string {
