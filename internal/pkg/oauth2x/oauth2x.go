@@ -15,16 +15,16 @@ type overrideSource struct {
 }
 
 // NewTypeOverride creates a token source which overrides the tokens returned
-// by ts with a different auth type. If authType is empty, then the original
+// by ts with a different auth type. If typ is empty, then the original
 // token source is returned.
-func NewTypeOverride(ts oauth2.TokenSource, authType string) oauth2.TokenSource {
-	if authType == "" {
+func NewTypeOverride(ts oauth2.TokenSource, typ string) oauth2.TokenSource {
+	if typ == "" {
 		return ts
 	}
 
 	return &overrideSource{
 		ts:  ts,
-		typ: authType,
+		typ: typ,
 	}
 }
 
