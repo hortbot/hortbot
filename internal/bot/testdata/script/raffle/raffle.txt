@@ -1,0 +1,98 @@
+bot_config {"Rand": 311}
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle enable
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle disable
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle winner
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle reset
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle what
+send hortbot #foobar [HB] usage: !raffle <enable|disable|count|winner|reset>
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle disable
+send hortbot #foobar [HB] Raffle is already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle enable
+send hortbot #foobar [HB] Raffle enabled. Use !raffle to enter!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle enable
+send hortbot #foobar [HB] Raffle is already enabled. Use !raffle to enter!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle disable
+send hortbot #foobar [HB] Raffle disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has no entries.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle winner
+send hortbot #foobar [HB] Raffle has no entries.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle enable
+send hortbot #foobar [HB] Raffle enabled. Use !raffle to enter!
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has 1 entry.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :user3!user3@user3.tmi.twitch.tv PRIVMSG #foobar :!raffle
+handle hortbot @id=__UUID__;room-id=1;user-id=4 :user4!user4@user4.tmi.twitch.tv PRIVMSG #foobar :!raffle
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has 3 entries.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle disable
+send hortbot #foobar [HB] Raffle disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has 3 entries.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle winner
+send hortbot #foobar [HB] Winner is user3!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle winner
+send hortbot #foobar [HB] Winner is user4!
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle enable
+send hortbot #foobar [HB] Raffle enabled. Use !raffle to enter!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has no entries.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle winner
+send hortbot #foobar [HB] Raffle has no entries.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!raffle
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :user3!user3@user3.tmi.twitch.tv PRIVMSG #foobar :!raffle
+handle hortbot @id=__UUID__;room-id=1;user-id=4 :user4!user4@user4.tmi.twitch.tv PRIVMSG #foobar :!raffle
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has 3 entries.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle reset
+send hortbot #foobar [HB] Raffle reset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle count
+send hortbot #foobar [HB] Raffle has no entries.

@@ -42,3 +42,19 @@ func (s *session) AutoreplyAllowed(id int64, seconds int) (bool, error) {
 func (s *session) FilterWarned(user string, filter string) (bool, error) {
 	return s.Deps.RDB.CheckAndRefresh(3600, s.RoomIDStr, "filter_warning", filter, user)
 }
+
+func (s *session) RaffleAdd(user string) error {
+	return s.Deps.RDB.SetAdd(user, s.RoomIDStr, "raffle")
+}
+
+func (s *session) RaffleReset() error {
+	return s.Deps.RDB.SetClear(s.RoomIDStr, "raffle")
+}
+
+func (s *session) RaffleWinner() (string, bool, error) {
+	return s.Deps.RDB.SetPop(s.RoomIDStr, "raffle")
+}
+
+func (s *session) RaffleCount() (int64, error) {
+	return s.Deps.RDB.SetLen(s.RoomIDStr, "raffle")
+}

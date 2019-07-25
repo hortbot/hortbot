@@ -22,6 +22,7 @@ var (
 	errNotImplemented  = errors.New("bot: not implemented")
 	errNotAuthorized   = errors.New("bot: user is not authorized to use this command")
 	errBuiltinDisabled = errors.New("bot: builtin disabled")
+	errIgnore          = errors.New("bot: ignore")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -285,7 +286,7 @@ func handleSession(ctx context.Context, s *session) error {
 		}
 
 		switch err {
-		case errNotAuthorized, errBuiltinDisabled:
+		case errNotAuthorized, errBuiltinDisabled, errIgnore:
 			// Do nothing.
 		default:
 			return err

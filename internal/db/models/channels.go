@@ -43,6 +43,7 @@ type Channel struct {
 	LastFM                      string            `boil:"last_fm" json:"last_fm" toml:"last_fm" yaml:"last_fm"`
 	ParseYoutube                bool              `boil:"parse_youtube" json:"parse_youtube" toml:"parse_youtube" yaml:"parse_youtube"`
 	ExtraLifeID                 int               `boil:"extra_life_id" json:"extra_life_id" toml:"extra_life_id" yaml:"extra_life_id"`
+	RaffleEnabled               bool              `boil:"raffle_enabled" json:"raffle_enabled" toml:"raffle_enabled" yaml:"raffle_enabled"`
 	ShouldModerate              bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
 	DisplayWarnings             bool              `boil:"display_warnings" json:"display_warnings" toml:"display_warnings" yaml:"display_warnings"`
 	EnableWarnings              bool              `boil:"enable_warnings" json:"enable_warnings" toml:"enable_warnings" yaml:"enable_warnings"`
@@ -88,6 +89,7 @@ var ChannelColumns = struct {
 	LastFM                      string
 	ParseYoutube                string
 	ExtraLifeID                 string
+	RaffleEnabled               string
 	ShouldModerate              string
 	DisplayWarnings             string
 	EnableWarnings              string
@@ -128,6 +130,7 @@ var ChannelColumns = struct {
 	LastFM:                      "last_fm",
 	ParseYoutube:                "parse_youtube",
 	ExtraLifeID:                 "extra_life_id",
+	RaffleEnabled:               "raffle_enabled",
 	ShouldModerate:              "should_moderate",
 	DisplayWarnings:             "display_warnings",
 	EnableWarnings:              "enable_warnings",
@@ -225,6 +228,7 @@ var ChannelWhere = struct {
 	LastFM                      whereHelperstring
 	ParseYoutube                whereHelperbool
 	ExtraLifeID                 whereHelperint
+	RaffleEnabled               whereHelperbool
 	ShouldModerate              whereHelperbool
 	DisplayWarnings             whereHelperbool
 	EnableWarnings              whereHelperbool
@@ -265,6 +269,7 @@ var ChannelWhere = struct {
 	LastFM:                      whereHelperstring{field: "\"channels\".\"last_fm\""},
 	ParseYoutube:                whereHelperbool{field: "\"channels\".\"parse_youtube\""},
 	ExtraLifeID:                 whereHelperint{field: "\"channels\".\"extra_life_id\""},
+	RaffleEnabled:               whereHelperbool{field: "\"channels\".\"raffle_enabled\""},
 	ShouldModerate:              whereHelperbool{field: "\"channels\".\"should_moderate\""},
 	DisplayWarnings:             whereHelperbool{field: "\"channels\".\"display_warnings\""},
 	EnableWarnings:              whereHelperbool{field: "\"channels\".\"enable_warnings\""},
@@ -321,8 +326,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

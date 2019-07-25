@@ -99,12 +99,12 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] CoeBot would delete a quote and shift quotes after it backwards; HortBot doesn't. There needs to be a command to emulate this behavior.
 - [x] ~~Poll~~
 - [x] ~~Giveaways~~
-- [ ] Raffles
-    - [ ] Raffle
-    - [ ] Enable/disable
-    - [ ] Reset
-    - [ ] Count
-    - [ ] Winner
+- [x] Raffles
+    - [x] Raffle
+    - [x] Enable/disable
+    - [x] Reset
+    - [x] Count
+    - [x] Winner
 - [x] ~~Highlights~~ (Predates twitch clips, may port for old data)
 - [x] ~~Binding of Isaac: Rebirth~~
 - [x] Moderation

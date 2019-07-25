@@ -333,7 +333,7 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 
 		Dedupe string
 		Clock  string
-		Rand   *int64
+		Rand   *int
 	}
 
 	bcj.Config = &st.bc
@@ -365,13 +365,15 @@ func (st *scriptTester) botConfig(t *testing.T, args string) {
 	}
 
 	if bcj.Rand != nil {
-		rng := rand.New(rand.NewSource(*bcj.Rand))
+		rng := rand.New(rand.NewSource(int64(*bcj.Rand)))
 
 		fakeRand := &botfakes.FakeRand{}
 		fakeRand.IntnCalls(rng.Intn)
 		fakeRand.Float64Calls(rng.Float64)
 
 		st.bc.Rand = fakeRand
+
+		st.redis.Seed(*bcj.Rand)
 	}
 }
 
