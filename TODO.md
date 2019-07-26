@@ -176,11 +176,12 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `symbols`
 - [ ] Administration
 - [ ] Variables
-    - [ ] Set
-    - [ ] Delete
-    - [ ] Get
-    - [ ] Increment
-    - [ ] Decrement
+    - [x] Set
+    - [x] Delete
+    - [x] Get
+    - [x] Increment
+    - [x] Decrement
+    - [ ] Actions / string replacements (see below)
 - [ ] Lists
 - [ ] Misc undocumented stuff
     - [ ] Roll

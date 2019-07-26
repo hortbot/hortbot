@@ -5,7 +5,7 @@ send hortbot #foobar [HB] parseYoutube is set to false.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set parseYoutube what
-send hortbot #foobar [HB] usage: !set parseyoutube <on|off>
+send hortbot #foobar [HB] usage: !set parseyoutube on|off
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set parseYoutube on
 send hortbot #foobar [HB] YouTube link parsing is now enabled.

@@ -25,7 +25,7 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 	}
 
 	usage := func() error {
-		return s.ReplyUsage("<list|add|remove> ...")
+		return s.ReplyUsage("list|add|remove ...")
 	}
 
 	getter := func() []string {

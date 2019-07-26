@@ -10,6 +10,7 @@ var TableNames = struct {
 	RepeatedCommands  string
 	ScheduledCommands string
 	SimpleCommands    string
+	Variables         string
 }{
 	Autoreplies:       "autoreplies",
 	Channels:          "channels",
@@ -17,4 +18,5 @@ var TableNames = struct {
 	RepeatedCommands:  "repeated_commands",
 	ScheduledCommands: "scheduled_commands",
 	SimpleCommands:    "simple_commands",
+	Variables:         "variables",
 }

@@ -40,6 +40,7 @@ func init() {
 		"autoreply":   {fn: cmdAutoreply, minLevel: levelModerator},
 		"xkcd":        {fn: cmdXKCD, minLevel: levelSubscriber},
 		"raffle":      {fn: cmdRaffle, minLevel: levelEveryone},
+		"var":         {fn: cmdVar, minLevel: levelModerator},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }

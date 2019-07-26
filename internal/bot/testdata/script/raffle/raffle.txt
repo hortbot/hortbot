@@ -22,7 +22,7 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle what
-send hortbot #foobar [HB] usage: !raffle <enable|disable|count|winner|reset>
+send hortbot #foobar [HB] usage: !raffle enable|disable|count|winner|reset
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!raffle disable

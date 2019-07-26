@@ -1,5 +1,7 @@
 BEGIN;
 
+DROP TABLE IF EXISTS variables CASCADE;
+
 DROP TABLE IF EXISTS autoreplies CASCADE;
 
 DROP TABLE IF EXISTS scheduled_commands CASCADE;

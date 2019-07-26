@@ -26,4 +26,4 @@ send hortbot #foobar /ban random
 send hortbot #foobar [HB] random has been banned.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate what
-send hortbot #foobar [HB] usage: !set shouldmoderate <on|off>
+send hortbot #foobar [HB] usage: !set shouldmoderate on|off

@@ -451,7 +451,7 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 			enabled = true
 		case "off":
 		default:
-			return s.ReplyUsage("single <on|off>")
+			return s.ReplyUsage("single on|off")
 		}
 
 		if s.Channel.FilterEmotesSingle == enabled {

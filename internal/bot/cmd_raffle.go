@@ -35,7 +35,7 @@ func cmdRaffle(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if s.UserLevel.CanAccess(levelModerator) {
-		return s.ReplyUsage("<enable|disable|count|winner|reset>")
+		return s.ReplyUsage("enable|disable|count|winner|reset")
 	}
 
 	return errIgnore

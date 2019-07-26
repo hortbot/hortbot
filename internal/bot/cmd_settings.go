@@ -308,7 +308,7 @@ func updateBoolean(
 		}
 
 	default:
-		return s.ReplyUsage("<on|off>")
+		return s.ReplyUsage("on|off")
 	}
 
 	set(v)
