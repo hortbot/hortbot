@@ -108,7 +108,7 @@ func (s *session) Replyf(format string, args ...interface{}) error {
 
 func (s *session) ReplyUsage(usage string) error {
 	var builder strings.Builder
-	builder.WriteString("usage: ")
+	builder.WriteString("Usage: ")
 	builder.WriteString(s.Channel.Prefix)
 	builder.WriteString(s.usageContext)
 	builder.WriteString(usage)

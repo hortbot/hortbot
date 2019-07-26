@@ -11,7 +11,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links what
-send hortbot #foobar [HB] usage: !filter links on|off
+send hortbot #foobar [HB] Usage: !filter links on|off
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on

@@ -11,10 +11,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase
-send hortbot #foobar [HB] usage: !filter banphrase on|off|add|delete|clear|list
+send hortbot #foobar [HB] Usage: !filter banphrase on|off|add|delete|clear|list
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase what
-send hortbot #foobar [HB] usage: !filter banphrase on|off|add|delete|clear|list
+send hortbot #foobar [HB] Usage: !filter banphrase on|off|add|delete|clear|list
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
 send hortbot #foobar [HB] Filters are now enabled.

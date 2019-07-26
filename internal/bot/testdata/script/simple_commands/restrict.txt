@@ -7,7 +7,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.
 send hortbot #foobar [HB] Your level is moderator; you cannot restrict a command to level admin.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict
-send hortbot #foobar [HB] usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
+send hortbot #foobar [HB] Usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan
 send hortbot #foobar [HB] Command 'pan' is restricted to subscribers and above.
@@ -34,7 +34,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Command 'what' does not exist.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan what
-send hortbot #foobar [HB] usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
+send hortbot #foobar [HB] Usage: +command restrict <name> everyone|regulars|subs|mods|broadcaster|admin
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :modman!modman@modman.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
 send hortbot #foobar [HB] Your level is moderator; you cannot restrict a command with level admin.

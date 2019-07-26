@@ -7,7 +7,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply
-send hortbot #foobar [HB] usage: !autoreply add|remove|editresponse|editpattern|list
+send hortbot #foobar [HB] Usage: !autoreply add|remove|editresponse|editpattern|list
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply what
-send hortbot #foobar [HB] usage: !autoreply add|remove|editresponse|editpattern|list
+send hortbot #foobar [HB] Usage: !autoreply add|remove|editresponse|editpattern|list

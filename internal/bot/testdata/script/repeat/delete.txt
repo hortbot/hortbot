@@ -1,7 +1,7 @@
 join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat delete
-send hortbot #foobar [HB] usage: !repeat delete <name>
+send hortbot #foobar [HB] Usage: !repeat delete <name>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat delete repeatme
 send hortbot #foobar [HB] Command 'repeatme' does not exist.

@@ -7,7 +7,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] "This is a test, part 2." added as quote #2.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add
-send hortbot #foobar [HB] usage: !quote add <quote>
+send hortbot #foobar [HB] Usage: !quote add <quote>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
 no_send

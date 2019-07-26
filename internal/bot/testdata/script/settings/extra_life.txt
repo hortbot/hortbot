@@ -4,10 +4,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Extra Life ID is not set.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid what
-send hortbot #foobar [HB] usage: !set extralifeid <participant ID>
+send hortbot #foobar [HB] Usage: !set extralifeid <participant ID>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid -1
-send hortbot #foobar [HB] usage: !set extralifeid <participant ID>
+send hortbot #foobar [HB] Usage: !set extralifeid <participant ID>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid 123
 send hortbot #foobar [HB] Extra Life ID changed to 123.

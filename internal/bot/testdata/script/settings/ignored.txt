@@ -1,7 +1,7 @@
 insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore
-send hortbot #foobar [HB] usage: +ignore list|add|remove ...
+send hortbot #foobar [HB] Usage: +ignore list|add|remove ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command adda pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar [HB] Command 'pan' added, restricted to everyone and above.

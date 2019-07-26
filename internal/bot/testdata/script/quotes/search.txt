@@ -32,7 +32,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Phrase found in quote 5.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search
-send hortbot #foobar [HB] usage: !quote search <phrase>
+send hortbot #foobar [HB] Usage: !quote search <phrase>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote search test

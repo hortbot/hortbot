@@ -13,10 +13,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Quote #1: "This is a testerino."
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit
-send hortbot #foobar [HB] usage: !quote edit <index> <quote>
+send hortbot #foobar [HB] Usage: !quote edit <index> <quote>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1
-send hortbot #foobar [HB] usage: !quote edit <index> <quote>
+send hortbot #foobar [HB] Usage: !quote edit <index> <quote>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote edit 2 "foobar"
 send hortbot #foobar [HB] Quote #2 does not exist.

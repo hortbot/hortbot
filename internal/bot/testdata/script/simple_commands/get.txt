@@ -18,4 +18,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Command 'pan2' does not exist.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command get
-send hortbot #foobar [HB] usage: !command get <name>
+send hortbot #foobar [HB] Usage: !command get <name>

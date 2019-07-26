@@ -11,7 +11,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols what
-send hortbot #foobar [HB] usage: !filter symbols on|off|percent|min|status
+send hortbot #foobar [HB] Usage: !filter symbols on|off|percent|min|status
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
@@ -53,13 +53,13 @@ no_send
 # symbols percent
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent
-send hortbot #foobar [HB] usage: !filter symbols percent <0-100>
+send hortbot #foobar [HB] Usage: !filter symbols percent <0-100>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent 101
-send hortbot #foobar [HB] usage: !filter symbols percent <0-100>
+send hortbot #foobar [HB] Usage: !filter symbols percent <0-100>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent -1
-send hortbot #foobar [HB] usage: !filter symbols percent <0-100>
+send hortbot #foobar [HB] Usage: !filter symbols percent <0-100>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols percent 25
@@ -90,10 +90,10 @@ send hortbot #foobar [HB] Symbols filter percent set to 50%.
 # Min symbols
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols min
-send hortbot #foobar [HB] usage: !filter symbols min <int>
+send hortbot #foobar [HB] Usage: !filter symbols min <int>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols min -1
-send hortbot #foobar [HB] usage: !filter symbols min <int>
+send hortbot #foobar [HB] Usage: !filter symbols min <int>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter symbols min 11

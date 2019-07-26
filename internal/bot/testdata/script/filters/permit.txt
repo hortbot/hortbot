@@ -17,7 +17,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit
-send hortbot #foobar [HB] usage: !permit <user>
+send hortbot #foobar [HB] Usage: !permit <user>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
 no_send

@@ -1,22 +1,22 @@
 join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse
-send hortbot #foobar [HB] usage: !autoreply editresponse <index> <response>
+send hortbot #foobar [HB] Usage: !autoreply editresponse <index> <response>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse what okok
-send hortbot #foobar [HB] usage: !autoreply editresponse <index> <response>
+send hortbot #foobar [HB] Usage: !autoreply editresponse <index> <response>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse 1
-send hortbot #foobar [HB] usage: !autoreply editresponse <index> <response>
+send hortbot #foobar [HB] Usage: !autoreply editresponse <index> <response>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern
-send hortbot #foobar [HB] usage: !autoreply editpattern <index> <pattern>
+send hortbot #foobar [HB] Usage: !autoreply editpattern <index> <pattern>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern what okok
-send hortbot #foobar [HB] usage: !autoreply editpattern <index> <pattern>
+send hortbot #foobar [HB] Usage: !autoreply editpattern <index> <pattern>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern 1
-send hortbot #foobar [HB] usage: !autoreply editpattern <index> <pattern>
+send hortbot #foobar [HB] Usage: !autoreply editpattern <index> <pattern>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse 1 hey

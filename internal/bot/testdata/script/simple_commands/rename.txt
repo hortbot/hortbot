@@ -11,10 +11,10 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command rename
-send hortbot #foobar [HB] usage: +command rename <old> <new>
+send hortbot #foobar [HB] Usage: +command rename <old> <new>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command rename pan
-send hortbot #foobar [HB] usage: +command rename <old> <new>
+send hortbot #foobar [HB] Usage: +command rename <old> <new>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command rename pan newpan

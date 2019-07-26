@@ -11,7 +11,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps what
-send hortbot #foobar [HB] usage: !filter caps on|off|percent|minchars|mincaps|status
+send hortbot #foobar [HB] Usage: !filter caps on|off|percent|minchars|mincaps|status
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
@@ -56,13 +56,13 @@ no_send
 # Caps percent
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent
-send hortbot #foobar [HB] usage: !filter caps percent <0-100>
+send hortbot #foobar [HB] Usage: !filter caps percent <0-100>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent 101
-send hortbot #foobar [HB] usage: !filter caps percent <0-100>
+send hortbot #foobar [HB] Usage: !filter caps percent <0-100>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent -1
-send hortbot #foobar [HB] usage: !filter caps percent <0-100>
+send hortbot #foobar [HB] Usage: !filter caps percent <0-100>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent 25
@@ -94,10 +94,10 @@ send hortbot #foobar [HB] Caps filter percent set to 50%.
 # Min chars
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps minchars
-send hortbot #foobar [HB] usage: !filter caps minchars <int>
+send hortbot #foobar [HB] Usage: !filter caps minchars <int>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps minchars -1
-send hortbot #foobar [HB] usage: !filter caps minchars <int>
+send hortbot #foobar [HB] Usage: !filter caps minchars <int>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps minchars 5
@@ -115,10 +115,10 @@ send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warni
 # Min caps
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps mincaps
-send hortbot #foobar [HB] usage: !filter caps mincaps <int>
+send hortbot #foobar [HB] Usage: !filter caps mincaps <int>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps mincaps -1
-send hortbot #foobar [HB] usage: !filter caps mincaps <int>
+send hortbot #foobar [HB] Usage: !filter caps mincaps <int>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps mincaps 11

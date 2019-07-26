@@ -27,7 +27,7 @@ func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
-		return s.Reply("usage: +b <user>")
+		return s.Reply("Usage: +b <user>")
 	}
 
 	user = strings.ToLower(user)
@@ -43,7 +43,7 @@ func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error
 	user, _ := splitSpace(args)
 
 	if user == "" {
-		return s.Reply("usage: -b <user>")
+		return s.Reply("Usage: -b <user>")
 	}
 
 	user = strings.ToLower(user)
@@ -57,7 +57,7 @@ func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error
 
 func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.Reply("usage: +t <user> [seconds]")
+		return s.Reply("Usage: +t <user> [seconds]")
 	}
 
 	user, args := splitSpace(args)
@@ -92,7 +92,7 @@ func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) e
 	user, _ := splitSpace(args)
 
 	if user == "" {
-		return s.Reply("usage: -t <user>")
+		return s.Reply("Usage: -t <user>")
 	}
 
 	user = strings.ToLower(user)
@@ -115,7 +115,7 @@ func cmdChangeMode(command, message string) func(ctx context.Context, s *session
 
 func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.Reply("usage: +p <user>")
+		return s.Reply("Usage: +p <user>")
 	}
 
 	user, _ := splitSpace(args)

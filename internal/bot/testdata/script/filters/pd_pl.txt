@@ -7,13 +7,13 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd
-send hortbot #foobar [HB] usage: !filter pd add|delete|list ...
+send hortbot #foobar [HB] Usage: !filter pd add|delete|list ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pl
-send hortbot #foobar [HB] usage: !filter pl add|delete|list ...
+send hortbot #foobar [HB] Usage: !filter pl add|delete|list ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pl what
-send hortbot #foobar [HB] usage: !filter pl add|delete|list ...
+send hortbot #foobar [HB] Usage: !filter pl add|delete|list ...
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd list
 send hortbot #foobar [HB] There are no permitted link patterns.
@@ -56,13 +56,13 @@ send hortbot #foobar [HB] There are no permitted link patterns.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd delete 0
-send hortbot #foobar [HB] usage: !filter pd delete <num>
+send hortbot #foobar [HB] Usage: !filter pd delete <num>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd remove foo
-send hortbot #foobar [HB] usage: !filter pd remove <num>
+send hortbot #foobar [HB] Usage: !filter pd remove <num>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add goo.gl/* hmm
-send hortbot #foobar [HB] usage: !filter pd add <link pattern>
+send hortbot #foobar [HB] Usage: !filter pd add <link pattern>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add *
 send hortbot #foobar [HB] Could not parse link pattern.

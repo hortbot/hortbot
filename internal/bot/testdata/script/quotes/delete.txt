@@ -47,10 +47,10 @@ send hortbot #foobar [HB] Quote #4 does not exist.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote remove
-send hortbot #foobar [HB] usage: !quote remove <index>
+send hortbot #foobar [HB] Usage: !quote remove <index>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote remove asd
-send hortbot #foobar [HB] usage: !quote remove <index>
+send hortbot #foobar [HB] Usage: !quote remove <index>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote delete 1

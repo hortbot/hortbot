@@ -1,10 +1,10 @@
 join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add
-send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+send hortbot #foobar [HB] Usage: !repeat add <name> <delay in seconds> [message difference]
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme
-send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+send hortbot #foobar [HB] Usage: !repeat add <name> <delay in seconds> [message difference]
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600
 send hortbot #foobar [HB] Command 'repeatme' does not exist.
@@ -34,7 +34,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Delay must be at least 30 seconds.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme what
-send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+send hortbot #foobar [HB] Usage: !repeat add <name> <delay in seconds> [message difference]
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 0
@@ -44,7 +44,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Message difference must be at least 1.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 600 huh
-send hortbot #foobar [HB] usage: !repeat add <name> <delay in seconds> [message difference]
+send hortbot #foobar [HB] Usage: !repeat add <name> <delay in seconds> [message difference]
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addb repeatme2 Hello there!

@@ -4,10 +4,10 @@ join hortbot 999 foobar 1
 clock_set 2000-10-01T03:11:00Z
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule on
-send hortbot #foobar [HB] usage: !schedule on <name>
+send hortbot #foobar [HB] Usage: !schedule on <name>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule off
-send hortbot #foobar [HB] usage: !schedule off <name>
+send hortbot #foobar [HB] Usage: !schedule off <name>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule on repeatme
 send hortbot #foobar [HB] Command 'repeatme' does not exist.

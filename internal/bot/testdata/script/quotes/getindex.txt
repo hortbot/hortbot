@@ -23,7 +23,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Quote not found; make sure your quote is exact.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote getindex
-send hortbot #foobar [HB] usage: !quote getindex <quote>
+send hortbot #foobar [HB] Usage: !quote getindex <quote>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote getindex "This is a TeSt."

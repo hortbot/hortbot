@@ -7,7 +7,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Timeout duration must not be negative.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration what
-send hortbot #foobar [HB] usage: !set timeoutduration <seconds>
+send hortbot #foobar [HB] Usage: !set timeoutduration <seconds>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration
 send hortbot #foobar [HB] Timeout duration is set to 600 seconds.

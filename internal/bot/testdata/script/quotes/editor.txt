@@ -22,10 +22,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Quote #2 does not exist.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor
-send hortbot #foobar [HB] usage: !quote editor <index>
+send hortbot #foobar [HB] Usage: !quote editor <index>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor asd
-send hortbot #foobar [HB] usage: !quote editor <index>
+send hortbot #foobar [HB] Usage: !quote editor <index>
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=4 :random2!random2@random2.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1

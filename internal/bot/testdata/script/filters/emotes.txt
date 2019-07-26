@@ -11,7 +11,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@rand
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes what
-send hortbot #foobar [HB] usage: !filter emotes on|off|max|single|status
+send hortbot #foobar [HB] Usage: !filter emotes on|off|max|single|status
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
@@ -59,13 +59,13 @@ send_any
 clock_forward 3h
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max
-send hortbot #foobar [HB] usage: !filter emotes max <num>
+send hortbot #foobar [HB] Usage: !filter emotes max <num>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max what
-send hortbot #foobar [HB] usage: !filter emotes max <num>
+send hortbot #foobar [HB] Usage: !filter emotes max <num>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max -1
-send hortbot #foobar [HB] usage: !filter emotes max <num>
+send hortbot #foobar [HB] Usage: !filter emotes max <num>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes max 10
 send hortbot #foobar [HB] Emote filter max emotes set to 10.
@@ -77,10 +77,10 @@ no_send
 clock_forward 3h
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single
-send hortbot #foobar [HB] usage: !filter emotes single on|off
+send hortbot #foobar [HB] Usage: !filter emotes single on|off
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single what
-send hortbot #foobar [HB] usage: !filter emotes single on|off
+send hortbot #foobar [HB] Usage: !filter emotes single on|off
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter emotes single off
 send hortbot #foobar [HB] Single emote filter is already disabled.

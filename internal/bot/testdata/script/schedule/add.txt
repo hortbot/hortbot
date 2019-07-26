@@ -4,10 +4,10 @@ join hortbot 999 foobar 1
 clock_set 2000-10-01T03:11:00Z
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add
-send hortbot #foobar [HB] usage: !schedule add <name> <pattern> [message difference]
+send hortbot #foobar [HB] Usage: !schedule add <name> <pattern> [message difference]
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme
-send hortbot #foobar [HB] usage: !schedule add <name> <pattern> [message difference]
+send hortbot #foobar [HB] Usage: !schedule add <name> <pattern> [message difference]
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme @hourly
 send hortbot #foobar [HB] Command 'repeatme' does not exist.
@@ -38,7 +38,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Message difference must be at least 1.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme *_*_*_*_* huh
-send hortbot #foobar [HB] usage: !schedule add <name> <pattern> [message difference]
+send hortbot #foobar [HB] Usage: !schedule add <name> <pattern> [message difference]
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addb repeatme2 Hello there!
