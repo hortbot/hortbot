@@ -118,68 +118,14 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 	switch {
 	case strings.HasPrefix(action, "RANDOM_"):
-		action = strings.TrimPrefix(action, "RANDOM_")
-
-		if strings.HasPrefix(action, "INT_") {
-			action = strings.TrimPrefix(action, "INT_")
-			minStr, maxStr := splitFirstSep(action, "_")
-			if minStr == "" || maxStr == "" {
-				return "0", nil
-			}
-
-			min, err := strconv.Atoi(minStr)
-			if err != nil {
-				return "0", nil
-			}
-
-			max, err := strconv.Atoi(maxStr)
-			if err != nil {
-				return "0", nil
-			}
-
-			switch {
-			case max < min:
-				return "0", nil
-			case max == min:
-				return strconv.Itoa(max), nil
-			}
-
-			x := s.Deps.Rand.Intn(max-min) + min
-			return strconv.Itoa(x), nil
-		}
-
-		minStr, maxStr := splitFirstSep(action, "_")
-		if minStr == "" || maxStr == "" {
-			return "0.0", nil
-		}
-
-		min, err := strconv.ParseFloat(minStr, 64)
-		if err != nil {
-			return "0.0", nil
-		}
-
-		max, err := strconv.ParseFloat(maxStr, 64)
-		if err != nil {
-			return "0.0", nil
-		}
-
-		var x float64
-
-		switch {
-		case max < min:
-			return "0.0", nil
-		case max == min:
-			x = max
-		default:
-			r := s.Deps.Rand.Float64()
-			x = r*(max-min) + min
-		}
-
-		return strconv.FormatFloat(x, 'f', 1, 64), nil
+		return s.actionRandom(strings.TrimPrefix(action, "RANDOM_"))
 
 	case strings.HasPrefix(action, "HOST_"):
 		ch := strings.TrimPrefix(action, "HOST_")
 		return "", s.SendCommand("host", strings.ToLower(ch))
+
+	case strings.HasPrefix(action, "VARS_"):
+		return s.actionVars(ctx, strings.TrimPrefix(action, "VARS_"))
 
 	case strings.HasSuffix(action, "_COUNT"): // This case must come last.
 		name := strings.TrimSuffix(action, "_COUNT")
@@ -196,6 +142,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 
 	default:
+		// TODO: Should this return "(_" + action "_)" to match the old behavior of not replacing things?
 		return "", fmt.Errorf("unknown action: %s", action)
 	}
 
@@ -270,4 +217,131 @@ func (s *session) actionSong(i int, url bool) (string, error) {
 	}
 
 	return track.Name + " by " + track.Artist, nil
+}
+
+func (s *session) actionRandom(action string) (string, error) {
+	if strings.HasPrefix(action, "INT_") {
+		action = strings.TrimPrefix(action, "INT_")
+		minStr, maxStr := splitFirstSep(action, "_")
+		if minStr == "" || maxStr == "" {
+			return "0", nil
+		}
+
+		min, err := strconv.Atoi(minStr)
+		if err != nil {
+			return "0", nil
+		}
+
+		max, err := strconv.Atoi(maxStr)
+		if err != nil {
+			return "0", nil
+		}
+
+		switch {
+		case max < min:
+			return "0", nil
+		case max == min:
+			return strconv.Itoa(max), nil
+		}
+
+		x := s.Deps.Rand.Intn(max-min) + min
+		return strconv.Itoa(x), nil
+	}
+
+	minStr, maxStr := splitFirstSep(action, "_")
+	if minStr == "" || maxStr == "" {
+		return "0.0", nil
+	}
+
+	min, err := strconv.ParseFloat(minStr, 64)
+	if err != nil {
+		return "0.0", nil
+	}
+
+	max, err := strconv.ParseFloat(maxStr, 64)
+	if err != nil {
+		return "0.0", nil
+	}
+
+	var x float64
+
+	switch {
+	case max < min:
+		return "0.0", nil
+	case max == min:
+		x = max
+	default:
+		r := s.Deps.Rand.Float64()
+		x = r*(max-min) + min
+	}
+
+	return strconv.FormatFloat(x, 'f', 1, 64), nil
+}
+
+func (s *session) actionVars(ctx context.Context, action string) (string, error) {
+	name, action := splitFirstSep(action, "_")
+	if name == "" || action == "" {
+		return "(error)", nil
+	}
+
+	switch {
+	case strings.HasPrefix(action, "GET_"):
+		ch := strings.TrimPrefix(action, "GET_")
+		if ch == "" {
+			return "(error)", nil
+		}
+
+		v, _, err := s.VarGetByChannel(ctx, ch, name)
+		if err != nil {
+			return "", err
+		}
+
+		return v, nil
+
+	case strings.HasPrefix(action, "SET_"):
+		value := strings.TrimPrefix(action, "SET_")
+
+		if err := s.VarSet(ctx, name, value); err != nil {
+			return "", err
+		}
+
+		return value, nil
+
+	case strings.HasPrefix(action, "INCREMENT_"):
+		incStr := strings.TrimPrefix(action, "INCREMENT_")
+		return s.actionVarInc(ctx, name, incStr, false)
+
+	case strings.HasPrefix(action, "DECREMENT_"):
+		decStr := strings.TrimPrefix(action, "DECREMENT_")
+		return s.actionVarInc(ctx, name, decStr, true)
+
+	default:
+		return "(error)", nil
+	}
+}
+
+func (s *session) actionVarInc(ctx context.Context, name, incStr string, dec bool) (string, error) {
+	if incStr == "" {
+		return "(error)", nil
+	}
+
+	inc, err := strconv.ParseInt(incStr, 10, 64)
+	if err != nil {
+		return "(error)", nil
+	}
+
+	if dec {
+		inc = 0 - inc
+	}
+
+	v, badVar, err := s.VarIncrement(ctx, name, inc)
+	if err != nil {
+		return "", err
+	}
+
+	if badVar {
+		return "(error)", nil
+	}
+
+	return strconv.FormatInt(v, 10), nil
 }

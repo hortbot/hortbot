@@ -175,13 +175,13 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `emotes`
         - [x] `symbols`
 - [ ] Administration
-- [ ] Variables
+- [x] Variables
     - [x] Set
     - [x] Delete
     - [x] Get
     - [x] Increment
     - [x] Decrement
-    - [ ] Actions / string replacements (see below)
+    - [x] Actions / string replacements (see below)
 - [ ] Lists
 - [ ] Misc undocumented stuff
     - [ ] Roll
@@ -234,7 +234,7 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_TWEET_URL_)`
 - [x] `(_EXTRALIFE_AMOUNT_)`
 - [ ] DATE/TIME/UNTIL variants
-- [ ] VAR actions
+- [x] VAR actions
 - [ ] LIST actions
 - [x] `(_SILENT_)`
 - [x] `(_CHANNEL_URL_)`

@@ -4,13 +4,40 @@ import (
 	"context"
 	"database/sql"
 	"strconv"
+	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
 func (s *session) VarGet(ctx context.Context, name string) (string, bool, error) {
 	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
+	if err == sql.ErrNoRows {
+		return "", false, nil
+	}
+
+	if err != nil {
+		return "", false, err
+	}
+
+	return v.Value, true, nil
+}
+
+func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string, bool, error) {
+	c, err := models.Channels(
+		models.ChannelWhere.Name.EQ(strings.ToLower(ch)),
+		qm.Select(models.ChannelColumns.ID),
+	).One(ctx, s.Tx)
+	if err == sql.ErrNoRows {
+		return "", false, nil
+	}
+
+	if err != nil {
+		return "", false, err
+	}
+
+	v, err := c.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err == sql.ErrNoRows {
 		return "", false, nil
 	}
