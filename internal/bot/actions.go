@@ -111,6 +111,8 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 			return fmt.Sprintf("$%.2f", amount), nil
 		case extralife.ErrNotFound:
 			return "Bad Extra Life participant ID", nil
+		case extralife.ErrServerError:
+			return "Extra Life server error", nil
 		default:
 			return "", err
 		}
