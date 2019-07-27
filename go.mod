@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
-	github.com/aws/aws-sdk-go v1.21.3 // indirect
+	github.com/aws/aws-sdk-go v1.21.6 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.4
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
@@ -37,6 +37,7 @@ require (
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
+	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/jackc/pgx v3.5.0+incompatible // indirect
 	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -75,12 +76,14 @@ require (
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190712062909-fae7ac547cb7 // indirect
-	golang.org/x/tools v0.0.0-20190723021737-8bb11ff117ca
-	google.golang.org/grpc v1.22.0 // indirect
+	golang.org/x/sys v0.0.0-20190726091711-fc99dfbffb4e // indirect
+	golang.org/x/tools v0.0.0-20190727173135-db2fa46ec33c
+	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
 	mvdan.cc/xurls/v2 v2.0.0
 )
 
 replace gopkg.in/DATA-DOG/go-sqlmock.v1 => github.com/DATA-DOG/go-sqlmock v1.3.3
+
+replace gopkg.in/jcmturner/rpc.v1 => github.com/jcmturner/rpc v1.1.1
