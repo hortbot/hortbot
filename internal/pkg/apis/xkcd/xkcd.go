@@ -21,6 +21,8 @@ type API interface {
 	GetComic(id int) (*Comic, error)
 }
 
+// TODO: Fork the XKCD library to allow for a custom HTTP client.
+
 type XKCD struct{}
 
 var _ API = &XKCD{}
