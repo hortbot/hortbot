@@ -24,7 +24,7 @@ const comic1 = `{
     "day": "1"
 }`
 
-func TestGetDonationAmount(t *testing.T) {
+func TestGetComic(t *testing.T) {
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
 
@@ -51,9 +51,9 @@ func TestGetDonationAmount(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
-		el := xkcd.New()
+		x := xkcd.New()
 
-		comic, err := el.GetComic(1)
+		comic, err := x.GetComic(1)
 		assert.NilError(t, err)
 		assert.DeepEqual(t, comic, &xkcd.Comic{
 			Title: "Barrel - Part 1",
@@ -63,16 +63,16 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		el := xkcd.New()
+		x := xkcd.New()
 
-		_, err := el.GetComic(77777)
+		_, err := x.GetComic(77777)
 		assert.Equal(t, err, xkcd.ErrNotFound)
 	})
 
 	t.Run("Client error", func(t *testing.T) {
-		el := xkcd.New()
+		x := xkcd.New()
 
-		_, err := el.GetComic(99999)
+		_, err := x.GetComic(99999)
 		assert.ErrorContains(t, err, errTest.Error())
 	})
 }

@@ -21,6 +21,8 @@ type API interface {
 	RecentTracks(user string, n int) ([]Track, error)
 }
 
+// TODO: Fork LastFM package to expose internal client.
+
 type LastFM struct {
 	api lastfm.LastFM
 }
@@ -40,10 +42,6 @@ func (l *LastFM) RecentTracks(user string, n int) ([]Track, error) {
 	}
 
 	tracks := resp.Tracks
-
-	if len(tracks) > n {
-		tracks = tracks[:n]
-	}
 
 	ts := make([]Track, len(tracks))
 
