@@ -42,7 +42,7 @@ var twitchEndpoint = oauth2.Endpoint{
 
 const (
 	krakenRoot = "https://api.twitch.tv/kraken"
-	helixRoot  = "https://api.twitch.tv/helix"
+	// helixRoot  = "https://api.twitch.tv/helix"
 )
 
 // API covers the main API methods for Twitch. It does not include OAuth-only
@@ -54,6 +54,7 @@ type API interface {
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newToken *oauth2.Token, err error)
+	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 }
 
 // Twitch is the Twitch API client.

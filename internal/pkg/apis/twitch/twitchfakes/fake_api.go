@@ -40,6 +40,20 @@ type FakeAPI struct {
 		result1 *twitch.Channel
 		result2 error
 	}
+	GetCurrentStreamStub        func(context.Context, int64) (*twitch.Stream, error)
+	getCurrentStreamMutex       sync.RWMutex
+	getCurrentStreamArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+	}
+	getCurrentStreamReturns struct {
+		result1 *twitch.Stream
+		result2 error
+	}
+	getCurrentStreamReturnsOnCall map[int]struct {
+		result1 *twitch.Stream
+		result2 error
+	}
 	SetChannelGameStub        func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)
 	setChannelGameMutex       sync.RWMutex
 	setChannelGameArgsForCall []struct {
@@ -207,6 +221,70 @@ func (fake *FakeAPI) GetChannelByIDReturnsOnCall(i int, result1 *twitch.Channel,
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) GetCurrentStream(arg1 context.Context, arg2 int64) (*twitch.Stream, error) {
+	fake.getCurrentStreamMutex.Lock()
+	ret, specificReturn := fake.getCurrentStreamReturnsOnCall[len(fake.getCurrentStreamArgsForCall)]
+	fake.getCurrentStreamArgsForCall = append(fake.getCurrentStreamArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+	}{arg1, arg2})
+	fake.recordInvocation("GetCurrentStream", []interface{}{arg1, arg2})
+	fake.getCurrentStreamMutex.Unlock()
+	if fake.GetCurrentStreamStub != nil {
+		return fake.GetCurrentStreamStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.getCurrentStreamReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) GetCurrentStreamCallCount() int {
+	fake.getCurrentStreamMutex.RLock()
+	defer fake.getCurrentStreamMutex.RUnlock()
+	return len(fake.getCurrentStreamArgsForCall)
+}
+
+func (fake *FakeAPI) GetCurrentStreamCalls(stub func(context.Context, int64) (*twitch.Stream, error)) {
+	fake.getCurrentStreamMutex.Lock()
+	defer fake.getCurrentStreamMutex.Unlock()
+	fake.GetCurrentStreamStub = stub
+}
+
+func (fake *FakeAPI) GetCurrentStreamArgsForCall(i int) (context.Context, int64) {
+	fake.getCurrentStreamMutex.RLock()
+	defer fake.getCurrentStreamMutex.RUnlock()
+	argsForCall := fake.getCurrentStreamArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) GetCurrentStreamReturns(result1 *twitch.Stream, result2 error) {
+	fake.getCurrentStreamMutex.Lock()
+	defer fake.getCurrentStreamMutex.Unlock()
+	fake.GetCurrentStreamStub = nil
+	fake.getCurrentStreamReturns = struct {
+		result1 *twitch.Stream
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetCurrentStreamReturnsOnCall(i int, result1 *twitch.Stream, result2 error) {
+	fake.getCurrentStreamMutex.Lock()
+	defer fake.getCurrentStreamMutex.Unlock()
+	fake.GetCurrentStreamStub = nil
+	if fake.getCurrentStreamReturnsOnCall == nil {
+		fake.getCurrentStreamReturnsOnCall = make(map[int]struct {
+			result1 *twitch.Stream
+			result2 error
+		})
+	}
+	fake.getCurrentStreamReturnsOnCall[i] = struct {
+		result1 *twitch.Stream
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeAPI) SetChannelGame(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (*oauth2.Token, error) {
 	fake.setChannelGameMutex.Lock()
 	ret, specificReturn := fake.setChannelGameReturnsOnCall[len(fake.setChannelGameArgsForCall)]
@@ -346,6 +424,8 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.getChannelMutex.RUnlock()
 	fake.getChannelByIDMutex.RLock()
 	defer fake.getChannelByIDMutex.RUnlock()
+	fake.getCurrentStreamMutex.RLock()
+	defer fake.getCurrentStreamMutex.RUnlock()
 	fake.setChannelGameMutex.RLock()
 	defer fake.setChannelGameMutex.RUnlock()
 	fake.setChannelStatusMutex.RLock()
