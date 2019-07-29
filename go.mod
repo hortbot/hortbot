@@ -25,12 +25,12 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20190724034813-50723dcdd23a // indirect
+	github.com/ericlagergren/decimal v0.0.0-20190728215445-5ff9df8e82c1 // indirect
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/fsouza/fake-gcs-server v1.10.1 // indirect
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.5
-	github.com/gocql/gocql v0.0.0-20190717234527-2ba2dd7440dc // indirect
+	github.com/gocql/gocql v0.0.0-20190728105348-76e94bbd190c // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.5.0
 	github.com/google/go-cmp v0.3.0
@@ -58,6 +58,7 @@ require (
 	github.com/pelletier/go-toml v1.4.0 // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
+	github.com/remyoudompheng/bigfft v0.0.0-20190728182440-6a916e37a237 // indirect
 	github.com/rkoesters/xkcd v0.0.0-20190613072715-c0127f09e992
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
@@ -78,7 +79,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190726091711-fc99dfbffb4e // indirect
-	golang.org/x/tools v0.0.0-20190727173135-db2fa46ec33c
+	golang.org/x/tools v0.0.0-20190728063539-fc6e2057e7f6
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
@@ -86,5 +87,3 @@ require (
 )
 
 replace gopkg.in/DATA-DOG/go-sqlmock.v1 => github.com/DATA-DOG/go-sqlmock v1.3.3
-
-replace gopkg.in/jcmturner/rpc.v1 => github.com/jcmturner/rpc v1.1.1
