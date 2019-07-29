@@ -15,7 +15,7 @@ import (
 var allTables = []string{
 	"schema_migrations",
 	"channels",
-	"simple_commands",
+	"custom_commands",
 	"quotes",
 	"repeated_commands",
 	"scheduled_commands",

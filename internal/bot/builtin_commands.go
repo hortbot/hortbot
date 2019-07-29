@@ -16,8 +16,8 @@ var reservedCommandNames = map[string]bool{
 func init() {
 	// To prevent initialization loop.
 	builtinCommands = map[string]handlerFunc{
-		"command":     {fn: cmdSimpleCommand, minLevel: levelModerator},
-		"coemand":     {fn: cmdSimpleCommand, minLevel: levelModerator},
+		"command":     {fn: cmdCommand, minLevel: levelModerator},
+		"coemand":     {fn: cmdCommand, minLevel: levelModerator},
 		"set":         {fn: cmdSettings, minLevel: levelModerator},
 		"setting":     {fn: cmdSettings, minLevel: levelModerator},
 		"owner":       {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},

@@ -351,8 +351,8 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(commandName),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(commandName),
 		qm.For("UPDATE"),
 	).One(ctx, tx)
 
@@ -366,7 +366,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	case nil:
 	default:
-		logger.Error("error getting simple command from database", zap.Error(err))
+		logger.Error("error getting custom command from database", zap.Error(err))
 		return true, err
 	}
 
@@ -375,7 +375,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return true, errNotAuthorized
 	}
 
-	return true, runSimpleCommand(ctx, s, command)
+	return true, runCustomCommand(ctx, s, command)
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {

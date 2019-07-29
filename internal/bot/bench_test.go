@@ -18,7 +18,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func BenchmarkSimpleCommand(b *testing.B) {
+func BenchmarkCustomCommand(b *testing.B) {
 	const botName = "hortbot"
 
 	_, rClient, rCleanup, err := miniredistest.New()

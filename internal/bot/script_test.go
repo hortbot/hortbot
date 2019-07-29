@@ -199,8 +199,8 @@ func (st *scriptTester) test(t *testing.T) {
 		case "insert_channel":
 			st.insertChannel(t, args)
 
-		case "insert_simple_command":
-			st.insertSimpleCommand(t, args)
+		case "insert_custom_command":
+			st.insertCustomCommand(t, args)
 
 		case "insert_repeated_command":
 			st.insertRepeatedCommand(t, args)
@@ -388,10 +388,10 @@ func (st *scriptTester) insertChannel(t *testing.T, args string) {
 	})
 }
 
-func (st *scriptTester) insertSimpleCommand(t *testing.T, args string) {
+func (st *scriptTester) insertCustomCommand(t *testing.T, args string) {
 	lineNum := st.lineNum
 
-	var sc models.SimpleCommand
+	var sc models.CustomCommand
 	assert.NilError(t, json.Unmarshal([]byte(args), &sc), "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {

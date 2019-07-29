@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func runSimpleCommand(ctx context.Context, s *session, command *models.SimpleCommand) error {
+func runCustomCommand(ctx context.Context, s *session, command *models.CustomCommand) error {
 	logger := ctxlog.FromContext(ctx)
 
 	nodes, err := cbp.Parse(command.Message)
@@ -22,7 +22,7 @@ func runSimpleCommand(ctx context.Context, s *session, command *models.SimpleCom
 	command.Count++
 
 	// Do not modify UpdatedAt, which should be only used for "real" modifications.
-	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.Count)); err != nil {
+	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.CustomCommandColumns.Count)); err != nil {
 		return err
 	}
 

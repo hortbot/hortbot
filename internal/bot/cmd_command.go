@@ -13,37 +13,37 @@ import (
 )
 
 var scCommands handlerMap = map[string]handlerFunc{
-	"add":             {fn: cmdSimpleCommandAddNormal, minLevel: levelModerator},
-	"addb":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addbroadcaster":  {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addbroadcasters": {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addo":            {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addowner":        {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addowners":       {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addstreamer":     {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addstreamers":    {fn: cmdSimpleCommandAddBroadcaster, minLevel: levelModerator},
-	"addm":            {fn: cmdSimpleCommandAddModerator, minLevel: levelModerator},
-	"addmod":          {fn: cmdSimpleCommandAddModerator, minLevel: levelModerator},
-	"addmods":         {fn: cmdSimpleCommandAddModerator, minLevel: levelModerator},
-	"adds":            {fn: cmdSimpleCommandAddSubscriber, minLevel: levelModerator},
-	"addsub":          {fn: cmdSimpleCommandAddSubscriber, minLevel: levelModerator},
-	"addsubs":         {fn: cmdSimpleCommandAddSubscriber, minLevel: levelModerator},
-	"adde":            {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
-	"adda":            {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
-	"addeveryone":     {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
-	"addall":          {fn: cmdSimpleCommandAddEveryone, minLevel: levelModerator},
-	"delete":          {fn: cmdSimpleCommandDelete, minLevel: levelModerator},
-	"remove":          {fn: cmdSimpleCommandDelete, minLevel: levelModerator},
-	"restrict":        {fn: cmdSimpleCommandRestrict, minLevel: levelModerator},
-	"editor":          {fn: cmdSimpleCommandProperty, minLevel: levelModerator},
-	"author":          {fn: cmdSimpleCommandProperty, minLevel: levelModerator},
-	"count":           {fn: cmdSimpleCommandProperty, minLevel: levelModerator},
-	"rename":          {fn: cmdSimpleCommandRename, minLevel: levelModerator},
-	"get":             {fn: cmdSimpleCommandGet, minLevel: levelModerator},
+	"add":             {fn: cmdCommandAddNormal, minLevel: levelModerator},
+	"addb":            {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addbroadcaster":  {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addbroadcasters": {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addo":            {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addowner":        {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addowners":       {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addstreamer":     {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addstreamers":    {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
+	"addm":            {fn: cmdCommandAddModerator, minLevel: levelModerator},
+	"addmod":          {fn: cmdCommandAddModerator, minLevel: levelModerator},
+	"addmods":         {fn: cmdCommandAddModerator, minLevel: levelModerator},
+	"adds":            {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
+	"addsub":          {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
+	"addsubs":         {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
+	"adde":            {fn: cmdCommandAddEveryone, minLevel: levelModerator},
+	"adda":            {fn: cmdCommandAddEveryone, minLevel: levelModerator},
+	"addeveryone":     {fn: cmdCommandAddEveryone, minLevel: levelModerator},
+	"addall":          {fn: cmdCommandAddEveryone, minLevel: levelModerator},
+	"delete":          {fn: cmdCommandDelete, minLevel: levelModerator},
+	"remove":          {fn: cmdCommandDelete, minLevel: levelModerator},
+	"restrict":        {fn: cmdCommandRestrict, minLevel: levelModerator},
+	"editor":          {fn: cmdCommandProperty, minLevel: levelModerator},
+	"author":          {fn: cmdCommandProperty, minLevel: levelModerator},
+	"count":           {fn: cmdCommandProperty, minLevel: levelModerator},
+	"rename":          {fn: cmdCommandRename, minLevel: levelModerator},
+	"get":             {fn: cmdCommandGet, minLevel: levelModerator},
 	// TODO: clone
 }
 
-func cmdSimpleCommand(ctx context.Context, s *session, cmd string, args string) error {
+func cmdCommand(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
@@ -59,27 +59,27 @@ func cmdSimpleCommand(ctx context.Context, s *session, cmd string, args string) 
 	return nil
 }
 
-func cmdSimpleCommandAddNormal(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, levelSubscriber, false)
+func cmdCommandAddNormal(ctx context.Context, s *session, cmd string, args string) error {
+	return cmdCommandAdd(ctx, s, args, levelSubscriber, false)
 }
 
-func cmdSimpleCommandAddBroadcaster(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, levelBroadcaster, true)
+func cmdCommandAddBroadcaster(ctx context.Context, s *session, cmd string, args string) error {
+	return cmdCommandAdd(ctx, s, args, levelBroadcaster, true)
 }
 
-func cmdSimpleCommandAddModerator(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, levelModerator, true)
+func cmdCommandAddModerator(ctx context.Context, s *session, cmd string, args string) error {
+	return cmdCommandAdd(ctx, s, args, levelModerator, true)
 }
 
-func cmdSimpleCommandAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, levelSubscriber, true)
+func cmdCommandAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
+	return cmdCommandAdd(ctx, s, args, levelSubscriber, true)
 }
 
-func cmdSimpleCommandAddEveryone(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdSimpleCommandAdd(ctx, s, args, levelEveryone, true)
+func cmdCommandAddEveryone(ctx context.Context, s *session, cmd string, args string) error {
+	return cmdCommandAdd(ctx, s, args, levelEveryone, true)
 }
 
-func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level accessLevel, forceLevel bool) error {
+func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLevel, forceLevel bool) error {
 	usage := func() error {
 		return s.ReplyUsage("<name> <text>")
 	}
@@ -106,8 +106,8 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 		return s.Replyf("Error parsing command.%s", warning)
 	}
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
@@ -139,7 +139,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 			command.AccessLevel = level.PGEnum()
 		}
 
-		if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Message, models.SimpleCommandColumns.Editor)); err != nil {
+		if err := command.Update(ctx, s.Tx, boil.Whitelist(models.CustomCommandColumns.UpdatedAt, models.CustomCommandColumns.Message, models.CustomCommandColumns.Editor)); err != nil {
 			return err
 		}
 
@@ -147,7 +147,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 		return s.Replyf("Command '%s' updated, restricted to %s and above.%s", name, al, warning)
 	}
 
-	command = &models.SimpleCommand{
+	command = &models.CustomCommand{
 		Name:        name,
 		ChannelID:   s.Channel.ID,
 		Message:     text,
@@ -164,7 +164,7 @@ func cmdSimpleCommandAdd(ctx context.Context, s *session, args string, level acc
 	return s.Replyf("Command '%s' added, restricted to %s and above.%s", name, al, warning)
 }
 
-func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args string) error {
+func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<name>")
 	}
@@ -176,11 +176,11 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 		return usage()
 	}
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
-		qm.Load(models.SimpleCommandRels.RepeatedCommand),
-		qm.Load(models.SimpleCommandRels.ScheduledCommand),
+		qm.Load(models.CustomCommandRels.RepeatedCommand),
+		qm.Load(models.CustomCommandRels.ScheduledCommand),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -227,7 +227,7 @@ func cmdSimpleCommandDelete(ctx context.Context, s *session, cmd string, args st
 	return s.Replyf("Command '%s' deleted.", name)
 }
 
-func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args string) error {
+func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<name> everyone|regulars|subs|mods|broadcaster|admin")
 	}
@@ -239,8 +239,8 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args 
 		return usage()
 	}
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
@@ -285,14 +285,14 @@ func cmdSimpleCommandRestrict(ctx context.Context, s *session, cmd string, args 
 	command.AccessLevel = newLevel
 	command.Editor = s.User
 
-	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.AccessLevel, models.SimpleCommandColumns.Editor)); err != nil {
+	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.CustomCommandColumns.UpdatedAt, models.CustomCommandColumns.AccessLevel, models.CustomCommandColumns.Editor)); err != nil {
 		return err
 	}
 
 	return s.Replyf("Command '%s' restricted to %s and above.", name, flect.Pluralize(command.AccessLevel))
 }
 
-func cmdSimpleCommandProperty(ctx context.Context, s *session, prop string, args string) error {
+func cmdCommandProperty(ctx context.Context, s *session, prop string, args string) error {
 	name, _ := splitSpace(args)
 	name = cleanCommandName(name)
 
@@ -300,8 +300,8 @@ func cmdSimpleCommandProperty(ctx context.Context, s *session, prop string, args
 		return s.ReplyUsage("<name>")
 	}
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
@@ -328,7 +328,7 @@ func cmdSimpleCommandProperty(ctx context.Context, s *session, prop string, args
 	panic("unreachable")
 }
 
-func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args string) error {
+func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<old> <new>")
 	}
@@ -347,8 +347,8 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 		return s.Replyf("'%s' is already called '%s'!", oldName, oldName)
 	}
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(oldName),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(oldName),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
@@ -365,8 +365,8 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 		return s.Replyf("Your level is %s; you cannot rename a command with level %s.", s.UserLevel.PGEnum(), command.AccessLevel)
 	}
 
-	exists, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(newName),
+	exists, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(newName),
 	).Exists(ctx, s.Tx)
 
 	if err != nil {
@@ -380,14 +380,14 @@ func cmdSimpleCommandRename(ctx context.Context, s *session, cmd string, args st
 	command.Name = newName
 	command.Editor = s.User
 
-	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.SimpleCommandColumns.UpdatedAt, models.SimpleCommandColumns.Name, models.SimpleCommandColumns.Editor)); err != nil {
+	if err := command.Update(ctx, s.Tx, boil.Whitelist(models.CustomCommandColumns.UpdatedAt, models.CustomCommandColumns.Name, models.CustomCommandColumns.Editor)); err != nil {
 		return err
 	}
 
 	return s.Replyf("Command '%s' has been renamed to '%s'.", oldName, newName)
 }
 
-func cmdSimpleCommandGet(ctx context.Context, s *session, cmd string, args string) error {
+func cmdCommandGet(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage("<name>")
 	}
@@ -399,8 +399,8 @@ func cmdSimpleCommandGet(ctx context.Context, s *session, cmd string, args strin
 		return usage()
 	}
 
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {

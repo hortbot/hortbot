@@ -27,7 +27,7 @@ type ScheduledCommand struct {
 	CreatedAt       time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt       time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
 	ChannelID       int64     `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
-	SimpleCommandID int64     `boil:"simple_command_id" json:"simple_command_id" toml:"simple_command_id" yaml:"simple_command_id"`
+	CustomCommandID int64     `boil:"custom_command_id" json:"custom_command_id" toml:"custom_command_id" yaml:"custom_command_id"`
 	Enabled         bool      `boil:"enabled" json:"enabled" toml:"enabled" yaml:"enabled"`
 	CronExpression  string    `boil:"cron_expression" json:"cron_expression" toml:"cron_expression" yaml:"cron_expression"`
 	MessageDiff     int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
@@ -44,7 +44,7 @@ var ScheduledCommandColumns = struct {
 	CreatedAt       string
 	UpdatedAt       string
 	ChannelID       string
-	SimpleCommandID string
+	CustomCommandID string
 	Enabled         string
 	CronExpression  string
 	MessageDiff     string
@@ -56,7 +56,7 @@ var ScheduledCommandColumns = struct {
 	CreatedAt:       "created_at",
 	UpdatedAt:       "updated_at",
 	ChannelID:       "channel_id",
-	SimpleCommandID: "simple_command_id",
+	CustomCommandID: "custom_command_id",
 	Enabled:         "enabled",
 	CronExpression:  "cron_expression",
 	MessageDiff:     "message_diff",
@@ -72,7 +72,7 @@ var ScheduledCommandWhere = struct {
 	CreatedAt       whereHelpertime_Time
 	UpdatedAt       whereHelpertime_Time
 	ChannelID       whereHelperint64
-	SimpleCommandID whereHelperint64
+	CustomCommandID whereHelperint64
 	Enabled         whereHelperbool
 	CronExpression  whereHelperstring
 	MessageDiff     whereHelperint64
@@ -84,7 +84,7 @@ var ScheduledCommandWhere = struct {
 	CreatedAt:       whereHelpertime_Time{field: "\"scheduled_commands\".\"created_at\""},
 	UpdatedAt:       whereHelpertime_Time{field: "\"scheduled_commands\".\"updated_at\""},
 	ChannelID:       whereHelperint64{field: "\"scheduled_commands\".\"channel_id\""},
-	SimpleCommandID: whereHelperint64{field: "\"scheduled_commands\".\"simple_command_id\""},
+	CustomCommandID: whereHelperint64{field: "\"scheduled_commands\".\"custom_command_id\""},
 	Enabled:         whereHelperbool{field: "\"scheduled_commands\".\"enabled\""},
 	CronExpression:  whereHelperstring{field: "\"scheduled_commands\".\"cron_expression\""},
 	MessageDiff:     whereHelperint64{field: "\"scheduled_commands\".\"message_diff\""},
@@ -96,16 +96,16 @@ var ScheduledCommandWhere = struct {
 // ScheduledCommandRels is where relationship names are stored.
 var ScheduledCommandRels = struct {
 	Channel       string
-	SimpleCommand string
+	CustomCommand string
 }{
 	Channel:       "Channel",
-	SimpleCommand: "SimpleCommand",
+	CustomCommand: "CustomCommand",
 }
 
 // scheduledCommandR is where relationships are stored.
 type scheduledCommandR struct {
 	Channel       *Channel
-	SimpleCommand *SimpleCommand
+	CustomCommand *CustomCommand
 }
 
 // NewStruct creates a new relationship struct
@@ -117,8 +117,8 @@ func (*scheduledCommandR) NewStruct() *scheduledCommandR {
 type scheduledCommandL struct{}
 
 var (
-	scheduledCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "simple_command_id", "enabled", "cron_expression", "message_diff", "last_count", "creator", "editor"}
-	scheduledCommandColumnsWithoutDefault = []string{"channel_id", "simple_command_id", "enabled", "cron_expression", "last_count", "creator", "editor"}
+	scheduledCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "custom_command_id", "enabled", "cron_expression", "message_diff", "last_count", "creator", "editor"}
+	scheduledCommandColumnsWithoutDefault = []string{"channel_id", "custom_command_id", "enabled", "cron_expression", "last_count", "creator", "editor"}
 	scheduledCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at", "message_diff"}
 	scheduledCommandPrimaryKeyColumns     = []string{"id"}
 )
@@ -228,16 +228,16 @@ func (o *ScheduledCommand) Channel(mods ...qm.QueryMod) channelQuery {
 	return query
 }
 
-// SimpleCommand pointed to by the foreign key.
-func (o *ScheduledCommand) SimpleCommand(mods ...qm.QueryMod) simpleCommandQuery {
+// CustomCommand pointed to by the foreign key.
+func (o *ScheduledCommand) CustomCommand(mods ...qm.QueryMod) customCommandQuery {
 	queryMods := []qm.QueryMod{
-		qm.Where("id=?", o.SimpleCommandID),
+		qm.Where("id=?", o.CustomCommandID),
 	}
 
 	queryMods = append(queryMods, mods...)
 
-	query := SimpleCommands(queryMods...)
-	queries.SetFrom(query.Query, "\"simple_commands\"")
+	query := CustomCommands(queryMods...)
+	queries.SetFrom(query.Query, "\"custom_commands\"")
 
 	return query
 }
@@ -335,9 +335,9 @@ func (scheduledCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor
 	return nil
 }
 
-// LoadSimpleCommand allows an eager lookup of values, cached into the
+// LoadCustomCommand allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (scheduledCommandL) LoadSimpleCommand(ctx context.Context, e boil.ContextExecutor, singular bool, maybeScheduledCommand interface{}, mods queries.Applicator) error {
+func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextExecutor, singular bool, maybeScheduledCommand interface{}, mods queries.Applicator) error {
 	var slice []*ScheduledCommand
 	var object *ScheduledCommand
 
@@ -352,7 +352,7 @@ func (scheduledCommandL) LoadSimpleCommand(ctx context.Context, e boil.ContextEx
 		if object.R == nil {
 			object.R = &scheduledCommandR{}
 		}
-		args = append(args, object.SimpleCommandID)
+		args = append(args, object.CustomCommandID)
 
 	} else {
 	Outer:
@@ -362,12 +362,12 @@ func (scheduledCommandL) LoadSimpleCommand(ctx context.Context, e boil.ContextEx
 			}
 
 			for _, a := range args {
-				if a == obj.SimpleCommandID {
+				if a == obj.CustomCommandID {
 					continue Outer
 				}
 			}
 
-			args = append(args, obj.SimpleCommandID)
+			args = append(args, obj.CustomCommandID)
 
 		}
 	}
@@ -376,26 +376,26 @@ func (scheduledCommandL) LoadSimpleCommand(ctx context.Context, e boil.ContextEx
 		return nil
 	}
 
-	query := NewQuery(qm.From(`simple_commands`), qm.WhereIn(`id in ?`, args...))
+	query := NewQuery(qm.From(`custom_commands`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
 	}
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load SimpleCommand")
+		return errors.Wrap(err, "failed to eager load CustomCommand")
 	}
 
-	var resultSlice []*SimpleCommand
+	var resultSlice []*CustomCommand
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice SimpleCommand")
+		return errors.Wrap(err, "failed to bind eager loaded slice CustomCommand")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for simple_commands")
+		return errors.Wrap(err, "failed to close results of eager load for custom_commands")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for simple_commands")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for custom_commands")
 	}
 
 	if len(resultSlice) == 0 {
@@ -404,9 +404,9 @@ func (scheduledCommandL) LoadSimpleCommand(ctx context.Context, e boil.ContextEx
 
 	if singular {
 		foreign := resultSlice[0]
-		object.R.SimpleCommand = foreign
+		object.R.CustomCommand = foreign
 		if foreign.R == nil {
-			foreign.R = &simpleCommandR{}
+			foreign.R = &customCommandR{}
 		}
 		foreign.R.ScheduledCommand = object
 		return nil
@@ -414,10 +414,10 @@ func (scheduledCommandL) LoadSimpleCommand(ctx context.Context, e boil.ContextEx
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if local.SimpleCommandID == foreign.ID {
-				local.R.SimpleCommand = foreign
+			if local.CustomCommandID == foreign.ID {
+				local.R.CustomCommand = foreign
 				if foreign.R == nil {
-					foreign.R = &simpleCommandR{}
+					foreign.R = &customCommandR{}
 				}
 				foreign.R.ScheduledCommand = local
 				break
@@ -475,10 +475,10 @@ func (o *ScheduledCommand) SetChannel(ctx context.Context, exec boil.ContextExec
 	return nil
 }
 
-// SetSimpleCommand of the scheduledCommand to the related item.
-// Sets o.R.SimpleCommand to related.
+// SetCustomCommand of the scheduledCommand to the related item.
+// Sets o.R.CustomCommand to related.
 // Adds o to related.R.ScheduledCommand.
-func (o *ScheduledCommand) SetSimpleCommand(ctx context.Context, exec boil.ContextExecutor, insert bool, related *SimpleCommand) error {
+func (o *ScheduledCommand) SetCustomCommand(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CustomCommand) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -488,7 +488,7 @@ func (o *ScheduledCommand) SetSimpleCommand(ctx context.Context, exec boil.Conte
 
 	updateQuery := fmt.Sprintf(
 		"UPDATE \"scheduled_commands\" SET %s WHERE %s",
-		strmangle.SetParamNames("\"", "\"", 1, []string{"simple_command_id"}),
+		strmangle.SetParamNames("\"", "\"", 1, []string{"custom_command_id"}),
 		strmangle.WhereClause("\"", "\"", 2, scheduledCommandPrimaryKeyColumns),
 	)
 	values := []interface{}{related.ID, o.ID}
@@ -502,17 +502,17 @@ func (o *ScheduledCommand) SetSimpleCommand(ctx context.Context, exec boil.Conte
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.SimpleCommandID = related.ID
+	o.CustomCommandID = related.ID
 	if o.R == nil {
 		o.R = &scheduledCommandR{
-			SimpleCommand: related,
+			CustomCommand: related,
 		}
 	} else {
-		o.R.SimpleCommand = related
+		o.R.CustomCommand = related
 	}
 
 	if related.R == nil {
-		related.R = &simpleCommandR{
+		related.R = &customCommandR{
 			ScheduledCommand: o,
 		}
 	} else {

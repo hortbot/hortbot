@@ -108,7 +108,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 	} else {
 		scheduled = &models.ScheduledCommand{
 			ChannelID:       s.Channel.ID,
-			SimpleCommandID: command.ID,
+			CustomCommandID: command.ID,
 			Enabled:         true,
 			CronExpression:  pattern,
 			MessageDiff:     messageDiff,
@@ -233,7 +233,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 
 func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) error {
 	scheduleds, err := s.Channel.ScheduledCommands(
-		qm.Load(models.ScheduledCommandRels.SimpleCommand),
+		qm.Load(models.ScheduledCommandRels.CustomCommand),
 	).All(ctx, s.Tx)
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	sort.Slice(scheduleds, func(i, j int) bool {
-		return scheduleds[i].R.SimpleCommand.Name < scheduleds[j].R.SimpleCommand.Name
+		return scheduleds[i].R.CustomCommand.Name < scheduleds[j].R.CustomCommand.Name
 	})
 
 	var builder strings.Builder
@@ -255,7 +255,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 			builder.WriteString(", ")
 		}
 
-		builder.WriteString(scheduled.R.SimpleCommand.Name)
+		builder.WriteString(scheduled.R.CustomCommand.Name)
 		builder.WriteString(" [")
 
 		if scheduled.Enabled {
@@ -272,10 +272,10 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	return s.Reply(builder.String())
 }
 
-func findScheduledCommand(ctx context.Context, name string, s *session) (*models.SimpleCommand, *models.ScheduledCommand, error) {
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
-		qm.Load(models.SimpleCommandRels.ScheduledCommand),
+func findScheduledCommand(ctx context.Context, name string, s *session) (*models.CustomCommand, *models.ScheduledCommand, error) {
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
+		qm.Load(models.CustomCommandRels.ScheduledCommand),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 

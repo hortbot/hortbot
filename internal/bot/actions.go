@@ -133,7 +133,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		name := strings.TrimSuffix(action, "_COUNT")
 		name = cleanCommandName(name)
 
-		command, err := s.Channel.SimpleCommands(models.SimpleCommandWhere.Name.EQ(name)).One(ctx, s.Tx)
+		command, err := s.Channel.CustomCommands(models.CustomCommandWhere.Name.EQ(name)).One(ctx, s.Tx)
 		switch err {
 		case nil:
 			return strconv.FormatInt(command.Count, 10), nil

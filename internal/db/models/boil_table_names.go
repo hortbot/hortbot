@@ -6,17 +6,17 @@ package models
 var TableNames = struct {
 	Autoreplies       string
 	Channels          string
+	CustomCommands    string
 	Quotes            string
 	RepeatedCommands  string
 	ScheduledCommands string
-	SimpleCommands    string
 	Variables         string
 }{
 	Autoreplies:       "autoreplies",
 	Channels:          "channels",
+	CustomCommands:    "custom_commands",
 	Quotes:            "quotes",
 	RepeatedCommands:  "repeated_commands",
 	ScheduledCommands: "scheduled_commands",
-	SimpleCommands:    "simple_commands",
 	Variables:         "variables",
 }

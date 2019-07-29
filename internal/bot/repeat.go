@@ -61,7 +61,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		models.RepeatedCommandWhere.ID.EQ(id),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
 		qm.Load(models.RepeatedCommandRels.Channel),
-		qm.Load(models.RepeatedCommandRels.SimpleCommand),
+		qm.Load(models.RepeatedCommandRels.CustomCommand),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 	if err != nil {
@@ -94,7 +94,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return runSimpleCommand(ctx, s, repeat.R.SimpleCommand)
+	return runCustomCommand(ctx, s, repeat.R.CustomCommand)
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
@@ -128,7 +128,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		models.ScheduledCommandWhere.ID.EQ(id),
 		models.ScheduledCommandWhere.Enabled.EQ(true),
 		qm.Load(models.ScheduledCommandRels.Channel),
-		qm.Load(models.ScheduledCommandRels.SimpleCommand),
+		qm.Load(models.ScheduledCommandRels.CustomCommand),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 	if err != nil {
@@ -165,7 +165,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return runSimpleCommand(ctx, s, scheduled.R.SimpleCommand)
+	return runCustomCommand(ctx, s, scheduled.R.CustomCommand)
 }
 
 func repeatPopulateSession(s *session, channel *models.Channel) error {

@@ -110,7 +110,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 	} else {
 		repeat = &models.RepeatedCommand{
 			ChannelID:       s.Channel.ID,
-			SimpleCommandID: command.ID,
+			CustomCommandID: command.ID,
 			Enabled:         true,
 			Delay:           delay,
 			MessageDiff:     messageDiff,
@@ -230,7 +230,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 
 func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) error {
 	repeats, err := s.Channel.RepeatedCommands(
-		qm.Load(models.RepeatedCommandRels.SimpleCommand),
+		qm.Load(models.RepeatedCommandRels.CustomCommand),
 	).All(ctx, s.Tx)
 	if err != nil {
 		return err
@@ -241,7 +241,7 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	sort.Slice(repeats, func(i, j int) bool {
-		return repeats[i].R.SimpleCommand.Name < repeats[j].R.SimpleCommand.Name
+		return repeats[i].R.CustomCommand.Name < repeats[j].R.CustomCommand.Name
 	})
 
 	var builder strings.Builder
@@ -252,7 +252,7 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 			builder.WriteString(", ")
 		}
 
-		builder.WriteString(repeat.R.SimpleCommand.Name)
+		builder.WriteString(repeat.R.CustomCommand.Name)
 		builder.WriteString(" [")
 
 		if repeat.Enabled {
@@ -269,10 +269,10 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 	return s.Reply(builder.String())
 }
 
-func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.SimpleCommand, *models.RepeatedCommand, error) {
-	command, err := s.Channel.SimpleCommands(
-		models.SimpleCommandWhere.Name.EQ(name),
-		qm.Load(models.SimpleCommandRels.RepeatedCommand),
+func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.CustomCommand, *models.RepeatedCommand, error) {
+	command, err := s.Channel.CustomCommands(
+		models.CustomCommandWhere.Name.EQ(name),
+		qm.Load(models.CustomCommandRels.RepeatedCommand),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
