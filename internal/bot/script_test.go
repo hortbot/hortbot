@@ -28,6 +28,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube/youtubefakes"
@@ -79,6 +81,7 @@ type scriptTester struct {
 	youtube   *youtubefakes.FakeAPI
 	xkcd      *xkcdfakes.FakeAPI
 	extraLife *extralifefakes.FakeAPI
+	twitch    *twitchfakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -128,6 +131,7 @@ func (st *scriptTester) test(t *testing.T) {
 	st.youtube = &youtubefakes.FakeAPI{}
 	st.xkcd = &xkcdfakes.FakeAPI{}
 	st.extraLife = &extralifefakes.FakeAPI{}
+	st.twitch = &twitchfakes.FakeAPI{}
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -158,6 +162,7 @@ func (st *scriptTester) test(t *testing.T) {
 		YouTube:   st.youtube,
 		XKCD:      st.xkcd,
 		ExtraLife: st.extraLife,
+		Twitch:    st.twitch,
 	}
 
 	f, err := os.Open(st.filename)
@@ -273,6 +278,12 @@ func (st *scriptTester) test(t *testing.T) {
 
 		case "extra_life_amounts":
 			st.extraLifeAmounts(t, args)
+
+		case "no_twitch":
+			st.noTwitch(t)
+
+		case "twitch_get_channel_by_id":
+			st.twitchGetChannelByID(t, args)
 
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
@@ -772,6 +783,49 @@ func (st *scriptTester) extraLifeAmounts(t *testing.T, args string) {
 				return 0, extralife.ErrNotFound
 			}
 			return a, nil
+		})
+	})
+}
+
+func (st *scriptTester) noTwitch(t *testing.T) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Twitch")
+		st.bc.Twitch = nil
+	})
+}
+
+func (st *scriptTester) twitchGetChannelByID(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var v struct {
+		ID      int64
+		Channel *twitch.Channel
+		Err     string
+	}
+
+	err := json.Unmarshal([]byte(args), &v)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetChannelByIDCalls(func(_ context.Context, id int64) (*twitch.Channel, error) {
+			assert.Equal(t, id, v.ID)
+
+			var err error
+			switch v.Err {
+			case "":
+			case "ErrNotFound":
+				err = twitch.ErrNotFound
+			case "ErrNotAuthorized":
+				err = twitch.ErrNotAuthorized
+			case "ErrServerError":
+				err = twitch.ErrServerError
+			case "ErrUnknown":
+				err = twitch.ErrUnknown
+			default:
+				t.Fatalf("unknown error type %s: line %d", v.Err, lineNum)
+			}
+
+			return v.Channel, err
 		})
 	})
 }

@@ -40,7 +40,7 @@ func (h *httpClient) Get(ctx context.Context, url string) (*http.Response, error
 		return nil, err
 	}
 
-	return ctxhttp.Do(ctx, h.cli, req)
+	return h.do(ctx, req)
 }
 
 func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.Response, error) {
@@ -55,5 +55,18 @@ func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.
 		return nil, err
 	}
 
-	return ctxhttp.Do(ctx, h.cli, req)
+	return h.do(ctx, req)
+}
+
+func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response, error) {
+	resp, err := ctxhttp.Do(ctx, h.cli, req)
+	if err != nil {
+		return nil, err
+	}
+
+	// For debugging.
+	// x, _ := httputil.DumpResponse(resp, true)
+	// log.Printf("%s", x)
+
+	return resp, nil
 }

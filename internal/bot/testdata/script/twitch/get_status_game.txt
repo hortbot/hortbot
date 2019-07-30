@@ -1,0 +1,36 @@
+twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": "This is the status!", "Game": "Garry's Mod"}}
+
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!status
+send hortbot #foobar [HB] This is the status!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!game
+send hortbot #foobar [HB] Current game: Garry's Mod
+
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": null, "Game": null}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!status
+send hortbot #foobar [HB] (Not set)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!game
+send hortbot #foobar [HB] Current game: (Not set)
+
+
+twitch_get_channel_by_id {"ID": 1, "Channel": null, "Err": "ErrServerError"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!status
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!game
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+
+twitch_get_channel_by_id {"ID": 1, "Channel": null, "Err": "ErrNotAuthorized"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!status
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!game
+no_send

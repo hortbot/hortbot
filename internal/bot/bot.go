@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
@@ -38,6 +39,7 @@ type Config struct {
 	YouTube   youtube.API
 	XKCD      xkcd.API
 	ExtraLife extralife.API
+	Twitch    twitch.API
 
 	Prefix   string
 	Bullet   string
@@ -85,6 +87,7 @@ func New(config *Config) *Bot {
 		YouTube:         config.YouTube,
 		XKCD:            config.XKCD,
 		ExtraLife:       config.ExtraLife,
+		Twitch:          config.Twitch,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
 	}

@@ -15,6 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
@@ -47,6 +48,10 @@ var args = struct {
 	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
 
 	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
+
+	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID"`
+	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret"`
+	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL"`
 }{
 	DefaultCooldown: 5,
 }
@@ -135,6 +140,15 @@ func main() {
 		logger.Warn("no LastFM API key provided, functionality will be disabled")
 	}
 
+	var twitchAPI twitch.API
+
+	switch {
+	case args.TwitchClientID == "", args.TwitchClientSecret == "", args.TwitchRedirectURL == "":
+		logger.Warn("missing Twitch API info, functionality will be disabled")
+	default:
+		twitchAPI = twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
+	}
+
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
@@ -148,6 +162,7 @@ func main() {
 		YouTube:          youtube.New(),
 		XKCD:             xkcd.New(),
 		ExtraLife:        extralife.New(),
+		Twitch:           twitchAPI,
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

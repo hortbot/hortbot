@@ -40,7 +40,11 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Bot help (*Website*)
     - [x] ~~Commercial~~
     - [ ] Game (*Twitch API*)
+        - [x] Get game
+        - [ ] Set game
     - [ ] Status (*Twitch API*)
+        - [x] Get status
+        - [ ] Set status
     - [x] ~~statusgame/steamgame~~ (Steam API is restricted)
     - [x] ~~XBox game~~
     - [ ] Follow me (*Twitch API*)

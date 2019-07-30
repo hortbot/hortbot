@@ -41,6 +41,8 @@ func init() {
 		"xkcd":        {fn: cmdXKCD, minLevel: levelSubscriber},
 		"raffle":      {fn: cmdRaffle, minLevel: levelEveryone},
 		"var":         {fn: cmdVar, minLevel: levelModerator},
+		"status":      {fn: cmdStatus, minLevel: levelEveryone},
+		"game":        {fn: cmdGame, minLevel: levelEveryone},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }
