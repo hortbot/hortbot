@@ -43,34 +43,6 @@ func TestGetChannelByID(t *testing.T) {
 	assert.DeepEqual(t, c, got)
 }
 
-func TestGetChannel(t *testing.T) {
-	ctx := context.Background()
-
-	ft := newFakeTwitch(t)
-	cli := ft.client()
-
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
-
-	c := &twitch.Channel{
-		ID:     1234,
-		Status: "What a cool stream!",
-		Game:   "Garry's Mod",
-	}
-
-	ft.setChannel(c)
-
-	code := ft.codeForUser(c.ID)
-
-	tok, err := tw.Exchange(ctx, code)
-	assert.NilError(t, err)
-	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
-
-	got, newToken, err := tw.GetChannel(ctx, tok)
-	assert.NilError(t, err)
-	assert.Assert(t, newToken == nil)
-	assert.DeepEqual(t, c, got)
-}
-
 func TestSetChannelStatus(t *testing.T) {
 	ctx := context.Background()
 
@@ -78,6 +50,14 @@ func TestSetChannelStatus(t *testing.T) {
 	cli := ft.client()
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	tok := &oauth2.Token{
+		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
+		TokenType:   "bearer",
+	}
+
+	ft.setClientTokens(tok)
 
 	c := &twitch.Channel{
 		ID:     1234,
@@ -99,9 +79,8 @@ func TestSetChannelStatus(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, newToken == nil)
 
-	got, newToken, err := tw.GetChannel(ctx, tok)
+	got, err := tw.GetChannelByID(ctx, c.ID)
 	assert.NilError(t, err)
-	assert.Assert(t, newToken == nil)
 	assert.Equal(t, got.Status, newStatus)
 }
 
@@ -134,6 +113,14 @@ func TestSetChannelGame(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
+	tok := &oauth2.Token{
+		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
+		TokenType:   "bearer",
+	}
+
+	ft.setClientTokens(tok)
+
 	c := &twitch.Channel{
 		ID:     1234,
 		Status: "What a cool stream!",
@@ -154,9 +141,8 @@ func TestSetChannelGame(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Assert(t, newToken == nil)
 
-	got, newToken, err := tw.GetChannel(ctx, tok)
+	got, err := tw.GetChannelByID(ctx, c.ID)
 	assert.NilError(t, err)
-	assert.Assert(t, newToken == nil)
 	assert.Equal(t, got.Game, newGame)
 }
 

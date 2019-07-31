@@ -10,22 +10,6 @@ import (
 )
 
 type FakeAPI struct {
-	GetChannelStub        func(context.Context, *oauth2.Token) (*twitch.Channel, *oauth2.Token, error)
-	getChannelMutex       sync.RWMutex
-	getChannelArgsForCall []struct {
-		arg1 context.Context
-		arg2 *oauth2.Token
-	}
-	getChannelReturns struct {
-		result1 *twitch.Channel
-		result2 *oauth2.Token
-		result3 error
-	}
-	getChannelReturnsOnCall map[int]struct {
-		result1 *twitch.Channel
-		result2 *oauth2.Token
-		result3 error
-	}
 	GetChannelByIDStub        func(context.Context, int64) (*twitch.Channel, error)
 	getChannelByIDMutex       sync.RWMutex
 	getChannelByIDArgsForCall []struct {
@@ -88,73 +72,6 @@ type FakeAPI struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
-}
-
-func (fake *FakeAPI) GetChannel(arg1 context.Context, arg2 *oauth2.Token) (*twitch.Channel, *oauth2.Token, error) {
-	fake.getChannelMutex.Lock()
-	ret, specificReturn := fake.getChannelReturnsOnCall[len(fake.getChannelArgsForCall)]
-	fake.getChannelArgsForCall = append(fake.getChannelArgsForCall, struct {
-		arg1 context.Context
-		arg2 *oauth2.Token
-	}{arg1, arg2})
-	fake.recordInvocation("GetChannel", []interface{}{arg1, arg2})
-	fake.getChannelMutex.Unlock()
-	if fake.GetChannelStub != nil {
-		return fake.GetChannelStub(arg1, arg2)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2, ret.result3
-	}
-	fakeReturns := fake.getChannelReturns
-	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
-}
-
-func (fake *FakeAPI) GetChannelCallCount() int {
-	fake.getChannelMutex.RLock()
-	defer fake.getChannelMutex.RUnlock()
-	return len(fake.getChannelArgsForCall)
-}
-
-func (fake *FakeAPI) GetChannelCalls(stub func(context.Context, *oauth2.Token) (*twitch.Channel, *oauth2.Token, error)) {
-	fake.getChannelMutex.Lock()
-	defer fake.getChannelMutex.Unlock()
-	fake.GetChannelStub = stub
-}
-
-func (fake *FakeAPI) GetChannelArgsForCall(i int) (context.Context, *oauth2.Token) {
-	fake.getChannelMutex.RLock()
-	defer fake.getChannelMutex.RUnlock()
-	argsForCall := fake.getChannelArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
-}
-
-func (fake *FakeAPI) GetChannelReturns(result1 *twitch.Channel, result2 *oauth2.Token, result3 error) {
-	fake.getChannelMutex.Lock()
-	defer fake.getChannelMutex.Unlock()
-	fake.GetChannelStub = nil
-	fake.getChannelReturns = struct {
-		result1 *twitch.Channel
-		result2 *oauth2.Token
-		result3 error
-	}{result1, result2, result3}
-}
-
-func (fake *FakeAPI) GetChannelReturnsOnCall(i int, result1 *twitch.Channel, result2 *oauth2.Token, result3 error) {
-	fake.getChannelMutex.Lock()
-	defer fake.getChannelMutex.Unlock()
-	fake.GetChannelStub = nil
-	if fake.getChannelReturnsOnCall == nil {
-		fake.getChannelReturnsOnCall = make(map[int]struct {
-			result1 *twitch.Channel
-			result2 *oauth2.Token
-			result3 error
-		})
-	}
-	fake.getChannelReturnsOnCall[i] = struct {
-		result1 *twitch.Channel
-		result2 *oauth2.Token
-		result3 error
-	}{result1, result2, result3}
 }
 
 func (fake *FakeAPI) GetChannelByID(arg1 context.Context, arg2 int64) (*twitch.Channel, error) {
@@ -420,8 +337,6 @@ func (fake *FakeAPI) SetChannelStatusReturnsOnCall(i int, result1 *oauth2.Token,
 func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
-	fake.getChannelMutex.RLock()
-	defer fake.getChannelMutex.RUnlock()
 	fake.getChannelByIDMutex.RLock()
 	defer fake.getChannelByIDMutex.RUnlock()
 	fake.getCurrentStreamMutex.RLock()

@@ -50,7 +50,6 @@ const (
 //
 //counterfeiter:generate . API
 type API interface {
-	GetChannel(ctx context.Context, userToken *oauth2.Token) (c *Channel, newToken *oauth2.Token, err error)
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newToken *oauth2.Token, err error)

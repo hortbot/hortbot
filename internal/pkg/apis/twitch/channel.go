@@ -17,35 +17,6 @@ type Channel struct {
 	Status string `json:"status"`
 }
 
-// GetChannel gets the channel for the given userToken.
-//
-// GET https://api.twitch.tv/kraken/channel
-func (t *Twitch) GetChannel(ctx context.Context, userToken *oauth2.Token) (c *Channel, newToken *oauth2.Token, err error) {
-	if userToken == nil || userToken.AccessToken == "" {
-		return nil, nil, ErrNotAuthorized
-	}
-
-	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
-
-	resp, err := cli.Get(ctx, krakenRoot+"/channel")
-	if err != nil {
-		return nil, newToken, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, newToken, err
-	}
-
-	c = &Channel{}
-
-	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
-		return nil, newToken, ErrServerError
-	}
-
-	return c, newToken, nil
-}
-
 // GetChannelByID gets a channel using the client's token.
 //
 // GET https://api.twitch.tv/kraken/channels/<id>
