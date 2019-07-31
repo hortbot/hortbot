@@ -122,6 +122,8 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/500$`, httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/777$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/\d+$`, f.krakenStreamByID)
+
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken", f.kraken)
 }
 
 func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
@@ -162,7 +164,7 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 }
 
 func (f *fakeTwitch) setChannel(c *twitch.Channel) {
-	f.channels[c.ID] = c
+	f.channels[c.ID.AsInt64()] = c
 }
 
 func (f *fakeTwitch) krakenChannel(req *http.Request) (*http.Response, error) {
@@ -263,6 +265,33 @@ func (f *fakeTwitch) krakenStreamByID(req *http.Request) (*http.Response, error)
 	}
 
 	return httpmock.NewJsonResponse(200, v)
+}
+
+func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
+	assert.Equal(f.t, req.Method, "GET")
+	f.checkHeaders(req, true)
+
+	auth := req.Header.Get("Authorization")
+	assert.Assert(f.t, strings.HasPrefix(auth, "OAuth "))
+
+	id, ok := f.tokenToID[strings.TrimPrefix(auth, "OAuth ")]
+	assert.Assert(f.t, ok)
+
+	c := f.channels[id]
+	assert.Assert(f.t, c != nil)
+
+	switch c.ID {
+	case 777:
+		return httpmock.NewStringResponse(200, "}"), nil
+	case 503:
+		return httpmock.NewStringResponse(503, ""), nil
+	}
+
+	return httpmock.NewJsonResponse(200, map[string]interface{}{
+		"token": map[string]interface{}{
+			"user_id": c.ID,
+		},
+	})
 }
 
 func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Response, error) {

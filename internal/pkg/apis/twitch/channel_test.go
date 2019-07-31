@@ -38,7 +38,7 @@ func TestGetChannelByID(t *testing.T) {
 	_, err := tw.GetChannelByID(ctx, 999)
 	assert.Equal(t, err, twitch.ErrNotFound)
 
-	got, err := tw.GetChannelByID(ctx, c.ID)
+	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
 	assert.DeepEqual(t, c, got)
 }
@@ -67,7 +67,7 @@ func TestSetChannelStatus(t *testing.T) {
 
 	ft.setChannel(c)
 
-	code := ft.codeForUser(c.ID)
+	code := ft.codeForUser(c.ID.AsInt64())
 
 	tok, err := tw.Exchange(ctx, code)
 	assert.NilError(t, err)
@@ -75,11 +75,11 @@ func TestSetChannelStatus(t *testing.T) {
 
 	const newStatus = "This is the new status."
 
-	newToken, err := tw.SetChannelStatus(ctx, c.ID, tok, newStatus)
+	newToken, err := tw.SetChannelStatus(ctx, c.ID.AsInt64(), tok, newStatus)
 	assert.NilError(t, err)
 	assert.Assert(t, newToken == nil)
 
-	got, err := tw.GetChannelByID(ctx, c.ID)
+	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
 	assert.Equal(t, got.Status, newStatus)
 }
@@ -100,7 +100,7 @@ func TestSetChannelStatusNilToken(t *testing.T) {
 
 	ft.setChannel(c)
 
-	newToken, err := tw.SetChannelStatus(ctx, c.ID, nil, "something")
+	newToken, err := tw.SetChannelStatus(ctx, c.ID.AsInt64(), nil, "something")
 	assert.Equal(t, err, twitch.ErrNotAuthorized)
 	assert.Assert(t, newToken == nil)
 }
@@ -129,7 +129,7 @@ func TestSetChannelGame(t *testing.T) {
 
 	ft.setChannel(c)
 
-	code := ft.codeForUser(c.ID)
+	code := ft.codeForUser(c.ID.AsInt64())
 
 	tok, err := tw.Exchange(ctx, code)
 	assert.NilError(t, err)
@@ -137,11 +137,11 @@ func TestSetChannelGame(t *testing.T) {
 
 	const newGame = "Just Chatting"
 
-	newToken, err := tw.SetChannelGame(ctx, c.ID, tok, newGame)
+	newToken, err := tw.SetChannelGame(ctx, c.ID.AsInt64(), tok, newGame)
 	assert.NilError(t, err)
 	assert.Assert(t, newToken == nil)
 
-	got, err := tw.GetChannelByID(ctx, c.ID)
+	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
 	assert.Equal(t, got.Game, newGame)
 }
@@ -162,7 +162,7 @@ func TestSetChannelGameNilToken(t *testing.T) {
 
 	ft.setChannel(c)
 
-	newToken, err := tw.SetChannelGame(ctx, c.ID, nil, "something")
+	newToken, err := tw.SetChannelGame(ctx, c.ID.AsInt64(), nil, "something")
 	assert.Equal(t, err, twitch.ErrNotAuthorized)
 	assert.Assert(t, newToken == nil)
 }

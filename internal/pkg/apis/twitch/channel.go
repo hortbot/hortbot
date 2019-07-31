@@ -12,7 +12,7 @@ import (
 // channel/channels endpoint. Some fields are missing (but may be added as
 // needed in the future).
 type Channel struct {
-	ID     int64  `json:"_id,string"` // Unbelievably (believably?), the Twitch API reference says this a number, but their server sends a string. Really?
+	ID     IDStr  `json:"_id"`
 	Game   string `json:"game"`
 	Status string `json:"status"`
 }

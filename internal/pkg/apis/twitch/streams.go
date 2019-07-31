@@ -11,9 +11,9 @@ import (
 // streams endpoint. Some fields are missing (but may be added as
 // needed in the future).
 type Stream struct {
-	ID        int64     `json:"_id"`
+	ID        IDStr     `json:"_id"`
 	Game      string    `json:"game"`
-	Viewers   int       `json:"viewers"`
+	Viewers   int64     `json:"viewers"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
