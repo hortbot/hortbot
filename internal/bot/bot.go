@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-redis/redis"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
@@ -28,7 +27,7 @@ const (
 
 type Config struct {
 	DB       *sql.DB
-	Redis    redis.Cmdable
+	RDB      *rdb.DB
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
@@ -66,7 +65,7 @@ func New(config *Config) *Bot {
 	switch {
 	case config.DB == nil:
 		panic("db is nil")
-	case config.Redis == nil:
+	case config.RDB == nil:
 		panic("redis is nil")
 	case config.Dedupe == nil:
 		panic("dedupe is nil")
@@ -77,6 +76,7 @@ func New(config *Config) *Bot {
 	}
 
 	deps := &sharedDeps{
+		RDB:             config.RDB,
 		Dedupe:          config.Dedupe,
 		Sender:          config.Sender,
 		Notifier:        config.Notifier,
@@ -122,13 +122,6 @@ func New(config *Config) *Bot {
 	} else {
 		deps.Rand = globalRand{}
 	}
-
-	r, err := rdb.New(config.Redis)
-	if err != nil {
-		panic(err)
-	}
-
-	deps.RDB = r
 
 	b := &Bot{
 		db:   config.DB,

@@ -21,6 +21,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/jessevdk/go-flags"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
@@ -96,6 +97,11 @@ func main() {
 	})
 	defer rClient.Close()
 
+	rDB, err := rdb.New(rClient)
+	if err != nil {
+		logger.Fatal("error creating RDB", zap.Error(err))
+	}
+
 	channels, err := listChannels(ctx, db)
 	if err != nil {
 		logger.Fatal("error listing initial channels", zap.Error(err))
@@ -154,7 +160,7 @@ func main() {
 
 	bc := &bot.Config{
 		DB:               db,
-		Redis:            rClient,
+		RDB:              rDB,
 		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,

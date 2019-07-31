@@ -36,6 +36,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	dedupemem "github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
@@ -145,6 +146,9 @@ func (st *scriptTester) test(t *testing.T) {
 	assert.NilError(t, err)
 	defer rCleanup()
 
+	rDB, err := rdb.New(rClient)
+	assert.NilError(t, err)
+
 	st.redis = rServer
 
 	db, undb := freshDB(t)
@@ -154,7 +158,7 @@ func (st *scriptTester) test(t *testing.T) {
 
 	st.bc = bot.Config{
 		DB:        db,
-		Redis:     rClient,
+		RDB:       rDB,
 		Dedupe:    dedupe.NeverSeen,
 		Sender:    st.sender,
 		Notifier:  st.notifier,

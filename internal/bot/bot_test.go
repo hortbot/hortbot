@@ -5,6 +5,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/assert"
 )
@@ -17,9 +18,12 @@ func TestBotNewPanics(t *testing.T) {
 	assert.NilError(t, err)
 	defer rCleanup()
 
+	rDB, err := rdb.New(rClient)
+	assert.NilError(t, err)
+
 	config := &bot.Config{
 		DB:       db,
-		Redis:    rClient,
+		RDB:      rDB,
 		Dedupe:   &struct{ dedupe.Deduplicator }{},
 		Sender:   &struct{ bot.Sender }{},
 		Notifier: &struct{ bot.Notifier }{},
@@ -45,10 +49,10 @@ func TestBotNewPanics(t *testing.T) {
 	assert.Equal(t, checkPanic(), "db is nil")
 	config.DB = db
 
-	oldRedis := config.Redis
-	config.Redis = nil
+	oldRedis := config.RDB
+	config.RDB = nil
 	assert.Equal(t, checkPanic(), "redis is nil")
-	config.Redis = oldRedis
+	config.RDB = oldRedis
 
 	oldDedupe := config.Dedupe
 	config.Dedupe = nil
@@ -66,5 +70,5 @@ func TestBotNewPanics(t *testing.T) {
 	config.Notifier = oldNotifier
 
 	rCleanup()
-	assert.Assert(t, checkPanic() != nil)
+	assert.Equal(t, checkPanic(), nil)
 }

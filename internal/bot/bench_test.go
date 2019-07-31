@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
@@ -25,6 +26,9 @@ func BenchmarkCustomCommand(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
+	rDB, err := rdb.New(rClient)
+	assert.NilError(b, err)
+
 	db, undb := freshDB(b)
 	defer undb()
 
@@ -34,7 +38,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 
 	config := &bot.Config{
 		DB:       db,
-		Redis:    rClient,
+		RDB:      rDB,
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
@@ -83,11 +87,14 @@ func BenchmarkNop(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
+	rDB, err := rdb.New(rClient)
+	assert.NilError(b, err)
+
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:       db,
-		Redis:    rClient,
+		RDB:      rDB,
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
