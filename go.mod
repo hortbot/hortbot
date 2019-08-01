@@ -7,7 +7,7 @@ require (
 	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
-	github.com/aws/aws-sdk-go v1.21.6 // indirect
+	github.com/aws/aws-sdk-go v1.21.8 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.4
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
@@ -25,7 +25,7 @@ require (
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20190728215445-5ff9df8e82c1 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20190729173012-f05d33913e5a // indirect
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/frankban/quicktest v1.4.0 // indirect
 	github.com/fsouza/fake-gcs-server v1.10.1 // indirect
@@ -34,6 +34,7 @@ require (
 	github.com/gobuffalo/flect v0.1.5
 	github.com/gocql/gocql v0.0.0-20190728105348-76e94bbd190c // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
+	github.com/gogo/protobuf v1.2.2-0.20190730201129-28a6bbf47e48 // indirect
 	github.com/golang-migrate/migrate/v4 v4.5.0
 	github.com/google/go-cmp v0.3.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
@@ -82,8 +83,8 @@ require (
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190726091711-fc99dfbffb4e // indirect
-	golang.org/x/tools v0.0.0-20190728063539-fc6e2057e7f6
+	golang.org/x/sys v0.0.0-20190801041406-cbf593c0f2f3 // indirect
+	golang.org/x/tools v0.0.0-20190731214159-1e85ed8060aa
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
