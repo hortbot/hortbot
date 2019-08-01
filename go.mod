@@ -27,7 +27,9 @@ require (
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190728215445-5ff9df8e82c1 // indirect
 	github.com/fortytw2/leaktest v1.3.0
+	github.com/frankban/quicktest v1.4.0 // indirect
 	github.com/fsouza/fake-gcs-server v1.10.1 // indirect
+	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.5
 	github.com/gocql/gocql v0.0.0-20190728105348-76e94bbd190c // indirect
@@ -56,11 +58,13 @@ require (
 	github.com/ory/dockertest v3.3.4+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pelletier/go-toml v1.4.0 // indirect
+	github.com/pierrec/lz4 v2.2.5+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20190728182440-6a916e37a237 // indirect
 	github.com/rkoesters/xkcd v0.0.0-20190613072715-c0127f09e992
 	github.com/robfig/cron/v3 v3.0.0
+	github.com/rs/xid v1.2.1
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5 // indirect

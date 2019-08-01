@@ -21,6 +21,7 @@ var allTables = []string{
 	"scheduled_commands",
 	"autoreplies",
 	"variables",
+	"twitch_tokens",
 }
 
 func TestUp(t *testing.T) {

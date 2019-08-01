@@ -10,6 +10,7 @@ var TableNames = struct {
 	Quotes            string
 	RepeatedCommands  string
 	ScheduledCommands string
+	TwitchTokens      string
 	Variables         string
 }{
 	Autoreplies:       "autoreplies",
@@ -18,5 +19,6 @@ var TableNames = struct {
 	Quotes:            "quotes",
 	RepeatedCommands:  "repeated_commands",
 	ScheduledCommands: "scheduled_commands",
+	TwitchTokens:      "twitch_tokens",
 	Variables:         "variables",
 }

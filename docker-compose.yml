@@ -14,6 +14,8 @@ services:
     depends_on:
       - db
       - redis
+    ports:
+      - "5000:5000"
     environment:
       - HB_DEBUG=true
       - HB_NICK=${HB_NICK:-}

@@ -22,6 +22,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
@@ -53,8 +54,11 @@ var args = struct {
 	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID"`
 	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret"`
 	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL"`
+
+	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 }{
 	DefaultCooldown: 5,
+	WebAddr:         ":5000",
 }
 
 func main() {
@@ -97,7 +101,12 @@ func main() {
 	})
 	defer rClient.Close()
 
-	rDB, err := rdb.New(rClient)
+	botRDB, err := rdb.New(rClient, rdb.KeyPrefix("bot"))
+	if err != nil {
+		logger.Fatal("error creating RDB", zap.Error(err))
+	}
+
+	webRDB, err := rdb.New(rClient, rdb.KeyPrefix("web"))
 	if err != nil {
 		logger.Fatal("error creating RDB", zap.Error(err))
 	}
@@ -146,7 +155,7 @@ func main() {
 		logger.Warn("no LastFM API key provided, functionality will be disabled")
 	}
 
-	var twitchAPI twitch.API
+	var twitchAPI *twitch.Twitch
 
 	switch {
 	case args.TwitchClientID == "", args.TwitchClientSecret == "", args.TwitchRedirectURL == "":
@@ -160,7 +169,7 @@ func main() {
 
 	bc := &bot.Config{
 		DB:               db,
-		RDB:              rDB,
+		RDB:              botRDB,
 		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,
@@ -184,6 +193,17 @@ func main() {
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
+
+	g.Go(func(ctx context.Context) error {
+		a := web.App{
+			Addr:   args.WebAddr,
+			RDB:    webRDB,
+			DB:     db,
+			Twitch: twitchAPI,
+		}
+
+		return a.Run(ctx)
+	})
 
 	g.Go(func(ctx context.Context) error {
 		inc := conn.Incoming()

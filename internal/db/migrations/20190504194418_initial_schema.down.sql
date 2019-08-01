@@ -1,18 +1,15 @@
 BEGIN;
 
-DROP TABLE IF EXISTS variables CASCADE;
-
-DROP TABLE IF EXISTS autoreplies CASCADE;
-
-DROP TABLE IF EXISTS scheduled_commands CASCADE;
-
-DROP TABLE IF EXISTS repeated_commands CASCADE;
-
-DROP TABLE IF EXISTS quotes CASCADE;
-
-DROP TABLE IF EXISTS custom_commands CASCADE;
-
-DROP TABLE IF EXISTS channels CASCADE;
+DROP TABLE IF EXISTS
+    channels,
+    custom_commands,
+    quotes,
+    repeated_commands,
+    scheduled_commands,
+    autoreplies,
+    variables,
+    twitch_tokens
+CASCADE;
 
 DROP TYPE IF EXISTS access_level;
 
