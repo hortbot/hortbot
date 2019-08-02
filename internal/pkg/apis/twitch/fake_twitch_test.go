@@ -104,22 +104,22 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("POST", "https://id.twitch.tv/oauth2/token", f.oauth2Token)
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/channel", f.krakenChannel)
 
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/401$`, httpmock.NewStringResponder(401, ""))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/404$`, httpmock.NewStringResponder(404, ""))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/418$`, httpmock.NewStringResponder(418, ""))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/500$`, httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/401$`, httpmock.NewStringResponder(401, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/404$`, httpmock.NewStringResponder(404, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/418$`, httpmock.NewStringResponder(418, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/500$`, httpmock.NewStringResponder(500, "{}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/\d+$`, f.krakenChannelByIDGet)
 
-	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/401$`, httpmock.NewStringResponder(401, ""))
-	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/404$`, httpmock.NewStringResponder(404, ""))
-	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/418$`, httpmock.NewStringResponder(418, ""))
-	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/500$`, httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/401$`, httpmock.NewStringResponder(401, "{}"))
+	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/404$`, httpmock.NewStringResponder(404, "{}"))
+	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/418$`, httpmock.NewStringResponder(418, "{}"))
+	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/500$`, httpmock.NewStringResponder(500, "{}"))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/\d+$`, f.krakenChannelByIDPut)
 
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/401$`, httpmock.NewStringResponder(401, ""))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/404$`, httpmock.NewStringResponder(404, ""))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/418$`, httpmock.NewStringResponder(418, ""))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/500$`, httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/401$`, httpmock.NewStringResponder(401, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/404$`, httpmock.NewStringResponder(404, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/418$`, httpmock.NewStringResponder(418, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/500$`, httpmock.NewStringResponder(500, "{}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/777$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/\d+$`, f.krakenStreamByID)
 
@@ -217,18 +217,20 @@ func (f *fakeTwitch) krakenChannelByIDPut(req *http.Request) (*http.Response, er
 	c := f.channels[id]
 	assert.Assert(f.t, c != nil)
 
-	body := struct {
-		Status *string
-		Game   *string
+	body := &struct {
+		Channel struct {
+			Status *string
+			Game   *string
+		}
 	}{}
 
 	assert.NilError(f.t, json.NewDecoder(req.Body).Decode(&body))
 
 	switch {
-	case body.Status != nil:
-		c.Status = *body.Status
-	case body.Game != nil:
-		c.Game = *body.Game
+	case body.Channel.Status != nil:
+		c.Status = *body.Channel.Status
+	case body.Channel.Game != nil:
+		c.Game = *body.Channel.Game
 	default:
 		f.t.Fatal("Nothing changed.")
 	}

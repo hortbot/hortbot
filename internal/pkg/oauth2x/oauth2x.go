@@ -3,6 +3,7 @@ package oauth2x
 
 import (
 	"sync"
+	"time"
 
 	"golang.org/x/oauth2"
 )
@@ -87,4 +88,30 @@ func (ts *onNewSource) Token() (*oauth2.Token, error) {
 	ts.tok = tok
 
 	return tok, err
+}
+
+// Equals checks that two tokens are equal by the following rules:
+//
+// - AccessToken, TokenType, and RefreshToken must be identical.
+// - Expiry must match within one second.
+func Equals(x, y *oauth2.Token) bool {
+	switch {
+	case x == y:
+		return true
+	case x == nil || y == nil:
+	case x.AccessToken != y.AccessToken:
+	case x.TokenType != y.TokenType:
+	case x.RefreshToken != y.RefreshToken:
+	case absDur(x.Expiry.Sub(y.Expiry)) > time.Second:
+	default:
+		return true
+	}
+	return false
+}
+
+func absDur(d time.Duration) time.Duration {
+	if d > 0 {
+		return d
+	}
+	return -d
 }

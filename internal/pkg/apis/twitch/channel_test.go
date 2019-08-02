@@ -75,9 +75,10 @@ func TestSetChannelStatus(t *testing.T) {
 
 	const newStatus = "This is the new status."
 
-	newToken, err := tw.SetChannelStatus(ctx, c.ID.AsInt64(), tok, newStatus)
+	getStatus, newToken, err := tw.SetChannelStatus(ctx, c.ID.AsInt64(), tok, newStatus)
 	assert.NilError(t, err)
 	assert.Assert(t, newToken == nil)
+	assert.Equal(t, getStatus, newStatus)
 
 	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
@@ -100,7 +101,7 @@ func TestSetChannelStatusNilToken(t *testing.T) {
 
 	ft.setChannel(c)
 
-	newToken, err := tw.SetChannelStatus(ctx, c.ID.AsInt64(), nil, "something")
+	_, newToken, err := tw.SetChannelStatus(ctx, c.ID.AsInt64(), nil, "something")
 	assert.Equal(t, err, twitch.ErrNotAuthorized)
 	assert.Assert(t, newToken == nil)
 }
@@ -137,9 +138,10 @@ func TestSetChannelGame(t *testing.T) {
 
 	const newGame = "Just Chatting"
 
-	newToken, err := tw.SetChannelGame(ctx, c.ID.AsInt64(), tok, newGame)
+	setGame, newToken, err := tw.SetChannelGame(ctx, c.ID.AsInt64(), tok, newGame)
 	assert.NilError(t, err)
 	assert.Assert(t, newToken == nil)
+	assert.Equal(t, setGame, newGame)
 
 	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
@@ -162,7 +164,7 @@ func TestSetChannelGameNilToken(t *testing.T) {
 
 	ft.setChannel(c)
 
-	newToken, err := tw.SetChannelGame(ctx, c.ID.AsInt64(), nil, "something")
+	_, newToken, err := tw.SetChannelGame(ctx, c.ID.AsInt64(), nil, "something")
 	assert.Equal(t, err, twitch.ErrNotAuthorized)
 	assert.Assert(t, newToken == nil)
 }
@@ -184,7 +186,7 @@ func TestSetChannelStatusErrors(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-		newToken, err := tw.SetChannelStatus(ctx, id, tok, "something")
+		_, newToken, err := tw.SetChannelStatus(ctx, id, tok, "something")
 		assert.Equal(t, err, expected, "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
@@ -207,7 +209,7 @@ func TestSetChannelGameErrors(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-		newToken, err := tw.SetChannelGame(ctx, id, tok, "something")
+		_, newToken, err := tw.SetChannelGame(ctx, id, tok, "something")
 		assert.Equal(t, err, expected, "%d", status)
 		assert.Assert(t, newToken == nil)
 	}

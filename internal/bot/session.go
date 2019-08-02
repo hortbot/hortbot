@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -9,9 +10,11 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
+	"golang.org/x/oauth2"
 )
 
 //go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=sessionType
@@ -57,6 +60,9 @@ type session struct {
 
 	tracks    []lastfm.Track
 	tracksSet bool
+
+	tok    *oauth2.Token
+	tokSet bool
 
 	Channel *models.Channel
 
@@ -279,4 +285,33 @@ func (s *session) Tracks() ([]lastfm.Track, error) {
 	}
 
 	return s.tracks, nil
+}
+
+func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
+	if s.tokSet {
+		return s.tok, nil
+	}
+
+	tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.UserID)).One(ctx, s.Tx)
+	switch {
+	case err == sql.ErrNoRows:
+		s.tok = nil
+		s.tokSet = true
+		return nil, nil
+	case err != nil:
+		return nil, err
+	}
+
+	s.tok = modelsx.ModelToToken(tt)
+	s.tokSet = true
+
+	return s.tok, nil
+}
+
+func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
+	s.tok = newToken
+	s.tokSet = true
+
+	tt := modelsx.TokenToModel(s.Channel.UserID, newToken)
+	return modelsx.UpsertToken(ctx, s.Tx, tt)
 }

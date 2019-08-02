@@ -54,7 +54,7 @@ type FakeAPI struct {
 		result2 *oauth2.Token
 		result3 error
 	}
-	SetChannelGameStub        func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)
+	SetChannelGameStub        func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error)
 	setChannelGameMutex       sync.RWMutex
 	setChannelGameArgsForCall []struct {
 		arg1 context.Context
@@ -63,14 +63,16 @@ type FakeAPI struct {
 		arg4 string
 	}
 	setChannelGameReturns struct {
-		result1 *oauth2.Token
-		result2 error
+		result1 string
+		result2 *oauth2.Token
+		result3 error
 	}
 	setChannelGameReturnsOnCall map[int]struct {
-		result1 *oauth2.Token
-		result2 error
+		result1 string
+		result2 *oauth2.Token
+		result3 error
 	}
-	SetChannelStatusStub        func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)
+	SetChannelStatusStub        func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error)
 	setChannelStatusMutex       sync.RWMutex
 	setChannelStatusArgsForCall []struct {
 		arg1 context.Context
@@ -79,12 +81,14 @@ type FakeAPI struct {
 		arg4 string
 	}
 	setChannelStatusReturns struct {
-		result1 *oauth2.Token
-		result2 error
+		result1 string
+		result2 *oauth2.Token
+		result3 error
 	}
 	setChannelStatusReturnsOnCall map[int]struct {
-		result1 *oauth2.Token
-		result2 error
+		result1 string
+		result2 *oauth2.Token
+		result3 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
@@ -285,7 +289,7 @@ func (fake *FakeAPI) GetIDForTokenReturnsOnCall(i int, result1 int64, result2 *o
 	}{result1, result2, result3}
 }
 
-func (fake *FakeAPI) SetChannelGame(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (*oauth2.Token, error) {
+func (fake *FakeAPI) SetChannelGame(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (string, *oauth2.Token, error) {
 	fake.setChannelGameMutex.Lock()
 	ret, specificReturn := fake.setChannelGameReturnsOnCall[len(fake.setChannelGameArgsForCall)]
 	fake.setChannelGameArgsForCall = append(fake.setChannelGameArgsForCall, struct {
@@ -300,10 +304,10 @@ func (fake *FakeAPI) SetChannelGame(arg1 context.Context, arg2 int64, arg3 *oaut
 		return fake.SetChannelGameStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
-		return ret.result1, ret.result2
+		return ret.result1, ret.result2, ret.result3
 	}
 	fakeReturns := fake.setChannelGameReturns
-	return fakeReturns.result1, fakeReturns.result2
+	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 
 func (fake *FakeAPI) SetChannelGameCallCount() int {
@@ -312,7 +316,7 @@ func (fake *FakeAPI) SetChannelGameCallCount() int {
 	return len(fake.setChannelGameArgsForCall)
 }
 
-func (fake *FakeAPI) SetChannelGameCalls(stub func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)) {
+func (fake *FakeAPI) SetChannelGameCalls(stub func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error)) {
 	fake.setChannelGameMutex.Lock()
 	defer fake.setChannelGameMutex.Unlock()
 	fake.SetChannelGameStub = stub
@@ -325,33 +329,36 @@ func (fake *FakeAPI) SetChannelGameArgsForCall(i int) (context.Context, int64, *
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
-func (fake *FakeAPI) SetChannelGameReturns(result1 *oauth2.Token, result2 error) {
+func (fake *FakeAPI) SetChannelGameReturns(result1 string, result2 *oauth2.Token, result3 error) {
 	fake.setChannelGameMutex.Lock()
 	defer fake.setChannelGameMutex.Unlock()
 	fake.SetChannelGameStub = nil
 	fake.setChannelGameReturns = struct {
-		result1 *oauth2.Token
-		result2 error
-	}{result1, result2}
+		result1 string
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
 }
 
-func (fake *FakeAPI) SetChannelGameReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+func (fake *FakeAPI) SetChannelGameReturnsOnCall(i int, result1 string, result2 *oauth2.Token, result3 error) {
 	fake.setChannelGameMutex.Lock()
 	defer fake.setChannelGameMutex.Unlock()
 	fake.SetChannelGameStub = nil
 	if fake.setChannelGameReturnsOnCall == nil {
 		fake.setChannelGameReturnsOnCall = make(map[int]struct {
-			result1 *oauth2.Token
-			result2 error
+			result1 string
+			result2 *oauth2.Token
+			result3 error
 		})
 	}
 	fake.setChannelGameReturnsOnCall[i] = struct {
-		result1 *oauth2.Token
-		result2 error
-	}{result1, result2}
+		result1 string
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
 }
 
-func (fake *FakeAPI) SetChannelStatus(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (*oauth2.Token, error) {
+func (fake *FakeAPI) SetChannelStatus(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (string, *oauth2.Token, error) {
 	fake.setChannelStatusMutex.Lock()
 	ret, specificReturn := fake.setChannelStatusReturnsOnCall[len(fake.setChannelStatusArgsForCall)]
 	fake.setChannelStatusArgsForCall = append(fake.setChannelStatusArgsForCall, struct {
@@ -366,10 +373,10 @@ func (fake *FakeAPI) SetChannelStatus(arg1 context.Context, arg2 int64, arg3 *oa
 		return fake.SetChannelStatusStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
-		return ret.result1, ret.result2
+		return ret.result1, ret.result2, ret.result3
 	}
 	fakeReturns := fake.setChannelStatusReturns
-	return fakeReturns.result1, fakeReturns.result2
+	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 
 func (fake *FakeAPI) SetChannelStatusCallCount() int {
@@ -378,7 +385,7 @@ func (fake *FakeAPI) SetChannelStatusCallCount() int {
 	return len(fake.setChannelStatusArgsForCall)
 }
 
-func (fake *FakeAPI) SetChannelStatusCalls(stub func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)) {
+func (fake *FakeAPI) SetChannelStatusCalls(stub func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error)) {
 	fake.setChannelStatusMutex.Lock()
 	defer fake.setChannelStatusMutex.Unlock()
 	fake.SetChannelStatusStub = stub
@@ -391,30 +398,33 @@ func (fake *FakeAPI) SetChannelStatusArgsForCall(i int) (context.Context, int64,
 	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
-func (fake *FakeAPI) SetChannelStatusReturns(result1 *oauth2.Token, result2 error) {
+func (fake *FakeAPI) SetChannelStatusReturns(result1 string, result2 *oauth2.Token, result3 error) {
 	fake.setChannelStatusMutex.Lock()
 	defer fake.setChannelStatusMutex.Unlock()
 	fake.SetChannelStatusStub = nil
 	fake.setChannelStatusReturns = struct {
-		result1 *oauth2.Token
-		result2 error
-	}{result1, result2}
+		result1 string
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
 }
 
-func (fake *FakeAPI) SetChannelStatusReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+func (fake *FakeAPI) SetChannelStatusReturnsOnCall(i int, result1 string, result2 *oauth2.Token, result3 error) {
 	fake.setChannelStatusMutex.Lock()
 	defer fake.setChannelStatusMutex.Unlock()
 	fake.SetChannelStatusStub = nil
 	if fake.setChannelStatusReturnsOnCall == nil {
 		fake.setChannelStatusReturnsOnCall = make(map[int]struct {
-			result1 *oauth2.Token
-			result2 error
+			result1 string
+			result2 *oauth2.Token
+			result3 error
 		})
 	}
 	fake.setChannelStatusReturnsOnCall[i] = struct {
-		result1 *oauth2.Token
-		result2 error
-	}{result1, result2}
+		result1 string
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
 }
 
 func (fake *FakeAPI) Invocations() map[string][][]interface{} {

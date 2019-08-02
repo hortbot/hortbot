@@ -5,25 +5,17 @@ import (
 	"fmt"
 	"net/url"
 	"testing"
-	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
 	"gotest.tools/assert"
 )
 
 var (
 	tokenCmp = cmp.Comparer(func(x, y oauth2.Token) bool {
-		switch {
-		case x.AccessToken != y.AccessToken:
-		case x.TokenType != y.TokenType:
-		case x.RefreshToken != y.RefreshToken:
-		case x.Expiry.Sub(y.Expiry) > time.Second:
-		default:
-			return true
-		}
-		return false
+		return oauth2x.Equals(&x, &y)
 	})
 
 	expectedErrors = map[int]error{

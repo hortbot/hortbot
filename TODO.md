@@ -39,12 +39,12 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] Song link
     - [ ] Bot help (*Website*)
     - [x] ~~Commercial~~
-    - [ ] Game (*Twitch API*)
+    - [x] Game (*Twitch API*)
         - [x] Get game
-        - [ ] Set game
-    - [ ] Status (*Twitch API*)
+        - [x] Set game
+    - [x] Status (*Twitch API*)
         - [x] Get status
-        - [ ] Set status
+        - [x] Set status
     - [x] ~~statusgame/steamgame~~ (Steam API is restricted)
     - [x] ~~XBox game~~
     - [ ] Follow me (*Twitch API*)

@@ -21,9 +21,11 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/bmatcuk/doublestar"
 	"github.com/gofrs/uuid"
+	gocmp "github.com/google/go-cmp/cmp"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
@@ -36,13 +38,16 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	dedupemem "github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
+	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
+	"golang.org/x/oauth2"
 	"gotest.tools/assert"
+	"gotest.tools/assert/cmp"
 )
 
 func TestScripts(t *testing.T) {
@@ -217,6 +222,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "insert_scheduled_command":
 			st.insertScheduledCommand(t, args)
 
+		case "upsert_twitch_token":
+			st.upsertTwitchToken(t, args)
+
 		case "checkpoint":
 			st.checkpoint()
 
@@ -288,6 +296,12 @@ func (st *scriptTester) test(t *testing.T) {
 
 		case "twitch_get_channel_by_id":
 			st.twitchGetChannelByID(t, args)
+
+		case "twitch_set_channel_status":
+			st.twitchSetChannel(t, args, "status")
+
+		case "twitch_set_channel_game":
+			st.twitchSetChannel(t, args, "game")
 
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
@@ -435,6 +449,18 @@ func (st *scriptTester) insertScheduledCommand(t *testing.T, args string) {
 	st.addAction(func(ctx context.Context) {
 		ctx = boil.SkipTimestamps(ctx)
 		assert.NilError(t, sc.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
+	})
+}
+
+func (st *scriptTester) upsertTwitchToken(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var tt models.TwitchToken
+	assert.NilError(t, json.Unmarshal([]byte(args), &tt), "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		ctx = boil.SkipTimestamps(ctx)
+		assert.NilError(t, modelsx.UpsertToken(ctx, st.db, &tt), "line %d", lineNum)
 	})
 }
 
@@ -801,35 +827,76 @@ func (st *scriptTester) noTwitch(t *testing.T) {
 func (st *scriptTester) twitchGetChannelByID(t *testing.T, args string) {
 	lineNum := st.lineNum
 
-	var v struct {
-		ID      int64
+	var call struct {
+		ID int64
+
 		Channel *twitch.Channel
 		Err     string
 	}
 
-	err := json.Unmarshal([]byte(args), &v)
+	err := json.Unmarshal([]byte(args), &call)
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
 		st.twitch.GetChannelByIDCalls(func(_ context.Context, id int64) (*twitch.Channel, error) {
-			assert.Equal(t, id, v.ID)
-
-			var err error
-			switch v.Err {
-			case "":
-			case "ErrNotFound":
-				err = twitch.ErrNotFound
-			case "ErrNotAuthorized":
-				err = twitch.ErrNotAuthorized
-			case "ErrServerError":
-				err = twitch.ErrServerError
-			case "ErrUnknown":
-				err = twitch.ErrUnknown
-			default:
-				t.Fatalf("unknown error type %s: line %d", v.Err, lineNum)
-			}
-
-			return v.Channel, err
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+			return call.Channel, twitchErr(t, lineNum, call.Err)
 		})
 	})
+}
+
+func (st *scriptTester) twitchSetChannel(t *testing.T, args string, prop string) {
+	lineNum := st.lineNum
+
+	var call struct {
+		ID  int64
+		Tok *oauth2.Token
+		New string
+
+		Set    string
+		NewTok *oauth2.Token
+		Err    string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		fn := st.twitch.SetChannelGameCalls
+		if prop == "status" {
+			fn = st.twitch.SetChannelStatusCalls
+		}
+
+		fn(func(_ context.Context, id int64, tok *oauth2.Token, n string) (string, *oauth2.Token, error) {
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(tok, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, n, call.New, "line %d", lineNum)
+
+			return call.Set, call.NewTok, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+var (
+	tokenCmp = gocmp.Comparer(func(x, y oauth2.Token) bool {
+		return oauth2x.Equals(&x, &y)
+	})
+)
+
+func twitchErr(t *testing.T, lineNum int, e string) error {
+	switch e {
+	case "":
+		return nil
+	case "ErrNotFound":
+		return twitch.ErrNotFound
+	case "ErrNotAuthorized":
+		return twitch.ErrNotAuthorized
+	case "ErrServerError":
+		return twitch.ErrServerError
+	case "ErrUnknown":
+		return twitch.ErrUnknown
+	default:
+		t.Fatalf("unknown error type %s: line %d", e, lineNum)
+		return nil
+	}
 }

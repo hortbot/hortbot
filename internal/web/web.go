@@ -9,12 +9,11 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gofrs/uuid"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/web/mid"
-	"github.com/volatiletech/sqlboiler/boil"
 	"go.uber.org/zap"
 )
 
@@ -78,14 +77,6 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
-var tokenUpdate = boil.Whitelist(
-	models.TwitchTokenColumns.UpdatedAt,
-	models.TwitchTokenColumns.AccessToken,
-	models.TwitchTokenColumns.TokenType,
-	models.TwitchTokenColumns.RefreshToken,
-	models.TwitchTokenColumns.Expiry,
-)
-
 func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -123,15 +114,9 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		tok = newToken
 	}
 
-	tt := &models.TwitchToken{
-		TwitchID:     id,
-		AccessToken:  tok.AccessToken,
-		TokenType:    tok.TokenType,
-		RefreshToken: tok.RefreshToken,
-		Expiry:       tok.Expiry,
-	}
+	tt := modelsx.TokenToModel(id, tok)
 
-	if err := tt.Upsert(ctx, a.DB, true, []string{models.TwitchTokenColumns.TwitchID}, tokenUpdate, boil.Infer()); err != nil {
+	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
 		httpError(w, http.StatusInternalServerError)
 		return
 	}

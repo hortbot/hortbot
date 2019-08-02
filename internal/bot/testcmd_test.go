@@ -2,6 +2,7 @@ package bot_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -97,6 +98,23 @@ func init() {
 	bot.TestingBuiltin("testing_message_count",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return s.Replyf("%v", s.N)
+		},
+		bot.LevelEveryone,
+	)
+
+	bot.TestingBuiltin("testing_twitch_token",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			tok, err := s.TwitchToken(ctx)
+			if err != nil {
+				return err
+			}
+
+			j, err := json.Marshal(tok)
+			if err != nil {
+				return err
+			}
+
+			return s.Replyf("%s", j)
 		},
 		bot.LevelEveryone,
 	)

@@ -256,3 +256,84 @@ func TestOnNewNil(t *testing.T) {
 
 	assert.Equal(t, fake.TokenCallCount(), 2)
 }
+
+func TestEquals(t *testing.T) {
+	orig := &oauth2.Token{
+		AccessToken:  "access-token",
+		TokenType:    "bearer",
+		RefreshToken: "refresh-token",
+		Expiry:       time.Now().Round(time.Second),
+	}
+
+	cp := func(o *oauth2.Token) *oauth2.Token {
+		o2 := *o
+		return &o2
+	}
+
+	tests := []struct {
+		other *oauth2.Token
+		equal bool
+	}{
+		{
+			other: nil,
+			equal: false,
+		},
+		{
+			other: orig,
+			equal: true,
+		},
+		{
+			other: cp(orig),
+			equal: true,
+		},
+		{
+			other: &oauth2.Token{
+				AccessToken:  "what",
+				TokenType:    orig.TokenType,
+				RefreshToken: orig.RefreshToken,
+				Expiry:       orig.Expiry,
+			},
+			equal: false,
+		},
+		{
+			other: &oauth2.Token{
+				AccessToken:  orig.AccessToken,
+				TokenType:    "OAuth",
+				RefreshToken: orig.RefreshToken,
+				Expiry:       orig.Expiry,
+			},
+			equal: false,
+		},
+		{
+			other: &oauth2.Token{
+				AccessToken:  orig.AccessToken,
+				TokenType:    orig.TokenType,
+				RefreshToken: "what",
+				Expiry:       orig.Expiry,
+			},
+			equal: false,
+		},
+		{
+			other: &oauth2.Token{
+				AccessToken:  orig.AccessToken,
+				TokenType:    orig.TokenType,
+				RefreshToken: orig.RefreshToken,
+				Expiry:       orig.Expiry.Add(time.Hour),
+			},
+			equal: false,
+		},
+		{
+			other: &oauth2.Token{
+				AccessToken:  orig.AccessToken,
+				TokenType:    orig.TokenType,
+				RefreshToken: orig.RefreshToken,
+				Expiry:       orig.Expiry.Add(-time.Hour),
+			},
+			equal: false,
+		},
+	}
+
+	for i, test := range tests {
+		assert.Assert(t, oauth2x.Equals(orig, test.other) == test.equal, "test %d", i)
+	}
+}

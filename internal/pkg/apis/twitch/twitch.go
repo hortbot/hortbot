@@ -52,8 +52,8 @@ const (
 type API interface {
 	GetIDForToken(ctx context.Context, userToken *oauth2.Token) (id int64, newToken *oauth2.Token, err error)
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
-	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newToken *oauth2.Token, err error)
-	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newToken *oauth2.Token, err error)
+	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
+	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 }
 
