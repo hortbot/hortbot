@@ -115,3 +115,24 @@ func (st *scriptTester) twitchGetCurrentStream(t testing.TB, _, args string) {
 		})
 	})
 }
+
+func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string) {
+	lineNum := st.lineNum
+
+	var call struct {
+		Channel string
+
+		Chatters int64
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetChattersCalls(func(_ context.Context, channel string) (int64, error) {
+			assert.Equal(t, channel, call.Channel, "line %d", lineNum)
+			return call.Chatters, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}

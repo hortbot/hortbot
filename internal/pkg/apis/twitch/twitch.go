@@ -55,6 +55,7 @@ type API interface {
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
+	GetChatters(ctx context.Context, channel string) (int64, error)
 }
 
 // Twitch is the Twitch API client.

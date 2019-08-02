@@ -332,4 +332,5 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"twitch_set_channel_status": (*scriptTester).twitchSetChannel,
 	"twitch_set_channel_game":   (*scriptTester).twitchSetChannel,
 	"twitch_get_current_stream": (*scriptTester).twitchGetCurrentStream,
+	"twitch_get_chatters":       (*scriptTester).twitchGetChatters,
 }

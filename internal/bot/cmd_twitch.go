@@ -187,3 +187,25 @@ func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, erro
 
 	return stream, nil
 }
+
+func cmdChatters(ctx context.Context, s *session, cmd string, args string) error {
+	if s.Deps.Twitch == nil {
+		return errBuiltinDisabled
+	}
+
+	chatters, err := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
+	switch err {
+	case twitch.ErrServerError, twitch.ErrNotFound:
+		return s.Reply(serverErrorReply)
+	case nil:
+	default:
+		return err
+	}
+
+	u := "users"
+	if chatters == 1 {
+		u = "user"
+	}
+
+	return s.Replyf("%d %s currently connected to chat.", chatters, u)
+}

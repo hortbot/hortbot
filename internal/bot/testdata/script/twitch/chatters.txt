@@ -1,0 +1,25 @@
+join hortbot 999 foobar 1
+
+twitch_get_chatters {"Channel": "foobar"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!chatters
+send hortbot #foobar [HB] 0 users currently connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": 1}
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!chatters
+send hortbot #foobar [HB] 1 user currently connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": 12345}
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!chatters
+send hortbot #foobar [HB] 12345 users currently connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!chatters
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+twitch_get_chatters {"Channel": "foobar", "Err": "ErrNotFound"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!chatters
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+twitch_get_chatters {"Channel": "foobar", "Err": "ErrNotAuthorized"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!chatters
+no_send

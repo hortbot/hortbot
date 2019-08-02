@@ -45,6 +45,7 @@ func init() {
 		"game":        {fn: cmdGame, minLevel: levelEveryone},
 		"viewers":     {fn: cmdViewers, minLevel: levelEveryone},
 		"uptime":      {fn: cmdUptime, minLevel: levelEveryone},
+		"chatters":    {fn: cmdChatters, minLevel: levelEveryone},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
 	}
 }

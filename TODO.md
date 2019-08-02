@@ -32,7 +32,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Part (in other channels); waiting until this can have "confirm" functionality
     - [x] ~~Topic~~
     - [x] Viewers (*Twitch API*)
-    - [ ] Chatters (*Twitch API*)
+    - [x] Chatters (*Twitch API*)
     - [x] Uptime (*Twitch API*)
     - [x] LastFM
         - [x] Music/np
