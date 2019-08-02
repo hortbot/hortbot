@@ -1,0 +1,48 @@
+bot_config {"Clock": "mock"}
+join hortbot 999 foobar 1
+
+clock_set 2000-10-01T03:11:00Z
+
+twitch_get_current_stream {"ID": 1}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+send hortbot #foobar [HB] Stream is not live.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+send hortbot #foobar [HB] Stream is not live.
+
+
+twitch_get_current_stream {"ID": 1, "Err": "ErrServerError"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+
+twitch_get_current_stream {"ID": 1, "Err": "ErrNotAuthorized"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+no_send
+
+
+twitch_get_current_stream {"ID": 1, "Stream": {"created_at": "2000-10-01T00:00:11Z", "viewers": 1234}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+send hortbot #foobar [HB] 1234 viewers.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+send hortbot #foobar [HB] Live for 3 hours 11 minutes.
+
+
+twitch_get_current_stream {"ID": 1, "Stream": {"created_at": "2000-09-29T01:23:12Z", "viewers": 1}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+send hortbot #foobar [HB] 1 viewer.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+send hortbot #foobar [HB] Live for 2 days 1 hour 48 minutes.

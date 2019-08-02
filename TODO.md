@@ -31,9 +31,9 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Join/part (in bot's channel)
     - [x] Part (in other channels); waiting until this can have "confirm" functionality
     - [x] ~~Topic~~
-    - [ ] Viewers (*Twitch API*)
+    - [x] Viewers (*Twitch API*)
     - [ ] Chatters (*Twitch API*)
-    - [ ] Uptime (*Twitch API*)
+    - [x] Uptime (*Twitch API*)
     - [x] LastFM
         - [x] Music/np
         - [x] Song link
@@ -201,9 +201,9 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_VIEWERS_)` (*Twitch API*)
 - [ ] `(_CHATTERS_)` (*Twitch API*)
 - [ ] ~~`(_STEAM_PROFILE_)`~~ (*Steam API*)
-- [ ] ~~`(_STEAM_GAME_)`~~ (*Steam API*)
+- [ ] `(_STEAM_GAME_)` (*Steam API*)
 - [ ] ~~`(_STEAM_SERVER_)`~~ (*Steam API*)
-- [ ] ~~`(_STEAM_STORE_)`~~ (*Steam API*)
+- [ ] `(_STEAM_STORE_)` (*Steam API*)
 - [x] `(_SONG_)`
 - [x] `(_SONG_URL_)`
 - [x] `(_LAST_SONG_)`

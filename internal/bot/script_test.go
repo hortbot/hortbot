@@ -303,6 +303,9 @@ func (st *scriptTester) test(t *testing.T) {
 		case "twitch_set_channel_game":
 			st.twitchSetChannel(t, args, "game")
 
+		case "twitch_get_current_stream":
+			st.twitchGetCurrentStream(t, args)
+
 		default:
 			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
 		}
@@ -899,4 +902,25 @@ func twitchErr(t *testing.T, lineNum int, e string) error {
 		t.Fatalf("unknown error type %s: line %d", e, lineNum)
 		return nil
 	}
+}
+
+func (st *scriptTester) twitchGetCurrentStream(t *testing.T, args string) {
+	lineNum := st.lineNum
+
+	var call struct {
+		ID int64
+
+		Stream *twitch.Stream
+		Err    string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetCurrentStreamCalls(func(_ context.Context, id int64) (*twitch.Stream, error) {
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+			return call.Stream, twitchErr(t, lineNum, call.Err)
+		})
+	})
 }

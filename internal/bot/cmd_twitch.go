@@ -3,7 +3,9 @@ package bot
 import (
 	"context"
 	"strings"
+	"time"
 
+	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 )
 
@@ -130,4 +132,58 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	return s.Reply("Current game: " + v)
+}
+
+func cmdUptime(ctx context.Context, s *session, cmd string, args string) error {
+	if s.Deps.Twitch == nil {
+		return errBuiltinDisabled
+	}
+
+	stream, err := streamOrReplyNotLive(ctx, s)
+	if err != nil || stream == nil {
+		return err
+	}
+
+	uptime := s.Deps.Clock.Since(stream.CreatedAt).Round(time.Minute)
+	uStr := durafmt.Parse(uptime).String()
+
+	return s.Replyf("Live for %s.", uStr)
+}
+
+func cmdViewers(ctx context.Context, s *session, cmd string, args string) error {
+	if s.Deps.Twitch == nil {
+		return errBuiltinDisabled
+	}
+
+	stream, err := streamOrReplyNotLive(ctx, s)
+	if err != nil || stream == nil {
+		return err
+	}
+
+	viewers := stream.Viewers
+
+	vs := "viewers"
+	if viewers == 1 {
+		vs = "viewer"
+	}
+
+	return s.Replyf("%d %s.", viewers, vs)
+}
+
+func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, error) {
+	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
+
+	switch err {
+	case twitch.ErrServerError:
+		return nil, s.Reply(serverErrorReply)
+	case nil:
+	default:
+		return nil, err
+	}
+
+	if stream == nil {
+		return nil, s.Reply("Stream is not live.")
+	}
+
+	return stream, nil
 }
