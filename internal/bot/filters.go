@@ -246,7 +246,8 @@ func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 		return true, filterDoPunish(ctx, s, "emotes", "please don't spam emotes")
 	}
 
-	if count == 1 && s.Channel.FilterEmotesSingle {
+	// If the count is 1 and the message has no whitespace, then it's a single emote message.
+	if count == 1 && s.Channel.FilterEmotesSingle && !containsSpace(s.Message) {
 		return true, filterDoPunish(ctx, s, "emotes", "single emote messages are not allowed")
 	}
 
@@ -283,6 +284,15 @@ func withoutSpaces(s string) string {
 		}
 		return r
 	}, s)
+}
+
+func containsSpace(s string) bool {
+	for _, r := range s {
+		if unicode.IsSpace(r) {
+			return true
+		}
+	}
+	return false
 }
 
 func filterDoPunish(ctx context.Context, s *session, filter, message string) error {
