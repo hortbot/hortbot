@@ -7,9 +7,9 @@ require (
 	github.com/Microsoft/go-winio v0.4.13 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
-	github.com/aws/aws-sdk-go v1.21.8 // indirect
+	github.com/aws/aws-sdk-go v1.21.9 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
-	github.com/bmatcuk/doublestar v1.1.4
+	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
@@ -59,7 +59,7 @@ require (
 	github.com/ory/dockertest v3.3.4+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pelletier/go-toml v1.4.0 // indirect
-	github.com/pierrec/lz4 v2.2.5+incompatible // indirect
+	github.com/pierrec/lz4 v2.2.6+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20190728182440-6a916e37a237 // indirect
@@ -84,7 +84,8 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190801041406-cbf593c0f2f3 // indirect
-	golang.org/x/tools v0.0.0-20190731214159-1e85ed8060aa
+	golang.org/x/tools v0.0.0-20190802220118-1d1727260058
+	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
