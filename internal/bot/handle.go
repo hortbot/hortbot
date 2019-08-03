@@ -279,6 +279,7 @@ func handleSession(ctx context.Context, s *session) error {
 		switch err {
 		case errNotAuthorized, errBuiltinDisabled, errIgnore:
 			wasCommand = false
+			err = nil
 		}
 
 		if wasCommand {
