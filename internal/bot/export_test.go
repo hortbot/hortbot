@@ -39,10 +39,14 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *session, cmd st
 		panic(name + " already exists")
 	}
 
-	builtinCommands[name] = handlerFunc{
+	hf := handlerFunc{
 		fn:       fn,
 		minLevel: minLevel,
 	}
+
+	verifyHandlerMapEntry(name, hf)
+
+	builtinCommands[name] = hf
 }
 
 func TestingAction(fn func(ctx context.Context, action string) (string, error, bool)) {

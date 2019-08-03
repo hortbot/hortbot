@@ -6,14 +6,14 @@ import (
 	"strings"
 )
 
-var varCommands handlerMap = map[string]handlerFunc{
+var varCommands = newHandlerMap(map[string]handlerFunc{
 	"set":       {fn: cmdVarSet, minLevel: levelModerator},
 	"get":       {fn: cmdVarGet, minLevel: levelModerator},
 	"delete":    {fn: cmdVarDelete, minLevel: levelModerator},
 	"remove":    {fn: cmdVarDelete, minLevel: levelModerator},
 	"increment": {fn: cmdVarIncrement, minLevel: levelModerator},
 	"decrement": {fn: cmdVarIncrement, minLevel: levelModerator},
-}
+})
 
 func cmdVar(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)

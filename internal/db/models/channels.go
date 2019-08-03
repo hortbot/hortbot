@@ -51,6 +51,7 @@ type Channel struct {
 	EnableFilters               bool              `boil:"enable_filters" json:"enable_filters" toml:"enable_filters" yaml:"enable_filters"`
 	FilterLinks                 bool              `boil:"filter_links" json:"filter_links" toml:"filter_links" yaml:"filter_links"`
 	PermittedLinks              types.StringArray `boil:"permitted_links" json:"permitted_links" toml:"permitted_links" yaml:"permitted_links"`
+	SubsMayLink                 bool              `boil:"subs_may_link" json:"subs_may_link" toml:"subs_may_link" yaml:"subs_may_link"`
 	FilterCaps                  bool              `boil:"filter_caps" json:"filter_caps" toml:"filter_caps" yaml:"filter_caps"`
 	FilterCapsMinChars          int               `boil:"filter_caps_min_chars" json:"filter_caps_min_chars" toml:"filter_caps_min_chars" yaml:"filter_caps_min_chars"`
 	FilterCapsPercentage        int               `boil:"filter_caps_percentage" json:"filter_caps_percentage" toml:"filter_caps_percentage" yaml:"filter_caps_percentage"`
@@ -97,6 +98,7 @@ var ChannelColumns = struct {
 	EnableFilters               string
 	FilterLinks                 string
 	PermittedLinks              string
+	SubsMayLink                 string
 	FilterCaps                  string
 	FilterCapsMinChars          string
 	FilterCapsPercentage        string
@@ -138,6 +140,7 @@ var ChannelColumns = struct {
 	EnableFilters:               "enable_filters",
 	FilterLinks:                 "filter_links",
 	PermittedLinks:              "permitted_links",
+	SubsMayLink:                 "subs_may_link",
 	FilterCaps:                  "filter_caps",
 	FilterCapsMinChars:          "filter_caps_min_chars",
 	FilterCapsPercentage:        "filter_caps_percentage",
@@ -236,6 +239,7 @@ var ChannelWhere = struct {
 	EnableFilters               whereHelperbool
 	FilterLinks                 whereHelperbool
 	PermittedLinks              whereHelpertypes_StringArray
+	SubsMayLink                 whereHelperbool
 	FilterCaps                  whereHelperbool
 	FilterCapsMinChars          whereHelperint
 	FilterCapsPercentage        whereHelperint
@@ -277,6 +281,7 @@ var ChannelWhere = struct {
 	EnableFilters:               whereHelperbool{field: "\"channels\".\"enable_filters\""},
 	FilterLinks:                 whereHelperbool{field: "\"channels\".\"filter_links\""},
 	PermittedLinks:              whereHelpertypes_StringArray{field: "\"channels\".\"permitted_links\""},
+	SubsMayLink:                 whereHelperbool{field: "\"channels\".\"subs_may_link\""},
 	FilterCaps:                  whereHelperbool{field: "\"channels\".\"filter_caps\""},
 	FilterCapsMinChars:          whereHelperint{field: "\"channels\".\"filter_caps_min_chars\""},
 	FilterCapsPercentage:        whereHelperint{field: "\"channels\".\"filter_caps_percentage\""},
@@ -329,8 +334,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

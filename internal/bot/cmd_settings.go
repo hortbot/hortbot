@@ -10,19 +10,21 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var settingCommands handlerMap = map[string]handlerFunc{
-	"filter":          {fn: cmdFilter, minLevel: levelModerator},
-	"prefix":          {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
-	"bullet":          {fn: cmdSettingBullet, minLevel: levelBroadcaster},
-	"cooldown":        {fn: cmdSettingCooldown, minLevel: levelModerator},
-	"shouldmoderate":  {fn: cmdSettingShouldModerate, minLevel: levelModerator},
-	"lastfm":          {fn: cmdSettingLastFM, minLevel: levelModerator},
-	"parseyoutube":    {fn: cmdSettingParseYoutube, minLevel: levelModerator},
-	"enablewarnings":  {fn: cmdSettingEnableWarnings, minLevel: levelModerator},
-	"displaywarnings": {fn: cmdSettingDisplayWarnings, minLevel: levelModerator},
-	"timeoutduration": {fn: cmdSettingTimeoutDuration, minLevel: levelModerator},
-	"extralifeid":     {fn: cmdSettingExtraLifeID, minLevel: levelModerator},
-}
+var settingCommands = newHandlerMap(map[string]handlerFunc{
+	"filter":             {fn: cmdFilter, minLevel: levelModerator},
+	"prefix":             {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
+	"bullet":             {fn: cmdSettingBullet, minLevel: levelBroadcaster},
+	"cooldown":           {fn: cmdSettingCooldown, minLevel: levelModerator},
+	"shouldmoderate":     {fn: cmdSettingShouldModerate, minLevel: levelModerator},
+	"lastfm":             {fn: cmdSettingLastFM, minLevel: levelModerator},
+	"parseyoutube":       {fn: cmdSettingParseYoutube, minLevel: levelModerator},
+	"enablewarnings":     {fn: cmdSettingEnableWarnings, minLevel: levelModerator},
+	"displaywarnings":    {fn: cmdSettingDisplayWarnings, minLevel: levelModerator},
+	"timeoutduration":    {fn: cmdSettingTimeoutDuration, minLevel: levelModerator},
+	"extralifeid":        {fn: cmdSettingExtraLifeID, minLevel: levelModerator},
+	"subsmaylink":        {fn: cmdSubsMayLink, minLevel: levelModerator},
+	"subsregsminuslinks": {fn: cmdSubsMayLink, minLevel: levelModerator},
+})
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
@@ -280,6 +282,20 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 	}
 
 	return s.Replyf("Extra Life ID changed to %d.", id)
+}
+
+func cmdSubsMayLink(ctx context.Context, s *session, cmd string, args string) error {
+	return updateBoolean(
+		ctx, s, cmd, args,
+		func() bool { return s.Channel.SubsMayLink },
+		func(v bool) { s.Channel.SubsMayLink = v },
+		models.ChannelColumns.SubsMayLink,
+		"subsMayLink",
+		"Subs already may post links.",
+		"Subs already may not post links.",
+		"Subs may now post links.",
+		"Subs may no longer post links.",
+	)
 }
 
 func updateBoolean(

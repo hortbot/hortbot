@@ -18,6 +18,13 @@
 
 Some features are not currently planned to be ported and have been crossed out.
 
+### Differences
+
+- The "regular" role has essentially been removed. All subs are "regulars", and all "regulars" are subs.
+This means that the `subsRegsMinusLinks` option doesn't make much sense. Instead, it may be referred to
+as `subsMayLink`, which when true means subs may link in chat.
+- Subs are allowed to post links by default, as regulars would be.
+
 ### Functionality
 
 - [x] Link detection and moderation
@@ -85,7 +92,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] Similarly to quotes, emulate old list behavior
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
-    - [x] ~~Winner~~ (Requires persisting twitch membership messages)
+    - [x] ~~Winner~~
     - [ ] Random number
     - [x] ~~Hug~~ (Use a custom command.)
     - [x] Conch/helix (Requires quotes)
@@ -144,7 +151,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [ ] `urban`
     - [x] ~~`gamertag`~~
     - [x] `bullet`
-    - [ ] `subsRegsMinusLinks`
+    - [x] `subsRegsMinusLinks` AKA `subsMayLink` (see "differences" above)
     - [x] `cooldown`
     - [x] ~~`throw~~
     - [x] `lastfm`

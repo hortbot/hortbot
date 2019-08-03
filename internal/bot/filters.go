@@ -26,10 +26,6 @@ func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
-		return false, nil
-	}
-
 	for _, fn := range filters {
 		filtered, err := fn(ctx, s)
 		if filtered || err != nil {
@@ -45,11 +41,24 @@ func filterMe(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
+	if s.UserLevel.CanAccess(levelSubscriber) {
+		return false, nil
+	}
+
 	return true, filterDoPunish(ctx, s, "me", "/me is not allowed in this channel")
 }
 
 func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 	if !s.Channel.FilterLinks {
+		return false, nil
+	}
+
+	minLevel := levelModerator
+	if s.Channel.SubsMayLink {
+		minLevel = levelSubscriber
+	}
+
+	if s.UserLevel.CanAccess(minLevel) {
 		return false, nil
 	}
 
@@ -125,6 +134,10 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
+	if s.UserLevel.CanAccess(levelSubscriber) {
+		return false, nil
+	}
+
 	message := s.Message
 
 	if utf8.RuneCountInString(message) < s.Channel.FilterCapsMinChars {
@@ -168,6 +181,10 @@ func filterSymbols(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
+	if s.UserLevel.CanAccess(levelSubscriber) {
+		return false, nil
+	}
+
 	message := withoutSpaces(s.Message)
 
 	messageLen := 0
@@ -202,6 +219,10 @@ func filterLength(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
+	if s.UserLevel.CanAccess(levelSubscriber) {
+		return false, nil
+	}
+
 	if utf8.RuneCountInString(s.Message) < s.Channel.FilterMaxLength {
 		return false, nil
 	}
@@ -211,6 +232,10 @@ func filterLength(ctx context.Context, s *session) (filtered bool, err error) {
 
 func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 	if !s.Channel.FilterEmotes {
+		return false, nil
+	}
+
+	if s.UserLevel.CanAccess(levelSubscriber) {
 		return false, nil
 	}
 
@@ -230,6 +255,10 @@ func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 
 func filterBannedPhrases(ctx context.Context, s *session) (filtered bool, err error) {
 	if !s.Channel.FilterBannedPhrases {
+		return false, nil
+	}
+
+	if s.UserLevel.CanAccess(levelSubscriber) {
 		return false, nil
 	}
 

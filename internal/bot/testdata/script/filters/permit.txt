@@ -10,6 +10,9 @@ send hortbot #foobar [HB] Filters are now enabled.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
 send hortbot #foobar [HB] Link filter is now enabled.
 
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsmaylink on
+send_any
+
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!permit random
 no_send
 

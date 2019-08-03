@@ -12,7 +12,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var filterCommands handlerMap = map[string]handlerFunc{
+var filterCommands = newHandlerMap(map[string]handlerFunc{
 	"status":        {fn: cmdFilterStatus, minLevel: levelModerator},
 	"on":            {fn: cmdFilterOnOff(true), minLevel: levelModerator},
 	"off":           {fn: cmdFilterOnOff(false), minLevel: levelModerator},
@@ -25,7 +25,7 @@ var filterCommands handlerMap = map[string]handlerFunc{
 	"messagelength": {fn: cmdFilterMessageLength, minLevel: levelModerator},
 	"emotes":        {fn: cmdFilterEmotes, minLevel: levelModerator},
 	"banphrase":     {fn: cmdFilterBanPhrase, minLevel: levelModerator},
-}
+})
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)

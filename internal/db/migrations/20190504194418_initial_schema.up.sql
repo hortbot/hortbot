@@ -45,6 +45,7 @@ CREATE TABLE channels (
 
     filter_links boolean NOT NULL,
     permitted_links text[] DEFAULT '{}' NOT NULL,
+    subs_may_link boolean NOT NULL,
 
     filter_caps boolean NOT NULL,
     filter_caps_min_chars int NOT NULL,

@@ -9,7 +9,7 @@ import (
 	"github.com/hako/durafmt"
 )
 
-var moderationCommands handlerMap = map[string]handlerFunc{
+var moderationCommands = newHandlerMap(map[string]handlerFunc{
 	"+b":   {fn: cmdModBan, minLevel: levelModerator},
 	"-b":   {fn: cmdModUnban, minLevel: levelModerator},
 	"+t":   {fn: cmdModTimeout, minLevel: levelModerator},
@@ -21,7 +21,7 @@ var moderationCommands handlerMap = map[string]handlerFunc{
 	"-s":   {fn: cmdChangeMode("subscribersoff", "Chat is no longer in subscribers only mode."), minLevel: levelModerator},
 	"+r9k": {fn: cmdChangeMode("r9kbeta", "Chat is now in r9k mode."), minLevel: levelModerator},
 	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: levelModerator},
-}
+})
 
 func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)

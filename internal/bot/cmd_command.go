@@ -12,7 +12,7 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
-var scCommands handlerMap = map[string]handlerFunc{
+var ccCommands = newHandlerMap(map[string]handlerFunc{
 	"add":             {fn: cmdCommandAddNormal, minLevel: levelModerator},
 	"addb":            {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
 	"addbroadcaster":  {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
@@ -41,13 +41,13 @@ var scCommands handlerMap = map[string]handlerFunc{
 	"rename":          {fn: cmdCommandRename, minLevel: levelModerator},
 	"get":             {fn: cmdCommandGet, minLevel: levelModerator},
 	// TODO: clone
-}
+})
 
 func cmdCommand(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := scCommands.run(ctx, s, subcommand, args)
+	ok, err := ccCommands.run(ctx, s, subcommand, args)
 	if err != nil {
 		return err
 	}

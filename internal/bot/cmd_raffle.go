@@ -8,13 +8,13 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var raffleCommands handlerMap = map[string]handlerFunc{
+var raffleCommands = newHandlerMap(map[string]handlerFunc{
 	"enable":  {fn: cmdRaffleEnableDisable, minLevel: levelModerator},
 	"disable": {fn: cmdRaffleEnableDisable, minLevel: levelModerator},
 	"count":   {fn: cmdRaffleCount, minLevel: levelModerator},
 	"winner":  {fn: cmdRaffleWinner, minLevel: levelModerator},
 	"reset":   {fn: cmdRaffleReset, minLevel: levelModerator},
-}
+})
 
 func cmdRaffle(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)

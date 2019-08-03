@@ -1,0 +1,16 @@
+join hortbot 99 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsRegsMinusLinks
+send hortbot #foobar [HB] subsMayLink is set to true.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsRegsMinusLinks on
+send hortbot #foobar [HB] Subs already may post links.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsMayLink off
+send hortbot #foobar [HB] Subs may no longer post links.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsMayLink off
+send hortbot #foobar [HB] Subs already may not post links.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsMayLink
+send hortbot #foobar [HB] subsMayLink is set to false.

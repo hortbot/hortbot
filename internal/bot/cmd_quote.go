@@ -12,7 +12,7 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
-var quoteCommands handlerMap = map[string]handlerFunc{
+var quoteCommands = newHandlerMap(map[string]handlerFunc{
 	"add":      {fn: cmdQuoteAdd, minLevel: levelModerator},
 	"delete":   {fn: cmdQuoteDelete, minLevel: levelModerator},
 	"remove":   {fn: cmdQuoteDelete, minLevel: levelModerator},
@@ -22,7 +22,7 @@ var quoteCommands handlerMap = map[string]handlerFunc{
 	"random":   {fn: cmdQuoteRandom, minLevel: levelSubscriber},
 	"search":   {fn: cmdQuoteSearch, minLevel: levelModerator},
 	"editor":   {fn: cmdQuoteEditor, minLevel: levelSubscriber},
-}
+})
 
 func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)

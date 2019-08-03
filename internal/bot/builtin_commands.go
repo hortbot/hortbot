@@ -15,7 +15,7 @@ var reservedCommandNames = map[string]bool{
 
 func init() {
 	// To prevent initialization loop.
-	builtinCommands = map[string]handlerFunc{
+	builtinCommands = newHandlerMap(map[string]handlerFunc{
 		"command":     {fn: cmdCommand, minLevel: levelModerator},
 		"coemand":     {fn: cmdCommand, minLevel: levelModerator},
 		"set":         {fn: cmdSettings, minLevel: levelModerator},
@@ -48,10 +48,35 @@ func init() {
 		"uptime":      {fn: cmdUptime, minLevel: levelEveryone},
 		"chatters":    {fn: cmdChatters, minLevel: levelEveryone},
 		"__roundtrip": {fn: cmdRoundtrip, minLevel: levelAdmin},
-	}
+	})
 }
 
 type handlerMap map[string]handlerFunc
+
+func verifyHandlerMapEntry(name string, hf handlerFunc) {
+	if name == "" {
+		panic("empty name")
+	}
+
+	if name != strings.ToLower(name) {
+		panic("name is not lowercase")
+	}
+
+	if hf.fn == nil {
+		panic("nil handler func")
+	}
+
+	if hf.minLevel == levelUnknown {
+		panic("unknown minLevel")
+	}
+}
+
+func newHandlerMap(m map[string]handlerFunc) handlerMap {
+	for k, v := range m {
+		verifyHandlerMapEntry(k, v)
+	}
+	return m
+}
 
 func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string) (bool, error) {
 	cmd = strings.ToLower(cmd)

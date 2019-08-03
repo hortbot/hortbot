@@ -14,14 +14,14 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
-var repeatCommands handlerMap = map[string]handlerFunc{
+var repeatCommands = newHandlerMap(map[string]handlerFunc{
 	"add":    {fn: cmdRepeatAdd, minLevel: levelModerator},
 	"delete": {fn: cmdRepeatDelete, minLevel: levelModerator},
 	"remove": {fn: cmdRepeatDelete, minLevel: levelModerator},
 	"on":     {fn: cmdRepeatOnOff, minLevel: levelModerator},
 	"off":    {fn: cmdRepeatOnOff, minLevel: levelModerator},
 	"list":   {fn: cmdRepeatList, minLevel: levelModerator},
-}
+})
 
 func cmdRepeat(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)

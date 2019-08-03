@@ -68,3 +68,19 @@ send hortbot #foobar [HB] hortbot will no longer attempt to moderate in this cha
 
 handle hortbot @id=630f301e-af82-495d-b6b4-107e5769e7c2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate on
+send_any
+
+clock_forward 3h
+handle hortbot @id=__UUID__;room-id=1;user-id=3;display-name=SubMan;subscriber=1 :subman!subman@subman.tmi.twitch.tv PRIVMSG #foobar :this should be fine example.com
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsMayLink off
+send_any
+
+clock_forward 3h
+handle hortbot @id=86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca;room-id=1;user-id=3;display-name=SubMan;subscriber=1 :subman!subman@subman.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+send hortbot #foobar /delete 86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca
+send hortbot #foobar [HB] SubMan, please ask a moderator before posting links - warning

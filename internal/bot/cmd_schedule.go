@@ -14,14 +14,14 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
-var scheduleCommands handlerMap = map[string]handlerFunc{
+var scheduleCommands = newHandlerMap(map[string]handlerFunc{
 	"add":    {fn: cmdScheduleAdd, minLevel: levelModerator},
 	"delete": {fn: cmdScheduleDelete, minLevel: levelModerator},
 	"remove": {fn: cmdScheduleDelete, minLevel: levelModerator},
 	"on":     {fn: cmdScheduleOnOff, minLevel: levelModerator},
 	"off":    {fn: cmdScheduleOnOff, minLevel: levelModerator},
 	"list":   {fn: cmdScheduleList, minLevel: levelModerator},
-}
+})
 
 func cmdSchedule(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
