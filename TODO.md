@@ -35,7 +35,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Chatters (*Twitch API*)
     - [x] Uptime (*Twitch API*)
     - [x] LastFM
-        - [x] Music/np
+        - [ ] `music`
         - [x] Song link
     - [ ] Bot help (*Website*)
     - [x] ~~Commercial~~
@@ -45,16 +45,17 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Status (*Twitch API*)
         - [x] Get status
         - [x] Set status
-    - [x] ~~statusgame/steamgame~~ (Steam API is restricted)
+    - [ ] statusgame/steamgame (*Steam API*)
     - [x] ~~XBox game~~
     - [ ] Follow me (*Twitch API*)
+        - Should this be automatic?
     - [ ] Viewer stats (*Twitch API*)
     - [ ] Punish stats (requires moderation)
-    - [x] ~~What should I play~~ (Steam API is restricted)
+    - [ ] What should I play (*Steam API*)
     - [ ] Google
     - ~~[x] Wiki~~
     - [ ] Is live (*Twitch API*)
-    - [x] ~~Is here~~ (Requires persisting twitch membership messages)
+    - [ ] Is here (*Twitch API*)
 - [ ] Custom Commands
     - [x] Cooldowns
     - [x] Add
@@ -94,6 +95,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~Race~~
     - [x] XKCD
 - [x] Quotes
+    - [ ] Link to quotes page on website (*Website*)
     - [x] Add
     - [x] Delete
     - [x] Get
@@ -109,7 +111,8 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Reset
     - [x] Count
     - [x] Winner
-- [x] ~~Highlights~~ (Predates twitch clips, may port for old data)
+- [x] ~~Highlights~~
+    - Predates Twitch clips; may still consider reviving.
 - [x] ~~Binding of Isaac: Rebirth~~
 - [x] Moderation
     - [x] Slow mode on/of
@@ -119,11 +122,15 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Purge
         - [ ] Add an argument to this to purge the last X messages
     - [x] Link permit (needs detection)
+        - [ ] `allow` form
     - [x] Clear chat
 - [x] Ignores
     - [x] Add/delete
     - [x] List
 - [x] ~~Raids~~ Twitch does this better now
+    - May partially implement.
+    - [ ] `host`
+    - [ ] `unhost`
 - [ ] Settings
     - Lots of settings here related to other items.
     - [x] ~~`topic`~~
@@ -179,6 +186,24 @@ Some features are not currently planned to be ported and have been crossed out.
         - [x] `emotes`
         - [x] `symbols`
 - [ ] Administration
+    - [x] ~~`verboseLogging`~~
+    - [ ] `imp`
+    - [ ] `+whatprefix`
+    - [ ] `altsend`
+    - [x] ~~`disconnect`~~
+    - [ ] `admin`
+        - [ ] `channels`
+        - [ ] `join`
+        - [ ] `part`
+        - [ ] `block`
+        - [ ] `unblock`
+        - [ ] `reconnect`
+        - [x] ~~`reload`~~
+        - [ ] `color`
+        - [ ] `loadfilter` (Needs live-reloading configs)
+        - [ ] `spam`
+        - [ ] `#`
+        - [x] ~~`trimchannels`~~
 - [x] Variables
     - [x] Set
     - [x] Delete
@@ -193,6 +218,16 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
     - [ ] Steam game (expand to other stores?)
     - [x] Extra Life stuff
+    - [x] ~~`strawpoll`~~
+    - [x] ~~`channelID`~~
+    - [x] ~~`whisper`~~
+    - [ ] "wp"
+    - [ ] `properties`
+    - [x] ~~`songrequest`~~
+    - [x] ~~`sendUpdate`~~
+    - [x] ~~Custom commands from another channel (`#<user>/`)~~
+    - [ ] `modchan`
+    - [ ] `rejoin`
 
 ### Actions (string replacements)
 
@@ -200,9 +235,9 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] `(_STATUS_)` (*Twitch API*)
 - [ ] `(_VIEWERS_)` (*Twitch API*)
 - [ ] `(_CHATTERS_)` (*Twitch API*)
-- [ ] ~~`(_STEAM_PROFILE_)`~~ (*Steam API*)
+- [ ] `(_STEAM_PROFILE_)` (*Steam API*)
 - [ ] `(_STEAM_GAME_)` (*Steam API*)
-- [ ] ~~`(_STEAM_SERVER_)`~~ (*Steam API*)
+- [ ] `(_STEAM_SERVER_)` (*Steam API*)
 - [ ] `(_STEAM_STORE_)` (*Steam API*)
 - [x] `(_SONG_)`
 - [x] `(_SONG_URL_)`
