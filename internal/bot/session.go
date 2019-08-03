@@ -66,6 +66,7 @@ type session struct {
 	links        *[]*url.URL
 	tracks       *[]lastfm.Track
 	tok          **oauth2.Token
+	isLive       *bool
 }
 
 func (s *session) formatResponse(response string) string {
@@ -306,4 +307,25 @@ func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) er
 
 	tt := modelsx.TokenToModel(s.Channel.UserID, newToken)
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
+}
+
+var errTwitchDisabled = errors.New("bot: Twitch disabled")
+
+func (s *session) IsLive(ctx context.Context) (bool, error) {
+	if s.Deps.Twitch == nil {
+		return false, errTwitchDisabled
+	}
+
+	if s.isLive != nil {
+		return *s.isLive, nil
+	}
+
+	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
+	if err != nil {
+		return false, err
+	}
+
+	isLive := stream != nil
+	s.isLive = &isLive
+	return isLive, nil
 }

@@ -116,6 +116,17 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		default:
 			return "", err
 		}
+	case "ONLINE_CHECK":
+		isLive, err := s.IsLive(ctx)
+		if err != nil {
+			return "", err
+		}
+
+		if !isLive {
+			panic("ONLINE_CHECK should have been handled earlier")
+		}
+
+		return "", nil
 	}
 
 	switch {

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -13,7 +14,20 @@ import (
 func runCustomCommand(ctx context.Context, s *session, command *models.CustomCommand) error {
 	logger := ctxlog.FromContext(ctx)
 
-	nodes, err := cbp.Parse(command.Message)
+	msg := command.Message
+
+	if strings.Contains(msg, "(_ONLINE_CHECK_)") {
+		isLive, err := s.IsLive(ctx)
+		if err != nil || !isLive {
+			return err
+		}
+	}
+
+	if strings.Contains(msg, "(_SILENT_)") {
+		s.Silent = true
+	}
+
+	nodes, err := cbp.Parse(msg)
 	if err != nil {
 		logger.Error("command did not parse, which should not happen", zap.Error(err))
 		return err

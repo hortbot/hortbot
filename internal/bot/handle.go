@@ -263,7 +263,6 @@ func handleSession(ctx context.Context, s *session) error {
 		return err
 	}
 
-	// TODO: precheck for links, banned phrases, etc
 	// Ignoring does not exempt messages from filters.
 
 	if ignored {
