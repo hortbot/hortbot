@@ -8,6 +8,9 @@ import (
 	"golang.org/x/net/context/ctxhttp"
 )
 
+// GetChatters gets the number of users connected to the channel's chat.
+//
+// GET https://tmi.twitch.tv/group/user/<channel>/chatters
 func (t *Twitch) GetChatters(ctx context.Context, channel string) (int64, error) {
 	url := "https://tmi.twitch.tv/group/user/" + strings.ToLower(channel) + "/chatters"
 
