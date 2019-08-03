@@ -55,23 +55,17 @@ type session struct {
 	UserLevel   accessLevel
 	Ignored     bool
 
-	links    []*url.URL
-	linksSet bool
-
-	tracks    []lastfm.Track
-	tracksSet bool
-
-	tok    *oauth2.Token
-	tokSet bool
-
 	Channel *models.Channel
 
 	CommandParams     string
 	OrigCommandParams string
 
-	usageContext string
-
 	Silent bool
+
+	usageContext string
+	links        *[]*url.URL
+	tracks       *[]lastfm.Track
+	tok          **oauth2.Token
 }
 
 func (s *session) formatResponse(response string) string {
@@ -255,12 +249,13 @@ func (s *session) DeleteMessage() error {
 }
 
 func (s *session) Links() []*url.URL {
-	if !s.linksSet {
-		s.links = findlinks.Find(s.Message, "http", "https", "ftp")
-		s.linksSet = true
+	if s.links != nil {
+		return *s.links
 	}
 
-	return s.links
+	links := findlinks.Find(s.Message, "http", "https", "ftp")
+	s.links = &links
+	return links
 }
 
 var errLastFMDisabled = errors.New("bot: LastFM disabled")
@@ -274,43 +269,40 @@ func (s *session) Tracks() ([]lastfm.Track, error) {
 		return nil, errLastFMDisabled
 	}
 
-	if !s.tracksSet {
-		var err error
-		s.tracks, err = s.Deps.LastFM.RecentTracks(s.Channel.LastFM, 2)
-		if err != nil {
-			return nil, err
-		}
-
-		s.tracksSet = true
+	if s.tracks != nil {
+		return *s.tracks, nil
 	}
 
-	return s.tracks, nil
+	tracks, err := s.Deps.LastFM.RecentTracks(s.Channel.LastFM, 2)
+	if err != nil {
+		return nil, err
+	}
+	s.tracks = &tracks
+	return tracks, nil
 }
 
 func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
-	if s.tokSet {
-		return s.tok, nil
+	if s.tok != nil {
+		return *s.tok, nil
 	}
 
 	tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.UserID)).One(ctx, s.Tx)
 	switch {
 	case err == sql.ErrNoRows:
-		s.tok = nil
-		s.tokSet = true
+		var tok *oauth2.Token
+		s.tok = &tok
 		return nil, nil
 	case err != nil:
 		return nil, err
 	}
 
-	s.tok = modelsx.ModelToToken(tt)
-	s.tokSet = true
-
-	return s.tok, nil
+	tok := modelsx.ModelToToken(tt)
+	s.tok = &tok
+	return tok, nil
 }
 
 func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
-	s.tok = newToken
-	s.tokSet = true
+	s.tok = &newToken
 
 	tt := modelsx.TokenToModel(s.Channel.UserID, newToken)
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
