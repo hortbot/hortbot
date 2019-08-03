@@ -37,6 +37,7 @@ func init() {
 		"schedule":    {fn: cmdSchedule, minLevel: levelModerator},
 		"lastfm":      {fn: cmdLastFM, minLevel: levelEveryone},
 		"songlink":    {fn: cmdSonglink, minLevel: levelEveryone},
+		"music":       {fn: cmdMusic, minLevel: levelEveryone},
 		"autoreply":   {fn: cmdAutoreply, minLevel: levelModerator},
 		"xkcd":        {fn: cmdXKCD, minLevel: levelSubscriber},
 		"raffle":      {fn: cmdRaffle, minLevel: levelEveryone},

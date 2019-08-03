@@ -35,7 +35,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Chatters (*Twitch API*)
     - [x] Uptime (*Twitch API*)
     - [x] LastFM
-        - [ ] `music`
+        - [x] `music`
         - [x] Song link
     - [ ] Bot help (*Website*)
     - [x] ~~Commercial~~

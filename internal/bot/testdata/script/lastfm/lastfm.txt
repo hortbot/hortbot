@@ -33,6 +33,9 @@ send hortbot #foobar [HB] Currently playing: Too Long by Daft Punk - example.com
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
 send hortbot #foobar [HB] Song link: example.com
 
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!music
+send hortbot #foobar [HB] Currently playing: Too Long by Daft Punk
+
 
 lastfm_recent_tracks {"foobar": []}
 
@@ -47,6 +50,9 @@ send hortbot #foobar [HB] No songs scrobbled on LastFM.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
 send hortbot #foobar [HB] Song link: (Nothing)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!music
+send hortbot #foobar [HB] No songs scrobbled on LastFM.
 
 
 lastfm_recent_tracks {"foobar": [{"NowPlaying": false, "Name": "Too Long", "Artist": "Daft Punk", "URL": "example.com"}, {"NowPlaying": false, "Name": "No", "Artist": "Wax Tailor"}]}
@@ -69,3 +75,6 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
 send hortbot #foobar [HB] Song link: (Unknown)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!music
+no_send
