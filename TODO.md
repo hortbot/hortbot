@@ -160,7 +160,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`commerciallength`~~
     - [ ] `tweet`
     - [x] `prefix`
-    - [ ] `emoteset`
+    - [x] ~~`emoteset`~~ Doesn't seem to be particularly useful with emotes in tags.
     - [ ] `subscriberalerts`
     - [ ] `resubalerts`
 - [x] User levels
