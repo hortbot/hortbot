@@ -277,18 +277,19 @@ func handleSession(ctx context.Context, s *session) error {
 
 	wasCommand, err := tryCommand(ctx, s)
 	if wasCommand {
-		s.Channel.LastCommandAt = s.Deps.Clock.Now()
-		if uerr := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.LastCommandAt)); uerr != nil {
-			logger.Error("error while updating last command timestamp", zap.Error(uerr))
-			if err == nil {
-				return uerr
+		switch err {
+		case errNotAuthorized, errBuiltinDisabled, errIgnore:
+			wasCommand = false
+		}
+
+		if wasCommand {
+			s.Channel.LastCommandAt = s.Deps.Clock.Now()
+			if uerr := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.LastCommandAt)); uerr != nil {
+				logger.Error("error while updating last command timestamp", zap.Error(uerr))
 			}
 		}
 
-		switch err {
-		case errNotAuthorized, errBuiltinDisabled, errIgnore:
-			// Do nothing.
-		default:
+		if wasCommand || err != nil {
 			return err
 		}
 	}
