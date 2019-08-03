@@ -49,7 +49,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~XBox game~~
     - [ ] Follow me (*Twitch API*)
         - Should this be automatic?
-    - [ ] Viewer stats (*Twitch API*)
+    - [x] ~~Viewer stats~~ (Use twitchtracker or sullygnome)
     - [ ] Punish stats (requires moderation)
     - [ ] What should I play (*Steam API*)
     - [ ] Google
@@ -77,7 +77,6 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] On/off
     - [x] List
 - [ ] Auto-replies
-    - ~~This may be reworked to use names for replies instead of indexes.~~
     - [x] Add
     - [x] Remove
     - [x] Edit
@@ -120,9 +119,8 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] Ban
     - [x] Timeout
     - [x] Purge
-        - [ ] Add an argument to this to purge the last X messages
     - [x] Link permit (needs detection)
-        - [ ] `allow` form
+        - [x] `allow` form
     - [x] Clear chat
 - [x] Ignores
     - [x] Add/delete
@@ -285,6 +283,7 @@ Some features are not currently planned to be ported and have been crossed out.
 - [ ] A new command language (scripting!)
 - [ ] GMod integration
 - [x] More "add" subcommands for !command, to preset restrictions.
+- [ ] Extra commands for the new `/delete` feature (to replace purging)
 
 ### Actions
 
