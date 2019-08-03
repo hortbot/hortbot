@@ -220,7 +220,7 @@ Some features are not currently planned to be ported and have been crossed out.
     - [x] ~~`channelID`~~
     - [x] ~~`whisper`~~
     - [ ] "wp"
-    - [ ] `properties`
+    - [ ] ~~`properties`~~ (This endpoint has been removed.)
     - [x] ~~`songrequest`~~
     - [x] ~~`sendUpdate`~~
     - [x] ~~Custom commands from another channel (`#<user>/`)~~
