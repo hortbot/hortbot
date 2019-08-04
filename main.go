@@ -51,9 +51,9 @@ var args = struct {
 
 	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
 
-	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID"`
-	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret"`
-	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL"`
+	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
+	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
+	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
 
 	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 }{
@@ -155,14 +155,7 @@ func main() {
 		logger.Warn("no LastFM API key provided, functionality will be disabled")
 	}
 
-	var twitchAPI *twitch.Twitch
-
-	switch {
-	case args.TwitchClientID == "", args.TwitchClientSecret == "", args.TwitchRedirectURL == "":
-		logger.Warn("missing Twitch API info, functionality will be disabled")
-	default:
-		twitchAPI = twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
-	}
+	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
 
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
