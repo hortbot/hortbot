@@ -35,13 +35,6 @@ func twitchErr(t testing.TB, lineNum int, e string) error {
 	}
 }
 
-func (st *scriptTester) noTwitch(t testing.TB, _, _ string) {
-	st.addAction(func(ctx context.Context) {
-		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Twitch")
-		st.bc.Twitch = nil
-	})
-}
-
 func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string) {
 	lineNum := st.lineNum
 

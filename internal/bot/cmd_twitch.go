@@ -15,10 +15,6 @@ const (
 )
 
 func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
-	if s.Deps.Twitch == nil {
-		return errBuiltinDisabled
-	}
-
 	if args != "" && s.UserLevel.CanAccess(levelModerator) {
 		tok, err := s.TwitchToken(ctx)
 		if err != nil {
@@ -75,10 +71,6 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
-	if s.Deps.Twitch == nil {
-		return errBuiltinDisabled
-	}
-
 	if args != "" && s.UserLevel.CanAccess(levelModerator) {
 		tok, err := s.TwitchToken(ctx)
 		if err != nil {
@@ -135,10 +127,6 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func cmdUptime(ctx context.Context, s *session, cmd string, args string) error {
-	if s.Deps.Twitch == nil {
-		return errBuiltinDisabled
-	}
-
 	stream, err := streamOrReplyNotLive(ctx, s)
 	if err != nil || stream == nil {
 		return err
@@ -151,10 +139,6 @@ func cmdUptime(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func cmdViewers(ctx context.Context, s *session, cmd string, args string) error {
-	if s.Deps.Twitch == nil {
-		return errBuiltinDisabled
-	}
-
 	stream, err := streamOrReplyNotLive(ctx, s)
 	if err != nil || stream == nil {
 		return err
@@ -189,10 +173,6 @@ func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, erro
 }
 
 func cmdChatters(ctx context.Context, s *session, cmd string, args string) error {
-	if s.Deps.Twitch == nil {
-		return errBuiltinDisabled
-	}
-
 	chatters, err := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
 	switch err {
 	case twitch.ErrServerError, twitch.ErrNotFound:

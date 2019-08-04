@@ -314,13 +314,7 @@ func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) er
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
 }
 
-var errTwitchDisabled = errors.New("bot: Twitch disabled")
-
 func (s *session) IsLive(ctx context.Context) (bool, error) {
-	if s.Deps.Twitch == nil {
-		return false, errTwitchDisabled
-	}
-
 	if s.isLive != nil {
 		return *s.isLive, nil
 	}

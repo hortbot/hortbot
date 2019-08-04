@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
@@ -27,6 +28,7 @@ func TestBotNewPanics(t *testing.T) {
 		Dedupe:   &struct{ dedupe.Deduplicator }{},
 		Sender:   &struct{ bot.Sender }{},
 		Notifier: &struct{ bot.Notifier }{},
+		Twitch:   &struct{ twitch.API }{},
 	}
 
 	checkPanic := func() interface{} {
@@ -68,6 +70,11 @@ func TestBotNewPanics(t *testing.T) {
 	config.Notifier = nil
 	assert.Equal(t, checkPanic(), "notifier is nil")
 	config.Notifier = oldNotifier
+
+	oldTwitch := config.Twitch
+	config.Twitch = nil
+	assert.Equal(t, checkPanic(), "twitch is nil")
+	config.Twitch = oldTwitch
 
 	rCleanup()
 	assert.Equal(t, checkPanic(), nil)

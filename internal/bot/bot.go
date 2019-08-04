@@ -73,6 +73,8 @@ func New(config *Config) *Bot {
 		panic("sender is nil")
 	case config.Notifier == nil:
 		panic("notifier is nil")
+	case config.Twitch == nil:
+		panic("twitch is nil")
 	}
 
 	deps := &sharedDeps{

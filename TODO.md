@@ -219,7 +219,6 @@ as `subsMayLink`, which when true means subs may link in chat.
 - [ ] Lists
 - [ ] Misc undocumented stuff
     - [ ] Roll
-    - [ ] Cross channel commands
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
     - [ ] Steam game (expand to other stores?)
     - [x] Extra Life stuff
