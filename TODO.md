@@ -199,7 +199,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [ ] `admin`
         - [x] `channels`
         - [x] ~~`join`~~
-      i  - [x] ~~`part`~~
+        - [x] ~~`part`~~
         - [x] `block`
         - [x] `unblock`
         - [ ] `reconnect`
