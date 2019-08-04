@@ -95,7 +95,6 @@ func (st *scriptTester) ensureBot(ctx context.Context, t testing.TB) {
 	}
 }
 
-//nolint:gocyclo
 func (st *scriptTester) test(t testing.TB) {
 	defer func() {
 		if r := recover(); r != nil {
