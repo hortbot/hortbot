@@ -13,6 +13,7 @@ var adminCommands = newHandlerMap(map[string]handlerFunc{
 	"roundtrip": {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
 	"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
 	"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
+	"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
 })
 
 func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
@@ -84,4 +85,18 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	return s.Replyf("%s (%d) has been unblocked.", args, id)
+}
+
+func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) error {
+	count, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, s.Tx)
+	if err != nil {
+		return err
+	}
+
+	ch := "channels"
+	if count == 1 {
+		ch = "channel"
+	}
+
+	return s.Replyf("Currently in %d %s.", count, ch)
 }
