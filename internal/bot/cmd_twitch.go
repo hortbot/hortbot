@@ -155,7 +155,7 @@ func cmdViewers(ctx context.Context, s *session, cmd string, args string) error 
 }
 
 func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, error) {
-	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
+	stream, err := s.TwitchStream(ctx)
 
 	switch err {
 	case twitch.ErrServerError:

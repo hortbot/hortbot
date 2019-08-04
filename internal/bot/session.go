@@ -69,6 +69,7 @@ type session struct {
 	tok           **oauth2.Token
 	isLive        *bool
 	twitchChannel **twitch.Channel
+	twitchStream  **twitch.Stream
 }
 
 func (s *session) formatResponse(response string) string {
@@ -315,7 +316,7 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 		return *s.isLive, nil
 	}
 
-	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
+	stream, err := s.TwitchStream(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -337,4 +338,18 @@ func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 
 	s.twitchChannel = &ch
 	return ch, nil
+}
+
+func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
+	if s.twitchStream != nil {
+		return *s.twitchStream, nil
+	}
+
+	st, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	s.twitchStream = &st
+	return st, nil
 }

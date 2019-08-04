@@ -160,6 +160,29 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 
 		return game, nil
+	case "STATUS":
+		ch, err := s.TwitchChannel(ctx)
+		if err != nil {
+			return "(error)", nil
+		}
+
+		status := ch.Status
+
+		if status == "" {
+			return "(Not set)", nil
+		}
+
+		return status, nil
+	case "VIEWERS":
+		var viewers int64
+		stream, err := s.TwitchStream(ctx)
+		if err == nil && stream != nil {
+			viewers = stream.Viewers
+		}
+		return strconv.FormatInt(viewers, 10), nil
+	case "CHATTERS":
+		chatters, _ := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
+		return strconv.FormatInt(chatters, 10), nil
 	}
 
 	switch {

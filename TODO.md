@@ -199,7 +199,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [ ] `admin`
         - [x] `channels`
         - [x] ~~`join`~~
-        - [x] ~~`part`~~
+      i  - [x] ~~`part`~~
         - [x] `block`
         - [x] `unblock`
         - [ ] `reconnect`
@@ -237,9 +237,9 @@ as `subsMayLink`, which when true means subs may link in chat.
 
 - [x] `(_GAME_)` (*Twitch API*)
 - [x] `(_GAME_CLEAN_)` (*Twitch API*) - `(_GAME_)` but replace all non-alphanum with `-`
-- [ ] `(_STATUS_)` (*Twitch API*)
-- [ ] `(_VIEWERS_)` (*Twitch API*)
-- [ ] `(_CHATTERS_)` (*Twitch API*)
+- [x] `(_STATUS_)` (*Twitch API*)
+- [x] `(_VIEWERS_)` (*Twitch API*)
+- [x] `(_CHATTERS_)` (*Twitch API*)
 - [ ] `(_STEAM_PROFILE_)` (*Steam API*)
 - [ ] `(_STEAM_GAME_)` (*Steam API*)
 - [ ] `(_STEAM_SERVER_)` (*Steam API*)
