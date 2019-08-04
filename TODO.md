@@ -277,7 +277,8 @@ as `subsMayLink`, which when true means subs may link in chat.
 - [ ] Sub message specific actions
 - [ ] `(_TWEET_URL_)`
 - [x] `(_EXTRALIFE_AMOUNT_)`
-- [ ] DATE/TIME/UNTIL variants
+- [x] `DATE`, `TIME`, `TIME24`, `DATETIME`, `DATETIME24`
+- [ ] `UNTIL`, `UNTILSHORT`, `UNTILLONG`
 - [x] VAR actions
 - [ ] LIST actions
 - [x] `(_SILENT_)`

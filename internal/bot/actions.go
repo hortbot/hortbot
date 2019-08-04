@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -183,9 +184,30 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "CHATTERS":
 		chatters, _ := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
 		return strconv.FormatInt(chatters, 10), nil
+	case "DATE":
+		return s.actionTime(ctx, "", "Jan 2, 2006")
+	case "TIME":
+		return s.actionTime(ctx, "", "3:04 PM")
+	case "TIME24":
+		return s.actionTime(ctx, "", "15:04")
+	case "DATETIME":
+		return s.actionTime(ctx, "", "Jan 2, 2006 3:04 PM")
+	case "DATETIME24":
+		return s.actionTime(ctx, "", "Jan 2, 2006 15:04")
 	}
 
 	switch {
+	case strings.HasPrefix(action, "DATE_"):
+		return s.actionTime(ctx, strings.TrimPrefix(action, "DATE_"), "Jan 2, 2006")
+	case strings.HasPrefix(action, "TIME_"):
+		return s.actionTime(ctx, strings.TrimPrefix(action, "TIME_"), "3:04 PM")
+	case strings.HasPrefix(action, "TIME24_"):
+		return s.actionTime(ctx, strings.TrimPrefix(action, "TIME24_"), "15:04")
+	case strings.HasPrefix(action, "DATETIME_"):
+		return s.actionTime(ctx, strings.TrimPrefix(action, "DATETIME_"), "Jan 2, 2006 3:04 PM")
+	case strings.HasPrefix(action, "DATETIME24_"):
+		return s.actionTime(ctx, strings.TrimPrefix(action, "DATETIME24_"), "Jan 2, 2006 15:04")
+
 	case strings.HasPrefix(action, "RANDOM_"):
 		return s.actionRandom(strings.TrimPrefix(action, "RANDOM_"))
 
@@ -413,4 +435,15 @@ func (s *session) actionVarInc(ctx context.Context, name, incStr string, dec boo
 	}
 
 	return strconv.FormatInt(v, 10), nil
+}
+
+func (s *session) actionTime(ctx context.Context, tz string, layout string) (string, error) {
+	loc, err := time.LoadLocation(tz)
+	if err != nil {
+		loc = time.UTC
+	}
+
+	now := s.Deps.Clock.Now().In(loc)
+
+	return now.Format(layout), nil
 }
