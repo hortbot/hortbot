@@ -136,3 +136,22 @@ func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string) {
 		})
 	})
 }
+
+func (st *scriptTester) twitchGetIDForUsername(t testing.TB, _, args string) {
+	lineNum := st.lineNum
+
+	var v map[string]int64
+
+	err := json.Unmarshal([]byte(args), &v)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetIDForUsernameCalls(func(_ context.Context, username string) (int64, error) {
+			id := v[username]
+			if id == 0 {
+				return 0, twitch.ErrNotFound
+			}
+			return id, nil
+		})
+	})
+}

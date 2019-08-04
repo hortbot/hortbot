@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"database/sql"
-	"strconv"
 	"strings"
 	"time"
 
@@ -21,16 +20,11 @@ func handleManagement(ctx context.Context, s *session) error {
 	}
 
 	cmd = strings.ToLower(cmd)
-
-	cmd, args := splitSpace(cmd)
-	name, args := splitSpace(args)
-	id, _ := splitSpace(args)
-
-	name = strings.ToLower(name)
+	cmd, name := splitSpace(cmd)
 
 	switch cmd {
 	case "join":
-		return handleJoin(ctx, s, name, id)
+		return handleJoin(ctx, s, name)
 
 	case "leave", "part":
 		return handleLeave(ctx, s, name)
@@ -39,7 +33,7 @@ func handleManagement(ctx context.Context, s *session) error {
 	return nil
 }
 
-func handleJoin(ctx context.Context, s *session, name, id string) error {
+func handleJoin(ctx context.Context, s *session, name string) error {
 	var channel *models.Channel
 	var err error
 
@@ -47,9 +41,9 @@ func handleJoin(ctx context.Context, s *session, name, id string) error {
 	userID := s.UserID
 
 	if name != "" && s.IsAdmin() {
-		userID, err = strconv.ParseInt(id, 10, 64)
-		if err != nil || userID <= 0 {
-			return s.Replyf("Bad user ID: '%s'", id)
+		userID, err = s.Deps.Twitch.GetIDForUsername(ctx, name)
+		if err != nil {
+			return s.Replyf("Error getting ID from Twitch: %s", err.Error())
 		}
 
 		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
