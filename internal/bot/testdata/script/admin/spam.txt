@@ -1,0 +1,17 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam
+send hortbot #foobar [HB] Usage: !admin spam <num> <message>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam what
+send hortbot #foobar [HB] Usage: !admin spam <num> <message>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam what huh
+send hortbot #foobar [HB] Usage: !admin spam <num> <message>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam 0 foo
+send hortbot #foobar [HB] Usage: !admin spam <num> <message>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam 5 coeLove
+send hortbot #foobar [HB] coeLove coeLove coeLove coeLove coeLove

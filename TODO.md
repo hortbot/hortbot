@@ -204,9 +204,9 @@ as `subsMayLink`, which when true means subs may link in chat.
         - [x] `unblock`
         - [ ] `reconnect`
         - [x] ~~`reload`~~
-        - [ ] `color`
+        - [x] `color`
         - [ ] `loadfilter` (Needs live-reloading configs)
-        - [ ] `spam`
+        - [x] `spam`
         - [ ] `#`
         - [x] ~~`trimchannels`~~
 - [x] Variables

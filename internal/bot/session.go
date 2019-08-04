@@ -233,6 +233,7 @@ func (s *session) SendCommand(command string, args ...string) error {
 	case "clear":
 	case "host":
 	case "unhost":
+	case "color":
 	default:
 		panic("attempt to use IRC command " + command)
 	}

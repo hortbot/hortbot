@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"strconv"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -14,6 +15,8 @@ var adminCommands = newHandlerMap(map[string]handlerFunc{
 	"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
 	"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
 	"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
+	"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
+	"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
 })
 
 func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
@@ -99,4 +102,48 @@ func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	return s.Replyf("Currently in %d %s.", count, ch)
+}
+
+func cmdAdminColor(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.ReplyUsage("<color>")
+	}
+
+	if err := s.SendCommand("color", args); err != nil {
+		return err
+	}
+
+	return s.Replyf("Color set to %s.", args)
+}
+
+func cmdAdminSpam(ctx context.Context, s *session, cmd string, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("<num> <message>")
+	}
+
+	if args == "" {
+		return usage()
+	}
+
+	numStr, message := splitSpace(args)
+
+	if numStr == "" || message == "" {
+		return usage()
+	}
+
+	n, err := strconv.Atoi(numStr)
+	if err != nil || n <= 0 {
+		return usage()
+	}
+
+	var builder strings.Builder
+
+	for i := 0; i < n; i++ {
+		if i != 0 {
+			builder.WriteByte(' ')
+		}
+		builder.WriteString(message)
+	}
+
+	return s.Reply(builder.String())
 }
