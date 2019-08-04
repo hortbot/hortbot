@@ -22,6 +22,7 @@ var allTables = []string{
 	"autoreplies",
 	"variables",
 	"twitch_tokens",
+	"blocked_users",
 }
 
 func TestUp(t *testing.T) {

@@ -198,10 +198,10 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`disconnect`~~
     - [ ] `admin`
         - [ ] `channels`
-        - [ ] `join`
-        - [ ] `part`
-        - [ ] `block`
-        - [ ] `unblock`
+        - [x] ~~`join`~~
+        - [x] ~~`part`~~
+        - [x] `block`
+        - [x] `unblock`
         - [ ] `reconnect`
         - [x] ~~`reload`~~
         - [ ] `color`

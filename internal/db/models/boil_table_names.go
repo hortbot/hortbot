@@ -5,6 +5,7 @@ package models
 
 var TableNames = struct {
 	Autoreplies       string
+	BlockedUsers      string
 	Channels          string
 	CustomCommands    string
 	Quotes            string
@@ -14,6 +15,7 @@ var TableNames = struct {
 	Variables         string
 }{
 	Autoreplies:       "autoreplies",
+	BlockedUsers:      "blocked_users",
 	Channels:          "channels",
 	CustomCommands:    "custom_commands",
 	Quotes:            "quotes",

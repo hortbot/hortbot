@@ -71,6 +71,11 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return err
 	}
 
+	if !repeat.R.Channel.Active {
+		s.Deps.UpdateRepeat(id, false, 0, 0)
+		return nil
+	}
+
 	if err := repeatPopulateSession(s, repeat.R.Channel); err != nil {
 		return err
 	}
@@ -136,6 +141,11 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 			return nil
 		}
 		return err
+	}
+
+	if !scheduled.R.Channel.Active {
+		s.Deps.UpdateSchedule(id, false, nil)
+		return nil
 	}
 
 	if err := repeatPopulateSession(s, scheduled.R.Channel); err != nil {

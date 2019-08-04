@@ -8,7 +8,8 @@ DROP TABLE IF EXISTS
     scheduled_commands,
     autoreplies,
     variables,
-    twitch_tokens
+    twitch_tokens,
+    blocked_users
 CASCADE;
 
 DROP TYPE IF EXISTS access_level;

@@ -8,7 +8,9 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/sqlboiler/boil"
+	"go.uber.org/zap"
 )
 
 func handleManagement(ctx context.Context, s *session) error {
@@ -20,39 +22,49 @@ func handleManagement(ctx context.Context, s *session) error {
 	}
 
 	cmd = strings.ToLower(cmd)
-	cmd, name := splitSpace(cmd)
+	cmd, args := splitSpace(cmd)
 
 	switch cmd {
 	case "join":
-		return handleJoin(ctx, s, name)
+		return handleJoin(ctx, s, args)
 
 	case "leave", "part":
-		return handleLeave(ctx, s, name)
+		return handleLeave(ctx, s, args)
+
+	case "admin":
+		return cmdAdmin(ctx, s, cmd, args)
 	}
 
 	return nil
 }
 
 func handleJoin(ctx context.Context, s *session, name string) error {
-	var channel *models.Channel
-	var err error
-
 	displayName := s.UserDisplay
 	userID := s.UserID
 
 	if name != "" && s.IsAdmin() {
+		var err error
 		userID, err = s.Deps.Twitch.GetIDForUsername(ctx, name)
 		if err != nil {
 			return s.Replyf("Error getting ID from Twitch: %s", err.Error())
 		}
 
-		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
 		displayName = name
 	} else {
-		channel, err = models.Channels(models.ChannelWhere.UserID.EQ(s.UserID)).One(ctx, s.Tx)
 		name = s.User
 	}
 
+	blocked, err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(userID)).Exists(ctx, s.Tx)
+	if err != nil {
+		return err
+	}
+
+	if blocked {
+		ctxlog.FromContext(ctx).Warn("user is blocked", zap.String("name", name), zap.Int64("user_id", userID))
+		return nil
+	}
+
+	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(userID)).One(ctx, s.Tx)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
