@@ -109,11 +109,11 @@ func (st *scriptTester) test(t testing.TB) {
 	st.sender = &botfakes.FakeSender{}
 	st.notifier = &botfakes.FakeNotifier{}
 	st.clock = clock.NewMock()
-	st.lastFM = &lastfmfakes.FakeAPI{}
-	st.youtube = &youtubefakes.FakeAPI{}
-	st.xkcd = &xkcdfakes.FakeAPI{}
-	st.extraLife = &extralifefakes.FakeAPI{}
-	st.twitch = &twitchfakes.FakeAPI{}
+	st.lastFM = newFakeLastFM(t)
+	st.youtube = newFakeYouTube(t)
+	st.xkcd = newFakeXKCD(t)
+	st.extraLife = newFakeExtraLife(t)
+	st.twitch = newFakeTwitch(t)
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -267,7 +267,7 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string) {
 	if bcj.Rand != nil {
 		rng := rand.New(rand.NewSource(int64(*bcj.Rand)))
 
-		fakeRand := &botfakes.FakeRand{}
+		fakeRand := newFakeRand(t)
 		fakeRand.IntnCalls(rng.Intn)
 		fakeRand.Float64Calls(rng.Float64)
 
