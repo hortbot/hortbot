@@ -26,9 +26,20 @@ var (
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
+	ctx = withCorrelation(ctx)
 	logger := ctxlog.FromContext(ctx)
 
+	var start time.Time
+
+	if !isTesting {
+		start = time.Now()
+	}
+
 	err := b.handle(ctx, origin, m)
+
+	if !isTesting {
+		logger.Debug("handled message", zap.Duration("took", time.Since(start)))
+	}
 
 	switch err {
 	case nil:
@@ -69,7 +80,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return errInvalidMessage
 	}
 
-	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("id", id))
+	logger := ctxlog.FromContext(ctx)
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -82,12 +93,12 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	seen, err := b.deps.Dedupe.CheckAndMark(id)
 	if err != nil {
-		logger.Error("error checking for duplicate", zap.Error(err))
+		logger.Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
 		return err
 	}
 
 	if seen {
-		logger.Debug("message already seen")
+		logger.Debug("message already seen", zap.String("id", id))
 		return nil
 	}
 
