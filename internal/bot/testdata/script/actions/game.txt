@@ -1,0 +1,42 @@
+join hortbot 99 foobar 1
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": null}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_GAME_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add testclean (_GAME_CLEAN_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (Not set)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testclean
+send hortbot #foobar [HB] -Not-set-
+
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Somebody's weird 世界 game: 2"}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Somebody's weird 世界 game: 2
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testclean
+send hortbot #foobar [HB] Somebody-s-weird----game--2
+
+
+twitch_get_channel_by_id {"ID": 1, "Err": "ErrServerError"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (error)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testclean
+send hortbot #foobar [HB] -error-
+
+
+twitch_get_channel_by_id {"ID": 1, "Err": "ErrNotAuthorized"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (error)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testclean
+send hortbot #foobar [HB] -error-

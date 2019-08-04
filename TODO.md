@@ -226,7 +226,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`channelID`~~
     - [x] ~~`whisper`~~
     - [ ] "wp"
-    - [ ] ~~`properties`~~ (This endpoint has been removed.)
+    - [x] ~~`properties`~~ (This endpoint has been removed.)
     - [x] ~~`songrequest`~~
     - [x] ~~`sendUpdate`~~
     - [x] ~~Custom commands from another channel (`#<user>/`)~~
@@ -235,7 +235,8 @@ as `subsMayLink`, which when true means subs may link in chat.
 
 ### Actions (string replacements)
 
-- [ ] `(_GAME_)` (*Twitch API*)
+- [x] `(_GAME_)` (*Twitch API*)
+- [x] `(_GAME_CLEAN_)` (*Twitch API*) - `(_GAME_)` but replace all non-alphanum with `-`
 - [ ] `(_STATUS_)` (*Twitch API*)
 - [ ] `(_VIEWERS_)` (*Twitch API*)
 - [ ] `(_CHATTERS_)` (*Twitch API*)

@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
 	"golang.org/x/oauth2"
@@ -62,11 +63,12 @@ type session struct {
 
 	Silent bool
 
-	usageContext string
-	links        *[]*url.URL
-	tracks       *[]lastfm.Track
-	tok          **oauth2.Token
-	isLive       *bool
+	usageContext  string
+	links         *[]*url.URL
+	tracks        *[]lastfm.Track
+	tok           **oauth2.Token
+	isLive        *bool
+	twitchChannel **twitch.Channel
 }
 
 func (s *session) formatResponse(response string) string {
@@ -321,4 +323,18 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	isLive := stream != nil
 	s.isLive = &isLive
 	return isLive, nil
+}
+
+func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
+	if s.twitchChannel != nil {
+		return *s.twitchChannel, nil
+	}
+
+	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.UserID)
+	if err != nil {
+		return nil, err
+	}
+
+	s.twitchChannel = &ch
+	return ch, nil
 }

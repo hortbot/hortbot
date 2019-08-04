@@ -52,7 +52,7 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 		return s.Reply("Status updated.")
 	}
 
-	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.UserID)
+	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
 		if err == twitch.ErrServerError {
 			return s.Reply(serverErrorReply)
@@ -108,7 +108,7 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 		return s.Reply("Game updated.")
 	}
 
-	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.UserID)
+	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
 		if err == twitch.ErrServerError {
 			return s.Reply("A Twitch server error occurred.")

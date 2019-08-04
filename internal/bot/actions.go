@@ -29,6 +29,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 	// TODO: run auto-reply only things first, then check if autoreply and return.
 
+	// Exact matches
 	switch action {
 	case "PARAMETER":
 		return s.NextParameter(), nil
@@ -60,8 +61,10 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "CHANNEL_URL":
 		return "twitch.tv/" + s.Channel.Name, nil
 	case "SUBMODE_ON":
+		// TODO: check user level
 		return "", s.SendCommand("subscribers")
 	case "SUBMODE_OFF":
+		// TODO: check user level
 		return "", s.SendCommand("subscribersoff")
 	case "SILENT":
 		// TODO: handle s.Silent elsewhere.
@@ -74,8 +77,10 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 		return strconv.FormatInt(count, 10), nil
 	case "UNHOST":
+		// TODO: check user level
 		return "", s.SendCommand("unhost")
 	case "PURGE":
+		// TODO: check user level
 		if u := s.FirstParameter(); u != "" {
 			u, _ = splitSpace(u)
 			u = strings.ToLower(u)
@@ -83,6 +88,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 		return "", nil // TODO: error?
 	case "TIMEOUT":
+		// TODO: check user level
 		if u := s.FirstParameter(); u != "" {
 			u, _ = splitSpace(u)
 			u = strings.ToLower(u)
@@ -90,6 +96,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 		return "", nil // TODO: error?
 	case "BAN":
+		// TODO: check user level
 		if u := s.FirstParameter(); u != "" {
 			u, _ = splitSpace(u)
 			u = strings.ToLower(u)
@@ -127,6 +134,32 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 
 		return "", nil
+	case "GAME", "GAME_CLEAN":
+		var game string
+
+		ch, err := s.TwitchChannel(ctx)
+		if err != nil {
+			game = "(error)"
+		} else {
+			game = ch.Game
+		}
+
+		if game == "" {
+			game = "(Not set)"
+		}
+
+		if action == "GAME_CLEAN" {
+			game = strings.Map(func(r rune) rune {
+				switch {
+				case 'a' <= r && r <= 'z', 'A' <= r && r <= 'Z', '0' <= r && r <= '9':
+					return r
+				default:
+					return '-'
+				}
+			}, game)
+		}
+
+		return game, nil
 	}
 
 	switch {
