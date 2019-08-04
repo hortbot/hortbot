@@ -60,7 +60,7 @@ func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.
 
 func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response, error) {
 	// x, _ := httputil.DumpRequestOut(req, true)
-	// log.Printf("%s", y)
+	// log.Printf("%s", x)
 
 	resp, err := ctxhttp.Do(ctx, h.cli, req)
 	if err != nil {

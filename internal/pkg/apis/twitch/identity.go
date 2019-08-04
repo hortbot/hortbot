@@ -55,7 +55,7 @@ func (t *Twitch) GetIDForUsername(ctx context.Context, username string) (int64, 
 
 	body := &struct {
 		Users []struct {
-			ID int64 `json:"_id"`
+			ID IDStr `json:"_id"`
 		}
 	}{}
 
@@ -68,5 +68,5 @@ func (t *Twitch) GetIDForUsername(ctx context.Context, username string) (int64, 
 		return 0, ErrNotFound
 	}
 
-	return users[0].ID, nil
+	return users[0].ID.AsInt64(), nil
 }

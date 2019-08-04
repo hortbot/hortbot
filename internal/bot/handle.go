@@ -17,7 +17,6 @@ import (
 )
 
 var (
-	errNilMessage      = errors.New("bot: nil message")
 	errInvalidMessage  = errors.New("bot: invalid message")
 	errNotImplemented  = errors.New("bot: not implemented")
 	errNotAuthorized   = errors.New("bot: user is not authorized to use this command")
@@ -28,6 +27,13 @@ var (
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	ctx = withCorrelation(ctx)
 	logger := ctxlog.FromContext(ctx)
+
+	if m == nil {
+		logger.Error("nil message")
+		return
+	}
+
+	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("irc_command", m.Command))
 
 	var start time.Time
 
@@ -44,22 +50,14 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	switch err {
 	case nil:
 		// Do nothing
-	case errNilMessage:
-		logger.Error("nil message")
 	case errInvalidMessage:
 		logger.Warn("invalid message", zap.Any("message", m))
-	case errNotImplemented:
-		logger.Debug("not implemented", zap.Any("message", m))
 	default:
 		logger.Error("unhandled error during handle", zap.Error(err), zap.Any("message", m))
 	}
 }
 
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
-	if m == nil {
-		return errNilMessage
-	}
-
 	start := b.deps.Clock.Now()
 
 	if m.Command != "PRIVMSG" {

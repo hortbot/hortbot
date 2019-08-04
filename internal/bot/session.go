@@ -179,22 +179,16 @@ func (s *session) parseUserLevel() accessLevel {
 	}
 
 	if s.Channel != nil {
-		for _, owner := range s.Channel.CustomOwners {
-			if s.User == owner {
-				return levelBroadcaster
-			}
+		if _, isOwner := stringSliceIndex(s.Channel.CustomOwners, s.User); isOwner {
+			return levelBroadcaster
 		}
 
-		for _, mod := range s.Channel.CustomMods {
-			if s.User == mod {
-				return levelModerator
-			}
+		if _, isMod := stringSliceIndex(s.Channel.CustomMods, s.User); isMod {
+			return levelModerator
 		}
 
-		for _, reg := range s.Channel.CustomRegulars {
-			if s.User == reg {
-				return levelSubscriber
-			}
+		if _, isReg := stringSliceIndex(s.Channel.CustomRegulars, s.User); isReg {
+			return levelSubscriber
 		}
 	}
 

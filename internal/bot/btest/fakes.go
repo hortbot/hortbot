@@ -21,12 +21,12 @@ func newFakeRand(t testing.TB) *botfakes.FakeRand {
 	f := &botfakes.FakeRand{}
 
 	f.IntnCalls(func(_ int) int {
-		t.Fatal("not implemented")
+		t.Fatal("IntnCalls not implemented")
 		return 0
 	})
 
 	f.Float64Calls(func() float64 {
-		t.Fatal("not implemented")
+		t.Fatal("Float64Calls not implemented")
 		return 0
 	})
 
@@ -37,7 +37,7 @@ func newFakeLastFM(t testing.TB) *lastfmfakes.FakeAPI {
 	f := &lastfmfakes.FakeAPI{}
 
 	f.RecentTracksCalls(func(_ string, _ int) ([]lastfm.Track, error) {
-		t.Fatal("not implemented")
+		t.Fatal("RecentTracksCalls not implemented")
 		return nil, nil
 	})
 
@@ -48,7 +48,7 @@ func newFakeYouTube(t testing.TB) *youtubefakes.FakeAPI {
 	f := &youtubefakes.FakeAPI{}
 
 	f.VideoTitleCalls(func(_ *url.URL) string {
-		t.Fatal("not implemented")
+		t.Fatal("VideoTitleCalls not implemented")
 		return ""
 	})
 
@@ -59,7 +59,7 @@ func newFakeXKCD(t testing.TB) *xkcdfakes.FakeAPI {
 	f := &xkcdfakes.FakeAPI{}
 
 	f.GetComicCalls(func(_ int) (*xkcd.Comic, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetComicCalls not implemented")
 		return nil, nil
 	})
 
@@ -70,7 +70,7 @@ func newFakeExtraLife(t testing.TB) *extralifefakes.FakeAPI {
 	f := &extralifefakes.FakeAPI{}
 
 	f.GetDonationAmountCalls(func(_ int) (float64, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetDonationAmountCalls not implemented")
 		return 0, nil
 	})
 
@@ -81,37 +81,37 @@ func newFakeTwitch(t testing.TB) *twitchfakes.FakeAPI {
 	f := &twitchfakes.FakeAPI{}
 
 	f.GetChattersCalls(func(context.Context, string) (int64, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetChattersCalls not implemented")
 		return 0, nil
 	})
 
 	f.GetCurrentStreamCalls(func(context.Context, int64) (*twitch.Stream, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetCurrentStreamCalls not implemented")
 		return nil, nil
 	})
 
 	f.GetIDForTokenCalls(func(context.Context, *oauth2.Token) (int64, *oauth2.Token, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetIDForTokenCalls not implemented")
 		return 0, nil, nil
 	})
 
 	f.GetIDForUsernameCalls(func(context.Context, string) (int64, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetIDForUsernameCalls not implemented")
 		return 0, nil
 	})
 
 	f.SetChannelGameCalls(func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error) {
-		t.Fatal("not implemented")
+		t.Fatal("SetChannelGameCalls not implemented")
 		return "", nil, nil
 	})
 
 	f.SetChannelStatusCalls(func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error) {
-		t.Fatal("not implemented")
+		t.Fatal("SetChannelStatusCalls not implemented")
 		return "", nil, nil
 	})
 
 	f.GetChannelByIDCalls(func(context.Context, int64) (*twitch.Channel, error) {
-		t.Fatal("not implemented")
+		t.Fatal("GetChannelByIDCalls not implemented")
 		return nil, nil
 	})
 

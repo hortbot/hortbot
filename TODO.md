@@ -61,7 +61,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [ ] What should I play (*Steam API*)
     - [ ] Google
     - ~~[x] Wiki~~
-    - [ ] Is live (*Twitch API*)
+    - [x] Is live (*Twitch API*)
     - [ ] Is here (*Twitch API*)
 - [ ] Custom Commands
     - [x] Cooldowns

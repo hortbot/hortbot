@@ -189,3 +189,65 @@ func cmdChatters(ctx context.Context, s *session, cmd string, args string) error
 
 	return s.Replyf("%d %s currently connected to chat.", chatters, u)
 }
+
+func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
+	name, _ := splitSpace(args)
+	name = strings.ToLower(name)
+
+	if name == "" {
+		isLive, err := s.IsLive(ctx)
+		switch err {
+		case twitch.ErrServerError:
+			return s.Reply(serverErrorReply)
+		case nil:
+		default:
+			return err
+		}
+
+		if isLive {
+			return s.Replyf("Yes, %s is live.", s.Channel.Name)
+		}
+
+		return s.Replyf("No, %s isn't live.", s.Channel.Name)
+	}
+
+	id, err := s.Deps.Twitch.GetIDForUsername(ctx, name)
+	if err != nil {
+		switch err {
+		case twitch.ErrNotFound:
+			return s.Replyf("User %s does not exist.", name)
+		case twitch.ErrServerError:
+			return s.Reply(serverErrorReply)
+		}
+		return err
+	}
+
+	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, id)
+	if err != nil {
+		switch err {
+		case twitch.ErrServerError:
+			return s.Reply(serverErrorReply)
+		case nil:
+		default:
+			return err
+		}
+	}
+
+	if stream == nil {
+		return s.Replyf("No, %s isn't live.", name)
+	}
+
+	viewers := stream.Viewers
+
+	v := "viewers"
+	if viewers == 1 {
+		v = "viewer"
+	}
+
+	game := stream.Game
+	if game == "" {
+		game = "(Not set)"
+	}
+
+	return s.Replyf("Yes, %s is live playing %s with %d %s.", name, game, viewers, v)
+}

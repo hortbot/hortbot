@@ -48,6 +48,7 @@ func init() {
 		"uptime":    {fn: cmdUptime, minLevel: levelEveryone},
 		"chatters":  {fn: cmdChatters, minLevel: levelEveryone},
 		"admin":     {fn: cmdAdmin, minLevel: levelAdmin},
+		"islive":    {fn: cmdIsLive, minLevel: levelModerator},
 	})
 }
 
