@@ -18,13 +18,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=sessionType
+//go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=sessionType -trimprefix=session
 
 type sessionType int
 
 const (
-	sessionUnknown sessionType = iota
-	sessionNormal
+	sessionUnknown sessionType = 0
+	sessionNormal  sessionType = 1 << (iota - 1)
 	sessionRepeat
 	sessionAutoreply
 	sessionSubNotification
