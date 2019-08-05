@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/araddon/dateparse"
+	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
@@ -198,15 +200,30 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 	switch {
 	case strings.HasPrefix(action, "DATE_"):
-		return s.actionTime(ctx, strings.TrimPrefix(action, "DATE_"), "Jan 2, 2006")
+		tz := strings.TrimPrefix(action, "DATE_")
+		return s.actionTime(ctx, tz, "Jan 2, 2006")
 	case strings.HasPrefix(action, "TIME_"):
-		return s.actionTime(ctx, strings.TrimPrefix(action, "TIME_"), "3:04 PM")
+		tz := strings.TrimPrefix(action, "TIME_")
+		return s.actionTime(ctx, tz, "3:04 PM")
 	case strings.HasPrefix(action, "TIME24_"):
-		return s.actionTime(ctx, strings.TrimPrefix(action, "TIME24_"), "15:04")
+		tz := strings.TrimPrefix(action, "TIME24_")
+		return s.actionTime(ctx, tz, "15:04")
 	case strings.HasPrefix(action, "DATETIME_"):
-		return s.actionTime(ctx, strings.TrimPrefix(action, "DATETIME_"), "Jan 2, 2006 3:04 PM")
+		tz := strings.TrimPrefix(action, "DATETIME_")
+		return s.actionTime(ctx, tz, "Jan 2, 2006 3:04 PM")
 	case strings.HasPrefix(action, "DATETIME24_"):
-		return s.actionTime(ctx, strings.TrimPrefix(action, "DATETIME24_"), "Jan 2, 2006 15:04")
+		tz := strings.TrimPrefix(action, "DATETIME24_")
+		return s.actionTime(ctx, tz, "Jan 2, 2006 15:04")
+
+	case strings.HasPrefix(action, "UNTIL_"):
+		event := strings.TrimPrefix(action, "UNTIL_")
+		return s.actionUntil(ctx, event, false)
+	case strings.HasPrefix(action, "UNTILLONG_"):
+		event := strings.TrimPrefix(action, "UNTILLONG_")
+		return s.actionUntil(ctx, event, false)
+	case strings.HasPrefix(action, "UNTILSHORT_"):
+		event := strings.TrimPrefix(action, "UNTILSHORT_")
+		return s.actionUntil(ctx, event, true)
 
 	case strings.HasPrefix(action, "RANDOM_"):
 		return s.actionRandom(strings.TrimPrefix(action, "RANDOM_"))
@@ -446,4 +463,74 @@ func (s *session) actionTime(ctx context.Context, tz string, layout string) (str
 	now := s.Deps.Clock.Now().In(loc)
 
 	return now.Format(layout), nil
+}
+
+const dayDur = 24 * time.Hour
+
+func (s *session) actionUntil(ctx context.Context, timestamp string, short bool) (string, error) {
+	t, err := parseUntilTimestamp(timestamp)
+	if err != nil {
+		return "(error)", nil
+	}
+
+	dur := s.Deps.Clock.Until(t).Round(time.Minute)
+
+	if short {
+		if dur/dayDur == 0 {
+			return trimSeconds(dur.String()), nil
+		}
+
+		// Extra logic to add the days to the duration string.
+		negative := dur < 0
+		if negative {
+			dur = 0 - dur
+		}
+
+		days := dur / dayDur
+		dur -= days * dayDur
+
+		var builder strings.Builder
+		if negative {
+			builder.WriteByte('-')
+		}
+		builder.WriteString(strconv.FormatInt(int64(days), 10))
+		builder.WriteByte('d')
+		builder.WriteString(dur.String())
+
+		return trimSeconds(builder.String()), nil
+	}
+
+	return durafmt.Parse(dur).String(), nil
+}
+
+func trimSeconds(d string) string {
+	if d == "0s" {
+		return d
+	}
+	return strings.TrimSuffix(d, "0s")
+}
+
+var easternTime = mustLoadLocation("America/New_York")
+
+func mustLoadLocation(name string) *time.Location {
+	l, err := time.LoadLocation(name)
+	if err != nil {
+		panic(err)
+	}
+	return l
+}
+
+func parseUntilTimestamp(timestamp string) (time.Time, error) {
+	if timestamp == "" {
+		return time.Time{}, fmt.Errorf("empty timestamp")
+	}
+
+	t, err := time.Parse(time.RFC3339, timestamp)
+	if err == nil {
+		return t, nil
+	}
+
+	// CoeBot would parse using a not-quite RFC3339 string in the host system's timezone.
+	// Do that here, assuming an Eastern time zone.
+	return dateparse.ParseIn(timestamp, easternTime)
 }

@@ -278,7 +278,10 @@ as `subsMayLink`, which when true means subs may link in chat.
 - [ ] `(_TWEET_URL_)`
 - [x] `(_EXTRALIFE_AMOUNT_)`
 - [x] `DATE`, `TIME`, `TIME24`, `DATETIME`, `DATETIME24`
-- [ ] `UNTIL`, `UNTILSHORT`, `UNTILLONG`
+- [x] `UNTIL`, `UNTILSHORT`, `UNTILLONG`
+    - This has been slightly modified to allow "real" RFC3339 timestamps. Existing timestamps were
+    done in not-quite-RFC3339 in the Eastern time zone. Also, dates more than ~290 years will no longer
+    work (sorry).
 - [x] VAR actions
 - [ ] LIST actions
 - [x] `(_SILENT_)`
