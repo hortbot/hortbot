@@ -33,10 +33,10 @@ type fdb struct {
 }
 
 var (
-	mainDB      *sql.DB
-	mainConnStr string
-	conns       chan fdb
-	isBench     bool
+	mainDB        *sql.DB
+	mainConnStr   string
+	conns         chan fdb
+	concurrentDBs = false
 )
 
 func TestMain(m *testing.M) {
@@ -46,7 +46,13 @@ func TestMain(m *testing.M) {
 	}()
 
 	flag.Parse()
-	isBench = flag.Lookup("test.bench").Value.String() != ""
+
+	switch {
+	case flag.Lookup("test.bench").Value.String() != "":
+	case flag.Lookup("test.run").Value.String() != "":
+	default:
+		concurrentDBs = true
+	}
 
 	var cleanup func()
 	var err error
@@ -60,10 +66,14 @@ func TestMain(m *testing.M) {
 	_, err = mainDB.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)
 	must(err)
 
-	if !isBench {
+	if concurrentDBs {
 		procs := runtime.GOMAXPROCS(0)
 
 		n := procs * 4
+		if n > 16 {
+			n = 16
+		}
+
 		conns = make(chan fdb, n)
 
 		for i := 0; i < n; i++ {
@@ -80,10 +90,10 @@ func freshDB(t testing.TB) (*sql.DB, func()) {
 	t.Helper()
 
 	var f fdb
-	if isBench {
-		f = makeDB()
-	} else {
+	if concurrentDBs {
 		f = <-conns
+	} else {
+		f = makeDB()
 	}
 
 	assert.NilError(t, f.err)
