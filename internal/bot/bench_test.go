@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
@@ -42,6 +43,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
+		Twitch:   &twitchfakes.FakeAPI{},
 	}
 
 	bb := bot.New(config)
@@ -98,6 +100,7 @@ func BenchmarkNop(b *testing.B) {
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
+		Twitch:   &twitchfakes.FakeAPI{},
 	}
 
 	bb := bot.New(config)

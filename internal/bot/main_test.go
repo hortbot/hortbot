@@ -2,9 +2,11 @@ package bot_test
 
 import (
 	"database/sql"
+	"flag"
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -14,20 +16,37 @@ import (
 	"gotest.tools/assert"
 )
 
+func init() {
+	bot.Testing()
+}
+
 func must(err error) {
 	if err != nil {
 		log.Panic(err)
 	}
 }
 
-var mainDB *sql.DB
-var mainConnStr string
+type fdb struct {
+	err     error
+	db      *sql.DB
+	cleanup func()
+}
+
+var (
+	mainDB      *sql.DB
+	mainConnStr string
+	conns       chan fdb
+	isBench     bool
+)
 
 func TestMain(m *testing.M) {
 	var status int
 	defer func() {
 		os.Exit(status)
 	}()
+
+	flag.Parse()
+	isBench = flag.Lookup("test.bench").Value.String() != ""
 
 	var cleanup func()
 	var err error
@@ -41,6 +60,17 @@ func TestMain(m *testing.M) {
 	_, err = mainDB.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)
 	must(err)
 
+	if !isBench {
+		procs := runtime.GOMAXPROCS(0)
+
+		n := procs * 4
+		conns = make(chan fdb, n)
+
+		for i := 0; i < n; i++ {
+			go dbMaker()
+		}
+	}
+
 	status = m.Run()
 }
 
@@ -49,22 +79,40 @@ var tempDBNum int64
 func freshDB(t testing.TB) (*sql.DB, func()) {
 	t.Helper()
 
+	var f fdb
+	if isBench {
+		f = makeDB()
+	} else {
+		f = <-conns
+	}
+
+	assert.NilError(t, f.err)
+	return f.db, f.cleanup
+}
+
+func dbMaker() {
+	for {
+		conns <- makeDB()
+	}
+}
+
+func makeDB() fdb {
 	dbName := fmt.Sprintf("temp%d", atomic.AddInt64(&tempDBNum, 1))
 
 	_, err := mainDB.Exec(fmt.Sprintf(`CREATE DATABASE %s WITH TEMPLATE temp_template`, dbName))
-	assert.NilError(t, err)
+	if err != nil {
+		return fdb{err: err}
+	}
 
 	connStr := strings.Replace(mainConnStr, "postgres?", dbName+"?", 1)
 
 	db, err := sql.Open("postgres", connStr)
-	assert.NilError(t, err)
-
-	return db, func() {
-		t.Helper()
-		assert.NilError(t, db.Close())
+	if err != nil {
+		return fdb{err: err}
 	}
-}
 
-func init() {
-	bot.Testing()
+	return fdb{
+		db:      db,
+		cleanup: func() { db.Close() },
+	}
 }

@@ -1,0 +1,153 @@
+[1mdiff --git a/internal/bot/bench_test.go b/internal/bot/bench_test.go[m
+[1mindex c965d40..e1cd1de 100644[m
+[1m--- a/internal/bot/bench_test.go[m
+[1m+++ b/internal/bot/bench_test.go[m
+[36m@@ -9,6 +9,7 @@[m [mimport ([m
+ [m
+ 	"github.com/gofrs/uuid"[m
+ 	"github.com/hortbot/hortbot/internal/bot"[m
+[32m+[m	[32m"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"[m
+ 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"[m
+ 	"github.com/hortbot/hortbot/internal/pkg/dedupe"[m
+ 	"github.com/hortbot/hortbot/internal/pkg/ircx"[m
+[36m@@ -42,6 +43,7 @@[m [mfunc BenchmarkCustomCommand(b *testing.B) {[m
+ 		Dedupe:   dedupe.NeverSeen,[m
+ 		Sender:   nopSender{},[m
+ 		Notifier: nopNotifier{},[m
+[32m+[m		[32mTwitch:   &twitchfakes.FakeAPI{},[m
+ 	}[m
+ [m
+ 	bb := bot.New(config)[m
+[36m@@ -98,6 +100,7 @@[m [mfunc BenchmarkNop(b *testing.B) {[m
+ 		Dedupe:   dedupe.NeverSeen,[m
+ 		Sender:   nopSender{},[m
+ 		Notifier: nopNotifier{},[m
+[32m+[m		[32mTwitch:   &twitchfakes.FakeAPI{},[m
+ 	}[m
+ [m
+ 	bb := bot.New(config)[m
+[1mdiff --git a/internal/bot/main_test.go b/internal/bot/main_test.go[m
+[1mindex c1c6073..6d177a6 100644[m
+[1m--- a/internal/bot/main_test.go[m
+[1m+++ b/internal/bot/main_test.go[m
+[36m@@ -2,9 +2,11 @@[m [mpackage bot_test[m
+ [m
+ import ([m
+ 	"database/sql"[m
+[32m+[m	[32m"flag"[m
+ 	"fmt"[m
+ 	"log"[m
+ 	"os"[m
+[32m+[m	[32m"runtime"[m
+ 	"strings"[m
+ 	"sync/atomic"[m
+ 	"testing"[m
+[36m@@ -14,14 +16,28 @@[m [mimport ([m
+ 	"gotest.tools/assert"[m
+ )[m
+ [m
+[32m+[m[32mfunc init() {[m
+[32m+[m	[32mbot.Testing()[m
+[32m+[m[32m}[m
+[32m+[m
+ func must(err error) {[m
+ 	if err != nil {[m
+ 		log.Panic(err)[m
+ 	}[m
+ }[m
+ [m
+[31m-var mainDB *sql.DB[m
+[31m-var mainConnStr string[m
+[32m+[m[32mtype fdb struct {[m
+[32m+[m	[32merr     error[m
+[32m+[m	[32mdb      *sql.DB[m
+[32m+[m	[32mcleanup func()[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mvar ([m
+[32m+[m	[32mmainDB      *sql.DB[m
+[32m+[m	[32mmainConnStr string[m
+[32m+[m	[32mconns       chan fdb[m
+[32m+[m	[32misBench     bool[m
+[32m+[m[32m)[m
+ [m
+ func TestMain(m *testing.M) {[m
+ 	var status int[m
+[36m@@ -29,6 +45,9 @@[m [mfunc TestMain(m *testing.M) {[m
+ 		os.Exit(status)[m
+ 	}()[m
+ [m
+[32m+[m	[32mflag.Parse()[m
+[32m+[m	[32misBench = flag.Lookup("test.bench").Value.String() != ""[m
+[32m+[m
+ 	var cleanup func()[m
+ 	var err error[m
+ [m
+[36m@@ -41,6 +60,17 @@[m [mfunc TestMain(m *testing.M) {[m
+ 	_, err = mainDB.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)[m
+ 	must(err)[m
+ [m
+[32m+[m	[32mif !isBench {[m
+[32m+[m		[32mprocs := runtime.GOMAXPROCS(0)[m
+[32m+[m
+[32m+[m		[32mn := procs * 4[m
+[32m+[m		[32mconns = make(chan fdb, n)[m
+[32m+[m
+[32m+[m		[32mfor i := 0; i < n; i++ {[m
+[32m+[m			[32mgo dbMaker()[m
+[32m+[m		[32m}[m
+[32m+[m	[32m}[m
+[32m+[m
+ 	status = m.Run()[m
+ }[m
+ [m
+[36m@@ -49,22 +79,40 @@[m [mvar tempDBNum int64[m
+ func freshDB(t testing.TB) (*sql.DB, func()) {[m
+ 	t.Helper()[m
+ [m
+[32m+[m	[32mvar f fdb[m
+[32m+[m
+[32m+[m	[32mif isBench {[m
+[32m+[m		[32mf = makeDB()[m
+[32m+[m	[32m} else {[m
+[32m+[m		[32mf = <-conns[m
+[32m+[m	[32m}[m
+[32m+[m	[32massert.NilError(t, f.err)[m
+[32m+[m	[32mreturn f.db, f.cleanup[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunc dbMaker() {[m
+[32m+[m	[32mfor {[m
+[32m+[m		[32mconns <- makeDB()[m
+[32m+[m	[32m}[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32mfunc makeDB() fdb {[m
+ 	dbName := fmt.Sprintf("temp%d", atomic.AddInt64(&tempDBNum, 1))[m
+ [m
+ 	_, err := mainDB.Exec(fmt.Sprintf(`CREATE DATABASE %s WITH TEMPLATE temp_template`, dbName))[m
+[31m-	assert.NilError(t, err)[m
+[32m+[m	[32mif err != nil {[m
+[32m+[m		[32mreturn fdb{err: err}[m
+[32m+[m	[32m}[m
+ [m
+ 	connStr := strings.Replace(mainConnStr, "postgres?", dbName+"?", 1)[m
+ [m
+ 	db, err := sql.Open("postgres", connStr)[m
+[31m-	assert.NilError(t, err)[m
+[31m-[m
+[31m-	return db, func() {[m
+[31m-		t.Helper()[m
+[31m-		assert.NilError(t, db.Close())[m
+[32m+[m	[32mif err != nil {[m
+[32m+[m		[32mreturn fdb{err: err}[m
+ 	}[m
+[31m-}[m
+ [m
+[31m-func init() {[m
+[31m-	bot.Testing()[m
+[32m+[m	[32mreturn fdb{[m
+[32m+[m		[32mdb:      db,[m
+[32m+[m		[32mcleanup: func() { db.Close() },[m
+[32m+[m	[32m}[m
+ }[m
