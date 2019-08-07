@@ -10,10 +10,8 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
-	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"gotest.tools/assert"
@@ -25,7 +23,7 @@ func BenchmarkNop(b *testing.B) {
 	db, undb := freshDB(b)
 	defer undb()
 
-	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
+	ctx := context.Background()
 
 	_, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(b, err)
@@ -71,7 +69,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 	db, undb := freshDB(b)
 	defer undb()
 
-	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
+	ctx := context.Background()
 
 	userID, name := getNextUserID()
 
@@ -111,7 +109,7 @@ func BenchmarkMixed(b *testing.B) {
 	db, undb := freshDB(b)
 	defer undb()
 
-	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(b))
+	ctx := context.Background()
 
 	userID, name := getNextUserID()
 

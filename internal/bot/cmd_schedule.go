@@ -72,17 +72,17 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		}
 	}
 
-	command, scheduled, err := findScheduledCommand(ctx, name, s)
+	info, scheduled, err := findScheduledCommand(ctx, name, s)
 	if err != nil {
 		return err
 	}
 
-	if command == nil {
+	if info == nil {
 		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(command.AccessLevel)) {
-		al := flect.Pluralize(command.AccessLevel)
+	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+		al := flect.Pluralize(info.AccessLevel)
 		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
@@ -107,14 +107,14 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		}
 	} else {
 		scheduled = &models.ScheduledCommand{
-			ChannelID:       s.Channel.ID,
-			CustomCommandID: command.ID,
-			Enabled:         true,
-			CronExpression:  pattern,
-			MessageDiff:     messageDiff,
-			LastCount:       s.N,
-			Creator:         s.User,
-			Editor:          s.User,
+			ChannelID:      s.Channel.ID,
+			CommandInfoID:  info.ID,
+			Enabled:        true,
+			CronExpression: pattern,
+			MessageDiff:    messageDiff,
+			LastCount:      s.N,
+			Creator:        s.User,
+			Editor:         s.User,
 		}
 
 		if err := scheduled.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -140,12 +140,12 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 		return s.ReplyUsage("<name>")
 	}
 
-	command, scheduled, err := findScheduledCommand(ctx, name, s)
+	info, scheduled, err := findScheduledCommand(ctx, name, s)
 	if err != nil {
 		return err
 	}
 
-	if command == nil {
+	if info == nil {
 		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
@@ -153,8 +153,8 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 		return s.Replyf("Command '%s' has no schedule.", name)
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(command.AccessLevel)) {
-		al := flect.Pluralize(command.AccessLevel)
+	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+		al := flect.Pluralize(info.AccessLevel)
 		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
@@ -177,12 +177,12 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 
 	enable := cmd == "on"
 
-	command, scheduled, err := findScheduledCommand(ctx, name, s)
+	info, scheduled, err := findScheduledCommand(ctx, name, s)
 	if err != nil {
 		return err
 	}
 
-	if command == nil {
+	if info == nil {
 		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
@@ -190,8 +190,8 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 		return s.Replyf("Command '%s' has no schedule.", name)
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(command.AccessLevel)) {
-		al := flect.Pluralize(command.AccessLevel)
+	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+		al := flect.Pluralize(info.AccessLevel)
 		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
@@ -233,7 +233,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 
 func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) error {
 	scheduleds, err := s.Channel.ScheduledCommands(
-		qm.Load(models.ScheduledCommandRels.CustomCommand),
+		qm.Load(models.ScheduledCommandRels.CommandInfo),
 	).All(ctx, s.Tx)
 	if err != nil {
 		return err
@@ -244,7 +244,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	sort.Slice(scheduleds, func(i, j int) bool {
-		return scheduleds[i].R.CustomCommand.Name < scheduleds[j].R.CustomCommand.Name
+		return scheduleds[i].R.CommandInfo.Name < scheduleds[j].R.CommandInfo.Name
 	})
 
 	var builder strings.Builder
@@ -255,7 +255,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 			builder.WriteString(", ")
 		}
 
-		builder.WriteString(scheduled.R.CustomCommand.Name)
+		builder.WriteString(scheduled.R.CommandInfo.Name)
 		builder.WriteString(" [")
 
 		if scheduled.Enabled {
@@ -272,10 +272,10 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	return s.Reply(builder.String())
 }
 
-func findScheduledCommand(ctx context.Context, name string, s *session) (*models.CustomCommand, *models.ScheduledCommand, error) {
-	command, err := s.Channel.CustomCommands(
-		models.CustomCommandWhere.Name.EQ(name),
-		qm.Load(models.CustomCommandRels.ScheduledCommand),
+func findScheduledCommand(ctx context.Context, name string, s *session) (*models.CommandInfo, *models.ScheduledCommand, error) {
+	info, err := s.Channel.CommandInfos(
+		models.CommandInfoWhere.Name.EQ(name),
+		qm.Load(models.CommandInfoRels.ScheduledCommand),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
@@ -287,5 +287,5 @@ func findScheduledCommand(ctx context.Context, name string, s *session) (*models
 		return nil, nil, err
 	}
 
-	return command, command.R.ScheduledCommand, nil
+	return info, info.R.ScheduledCommand, nil
 }

@@ -23,89 +23,89 @@ import (
 
 // ScheduledCommand is an object representing the database table.
 type ScheduledCommand struct {
-	ID              int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt       time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt       time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	ChannelID       int64     `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
-	CustomCommandID int64     `boil:"custom_command_id" json:"custom_command_id" toml:"custom_command_id" yaml:"custom_command_id"`
-	Enabled         bool      `boil:"enabled" json:"enabled" toml:"enabled" yaml:"enabled"`
-	CronExpression  string    `boil:"cron_expression" json:"cron_expression" toml:"cron_expression" yaml:"cron_expression"`
-	MessageDiff     int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
-	LastCount       int64     `boil:"last_count" json:"last_count" toml:"last_count" yaml:"last_count"`
-	Creator         string    `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
-	Editor          string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
+	ID             int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt      time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt      time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	ChannelID      int64     `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
+	CommandInfoID  int64     `boil:"command_info_id" json:"command_info_id" toml:"command_info_id" yaml:"command_info_id"`
+	Enabled        bool      `boil:"enabled" json:"enabled" toml:"enabled" yaml:"enabled"`
+	CronExpression string    `boil:"cron_expression" json:"cron_expression" toml:"cron_expression" yaml:"cron_expression"`
+	MessageDiff    int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
+	LastCount      int64     `boil:"last_count" json:"last_count" toml:"last_count" yaml:"last_count"`
+	Creator        string    `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
+	Editor         string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
 
 	R *scheduledCommandR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L scheduledCommandL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var ScheduledCommandColumns = struct {
-	ID              string
-	CreatedAt       string
-	UpdatedAt       string
-	ChannelID       string
-	CustomCommandID string
-	Enabled         string
-	CronExpression  string
-	MessageDiff     string
-	LastCount       string
-	Creator         string
-	Editor          string
+	ID             string
+	CreatedAt      string
+	UpdatedAt      string
+	ChannelID      string
+	CommandInfoID  string
+	Enabled        string
+	CronExpression string
+	MessageDiff    string
+	LastCount      string
+	Creator        string
+	Editor         string
 }{
-	ID:              "id",
-	CreatedAt:       "created_at",
-	UpdatedAt:       "updated_at",
-	ChannelID:       "channel_id",
-	CustomCommandID: "custom_command_id",
-	Enabled:         "enabled",
-	CronExpression:  "cron_expression",
-	MessageDiff:     "message_diff",
-	LastCount:       "last_count",
-	Creator:         "creator",
-	Editor:          "editor",
+	ID:             "id",
+	CreatedAt:      "created_at",
+	UpdatedAt:      "updated_at",
+	ChannelID:      "channel_id",
+	CommandInfoID:  "command_info_id",
+	Enabled:        "enabled",
+	CronExpression: "cron_expression",
+	MessageDiff:    "message_diff",
+	LastCount:      "last_count",
+	Creator:        "creator",
+	Editor:         "editor",
 }
 
 // Generated where
 
 var ScheduledCommandWhere = struct {
-	ID              whereHelperint64
-	CreatedAt       whereHelpertime_Time
-	UpdatedAt       whereHelpertime_Time
-	ChannelID       whereHelperint64
-	CustomCommandID whereHelperint64
-	Enabled         whereHelperbool
-	CronExpression  whereHelperstring
-	MessageDiff     whereHelperint64
-	LastCount       whereHelperint64
-	Creator         whereHelperstring
-	Editor          whereHelperstring
+	ID             whereHelperint64
+	CreatedAt      whereHelpertime_Time
+	UpdatedAt      whereHelpertime_Time
+	ChannelID      whereHelperint64
+	CommandInfoID  whereHelperint64
+	Enabled        whereHelperbool
+	CronExpression whereHelperstring
+	MessageDiff    whereHelperint64
+	LastCount      whereHelperint64
+	Creator        whereHelperstring
+	Editor         whereHelperstring
 }{
-	ID:              whereHelperint64{field: "\"scheduled_commands\".\"id\""},
-	CreatedAt:       whereHelpertime_Time{field: "\"scheduled_commands\".\"created_at\""},
-	UpdatedAt:       whereHelpertime_Time{field: "\"scheduled_commands\".\"updated_at\""},
-	ChannelID:       whereHelperint64{field: "\"scheduled_commands\".\"channel_id\""},
-	CustomCommandID: whereHelperint64{field: "\"scheduled_commands\".\"custom_command_id\""},
-	Enabled:         whereHelperbool{field: "\"scheduled_commands\".\"enabled\""},
-	CronExpression:  whereHelperstring{field: "\"scheduled_commands\".\"cron_expression\""},
-	MessageDiff:     whereHelperint64{field: "\"scheduled_commands\".\"message_diff\""},
-	LastCount:       whereHelperint64{field: "\"scheduled_commands\".\"last_count\""},
-	Creator:         whereHelperstring{field: "\"scheduled_commands\".\"creator\""},
-	Editor:          whereHelperstring{field: "\"scheduled_commands\".\"editor\""},
+	ID:             whereHelperint64{field: "\"scheduled_commands\".\"id\""},
+	CreatedAt:      whereHelpertime_Time{field: "\"scheduled_commands\".\"created_at\""},
+	UpdatedAt:      whereHelpertime_Time{field: "\"scheduled_commands\".\"updated_at\""},
+	ChannelID:      whereHelperint64{field: "\"scheduled_commands\".\"channel_id\""},
+	CommandInfoID:  whereHelperint64{field: "\"scheduled_commands\".\"command_info_id\""},
+	Enabled:        whereHelperbool{field: "\"scheduled_commands\".\"enabled\""},
+	CronExpression: whereHelperstring{field: "\"scheduled_commands\".\"cron_expression\""},
+	MessageDiff:    whereHelperint64{field: "\"scheduled_commands\".\"message_diff\""},
+	LastCount:      whereHelperint64{field: "\"scheduled_commands\".\"last_count\""},
+	Creator:        whereHelperstring{field: "\"scheduled_commands\".\"creator\""},
+	Editor:         whereHelperstring{field: "\"scheduled_commands\".\"editor\""},
 }
 
 // ScheduledCommandRels is where relationship names are stored.
 var ScheduledCommandRels = struct {
-	Channel       string
-	CustomCommand string
+	Channel     string
+	CommandInfo string
 }{
-	Channel:       "Channel",
-	CustomCommand: "CustomCommand",
+	Channel:     "Channel",
+	CommandInfo: "CommandInfo",
 }
 
 // scheduledCommandR is where relationships are stored.
 type scheduledCommandR struct {
-	Channel       *Channel
-	CustomCommand *CustomCommand
+	Channel     *Channel
+	CommandInfo *CommandInfo
 }
 
 // NewStruct creates a new relationship struct
@@ -117,8 +117,8 @@ func (*scheduledCommandR) NewStruct() *scheduledCommandR {
 type scheduledCommandL struct{}
 
 var (
-	scheduledCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "custom_command_id", "enabled", "cron_expression", "message_diff", "last_count", "creator", "editor"}
-	scheduledCommandColumnsWithoutDefault = []string{"channel_id", "custom_command_id", "enabled", "cron_expression", "last_count", "creator", "editor"}
+	scheduledCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "command_info_id", "enabled", "cron_expression", "message_diff", "last_count", "creator", "editor"}
+	scheduledCommandColumnsWithoutDefault = []string{"channel_id", "command_info_id", "enabled", "cron_expression", "last_count", "creator", "editor"}
 	scheduledCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at", "message_diff"}
 	scheduledCommandPrimaryKeyColumns     = []string{"id"}
 )
@@ -228,16 +228,16 @@ func (o *ScheduledCommand) Channel(mods ...qm.QueryMod) channelQuery {
 	return query
 }
 
-// CustomCommand pointed to by the foreign key.
-func (o *ScheduledCommand) CustomCommand(mods ...qm.QueryMod) customCommandQuery {
+// CommandInfo pointed to by the foreign key.
+func (o *ScheduledCommand) CommandInfo(mods ...qm.QueryMod) commandInfoQuery {
 	queryMods := []qm.QueryMod{
-		qm.Where("id=?", o.CustomCommandID),
+		qm.Where("id=?", o.CommandInfoID),
 	}
 
 	queryMods = append(queryMods, mods...)
 
-	query := CustomCommands(queryMods...)
-	queries.SetFrom(query.Query, "\"custom_commands\"")
+	query := CommandInfos(queryMods...)
+	queries.SetFrom(query.Query, "\"command_infos\"")
 
 	return query
 }
@@ -335,9 +335,9 @@ func (scheduledCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor
 	return nil
 }
 
-// LoadCustomCommand allows an eager lookup of values, cached into the
+// LoadCommandInfo allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextExecutor, singular bool, maybeScheduledCommand interface{}, mods queries.Applicator) error {
+func (scheduledCommandL) LoadCommandInfo(ctx context.Context, e boil.ContextExecutor, singular bool, maybeScheduledCommand interface{}, mods queries.Applicator) error {
 	var slice []*ScheduledCommand
 	var object *ScheduledCommand
 
@@ -352,7 +352,7 @@ func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextEx
 		if object.R == nil {
 			object.R = &scheduledCommandR{}
 		}
-		args = append(args, object.CustomCommandID)
+		args = append(args, object.CommandInfoID)
 
 	} else {
 	Outer:
@@ -362,12 +362,12 @@ func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextEx
 			}
 
 			for _, a := range args {
-				if a == obj.CustomCommandID {
+				if a == obj.CommandInfoID {
 					continue Outer
 				}
 			}
 
-			args = append(args, obj.CustomCommandID)
+			args = append(args, obj.CommandInfoID)
 
 		}
 	}
@@ -376,26 +376,26 @@ func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextEx
 		return nil
 	}
 
-	query := NewQuery(qm.From(`custom_commands`), qm.WhereIn(`id in ?`, args...))
+	query := NewQuery(qm.From(`command_infos`), qm.WhereIn(`id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
 	}
 
 	results, err := query.QueryContext(ctx, e)
 	if err != nil {
-		return errors.Wrap(err, "failed to eager load CustomCommand")
+		return errors.Wrap(err, "failed to eager load CommandInfo")
 	}
 
-	var resultSlice []*CustomCommand
+	var resultSlice []*CommandInfo
 	if err = queries.Bind(results, &resultSlice); err != nil {
-		return errors.Wrap(err, "failed to bind eager loaded slice CustomCommand")
+		return errors.Wrap(err, "failed to bind eager loaded slice CommandInfo")
 	}
 
 	if err = results.Close(); err != nil {
-		return errors.Wrap(err, "failed to close results of eager load for custom_commands")
+		return errors.Wrap(err, "failed to close results of eager load for command_infos")
 	}
 	if err = results.Err(); err != nil {
-		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for custom_commands")
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for command_infos")
 	}
 
 	if len(resultSlice) == 0 {
@@ -404,9 +404,9 @@ func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextEx
 
 	if singular {
 		foreign := resultSlice[0]
-		object.R.CustomCommand = foreign
+		object.R.CommandInfo = foreign
 		if foreign.R == nil {
-			foreign.R = &customCommandR{}
+			foreign.R = &commandInfoR{}
 		}
 		foreign.R.ScheduledCommand = object
 		return nil
@@ -414,10 +414,10 @@ func (scheduledCommandL) LoadCustomCommand(ctx context.Context, e boil.ContextEx
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if local.CustomCommandID == foreign.ID {
-				local.R.CustomCommand = foreign
+			if local.CommandInfoID == foreign.ID {
+				local.R.CommandInfo = foreign
 				if foreign.R == nil {
-					foreign.R = &customCommandR{}
+					foreign.R = &commandInfoR{}
 				}
 				foreign.R.ScheduledCommand = local
 				break
@@ -475,10 +475,10 @@ func (o *ScheduledCommand) SetChannel(ctx context.Context, exec boil.ContextExec
 	return nil
 }
 
-// SetCustomCommand of the scheduledCommand to the related item.
-// Sets o.R.CustomCommand to related.
+// SetCommandInfo of the scheduledCommand to the related item.
+// Sets o.R.CommandInfo to related.
 // Adds o to related.R.ScheduledCommand.
-func (o *ScheduledCommand) SetCustomCommand(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CustomCommand) error {
+func (o *ScheduledCommand) SetCommandInfo(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CommandInfo) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -488,7 +488,7 @@ func (o *ScheduledCommand) SetCustomCommand(ctx context.Context, exec boil.Conte
 
 	updateQuery := fmt.Sprintf(
 		"UPDATE \"scheduled_commands\" SET %s WHERE %s",
-		strmangle.SetParamNames("\"", "\"", 1, []string{"custom_command_id"}),
+		strmangle.SetParamNames("\"", "\"", 1, []string{"command_info_id"}),
 		strmangle.WhereClause("\"", "\"", 2, scheduledCommandPrimaryKeyColumns),
 	)
 	values := []interface{}{related.ID, o.ID}
@@ -502,17 +502,17 @@ func (o *ScheduledCommand) SetCustomCommand(ctx context.Context, exec boil.Conte
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.CustomCommandID = related.ID
+	o.CommandInfoID = related.ID
 	if o.R == nil {
 		o.R = &scheduledCommandR{
-			CustomCommand: related,
+			CommandInfo: related,
 		}
 	} else {
-		o.R.CustomCommand = related
+		o.R.CommandInfo = related
 	}
 
 	if related.R == nil {
-		related.R = &customCommandR{
+		related.R = &commandInfoR{
 			ScheduledCommand: o,
 		}
 	} else {

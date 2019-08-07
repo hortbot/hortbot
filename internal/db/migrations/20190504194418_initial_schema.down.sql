@@ -4,12 +4,14 @@ DROP TABLE IF EXISTS
     channels,
     custom_commands,
     quotes,
-    repeated_commands,
-    scheduled_commands,
     autoreplies,
     variables,
     twitch_tokens,
-    blocked_users
+    blocked_users,
+    command_lists,
+    command_infos,
+    repeated_commands,
+    scheduled_commands
 CASCADE;
 
 DROP TYPE IF EXISTS access_level;

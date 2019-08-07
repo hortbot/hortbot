@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"time"
 
@@ -61,7 +62,9 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		models.RepeatedCommandWhere.ID.EQ(id),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
 		qm.Load(models.RepeatedCommandRels.Channel),
-		qm.Load(models.RepeatedCommandRels.CustomCommand),
+		qm.Load(models.RepeatedCommandRels.CommandInfo, qm.For("UPDATE")),
+		qm.Load(qm.Rels(models.RepeatedCommandRels.CommandInfo, models.CommandInfoRels.CustomCommand)),
+		qm.Load(qm.Rels(models.RepeatedCommandRels.CommandInfo, models.CommandInfoRels.CommandList)),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 	if err != nil {
@@ -90,7 +93,15 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 
 	repeat.LastCount = s.N
 
-	if err := repeat.Update(ctx, s.Tx, boil.Whitelist(models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.LastCount)); err != nil {
+	if err := repeat.Update(ctx, s.Tx, boil.Whitelist(models.RepeatedCommandColumns.LastCount)); err != nil {
+		return err
+	}
+
+	info := repeat.R.CommandInfo
+
+	info.Count++
+
+	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
 		return err
 	}
 
@@ -99,7 +110,12 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return runCustomCommand(ctx, s, repeat.R.CustomCommand)
+	if command := info.R.CustomCommand; command != nil {
+		return runCustomCommand(ctx, s, command.Message)
+	}
+
+	// TODO: lists
+	return errors.New("TODO: handle lists")
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
@@ -133,7 +149,9 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		models.ScheduledCommandWhere.ID.EQ(id),
 		models.ScheduledCommandWhere.Enabled.EQ(true),
 		qm.Load(models.ScheduledCommandRels.Channel),
-		qm.Load(models.ScheduledCommandRels.CustomCommand),
+		qm.Load(models.ScheduledCommandRels.CommandInfo, qm.For("UPDATE")),
+		qm.Load(qm.Rels(models.ScheduledCommandRels.CommandInfo, models.CommandInfoRels.CustomCommand)),
+		qm.Load(qm.Rels(models.ScheduledCommandRels.CommandInfo, models.CommandInfoRels.CommandList)),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 	if err != nil {
@@ -166,7 +184,15 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 
 	scheduled.LastCount = s.N
 
-	if err := scheduled.Update(ctx, s.Tx, boil.Whitelist(models.ScheduledCommandColumns.UpdatedAt, models.ScheduledCommandColumns.LastCount)); err != nil {
+	if err := scheduled.Update(ctx, s.Tx, boil.Whitelist(models.ScheduledCommandColumns.LastCount)); err != nil {
+		return err
+	}
+
+	info := scheduled.R.CommandInfo
+
+	info.Count++
+
+	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
 		return err
 	}
 
@@ -175,7 +201,12 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return runCustomCommand(ctx, s, scheduled.R.CustomCommand)
+	if command := info.R.CustomCommand; command != nil {
+		return runCustomCommand(ctx, s, command.Message)
+	}
+
+	// TODO: lists
+	return errors.New("TODO: handle lists")
 }
 
 func repeatPopulateSession(s *session, channel *models.Channel) error {

@@ -128,7 +128,7 @@ func New(config *Config) *Bot {
 	b := &Bot{
 		db:   config.DB,
 		deps: deps,
-		rep:  repeat.New(nil, deps.Clock),
+		rep:  repeat.New(nil, deps.Clock), // TODO: Need a context here; ctxlog won't work for derived tasks.
 	}
 
 	deps.UpdateRepeat = b.updateRepeatedCommand

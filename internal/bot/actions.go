@@ -239,15 +239,15 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		name := strings.TrimSuffix(action, "_COUNT")
 		name = cleanCommandName(name)
 
-		command, err := s.Channel.CustomCommands(models.CustomCommandWhere.Name.EQ(name)).One(ctx, s.Tx)
-		switch err {
-		case nil:
-			return strconv.FormatInt(command.Count, 10), nil
-		case sql.ErrNoRows:
-			return "?", nil
-		default:
+		info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).One(ctx, s.Tx)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return "?", nil
+			}
 			return "", err
 		}
+
+		return strconv.FormatInt(info.Count, 10), nil
 
 	default:
 		// TODO: Should this return "(_" + action "_)" to match the old behavior of not replacing things?

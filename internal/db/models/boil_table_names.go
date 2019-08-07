@@ -7,6 +7,8 @@ var TableNames = struct {
 	Autoreplies       string
 	BlockedUsers      string
 	Channels          string
+	CommandInfos      string
+	CommandLists      string
 	CustomCommands    string
 	Quotes            string
 	RepeatedCommands  string
@@ -17,6 +19,8 @@ var TableNames = struct {
 	Autoreplies:       "autoreplies",
 	BlockedUsers:      "blocked_users",
 	Channels:          "channels",
+	CommandInfos:      "command_infos",
+	CommandLists:      "command_lists",
 	CustomCommands:    "custom_commands",
 	Quotes:            "quotes",
 	RepeatedCommands:  "repeated_commands",

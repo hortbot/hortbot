@@ -19,52 +19,53 @@ import (
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"github.com/volatiletech/sqlboiler/queries/qmhelper"
 	"github.com/volatiletech/sqlboiler/strmangle"
+	"github.com/volatiletech/sqlboiler/types"
 )
 
-// CustomCommand is an object representing the database table.
-type CustomCommand struct {
-	ID        int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	ChannelID int64     `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
-	Message   string    `boil:"message" json:"message" toml:"message" yaml:"message"`
+// CommandList is an object representing the database table.
+type CommandList struct {
+	ID        int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	ChannelID int64             `boil:"channel_id" json:"channel_id" toml:"channel_id" yaml:"channel_id"`
+	Items     types.StringArray `boil:"items" json:"items" toml:"items" yaml:"items"`
 
-	R *customCommandR `boil:"-" json:"-" toml:"-" yaml:"-"`
-	L customCommandL  `boil:"-" json:"-" toml:"-" yaml:"-"`
+	R *commandListR `boil:"-" json:"-" toml:"-" yaml:"-"`
+	L commandListL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
-var CustomCommandColumns = struct {
+var CommandListColumns = struct {
 	ID        string
 	CreatedAt string
 	UpdatedAt string
 	ChannelID string
-	Message   string
+	Items     string
 }{
 	ID:        "id",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
 	ChannelID: "channel_id",
-	Message:   "message",
+	Items:     "items",
 }
 
 // Generated where
 
-var CustomCommandWhere = struct {
+var CommandListWhere = struct {
 	ID        whereHelperint64
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpertime_Time
 	ChannelID whereHelperint64
-	Message   whereHelperstring
+	Items     whereHelpertypes_StringArray
 }{
-	ID:        whereHelperint64{field: "\"custom_commands\".\"id\""},
-	CreatedAt: whereHelpertime_Time{field: "\"custom_commands\".\"created_at\""},
-	UpdatedAt: whereHelpertime_Time{field: "\"custom_commands\".\"updated_at\""},
-	ChannelID: whereHelperint64{field: "\"custom_commands\".\"channel_id\""},
-	Message:   whereHelperstring{field: "\"custom_commands\".\"message\""},
+	ID:        whereHelperint64{field: "\"command_lists\".\"id\""},
+	CreatedAt: whereHelpertime_Time{field: "\"command_lists\".\"created_at\""},
+	UpdatedAt: whereHelpertime_Time{field: "\"command_lists\".\"updated_at\""},
+	ChannelID: whereHelperint64{field: "\"command_lists\".\"channel_id\""},
+	Items:     whereHelpertypes_StringArray{field: "\"command_lists\".\"items\""},
 }
 
-// CustomCommandRels is where relationship names are stored.
-var CustomCommandRels = struct {
+// CommandListRels is where relationship names are stored.
+var CommandListRels = struct {
 	Channel     string
 	CommandInfo string
 }{
@@ -72,48 +73,48 @@ var CustomCommandRels = struct {
 	CommandInfo: "CommandInfo",
 }
 
-// customCommandR is where relationships are stored.
-type customCommandR struct {
+// commandListR is where relationships are stored.
+type commandListR struct {
 	Channel     *Channel
 	CommandInfo *CommandInfo
 }
 
 // NewStruct creates a new relationship struct
-func (*customCommandR) NewStruct() *customCommandR {
-	return &customCommandR{}
+func (*commandListR) NewStruct() *commandListR {
+	return &commandListR{}
 }
 
-// customCommandL is where Load methods for each relationship are stored.
-type customCommandL struct{}
+// commandListL is where Load methods for each relationship are stored.
+type commandListL struct{}
 
 var (
-	customCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "message"}
-	customCommandColumnsWithoutDefault = []string{"channel_id", "message"}
-	customCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
-	customCommandPrimaryKeyColumns     = []string{"id"}
+	commandListAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "items"}
+	commandListColumnsWithoutDefault = []string{"channel_id"}
+	commandListColumnsWithDefault    = []string{"id", "created_at", "updated_at", "items"}
+	commandListPrimaryKeyColumns     = []string{"id"}
 )
 
 type (
-	// CustomCommandSlice is an alias for a slice of pointers to CustomCommand.
-	// This should generally be used opposed to []CustomCommand.
-	CustomCommandSlice []*CustomCommand
+	// CommandListSlice is an alias for a slice of pointers to CommandList.
+	// This should generally be used opposed to []CommandList.
+	CommandListSlice []*CommandList
 
-	customCommandQuery struct {
+	commandListQuery struct {
 		*queries.Query
 	}
 )
 
 // Cache for insert, update and upsert
 var (
-	customCommandType                 = reflect.TypeOf(&CustomCommand{})
-	customCommandMapping              = queries.MakeStructMapping(customCommandType)
-	customCommandPrimaryKeyMapping, _ = queries.BindMapping(customCommandType, customCommandMapping, customCommandPrimaryKeyColumns)
-	customCommandInsertCacheMut       sync.RWMutex
-	customCommandInsertCache          = make(map[string]insertCache)
-	customCommandUpdateCacheMut       sync.RWMutex
-	customCommandUpdateCache          = make(map[string]updateCache)
-	customCommandUpsertCacheMut       sync.RWMutex
-	customCommandUpsertCache          = make(map[string]insertCache)
+	commandListType                 = reflect.TypeOf(&CommandList{})
+	commandListMapping              = queries.MakeStructMapping(commandListType)
+	commandListPrimaryKeyMapping, _ = queries.BindMapping(commandListType, commandListMapping, commandListPrimaryKeyColumns)
+	commandListInsertCacheMut       sync.RWMutex
+	commandListInsertCache          = make(map[string]insertCache)
+	commandListUpdateCacheMut       sync.RWMutex
+	commandListUpdateCache          = make(map[string]updateCache)
+	commandListUpsertCacheMut       sync.RWMutex
+	commandListUpsertCache          = make(map[string]insertCache)
 )
 
 var (
@@ -124,9 +125,9 @@ var (
 	_ = qmhelper.Where
 )
 
-// One returns a single customCommand record from the query.
-func (q customCommandQuery) One(ctx context.Context, exec boil.ContextExecutor) (*CustomCommand, error) {
-	o := &CustomCommand{}
+// One returns a single commandList record from the query.
+func (q commandListQuery) One(ctx context.Context, exec boil.ContextExecutor) (*CommandList, error) {
+	o := &CommandList{}
 
 	queries.SetLimit(q.Query, 1)
 
@@ -135,26 +136,26 @@ func (q customCommandQuery) One(ctx context.Context, exec boil.ContextExecutor) 
 		if errors.Cause(err) == sql.ErrNoRows {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: failed to execute a one query for custom_commands")
+		return nil, errors.Wrap(err, "models: failed to execute a one query for command_lists")
 	}
 
 	return o, nil
 }
 
-// All returns all CustomCommand records from the query.
-func (q customCommandQuery) All(ctx context.Context, exec boil.ContextExecutor) (CustomCommandSlice, error) {
-	var o []*CustomCommand
+// All returns all CommandList records from the query.
+func (q commandListQuery) All(ctx context.Context, exec boil.ContextExecutor) (CommandListSlice, error) {
+	var o []*CommandList
 
 	err := q.Bind(ctx, exec, &o)
 	if err != nil {
-		return nil, errors.Wrap(err, "models: failed to assign all query results to CustomCommand slice")
+		return nil, errors.Wrap(err, "models: failed to assign all query results to CommandList slice")
 	}
 
 	return o, nil
 }
 
-// Count returns the count of all CustomCommand records in the query.
-func (q customCommandQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
+// Count returns the count of all CommandList records in the query.
+func (q commandListQuery) Count(ctx context.Context, exec boil.ContextExecutor) (int64, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -162,14 +163,14 @@ func (q customCommandQuery) Count(ctx context.Context, exec boil.ContextExecutor
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return 0, errors.Wrap(err, "models: failed to count custom_commands rows")
+		return 0, errors.Wrap(err, "models: failed to count command_lists rows")
 	}
 
 	return count, nil
 }
 
 // Exists checks if the row exists in the table.
-func (q customCommandQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
+func (q commandListQuery) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	var count int64
 
 	queries.SetSelect(q.Query, nil)
@@ -178,14 +179,14 @@ func (q customCommandQuery) Exists(ctx context.Context, exec boil.ContextExecuto
 
 	err := q.Query.QueryRowContext(ctx, exec).Scan(&count)
 	if err != nil {
-		return false, errors.Wrap(err, "models: failed to check if custom_commands exists")
+		return false, errors.Wrap(err, "models: failed to check if command_lists exists")
 	}
 
 	return count > 0, nil
 }
 
 // Channel pointed to by the foreign key.
-func (o *CustomCommand) Channel(mods ...qm.QueryMod) channelQuery {
+func (o *CommandList) Channel(mods ...qm.QueryMod) channelQuery {
 	queryMods := []qm.QueryMod{
 		qm.Where("id=?", o.ChannelID),
 	}
@@ -199,9 +200,9 @@ func (o *CustomCommand) Channel(mods ...qm.QueryMod) channelQuery {
 }
 
 // CommandInfo pointed to by the foreign key.
-func (o *CustomCommand) CommandInfo(mods ...qm.QueryMod) commandInfoQuery {
+func (o *CommandList) CommandInfo(mods ...qm.QueryMod) commandInfoQuery {
 	queryMods := []qm.QueryMod{
-		qm.Where("custom_command_id=?", o.ID),
+		qm.Where("command_list_id=?", o.ID),
 	}
 
 	queryMods = append(queryMods, mods...)
@@ -214,20 +215,20 @@ func (o *CustomCommand) CommandInfo(mods ...qm.QueryMod) commandInfoQuery {
 
 // LoadChannel allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for an N-1 relationship.
-func (customCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCustomCommand interface{}, mods queries.Applicator) error {
-	var slice []*CustomCommand
-	var object *CustomCommand
+func (commandListL) LoadChannel(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCommandList interface{}, mods queries.Applicator) error {
+	var slice []*CommandList
+	var object *CommandList
 
 	if singular {
-		object = maybeCustomCommand.(*CustomCommand)
+		object = maybeCommandList.(*CommandList)
 	} else {
-		slice = *maybeCustomCommand.(*[]*CustomCommand)
+		slice = *maybeCommandList.(*[]*CommandList)
 	}
 
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &customCommandR{}
+			object.R = &commandListR{}
 		}
 		args = append(args, object.ChannelID)
 
@@ -235,7 +236,7 @@ func (customCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor, s
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &customCommandR{}
+				obj.R = &commandListR{}
 			}
 
 			for _, a := range args {
@@ -285,7 +286,7 @@ func (customCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor, s
 		if foreign.R == nil {
 			foreign.R = &channelR{}
 		}
-		foreign.R.CustomCommands = append(foreign.R.CustomCommands, object)
+		foreign.R.CommandLists = append(foreign.R.CommandLists, object)
 		return nil
 	}
 
@@ -296,7 +297,7 @@ func (customCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor, s
 				if foreign.R == nil {
 					foreign.R = &channelR{}
 				}
-				foreign.R.CustomCommands = append(foreign.R.CustomCommands, local)
+				foreign.R.CommandLists = append(foreign.R.CommandLists, local)
 				break
 			}
 		}
@@ -307,27 +308,27 @@ func (customCommandL) LoadChannel(ctx context.Context, e boil.ContextExecutor, s
 
 // LoadCommandInfo allows an eager lookup of values, cached into the
 // loaded structs of the objects. This is for a 1-1 relationship.
-func (customCommandL) LoadCommandInfo(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCustomCommand interface{}, mods queries.Applicator) error {
-	var slice []*CustomCommand
-	var object *CustomCommand
+func (commandListL) LoadCommandInfo(ctx context.Context, e boil.ContextExecutor, singular bool, maybeCommandList interface{}, mods queries.Applicator) error {
+	var slice []*CommandList
+	var object *CommandList
 
 	if singular {
-		object = maybeCustomCommand.(*CustomCommand)
+		object = maybeCommandList.(*CommandList)
 	} else {
-		slice = *maybeCustomCommand.(*[]*CustomCommand)
+		slice = *maybeCommandList.(*[]*CommandList)
 	}
 
 	args := make([]interface{}, 0, 1)
 	if singular {
 		if object.R == nil {
-			object.R = &customCommandR{}
+			object.R = &commandListR{}
 		}
 		args = append(args, object.ID)
 	} else {
 	Outer:
 		for _, obj := range slice {
 			if obj.R == nil {
-				obj.R = &customCommandR{}
+				obj.R = &commandListR{}
 			}
 
 			for _, a := range args {
@@ -344,7 +345,7 @@ func (customCommandL) LoadCommandInfo(ctx context.Context, e boil.ContextExecuto
 		return nil
 	}
 
-	query := NewQuery(qm.From(`command_infos`), qm.WhereIn(`custom_command_id in ?`, args...))
+	query := NewQuery(qm.From(`command_infos`), qm.WhereIn(`command_list_id in ?`, args...))
 	if mods != nil {
 		mods.Apply(query)
 	}
@@ -376,17 +377,17 @@ func (customCommandL) LoadCommandInfo(ctx context.Context, e boil.ContextExecuto
 		if foreign.R == nil {
 			foreign.R = &commandInfoR{}
 		}
-		foreign.R.CustomCommand = object
+		foreign.R.CommandList = object
 	}
 
 	for _, local := range slice {
 		for _, foreign := range resultSlice {
-			if queries.Equal(local.ID, foreign.CustomCommandID) {
+			if queries.Equal(local.ID, foreign.CommandListID) {
 				local.R.CommandInfo = foreign
 				if foreign.R == nil {
 					foreign.R = &commandInfoR{}
 				}
-				foreign.R.CustomCommand = local
+				foreign.R.CommandList = local
 				break
 			}
 		}
@@ -395,10 +396,10 @@ func (customCommandL) LoadCommandInfo(ctx context.Context, e boil.ContextExecuto
 	return nil
 }
 
-// SetChannel of the customCommand to the related item.
+// SetChannel of the commandList to the related item.
 // Sets o.R.Channel to related.
-// Adds o to related.R.CustomCommands.
-func (o *CustomCommand) SetChannel(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Channel) error {
+// Adds o to related.R.CommandLists.
+func (o *CommandList) SetChannel(ctx context.Context, exec boil.ContextExecutor, insert bool, related *Channel) error {
 	var err error
 	if insert {
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -407,9 +408,9 @@ func (o *CustomCommand) SetChannel(ctx context.Context, exec boil.ContextExecuto
 	}
 
 	updateQuery := fmt.Sprintf(
-		"UPDATE \"custom_commands\" SET %s WHERE %s",
+		"UPDATE \"command_lists\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
-		strmangle.WhereClause("\"", "\"", 2, customCommandPrimaryKeyColumns),
+		strmangle.WhereClause("\"", "\"", 2, commandListPrimaryKeyColumns),
 	)
 	values := []interface{}{related.ID, o.ID}
 
@@ -424,7 +425,7 @@ func (o *CustomCommand) SetChannel(ctx context.Context, exec boil.ContextExecuto
 
 	o.ChannelID = related.ID
 	if o.R == nil {
-		o.R = &customCommandR{
+		o.R = &commandListR{
 			Channel: related,
 		}
 	} else {
@@ -433,23 +434,23 @@ func (o *CustomCommand) SetChannel(ctx context.Context, exec boil.ContextExecuto
 
 	if related.R == nil {
 		related.R = &channelR{
-			CustomCommands: CustomCommandSlice{o},
+			CommandLists: CommandListSlice{o},
 		}
 	} else {
-		related.R.CustomCommands = append(related.R.CustomCommands, o)
+		related.R.CommandLists = append(related.R.CommandLists, o)
 	}
 
 	return nil
 }
 
-// SetCommandInfo of the customCommand to the related item.
+// SetCommandInfo of the commandList to the related item.
 // Sets o.R.CommandInfo to related.
-// Adds o to related.R.CustomCommand.
-func (o *CustomCommand) SetCommandInfo(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CommandInfo) error {
+// Adds o to related.R.CommandList.
+func (o *CommandList) SetCommandInfo(ctx context.Context, exec boil.ContextExecutor, insert bool, related *CommandInfo) error {
 	var err error
 
 	if insert {
-		queries.Assign(&related.CustomCommandID, o.ID)
+		queries.Assign(&related.CommandListID, o.ID)
 
 		if err = related.Insert(ctx, exec, boil.Infer()); err != nil {
 			return errors.Wrap(err, "failed to insert into foreign table")
@@ -457,7 +458,7 @@ func (o *CustomCommand) SetCommandInfo(ctx context.Context, exec boil.ContextExe
 	} else {
 		updateQuery := fmt.Sprintf(
 			"UPDATE \"command_infos\" SET %s WHERE %s",
-			strmangle.SetParamNames("\"", "\"", 1, []string{"custom_command_id"}),
+			strmangle.SetParamNames("\"", "\"", 1, []string{"command_list_id"}),
 			strmangle.WhereClause("\"", "\"", 2, commandInfoPrimaryKeyColumns),
 		)
 		values := []interface{}{o.ID, related.ID}
@@ -471,11 +472,11 @@ func (o *CustomCommand) SetCommandInfo(ctx context.Context, exec boil.ContextExe
 			return errors.Wrap(err, "failed to update foreign table")
 		}
 
-		queries.Assign(&related.CustomCommandID, o.ID)
+		queries.Assign(&related.CommandListID, o.ID)
 	}
 
 	if o.R == nil {
-		o.R = &customCommandR{
+		o.R = &commandListR{
 			CommandInfo: related,
 		}
 	} else {
@@ -484,10 +485,10 @@ func (o *CustomCommand) SetCommandInfo(ctx context.Context, exec boil.ContextExe
 
 	if related.R == nil {
 		related.R = &commandInfoR{
-			CustomCommand: o,
+			CommandList: o,
 		}
 	} else {
-		related.R.CustomCommand = o
+		related.R.CommandList = o
 	}
 	return nil
 }
@@ -495,11 +496,11 @@ func (o *CustomCommand) SetCommandInfo(ctx context.Context, exec boil.ContextExe
 // RemoveCommandInfo relationship.
 // Sets o.R.CommandInfo to nil.
 // Removes o from all passed in related items' relationships struct (Optional).
-func (o *CustomCommand) RemoveCommandInfo(ctx context.Context, exec boil.ContextExecutor, related *CommandInfo) error {
+func (o *CommandList) RemoveCommandInfo(ctx context.Context, exec boil.ContextExecutor, related *CommandInfo) error {
 	var err error
 
-	queries.SetScanner(&related.CustomCommandID, nil)
-	if err = related.Update(ctx, exec, boil.Whitelist("custom_command_id")); err != nil {
+	queries.SetScanner(&related.CommandListID, nil)
+	if err = related.Update(ctx, exec, boil.Whitelist("command_list_id")); err != nil {
 		return errors.Wrap(err, "failed to update local table")
 	}
 
@@ -508,47 +509,47 @@ func (o *CustomCommand) RemoveCommandInfo(ctx context.Context, exec boil.Context
 		return nil
 	}
 
-	related.R.CustomCommand = nil
+	related.R.CommandList = nil
 	return nil
 }
 
-// CustomCommands retrieves all the records using an executor.
-func CustomCommands(mods ...qm.QueryMod) customCommandQuery {
-	mods = append(mods, qm.From("\"custom_commands\""))
-	return customCommandQuery{NewQuery(mods...)}
+// CommandLists retrieves all the records using an executor.
+func CommandLists(mods ...qm.QueryMod) commandListQuery {
+	mods = append(mods, qm.From("\"command_lists\""))
+	return commandListQuery{NewQuery(mods...)}
 }
 
-// FindCustomCommand retrieves a single record by ID with an executor.
+// FindCommandList retrieves a single record by ID with an executor.
 // If selectCols is empty Find will return all columns.
-func FindCustomCommand(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*CustomCommand, error) {
-	customCommandObj := &CustomCommand{}
+func FindCommandList(ctx context.Context, exec boil.ContextExecutor, iD int64, selectCols ...string) (*CommandList, error) {
+	commandListObj := &CommandList{}
 
 	sel := "*"
 	if len(selectCols) > 0 {
 		sel = strings.Join(strmangle.IdentQuoteSlice(dialect.LQ, dialect.RQ, selectCols), ",")
 	}
 	query := fmt.Sprintf(
-		"select %s from \"custom_commands\" where \"id\"=$1", sel,
+		"select %s from \"command_lists\" where \"id\"=$1", sel,
 	)
 
 	q := queries.Raw(query, iD)
 
-	err := q.Bind(ctx, exec, customCommandObj)
+	err := q.Bind(ctx, exec, commandListObj)
 	if err != nil {
 		if errors.Cause(err) == sql.ErrNoRows {
 			return nil, sql.ErrNoRows
 		}
-		return nil, errors.Wrap(err, "models: unable to select from custom_commands")
+		return nil, errors.Wrap(err, "models: unable to select from command_lists")
 	}
 
-	return customCommandObj, nil
+	return commandListObj, nil
 }
 
 // Insert a single record using an executor.
 // See boil.Columns.InsertColumnSet documentation to understand column list inference for inserts.
-func (o *CustomCommand) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (o *CommandList) Insert(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no custom_commands provided for insertion")
+		return errors.New("models: no command_lists provided for insertion")
 	}
 
 	var err error
@@ -563,33 +564,33 @@ func (o *CustomCommand) Insert(ctx context.Context, exec boil.ContextExecutor, c
 		}
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet(customCommandColumnsWithDefault, o)
+	nzDefaults := queries.NonZeroDefaultSet(commandListColumnsWithDefault, o)
 
 	key := makeCacheKey(columns, nzDefaults)
-	customCommandInsertCacheMut.RLock()
-	cache, cached := customCommandInsertCache[key]
-	customCommandInsertCacheMut.RUnlock()
+	commandListInsertCacheMut.RLock()
+	cache, cached := commandListInsertCache[key]
+	commandListInsertCacheMut.RUnlock()
 
 	if !cached {
 		wl, returnColumns := columns.InsertColumnSet(
-			customCommandAllColumns,
-			customCommandColumnsWithDefault,
-			customCommandColumnsWithoutDefault,
+			commandListAllColumns,
+			commandListColumnsWithDefault,
+			commandListColumnsWithoutDefault,
 			nzDefaults,
 		)
 
-		cache.valueMapping, err = queries.BindMapping(customCommandType, customCommandMapping, wl)
+		cache.valueMapping, err = queries.BindMapping(commandListType, commandListMapping, wl)
 		if err != nil {
 			return err
 		}
-		cache.retMapping, err = queries.BindMapping(customCommandType, customCommandMapping, returnColumns)
+		cache.retMapping, err = queries.BindMapping(commandListType, commandListMapping, returnColumns)
 		if err != nil {
 			return err
 		}
 		if len(wl) != 0 {
-			cache.query = fmt.Sprintf("INSERT INTO \"custom_commands\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
+			cache.query = fmt.Sprintf("INSERT INTO \"command_lists\" (\"%s\") %%sVALUES (%s)%%s", strings.Join(wl, "\",\""), strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), 1, 1))
 		} else {
-			cache.query = "INSERT INTO \"custom_commands\" %sDEFAULT VALUES%s"
+			cache.query = "INSERT INTO \"command_lists\" %sDEFAULT VALUES%s"
 		}
 
 		var queryOutput, queryReturning string
@@ -616,22 +617,22 @@ func (o *CustomCommand) Insert(ctx context.Context, exec boil.ContextExecutor, c
 	}
 
 	if err != nil {
-		return errors.Wrap(err, "models: unable to insert into custom_commands")
+		return errors.Wrap(err, "models: unable to insert into command_lists")
 	}
 
 	if !cached {
-		customCommandInsertCacheMut.Lock()
-		customCommandInsertCache[key] = cache
-		customCommandInsertCacheMut.Unlock()
+		commandListInsertCacheMut.Lock()
+		commandListInsertCache[key] = cache
+		commandListInsertCacheMut.Unlock()
 	}
 
 	return nil
 }
 
-// Update uses an executor to update the CustomCommand.
+// Update uses an executor to update the CommandList.
 // See boil.Columns.UpdateColumnSet documentation to understand column list inference for updates.
 // Update does not automatically update the record in case of default values. Use .Reload() to refresh the records.
-func (o *CustomCommand) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+func (o *CommandList) Update(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
 
@@ -640,28 +641,28 @@ func (o *CustomCommand) Update(ctx context.Context, exec boil.ContextExecutor, c
 
 	var err error
 	key := makeCacheKey(columns, nil)
-	customCommandUpdateCacheMut.RLock()
-	cache, cached := customCommandUpdateCache[key]
-	customCommandUpdateCacheMut.RUnlock()
+	commandListUpdateCacheMut.RLock()
+	cache, cached := commandListUpdateCache[key]
+	commandListUpdateCacheMut.RUnlock()
 
 	if !cached {
 		wl := columns.UpdateColumnSet(
-			customCommandAllColumns,
-			customCommandPrimaryKeyColumns,
+			commandListAllColumns,
+			commandListPrimaryKeyColumns,
 		)
 
 		if !columns.IsWhitelist() {
 			wl = strmangle.SetComplement(wl, []string{"created_at"})
 		}
 		if len(wl) == 0 {
-			return errors.New("models: unable to update custom_commands, could not build whitelist")
+			return errors.New("models: unable to update command_lists, could not build whitelist")
 		}
 
-		cache.query = fmt.Sprintf("UPDATE \"custom_commands\" SET %s WHERE %s",
+		cache.query = fmt.Sprintf("UPDATE \"command_lists\" SET %s WHERE %s",
 			strmangle.SetParamNames("\"", "\"", 1, wl),
-			strmangle.WhereClause("\"", "\"", len(wl)+1, customCommandPrimaryKeyColumns),
+			strmangle.WhereClause("\"", "\"", len(wl)+1, commandListPrimaryKeyColumns),
 		)
-		cache.valueMapping, err = queries.BindMapping(customCommandType, customCommandMapping, append(wl, customCommandPrimaryKeyColumns...))
+		cache.valueMapping, err = queries.BindMapping(commandListType, commandListMapping, append(wl, commandListPrimaryKeyColumns...))
 		if err != nil {
 			return err
 		}
@@ -676,32 +677,32 @@ func (o *CustomCommand) Update(ctx context.Context, exec boil.ContextExecutor, c
 
 	_, err = exec.ExecContext(ctx, cache.query, values...)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to update custom_commands row")
+		return errors.Wrap(err, "models: unable to update command_lists row")
 	}
 
 	if !cached {
-		customCommandUpdateCacheMut.Lock()
-		customCommandUpdateCache[key] = cache
-		customCommandUpdateCacheMut.Unlock()
+		commandListUpdateCacheMut.Lock()
+		commandListUpdateCache[key] = cache
+		commandListUpdateCacheMut.Unlock()
 	}
 
 	return nil
 }
 
 // UpdateAll updates all rows with the specified column values.
-func (q customCommandQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) error {
+func (q commandListQuery) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) error {
 	queries.SetUpdate(q.Query, cols)
 
 	_, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to update all for custom_commands")
+		return errors.Wrap(err, "models: unable to update all for command_lists")
 	}
 
 	return nil
 }
 
 // UpdateAll updates all rows with the specified column values, using an executor.
-func (o CustomCommandSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) error {
+func (o CommandListSlice) UpdateAll(ctx context.Context, exec boil.ContextExecutor, cols M) error {
 	ln := int64(len(o))
 	if ln == 0 {
 		return nil
@@ -723,13 +724,13 @@ func (o CustomCommandSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 
 	// Append all of the primary key values for each column
 	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), customCommandPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), commandListPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := fmt.Sprintf("UPDATE \"custom_commands\" SET %s WHERE %s",
+	sql := fmt.Sprintf("UPDATE \"command_lists\" SET %s WHERE %s",
 		strmangle.SetParamNames("\"", "\"", 1, colNames),
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), len(colNames)+1, customCommandPrimaryKeyColumns, len(o)))
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), len(colNames)+1, commandListPrimaryKeyColumns, len(o)))
 
 	if boil.DebugMode {
 		fmt.Fprintln(boil.DebugWriter, sql)
@@ -738,7 +739,7 @@ func (o CustomCommandSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 
 	_, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to update all in customCommand slice")
+		return errors.Wrap(err, "models: unable to update all in commandList slice")
 	}
 
 	return nil
@@ -746,9 +747,9 @@ func (o CustomCommandSlice) UpdateAll(ctx context.Context, exec boil.ContextExec
 
 // Upsert attempts an insert using an executor, and does an update or ignore on conflict.
 // See boil.Columns documentation for how to properly use updateColumns and insertColumns.
-func (o *CustomCommand) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
+func (o *CommandList) Upsert(ctx context.Context, exec boil.ContextExecutor, updateOnConflict bool, conflictColumns []string, updateColumns, insertColumns boil.Columns) error {
 	if o == nil {
-		return errors.New("models: no custom_commands provided for upsert")
+		return errors.New("models: no command_lists provided for upsert")
 	}
 	if !boil.TimestampsAreSkipped(ctx) {
 		currTime := time.Now().In(boil.GetLocation())
@@ -759,7 +760,7 @@ func (o *CustomCommand) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 		o.UpdatedAt = currTime
 	}
 
-	nzDefaults := queries.NonZeroDefaultSet(customCommandColumnsWithDefault, o)
+	nzDefaults := queries.NonZeroDefaultSet(commandListColumnsWithDefault, o)
 
 	// Build cache key in-line uglily - mysql vs psql problems
 	buf := strmangle.GetBuffer()
@@ -789,41 +790,41 @@ func (o *CustomCommand) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 	key := buf.String()
 	strmangle.PutBuffer(buf)
 
-	customCommandUpsertCacheMut.RLock()
-	cache, cached := customCommandUpsertCache[key]
-	customCommandUpsertCacheMut.RUnlock()
+	commandListUpsertCacheMut.RLock()
+	cache, cached := commandListUpsertCache[key]
+	commandListUpsertCacheMut.RUnlock()
 
 	var err error
 
 	if !cached {
 		insert, ret := insertColumns.InsertColumnSet(
-			customCommandAllColumns,
-			customCommandColumnsWithDefault,
-			customCommandColumnsWithoutDefault,
+			commandListAllColumns,
+			commandListColumnsWithDefault,
+			commandListColumnsWithoutDefault,
 			nzDefaults,
 		)
 		update := updateColumns.UpdateColumnSet(
-			customCommandAllColumns,
-			customCommandPrimaryKeyColumns,
+			commandListAllColumns,
+			commandListPrimaryKeyColumns,
 		)
 
 		if updateOnConflict && len(update) == 0 {
-			return errors.New("models: unable to upsert custom_commands, could not build update column list")
+			return errors.New("models: unable to upsert command_lists, could not build update column list")
 		}
 
 		conflict := conflictColumns
 		if len(conflict) == 0 {
-			conflict = make([]string, len(customCommandPrimaryKeyColumns))
-			copy(conflict, customCommandPrimaryKeyColumns)
+			conflict = make([]string, len(commandListPrimaryKeyColumns))
+			copy(conflict, commandListPrimaryKeyColumns)
 		}
-		cache.query = buildUpsertQueryPostgres(dialect, "\"custom_commands\"", updateOnConflict, ret, update, conflict, insert)
+		cache.query = buildUpsertQueryPostgres(dialect, "\"command_lists\"", updateOnConflict, ret, update, conflict, insert)
 
-		cache.valueMapping, err = queries.BindMapping(customCommandType, customCommandMapping, insert)
+		cache.valueMapping, err = queries.BindMapping(commandListType, commandListMapping, insert)
 		if err != nil {
 			return err
 		}
 		if len(ret) != 0 {
-			cache.retMapping, err = queries.BindMapping(customCommandType, customCommandMapping, ret)
+			cache.retMapping, err = queries.BindMapping(commandListType, commandListMapping, ret)
 			if err != nil {
 				return err
 			}
@@ -851,27 +852,27 @@ func (o *CustomCommand) Upsert(ctx context.Context, exec boil.ContextExecutor, u
 		_, err = exec.ExecContext(ctx, cache.query, vals...)
 	}
 	if err != nil {
-		return errors.Wrap(err, "models: unable to upsert custom_commands")
+		return errors.Wrap(err, "models: unable to upsert command_lists")
 	}
 
 	if !cached {
-		customCommandUpsertCacheMut.Lock()
-		customCommandUpsertCache[key] = cache
-		customCommandUpsertCacheMut.Unlock()
+		commandListUpsertCacheMut.Lock()
+		commandListUpsertCache[key] = cache
+		commandListUpsertCacheMut.Unlock()
 	}
 
 	return nil
 }
 
-// Delete deletes a single CustomCommand record with an executor.
+// Delete deletes a single CommandList record with an executor.
 // Delete will match against the primary key column to find the record to delete.
-func (o *CustomCommand) Delete(ctx context.Context, exec boil.ContextExecutor) error {
+func (o *CommandList) Delete(ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil {
-		return errors.New("models: no CustomCommand provided for delete")
+		return errors.New("models: no CommandList provided for delete")
 	}
 
-	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), customCommandPrimaryKeyMapping)
-	sql := "DELETE FROM \"custom_commands\" WHERE \"id\"=$1"
+	args := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(o)), commandListPrimaryKeyMapping)
+	sql := "DELETE FROM \"command_lists\" WHERE \"id\"=$1"
 
 	if boil.DebugMode {
 		fmt.Fprintln(boil.DebugWriter, sql)
@@ -880,42 +881,42 @@ func (o *CustomCommand) Delete(ctx context.Context, exec boil.ContextExecutor) e
 
 	_, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to delete from custom_commands")
+		return errors.Wrap(err, "models: unable to delete from command_lists")
 	}
 
 	return nil
 }
 
 // DeleteAll deletes all matching rows.
-func (q customCommandQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) error {
+func (q commandListQuery) DeleteAll(ctx context.Context, exec boil.ContextExecutor) error {
 	if q.Query == nil {
-		return errors.New("models: no customCommandQuery provided for delete all")
+		return errors.New("models: no commandListQuery provided for delete all")
 	}
 
 	queries.SetDelete(q.Query)
 
 	_, err := q.Query.ExecContext(ctx, exec)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to delete all from custom_commands")
+		return errors.Wrap(err, "models: unable to delete all from command_lists")
 	}
 
 	return nil
 }
 
 // DeleteAll deletes all rows in the slice, using an executor.
-func (o CustomCommandSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) error {
+func (o CommandListSlice) DeleteAll(ctx context.Context, exec boil.ContextExecutor) error {
 	if len(o) == 0 {
 		return nil
 	}
 
 	var args []interface{}
 	for _, obj := range o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), customCommandPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), commandListPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "DELETE FROM \"custom_commands\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, customCommandPrimaryKeyColumns, len(o))
+	sql := "DELETE FROM \"command_lists\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, commandListPrimaryKeyColumns, len(o))
 
 	if boil.DebugMode {
 		fmt.Fprintln(boil.DebugWriter, sql)
@@ -924,7 +925,7 @@ func (o CustomCommandSlice) DeleteAll(ctx context.Context, exec boil.ContextExec
 
 	_, err := exec.ExecContext(ctx, sql, args...)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to delete all from customCommand slice")
+		return errors.Wrap(err, "models: unable to delete all from commandList slice")
 	}
 
 	return nil
@@ -932,8 +933,8 @@ func (o CustomCommandSlice) DeleteAll(ctx context.Context, exec boil.ContextExec
 
 // Reload refetches the object from the database
 // using the primary keys with an executor.
-func (o *CustomCommand) Reload(ctx context.Context, exec boil.ContextExecutor) error {
-	ret, err := FindCustomCommand(ctx, exec, o.ID)
+func (o *CommandList) Reload(ctx context.Context, exec boil.ContextExecutor) error {
+	ret, err := FindCommandList(ctx, exec, o.ID)
 	if err != nil {
 		return err
 	}
@@ -944,26 +945,26 @@ func (o *CustomCommand) Reload(ctx context.Context, exec boil.ContextExecutor) e
 
 // ReloadAll refetches every row with matching primary key column values
 // and overwrites the original object slice with the newly updated slice.
-func (o *CustomCommandSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
+func (o *CommandListSlice) ReloadAll(ctx context.Context, exec boil.ContextExecutor) error {
 	if o == nil || len(*o) == 0 {
 		return nil
 	}
 
-	slice := CustomCommandSlice{}
+	slice := CommandListSlice{}
 	var args []interface{}
 	for _, obj := range *o {
-		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), customCommandPrimaryKeyMapping)
+		pkeyArgs := queries.ValuesFromMapping(reflect.Indirect(reflect.ValueOf(obj)), commandListPrimaryKeyMapping)
 		args = append(args, pkeyArgs...)
 	}
 
-	sql := "SELECT \"custom_commands\".* FROM \"custom_commands\" WHERE " +
-		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, customCommandPrimaryKeyColumns, len(*o))
+	sql := "SELECT \"command_lists\".* FROM \"command_lists\" WHERE " +
+		strmangle.WhereClauseRepeated(string(dialect.LQ), string(dialect.RQ), 1, commandListPrimaryKeyColumns, len(*o))
 
 	q := queries.Raw(sql, args...)
 
 	err := q.Bind(ctx, exec, &slice)
 	if err != nil {
-		return errors.Wrap(err, "models: unable to reload all in CustomCommandSlice")
+		return errors.Wrap(err, "models: unable to reload all in CommandListSlice")
 	}
 
 	*o = slice
@@ -971,10 +972,10 @@ func (o *CustomCommandSlice) ReloadAll(ctx context.Context, exec boil.ContextExe
 	return nil
 }
 
-// CustomCommandExists checks if the CustomCommand row exists.
-func CustomCommandExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
+// CommandListExists checks if the CommandList row exists.
+func CommandListExists(ctx context.Context, exec boil.ContextExecutor, iD int64) (bool, error) {
 	var exists bool
-	sql := "select exists(select 1 from \"custom_commands\" where \"id\"=$1 limit 1)"
+	sql := "select exists(select 1 from \"command_lists\" where \"id\"=$1 limit 1)"
 
 	if boil.DebugMode {
 		fmt.Fprintln(boil.DebugWriter, sql)
@@ -985,7 +986,7 @@ func CustomCommandExists(ctx context.Context, exec boil.ContextExecutor, iD int6
 
 	err := row.Scan(&exists)
 	if err != nil {
-		return false, errors.Wrap(err, "models: unable to check if custom_commands exists")
+		return false, errors.Wrap(err, "models: unable to check if command_lists exists")
 	}
 
 	return exists, nil

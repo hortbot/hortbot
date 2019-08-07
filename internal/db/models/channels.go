@@ -301,6 +301,8 @@ var ChannelWhere = struct {
 // ChannelRels is where relationship names are stored.
 var ChannelRels = struct {
 	Autoreplies       string
+	CommandInfos      string
+	CommandLists      string
 	CustomCommands    string
 	Quotes            string
 	RepeatedCommands  string
@@ -308,6 +310,8 @@ var ChannelRels = struct {
 	Variables         string
 }{
 	Autoreplies:       "Autoreplies",
+	CommandInfos:      "CommandInfos",
+	CommandLists:      "CommandLists",
 	CustomCommands:    "CustomCommands",
 	Quotes:            "Quotes",
 	RepeatedCommands:  "RepeatedCommands",
@@ -318,6 +322,8 @@ var ChannelRels = struct {
 // channelR is where relationships are stored.
 type channelR struct {
 	Autoreplies       AutoreplySlice
+	CommandInfos      CommandInfoSlice
+	CommandLists      CommandListSlice
 	CustomCommands    CustomCommandSlice
 	Quotes            QuoteSlice
 	RepeatedCommands  RepeatedCommandSlice
@@ -447,6 +453,48 @@ func (o *Channel) Autoreplies(mods ...qm.QueryMod) autoreplyQuery {
 
 	if len(queries.GetSelect(query.Query)) == 0 {
 		queries.SetSelect(query.Query, []string{"\"autoreplies\".*"})
+	}
+
+	return query
+}
+
+// CommandInfos retrieves all the command_info's CommandInfos with an executor.
+func (o *Channel) CommandInfos(mods ...qm.QueryMod) commandInfoQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"command_infos\".\"channel_id\"=?", o.ID),
+	)
+
+	query := CommandInfos(queryMods...)
+	queries.SetFrom(query.Query, "\"command_infos\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"command_infos\".*"})
+	}
+
+	return query
+}
+
+// CommandLists retrieves all the command_list's CommandLists with an executor.
+func (o *Channel) CommandLists(mods ...qm.QueryMod) commandListQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"command_lists\".\"channel_id\"=?", o.ID),
+	)
+
+	query := CommandLists(queryMods...)
+	queries.SetFrom(query.Query, "\"command_lists\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"command_lists\".*"})
 	}
 
 	return query
@@ -635,6 +683,182 @@ func (channelL) LoadAutoreplies(ctx context.Context, e boil.ContextExecutor, sin
 				local.R.Autoreplies = append(local.R.Autoreplies, foreign)
 				if foreign.R == nil {
 					foreign.R = &autoreplyR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadCommandInfos allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadCommandInfos(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`command_infos`), qm.WhereIn(`channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load command_infos")
+	}
+
+	var resultSlice []*CommandInfo
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice command_infos")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on command_infos")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for command_infos")
+	}
+
+	if singular {
+		object.R.CommandInfos = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &commandInfoR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.CommandInfos = append(local.R.CommandInfos, foreign)
+				if foreign.R == nil {
+					foreign.R = &commandInfoR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadCommandLists allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadCommandLists(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`command_lists`), qm.WhereIn(`channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load command_lists")
+	}
+
+	var resultSlice []*CommandList
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice command_lists")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on command_lists")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for command_lists")
+	}
+
+	if singular {
+		object.R.CommandLists = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &commandListR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.CommandLists = append(local.R.CommandLists, foreign)
+				if foreign.R == nil {
+					foreign.R = &commandListR{}
 				}
 				foreign.R.Channel = local
 				break
@@ -1129,6 +1353,112 @@ func (o *Channel) AddAutoreplies(ctx context.Context, exec boil.ContextExecutor,
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &autoreplyR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
+	return nil
+}
+
+// AddCommandInfos adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.CommandInfos.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddCommandInfos(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*CommandInfo) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"command_infos\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, commandInfoPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			CommandInfos: related,
+		}
+	} else {
+		o.R.CommandInfos = append(o.R.CommandInfos, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &commandInfoR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
+	return nil
+}
+
+// AddCommandLists adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.CommandLists.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddCommandLists(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*CommandList) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"command_lists\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, commandListPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.DebugMode {
+				fmt.Fprintln(boil.DebugWriter, updateQuery)
+				fmt.Fprintln(boil.DebugWriter, values)
+			}
+
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			CommandLists: related,
+		}
+	} else {
+		o.R.CommandLists = append(o.R.CommandLists, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &commandListR{
 				Channel: o,
 			}
 		} else {

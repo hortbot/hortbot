@@ -11,8 +11,10 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/sqlboiler/queries"
+	"github.com/volatiletech/sqlboiler/types"
 	"go.uber.org/zap"
 )
 
@@ -324,15 +326,14 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	}
 
-	tx := s.Tx
 	channel := s.Channel
 	prefix := channel.Prefix
 	message := s.Message
 
-	commandName, params := splitSpace(message)
+	name, params := splitSpace(message)
 
 	if s.Channel.ShouldModerate {
-		ok, err := moderationCommands.run(ctx, s, strings.ToLower(commandName), params)
+		ok, err := moderationCommands.run(ctx, s, strings.ToLower(name), params)
 		if err != nil {
 			return false, err
 		}
@@ -342,13 +343,13 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		}
 	}
 
-	if !strings.HasPrefix(commandName, prefix) {
+	if !strings.HasPrefix(name, prefix) {
 		return false, nil
 	}
 
-	commandName = cleanCommandName(commandName[len(prefix):])
+	name = cleanCommandName(name[len(prefix):])
 
-	if commandName == "" {
+	if name == "" {
 		return false, nil
 	}
 
@@ -359,31 +360,63 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	s.CommandParams = params
 	s.OrigCommandParams = params
 
-	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("command", commandName), zap.String("params", params))
+	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params))
 
-	command, err := s.Channel.CustomCommands(
-		models.CustomCommandWhere.Name.EQ(commandName),
-		qm.For("UPDATE"),
-	).One(ctx, tx)
+	infoAndCommand := struct {
+		CommandInfo models.CommandInfo `boil:"command_infos,bind"`
+		Message     null.String        `boil:"message"`
+		CommandList types.StringArray  `boil:"items"`
+	}{}
+
+	// This is much faster than using qm.Load, as SQLBoiler's loading does multiple
+	// queries to fetch 1:1 relationships rather than joins.
+	err := queries.Raw(`
+		SELECT command_infos.*, custom_commands.message, command_lists.items
+		FROM command_infos
+		LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
+		LEFT OUTER JOIN command_lists on command_lists.id = command_infos.command_list_id
+		WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
+		FOR UPDATE OF command_infos
+		`, s.Channel.ID, name).Bind(ctx, s.Tx, &infoAndCommand)
+
+	info := &infoAndCommand.CommandInfo
+
+	// info, err := s.Channel.CommandInfos(
+	// 	models.CommandInfoWhere.Name.EQ(name),
+	// 	qm.Load(models.CommandInfoRels.CustomCommand, qm.For("UPDATE")),
+	// 	qm.Load(models.CommandInfoRels.CommandList, qm.For("UPDATE")),
+	// 	qm.For("UPDATE"),
+	// ).One(ctx, s.Tx)
 
 	switch err {
 	case sql.ErrNoRows:
-		if ok, err := tryBuiltinCommand(ctx, s, commandName, params); ok {
+		if ok, err := tryBuiltinCommand(ctx, s, name, params); ok {
 			return true, err
 		}
 		return false, nil
 	case nil:
 	default:
-		logger.Error("error getting custom command from database", zap.Error(err))
+		logger.Error("error looking up command name in database", zap.Error(err))
 		return true, err
 	}
 
-	commandLevel := newAccessLevel(command.AccessLevel)
-	if !s.UserLevel.CanAccess(commandLevel) {
+	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
 		return true, errNotAuthorized
 	}
 
-	return true, runCustomCommand(ctx, s, command)
+	info.Count++
+
+	// Update count, but not any timestamps.
+	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
+		return true, err
+	}
+
+	if msg := infoAndCommand.Message; msg.Valid {
+		return true, runCustomCommand(ctx, s, msg.String)
+	}
+
+	// TODO: lists
+	return true, errors.New("TODO: handle lists")
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {

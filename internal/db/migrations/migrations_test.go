@@ -23,6 +23,8 @@ var allTables = []string{
 	"variables",
 	"twitch_tokens",
 	"blocked_users",
+	"command_lists",
+	"command_infos",
 }
 
 func TestUp(t *testing.T) {

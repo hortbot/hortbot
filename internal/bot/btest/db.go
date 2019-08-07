@@ -68,3 +68,15 @@ func (st *scriptTester) upsertTwitchToken(t testing.TB, _, args string) {
 		assert.NilError(t, modelsx.UpsertToken(ctx, st.db, &tt), "line %d", lineNum)
 	})
 }
+
+func (st *scriptTester) insertCommandInfo(t testing.TB, _, args string) {
+	lineNum := st.lineNum
+
+	var ci models.CommandInfo
+	assert.NilError(t, json.Unmarshal([]byte(args), &ci), "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		ctx = boil.SkipTimestamps(ctx)
+		assert.NilError(t, ci.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)
+	})
+}
