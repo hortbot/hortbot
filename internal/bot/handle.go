@@ -371,8 +371,6 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		if ok, err := tryBuiltinCommand(ctx, s, commandName, params); ok {
 			return true, err
 		}
-
-		logger.Debug("unknown command", zap.String("name", commandName))
 		return false, nil
 	case nil:
 	default:
