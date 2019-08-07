@@ -4,11 +4,11 @@ go 1.12
 
 require (
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
-	github.com/Microsoft/go-winio v0.4.13 // indirect
+	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.21.9 // indirect
+	github.com/aws/aws-sdk-go v1.22.0 // indirect
 	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
@@ -21,15 +21,15 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190724012636-11b2859924c1 // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190806190131-db2462fef53b // indirect
 	github.com/dhui/dktest v0.3.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190729173012-f05d33913e5a // indirect
 	github.com/fortytw2/leaktest v1.3.0
-	github.com/frankban/quicktest v1.4.0 // indirect
-	github.com/fsouza/fake-gcs-server v1.10.1 // indirect
+	github.com/frankban/quicktest v1.4.1 // indirect
+	github.com/fsouza/fake-gcs-server v1.11.1 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis v6.15.2+incompatible
 	github.com/gobuffalo/flect v0.1.5
@@ -84,8 +84,8 @@ require (
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190801041406-cbf593c0f2f3 // indirect
-	golang.org/x/tools v0.0.0-20190802220118-1d1727260058
+	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
+	golang.org/x/tools v0.0.0-20190806215303-88ddfcebc769
 	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
