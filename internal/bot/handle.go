@@ -204,21 +204,15 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return nil
 	}
 
-	ctx, logger = ctxlog.FromContextWith(ctx,
+	ctx, _ = ctxlog.FromContextWith(ctx,
 		zap.Int64("roomID", s.RoomID),
 		zap.String("channel", s.IRCChannel),
 	)
 
-	err = transact(b.db, func(tx *sql.Tx) error {
+	return transact(b.db, func(tx *sql.Tx) error {
 		s.Tx = tx
 		return handleSession(ctx, s)
 	})
-
-	if err != nil {
-		logger.Error("error during handle", zap.Error(err))
-	}
-
-	return err
 }
 
 func handleSession(ctx context.Context, s *session) error {
