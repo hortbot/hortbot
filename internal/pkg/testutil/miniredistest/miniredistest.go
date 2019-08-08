@@ -2,7 +2,7 @@ package miniredistest
 
 import (
 	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v7"
 )
 
 func New() (s *miniredis.Miniredis, c *redis.Client, cleanup func(), retErr error) {

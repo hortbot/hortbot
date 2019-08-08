@@ -31,7 +31,7 @@ require (
 	github.com/frankban/quicktest v1.4.1 // indirect
 	github.com/fsouza/fake-gcs-server v1.11.1 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible
-	github.com/go-redis/redis v6.15.2+incompatible
+	github.com/go-redis/redis/v7 v7.0.0-beta
 	github.com/gobuffalo/flect v0.1.5
 	github.com/gocql/gocql v0.0.0-20190728105348-76e94bbd190c // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible

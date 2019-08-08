@@ -1,6 +1,6 @@
 package rdb
 
-import "github.com/go-redis/redis"
+import "github.com/go-redis/redis/v7"
 
 // SetAdd adds the value to a set.
 func (d *DB) SetAdd(value string, key string, more ...string) error {

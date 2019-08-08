@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	redislib "github.com/go-redis/redis"
+	redislib "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/assert"

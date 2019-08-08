@@ -1,6 +1,6 @@
 package rdb
 
-import "github.com/go-redis/redis"
+import "github.com/go-redis/redis/v7"
 
 func ReplaceCheckAndMark(source string) func() {
 	old := checkAndMark
