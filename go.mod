@@ -8,11 +8,9 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.22.0 // indirect
-	github.com/bkaradzic/go-lz4 v1.0.0 // indirect
+	github.com/aws/aws-sdk-go v1.22.2 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/cloudflare/golz4 v0.0.0-20150217214814-ef862a3cdc58 // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
 	github.com/cznic/b v0.0.0-20181122101859-a26611c4d92d // indirect
 	github.com/cznic/fileutil v0.0.0-20181122101858-4d67cfea8c87 // indirect
@@ -37,7 +35,7 @@ require (
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/gogo/protobuf v1.2.2-0.20190730201129-28a6bbf47e48 // indirect
 	github.com/golang-migrate/migrate/v4 v4.5.0
-	github.com/google/go-cmp v0.3.0
+	github.com/google/go-cmp v0.3.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
@@ -47,7 +45,7 @@ require (
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
-	github.com/kshvakov/clickhouse v1.3.9 // indirect
+	github.com/kshvakov/clickhouse v1.3.11 // indirect
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.2.0
 	github.com/magiconair/properties v1.8.1 // indirect
@@ -85,7 +83,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
-	golang.org/x/tools v0.0.0-20190806215303-88ddfcebc769
+	golang.org/x/tools v0.0.0-20190808195139-e713427fea3f
 	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
