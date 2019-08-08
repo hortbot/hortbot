@@ -230,7 +230,9 @@ func handleSession(ctx context.Context, s *session) error {
 		return handleManagement(ctx, s)
 	}
 
-	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(s.RoomID)).One(ctx, s.Tx)
+	// This is the most frequent query; speed it up by executing a hand written query.
+	channel := &models.Channel{}
+	err := queries.Raw(`SELECT * FROM channels WHERE user_id = $1`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Debug("channel not found in database")
@@ -380,13 +382,6 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		`, s.Channel.ID, name).Bind(ctx, s.Tx, &infoAndCommand)
 
 	info := &infoAndCommand.CommandInfo
-
-	// info, err := s.Channel.CommandInfos(
-	// 	models.CommandInfoWhere.Name.EQ(name),
-	// 	qm.Load(models.CommandInfoRels.CustomCommand, qm.For("UPDATE")),
-	// 	qm.Load(models.CommandInfoRels.CommandList, qm.For("UPDATE")),
-	// 	qm.For("UPDATE"),
-	// ).One(ctx, s.Tx)
 
 	switch err {
 	case sql.ErrNoRows:
