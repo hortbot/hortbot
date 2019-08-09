@@ -48,6 +48,10 @@ func (a accessLevel) CanAccess(resource accessLevel) bool {
 	return a >= resource
 }
 
+func (a accessLevel) CanAccessPG(s string) bool {
+	return a.CanAccess(newAccessLevel(s))
+}
+
 func (a accessLevel) PGEnum() string {
 	switch a {
 	case levelEveryone:

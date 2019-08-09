@@ -83,7 +83,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		return s.Replyf("Command '%s' does not exist.", name)
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
 		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
@@ -155,7 +155,7 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 		return s.Replyf("Command '%s' has no repeat.", name)
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
 		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
@@ -192,7 +192,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 		return s.Replyf("Command '%s' has no repeat.", name)
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
 		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}

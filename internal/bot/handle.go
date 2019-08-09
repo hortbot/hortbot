@@ -389,7 +389,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return true, err
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		return true, errNotAuthorized
 	}
 

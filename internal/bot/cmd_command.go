@@ -128,7 +128,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 	}
 
 	if update {
-		if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+		if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 			al := flect.Pluralize(info.AccessLevel)
 			return s.Replyf("Command '%s' is restricted to %s; only %s and above can update it.", name, al, al)
 		}
@@ -204,8 +204,7 @@ func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) 
 		return s.Replyf("Command name '%s' is not a custom command.", name)
 	}
 
-	level := newAccessLevel(info.AccessLevel)
-	if !s.UserLevel.CanAccess(level) {
+	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		return s.Replyf("Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
@@ -300,7 +299,7 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 		return usage()
 	}
 
-	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
+	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		return s.Replyf("Your level is %s; you cannot restrict a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
