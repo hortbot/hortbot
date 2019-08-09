@@ -42,7 +42,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command rename pan newpan
-send hortbot #foobar [HB] Command 'newpan' already exists.
+send hortbot #foobar [HB] A command or list with name 'newpan' already exists.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?

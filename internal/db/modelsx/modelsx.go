@@ -2,6 +2,7 @@ package modelsx
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -37,4 +38,46 @@ var tokenUpdate = boil.Whitelist(
 
 func UpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
 	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, tokenUpdate, boil.Infer())
+}
+
+func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *models.CommandInfo) (repeated *models.RepeatedCommand, scheduled *models.ScheduledCommand, err error) {
+	repeated, err = info.RepeatedCommand().One(ctx, exec)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return nil, nil, err
+		}
+	} else {
+		if err := repeated.Delete(ctx, exec); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	scheduled, err = info.ScheduledCommand().One(ctx, exec)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			return nil, nil, err
+		}
+	} else {
+		if err := scheduled.Delete(ctx, exec); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	if err := info.Delete(ctx, exec); err != nil {
+		return nil, nil, err
+	}
+
+	if command := info.R.CustomCommand; command != nil {
+		if err := command.Delete(ctx, exec); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	if list := info.R.CommandList; list != nil {
+		if err := list.Delete(ctx, exec); err != nil {
+			return nil, nil, err
+		}
+	}
+
+	return repeated, scheduled, nil
 }

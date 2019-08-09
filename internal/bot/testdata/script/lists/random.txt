@@ -1,0 +1,26 @@
+bot_config {"Rand": 3}
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list addb mylist
+send hortbot #foobar [HB] List 'mylist' added, restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list addb mylist2
+send hortbot #foobar [HB] List 'mylist2' added, restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Something
+send hortbot #foobar [HB] "Something" has been added to the list as item #1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Other thing
+send hortbot #foobar [HB] "Other thing" has been added to the list as item #2.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist
+send hortbot #foobar [HB] Something
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist random
+send hortbot #foobar [HB] Other thing
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist
+send hortbot #foobar [HB] Something
+

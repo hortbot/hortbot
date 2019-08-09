@@ -1,0 +1,62 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict
+send hortbot #foobar [HB] Usage: !list restrict <name> everyone|regulars|subs|mods|broadcaster|admin
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist all
+send hortbot #foobar [HB] List 'mylist' does not exist.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+send hortbot #foobar [HB] List 'mylist' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist what
+send hortbot #foobar [HB] Usage: !list restrict <name> everyone|regulars|subs|mods|broadcaster|admin
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict huh
+send hortbot #foobar [HB] Usage: !mylist restrict everyone|regulars|subs|mods|broadcaster|admin
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist
+send hortbot #foobar [HB] List 'mylist' is restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict
+send hortbot #foobar [HB] List 'mylist' is restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist all
+send hortbot #foobar [HB] List 'mylist' restricted to everyone and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict
+send hortbot #foobar [HB] List 'mylist' is restricted to everyone and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict mods
+send hortbot #foobar [HB] List 'mylist' restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist
+send hortbot #foobar [HB] List 'mylist' is restricted to moderators and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict broadcaster
+send hortbot #foobar [HB] List 'mylist' restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict mods
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist mods
+send hortbot #foobar [HB] Your level is moderator; you cannot restrict a list with level broadcaster.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist admin
+send hortbot #foobar [HB] Your level is broadcaster; you cannot restrict a list to level admin.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist restrict admin
+send hortbot #foobar [HB] Your level is broadcaster; you cannot restrict a list to level admin.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mylist subs
+send hortbot #foobar [HB] List 'mylist' restricted to subscribers and above.

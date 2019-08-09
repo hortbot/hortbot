@@ -1,0 +1,55 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list
+send hortbot #foobar [HB] Usage: !list add|delete|restrict|rename ...
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add
+send hortbot #foobar [HB] Usage: !list add <name>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+send hortbot #foobar [HB] List 'mylist' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+send hortbot #foobar [HB] List 'mylist' already exists. Use !mylist add|delete|get|... to access it.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add mylist oops
+send hortbot #foobar [HB] A command or list with name 'mylist' already exists.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add mycommand oops
+send hortbot #foobar [HB] Command 'mycommand' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mycommand
+send hortbot #foobar [HB] A command or list with name 'mycommand' already exists.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list delete mycommand
+send hortbot #foobar [HB] 'mycommand' is not a list.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list restrict mycommand all
+send hortbot #foobar [HB] 'mycommand' is not a list.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list rename mycommand other
+send hortbot #foobar [HB] 'mycommand' is not a list.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command delete mylist
+send hortbot #foobar [HB] 'mylist' is not a custom command.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command restrict mylist all
+send hortbot #foobar [HB] 'mylist' is not a custom command.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command rename mylist other
+send hortbot #foobar [HB] 'mylist' is not a custom command.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command editor mylist other
+send hortbot #foobar [HB] 'mylist' is not a custom command.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command get mylist other
+send hortbot #foobar [HB] 'mylist' is not a custom command.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add builtin
+send hortbot #foobar [HB] List name 'builtin' is reserved.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add list
+send hortbot #foobar [HB] List 'list' added, restricted to subscribers and above. Warning: 'list' is a builtin command and will now only be accessible via !builtin list

@@ -1,0 +1,95 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+send hortbot #foobar [HB] List 'mylist' added, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add
+send hortbot #foobar [HB] Usage: !mylist add <item>
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get what
+send hortbot #foobar [HB] Usage: !mylist get <index>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 0
+send hortbot #foobar [HB] Index out of range.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 1
+send hortbot #foobar [HB] The list is empty.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Something
+send hortbot #foobar [HB] "Something" has been added to the list as item #1.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Something
+send hortbot #foobar [HB] The list already contains that item.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 0
+send hortbot #foobar [HB] Index out of range.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get -1
+send hortbot #foobar [HB] Index out of range.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 0
+send hortbot #foobar [HB] Index out of range.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 1
+send hortbot #foobar [HB] Something
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 2
+send hortbot #foobar [HB] Index out of range.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Other thing
+send hortbot #foobar [HB] "Other thing" has been added to the list as item #2.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 1
+send hortbot #foobar [HB] Something
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 2
+send hortbot #foobar [HB] Other thing
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 3
+send hortbot #foobar [HB] Index out of range.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist delete -1
+send hortbot #foobar [HB] Usage: !mylist delete <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist delete 0
+send hortbot #foobar [HB] Usage: !mylist delete <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist remove 3
+send hortbot #foobar [HB] Usage: !mylist remove <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist remove what
+send hortbot #foobar [HB] Usage: !mylist remove <num>
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist remove 1
+send hortbot #foobar [HB] "Something" has been removed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 1
+send hortbot #foobar [HB] Other thing
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist remove 1
+send hortbot #foobar [HB] "Other thing" has been removed.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 1
+send hortbot #foobar [HB] The list is empty.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!mylist add Something
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!mylist remove 1
+no_send

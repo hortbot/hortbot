@@ -8,6 +8,7 @@ import (
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -113,7 +114,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 	}
 
 	if info != nil && command == nil {
-		return s.Replyf("Command name '%s' is already in use.", name)
+		return s.Replyf("A command or list with name '%s' already exists.", name)
 	}
 
 	update := command != nil
@@ -201,49 +202,28 @@ func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if command == nil {
-		return s.Replyf("Command name '%s' is not a custom command.", name)
+		return s.Replyf("'%s' is not a custom command.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		return s.Replyf("Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
+	repeated, scheduled, err := modelsx.DeleteCommandInfo(ctx, s.Tx, info)
+	if err != nil {
+		return err
+	}
+
 	deletedRepeat := false
 
-	repeated, err := info.RepeatedCommand().One(ctx, s.Tx)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return err
-		}
-	} else {
+	if repeated != nil {
 		deletedRepeat = true
 		s.Deps.UpdateRepeat(repeated.ID, false, 0, 0)
-
-		if err := repeated.Delete(ctx, s.Tx); err != nil {
-			return err
-		}
 	}
 
-	scheduled, err := info.ScheduledCommand().One(ctx, s.Tx)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			return err
-		}
-	} else {
+	if scheduled != nil {
 		deletedRepeat = true
 		s.Deps.UpdateSchedule(scheduled.ID, false, nil)
-
-		if err := scheduled.Delete(ctx, s.Tx); err != nil {
-			return err
-		}
-	}
-
-	if err := info.Delete(ctx, s.Tx); err != nil {
-		return err
-	}
-
-	if err := command.Delete(ctx, s.Tx); err != nil {
-		return err
 	}
 
 	if deletedRepeat {
@@ -274,7 +254,7 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 	}
 
 	if !info.CustomCommandID.Valid {
-		return s.Replyf("Command name '%s' is not a custom command.", name)
+		return s.Replyf("'%s' is not a custom command.", name)
 	}
 
 	if level == "" {
@@ -334,7 +314,7 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 	}
 
 	if !info.CustomCommandID.Valid {
-		return s.Replyf("Command name '%s' is not a custom command.", name)
+		return s.Replyf("'%s' is not a custom command.", name)
 	}
 
 	switch prop {
@@ -381,7 +361,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if !info.CustomCommandID.Valid {
-		return s.Replyf("Command name '%s' is not a custom command.", oldName)
+		return s.Replyf("'%s' is not a custom command.", oldName)
 	}
 
 	level := newAccessLevel(info.AccessLevel)
@@ -395,8 +375,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if exists {
-		// TODO: worting
-		return s.Replyf("Command '%s' already exists.", newName)
+		return s.Replyf("A command or list with name '%s' already exists.", newName)
 	}
 
 	info.Name = newName
@@ -431,7 +410,7 @@ func cmdCommandGet(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if command == nil {
-		return s.Replyf("Command name '%s' is not a custom command.", name)
+		return s.Replyf("'%s' is not a custom command.", name)
 	}
 
 	return s.Replyf("Command '%s': %s", name, command.Message)

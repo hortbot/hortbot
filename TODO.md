@@ -24,6 +24,7 @@ Some features are not currently planned to be ported and have been crossed out.
 This means that the `subsRegsMinusLinks` option doesn't make much sense. Instead, it may be referred to
 as `subsMayLink`, which when true means subs may link in chat.
 - Subs are allowed to post links by default, as regulars would be.
+- Command lists (`!list`) may be run via repeats and schedules.
 
 ### Functionality
 
@@ -72,17 +73,19 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] Editor (undocumented)
     - [ ] Link to list of commands (*Website*)
     - [ ] Clone
-- [x] Repeats
-    - This might need to get reworked to prevent statefulness within the bot.
+    - [ ] Automatic restriction based on known actions
+- [ ] Repeats
     - [x] Add
     - [x] Delete
     - [x] On/off
     - [x] List
-- [x] Schedule
+    - [ ] Actually execute the commands rather than printing them verbatim.
+- [ ] Schedule
     - [x] Add
     - [x] Delete
     - [x] On/off
     - [x] List
+    - [ ] Actually execute the commands rather than printing them verbatim.
 - [ ] Auto-replies
     - [x] Add
     - [x] Remove
@@ -92,7 +95,8 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [ ] Similarly to quotes, emulate old list behavior
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
-    - [x] ~~Winner~~
+    - [ ] Winner
+        - Expand to pick from only subs
     - [ ] Random number
     - [x] ~~Hug~~ (Use a custom command.)
     - [x] Conch/helix (Requires quotes)
@@ -217,6 +221,14 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] Decrement
     - [x] Actions / string replacements (see below)
 - [ ] Lists
+    - [x] Add
+    - [x] Delete
+    - [x] Restrict
+    - [x] Add item
+    - [x] Delete item
+    - [x] Get
+    - [x] Random
+    - [ ] Actually execute the commands rather than printing them verbatim.
 - [ ] Misc undocumented stuff
     - [ ] Roll
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)

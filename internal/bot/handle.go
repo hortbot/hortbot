@@ -14,7 +14,6 @@ import (
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
-	"github.com/volatiletech/sqlboiler/types"
 	"go.uber.org/zap"
 )
 
@@ -361,16 +360,14 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	infoAndCommand := struct {
 		CommandInfo models.CommandInfo `boil:"command_infos,bind"`
 		Message     null.String        `boil:"message"`
-		CommandList types.StringArray  `boil:"items"`
 	}{}
 
 	// This is much faster than using qm.Load, as SQLBoiler's loading does multiple
 	// queries to fetch 1:1 relationships rather than joins.
 	err := queries.Raw(`
-		SELECT command_infos.*, custom_commands.message, command_lists.items
+		SELECT command_infos.*, custom_commands.message
 		FROM command_infos
 		LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
-		LEFT OUTER JOIN command_lists on command_lists.id = command_infos.command_list_id
 		WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
 		FOR UPDATE OF command_infos
 		`, s.Channel.ID, name).Bind(ctx, s.Tx, &infoAndCommand)
@@ -390,22 +387,20 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		return true, errNotAuthorized
-	}
-
-	info.Count++
-
-	// Update count, but not any timestamps.
-	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
-		return true, err
+		return false, errNotAuthorized
 	}
 
 	if msg := infoAndCommand.Message; msg.Valid {
-		return true, runCustomCommand(ctx, s, msg.String)
+		if err := runCustomCommand(ctx, s, msg.String); err != nil {
+			return true, err
+		}
+
+		info.Count++
+
+		return true, info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count))
 	}
 
-	// TODO: lists
-	return true, errors.New("TODO: handle lists")
+	return handleList(ctx, s, info)
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {

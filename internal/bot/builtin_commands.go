@@ -49,6 +49,7 @@ func init() {
 		"chatters":  {fn: cmdChatters, minLevel: levelEveryone},
 		"admin":     {fn: cmdAdmin, minLevel: levelAdmin},
 		"islive":    {fn: cmdIsLive, minLevel: levelModerator},
+		"list":      {fn: cmdList, minLevel: levelModerator},
 	})
 }
 

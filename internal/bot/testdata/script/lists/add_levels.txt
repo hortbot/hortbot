@@ -1,0 +1,17 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+send hortbot #foobar [HB] List 'mylist' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list adda mylist2
+send hortbot #foobar [HB] List 'mylist2' added, restricted to everyone and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list addm mylist3
+send hortbot #foobar [HB] List 'mylist3' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list addb mylist4
+send hortbot #foobar [HB] List 'mylist4' added, restricted to broadcasters and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!list addb mylist5
+send hortbot #foobar [HB] Your level is moderator; you cannot add a list with level broadcaster.
+

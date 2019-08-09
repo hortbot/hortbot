@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"strconv"
 	"time"
 
@@ -114,8 +113,17 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return runCustomCommand(ctx, s, command.Message)
 	}
 
-	// TODO: lists
-	return errors.New("TODO: handle lists")
+	items := info.R.CommandList.Items
+
+	if len(items) == 0 {
+		return nil
+	}
+
+	i := s.Deps.Rand.Intn(len(items))
+	item := items[i]
+
+	// TODO: Actually execute.
+	return s.Reply(item)
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
@@ -205,8 +213,17 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		return runCustomCommand(ctx, s, command.Message)
 	}
 
-	// TODO: lists
-	return errors.New("TODO: handle lists")
+	items := info.R.CommandList.Items
+
+	if len(items) == 0 {
+		return nil
+	}
+
+	i := s.Deps.Rand.Intn(len(items))
+	item := items[i]
+
+	// TODO: Actually execute.
+	return s.Reply(item)
 }
 
 func repeatPopulateSession(s *session, channel *models.Channel) error {
