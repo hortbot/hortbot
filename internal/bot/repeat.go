@@ -234,6 +234,6 @@ func repeatPopulateSession(s *session, channel *models.Channel) error {
 	s.RoomIDStr = strconv.FormatInt(s.RoomID, 10)
 
 	var err error
-	s.N, err = s.messageCount()
+	s.N, err = s.MessageCount()
 	return err
 }

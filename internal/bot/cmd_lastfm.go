@@ -10,12 +10,20 @@ func cmdLastFM(ctx context.Context, s *session, cmd string, args string) error {
 		return errBuiltinDisabled
 	}
 
+	if err := s.TryCooldown(); err != nil {
+		return err
+	}
+
 	return s.Replyf("https://www.last.fm/user/%s", s.Channel.LastFM)
 }
 
 func cmdMusic(ctx context.Context, s *session, cmd string, args string) error {
 	if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
 		return errBuiltinDisabled
+	}
+
+	if err := s.TryCooldown(); err != nil {
+		return err
 	}
 
 	resp, err := getSongString(s, false)
@@ -29,6 +37,10 @@ func cmdMusic(ctx context.Context, s *session, cmd string, args string) error {
 func cmdSonglink(ctx context.Context, s *session, cmd string, args string) error {
 	if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
 		return errBuiltinDisabled
+	}
+
+	if err := s.TryCooldown(); err != nil {
+		return err
 	}
 
 	resp, err := getSongString(s, true)

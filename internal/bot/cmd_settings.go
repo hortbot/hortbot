@@ -35,7 +35,7 @@ func cmdSettings(ctx context.Context, s *session, cmd string, args string) error
 		return s.ReplyUsage("<setting> <value>")
 	}
 
-	ok, err := settingCommands.run(ctx, s, subcommand, args)
+	ok, err := settingCommands.Run(ctx, s, subcommand, args)
 	if !ok {
 		return s.Replyf("No such setting '%s'.", subcommand)
 	}

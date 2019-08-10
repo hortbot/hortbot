@@ -23,7 +23,7 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := adminCommands.run(ctx, s, subcommand, args)
+	ok, err := adminCommands.Run(ctx, s, subcommand, args)
 	if ok || err != nil {
 		return err
 	}

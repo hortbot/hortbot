@@ -47,6 +47,10 @@ func cmdXKCD(ctx context.Context, s *session, cmd string, args string) error {
 		return errBuiltinDisabled
 	}
 
+	if err := s.TryCooldown(); err != nil {
+		return err
+	}
+
 	id, err := strconv.Atoi(args)
 	if err != nil || id <= 0 {
 		return s.ReplyUsage("<num>")

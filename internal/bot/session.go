@@ -202,17 +202,6 @@ func (s *session) IsAdmin() bool {
 	return s.UserLevel.CanAccess(levelAdmin)
 }
 
-func (s *session) IsInCooldown() bool {
-	seconds := s.Deps.Clock.Since(s.Channel.LastCommandAt).Seconds()
-	cooldown := s.Deps.DefaultCooldown
-
-	if s.Channel.Cooldown.Valid {
-		cooldown = s.Channel.Cooldown.Int
-	}
-
-	return seconds < float64(cooldown)
-}
-
 func (s *session) SendCommand(command string, args ...string) error {
 	switch command {
 	case "slow":

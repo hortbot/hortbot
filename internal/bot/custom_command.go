@@ -5,9 +5,25 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/cbp"
+	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/volatiletech/sqlboiler/boil"
 	"go.uber.org/zap"
 )
+
+func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string) (bool, error) {
+	if err := s.TryCooldown(); err != nil {
+		return false, err
+	}
+
+	if err := runCustomCommand(ctx, s, message); err != nil {
+		return true, err
+	}
+
+	info.Count++
+
+	return true, info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count))
+}
 
 func runCustomCommand(ctx context.Context, s *session, msg string) error {
 	logger := ctxlog.FromContext(ctx)

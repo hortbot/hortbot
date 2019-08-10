@@ -35,12 +35,12 @@ func init() {
 		"helix":     {fn: cmdConch, minLevel: levelSubscriber},
 		"repeat":    {fn: cmdRepeat, minLevel: levelModerator},
 		"schedule":  {fn: cmdSchedule, minLevel: levelModerator},
-		"lastfm":    {fn: cmdLastFM, minLevel: levelEveryone},
-		"songlink":  {fn: cmdSonglink, minLevel: levelEveryone},
-		"music":     {fn: cmdMusic, minLevel: levelEveryone},
+		"lastfm":    {fn: cmdLastFM, minLevel: levelEveryone, skipCooldown: true},
+		"songlink":  {fn: cmdSonglink, minLevel: levelEveryone, skipCooldown: true},
+		"music":     {fn: cmdMusic, minLevel: levelEveryone, skipCooldown: true},
 		"autoreply": {fn: cmdAutoreply, minLevel: levelModerator},
-		"xkcd":      {fn: cmdXKCD, minLevel: levelSubscriber},
-		"raffle":    {fn: cmdRaffle, minLevel: levelEveryone},
+		"xkcd":      {fn: cmdXKCD, minLevel: levelSubscriber, skipCooldown: true},
+		"raffle":    {fn: cmdRaffle, minLevel: levelEveryone, skipCooldown: true},
 		"var":       {fn: cmdVar, minLevel: levelModerator},
 		"status":    {fn: cmdStatus, minLevel: levelEveryone},
 		"game":      {fn: cmdGame, minLevel: levelEveryone},
@@ -51,6 +51,11 @@ func init() {
 		"islive":    {fn: cmdIsLive, minLevel: levelModerator},
 		"list":      {fn: cmdList, minLevel: levelModerator},
 	})
+}
+
+func isBuiltinName(name string) bool {
+	_, ok := builtinCommands[name]
+	return ok
 }
 
 type handlerMap map[string]handlerFunc
@@ -80,11 +85,29 @@ func newHandlerMap(m map[string]handlerFunc) handlerMap {
 	return m
 }
 
-func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string) (bool, error) {
+func (h handlerMap) Run(ctx context.Context, s *session, cmd string, args string) (bool, error) {
+	return h.run(ctx, s, cmd, args, false)
+}
+
+func (h handlerMap) RunWithCooldown(ctx context.Context, s *session, cmd string, args string) (bool, error) {
+	return h.run(ctx, s, cmd, args, true)
+}
+
+func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string, checkCooldown bool) (bool, error) {
 	cmd = strings.ToLower(cmd)
 	bc, ok := h[cmd]
 	if !ok {
 		return false, nil
+	}
+
+	if !s.UserLevel.CanAccess(bc.minLevel) {
+		return true, errNotAuthorized
+	}
+
+	if checkCooldown && !bc.skipCooldown {
+		if err := s.TryCooldown(); err != nil {
+			return false, err
+		}
 	}
 
 	defer s.UsageContext(cmd)()
@@ -93,8 +116,9 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 }
 
 type handlerFunc struct {
-	fn       func(ctx context.Context, s *session, cmd string, args string) error
-	minLevel accessLevel
+	fn           func(ctx context.Context, s *session, cmd string, args string) error
+	minLevel     accessLevel
+	skipCooldown bool
 }
 
 func (h handlerFunc) run(ctx context.Context, s *session, cmd string, args string) error {

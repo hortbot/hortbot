@@ -40,7 +40,6 @@ type Channel struct {
 	CustomMods                  types.StringArray `boil:"custom_mods" json:"custom_mods" toml:"custom_mods" yaml:"custom_mods"`
 	CustomRegulars              types.StringArray `boil:"custom_regulars" json:"custom_regulars" toml:"custom_regulars" yaml:"custom_regulars"`
 	Cooldown                    null.Int          `boil:"cooldown" json:"cooldown,omitempty" toml:"cooldown" yaml:"cooldown,omitempty"`
-	LastCommandAt               time.Time         `boil:"last_command_at" json:"last_command_at" toml:"last_command_at" yaml:"last_command_at"`
 	LastFM                      string            `boil:"last_fm" json:"last_fm" toml:"last_fm" yaml:"last_fm"`
 	ParseYoutube                bool              `boil:"parse_youtube" json:"parse_youtube" toml:"parse_youtube" yaml:"parse_youtube"`
 	ExtraLifeID                 int               `boil:"extra_life_id" json:"extra_life_id" toml:"extra_life_id" yaml:"extra_life_id"`
@@ -88,7 +87,6 @@ var ChannelColumns = struct {
 	CustomMods                  string
 	CustomRegulars              string
 	Cooldown                    string
-	LastCommandAt               string
 	LastFM                      string
 	ParseYoutube                string
 	ExtraLifeID                 string
@@ -131,7 +129,6 @@ var ChannelColumns = struct {
 	CustomMods:                  "custom_mods",
 	CustomRegulars:              "custom_regulars",
 	Cooldown:                    "cooldown",
-	LastCommandAt:               "last_command_at",
 	LastFM:                      "last_fm",
 	ParseYoutube:                "parse_youtube",
 	ExtraLifeID:                 "extra_life_id",
@@ -231,7 +228,6 @@ var ChannelWhere = struct {
 	CustomMods                  whereHelpertypes_StringArray
 	CustomRegulars              whereHelpertypes_StringArray
 	Cooldown                    whereHelpernull_Int
-	LastCommandAt               whereHelpertime_Time
 	LastFM                      whereHelperstring
 	ParseYoutube                whereHelperbool
 	ExtraLifeID                 whereHelperint
@@ -274,7 +270,6 @@ var ChannelWhere = struct {
 	CustomMods:                  whereHelpertypes_StringArray{field: "\"channels\".\"custom_mods\""},
 	CustomRegulars:              whereHelpertypes_StringArray{field: "\"channels\".\"custom_regulars\""},
 	Cooldown:                    whereHelpernull_Int{field: "\"channels\".\"cooldown\""},
-	LastCommandAt:               whereHelpertime_Time{field: "\"channels\".\"last_command_at\""},
 	LastFM:                      whereHelperstring{field: "\"channels\".\"last_fm\""},
 	ParseYoutube:                whereHelperbool{field: "\"channels\".\"parse_youtube\""},
 	ExtraLifeID:                 whereHelperint{field: "\"channels\".\"extra_life_id\""},
@@ -345,8 +340,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "cooldown", "last_command_at", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

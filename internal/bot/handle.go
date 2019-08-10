@@ -12,17 +12,14 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/null"
-	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"go.uber.org/zap"
 )
 
 var (
 	errInvalidMessage  = errors.New("bot: invalid message")
-	errNotImplemented  = errors.New("bot: not implemented")
 	errNotAuthorized   = errors.New("bot: user is not authorized to use this command")
 	errBuiltinDisabled = errors.New("bot: builtin disabled")
-	errIgnore          = errors.New("bot: ignore")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -48,13 +45,8 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		logger.Debug("handled message", zap.Duration("took", time.Since(start)))
 	}
 
-	switch err {
-	case nil:
-		// Do nothing
-	case errInvalidMessage:
-		logger.Warn("invalid message", zap.Any("message", m))
-	default:
-		logger.Error("unhandled error during handle", zap.Error(err), zap.Any("message", m))
+	if err != nil {
+		logger.Error("error during handle", zap.Error(err), zap.Any("message", m))
 	}
 }
 
@@ -279,7 +271,7 @@ func handleSession(ctx context.Context, s *session) error {
 		return nil
 	}
 
-	s.N, err = s.incrementMessageCount()
+	s.N, err = s.IncrementMessageCount()
 	if err != nil {
 		return err
 	}
@@ -287,19 +279,8 @@ func handleSession(ctx context.Context, s *session) error {
 	wasCommand, err := tryCommand(ctx, s)
 	if wasCommand {
 		switch err {
-		case errNotAuthorized, errBuiltinDisabled, errIgnore:
-			wasCommand = false
-			err = nil
-		}
-
-		if wasCommand {
-			s.Channel.LastCommandAt = s.Deps.Clock.Now()
-			if uerr := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.LastCommandAt)); uerr != nil {
-				logger.Error("error while updating last command timestamp", zap.Error(uerr))
-			}
-		}
-
-		if wasCommand || err != nil {
+		case errNotAuthorized, errBuiltinDisabled, errInCooldown:
+		default:
 			return err
 		}
 	}
@@ -332,13 +313,9 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	name, params := splitSpace(message)
 
 	if s.Channel.ShouldModerate {
-		ok, err := moderationCommands.run(ctx, s, strings.ToLower(name), params)
-		if err != nil {
-			return false, err
-		}
-
-		if ok {
-			return true, nil
+		ok, err := moderationCommands.Run(ctx, s, strings.ToLower(name), params)
+		if ok || err != nil {
+			return true, err
 		}
 	}
 
@@ -349,10 +326,6 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	name = cleanCommandName(name[len(prefix):])
 
 	if name == "" {
-		return false, nil
-	}
-
-	if !s.UserLevel.CanAccess(levelModerator) && s.IsInCooldown() {
 		return false, nil
 	}
 
@@ -380,10 +353,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	switch err {
 	case sql.ErrNoRows:
-		if ok, err := tryBuiltinCommand(ctx, s, name, params); ok {
-			return true, err
-		}
-		return false, nil
+		return tryBuiltinCommand(ctx, s, name, params)
 	case nil:
 	default:
 		logger.Error("error looking up command name in database", zap.Error(err))
@@ -395,13 +365,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	}
 
 	if msg := infoAndCommand.Message; msg.Valid {
-		if err := runCustomCommand(ctx, s, msg.String); err != nil {
-			return true, err
-		}
-
-		info.Count++
-
-		return true, info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count))
+		return handleCustomCommand(ctx, s, info, msg.String)
 	}
 
 	return handleList(ctx, s, info)
@@ -410,14 +374,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {
 	if cmd == "builtin" {
 		cmd, args = splitSpace(args)
-		cmd = strings.ToLower(cmd)
+		cmd = cleanCommandName(cmd)
 	}
-
-	isBuiltin, err := builtinCommands.run(ctx, s, cmd, args)
-
-	if err == errBuiltinDisabled {
-		return true, nil
-	}
-
-	return isBuiltin, err
+	return builtinCommands.RunWithCooldown(ctx, s, cmd, args)
 }

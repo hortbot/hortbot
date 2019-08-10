@@ -19,7 +19,7 @@ func cmdVar(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := varCommands.run(ctx, s, subcommand, args)
+	ok, err := varCommands.Run(ctx, s, subcommand, args)
 	if ok || err != nil {
 		return err
 	}

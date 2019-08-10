@@ -1,4 +1,3 @@
-bot_config {"Clock": "mock"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
 no_send

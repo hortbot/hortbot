@@ -38,7 +38,7 @@ func cmdAutoreply(ctx context.Context, s *session, cmd string, args string) erro
 		return usage()
 	}
 
-	ok, err := autoreplyCommands.run(ctx, s, subcommand, args)
+	ok, err := autoreplyCommands.Run(ctx, s, subcommand, args)
 	if !ok {
 		return usage()
 	}

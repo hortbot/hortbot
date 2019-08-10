@@ -49,7 +49,7 @@ func cmdCommand(ctx context.Context, s *session, cmd string, args string) error 
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := ccCommands.run(ctx, s, subcommand, args)
+	ok, err := ccCommands.Run(ctx, s, subcommand, args)
 	if err != nil {
 		return err
 	}
@@ -99,7 +99,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 
 	// TODO: remove this warning
 	var warning string
-	if _, ok := builtinCommands[name]; ok {
+	if isBuiltinName(name) {
 		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
 	}
 

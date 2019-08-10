@@ -46,7 +46,7 @@ func cmdList(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := listCommands.run(ctx, s, subcommand, args)
+	ok, err := listCommands.Run(ctx, s, subcommand, args)
 	if err != nil {
 		return err
 	}
@@ -92,7 +92,7 @@ func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel)
 
 	// TODO: remove this warning
 	var warning string
-	if _, ok := builtinCommands[name]; ok {
+	if isBuiltinName(name) {
 		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
 	}
 
@@ -291,8 +291,6 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 }
 
 func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool, error) {
-	defer s.UsageContext(info.Name)()
-
 	args := s.OrigCommandParams
 	cmd, args := splitSpace(args)
 	cmd = strings.ToLower(cmd)
@@ -303,6 +301,12 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool
 			return true, errNotAuthorized
 		}
 	}
+
+	if err := s.TryCooldown(); err != nil {
+		return false, err
+	}
+
+	defer s.UsageContext(info.Name)()
 
 	random := false
 

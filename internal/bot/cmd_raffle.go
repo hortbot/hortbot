@@ -26,19 +26,15 @@ func cmdRaffle(ctx context.Context, s *session, cmd string, args string) error {
 				return err
 			}
 		}
-		return errIgnore
+		return nil
 	}
 
-	ok, err := raffleCommands.run(ctx, s, subcommand, args)
+	ok, err := raffleCommands.RunWithCooldown(ctx, s, subcommand, args)
 	if ok || err != nil {
 		return err
 	}
 
-	if s.UserLevel.CanAccess(levelModerator) {
-		return s.ReplyUsage("enable|disable|count|winner|reset")
-	}
-
-	return errIgnore
+	return s.ReplyUsage("enable|disable|count|winner|reset")
 }
 
 func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args string) error {

@@ -34,7 +34,6 @@ CREATE TABLE channels (
     custom_regulars text[] DEFAULT '{}' NOT NULL,
 
     cooldown int,
-    last_command_at timestamptz NOT NULL,
 
     last_fm text NOT NULL,
     parse_youtube boolean NOT NULL,

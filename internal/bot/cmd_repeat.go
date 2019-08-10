@@ -27,7 +27,7 @@ func cmdRepeat(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := repeatCommands.run(ctx, s, subcommand, args)
+	ok, err := repeatCommands.Run(ctx, s, subcommand, args)
 	if err != nil {
 		return err
 	}

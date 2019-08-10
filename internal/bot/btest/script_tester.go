@@ -137,12 +137,15 @@ func (st *scriptTester) test(t testing.TB) {
 		Dedupe:    dedupe.NeverSeen,
 		Sender:    st.sender,
 		Notifier:  st.notifier,
+		Clock:     st.clock,
 		LastFM:    st.lastFM,
 		YouTube:   st.youtube,
 		XKCD:      st.xkcd,
 		ExtraLife: st.extraLife,
 		Twitch:    st.twitch,
 	}
+
+	st.clock.Set(time.Now())
 
 	f, err := os.Open(st.filename)
 	assert.NilError(t, err)
@@ -253,10 +256,10 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string) {
 	}
 
 	switch bcj.Clock {
-	case "", "real":
+	case "real":
 		st.bc.Clock = clock.New()
 
-	case "mock":
+	case "", "mock":
 		st.bc.Clock = st.clock
 
 	default:

@@ -27,7 +27,7 @@ func cmdSchedule(ctx context.Context, s *session, cmd string, args string) error
 	subcommand, args := splitSpace(args)
 	subcommand = strings.ToLower(subcommand)
 
-	ok, err := scheduleCommands.run(ctx, s, subcommand, args)
+	ok, err := scheduleCommands.Run(ctx, s, subcommand, args)
 	if err != nil {
 		return err
 	}

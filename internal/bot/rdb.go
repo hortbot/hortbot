@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"errors"
 	"strconv"
 )
 
@@ -26,11 +27,11 @@ func (s *session) ScheduledAllowed(id int64, seconds int) (bool, error) {
 	return !seen, err
 }
 
-func (s *session) messageCount() (int64, error) {
+func (s *session) MessageCount() (int64, error) {
 	return s.Deps.RDB.GetInt64(s.RoomIDStr, "message_count")
 }
 
-func (s *session) incrementMessageCount() (int64, error) {
+func (s *session) IncrementMessageCount() (int64, error) {
 	return s.Deps.RDB.Increment(s.RoomIDStr, "message_count")
 }
 
@@ -57,4 +58,33 @@ func (s *session) RaffleWinner() (string, bool, error) {
 
 func (s *session) RaffleCount() (int64, error) {
 	return s.Deps.RDB.SetLen(s.RoomIDStr, "raffle")
+}
+
+var errInCooldown = errors.New("bot: in cooldown")
+
+func (s *session) TryCooldown() error {
+	cooldown := s.Deps.DefaultCooldown
+
+	if s.Channel.Cooldown.Valid {
+		cooldown = s.Channel.Cooldown.Int
+	}
+
+	if cooldown == 0 {
+		return nil
+	}
+
+	if s.UserLevel.CanAccess(levelModerator) {
+		return s.Deps.RDB.Mark(cooldown, s.RoomIDStr, "command_cooldown")
+	}
+
+	seen, err := s.Deps.RDB.CheckAndMark(cooldown, s.RoomIDStr, "command_cooldown")
+
+	switch {
+	case err != nil:
+		return err
+	case seen:
+		return errInCooldown
+	default:
+		return nil
+	}
 }

@@ -35,7 +35,7 @@ func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
 		return s.ReplyUsage("<option> ...")
 	}
 
-	ok, err := filterCommands.run(ctx, s, subcommand, args)
+	ok, err := filterCommands.Run(ctx, s, subcommand, args)
 	if !ok {
 		return s.Replyf("No such filter option '%s'.", subcommand)
 	}

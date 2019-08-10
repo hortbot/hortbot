@@ -1,4 +1,3 @@
-bot_config {"Clock": "mock"}
 join hortbot 999 foobar 1
 
 

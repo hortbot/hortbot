@@ -32,7 +32,7 @@ func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {
 		return cmdQuoteRandom(ctx, s, "", args)
 	}
 
-	ok, err := quoteCommands.run(ctx, s, subcommand, args)
+	ok, err := quoteCommands.Run(ctx, s, subcommand, args)
 	if err != nil {
 		return err
 	}

@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
@@ -25,7 +26,7 @@ func BenchmarkNop(b *testing.B) {
 
 	ctx := context.Background()
 
-	_, rClient, rCleanup, err := miniredistest.New()
+	rServer, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(b, err)
 	defer rCleanup()
 
@@ -52,6 +53,7 @@ func BenchmarkNop(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		bb.Handle(ctx, botName, m)
+		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
 }
@@ -59,7 +61,7 @@ func BenchmarkNop(b *testing.B) {
 func BenchmarkCustomCommand(b *testing.B) {
 	const botName = "hortbot"
 
-	_, rClient, rCleanup, err := miniredistest.New()
+	rServer, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(b, err)
 	defer rCleanup()
 
@@ -92,6 +94,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		bb.Handle(ctx, botName, m)
+		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
 }
@@ -99,7 +102,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 func BenchmarkMixed(b *testing.B) {
 	const botName = "hortbot"
 
-	_, rClient, rCleanup, err := miniredistest.New()
+	rServer, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(b, err)
 	defer rCleanup()
 
@@ -149,6 +152,7 @@ func BenchmarkMixed(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		m := ms[i%l]
 		bb.Handle(ctx, botName, m)
+		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
 }
