@@ -207,12 +207,12 @@ as `subsMayLink`, which when true means subs may link in chat.
         - [x] ~~`part`~~
         - [x] `block`
         - [x] `unblock`
-        - [ ] `reconnect`
+        - [x] ~~`reconnect`~~
         - [x] ~~`reload`~~
         - [x] `color`
         - [ ] `loadfilter` (Needs live-reloading configs)
         - [x] `spam`
-        - [ ] `#`
+        - [x] `#`
         - [x] ~~`trimchannels`~~
 - [x] Variables
     - [x] Set
@@ -243,8 +243,8 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`songrequest`~~
     - [x] ~~`sendUpdate`~~
     - [x] ~~Custom commands from another channel (`#<user>/`)~~
-    - [ ] `modchan`
-    - [ ] `rejoin`
+    - [x] ~~`modchan`~~ Use `!set mode`
+    - [x] ~~`rejoin`~~
 
 ### Actions (string replacements)
 

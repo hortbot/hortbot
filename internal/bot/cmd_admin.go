@@ -24,15 +24,15 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand = strings.ToLower(subcommand)
 
 	ok, err := adminCommands.run(ctx, s, subcommand, args)
-	if err != nil {
+	if ok || err != nil {
 		return err
 	}
 
-	if !ok {
-		return s.Replyf("Bad command %s", subcommand)
+	if strings.HasPrefix(subcommand, "#") {
+		return s.Deps.Sender.SendMessage(s.Origin, subcommand, args)
 	}
 
-	return nil
+	return s.Replyf("Bad command %s", subcommand)
 }
 
 func cmdAdminRoundtrip(ctx context.Context, s *session, cmd string, args string) error {
