@@ -3,12 +3,13 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
+	cloud.google.com/go v0.44.0 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.22.2 // indirect
+	github.com/aws/aws-sdk-go v1.22.3 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20190426062206-aaeac12a7ffc // indirect
@@ -29,7 +30,7 @@ require (
 	github.com/frankban/quicktest v1.4.1 // indirect
 	github.com/fsouza/fake-gcs-server v1.11.1 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible
-	github.com/go-redis/redis/v7 v7.0.0-beta
+	github.com/go-redis/redis/v7 v7.0.0-beta.2
 	github.com/gobuffalo/flect v0.1.5
 	github.com/gocql/gocql v0.0.0-20190728105348-76e94bbd190c // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
@@ -83,8 +84,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190804053845-51ab0e2deafa // indirect
-	golang.org/x/tools v0.0.0-20190808195139-e713427fea3f
-	google.golang.org/genproto v0.0.0-20190801165951-fa694d86fc64 // indirect
+	golang.org/x/tools v0.0.0-20190809145639-6d4652c779c4
 	google.golang.org/grpc v1.22.1 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools v2.2.0+incompatible
