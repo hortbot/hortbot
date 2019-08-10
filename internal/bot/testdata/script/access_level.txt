@@ -1,4 +1,4 @@
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true, "mode": "everyone"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+testing_access_level
 send hortbot #foobar [HB] Admin

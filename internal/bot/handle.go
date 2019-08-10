@@ -275,6 +275,10 @@ func handleSession(ctx context.Context, s *session) error {
 		return nil
 	}
 
+	if !s.UserLevel.CanAccessPG(s.Channel.Mode) {
+		return nil
+	}
+
 	s.N, err = s.incrementMessageCount()
 	if err != nil {
 		return err

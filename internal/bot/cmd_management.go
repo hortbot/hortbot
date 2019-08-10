@@ -78,6 +78,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			BotName:                 botName,
 			Active:                  true,
 			Prefix:                  s.Deps.DefaultPrefix,
+			Mode:                    models.AccessLevelEveryone,
 			ShouldModerate:          true,
 			EnableWarnings:          true,
 			SubsMayLink:             true,

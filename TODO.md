@@ -25,6 +25,7 @@ This means that the `subsRegsMinusLinks` option doesn't make much sense. Instead
 as `subsMayLink`, which when true means subs may link in chat.
 - Subs are allowed to post links by default, as regulars would be.
 - Command lists (`!list`) may be run via repeats and schedules.
+- The special `-1`/`admin` mode has been removed; it can be reproduced using another mode.
 
 ### Functionality
 
@@ -160,7 +161,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`throw~~
     - [x] `lastfm`
     - [ ] `steam` (*Steam API*)
-    - [ ] `mode`
+    - [x] `mode`
     - [x] ~~`commerciallength`~~
     - [ ] `tweet`
     - [x] `prefix`

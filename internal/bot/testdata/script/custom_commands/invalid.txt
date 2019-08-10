@@ -1,4 +1,4 @@
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true, "mode": "everyone"}
 insert_custom_command {"channel_id": 1, "name": "pan", "message": "FOUND THE (_PARAMETER_CAPS, HAVE YE?", "access_level": "everyone"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command

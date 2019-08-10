@@ -22,8 +22,9 @@ var settingCommands = newHandlerMap(map[string]handlerFunc{
 	"displaywarnings":    {fn: cmdSettingDisplayWarnings, minLevel: levelModerator},
 	"timeoutduration":    {fn: cmdSettingTimeoutDuration, minLevel: levelModerator},
 	"extralifeid":        {fn: cmdSettingExtraLifeID, minLevel: levelModerator},
-	"subsmaylink":        {fn: cmdSubsMayLink, minLevel: levelModerator},
-	"subsregsminuslinks": {fn: cmdSubsMayLink, minLevel: levelModerator},
+	"subsmaylink":        {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
+	"subsregsminuslinks": {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
+	"mode":               {fn: cmdSettingMode, minLevel: levelModerator},
 })
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -284,7 +285,7 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 	return s.Replyf("Extra Life ID changed to %d.", id)
 }
 
-func cmdSubsMayLink(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingSubsMayLink(ctx context.Context, s *session, cmd string, args string) error {
 	return updateBoolean(
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.SubsMayLink },
@@ -296,6 +297,41 @@ func cmdSubsMayLink(ctx context.Context, s *session, cmd string, args string) er
 		"Subs may now post links.",
 		"Subs may no longer post links.",
 	)
+}
+
+func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.Replyf("Mode is set to %s.", s.Channel.Mode)
+	}
+
+	var newMode accessLevel
+
+	switch args {
+	case "0", "owner", "broadcaster":
+		newMode = levelBroadcaster
+	case "1", "mod", "mods", "moderators":
+		newMode = levelModerator
+	case "2", "everyone", "all":
+		newMode = levelEveryone
+	case "3", "subs", "subscribers", "regs", "regulars":
+		newMode = levelSubscriber
+	default:
+		return s.Replyf("%s is not a valid mode.", args)
+	}
+
+	newModePG := newMode.PGEnum()
+
+	if s.Channel.Mode == newModePG {
+		return s.Replyf("Mode is already set to %s.", newMode.PGEnum())
+	}
+
+	s.Channel.Mode = newModePG
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Mode)); err != nil {
+		return err
+	}
+
+	return s.Replyf("Mode set to %s.", newModePG)
 }
 
 func updateBoolean(

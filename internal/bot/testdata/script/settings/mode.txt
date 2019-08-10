@@ -1,0 +1,86 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode
+send hortbot #foobar [HB] Mode is set to everyone.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode what
+send hortbot #foobar [HB] what is not a valid mode.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode everyone
+send hortbot #foobar [HB] Mode is already set to everyone.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode 2
+send hortbot #foobar [HB] Mode is already set to everyone.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda test Hi there!
+send hortbot #foobar [HB] Command 'test' added, restricted to everyone and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode subs
+send hortbot #foobar [HB] Mode set to subscriber.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode 3
+send hortbot #foobar [HB] Mode is already set to subscriber.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode mods
+send hortbot #foobar [HB] Mode set to moderator.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode 1
+send hortbot #foobar [HB] Mode is already set to moderator.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode owner
+send hortbot #foobar [HB] Mode set to broadcaster.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set mode 0
+send hortbot #foobar [HB] Mode is already set to broadcaster.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] Hi there!
