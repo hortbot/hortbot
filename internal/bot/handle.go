@@ -314,8 +314,12 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	if s.Channel.ShouldModerate {
 		ok, err := moderationCommands.Run(ctx, s, strings.ToLower(name), params)
-		if ok || err != nil {
+		switch {
+		case err == errNotAuthorized:
+		case err != nil:
 			return true, err
+		case ok:
+			return true, nil
 		}
 	}
 
