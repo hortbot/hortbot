@@ -1,56 +1,56 @@
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true, "mode": "everyone"}
+join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan everyone
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command restrict pan everyone
 send hortbot #foobar [HB] Command 'pan' restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan mods
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command restrict pan mods
 send hortbot #foobar [HB] Command 'pan' restricted to moderators and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan owner
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command restrict pan owner
 send hortbot #foobar [HB] Command 'pan' restricted to broadcasters and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command restrict pan admin
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command restrict pan admin
 send hortbot #foobar [HB] Command 'pan' restricted to admins and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?

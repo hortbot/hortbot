@@ -1,47 +1,47 @@
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true, "mode": "everyone"}
+join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore
-send hortbot #foobar [HB] Usage: +ignore list|add|remove ...
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore
+send hortbot #foobar [HB] Usage: !ignore list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command adda pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar [HB] Command 'pan' added, restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :ignored!ignored@ignored.tmi.twitch.tv PRIVMSG #foobar :+pan test
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :ignored!ignored@ignored.tmi.twitch.tv PRIVMSG #foobar :!pan test
 send hortbot #foobar [HB] FOUND THE TEST, HAVE YE?
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore list
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore list
 send hortbot #foobar [HB] There are no ignored users.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore add ignored
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add ignored
 send hortbot #foobar [HB] ignored added to ignored users.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :ignored!ignored@ignored.tmi.twitch.tv PRIVMSG #foobar :+pan test
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :ignored!ignored@ignored.tmi.twitch.tv PRIVMSG #foobar :!pan test
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore list
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore list
 send hortbot #foobar [HB] ignored users: ignored
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore add ignored2
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add ignored2
 send hortbot #foobar [HB] ignored2 added to ignored users.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore list
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore list
 send hortbot #foobar [HB] ignored users: ignored, ignored2
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore remove ignored
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore remove ignored
 send hortbot #foobar [HB] ignored removed from ignored users.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore list
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore list
 send hortbot #foobar [HB] ignored users: ignored2
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :ignored!ignored@ignored.tmi.twitch.tv PRIVMSG #foobar :+pan test
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :ignored!ignored@ignored.tmi.twitch.tv PRIVMSG #foobar :!pan test
 send hortbot #foobar [HB] FOUND THE TEST, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+ignore add foobar
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add foobar
 send hortbot #foobar [HB] foobar added to ignored users.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan test
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan test
 send hortbot #foobar [HB] FOUND THE TEST, HAVE YE?

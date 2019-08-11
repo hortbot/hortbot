@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -14,8 +15,8 @@ import (
 func (st *scriptTester) insertChannel(t testing.TB, _, args string) {
 	lineNum := st.lineNum
 
-	var channel models.Channel
-	assert.NilError(t, json.Unmarshal([]byte(args), &channel), "line %d", lineNum)
+	channel := bot.NewChannel()
+	assert.NilError(t, json.Unmarshal([]byte(args), channel), "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
 		assert.NilError(t, channel.Insert(ctx, st.db, boil.Infer()), "line %d", lineNum)

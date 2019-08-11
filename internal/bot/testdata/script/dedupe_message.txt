@@ -1,10 +1,12 @@
 bot_config {"Dedupe": "memory"}
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true, "mode": "everyone"}
-insert_custom_command {"channel_id": 1, "message": "FOUND THE (_PARAMETER_CAPS_), HAVE YE?"}
-insert_command_info {"channel_id": 1, "name": "pan", "access_level": "everyone", "custom_command_id": 1}
 
-handle hortbot @id=9b2d2c0d-8a99-44b0-abe0-c4c9eeeb99aa;room-id=1;user-id=2 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send_any
+
+handle hortbot @id=9b2d2c0d-8a99-44b0-abe0-c4c9eeeb99aa;room-id=1;user-id=2 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
-handle hortbot @id=9b2d2c0d-8a99-44b0-abe0-c4c9eeeb99aa;room-id=1;user-id=2 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot @id=9b2d2c0d-8a99-44b0-abe0-c4c9eeeb99aa;room-id=1;user-id=2 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
