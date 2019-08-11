@@ -33,6 +33,7 @@ type CommandInfo struct {
 	Count           int64      `boil:"count" json:"count" toml:"count" yaml:"count"`
 	Creator         string     `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
 	Editor          string     `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
+	LastUsed        null.Time  `boil:"last_used" json:"last_used,omitempty" toml:"last_used" yaml:"last_used,omitempty"`
 	CustomCommandID null.Int64 `boil:"custom_command_id" json:"custom_command_id,omitempty" toml:"custom_command_id" yaml:"custom_command_id,omitempty"`
 	CommandListID   null.Int64 `boil:"command_list_id" json:"command_list_id,omitempty" toml:"command_list_id" yaml:"command_list_id,omitempty"`
 
@@ -50,6 +51,7 @@ var CommandInfoColumns = struct {
 	Count           string
 	Creator         string
 	Editor          string
+	LastUsed        string
 	CustomCommandID string
 	CommandListID   string
 }{
@@ -62,11 +64,35 @@ var CommandInfoColumns = struct {
 	Count:           "count",
 	Creator:         "creator",
 	Editor:          "editor",
+	LastUsed:        "last_used",
 	CustomCommandID: "custom_command_id",
 	CommandListID:   "command_list_id",
 }
 
 // Generated where
+
+type whereHelpernull_Time struct{ field string }
+
+func (w whereHelpernull_Time) EQ(x null.Time) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Time) NEQ(x null.Time) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Time) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Time) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+func (w whereHelpernull_Time) LT(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Time) LTE(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Time) GT(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Time) GTE(x null.Time) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
 
 type whereHelpernull_Int64 struct{ field string }
 
@@ -101,6 +127,7 @@ var CommandInfoWhere = struct {
 	Count           whereHelperint64
 	Creator         whereHelperstring
 	Editor          whereHelperstring
+	LastUsed        whereHelpernull_Time
 	CustomCommandID whereHelpernull_Int64
 	CommandListID   whereHelpernull_Int64
 }{
@@ -113,6 +140,7 @@ var CommandInfoWhere = struct {
 	Count:           whereHelperint64{field: "\"command_infos\".\"count\""},
 	Creator:         whereHelperstring{field: "\"command_infos\".\"creator\""},
 	Editor:          whereHelperstring{field: "\"command_infos\".\"editor\""},
+	LastUsed:        whereHelpernull_Time{field: "\"command_infos\".\"last_used\""},
 	CustomCommandID: whereHelpernull_Int64{field: "\"command_infos\".\"custom_command_id\""},
 	CommandListID:   whereHelpernull_Int64{field: "\"command_infos\".\"command_list_id\""},
 }
@@ -150,8 +178,8 @@ func (*commandInfoR) NewStruct() *commandInfoR {
 type commandInfoL struct{}
 
 var (
-	commandInfoAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "name", "access_level", "count", "creator", "editor", "custom_command_id", "command_list_id"}
-	commandInfoColumnsWithoutDefault = []string{"channel_id", "name", "access_level", "count", "creator", "editor", "custom_command_id", "command_list_id"}
+	commandInfoAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "name", "access_level", "count", "creator", "editor", "last_used", "custom_command_id", "command_list_id"}
+	commandInfoColumnsWithoutDefault = []string{"channel_id", "name", "access_level", "count", "creator", "editor", "last_used", "custom_command_id", "command_list_id"}
 	commandInfoColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	commandInfoPrimaryKeyColumns     = []string{"id"}
 )

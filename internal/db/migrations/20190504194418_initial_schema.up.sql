@@ -193,6 +193,7 @@ CREATE TABLE command_infos (
     count bigint NOT NULL,
     creator text NOT NULL,
     editor text NOT NULL,
+    last_used timestamptz,
 
     custom_command_id bigint REFERENCES custom_commands (id) UNIQUE,
     command_list_id bigint REFERENCES command_lists (id) UNIQUE,

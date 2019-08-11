@@ -7,6 +7,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"go.uber.org/zap"
 )
@@ -31,8 +32,9 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 	}
 
 	info.Count++
+	info.LastUsed = null.TimeFrom(s.Deps.Clock.Now())
 
-	return info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count))
+	return info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count, models.CommandInfoColumns.LastUsed))
 }
 
 func processCommand(ctx context.Context, s *session, msg string) (string, error) {
