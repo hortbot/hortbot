@@ -10,7 +10,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Command 'notexist' added, restricted to subscribers and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!notexist hello
-no_send
+send hortbot #foobar [HB] (_THISDOESNTEXIST_)
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add nestederror (_HEY_(_TESTING_ERROR_)_)
 send hortbot #foobar [HB] Command 'nestederror' added, restricted to subscribers and above.

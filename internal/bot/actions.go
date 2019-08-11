@@ -254,8 +254,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return strconv.FormatInt(info.Count, 10), nil
 
 	default:
-		// TODO: Should this return "(_" + action "_)" to match the old behavior of not replacing things?
-		return "", fmt.Errorf("unknown action: %s", action)
+		return "(_" + action + "_)", nil
 	}
 
 	// No return here; use default in the switch case to catch
