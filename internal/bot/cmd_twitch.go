@@ -173,7 +173,7 @@ func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, erro
 }
 
 func cmdChatters(ctx context.Context, s *session, cmd string, args string) error {
-	chatters, err := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
+	chatters, err := s.TwitchChatters(ctx)
 	switch err {
 	case twitch.ErrServerError, twitch.ErrNotFound:
 		return s.Reply(serverErrorReply)

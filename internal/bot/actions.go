@@ -184,7 +184,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 		return strconv.FormatInt(viewers, 10), nil
 	case "CHATTERS":
-		chatters, _ := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
+		chatters, _ := s.TwitchChatters(ctx)
 		var count int64
 		if chatters != nil {
 			count = chatters.Count

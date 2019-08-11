@@ -63,13 +63,14 @@ type session struct {
 
 	Silent bool
 
-	usageContext  string
-	links         *[]*url.URL
-	tracks        *[]lastfm.Track
-	tok           **oauth2.Token
-	isLive        *bool
-	twitchChannel **twitch.Channel
-	twitchStream  **twitch.Stream
+	usageContext   string
+	links          *[]*url.URL
+	tracks         *[]lastfm.Track
+	tok            **oauth2.Token
+	isLive         *bool
+	twitchChannel  **twitch.Channel
+	twitchStream   **twitch.Stream
+	twitchChatters **twitch.Chatters
 }
 
 func (s *session) formatResponse(response string) string {
@@ -341,4 +342,18 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 
 	s.twitchStream = &st
 	return st, nil
+}
+
+func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) {
+	if s.twitchChatters != nil {
+		return *s.twitchChatters, nil
+	}
+
+	chatters, err := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
+	if err != nil {
+		return nil, err
+	}
+
+	s.twitchChatters = &chatters
+	return chatters, nil
 }
