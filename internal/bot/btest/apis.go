@@ -13,16 +13,14 @@ import (
 	"gotest.tools/assert"
 )
 
-func (st *scriptTester) noLastFM(t testing.TB, _, _ string) {
+func (st *scriptTester) noLastFM(t testing.TB, _, _ string, _ int) {
 	st.addAction(func(ctx context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable LastFM")
 		st.bc.LastFM = nil
 	})
 }
 
-func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum int) {
 	var v map[string][]lastfm.Track
 
 	err := json.Unmarshal([]byte(args), &v)
@@ -41,16 +39,14 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) noYouTube(t testing.TB, _, _ string) {
+func (st *scriptTester) noYouTube(t testing.TB, _, _ string, _ int) {
 	st.addAction(func(ctx context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable YouTube")
 		st.bc.YouTube = nil
 	})
 }
 
-func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string, lineNum int) {
 	var v map[string]string
 
 	err := json.Unmarshal([]byte(args), &v)
@@ -63,16 +59,14 @@ func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) noXKCD(t testing.TB, _, _ string) {
+func (st *scriptTester) noXKCD(t testing.TB, _, _ string, _ int) {
 	st.addAction(func(ctx context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable XKCD")
 		st.bc.XKCD = nil
 	})
 }
 
-func (st *scriptTester) xkcdComics(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) xkcdComics(t testing.TB, _, args string, lineNum int) {
 	var v map[string]*xkcd.Comic
 
 	err := json.Unmarshal([]byte(args), &v)
@@ -89,16 +83,14 @@ func (st *scriptTester) xkcdComics(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) noExtraLife(t testing.TB, _, _ string) {
+func (st *scriptTester) noExtraLife(t testing.TB, _, _ string, _ int) {
 	st.addAction(func(ctx context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Extra Life")
 		st.bc.ExtraLife = nil
 	})
 }
 
-func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum int) {
 	var v map[string]float64
 
 	err := json.Unmarshal([]byte(args), &v)

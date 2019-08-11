@@ -51,7 +51,6 @@ const (
 
 type scriptTester struct {
 	filename string
-	lineNum  int
 
 	db       *sql.DB
 	redis    *miniredis.Miniredis
@@ -152,8 +151,10 @@ func (st *scriptTester) test(t testing.TB) {
 	defer f.Close()
 
 	scanner := bufio.NewScanner(f)
+	lineNum := 0
+
 	for scanner.Scan() {
-		st.lineNum++
+		lineNum++
 
 		line := scanner.Text()
 		line = strings.TrimLeftFunc(line, unicode.IsSpace)
@@ -175,10 +176,10 @@ func (st *scriptTester) test(t testing.TB) {
 
 		fn := directiveFuncs[directive]
 		if fn == nil {
-			t.Fatalf("line %d: unknown directive %s", st.lineNum, directive)
+			t.Fatalf("line %d: unknown directive %s", lineNum, directive)
 		}
 
-		fn(st, t, directive, args)
+		fn(st, t, directive, args, lineNum)
 	}
 
 	assert.NilError(t, scanner.Err())
@@ -202,9 +203,7 @@ func (st *scriptTester) test(t testing.TB) {
 	assert.Equal(t, st.notifier.NotifyChannelUpdatesCallCount(), st.counts[countNotifyChannelUpdates])
 }
 
-func (st *scriptTester) skip(t testing.TB, _, reason string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
 	if reason == "" {
 		t.Skipf("line %d", lineNum)
 	} else {
@@ -212,7 +211,7 @@ func (st *scriptTester) skip(t testing.TB, _, reason string) {
 	}
 }
 
-func (st *scriptTester) boilDebug(t testing.TB, _, _ string) {
+func (st *scriptTester) boilDebug(t testing.TB, _, _ string, _ int) {
 	oldMode := boil.DebugMode
 	oldWriter := boil.DebugWriter
 
@@ -225,9 +224,7 @@ func (st *scriptTester) boilDebug(t testing.TB, _, _ string) {
 	})
 }
 
-func (st *scriptTester) botConfig(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 	assert.Assert(t, st.b == nil, "bot has already been created, cannot configure")
 
 	var bcj struct {
@@ -279,7 +276,7 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string) {
 	}
 }
 
-func (st *scriptTester) checkpoint(_ testing.TB, _, _ string) {
+func (st *scriptTester) checkpoint(_ testing.TB, _, _ string, _ int) {
 	st.addAction(func(ctx context.Context) {
 		st.doCheckpoint()
 	})
@@ -290,15 +287,13 @@ func (st *scriptTester) doCheckpoint() {
 	st.notifyChannelUpdatesBefore = st.notifier.NotifyChannelUpdatesCallCount()
 }
 
-func (st *scriptTester) dumpRedis(t testing.TB, _, _ string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(ctx context.Context) {
 		t.Logf("line %d:\n%s", lineNum, st.redis.Dump())
 	})
 }
 
-var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, args string){
+var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, args string, lineNum int){
 	"skip":                       (*scriptTester).skip,
 	"boil_debug":                 (*scriptTester).boilDebug,
 	"bot_config":                 (*scriptTester).botConfig,

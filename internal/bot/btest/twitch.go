@@ -35,9 +35,7 @@ func twitchErr(t testing.TB, lineNum int, e string) error {
 	}
 }
 
-func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		ID int64
 
@@ -56,9 +54,7 @@ func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) twitchSetChannel(t testing.TB, directive, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) twitchSetChannel(t testing.TB, directive, args string, lineNum int) {
 	var call struct {
 		ID  int64
 		Tok *oauth2.Token
@@ -88,9 +84,7 @@ func (st *scriptTester) twitchSetChannel(t testing.TB, directive, args string) {
 	})
 }
 
-func (st *scriptTester) twitchGetCurrentStream(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) twitchGetCurrentStream(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		ID int64
 
@@ -109,9 +103,7 @@ func (st *scriptTester) twitchGetCurrentStream(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		Channel string
 
@@ -130,9 +122,7 @@ func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) twitchGetIDForUsername(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) twitchGetIDForUsername(t testing.TB, _, args string, lineNum int) {
 	var v map[string]int64
 
 	err := json.Unmarshal([]byte(args), &v)

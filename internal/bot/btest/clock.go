@@ -9,9 +9,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func (st *scriptTester) clockForward(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) clockForward(t testing.TB, _, args string, lineNum int) {
 	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
 		t.Fatalf("clock must be a mock: line %d", lineNum)
 	}
@@ -25,9 +23,7 @@ func (st *scriptTester) clockForward(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) clockSet(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) clockSet(t testing.TB, _, args string, lineNum int) {
 	if _, ok := st.bc.Clock.(*clock.Mock); !ok {
 		t.Fatalf("clock must be a mock: line %d", lineNum)
 	}
@@ -48,9 +44,7 @@ func (st *scriptTester) clockSet(t testing.TB, _, args string) {
 	})
 }
 
-func (st *scriptTester) sleep(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) sleep(t testing.TB, _, args string, lineNum int) {
 	dur, err := time.ParseDuration(args)
 	assert.NilError(t, err, "line %d", lineNum)
 

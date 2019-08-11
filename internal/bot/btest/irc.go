@@ -13,15 +13,13 @@ import (
 	"gotest.tools/assert"
 )
 
-func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, lineNum int) {
 	if st.needNoSend {
-		st.noSend(t, "", "")
+		st.noSend(t, "", "", lineNum)
 	}
 
 	if st.needNoNotifyChannelUpdates {
-		st.noNotifyChannelUpdates(t, "", "")
+		st.noNotifyChannelUpdates(t, "", "", lineNum)
 	}
 
 	st.needNoSend = true
@@ -59,9 +57,7 @@ func (st *scriptTester) handleM(t testing.TB, origin string, m *irc.Message) {
 	})
 }
 
-func (st *scriptTester) send(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) send(t testing.TB, _, args string, lineNum int) {
 	callNum := st.counts[countSend]
 	st.counts[countSend]++
 
@@ -79,9 +75,7 @@ func (st *scriptTester) send(t testing.TB, _, args string) {
 	st.needNoSend = false
 }
 
-func (st *scriptTester) sendMatch(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) sendMatch(t testing.TB, _, args string, lineNum int) {
 	callNum := st.counts[countSend]
 	st.counts[countSend]++
 
@@ -102,9 +96,7 @@ func (st *scriptTester) sendMatch(t testing.TB, _, args string) {
 	st.needNoSend = false
 }
 
-func (st *scriptTester) noSend(t testing.TB, _, _ string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) noSend(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(context.Context) {
 		sentAfter := st.sender.SendMessageCallCount()
 
@@ -118,9 +110,7 @@ func (st *scriptTester) noSend(t testing.TB, _, _ string) {
 	st.needNoSend = false
 }
 
-func (st *scriptTester) sendAny(t testing.TB, _, _ string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) sendAny(t testing.TB, _, _ string, lineNum int) {
 	callNum := st.counts["send"]
 	st.counts["send"]++
 
@@ -131,9 +121,7 @@ func (st *scriptTester) sendAny(t testing.TB, _, _ string) {
 	st.needNoSend = false
 }
 
-func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, lineNum int) {
 	callNum := st.counts[countNotifyChannelUpdates]
 	st.counts[countNotifyChannelUpdates]++
 
@@ -146,9 +134,7 @@ func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string) {
 	st.needNoNotifyChannelUpdates = false
 }
 
-func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(context.Context) {
 		notifyAfter := st.notifier.NotifyChannelUpdatesCallCount()
 
@@ -162,9 +148,7 @@ func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string) {
 	st.needNoNotifyChannelUpdates = false
 }
 
-func (st *scriptTester) join(t testing.TB, _, args string) {
-	lineNum := st.lineNum
-
+func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	var botName string
 	var botID int
 	var userName string
@@ -191,6 +175,6 @@ func (st *scriptTester) join(t testing.TB, _, args string) {
 	}
 
 	st.handleM(t, botName, m)
-	st.sendAny(t, "", "")
-	st.notifyChannelUpdates(t, "", botName)
+	st.sendAny(t, "", "", lineNum)
+	st.notifyChannelUpdates(t, "", botName, lineNum)
 }
