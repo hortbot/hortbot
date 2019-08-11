@@ -84,7 +84,7 @@ func (ca *CachedAPI) GetCurrentStream(ctx context.Context, id int64) (*Stream, e
 	return s, err
 }
 
-func (ca *CachedAPI) GetChatters(ctx context.Context, channel string) (int64, error) {
+func (ca *CachedAPI) GetChatters(ctx context.Context, channel string) (*Chatters, error) {
 	return ca.api.GetChatters(ctx, channel)
 }
 

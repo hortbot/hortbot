@@ -115,7 +115,7 @@ func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string) {
 	var call struct {
 		Channel string
 
-		Chatters int64
+		Chatters *twitch.Chatters
 		Err      string
 	}
 
@@ -123,7 +123,7 @@ func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetChattersCalls(func(_ context.Context, channel string) (int64, error) {
+		st.twitch.GetChattersCalls(func(_ context.Context, channel string) (*twitch.Chatters, error) {
 			assert.Equal(t, channel, call.Channel, "line %d", lineNum)
 			return call.Chatters, twitchErr(t, lineNum, call.Err)
 		})

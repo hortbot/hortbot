@@ -182,12 +182,14 @@ func cmdChatters(ctx context.Context, s *session, cmd string, args string) error
 		return err
 	}
 
+	count := chatters.Count
+
 	u := "users"
-	if chatters == 1 {
+	if count == 1 {
 		u = "user"
 	}
 
-	return s.Replyf("%d %s currently connected to chat.", chatters, u)
+	return s.Replyf("%d %s currently connected to chat.", count, u)
 }
 
 func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {

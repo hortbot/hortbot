@@ -185,7 +185,11 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return strconv.FormatInt(viewers, 10), nil
 	case "CHATTERS":
 		chatters, _ := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
-		return strconv.FormatInt(chatters, 10), nil
+		var count int64
+		if chatters != nil {
+			count = chatters.Count
+		}
+		return strconv.FormatInt(count, 10), nil
 	case "DATE":
 		return s.actionTime(ctx, "", "Jan 2, 2006")
 	case "TIME":

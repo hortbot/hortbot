@@ -80,9 +80,9 @@ func newFakeExtraLife(t testing.TB) *extralifefakes.FakeAPI {
 func newFakeTwitch(t testing.TB) *twitchfakes.FakeAPI {
 	f := &twitchfakes.FakeAPI{}
 
-	f.GetChattersCalls(func(context.Context, string) (int64, error) {
+	f.GetChattersCalls(func(context.Context, string) (*twitch.Chatters, error) {
 		t.Fatal("GetChattersCalls not implemented")
-		return 0, nil
+		return nil, nil
 	})
 
 	f.GetCurrentStreamCalls(func(context.Context, int64) (*twitch.Stream, error) {

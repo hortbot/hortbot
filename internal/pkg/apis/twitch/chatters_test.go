@@ -4,8 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"gotest.tools/assert"
+	"gotest.tools/assert/cmp"
 )
 
 func TestGetChatters(t *testing.T) {
@@ -16,14 +18,20 @@ func TestGetChatters(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
+	chatters := &twitch.Chatters{
+		Count: 1234,
+	}
+	chatters.Chatters.Broadcaster = []string{"foobar"}
+	chatters.Chatters.Viewers = []string{"foo", "bar"}
+
 	tests := []struct {
 		Channel  string
-		Chatters int64
+		Chatters *twitch.Chatters
 		Err      error
 	}{
 		{
 			Channel:  "foobar",
-			Chatters: 1234,
+			Chatters: chatters,
 		},
 		{
 			Channel: "notfound",
@@ -43,8 +51,8 @@ func TestGetChatters(t *testing.T) {
 		test := test
 		t.Run(test.Channel, func(t *testing.T) {
 			chatters, err := tw.GetChatters(ctx, test.Channel)
-			assert.Equal(t, chatters, test.Chatters)
 			assert.Equal(t, err, test.Err)
+			assert.Assert(t, cmp.DeepEqual(chatters, test.Chatters, cmpopts.EquateEmpty()))
 		})
 	}
 }
