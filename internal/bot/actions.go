@@ -21,6 +21,12 @@ var testingAction func(ctx context.Context, action string) (string, error, bool)
 
 //nolint:gocyclo
 func (s *session) doAction(ctx context.Context, action string) (string, error) {
+	select {
+	case <-ctx.Done():
+		return "", ctx.Err()
+	default:
+	}
+
 	if isTesting && testingAction != nil {
 		s, err, ok := testingAction(ctx, action)
 		if ok {
