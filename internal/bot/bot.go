@@ -51,7 +51,8 @@ type Config struct {
 }
 
 type Bot struct {
-	stopOnce sync.Once
+	initialized bool
+	stopOnce    sync.Once
 
 	db   *sql.DB
 	deps *sharedDeps
@@ -128,7 +129,6 @@ func New(config *Config) *Bot {
 	b := &Bot{
 		db:   config.DB,
 		deps: deps,
-		rep:  repeat.New(nil, deps.Clock), // TODO: Need a context here; ctxlog won't work for derived tasks.
 	}
 
 	deps.UpdateRepeat = b.updateRepeatedCommand
@@ -142,6 +142,8 @@ func New(config *Config) *Bot {
 }
 
 func (b *Bot) Init(ctx context.Context) error {
+	b.rep = repeat.New(ctx, b.deps.Clock)
+
 	repeats, err := models.RepeatedCommands(
 		qm.Select(models.RepeatedCommandColumns.ID, models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.Delay),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
@@ -177,6 +179,8 @@ func (b *Bot) Init(ctx context.Context) error {
 		}
 		b.updateScheduledCommand(scheduled.ID, true, expr)
 	}
+
+	b.initialized = true
 
 	return nil
 }

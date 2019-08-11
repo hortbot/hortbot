@@ -23,6 +23,10 @@ var (
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
+	if !b.initialized {
+		panic("bot is not initialized")
+	}
+
 	ctx = withCorrelation(ctx)
 	logger := ctxlog.FromContext(ctx)
 
