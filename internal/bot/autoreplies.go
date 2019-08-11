@@ -6,16 +6,19 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/sqlboiler/queries"
 )
 
 // var autoreplyCommandRegex = regexp.MustCompile(`\(_COMMAND_(.*)_\)`)
 
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
-	autoreplies, err := s.Channel.Autoreplies(
-		qm.Select(models.AutoreplyColumns.ID, models.AutoreplyColumns.Trigger, models.AutoreplyColumns.Response),
-		qm.OrderBy(models.AutoreplyColumns.Num),
-	).All(ctx, s.Tx)
+	var autoreplies models.AutoreplySlice
+	err := queries.Raw(`
+		SELECT autoreplies.id, autoreplies.trigger, autoreplies.response, autoreplies.count
+		FROM autoreplies
+		WHERE autoreplies.channel_id = $1
+		ORDER BY autoreplies.num ASC
+		`, s.Channel.ID).Bind(ctx, s.Tx, &autoreplies)
 	if err != nil {
 		return true, err
 	}
