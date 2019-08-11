@@ -5,7 +5,9 @@ import (
 	"database/sql"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries"
 	"golang.org/x/oauth2"
 )
 
@@ -80,4 +82,31 @@ func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *mod
 	}
 
 	return repeated, scheduled, nil
+}
+
+func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string) (info *models.CommandInfo, commandMsg null.String, found bool, err error) {
+	infoAndCommand := struct {
+		CommandInfo models.CommandInfo `boil:"command_infos,bind"`
+		Message     null.String        `boil:"message"`
+	}{}
+
+	// This is much faster than using qm.Load, as SQLBoiler's loading does multiple
+	// queries to fetch 1:1 relationships rather than joins.
+	err = queries.Raw(`
+		SELECT command_infos.*, custom_commands.message
+		FROM command_infos
+		LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
+		WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
+		FOR UPDATE OF command_infos
+		`, id, name).Bind(ctx, exec, &infoAndCommand)
+
+	if err == sql.ErrNoRows {
+		return nil, null.String{}, false, nil
+	}
+
+	if err != nil {
+		return nil, null.String{}, false, err
+	}
+
+	return &infoAndCommand.CommandInfo, infoAndCommand.Message, true, nil
 }

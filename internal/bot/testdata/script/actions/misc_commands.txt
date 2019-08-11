@@ -59,8 +59,9 @@ no_send
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
 send hortbot #foobar /ban whoever
 
+# DELETE only works in autoreplies.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_DELETE_)
 send_any
 
 handle hortbot @id=811f57a8-f392-4972-b3cf-753fb4aced22;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar /delete 811f57a8-f392-4972-b3cf-753fb4aced22
+no_send

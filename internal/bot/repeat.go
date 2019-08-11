@@ -110,7 +110,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 	)
 
 	if command := info.R.CustomCommand; command != nil {
-		return runCustomCommand(ctx, s, command.Message)
+		return runCommandAndCount(ctx, s, info, command.Message)
 	}
 
 	items := info.R.CommandList.Items
@@ -122,8 +122,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 	i := s.Deps.Rand.Intn(len(items))
 	item := items[i]
 
-	// TODO: Actually execute.
-	return s.Reply(item)
+	return runCommandAndCount(ctx, s, info, item)
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
@@ -210,7 +209,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	)
 
 	if command := info.R.CustomCommand; command != nil {
-		return runCustomCommand(ctx, s, command.Message)
+		return runCommandAndCount(ctx, s, info, command.Message)
 	}
 
 	items := info.R.CommandList.Items
@@ -222,8 +221,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	i := s.Deps.Rand.Intn(len(items))
 	item := items[i]
 
-	// TODO: Actually execute.
-	return s.Reply(item)
+	return runCommandAndCount(ctx, s, info, item)
 }
 
 func repeatPopulateSession(s *session, channel *models.Channel) error {

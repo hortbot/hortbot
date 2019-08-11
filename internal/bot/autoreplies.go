@@ -9,8 +9,6 @@ import (
 	"github.com/volatiletech/sqlboiler/queries"
 )
 
-// var autoreplyCommandRegex = regexp.MustCompile(`\(_COMMAND_(.*)_\)`)
-
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 	var autoreplies models.AutoreplySlice
 	err := queries.Raw(`
@@ -52,44 +50,24 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 			return true, nil
 		}
 
-		autoreply.Count++
+		oldType := s.Type
+		s.Type = sessionAutoreply
+		defer func() {
+			s.Type = oldType
+		}()
 
-		if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.Count)); err != nil {
+		reply, err := processCommand(ctx, s, msg)
+		if err != nil {
 			return true, err
 		}
 
-		// TODO: Don't do this as string replacements; do it in the normal handling way.
-		switch {
-		case strings.Contains(msg, "(_PURGE_)"):
-			// TODO: Just delete message?
-			if err := s.SendCommand("timeout", s.User, "1"); err != nil {
-				return true, err
-			}
-			msg = strings.ReplaceAll(msg, "(_PURGE_)", "")
-
-		case strings.Contains(msg, "(_TIMEOUT_)"):
-			if err := s.SendCommand("timeout", s.User); err != nil {
-				return true, err
-			}
-			msg = strings.ReplaceAll(msg, "(_TIMEOUT_)", "")
-
-		case strings.Contains(msg, "(_BAN_)"):
-			if err := s.SendCommand("ban", s.User); err != nil {
-				return true, err
-			}
-			msg = strings.ReplaceAll(msg, "(_BAN_)", "")
-
-		default:
-			// TODO: (_COMMAND_<command>_)
+		if err := s.Reply(reply); err != nil {
+			return true, err
 		}
 
-		// TODO: Handle autoreply instead of returning it verbatim.
+		autoreply.Count++
 
-		msg = strings.TrimSpace(msg)
-		if msg == "" {
-			return true, nil
-		}
-		return true, s.Reply(msg)
+		return true, autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.Count))
 	}
 
 	return false, nil

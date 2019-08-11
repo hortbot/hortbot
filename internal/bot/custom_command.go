@@ -15,23 +15,33 @@ func handleCustomCommand(ctx context.Context, s *session, info *models.CommandIn
 	if err := s.TryCooldown(); err != nil {
 		return false, err
 	}
+	return true, runCommandAndCount(ctx, s, info, message)
+}
 
-	if err := runCustomCommand(ctx, s, message); err != nil {
-		return true, err
+func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string) error {
+	ctx = withCommandGuard(ctx, info.Name)
+
+	reply, err := processCommand(ctx, s, message)
+	if err != nil {
+		return err
+	}
+
+	if err := s.Reply(reply); err != nil {
+		return err
 	}
 
 	info.Count++
 
-	return true, info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count))
+	return info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count))
 }
 
-func runCustomCommand(ctx context.Context, s *session, msg string) error {
+func processCommand(ctx context.Context, s *session, msg string) (string, error) {
 	logger := ctxlog.FromContext(ctx)
 
 	if strings.Contains(msg, "(_ONLINE_CHECK_)") {
 		isLive, err := s.IsLive(ctx)
 		if err != nil || !isLive {
-			return err
+			return "", err
 		}
 	}
 
@@ -42,14 +52,8 @@ func runCustomCommand(ctx context.Context, s *session, msg string) error {
 	nodes, err := cbp.Parse(msg)
 	if err != nil {
 		logger.Error("command did not parse, which should not happen", zap.Error(err))
-		return err
+		return "", err
 	}
 
-	response, err := walk(ctx, nodes, s.doAction)
-	if err != nil {
-		logger.Debug("error while walking command tree", zap.Error(err))
-		return err
-	}
-
-	return s.Reply(response)
+	return walk(ctx, nodes, s.doAction)
 }

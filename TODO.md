@@ -75,24 +75,24 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [ ] Link to list of commands (*Website*)
     - [ ] Clone
     - [ ] Automatic restriction based on known actions
-- [ ] Repeats
+- [x] Repeats
     - [x] Add
     - [x] Delete
     - [x] On/off
     - [x] List
-    - [ ] Actually execute the commands rather than printing them verbatim.
-- [ ] Schedule
+    - [x] Actually execute the commands rather than printing them verbatim.
+- [x] Schedule
     - [x] Add
     - [x] Delete
     - [x] On/off
     - [x] List
-    - [ ] Actually execute the commands rather than printing them verbatim.
+    - [x] Actually execute the commands rather than printing them verbatim.
 - [ ] Auto-replies
     - [x] Add
     - [x] Remove
     - [x] Edit
     - [x] List
-    - [ ] Actions inside of autoreply responses
+    - [x] Actions inside of autoreply responses
     - [ ] Similarly to quotes, emulate old list behavior
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
@@ -221,7 +221,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] Increment
     - [x] Decrement
     - [x] Actions / string replacements (see below)
-- [ ] Lists
+- [x] Lists
     - [x] Add
     - [x] Delete
     - [x] Restrict
@@ -229,7 +229,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] Delete item
     - [x] Get
     - [x] Random
-    - [ ] Actually execute the commands rather than printing them verbatim.
+    - [x] Actually execute the commands rather than printing them verbatim.
 - [ ] Misc undocumented stuff
     - [ ] Roll
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
@@ -242,7 +242,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`properties`~~ (This endpoint has been removed.)
     - [x] ~~`songrequest`~~
     - [x] ~~`sendUpdate`~~
-    - [x] ~~Custom commands from another channel (`#<user>/`)~~
+    - [ ] Custom commands from another channel (`#<user>/`)
     - [x] ~~`modchan`~~ Use `!set mode`
     - [x] ~~`rejoin`~~
 
@@ -286,7 +286,7 @@ as `subsMayLink`, which when true means subs may link in chat.
 - [x] `(_SUBMODE_OFF_)`
 - [x] `(_SUBMODE_OFF_)`
 - [x] `(_REGULARS_ONLY_)`
-- [ ] `(_COMMAND_<NAME>_)` (for autoreplies)
+- [x] `(_COMMAND_<NAME>_)` (for autoreplies)
 - [ ] Sub message specific actions
 - [ ] `(_TWEET_URL_)`
 - [x] `(_EXTRALIFE_AMOUNT_)`
@@ -296,7 +296,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     done in not-quite-RFC3339 in the Eastern time zone. Also, dates more than ~290 years will no longer
     work (sorry).
 - [x] VAR actions
-- [ ] LIST actions
+- [x] `(_LIST_<name>_RANDOM_)`
 - [x] `(_SILENT_)`
 - [x] `(_CHANNEL_URL_)`
 - [ ] `(_n_)` ("args")

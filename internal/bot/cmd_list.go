@@ -322,7 +322,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool
 	case "random", "":
 		random = true
 	case "get":
-		cmd, _ = splitSpace(args)
+		cmd, args = splitSpace(args)
 	}
 
 	var num int
@@ -361,17 +361,12 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool
 		}
 	}
 
-	// TODO: Move this after the reply.
-	info.Count++
-
-	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
-		return true, err
-	}
-
 	item := list.Items[num]
 
-	// TODO: Actually execute.
-	return true, s.Reply(item)
+	s.CommandParams = args
+	s.OrigCommandParams = args
+
+	return true, runCommandAndCount(ctx, s, info, item)
 }
 
 func handleListRestrict(ctx context.Context, s *session, info *models.CommandInfo, level string, usage func() error) error {

@@ -12,7 +12,9 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
 var testingAction func(ctx context.Context, action string) (string, error, bool)
@@ -25,12 +27,6 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 			return s, err
 		}
 	}
-
-	// TODO: ORIG_PARAMS to always fetch the entire thing.
-	// TODO: Figure out how to deal with change in behavior for PARAMETER (DFS versus BFS)
-	// 	     Maybe PARAMETER[0]?
-
-	// TODO: run auto-reply only things first, then check if autoreply and return.
 
 	// Exact matches
 	switch action {
@@ -64,11 +60,15 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "CHANNEL_URL":
 		return "twitch.tv/" + s.Channel.Name, nil
 	case "SUBMODE_ON":
-		// TODO: check user level
-		return "", s.SendCommand("subscribers")
+		if s.UserLevel.CanAccess(levelModerator) {
+			return "", s.SendCommand("subscribers")
+		}
+		return "", nil
 	case "SUBMODE_OFF":
-		// TODO: check user level
-		return "", s.SendCommand("subscribersoff")
+		if s.UserLevel.CanAccess(levelModerator) {
+			return "", s.SendCommand("subscribersoff")
+		}
+		return "", nil
 	case "SILENT":
 		// TODO: handle s.Silent elsewhere.
 		s.Silent = true
@@ -83,31 +83,25 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		// TODO: check user level
 		return "", s.SendCommand("unhost")
 	case "PURGE":
-		// TODO: check user level
-		if u := s.FirstParameter(); u != "" {
-			u, _ = splitSpace(u)
-			u = strings.ToLower(u)
-			return "", s.SendCommand("timeout", strings.ToLower(u), "1")
+		if u := s.UserForModAction(); u != "" {
+			return "", s.SendCommand("timeout", u, "1")
 		}
-		return "", nil // TODO: error?
+		return "", nil
 	case "TIMEOUT":
-		// TODO: check user level
-		if u := s.FirstParameter(); u != "" {
-			u, _ = splitSpace(u)
-			u = strings.ToLower(u)
-			return "", s.SendCommand("timeout", strings.ToLower(u))
+		if u := s.UserForModAction(); u != "" {
+			return "", s.SendCommand("timeout", u)
 		}
-		return "", nil // TODO: error?
+		return "", nil
 	case "BAN":
-		// TODO: check user level
-		if u := s.FirstParameter(); u != "" {
-			u, _ = splitSpace(u)
-			u = strings.ToLower(u)
-			return "", s.SendCommand("ban", strings.ToLower(u))
+		if u := s.UserForModAction(); u != "" {
+			return "", s.SendCommand("ban", u)
 		}
-		return "", nil // TODO: error?
+		return "", nil
 	case "DELETE":
-		return "", s.DeleteMessage()
+		if s.Type == sessionAutoreply {
+			return "", s.DeleteMessage()
+		}
+		return "", nil
 	case "REGULARS_ONLY":
 		return "", nil
 	case "EXTRALIFE_AMOUNT":
@@ -239,6 +233,15 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case strings.HasPrefix(action, "VARS_"):
 		return s.actionVars(ctx, strings.TrimPrefix(action, "VARS_"))
 
+	case strings.HasPrefix(action, "COMMAND_"):
+		name := strings.TrimPrefix(action, "COMMAND_")
+		return s.actionCommand(ctx, name)
+
+	case strings.HasPrefix(action, "LIST_") && strings.HasSuffix(action, "_RANDOM"):
+		name := strings.TrimPrefix(action, "LIST_")
+		name = strings.TrimSuffix(name, "_RANDOM")
+		return s.actionList(ctx, name)
+
 	case strings.HasSuffix(action, "_COUNT"): // This case must come last.
 		name := strings.TrimSuffix(action, "_COUNT")
 		name = cleanCommandName(name)
@@ -252,13 +255,9 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 
 		return strconv.FormatInt(info.Count, 10), nil
-
-	default:
-		return "(_" + action + "_)", nil
 	}
 
-	// No return here; use default in the switch case to catch
-	// unwanted fallthrough at compile time.
+	return "(_" + action + "_)", nil
 }
 
 func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, action string) (string, error)) (string, error) {
@@ -296,6 +295,19 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 func (s *session) FirstParameter() string {
 	param, _ := splitFirstSep(s.OrigCommandParams, ";")
 	return strings.TrimSpace(param)
+}
+
+func (s *session) UserForModAction() string {
+	switch {
+	case s.Type == sessionAutoreply:
+		return s.User
+	case s.UserLevel.CanAccess(levelModerator):
+		p := s.FirstParameter()
+		p, _ = splitSpace(p)
+		return strings.ToLower(p)
+	default:
+		return ""
+	}
 }
 
 func (s *session) NextParameter() string {
@@ -536,4 +548,59 @@ func parseUntilTimestamp(timestamp string) (time.Time, error) {
 	// CoeBot would parse using a not-quite RFC3339 string in the host system's timezone.
 	// Do that here, assuming an Eastern time zone.
 	return dateparse.ParseIn(timestamp, easternTime)
+}
+
+type commandGuard string
+
+func withCommandGuard(ctx context.Context, command string) context.Context {
+	return context.WithValue(ctx, commandGuard(command), true)
+}
+
+func (s *session) actionCommand(ctx context.Context, name string) (string, error) {
+	name = cleanCommandName(name)
+
+	if ctx.Value(commandGuard(name)) != nil {
+		return "", nil
+	}
+
+	ctx = withCommandGuard(ctx, name)
+
+	_, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name)
+	if err != nil || !found {
+		return "", err
+	}
+
+	if commandMsg.Valid {
+		return processCommand(ctx, s, commandMsg.String)
+	}
+
+	return "(error)", nil
+}
+
+func (s *session) actionList(ctx context.Context, name string) (string, error) {
+	name = cleanCommandName(name)
+
+	info, err := s.Channel.CommandInfos(
+		models.CommandInfoWhere.Name.EQ(name),
+		qm.Load(models.CommandInfoRels.CommandList),
+	).One(ctx, s.Tx)
+	switch {
+	case err == sql.ErrNoRows:
+		return "(error)", nil
+	case err != nil:
+		return "", err
+	case info.R.CommandList == nil:
+		return "(error)", nil
+	}
+
+	items := info.R.CommandList.Items
+	if len(items) == 0 {
+		return "", nil
+	}
+
+	i := s.Deps.Rand.Intn(len(items))
+	item := items[i]
+
+	ctx = withCommandGuard(ctx, name)
+	return processCommand(ctx, s, item)
 }

@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
-	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/queries"
 	"go.uber.org/zap"
 )
@@ -338,38 +338,22 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params))
 
-	infoAndCommand := struct {
-		CommandInfo models.CommandInfo `boil:"command_infos,bind"`
-		Message     null.String        `boil:"message"`
-	}{}
-
-	// This is much faster than using qm.Load, as SQLBoiler's loading does multiple
-	// queries to fetch 1:1 relationships rather than joins.
-	err := queries.Raw(`
-		SELECT command_infos.*, custom_commands.message
-		FROM command_infos
-		LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
-		WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
-		FOR UPDATE OF command_infos
-		`, s.Channel.ID, name).Bind(ctx, s.Tx, &infoAndCommand)
-
-	info := &infoAndCommand.CommandInfo
-
-	switch err {
-	case sql.ErrNoRows:
-		return tryBuiltinCommand(ctx, s, name, params)
-	case nil:
-	default:
+	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name)
+	if err != nil {
 		logger.Error("error looking up command name in database", zap.Error(err))
 		return true, err
+	}
+
+	if !found {
+		return tryBuiltinCommand(ctx, s, name, params)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		return false, errNotAuthorized
 	}
 
-	if msg := infoAndCommand.Message; msg.Valid {
-		return handleCustomCommand(ctx, s, info, msg.String)
+	if commandMsg.Valid {
+		return handleCustomCommand(ctx, s, info, commandMsg.String)
 	}
 
 	return handleList(ctx, s, info)
