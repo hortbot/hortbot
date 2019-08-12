@@ -138,3 +138,27 @@ func (st *scriptTester) twitchGetIDForUsername(t testing.TB, _, args string, lin
 		})
 	})
 }
+
+func (st *scriptTester) twitchFollowChannel(t testing.TB, directive, args string, lineNum int) {
+	var call struct {
+		ID       int64
+		Tok      *oauth2.Token
+		ToFollow int64
+
+		NewTok *oauth2.Token
+		Err    string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.FollowChannelCalls(func(_ context.Context, id int64, tok *oauth2.Token, toFollow int64) (*oauth2.Token, error) {
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(tok, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, toFollow, call.ToFollow, "line %d", lineNum)
+
+			return call.NewTok, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
