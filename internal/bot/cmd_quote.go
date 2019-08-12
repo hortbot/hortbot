@@ -22,6 +22,7 @@ var quoteCommands = newHandlerMap(map[string]handlerFunc{
 	"random":   {fn: cmdQuoteRandom, minLevel: levelSubscriber},
 	"search":   {fn: cmdQuoteSearch, minLevel: levelModerator},
 	"editor":   {fn: cmdQuoteEditor, minLevel: levelSubscriber},
+	"compact":  {fn: cmdQuoteCompact, minLevel: levelSubscriber},
 })
 
 func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {
@@ -301,4 +302,43 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	return s.Replyf("Quote #%d was last edited by %s.", quote.Num, quote.Editor)
+}
+
+const quoteCompactQuery = `
+UPDATE quotes q
+SET num = q3.new_num
+FROM (
+	SELECT q2.id, q2.num, (ROW_NUMBER() OVER ()) + $2 - 1 AS new_num
+	FROM quotes q2
+	WHERE q2.channel_id = $1 AND q2.num >= $2
+	ORDER BY q2.num ASC
+) q3
+WHERE q3.id = q.id AND q3.id != q3.new_num
+`
+
+func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("<num>")
+	}
+
+	if args == "" {
+		return usage()
+	}
+
+	num, err := strconv.Atoi(args)
+	if err != nil || num <= 0 {
+		return usage()
+	}
+
+	result, err := s.Tx.Exec(quoteCompactQuery, s.Channel.ID, num)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return s.Replyf("Compacted quotes %d and above (%d affected).", num, affected)
 }

@@ -26,6 +26,9 @@ as `subsMayLink`, which when true means subs may link in chat.
 - Subs are allowed to post links by default, as regulars would be.
 - Command lists (`!list`) may be run via repeats and schedules.
 - The special `-1`/`admin` mode has been removed; it can be reproduced using another mode.
+- When quotes are deleted, quotes after it do not have their numbers changed.
+The new `!quote compact <num>` command can be used to compact the quote list and remove
+any holes left by deleted quotes.
 
 ### Functionality
 
@@ -118,7 +121,7 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] Get index
     - [x] Random
     - [x] Search
-    - [ ] CoeBot would delete a quote and shift quotes after it backwards; HortBot doesn't. There needs to be a command to emulate this behavior.
+    - [x] CoeBot would delete a quote and shift quotes after it backwards; HortBot doesn't. There needs to be a command to emulate this behavior.
 - [x] ~~Poll~~
 - [x] ~~Giveaways~~
 - [x] Raffles
