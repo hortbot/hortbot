@@ -207,9 +207,9 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] ~~`verboseLogging`~~
     - [ ] `imp`
     - [ ] `+whatprefix`
-    - [ ] `altsend`
+    - [x] ~~`altsend`~~ There is no "alt" connection, so this doesn't have a meaning (but may if send priorities/rate limiting is added later).
     - [x] ~~`disconnect`~~
-    - [ ] `admin`
+    - [x] `admin`
         - [x] `channels`
         - [x] ~~`join`~~
         - [x] ~~`part`~~
@@ -218,7 +218,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
         - [x] ~~`reconnect`~~
         - [x] ~~`reload`~~
         - [x] `color`
-        - [ ] `loadfilter` (Needs live-reloading configs)
+        - [x] ~~`loadfilter`~~ Maybe reintroduce later for another purpose.
         - [x] `spam`
         - [x] `#`
         - [x] ~~`trimchannels`~~
@@ -240,12 +240,12 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Actually execute the commands rather than printing them verbatim.
 - [ ] Misc undocumented stuff
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
-    - [ ] Steam game (expand to other stores?)
+    - [ ] Steam game
     - [x] Extra Life stuff
     - [x] ~~`strawpoll`~~
     - [x] ~~`channelID`~~
     - [x] ~~`whisper`~~
-    - [ ] "wp"
+    - [x] ~~"wp"~~ (Sorry, go make another bot to do this...)
     - [x] ~~`properties`~~ (This endpoint has been removed.)
     - [x] ~~`songrequest`~~
     - [x] ~~`sendUpdate`~~
@@ -313,8 +313,10 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 
 - [ ] A new command language (scripting!)
 - [ ] GMod integration
-- [x] More "add" subcommands for !command, to preset restrictions.
+- [x] More "add" subcommands for !command, to preset restrictions
 - [ ] Extra commands for the new `/delete` feature (to replace purging)
+- [ ] HowLongToBeat queries
+- [ ] Get a link to game stores other than Steam
 
 ### Actions
 
