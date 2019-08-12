@@ -58,6 +58,7 @@ type API interface {
 	GetIDForToken(ctx context.Context, userToken *oauth2.Token) (id int64, newToken *oauth2.Token, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
+	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
 }
 
 // Twitch is the Twitch API client.
@@ -145,8 +146,17 @@ func HTTPClient(cli *http.Client) Option {
 //
 // state should be randomly generated, i.e. a random UUID which is then
 // mapped back through some other lookup.
-func (t *Twitch) AuthCodeURL(state string) string {
-	return t.forUser.AuthCodeURL(state, oauth2.AccessTypeOffline)
+//
+// extraScopes can be specified to request more scopes than the defaults.
+func (t *Twitch) AuthCodeURL(state string, extraScopes ...string) string {
+	if len(extraScopes) == 0 {
+		return t.forUser.AuthCodeURL(state, oauth2.AccessTypeOffline)
+	}
+
+	c := *t.forUser
+	c.Scopes = append([]string(nil), c.Scopes...)
+	c.Scopes = append(c.Scopes, extraScopes...)
+	return c.AuthCodeURL(state, oauth2.AccessTypeOffline)
 }
 
 // Exchange provides the Twitch OAuth server with the code and exchanges it

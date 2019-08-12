@@ -191,3 +191,48 @@ func TestGetIDForUsernameDecodeError(t *testing.T) {
 	_, err := tw.GetIDForUsername(ctx, "decodeerror")
 	assert.Equal(t, err, twitch.ErrServerError)
 }
+
+func TestFollowChannel(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	c := &twitch.Channel{
+		ID: 1234,
+	}
+
+	ft.setChannel(c)
+
+	code := ft.codeForUser(c.ID.AsInt64())
+
+	tok, err := tw.Exchange(ctx, code)
+	assert.NilError(t, err)
+	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
+
+	newToken, err := tw.FollowChannel(ctx, c.ID.AsInt64(), tok, 200)
+	assert.NilError(t, err)
+	assert.Assert(t, newToken == nil)
+
+	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), tok, 401)
+	assert.Equal(t, err, twitch.ErrNotAuthorized)
+	assert.Assert(t, newToken == nil)
+
+	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), tok, 404)
+	assert.Equal(t, err, twitch.ErrNotFound)
+	assert.Assert(t, newToken == nil)
+
+	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), tok, 422)
+	assert.Equal(t, err, twitch.ErrUnknown)
+	assert.Assert(t, newToken == nil)
+
+	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), tok, 500)
+	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Assert(t, newToken == nil)
+
+	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), nil, 500)
+	assert.Equal(t, err, twitch.ErrNotAuthorized)
+	assert.Assert(t, newToken == nil)
+}

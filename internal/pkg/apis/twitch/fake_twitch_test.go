@@ -135,6 +135,12 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound2", httpmock.NewStringResponder(200, `{"users": []}`))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=servererror", httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=decodeerror", httpmock.NewStringResponder(200, "}"))
+
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/200", httpmock.NewStringResponder(200, "{}"))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/401", httpmock.NewStringResponder(401, "{}"))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/404", httpmock.NewStringResponder(404, "{}"))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/422", httpmock.NewStringResponder(422, "{}"))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/500", httpmock.NewStringResponder(500, "{}"))
 }
 
 func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {

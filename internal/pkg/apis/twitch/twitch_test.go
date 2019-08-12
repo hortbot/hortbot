@@ -84,4 +84,9 @@ func TestAuthExchange(t *testing.T) {
 	tok, err := tw.Exchange(ctx, code)
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
+
+	assert.Equal(t,
+		tw.AuthCodeURL(state, "user_follows_edit"),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&redirect_uri=%s&response_type=code&scope=user_read+channel_editor+user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), state),
+	)
 }

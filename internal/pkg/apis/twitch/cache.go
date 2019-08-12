@@ -103,3 +103,7 @@ func (ca *CachedAPI) SetChannelGame(ctx context.Context, id int64, userToken *oa
 	ca.cache.Delete("GetCurrentStream/" + strconv.FormatInt(id, 10))
 	return ca.api.SetChannelGame(ctx, id, userToken, game)
 }
+
+func (ca *CachedAPI) FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error) {
+	return ca.api.FollowChannel(ctx, id, userToken, toFollow)
+}

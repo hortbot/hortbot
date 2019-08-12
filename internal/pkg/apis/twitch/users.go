@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"net/url"
+	"strconv"
 
 	"golang.org/x/oauth2"
 )
@@ -69,4 +70,26 @@ func (t *Twitch) GetIDForUsername(ctx context.Context, username string) (int64, 
 	}
 
 	return users[0].ID.AsInt64(), nil
+}
+
+// FollowChannel makes one channel follow another. This requires the
+// user_follows_edit scope on the provided token.
+//
+// PUT https://api.twitch.tv/kraken/users/<id>/follows/channels/<toFollow>
+func (t *Twitch) FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error) {
+	if userToken == nil || userToken.AccessToken == "" {
+		return nil, ErrNotAuthorized
+	}
+
+	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
+
+	url := krakenRoot + "/users/" + strconv.FormatInt(id, 10) + "/follows/channels/" + strconv.FormatInt(toFollow, 10)
+
+	resp, err := cli.Put(ctx, url, nil)
+	if err != nil {
+		return newToken, err
+	}
+	defer resp.Body.Close()
+
+	return newToken, statusToError(resp.StatusCode)
 }
