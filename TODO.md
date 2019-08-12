@@ -28,14 +28,14 @@ as `subsMayLink`, which when true means subs may link in chat.
 - The special `-1`/`admin` mode has been removed; it can be reproduced using another mode.
 - When quotes are deleted, quotes after it do not have their numbers changed.
 The new `!quote compact <num>` command can be used to compact the quote list and remove
-any holes left by deleted quotes.
+any holes left by deleted quotes. (The same applies to autoreplies.)
 
 ### Functionality
 
 - [x] Link detection and moderation
     - [x] YouTube API access to grab URLs
-- [ ] Twitch API stuff
-    - [ ] For many things, this requires OAuth, which means the web service.
+- [x] Twitch API stuff
+    - [x] For many things, this requires OAuth, which means the web service.
 
 ### Commands
 
@@ -90,13 +90,13 @@ any holes left by deleted quotes.
     - [x] On/off
     - [x] List
     - [x] Actually execute the commands rather than printing them verbatim.
-- [ ] Auto-replies
+- [x] Auto-replies
     - [x] Add
     - [x] Remove
     - [x] Edit
     - [x] List
     - [x] Actions inside of autoreply responses
-    - [ ] Similarly to quotes, emulate old list behavior
+    - [x] Similarly to quotes, emulate old list behavior
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
     - [ ] Winner

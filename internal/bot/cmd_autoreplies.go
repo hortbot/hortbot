@@ -24,6 +24,7 @@ var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
 	"editpattern":  {fn: cmdAutoreplyEditPattern, minLevel: levelModerator},
 	"edittrigger":  {fn: cmdAutoreplyEditPattern, minLevel: levelModerator},
 	"list":         {fn: cmdAutoreplyList, minLevel: levelSubscriber},
+	"compact":      {fn: cmdAutoreplyCompact, minLevel: levelSubscriber},
 })
 
 func cmdAutoreply(ctx context.Context, s *session, cmd string, args string) error {
@@ -318,4 +319,43 @@ func (s *session) replyBadPattern(err error) error {
 	}
 
 	return s.Replyf("Error parsing pattern: %s", errStr)
+}
+
+const autoreplyCompactQuery = `
+UPDATE autoreplies q
+SET num = q3.new_num
+FROM (
+	SELECT q2.id, q2.num, (ROW_NUMBER() OVER ()) + $2 - 1 AS new_num
+	FROM autoreplies q2
+	WHERE q2.channel_id = $1 AND q2.num >= $2
+	ORDER BY q2.num ASC
+) q3
+WHERE q3.id = q.id AND q3.id != q3.new_num
+`
+
+func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("<num>")
+	}
+
+	if args == "" {
+		return usage()
+	}
+
+	num, err := strconv.Atoi(args)
+	if err != nil || num <= 0 {
+		return usage()
+	}
+
+	result, err := s.Tx.Exec(autoreplyCompactQuery, s.Channel.ID, num)
+	if err != nil {
+		return err
+	}
+
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	return s.Replyf("Compacted autoreplies %d and above (%d affected).", num, affected)
 }
