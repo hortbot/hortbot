@@ -1,0 +1,57 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll
+send hortbot #foobar [HB] Usage: !set roll default|cooldown|userlevel ...
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll default
+send hortbot #foobar [HB] Default roll size is set to 20.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll default 100
+send hortbot #foobar [HB] Default roll size set to 100.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll default
+send hortbot #foobar [HB] Default roll size is set to 100.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll default what
+send hortbot #foobar [HB] Usage: !set roll default <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll default 0
+send hortbot #foobar [HB] Usage: !set roll default <num>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll default -1
+send hortbot #foobar [HB] Usage: !set roll default <num>
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll cooldown
+send hortbot #foobar [HB] Roll command cooldown is set to 10 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll cooldown 5
+send hortbot #foobar [HB] Roll command cooldown set to 5 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll cooldown
+send hortbot #foobar [HB] Roll command cooldown is set to 5 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll cooldown 0
+send hortbot #foobar [HB] Roll command cooldown set to 0 seconds.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll cooldown -1
+send hortbot #foobar [HB] Usage: !set roll cooldown <seconds>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll cooldown what
+send hortbot #foobar [HB] Usage: !set roll cooldown <seconds>
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll userlevel
+send hortbot #foobar [HB] Roll command is available to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll userlevel everyone
+send hortbot #foobar [HB] Roll command is now available to everyone and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll userlevel
+send hortbot #foobar [HB] Roll command is available to everyone and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll userlevel mods
+send hortbot #foobar [HB] Roll command is now available to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll userlevel what
+send hortbot #foobar [HB] Usage: !set roll userlevel everyone|regulars|subs|mods|broadcaster|admin

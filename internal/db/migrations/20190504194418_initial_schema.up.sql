@@ -40,6 +40,10 @@ CREATE TABLE channels (
     extra_life_id int NOT NULL,
     raffle_enabled boolean NOT NULL,
 
+    roll_level access_level NOT NULL,
+    roll_cooldown int NOT NULL,
+    roll_default int NOT NULL,
+
     should_moderate boolean NOT NULL,
     display_warnings boolean NOT NULL,
     enable_warnings boolean NOT NULL,

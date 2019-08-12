@@ -263,19 +263,8 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 
 	level = strings.ToLower(level)
 
-	var newLevel string
-	switch level {
-	case "everyone", "all", "everybody", "normal":
-		newLevel = models.AccessLevelEveryone
-	case "default", "sub", "subs", "subscriber", "subscrbers", "regular", "regulars", "reg", "regs":
-		newLevel = models.AccessLevelSubscriber
-	case "mod", "mods", "moderator", "moderators":
-		newLevel = models.AccessLevelModerator
-	case "broadcaster", "broadcasters", "owner", "owners", "streamer", "streamers":
-		newLevel = models.AccessLevelBroadcaster
-	case "admin", "admins":
-		newLevel = models.AccessLevelAdmin
-	default:
+	newLevel := parseLevelPG(level)
+	if newLevel == "" {
 		return usage()
 	}
 

@@ -98,13 +98,18 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~Throw~~ (Use a custom command.)
     - [ ] Winner
         - Expand to pick from only subs
-    - [ ] Random number
     - [x] ~~Hug~~ (Use a custom command.)
     - [x] Conch/helix (Requires quotes)
     - [ ] Urban
     - [x] ~~Me~~ (Use a custom command.)
     - [x] ~~Race~~
     - [x] XKCD
+- [ ] Random/roll
+    - [x] ~~`regular`/`sub`~~ The Twitch TMI endpoint doesn't identify users as subs.
+    - [x] Cooldowns
+    - [x] Integer
+    - [x] Dice
+    - [x] Default
 - [x] Quotes
     - [ ] Link to quotes page on website (*Website*)
     - [x] Add
@@ -146,11 +151,11 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] ~~`topic`~~
     - [x] `parseYoutube`
     - [x] `shouldModerate`
-    - [ ] `roll`
-        - [ ] `timeoutoncriticalfail`
-        - [ ] `default`
-        - [ ] `cooldown`
-        - [ ] `userlevel`
+    - [x] `roll`
+        - [x] ~~`timeoutoncriticalfail`~~
+        - [x] `default`
+        - [x] `cooldown`
+        - [x] `userlevel`
     - [x] ~~`songrequest`~~
     - [x] `extralifeid`
     - [ ] `urban`
@@ -231,7 +236,6 @@ as `subsMayLink`, which when true means subs may link in chat.
     - [x] Random
     - [x] Actually execute the commands rather than printing them verbatim.
 - [ ] Misc undocumented stuff
-    - [ ] Roll
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
     - [ ] Steam game (expand to other stores?)
     - [x] Extra Life stuff
@@ -263,7 +267,7 @@ as `subsMayLink`, which when true means subs may link in chat.
 - [ ] `(_BOT_HELP_)` (*Website*)
 - [x] `(_USER_)`
 - [x] `(_QUOTE_)`
-- [ ] ~~`(_COMMERCIAL_)`~~
+- [x] ~~`(_COMMERCIAL_)`~~
 - [x] `(_PARAMETER_)`
 - [x] `(_PARAMETER_CAPS_)`
 - [x] `(_NUMCHANNELS_)`

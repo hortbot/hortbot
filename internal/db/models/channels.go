@@ -44,6 +44,9 @@ type Channel struct {
 	ParseYoutube                bool              `boil:"parse_youtube" json:"parse_youtube" toml:"parse_youtube" yaml:"parse_youtube"`
 	ExtraLifeID                 int               `boil:"extra_life_id" json:"extra_life_id" toml:"extra_life_id" yaml:"extra_life_id"`
 	RaffleEnabled               bool              `boil:"raffle_enabled" json:"raffle_enabled" toml:"raffle_enabled" yaml:"raffle_enabled"`
+	RollLevel                   string            `boil:"roll_level" json:"roll_level" toml:"roll_level" yaml:"roll_level"`
+	RollCooldown                int               `boil:"roll_cooldown" json:"roll_cooldown" toml:"roll_cooldown" yaml:"roll_cooldown"`
+	RollDefault                 int               `boil:"roll_default" json:"roll_default" toml:"roll_default" yaml:"roll_default"`
 	ShouldModerate              bool              `boil:"should_moderate" json:"should_moderate" toml:"should_moderate" yaml:"should_moderate"`
 	DisplayWarnings             bool              `boil:"display_warnings" json:"display_warnings" toml:"display_warnings" yaml:"display_warnings"`
 	EnableWarnings              bool              `boil:"enable_warnings" json:"enable_warnings" toml:"enable_warnings" yaml:"enable_warnings"`
@@ -91,6 +94,9 @@ var ChannelColumns = struct {
 	ParseYoutube                string
 	ExtraLifeID                 string
 	RaffleEnabled               string
+	RollLevel                   string
+	RollCooldown                string
+	RollDefault                 string
 	ShouldModerate              string
 	DisplayWarnings             string
 	EnableWarnings              string
@@ -133,6 +139,9 @@ var ChannelColumns = struct {
 	ParseYoutube:                "parse_youtube",
 	ExtraLifeID:                 "extra_life_id",
 	RaffleEnabled:               "raffle_enabled",
+	RollLevel:                   "roll_level",
+	RollCooldown:                "roll_cooldown",
+	RollDefault:                 "roll_default",
 	ShouldModerate:              "should_moderate",
 	DisplayWarnings:             "display_warnings",
 	EnableWarnings:              "enable_warnings",
@@ -232,6 +241,9 @@ var ChannelWhere = struct {
 	ParseYoutube                whereHelperbool
 	ExtraLifeID                 whereHelperint
 	RaffleEnabled               whereHelperbool
+	RollLevel                   whereHelperstring
+	RollCooldown                whereHelperint
+	RollDefault                 whereHelperint
 	ShouldModerate              whereHelperbool
 	DisplayWarnings             whereHelperbool
 	EnableWarnings              whereHelperbool
@@ -274,6 +286,9 @@ var ChannelWhere = struct {
 	ParseYoutube:                whereHelperbool{field: "\"channels\".\"parse_youtube\""},
 	ExtraLifeID:                 whereHelperint{field: "\"channels\".\"extra_life_id\""},
 	RaffleEnabled:               whereHelperbool{field: "\"channels\".\"raffle_enabled\""},
+	RollLevel:                   whereHelperstring{field: "\"channels\".\"roll_level\""},
+	RollCooldown:                whereHelperint{field: "\"channels\".\"roll_cooldown\""},
+	RollDefault:                 whereHelperint{field: "\"channels\".\"roll_default\""},
 	ShouldModerate:              whereHelperbool{field: "\"channels\".\"should_moderate\""},
 	DisplayWarnings:             whereHelperbool{field: "\"channels\".\"display_warnings\""},
 	EnableWarnings:              whereHelperbool{field: "\"channels\".\"enable_warnings\""},
@@ -340,8 +355,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "bot_name", "active", "prefix", "bullet", "mode", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

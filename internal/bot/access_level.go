@@ -68,3 +68,28 @@ func (a accessLevel) PGEnum() string {
 		panic(fmt.Sprintf("cannot convert %v to enum value", a))
 	}
 }
+
+func parseLevel(s string) accessLevel {
+	switch s {
+	case "everyone", "all", "everybody", "normal":
+		return levelEveryone
+	case "sub", "subs", "subscriber", "subscrbers", "regular", "regulars", "reg", "regs":
+		return levelSubscriber
+	case "mod", "mods", "moderator", "moderators":
+		return levelModerator
+	case "broadcaster", "broadcasters", "owner", "owners", "streamer", "streamers":
+		return levelBroadcaster
+	case "admin", "admins":
+		return levelAdmin
+	default:
+		return levelUnknown
+	}
+}
+
+func parseLevelPG(s string) string {
+	l := parseLevel(s)
+	if l == levelUnknown {
+		return ""
+	}
+	return l.PGEnum()
+}

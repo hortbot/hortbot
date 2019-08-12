@@ -50,6 +50,8 @@ func init() {
 		"admin":     {fn: cmdAdmin, minLevel: levelAdmin},
 		"islive":    {fn: cmdIsLive, minLevel: levelModerator},
 		"list":      {fn: cmdList, minLevel: levelModerator},
+		"random":    {fn: cmdRandom, minLevel: levelEveryone, skipCooldown: true},
+		"roll":      {fn: cmdRandom, minLevel: levelEveryone, skipCooldown: true},
 	})
 }
 

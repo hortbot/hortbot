@@ -62,22 +62,16 @@ func (s *session) RaffleCount() (int64, error) {
 
 var errInCooldown = errors.New("bot: in cooldown")
 
-func (s *session) TryCooldown() error {
-	cooldown := s.Deps.DefaultCooldown
-
-	if s.Channel.Cooldown.Valid {
-		cooldown = s.Channel.Cooldown.Int
-	}
-
-	if cooldown == 0 {
+func (s *session) tryCooldown(key string, seconds int) error {
+	if seconds == 0 {
 		return nil
 	}
 
 	if s.UserLevel.CanAccess(levelModerator) {
-		return s.Deps.RDB.Mark(cooldown, s.RoomIDStr, "command_cooldown")
+		return s.Deps.RDB.Mark(seconds, s.RoomIDStr, key)
 	}
 
-	seen, err := s.Deps.RDB.CheckAndMark(cooldown, s.RoomIDStr, "command_cooldown")
+	seen, err := s.Deps.RDB.CheckAndMark(seconds, s.RoomIDStr, key)
 
 	switch {
 	case err != nil:
@@ -87,4 +81,18 @@ func (s *session) TryCooldown() error {
 	default:
 		return nil
 	}
+}
+
+func (s *session) TryCooldown() error {
+	cooldown := s.Deps.DefaultCooldown
+
+	if s.Channel.Cooldown.Valid {
+		cooldown = s.Channel.Cooldown.Int
+	}
+
+	return s.tryCooldown("command_cooldown", cooldown)
+}
+
+func (s *session) TryRollCooldown() error {
+	return s.tryCooldown("roll_cooldown", s.Channel.RollCooldown)
 }

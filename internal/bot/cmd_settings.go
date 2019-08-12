@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -25,6 +26,7 @@ var settingCommands = newHandlerMap(map[string]handlerFunc{
 	"subsmaylink":        {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
 	"subsregsminuslinks": {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
 	"mode":               {fn: cmdSettingMode, minLevel: levelModerator},
+	"roll":               {fn: cmdSettingsRoll, minLevel: levelModerator},
 })
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -374,4 +376,65 @@ func updateBoolean(
 	}
 
 	return s.Reply(setFalse)
+}
+
+func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) error {
+	opt, args := splitSpace(args)
+
+	var column string
+	var reply string
+
+	switch opt {
+	case "default":
+		if args == "" {
+			return s.Replyf("Default roll size is set to %d.", s.Channel.RollDefault)
+		}
+
+		def, err := strconv.Atoi(args)
+		if err != nil || def <= 0 {
+			return s.ReplyUsage("default <num>")
+		}
+
+		s.Channel.RollDefault = def
+		column = models.ChannelColumns.RollDefault
+		reply = "Default roll size set to " + strconv.Itoa(def) + "."
+
+	case "cooldown":
+		if args == "" {
+			return s.Replyf("Roll command cooldown is set to %d seconds.", s.Channel.RollCooldown)
+		}
+
+		cooldown, err := strconv.Atoi(args)
+		if err != nil || cooldown < 0 {
+			return s.ReplyUsage("cooldown <seconds>")
+		}
+
+		s.Channel.RollCooldown = cooldown
+		column = models.ChannelColumns.RollCooldown
+		reply = "Roll command cooldown set to " + strconv.Itoa(cooldown) + " seconds."
+
+	case "userlevel":
+		if args == "" {
+			return s.Replyf("Roll command is available to %s and above.", flect.Pluralize(s.Channel.RollLevel))
+		}
+
+		args = strings.ToLower(args)
+		level := parseLevelPG(args)
+		if level == "" {
+			return s.ReplyUsage("userlevel everyone|regulars|subs|mods|broadcaster|admin")
+		}
+
+		s.Channel.RollLevel = level
+		column = models.ChannelColumns.RollLevel
+		reply = "Roll command is now available to " + flect.Pluralize(level) + " and above."
+
+	default:
+		return s.ReplyUsage("default|cooldown|userlevel ...")
+	}
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+		return err
+	}
+
+	return s.Reply(reply)
 }
