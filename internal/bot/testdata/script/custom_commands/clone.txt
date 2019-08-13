@@ -1,0 +1,41 @@
+join hortbot 999 foobar 1
+join hortbot 999 otherchan 2
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command clone #foobar pan
+send hortbot #foobar [HB] A command or list with name 'pan' already exists.
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone
+send hortbot #otherchan [HB] Usage: !command clone #<channel> <name>
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone #foobar
+send hortbot #otherchan [HB] Usage: !command clone #<channel> <name>
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone foobar pan
+send hortbot #otherchan [HB] Usage: !command clone #<channel> <name>
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone #foobar pan
+send hortbot #otherchan [HB] Command 'pan' has been cloned from channel foobar.
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!pan working command
+send hortbot #otherchan [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command restrict pan
+send hortbot #otherchan [HB] Command 'pan' is restricted to everyone and above.
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone #foobar huh
+send hortbot #otherchan [HB] Channel foobar does not have a command named 'huh'.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add something
+send_any
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone #foobar something
+send hortbot #otherchan [HB] 'something' is not a command.
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=2 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!command clone #who something
+send hortbot #otherchan [HB] Channel who does not exist.

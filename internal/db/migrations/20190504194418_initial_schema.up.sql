@@ -193,7 +193,7 @@ CREATE TABLE command_infos (
 
     channel_id bigint REFERENCES channels (id) NOT NULL,
 
-    name text NOT NULL UNIQUE,
+    name text NOT NULL,
     access_level access_level NOT NULL,
     count bigint NOT NULL,
     creator text NOT NULL,
@@ -203,6 +203,7 @@ CREATE TABLE command_infos (
     custom_command_id bigint REFERENCES custom_commands (id) UNIQUE,
     command_list_id bigint REFERENCES command_lists (id) UNIQUE,
 
+    UNIQUE (channel_id, name),
     CONSTRAINT chk_unique_id CHECK (
         (
             (CASE WHEN custom_command_id IS NULL THEN 0 ELSE 1 end)

@@ -76,7 +76,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Rename (undocumented)
     - [x] Editor (undocumented)
     - [ ] Link to list of commands (*Website*)
-    - [ ] Clone
+    - [x] Clone
     - [ ] Automatic restriction based on known actions
 - [x] Repeats
     - [x] Add
@@ -317,6 +317,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [ ] Extra commands for the new `/delete` feature (to replace purging)
 - [ ] HowLongToBeat queries
 - [ ] Get a link to game stores other than Steam
+- [ ] List cloning
 
 ### Actions
 

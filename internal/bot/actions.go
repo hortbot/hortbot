@@ -571,7 +571,7 @@ func (s *session) actionCommand(ctx context.Context, name string) (string, error
 
 	ctx = withCommandGuard(ctx, name)
 
-	_, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name)
+	_, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name, false)
 	if err != nil || !found {
 		return "", err
 	}

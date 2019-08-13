@@ -342,7 +342,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params))
 
-	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name)
+	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name, true)
 	if err != nil {
 		logger.Error("error looking up command name in database", zap.Error(err))
 		return true, err

@@ -42,7 +42,7 @@ var ccCommands = newHandlerMap(map[string]handlerFunc{
 	"count":           {fn: cmdCommandProperty, minLevel: levelModerator},
 	"rename":          {fn: cmdCommandRename, minLevel: levelModerator},
 	"get":             {fn: cmdCommandGet, minLevel: levelModerator},
-	// TODO: clone
+	"clone":           {fn: cmdCommandClone, minLevel: levelModerator},
 })
 
 func cmdCommand(ctx context.Context, s *session, cmd string, args string) error {
@@ -403,6 +403,79 @@ func cmdCommandGet(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	return s.Replyf("Command '%s': %s", name, command.Message)
+}
+
+func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) error {
+	usage := func() error {
+		return s.ReplyUsage("#<channel> <name>")
+	}
+
+	other, args := splitSpace(args)
+	name, _ := splitSpace(args)
+	name = cleanCommandName(name)
+
+	if len(other) < 2 || name == "" {
+		return usage()
+	}
+
+	if other[0] != '#' {
+		return usage()
+	}
+
+	other = strings.ToLower(other[1:])
+
+	exists, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).Exists(ctx, s.Tx)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return s.Replyf("A command or list with name '%s' already exists.", name)
+	}
+
+	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(other)).One(ctx, s.Tx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return s.Replyf("Channel %s does not exist.", other)
+		}
+		return err
+	}
+
+	oldInfo, commandMessage, found, err := modelsx.FindCommand(ctx, s.Tx, otherChannel.ID, name, false)
+	if err != nil {
+		return err
+	}
+
+	if !found {
+		return s.Replyf("Channel %s does not have a command named '%s'.", other, name)
+	}
+
+	if !commandMessage.Valid {
+		return s.Replyf("'%s' is not a command.", name)
+	}
+
+	command := &models.CustomCommand{
+		ChannelID: s.Channel.ID,
+		Message:   commandMessage.String,
+	}
+
+	if err := command.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+		return err
+	}
+
+	info := &models.CommandInfo{
+		ChannelID:       s.Channel.ID,
+		Name:            name,
+		CustomCommandID: null.Int64From(command.ID),
+		AccessLevel:     oldInfo.AccessLevel,
+		Creator:         s.User,
+		Editor:          s.User,
+	}
+
+	if err := info.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+		return err
+	}
+
+	return s.Replyf("Command '%s' has been cloned from channel %s.", name, other)
 }
 
 func findCustomCommand(ctx context.Context, s *session, name string, forUpdate bool) (*models.CommandInfo, *models.CustomCommand, error) {

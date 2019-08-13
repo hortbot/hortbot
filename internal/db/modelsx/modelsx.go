@@ -84,21 +84,35 @@ func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *mod
 	return repeated, scheduled, nil
 }
 
-func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string) (info *models.CommandInfo, commandMsg null.String, found bool, err error) {
+const findCommandQueryUpdate = `
+SELECT command_infos.*, custom_commands.message
+FROM command_infos
+LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
+WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
+FOR UPDATE OF command_infos
+`
+
+const findCommandQuery = `
+SELECT command_infos.*, custom_commands.message
+FROM command_infos
+LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
+WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
+`
+
+func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string, forUpdate bool) (info *models.CommandInfo, commandMsg null.String, found bool, err error) {
 	infoAndCommand := struct {
 		CommandInfo models.CommandInfo `boil:"command_infos,bind"`
 		Message     null.String        `boil:"message"`
 	}{}
 
+	query := findCommandQuery
+	if forUpdate {
+		query = findCommandQueryUpdate
+	}
+
 	// This is much faster than using qm.Load, as SQLBoiler's loading does multiple
 	// queries to fetch 1:1 relationships rather than joins.
-	err = queries.Raw(`
-		SELECT command_infos.*, custom_commands.message
-		FROM command_infos
-		LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_command_id
-		WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
-		FOR UPDATE OF command_infos
-		`, id, name).Bind(ctx, exec, &infoAndCommand)
+	err = queries.Raw(query, id, name).Bind(ctx, exec, &infoAndCommand)
 
 	if err == sql.ErrNoRows {
 		return nil, null.String{}, false, nil
