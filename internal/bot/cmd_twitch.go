@@ -253,3 +253,62 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 
 	return s.Replyf("Yes, %s is live playing %s with %d %s.", name, game, viewers, v)
 }
+
+func cmdIsHere(ctx context.Context, s *session, cmd string, args string) error {
+	name, _ := splitSpace(args)
+
+	if name == "" {
+		return s.ReplyUsage("<username>")
+	}
+
+	chatters, err := s.TwitchChatters(ctx)
+	switch err {
+	case twitch.ErrServerError, twitch.ErrNotFound:
+		return s.Reply(serverErrorReply)
+	case nil:
+	default:
+		return err
+	}
+
+	lists := [][]string{
+		chatters.Chatters.Broadcaster,
+		chatters.Chatters.Vips,
+		chatters.Chatters.Moderators,
+		chatters.Chatters.Staff,
+		chatters.Chatters.Admins,
+		chatters.Chatters.GlobalMods,
+		chatters.Chatters.Viewers,
+	}
+
+	nameLower := strings.ToLower(name)
+
+	for _, l := range lists {
+		if _, found := stringSliceIndex(l, nameLower); found {
+			return s.Replyf("Yes, %s is connected to chat.", name)
+		}
+	}
+
+	return s.Replyf("No, %s is not connected to chat.", name)
+}
+
+func cmdHost(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.ReplyUsage("<username>")
+	}
+
+	username, _ := splitSpace(args)
+
+	if err := s.SendCommand("host", strings.ToLower(username)); err != nil {
+		return err
+	}
+
+	return s.Replyf("Now hosting: %s", username)
+}
+
+func cmdUnhost(ctx context.Context, s *session, cmd string, args string) error {
+	if err := s.SendCommand("unhost"); err != nil {
+		return err
+	}
+
+	return s.Reply("Exited host mode.")
+}

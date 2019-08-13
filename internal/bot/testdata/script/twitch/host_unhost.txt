@@ -1,0 +1,12 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!host
+send hortbot #foobar [HB] Usage: !host <username>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!host Coestar
+send hortbot #foobar /host coestar
+send hortbot #foobar [HB] Now hosting: Coestar
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!unhost
+send hortbot #foobar /unhost
+send hortbot #foobar [HB] Exited host mode.

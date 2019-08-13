@@ -56,9 +56,11 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	start := b.deps.Clock.Now()
+	logger := ctxlog.FromContext(ctx)
 
 	if m.Command != "PRIVMSG" {
 		// TODO: handle other types of messages
+		logger.Debug("unhandled command", zap.Any("message", m))
 		return nil
 	}
 
@@ -74,8 +76,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	if id == "" {
 		return errInvalidMessage
 	}
-
-	logger := ctxlog.FromContext(ctx)
 
 	defer func() {
 		if r := recover(); r != nil {

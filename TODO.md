@@ -62,12 +62,12 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [ ] Follow me (*Twitch API*)
         - Should this be automatic?
     - [x] ~~Viewer stats~~ (Use twitchtracker or sullygnome)
-    - [ ] Punish stats (requires moderation)
+    - [x] ~~Punish stats~~ Twitch provides some element of this already; could bring back if wanted.
     - [ ] What should I play (*Steam API*)
     - [ ] Google
-    - ~~[x] Wiki~~
+    - [x] ~~Wiki~~
     - [x] Is live (*Twitch API*)
-    - [ ] Is here (*Twitch API*)
+    - [x] Is here (*Twitch API*)
 - [ ] Custom Commands
     - [x] Cooldowns
     - [x] Add
@@ -146,9 +146,9 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Add/delete
     - [x] List
 - [x] ~~Raids~~ Twitch does this better now
-    - May partially implement.
-    - [ ] `host`
-    - [ ] `unhost`
+    - May partially implement. Requires the bot account in use to be a channel editor.
+    - [x] `host`
+    - [x] `unhost`
 - [ ] Settings
     - Lots of settings here related to other items.
     - [x] ~~`topic`~~

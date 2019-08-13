@@ -49,9 +49,12 @@ func init() {
 		"chatters":  {fn: cmdChatters, minLevel: levelEveryone},
 		"admin":     {fn: cmdAdmin, minLevel: levelAdmin},
 		"islive":    {fn: cmdIsLive, minLevel: levelModerator},
+		"ishere":    {fn: cmdIsHere, minLevel: levelModerator},
 		"list":      {fn: cmdList, minLevel: levelModerator},
 		"random":    {fn: cmdRandom, minLevel: levelEveryone, skipCooldown: true},
 		"roll":      {fn: cmdRandom, minLevel: levelEveryone, skipCooldown: true},
+		"host":      {fn: cmdHost, minLevel: levelEveryone},
+		"unhost":    {fn: cmdUnhost, minLevel: levelEveryone},
 	})
 }
 

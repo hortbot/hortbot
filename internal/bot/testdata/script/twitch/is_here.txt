@@ -1,0 +1,53 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere
+send hortbot #foobar [HB] Usage: !ishere <username>
+
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] No, Someone is not connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"viewers": ["huh", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] No, Someone is not connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"broadcaster": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"vips": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"moderators": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"staff": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"admins": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"global_mods": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatter_count": 0, "chatters": {"viewers": ["huh", "someone", "okokok"]}}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] Yes, Someone is connected to chat.
+
+
+twitch_get_chatters {"Channel": "foobar", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+send hortbot #foobar [HB] A Twitch server error occurred.
+
+twitch_get_chatters {"Channel": "foobar", "Err": "ErrNotAuthorized"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ishere Someone
+no_send
