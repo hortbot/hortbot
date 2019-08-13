@@ -15,6 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -54,6 +55,8 @@ var args = struct {
 	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
 	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
 	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
+
+	SteamKey string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
 
 	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 }{
@@ -157,6 +160,13 @@ func main() {
 
 	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
 
+	var steamAPI steam.API
+	if args.SteamKey != "" {
+		steamAPI = steam.New(args.SteamKey)
+	} else {
+		logger.Warn("no Steam API key provided, functionality will be disabled")
+	}
+
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
@@ -171,6 +181,7 @@ func main() {
 		XKCD:             xkcd.New(),
 		ExtraLife:        extralife.New(),
 		Twitch:           twitchAPI,
+		Steam:            steamAPI,
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

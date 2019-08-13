@@ -200,6 +200,60 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return s.actionTime(ctx, "", "Jan 2, 2006 3:04 PM")
 	case "DATETIME24":
 		return s.actionTime(ctx, "", "Jan 2, 2006 15:04")
+	case "STEAM_PROFILE":
+		summary, err := s.SteamSummary(ctx)
+		if err != nil {
+			return "(error)", nil
+		}
+
+		url := summary.ProfileURL
+		if url == "" {
+			return "(unavailable)", nil
+		}
+		return url, nil
+	case "STEAM_GAME":
+		var game string
+		summary, err := s.SteamSummary(ctx)
+		if err == nil {
+			game = summary.Game
+		}
+
+		if game == "" || err != nil {
+			ch, err := s.TwitchChannel(ctx)
+			if err != nil {
+				game = "(error)"
+			} else {
+				game = ch.Game
+			}
+		}
+
+		if game == "" {
+			game = "(unavailable)"
+		}
+
+		return game, nil
+	case "STEAM_SERVER":
+		summary, err := s.SteamSummary(ctx)
+		if err != nil {
+			return "(error)", nil
+		}
+
+		server := summary.GameServer
+		if server == "" {
+			return "(unavailable)", nil
+		}
+		return server, nil
+	case "STEAM_STORE":
+		summary, err := s.SteamSummary(ctx)
+		if err != nil {
+			return "(error)", nil
+		}
+
+		gameID := summary.GameID
+		if gameID == "" {
+			return "(unavailable)", nil
+		}
+		return "http://store.steampowered.com/app/" + gameID, nil
 	}
 
 	switch {

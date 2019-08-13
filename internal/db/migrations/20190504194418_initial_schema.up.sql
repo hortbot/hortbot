@@ -39,6 +39,7 @@ CREATE TABLE channels (
     parse_youtube boolean NOT NULL,
     extra_life_id int NOT NULL,
     raffle_enabled boolean NOT NULL,
+    steam_id text NOT NULL,
 
     roll_level access_level NOT NULL,
     roll_cooldown int NOT NULL,

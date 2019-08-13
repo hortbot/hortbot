@@ -1,0 +1,26 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_STEAM_PROFILE_) (_STEAM_GAME_) (_STEAM_SERVER_) (_STEAM_STORE_)
+send_any
+
+twitch_get_channel_by_id {"ID": 1, "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (error) (error) (error) (error)
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam 1234567890123456789
+send_any
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {}}
+steam_get_player_summary {"ID": "1234567890123456789", "Summary": {}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (unavailable) (unavailable) (unavailable) (unavailable)
+
+steam_get_player_summary {"ID": "1234567890123456789", "Summary": {"personaname": "Steam User", "profileurl": "https://steamcommunity.com/id/fakeprofile", "gameextrainfo": "Garry's Mod", "gameid": "4000", "gameserverip": "127.0.0.1:27015"}}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] https://steamcommunity.com/id/fakeprofile Garry's Mod 127.0.0.1:27015 http://store.steampowered.com/app/4000
+
+steam_get_player_summary {"ID": "1234567890123456789", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (error) (unavailable) (error) (error)

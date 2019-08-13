@@ -5,6 +5,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -28,6 +29,7 @@ type sharedDeps struct {
 	XKCD      xkcd.API
 	ExtraLife extralife.API
 	Twitch    twitch.API
+	Steam     steam.API
 
 	ReCache *recache.RegexpCache
 

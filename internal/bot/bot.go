@@ -9,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -39,6 +40,7 @@ type Config struct {
 	XKCD      xkcd.API
 	ExtraLife extralife.API
 	Twitch    twitch.API
+	Steam     steam.API
 
 	Prefix   string
 	Bullet   string
@@ -91,6 +93,7 @@ func New(config *Config) *Bot {
 		XKCD:            config.XKCD,
 		ExtraLife:       config.ExtraLife,
 		Twitch:          config.Twitch,
+		Steam:           config.Steam,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
 	}

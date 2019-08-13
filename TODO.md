@@ -57,13 +57,13 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Status (*Twitch API*)
         - [x] Get status
         - [x] Set status
-    - [ ] statusgame/steamgame (*Steam API*)
+    - [x] statusgame/steamgame (*Steam API*)
     - [x] ~~XBox game~~
     - [ ] Follow me (*Twitch API*)
         - Should this be automatic?
     - [x] ~~Viewer stats~~ (Use twitchtracker or sullygnome)
     - [x] ~~Punish stats~~ Twitch provides some element of this already; could bring back if wanted.
-    - [ ] What should I play (*Steam API*)
+    - [x] What should I play (*Steam API*)
     - [ ] Google
     - [x] ~~Wiki~~
     - [x] Is live (*Twitch API*)
@@ -168,7 +168,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] `cooldown`
     - [x] ~~`throw~~
     - [x] `lastfm`
-    - [ ] `steam` (*Steam API*)
+    - [x] `steam` (*Steam API*)
     - [x] `mode`
     - [x] ~~`commerciallength`~~
     - [ ] `tweet`
@@ -240,7 +240,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Actually execute the commands rather than printing them verbatim.
 - [ ] Misc undocumented stuff
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
-    - [ ] Steam game
+    - [x] Steam game
     - [x] Extra Life stuff
     - [x] ~~`strawpoll`~~
     - [x] ~~`channelID`~~
@@ -260,10 +260,10 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [x] `(_STATUS_)` (*Twitch API*)
 - [x] `(_VIEWERS_)` (*Twitch API*)
 - [x] `(_CHATTERS_)` (*Twitch API*)
-- [ ] `(_STEAM_PROFILE_)` (*Steam API*)
-- [ ] `(_STEAM_GAME_)` (*Steam API*)
-- [ ] `(_STEAM_SERVER_)` (*Steam API*)
-- [ ] `(_STEAM_STORE_)` (*Steam API*)
+- [x] `(_STEAM_PROFILE_)` (*Steam API*)
+- [x] `(_STEAM_GAME_)` (*Steam API*)
+- [x] `(_STEAM_SERVER_)` (*Steam API*)
+- [x] `(_STEAM_STORE_)` (*Steam API*)
 - [x] `(_SONG_)`
 - [x] `(_SONG_URL_)`
 - [x] `(_LAST_SONG_)`

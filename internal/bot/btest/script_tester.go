@@ -18,6 +18,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam/steamfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube/youtubefakes"
@@ -63,6 +64,7 @@ type scriptTester struct {
 	xkcd      *xkcdfakes.FakeAPI
 	extraLife *extralifefakes.FakeAPI
 	twitch    *twitchfakes.FakeAPI
+	steam     *steamfakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -112,6 +114,7 @@ func (st *scriptTester) test(t testing.TB) {
 	st.xkcd = newFakeXKCD(t)
 	st.extraLife = newFakeExtraLife(t)
 	st.twitch = newFakeTwitch(t)
+	st.steam = newFakeSteam(t)
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -142,6 +145,7 @@ func (st *scriptTester) test(t testing.TB) {
 		XKCD:      st.xkcd,
 		ExtraLife: st.extraLife,
 		Twitch:    st.twitch,
+		Steam:     st.steam,
 	}
 
 	st.clock.Set(time.Now())
@@ -332,4 +336,6 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"twitch_get_chatters":        (*scriptTester).twitchGetChatters,
 	"twitch_get_id_for_username": (*scriptTester).twitchGetIDForUsername,
 	"twitch_follow_channel":      (*scriptTester).twitchFollowChannel,
+	"steam_get_player_summary":   (*scriptTester).steamGetPlayerSummary,
+	"steam_get_owned_games":      (*scriptTester).steamGetOwnedGames,
 }

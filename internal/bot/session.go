@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
@@ -71,6 +72,8 @@ type session struct {
 	twitchChannel  **twitch.Channel
 	twitchStream   **twitch.Stream
 	twitchChatters **twitch.Chatters
+	steamSummary   **steam.Summary
+	steamGames     *[]*steam.Game
 }
 
 func (s *session) formatResponse(response string) string {
@@ -254,16 +257,12 @@ func (s *session) Links() []*url.URL {
 var errLastFMDisabled = errors.New("bot: LastFM disabled")
 
 func (s *session) Tracks() ([]lastfm.Track, error) {
-	if s.Deps.LastFM == nil {
-		return nil, errLastFMDisabled
-	}
-
-	if s.Channel.LastFM == "" {
-		return nil, errLastFMDisabled
-	}
-
 	if s.tracks != nil {
 		return *s.tracks, nil
+	}
+
+	if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
+		return nil, errLastFMDisabled
 	}
 
 	tracks, err := s.Deps.LastFM.RecentTracks(s.Channel.LastFM, 2)
@@ -356,4 +355,44 @@ func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) 
 
 	s.twitchChatters = &chatters
 	return chatters, nil
+}
+
+var (
+	errSteamDisabled = errors.New("bot: steam disabled")
+)
+
+func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
+	if s.steamSummary != nil {
+		return *s.steamSummary, nil
+	}
+
+	if s.Deps.Steam == nil || s.Channel.SteamID == "" {
+		return nil, errSteamDisabled
+	}
+
+	summary, err := s.Deps.Steam.GetPlayerSummary(ctx, s.Channel.SteamID)
+	if err != nil {
+		return nil, err
+	}
+
+	s.steamSummary = &summary
+	return summary, nil
+}
+
+func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
+	if s.steamGames != nil {
+		return *s.steamGames, nil
+	}
+
+	if s.Deps.Steam == nil || s.Channel.SteamID == "" {
+		return nil, errSteamDisabled
+	}
+
+	games, err := s.Deps.Steam.GetOwnedGames(ctx, s.Channel.SteamID)
+	if err != nil {
+		return nil, err
+	}
+
+	s.steamGames = &games
+	return games, nil
 }

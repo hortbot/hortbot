@@ -1,0 +1,33 @@
+bot_config {"Rand": 3}
+
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!whatshouldiplay
+send hortbot #foobar [HB] Steam support is disabled.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam 1234567890123456789
+send hortbot #foobar [HB] Steam ID set to 1234567890123456789.
+
+steam_get_owned_games {"ID": "1234567890123456789", "Games": []}
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!whatshouldiplay
+send hortbot #foobar [HB] Your Steam profile is private, or you own no games.
+
+
+steam_get_owned_games {"ID": "1234567890123456789", "Games": [{"appid": 1234, "name": "Game 1234"}, {"appid": 979797, "name": "Game 979797"}]}
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!whatshouldiplay
+send hortbot #foobar [HB] You could always play: Game 1234 (http://store.steampowered.com/app/1234)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!whatshouldiplay
+send hortbot #foobar [HB] You could always play: Game 979797 (http://store.steampowered.com/app/979797)
+
+
+steam_get_owned_games {"ID": "1234567890123456789", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!whatshouldiplay
+send hortbot #foobar [HB] A Steam API error occurred.
+
+
+steam_get_owned_games {"ID": "1234567890123456789", "Err": "ErrUnknown"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!whatshouldiplay
+no_send

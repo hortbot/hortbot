@@ -9,6 +9,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apis/steam/steamfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
@@ -117,6 +119,22 @@ func newFakeTwitch(t testing.TB) *twitchfakes.FakeAPI {
 
 	f.FollowChannelCalls(func(context.Context, int64, *oauth2.Token, int64) (*oauth2.Token, error) {
 		t.Fatal("FollowChannel not implemented")
+		return nil, nil
+	})
+
+	return f
+}
+
+func newFakeSteam(t testing.TB) *steamfakes.FakeAPI {
+	f := &steamfakes.FakeAPI{}
+
+	f.GetPlayerSummaryCalls(func(context.Context, string) (*steam.Summary, error) {
+		t.Fatal("GetPlayerSummary not implemented")
+		return nil, nil
+	})
+
+	f.GetOwnedGamesCalls(func(context.Context, string) ([]*steam.Game, error) {
+		t.Fatal("GetOwnedGames not implemented")
 		return nil, nil
 	})
 

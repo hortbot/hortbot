@@ -27,6 +27,7 @@ var settingCommands = newHandlerMap(map[string]handlerFunc{
 	"subsregsminuslinks": {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
 	"mode":               {fn: cmdSettingMode, minLevel: levelModerator},
 	"roll":               {fn: cmdSettingsRoll, minLevel: levelModerator},
+	"steam":              {fn: cmdSettingsSteam, minLevel: levelModerator},
 })
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -437,4 +438,31 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	return s.Reply(reply)
+}
+
+func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) error {
+	id, _ := splitSpace(args)
+
+	if id == "" {
+		if s.Channel.SteamID == "" {
+			return s.Reply("Steam ID is not set.")
+		}
+		return s.Replyf("Steam ID is set to %s.", s.Channel.SteamID)
+	}
+
+	if strings.EqualFold(id, "off") {
+		id = ""
+	}
+
+	s.Channel.SteamID = id
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.SteamID)); err != nil {
+		return err
+	}
+
+	if id == "" {
+		return s.Reply("Steam ID unset.")
+	}
+
+	return s.Replyf("Steam ID set to %s.", id)
 }

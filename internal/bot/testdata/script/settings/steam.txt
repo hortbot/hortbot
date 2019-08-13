@@ -1,0 +1,18 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam
+send hortbot #foobar [HB] Steam ID is not set.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam 1234567890123456789
+send hortbot #foobar [HB] Steam ID set to 1234567890123456789.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam
+send hortbot #foobar [HB] Steam ID is set to 1234567890123456789.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam off
+send hortbot #foobar [HB] Steam ID unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set steam
+send hortbot #foobar [HB] Steam ID is not set.
