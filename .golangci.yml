@@ -19,6 +19,8 @@ linters:
     - goconst
     - interfacer
     - dupl
+    # https://github.com/golangci/golangci-lint/issues/484
+    - govet
 
 
   # fast: true

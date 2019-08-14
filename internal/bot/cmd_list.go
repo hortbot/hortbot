@@ -355,10 +355,8 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool
 
 	if random {
 		num = s.Deps.Rand.Intn(len(list.Items))
-	} else {
-		if num >= len(list.Items) {
-			return true, s.Reply("Index out of range.")
-		}
+	} else if num >= len(list.Items) {
+		return true, s.Reply("Index out of range.")
 	}
 
 	item := list.Items[num]
