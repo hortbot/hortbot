@@ -21,6 +21,10 @@ import (
 
 const rdbKey = "auth_state"
 
+var botScopes = []string{
+	"user_follows_edit",
+}
+
 type App struct {
 	Addr   string
 	RealIP bool
@@ -71,7 +75,8 @@ func (a *App) Run(ctx context.Context) error {
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	state := uuid.Must(uuid.NewV4()).String()
 
-	if botName := chi.URLParam(r, "botName"); botName != "" {
+	botName := chi.URLParam(r, "botName")
+	if botName != "" {
 		state = strings.ToLower(botName) + ":" + state
 	}
 
@@ -80,7 +85,12 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := a.Twitch.AuthCodeURL(state)
+	var extraScopes []string
+	if botName != "" {
+		extraScopes = botScopes
+	}
+
+	url := a.Twitch.AuthCodeURL(state, extraScopes...)
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 
