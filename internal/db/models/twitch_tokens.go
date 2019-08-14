@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -23,14 +24,15 @@ import (
 
 // TwitchToken is an object representing the database table.
 type TwitchToken struct {
-	ID           int64     `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt    time.Time `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	TwitchID     int64     `boil:"twitch_id" json:"twitch_id" toml:"twitch_id" yaml:"twitch_id"`
-	AccessToken  string    `boil:"access_token" json:"access_token" toml:"access_token" yaml:"access_token"`
-	TokenType    string    `boil:"token_type" json:"token_type" toml:"token_type" yaml:"token_type"`
-	RefreshToken string    `boil:"refresh_token" json:"refresh_token" toml:"refresh_token" yaml:"refresh_token"`
-	Expiry       time.Time `boil:"expiry" json:"expiry" toml:"expiry" yaml:"expiry"`
+	ID           int64       `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt    time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt    time.Time   `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	TwitchID     int64       `boil:"twitch_id" json:"twitch_id" toml:"twitch_id" yaml:"twitch_id"`
+	BotName      null.String `boil:"bot_name" json:"bot_name,omitempty" toml:"bot_name" yaml:"bot_name,omitempty"`
+	AccessToken  string      `boil:"access_token" json:"access_token" toml:"access_token" yaml:"access_token"`
+	TokenType    string      `boil:"token_type" json:"token_type" toml:"token_type" yaml:"token_type"`
+	RefreshToken string      `boil:"refresh_token" json:"refresh_token" toml:"refresh_token" yaml:"refresh_token"`
+	Expiry       time.Time   `boil:"expiry" json:"expiry" toml:"expiry" yaml:"expiry"`
 
 	R *twitchTokenR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L twitchTokenL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -41,6 +43,7 @@ var TwitchTokenColumns = struct {
 	CreatedAt    string
 	UpdatedAt    string
 	TwitchID     string
+	BotName      string
 	AccessToken  string
 	TokenType    string
 	RefreshToken string
@@ -50,6 +53,7 @@ var TwitchTokenColumns = struct {
 	CreatedAt:    "created_at",
 	UpdatedAt:    "updated_at",
 	TwitchID:     "twitch_id",
+	BotName:      "bot_name",
 	AccessToken:  "access_token",
 	TokenType:    "token_type",
 	RefreshToken: "refresh_token",
@@ -63,6 +67,7 @@ var TwitchTokenWhere = struct {
 	CreatedAt    whereHelpertime_Time
 	UpdatedAt    whereHelpertime_Time
 	TwitchID     whereHelperint64
+	BotName      whereHelpernull_String
 	AccessToken  whereHelperstring
 	TokenType    whereHelperstring
 	RefreshToken whereHelperstring
@@ -72,6 +77,7 @@ var TwitchTokenWhere = struct {
 	CreatedAt:    whereHelpertime_Time{field: "\"twitch_tokens\".\"created_at\""},
 	UpdatedAt:    whereHelpertime_Time{field: "\"twitch_tokens\".\"updated_at\""},
 	TwitchID:     whereHelperint64{field: "\"twitch_tokens\".\"twitch_id\""},
+	BotName:      whereHelpernull_String{field: "\"twitch_tokens\".\"bot_name\""},
 	AccessToken:  whereHelperstring{field: "\"twitch_tokens\".\"access_token\""},
 	TokenType:    whereHelperstring{field: "\"twitch_tokens\".\"token_type\""},
 	RefreshToken: whereHelperstring{field: "\"twitch_tokens\".\"refresh_token\""},
@@ -95,8 +101,8 @@ func (*twitchTokenR) NewStruct() *twitchTokenR {
 type twitchTokenL struct{}
 
 var (
-	twitchTokenAllColumns            = []string{"id", "created_at", "updated_at", "twitch_id", "access_token", "token_type", "refresh_token", "expiry"}
-	twitchTokenColumnsWithoutDefault = []string{"twitch_id", "access_token", "token_type", "refresh_token", "expiry"}
+	twitchTokenAllColumns            = []string{"id", "created_at", "updated_at", "twitch_id", "bot_name", "access_token", "token_type", "refresh_token", "expiry"}
+	twitchTokenColumnsWithoutDefault = []string{"twitch_id", "bot_name", "access_token", "token_type", "refresh_token", "expiry"}
 	twitchTokenColumnsWithDefault    = []string{"id", "created_at", "updated_at"}
 	twitchTokenPrimaryKeyColumns     = []string{"id"}
 )

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -14,6 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/web/mid"
+	"github.com/volatiletech/null"
 	"go.uber.org/zap"
 )
 
@@ -46,6 +48,7 @@ func (a *App) Run(ctx context.Context) error {
 	r.Use(mid.Recoverer)
 
 	r.Get("/auth/twitch", a.authTwitch)
+	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
 	r.Get("/auth/twitch/callback", a.authTwitchCallback)
 
 	srv := http.Server{
@@ -67,6 +70,10 @@ func (a *App) Run(ctx context.Context) error {
 
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	state := uuid.Must(uuid.NewV4()).String()
+
+	if botName := chi.URLParam(r, "botName"); botName != "" {
+		state = strings.ToLower(botName) + ":" + state
+	}
 
 	if err := a.RDB.Mark(60*60, rdbKey, state); err != nil {
 		httpError(w, http.StatusInternalServerError)
@@ -97,6 +104,11 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var botName string
+	if i := strings.IndexByte(state, ':'); i > 0 {
+		botName = strings.ToLower(state[:i])
+	}
+
 	code := r.FormValue("code")
 
 	tok, err := a.Twitch.Exchange(ctx, code)
@@ -116,12 +128,24 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	tt := modelsx.TokenToModel(user.ID, tok)
 
+	if botName != "" {
+		if botName != user.Name {
+			httpError(w, http.StatusBadRequest)
+			return
+		}
+		tt.BotName = null.StringFrom(botName)
+	}
+
 	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprintf(w, "Success for user %s (%d).\n", user.Name, user.ID)
+	if botName == "" {
+		fmt.Fprintf(w, "Success for user %s (%d).\n", user.Name, user.ID)
+	} else {
+		fmt.Fprintf(w, "Success for user %s (%d) as bot.\n", user.Name, user.ID)
+	}
 }
 
 func httpError(w http.ResponseWriter, code int) {

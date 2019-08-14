@@ -159,6 +159,7 @@ CREATE TABLE twitch_tokens (
     updated_at timestamptz DEFAULT NOW() NOT NULL,
 
     twitch_id bigint NOT NULL UNIQUE,
+    bot_name text UNIQUE,
 
     access_token text NOT NULL,
     token_type text NOT NULL,

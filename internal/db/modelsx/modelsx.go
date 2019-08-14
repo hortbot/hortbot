@@ -32,6 +32,7 @@ func ModelToToken(tt *models.TwitchToken) *oauth2.Token {
 
 var tokenUpdate = boil.Whitelist(
 	models.TwitchTokenColumns.UpdatedAt,
+	models.TwitchTokenColumns.BotName,
 	models.TwitchTokenColumns.AccessToken,
 	models.TwitchTokenColumns.TokenType,
 	models.TwitchTokenColumns.RefreshToken,
