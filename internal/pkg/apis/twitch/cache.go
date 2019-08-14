@@ -88,8 +88,8 @@ func (ca *CachedAPI) GetChatters(ctx context.Context, channel string) (*Chatters
 	return ca.api.GetChatters(ctx, channel)
 }
 
-func (ca *CachedAPI) GetIDForToken(ctx context.Context, userToken *oauth2.Token) (int64, *oauth2.Token, error) {
-	return ca.api.GetIDForToken(ctx, userToken)
+func (ca *CachedAPI) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
+	return ca.api.GetUserForToken(ctx, userToken)
 }
 
 func (ca *CachedAPI) SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (string, *oauth2.Token, error) {

@@ -308,7 +308,8 @@ func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
 
 	return httpmock.NewJsonResponse(200, map[string]interface{}{
 		"token": map[string]interface{}{
-			"user_id": c.ID,
+			"user_id":   c.ID,
+			"user_name": c.Name,
 		},
 	})
 }

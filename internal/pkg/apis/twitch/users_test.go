@@ -11,7 +11,7 @@ import (
 	"gotest.tools/assert"
 )
 
-func TestGetIDForToken(t *testing.T) {
+func TestGetUserForToken(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -21,6 +21,7 @@ func TestGetIDForToken(t *testing.T) {
 
 	c := &twitch.Channel{
 		ID:     1234,
+		Name:   "someone",
 		Status: "What a cool stream!",
 		Game:   "Garry's Mod",
 	}
@@ -33,13 +34,14 @@ func TestGetIDForToken(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-	id, newToken, err := tw.GetIDForToken(ctx, tok)
+	user, newToken, err := tw.GetUserForToken(ctx, tok)
 	assert.NilError(t, err)
-	assert.Equal(t, id, c.ID.AsInt64())
+	assert.Equal(t, user.ID, c.ID.AsInt64())
+	assert.Equal(t, user.Name, c.Name)
 	assert.Assert(t, newToken == nil)
 }
 
-func TestGetIDForTokenServerError(t *testing.T) {
+func TestGetUserForTokenServerError(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -61,11 +63,11 @@ func TestGetIDForTokenServerError(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-	_, _, err = tw.GetIDForToken(ctx, tok)
+	_, _, err = tw.GetUserForToken(ctx, tok)
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
-func TestGetIDForTokenDecodeError(t *testing.T) {
+func TestGetUserForTokenDecodeError(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -87,7 +89,7 @@ func TestGetIDForTokenDecodeError(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-	_, _, err = tw.GetIDForToken(ctx, tok)
+	_, _, err = tw.GetUserForToken(ctx, tok)
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 

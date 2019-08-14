@@ -92,9 +92,9 @@ func newFakeTwitch(t testing.TB) *twitchfakes.FakeAPI {
 		return nil, nil
 	})
 
-	f.GetIDForTokenCalls(func(context.Context, *oauth2.Token) (int64, *oauth2.Token, error) {
-		t.Fatal("GetIDForToken not implemented")
-		return 0, nil, nil
+	f.GetUserForTokenCalls(func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
+		t.Fatal("GetUserForToken not implemented")
+		return nil, nil, nil
 	})
 
 	f.GetIDForUsernameCalls(func(context.Context, string) (int64, error) {

@@ -105,7 +105,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, newToken, err := a.Twitch.GetIDForToken(ctx, tok)
+	user, newToken, err := a.Twitch.GetUserForToken(ctx, tok)
 	if err != nil {
 		httpError(w, http.StatusInternalServerError)
 		return
@@ -114,14 +114,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		tok = newToken
 	}
 
-	tt := modelsx.TokenToModel(id, tok)
+	tt := modelsx.TokenToModel(user.ID, tok)
 
 	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
 
-	fmt.Fprintf(w, "Success for user %d.\n", id)
+	fmt.Fprintf(w, "Success for user %s (%d).\n", user.Name, user.ID)
 }
 
 func httpError(w http.ResponseWriter, code int) {

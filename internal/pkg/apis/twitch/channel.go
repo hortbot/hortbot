@@ -13,6 +13,7 @@ import (
 // needed in the future).
 type Channel struct {
 	ID     IDStr  `json:"_id"`
+	Name   string `json:"name"`
 	Game   string `json:"game"`
 	Status string `json:"status"`
 }

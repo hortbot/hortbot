@@ -9,33 +9,42 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// GetIDForToken gets the Twitch user ID for the specified token.
+type User struct {
+	ID   int64  `json:"user_id"`
+	Name string `json:"user_name"`
+}
+
+// GetUserForToken gets the Twitch user for the specified token.
 //
 // GET https://api.twitch.tv/kraken
-func (t *Twitch) GetIDForToken(ctx context.Context, userToken *oauth2.Token) (id int64, newToken *oauth2.Token, err error) {
+func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
 	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
 
 	resp, err := cli.Get(ctx, krakenRoot)
 	if err != nil {
-		return 0, newToken, err
+		return nil, newToken, err
 	}
 	defer resp.Body.Close()
 
 	if err := statusToError(resp.StatusCode); err != nil {
-		return 0, newToken, err
+		return nil, newToken, err
 	}
 
 	body := &struct {
 		Token struct {
-			UserID IDStr `json:"user_id"`
+			ID   IDStr  `json:"user_id"`
+			Name string `json:"user_name"`
 		} `json:"token"`
 	}{}
 
 	if err := json.NewDecoder(resp.Body).Decode(body); err != nil {
-		return 0, newToken, ErrServerError
+		return nil, newToken, ErrServerError
 	}
 
-	return body.Token.UserID.AsInt64(), newToken, nil
+	return &User{
+		ID:   body.Token.ID.AsInt64(),
+		Name: body.Token.Name,
+	}, newToken, nil
 }
 
 // GetIDForUsername gets the Twitch user ID for the specified username.
