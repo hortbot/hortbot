@@ -58,6 +58,7 @@ func init() {
 		"whatshouldiplay": {fn: cmdWhatShouldIPlay, minLevel: levelBroadcaster},
 		"statusgame":      {fn: cmdStatusGame, minLevel: levelModerator},
 		"steamgame":       {fn: cmdSteamGame, minLevel: levelModerator},
+		"winner":          {fn: cmdWinner, minLevel: levelModerator},
 	})
 }
 

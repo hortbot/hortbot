@@ -99,8 +99,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Similarly to quotes, emulate old list behavior
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
-    - [ ] Winner
-        - Expand to pick from only subs
+    - [x] Winner
     - [x] ~~Hug~~ (Use a custom command.)
     - [x] Conch/helix (Requires quotes)
     - [ ] Urban
@@ -108,7 +107,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] ~~Race~~
     - [x] XKCD
 - [ ] Random/roll
-    - [x] ~~`regular`/`sub`~~ The Twitch TMI endpoint doesn't identify users as subs.
+    - [x] ~~`regular`~~ Implement later on subs.
     - [x] Cooldowns
     - [x] Integer
     - [x] Dice
@@ -318,6 +317,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [ ] HowLongToBeat queries
 - [ ] Get a link to game stores other than Steam
 - [ ] List cloning
+- [ ] Random stuff over subs.
 
 ### Actions
 

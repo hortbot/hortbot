@@ -329,3 +329,44 @@ func cmdUnhost(ctx context.Context, s *session, cmd string, args string) error {
 
 	return s.Reply("Exited host mode.")
 }
+
+func cmdWinner(ctx context.Context, s *session, cmd string, args string) error {
+	chatters, err := s.TwitchChatters(ctx)
+	switch err {
+	case twitch.ErrServerError, twitch.ErrNotFound:
+		return s.Reply(twitchServerErrorReply)
+	case nil:
+	default:
+		return err
+	}
+
+	lists := [][]string{
+		chatters.Chatters.Vips,
+		chatters.Chatters.Moderators,
+		chatters.Chatters.Staff,
+		chatters.Chatters.Admins,
+		chatters.Chatters.GlobalMods,
+		chatters.Chatters.Viewers,
+	}
+
+	count := 0
+	for _, l := range lists {
+		count += len(l)
+	}
+
+	if count == 0 {
+		return s.Reply("Nobody in chat.")
+	}
+
+	i := s.Deps.Rand.Intn(count)
+
+	for _, l := range lists {
+		if i < len(l) {
+			return s.Reply("And the winner is... " + l[i])
+		}
+
+		i -= len(l)
+	}
+
+	panic("unreachable")
+}
