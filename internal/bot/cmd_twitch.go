@@ -362,7 +362,7 @@ func cmdWinner(ctx context.Context, s *session, cmd string, args string) error {
 
 	for _, l := range lists {
 		if i < len(l) {
-			return s.Reply("And the winner is... " + l[i])
+			return s.Reply("And the winner is... " + l[i] + "!")
 		}
 
 		i -= len(l)

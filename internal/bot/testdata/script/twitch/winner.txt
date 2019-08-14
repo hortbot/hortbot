@@ -14,55 +14,55 @@ send hortbot #foobar [HB] Nobody in chat.
 
 twitch_get_chatters {"Channel": "foobar", "Chatters": {"chatters": {"broadcaster": ["foobar"], "vips": ["vipman", "vip2"], "moderators": ["modman"], "staff": ["staffer"], "admins": ["administrator"], "global_mods": ["gmod"], "viewers": ["user1", "user2", "user3"]}}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... gmod
+send hortbot #foobar [HB] And the winner is... gmod!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user1
+send hortbot #foobar [HB] And the winner is... user1!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... modman
+send hortbot #foobar [HB] And the winner is... modman!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... modman
+send hortbot #foobar [HB] And the winner is... modman!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... administrator
+send hortbot #foobar [HB] And the winner is... administrator!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user1
+send hortbot #foobar [HB] And the winner is... user1!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user2
+send hortbot #foobar [HB] And the winner is... user2!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user3
+send hortbot #foobar [HB] And the winner is... user3!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... administrator
+send hortbot #foobar [HB] And the winner is... administrator!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user1
+send hortbot #foobar [HB] And the winner is... user1!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... gmod
+send hortbot #foobar [HB] And the winner is... gmod!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user2
+send hortbot #foobar [HB] And the winner is... user2!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... staffer
+send hortbot #foobar [HB] And the winner is... staffer!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... modman
+send hortbot #foobar [HB] And the winner is... modman!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... administrator
+send hortbot #foobar [HB] And the winner is... administrator!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... user3
+send hortbot #foobar [HB] And the winner is... user3!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!winner
-send hortbot #foobar [HB] And the winner is... vipman
+send hortbot #foobar [HB] And the winner is... vipman!
 
 
 twitch_get_chatters {"Channel": "foobar", "Err": "ErrServerError"}
