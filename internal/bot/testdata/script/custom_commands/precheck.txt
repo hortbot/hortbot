@@ -1,0 +1,31 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda test1 (_PURGE_)
+send hortbot #foobar [HB] Command 'test1' added, restricted to everyone and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test2 (_PURGE_)
+send hortbot #foobar [HB] Command 'test2' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test3 (_TIMEOUT_)
+send hortbot #foobar [HB] Command 'test3' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test4 (_BAN_)
+send hortbot #foobar [HB] Command 'test4' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test5 (_SUBMODE_ON_)
+send hortbot #foobar [HB] Command 'test5' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test6 (_SUBMODE_OFF_)
+send hortbot #foobar [HB] Command 'test6' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test7 (_VARS_foo_SET_1_)
+send hortbot #foobar [HB] Command 'test7' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test8 (_VARS_foo_INCREMENT_1_)
+send hortbot #foobar [HB] Command 'test8' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test9 (_VARS_foo_DECREMENT_1_)
+send hortbot #foobar [HB] Command 'test9' added, restricted to moderators and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test10 (_VARS_what_GET_foobar_)
+send hortbot #foobar [HB] Command 'test10' added, restricted to subscribers and above.

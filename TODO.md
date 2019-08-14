@@ -68,16 +68,16 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] ~~Wiki~~
     - [x] Is live (*Twitch API*)
     - [x] Is here (*Twitch API*)
-- [ ] Custom Commands
+- [x] Custom Commands
     - [x] Cooldowns
     - [x] Add
     - [x] Delete
     - [x] Restrict
     - [x] Rename (undocumented)
     - [x] Editor (undocumented)
-    - [ ] Link to list of commands (*Website*)
     - [x] Clone
-    - [ ] Automatic restriction based on known actions
+    - [x] Automatic restriction based on known actions
+    - [ ] Link to list of commands (*Website*)
 - [x] Repeats
     - [x] Add
     - [x] Delete
@@ -113,7 +113,6 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Dice
     - [x] Default
 - [x] Quotes
-    - [ ] Link to quotes page on website (*Website*)
     - [x] Add
     - [x] Delete
     - [x] Get
@@ -121,6 +120,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Random
     - [x] Search
     - [x] CoeBot would delete a quote and shift quotes after it backwards; HortBot doesn't. There needs to be a command to emulate this behavior.
+    - [ ] Link to quotes page on website (*Website*)
 - [x] ~~Poll~~
 - [x] ~~Giveaways~~
 - [x] Raffles

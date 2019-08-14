@@ -128,6 +128,22 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 		return s.Replyf("Your level is %s; you cannot %s a command with level %s.", s.UserLevel.PGEnum(), a, level.PGEnum())
 	}
 
+	if !forceLevel {
+		orig := level
+		level = levelModerator
+
+		switch {
+		case strings.Contains(text, "(_PURGE_)"):
+		case strings.Contains(text, "(_TIMEOUT_)"):
+		case strings.Contains(text, "(_BAN_)"):
+		case strings.Contains(text, "(_VARS_") && (strings.Contains(text, "_INCREMENT_") || strings.Contains(text, "_DECREMENT_") || strings.Contains(text, "_SET_")):
+		case strings.Contains(text, "(_SUBMODE_ON_)"):
+		case strings.Contains(text, "(_SUBMODE_OFF_)"):
+		default:
+			level = orig
+		}
+	}
+
 	if update {
 		if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 			al := flect.Pluralize(info.AccessLevel)
