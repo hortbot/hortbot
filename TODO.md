@@ -238,7 +238,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Get
     - [x] Random
     - [x] Actually execute the commands rather than printing them verbatim.
-- [ ] Misc undocumented stuff
+- [x] Misc undocumented stuff
     - [x] ~~Weird testing commands~~ (Twitch resubs are no longer sent in PRIVMSGs)
     - [x] Steam game
     - [x] Extra Life stuff
@@ -249,7 +249,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] ~~`properties`~~ (This endpoint has been removed.)
     - [x] ~~`songrequest`~~
     - [x] ~~`sendUpdate`~~
-    - [ ] Custom commands from another channel (`#<user>/`)
+    - [x] Custom commands from another channel (`!#<user>/<command> ...`)
     - [x] ~~`modchan`~~ Use `!set mode`
     - [x] ~~`rejoin`~~
     - [x] `link`

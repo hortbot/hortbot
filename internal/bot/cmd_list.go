@@ -290,7 +290,7 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 	}
 }
 
-func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool, error) {
+func handleList(ctx context.Context, s *session, info *models.CommandInfo, update bool) (bool, error) {
 	args := s.OrigCommandParams
 	cmd, args := splitSpace(args)
 	cmd = strings.ToLower(cmd)
@@ -364,7 +364,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo) (bool
 	s.CommandParams = args
 	s.OrigCommandParams = args
 
-	return true, runCommandAndCount(ctx, s, info, item)
+	return true, runCommandAndCount(ctx, s, info, item, update)
 }
 
 func handleListRestrict(ctx context.Context, s *session, info *models.CommandInfo, level string, usage func() error) error {

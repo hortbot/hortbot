@@ -331,7 +331,14 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	}
 
-	name = cleanCommandName(name[len(prefix):])
+	name = name[len(prefix):]
+
+	var foreignChannel string
+	if strings.HasPrefix(name, "#") && s.UserLevel.CanAccess(levelBroadcaster) {
+		foreignChannel, name = splitFirstSep(name[1:], "/")
+	}
+
+	name = cleanCommandName(name)
 
 	if name == "" {
 		return false, nil
@@ -339,10 +346,25 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	s.CommandParams = params
 	s.OrigCommandParams = params
+	thisChannel := foreignChannel == ""
 
-	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params))
+	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params), zap.Bool("foreign", !thisChannel))
 
-	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name, true)
+	channelID := s.Channel.ID
+
+	if !thisChannel {
+		foreignChannel = strings.ToLower(foreignChannel)
+		otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(foreignChannel)).One(ctx, s.Tx)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return false, nil
+			}
+			return false, err
+		}
+		channelID = otherChannel.ID
+	}
+
+	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, channelID, name, thisChannel)
 	if err != nil {
 		logger.Error("error looking up command name in database", zap.Error(err))
 		return true, err
@@ -357,10 +379,10 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	}
 
 	if commandMsg.Valid {
-		return handleCustomCommand(ctx, s, info, commandMsg.String)
+		return handleCustomCommand(ctx, s, info, commandMsg.String, thisChannel)
 	}
 
-	return handleList(ctx, s, info)
+	return handleList(ctx, s, info, thisChannel)
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {

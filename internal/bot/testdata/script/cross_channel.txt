@@ -1,0 +1,37 @@
+join hortbot 999 foobar 1
+join hortbot 999 otherchan 9
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+send hortbot #otherchan [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=9;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=9;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+no_send
+
+handle hortbot @id=__UUID__;room-id=9;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add thing 1
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add thing 2
+send_any
+
+
+handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/mylist get 1
+send hortbot #otherchan [HB] thing 1

@@ -12,14 +12,14 @@ import (
 	"go.uber.org/zap"
 )
 
-func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string) (bool, error) {
+func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) (bool, error) {
 	if err := s.TryCooldown(); err != nil {
 		return false, err
 	}
-	return true, runCommandAndCount(ctx, s, info, message)
+	return true, runCommandAndCount(ctx, s, info, message, update)
 }
 
-func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string) error {
+func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) error {
 	ctx = withCommandGuard(ctx, info.Name)
 
 	reply, err := processCommand(ctx, s, message)
@@ -29,6 +29,10 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 
 	if err := s.Reply(reply); err != nil {
 		return err
+	}
+
+	if !update {
+		return nil
 	}
 
 	info.Count++
