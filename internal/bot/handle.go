@@ -310,8 +310,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	}
 
-	channel := s.Channel
-	prefix := channel.Prefix
+	prefix := s.Channel.Prefix
 	message := s.Message
 
 	name, params := splitSpace(message)
@@ -325,6 +324,10 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		case ok:
 			return true, nil
 		}
+	}
+
+	if name == "+whatprefix" && s.UserLevel.CanAccess(levelAdmin) {
+		return true, s.Reply("The prefix for this channel is: " + prefix)
 	}
 
 	if !strings.HasPrefix(name, prefix) {

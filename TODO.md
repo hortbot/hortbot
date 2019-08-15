@@ -206,7 +206,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [ ] Administration
     - [x] ~~`verboseLogging`~~
     - [ ] `imp`
-    - [ ] `+whatprefix`
+    - [x] `+whatprefix`
     - [x] ~~`altsend`~~ There is no "alt" connection, so this doesn't have a meaning (but may if send priorities/rate limiting is added later).
     - [x] ~~`disconnect`~~
     - [x] `admin`
