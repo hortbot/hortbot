@@ -97,6 +97,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] List
     - [x] Actions inside of autoreply responses
     - [x] Similarly to quotes, emulate old list behavior
+    - [ ] Link to list of autoreplies (*Website*)
 - [ ] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
     - [x] Winner

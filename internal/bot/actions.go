@@ -89,23 +89,26 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		// TODO: check user level
 		return "", s.SendCommand("unhost")
 	case "PURGE":
-		if u := s.UserForModAction(); u != "" {
-			return "", s.SendCommand("timeout", u, "1")
+		u, do := s.UserForModAction()
+		if do && u != "" {
+			return u, s.SendCommand("timeout", strings.ToLower(u), "1")
 		}
-		return "", nil
+		return u, nil
 	case "TIMEOUT":
-		if u := s.UserForModAction(); u != "" {
-			return "", s.SendCommand("timeout", u)
+		u, do := s.UserForModAction()
+		if do && u != "" {
+			return u, s.SendCommand("timeout", strings.ToLower(u))
 		}
-		return "", nil
+		return u, nil
 	case "BAN":
-		if u := s.UserForModAction(); u != "" {
-			return "", s.SendCommand("ban", u)
+		u, do := s.UserForModAction()
+		if do && u != "" {
+			return u, s.SendCommand("ban", strings.ToLower(u))
 		}
-		return "", nil
+		return u, nil
 	case "DELETE":
 		if s.Type == sessionAutoreply {
-			return "", s.DeleteMessage()
+			return s.User, s.DeleteMessage()
 		}
 		return "", nil
 	case "REGULARS_ONLY":
@@ -357,16 +360,16 @@ func (s *session) FirstParameter() string {
 	return strings.TrimSpace(param)
 }
 
-func (s *session) UserForModAction() string {
+func (s *session) UserForModAction() (string, bool) {
 	switch {
 	case s.Type == sessionAutoreply:
-		return s.User
+		return s.User, true
 	case s.UserLevel.CanAccess(levelModerator):
 		p := s.FirstParameter()
 		p, _ = splitSpace(p)
-		return strings.ToLower(p)
+		return p, true
 	default:
-		return ""
+		return s.User, false
 	}
 }
 
