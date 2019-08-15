@@ -35,3 +35,7 @@ send_any
 
 handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/mylist get 1
 send hortbot #otherchan [HB] thing 1
+
+
+handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#who/mylist get 1
+send hortbot #otherchan [HB] Channel who does not exist.

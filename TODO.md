@@ -203,9 +203,9 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
         - [x] `caps`
         - [x] `emotes`
         - [x] `symbols`
-- [ ] Administration
+- [x] Administration
     - [x] ~~`verboseLogging`~~
-    - [ ] `imp`
+    - [x] `imp` - Moved to `!admin imp`
     - [x] `+whatprefix`
     - [x] ~~`altsend`~~ There is no "alt" connection, so this doesn't have a meaning (but may if send priorities/rate limiting is added later).
     - [x] ~~`disconnect`~~

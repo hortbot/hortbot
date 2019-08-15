@@ -64,6 +64,7 @@ type session struct {
 	OrigCommandParams string
 
 	Silent bool
+	Imp    bool
 
 	usageContext   string
 	links          *[]*url.URL

@@ -230,22 +230,24 @@ func handleSession(ctx context.Context, s *session) error {
 		return err
 	}
 
-	if !channel.Active {
-		logger.Warn("channel is not active")
-		return nil
-	}
+	if !s.Imp {
+		if !channel.Active {
+			logger.Warn("channel is not active")
+			return nil
+		}
 
-	if channel.Name != s.IRCChannel {
-		logger.Error("channel name mismatch", zap.String("fromMessage", s.IRCChannel), zap.String("fromDB", channel.Name))
-		return errors.New("channel name mismatch") // TODO
-	}
+		if channel.Name != s.IRCChannel {
+			logger.Error("channel name mismatch", zap.String("fromMessage", s.IRCChannel), zap.String("fromDB", channel.Name))
+			return errors.New("channel name mismatch") // TODO
+		}
 
-	if channel.BotName != s.Origin {
-		logger.Warn("bot name mismatch",
-			zap.String("expected", channel.BotName),
-			zap.String("origin", s.Origin),
-		)
-		return nil
+		if channel.BotName != s.Origin {
+			logger.Warn("bot name mismatch",
+				zap.String("expected", channel.BotName),
+				zap.String("origin", s.Origin),
+			)
+			return nil
+		}
 	}
 
 	s.Channel = channel
@@ -360,9 +362,9 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(foreignChannel)).One(ctx, s.Tx)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				return false, nil
+				return true, s.Replyf("Channel %s does not exist.", foreignChannel)
 			}
-			return false, err
+			return true, err
 		}
 		channelID = otherChannel.ID
 	}

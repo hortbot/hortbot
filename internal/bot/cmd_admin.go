@@ -10,14 +10,20 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-var adminCommands = newHandlerMap(map[string]handlerFunc{
-	"roundtrip": {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
-	"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
-	"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
-	"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
-	"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
-	"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
-})
+var adminCommands handlerMap
+
+func init() {
+	// To prevent initialization loop.
+	adminCommands = newHandlerMap(map[string]handlerFunc{
+		"roundtrip": {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
+		"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
+		"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
+		"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
+		"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
+		"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
+		"imp":       {fn: cmdAdminImp, minLevel: levelAdmin},
+	})
+}
 
 func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand, args := splitSpace(args)
@@ -146,4 +152,27 @@ func cmdAdminSpam(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	return s.Reply(builder.String())
+}
+
+func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error {
+	name, msg := splitSpace(args)
+	name = strings.ToLower(name)
+
+	if name == "" {
+		return s.ReplyUsage("<channel> <message>")
+	}
+
+	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return s.Replyf("Channel %s does not exist.", name)
+		}
+		return err
+	}
+
+	s.RoomID = otherChannel.UserID
+	s.Message = msg
+	s.Imp = true
+
+	return handleSession(ctx, s)
 }
