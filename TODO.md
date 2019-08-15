@@ -107,7 +107,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] ~~Me~~ (Use a custom command.)
     - [x] ~~Race~~
     - [x] XKCD
-- [ ] Random/roll
+- [x] Random/roll
     - [x] ~~`regular`~~ Implement later on subs.
     - [x] Cooldowns
     - [x] Integer
