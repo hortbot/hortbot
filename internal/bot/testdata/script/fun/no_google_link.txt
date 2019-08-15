@@ -1,0 +1,8 @@
+no_tiny_url
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!google this is a test
+send hortbot #foobar [HB] https://google.com/search?q=this+is+a+test
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!link Something interesting
+send hortbot #foobar [HB] Link to "Something interesting": https://lmgtfy.com/?q=Something+interesting

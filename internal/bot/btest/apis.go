@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"gotest.tools/assert"
 )
@@ -169,6 +170,42 @@ func (st *scriptTester) steamGetOwnedGames(t testing.TB, directive, args string,
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
 			return call.Games, steamErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) noTinyURL(t testing.TB, directive, args string, lineNum int) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable TinyURL")
+		st.bc.TinyURL = nil
+	})
+}
+
+func (st *scriptTester) tinyURLShorten(t testing.TB, directive, args string, lineNum int) {
+	var call struct {
+		Link string
+
+		Short string
+		Err   string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.tinyURL.ShortenCalls(func(_ context.Context, link string) (string, error) {
+			assert.Equal(t, link, call.Link, "line %d", lineNum)
+
+			var err error
+			switch call.Err {
+			case "ErrServerError":
+				err = tinyurl.ErrServerError
+			case "":
+			default:
+				t.Fatalf("unknown error type %s: line %d", call.Err, lineNum)
+			}
+
+			return call.Short, err
 		})
 	})
 }

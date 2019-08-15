@@ -64,7 +64,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] ~~Viewer stats~~ (Use twitchtracker or sullygnome)
     - [x] ~~Punish stats~~ Twitch provides some element of this already; could bring back if wanted.
     - [x] What should I play (*Steam API*)
-    - [ ] Google
+    - [x] Google
     - [x] ~~Wiki~~
     - [x] Is live (*Twitch API*)
     - [x] Is here (*Twitch API*)
@@ -251,6 +251,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [ ] Custom commands from another channel (`#<user>/`)
     - [x] ~~`modchan`~~ Use `!set mode`
     - [x] ~~`rejoin`~~
+    - [x] `link`
 
 ### Actions (string replacements)
 

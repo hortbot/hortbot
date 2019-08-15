@@ -11,6 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam/steamfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl/tinyurlfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
@@ -136,6 +137,17 @@ func newFakeSteam(t testing.TB) *steamfakes.FakeAPI {
 	f.GetOwnedGamesCalls(func(context.Context, string) ([]*steam.Game, error) {
 		t.Fatal("GetOwnedGames not implemented")
 		return nil, nil
+	})
+
+	return f
+}
+
+func newTinyURL(t testing.TB) *tinyurlfakes.FakeAPI {
+	f := &tinyurlfakes.FakeAPI{}
+
+	f.ShortenCalls(func(context.Context, string) (string, error) {
+		t.Fatal("Shorten not implemented")
+		return "", nil
 	})
 
 	return f

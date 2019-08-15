@@ -16,6 +16,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -170,6 +171,7 @@ func main() {
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
+	// TODO: Combine clients
 	bc := &bot.Config{
 		DB:               db,
 		RDB:              botRDB,
@@ -182,6 +184,7 @@ func main() {
 		ExtraLife:        extralife.New(),
 		Twitch:           twitchAPI,
 		Steam:            steamAPI,
+		TinyURL:          tinyurl.New(),
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

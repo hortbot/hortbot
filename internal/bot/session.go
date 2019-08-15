@@ -13,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
@@ -395,4 +396,16 @@ func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 
 	s.steamGames = &games
 	return games, nil
+}
+
+func (s *session) ShortenLink(ctx context.Context, link string) (string, error) {
+	if s.Deps.TinyURL == nil {
+		return link, nil
+	}
+
+	short, err := s.Deps.TinyURL.Shorten(ctx, link)
+	if err == tinyurl.ErrServerError {
+		return link, nil
+	}
+	return short, err
 }

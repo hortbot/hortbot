@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"net/url"
 	"strconv"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
@@ -68,4 +69,29 @@ func cmdXKCD(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	return s.Replyf("XKCD Comic #%d Title: %s; Image: %s ; Alt-Text: %s", id, c.Title, c.Img, c.Alt)
+}
+
+func cmdGoogle(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.ReplyUsage("<query>")
+	}
+
+	link, err := s.ShortenLink(ctx, "https://google.com/search?q="+url.QueryEscape(args))
+	if err != nil {
+		return err
+	}
+
+	return s.Reply(link)
+}
+
+func cmdLink(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.ReplyUsage("<query>")
+	}
+
+	link, err := s.ShortenLink(ctx, "https://lmgtfy.com/?q="+url.QueryEscape(args))
+	if err != nil {
+		return err
+	}
+	return s.Replyf(`Link to "%s": %s`, args, link)
 }

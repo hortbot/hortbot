@@ -1,0 +1,32 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!google
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!link
+no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!google
+send hortbot #foobar [HB] Usage: !google <query>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!link
+send hortbot #foobar [HB] Usage: !link <query>
+
+
+tiny_url_shorten {"Link": "https://google.com/search?q=this+is+a+test", "Short": "https://tinyurl.com/y2pebppj"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!google this is a test
+send hortbot #foobar [HB] https://tinyurl.com/y2pebppj
+
+tiny_url_shorten {"Link": "https://lmgtfy.com/?q=Something+interesting", "Short": "https://tinyurl.com/y4on389z"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!link Something interesting
+send hortbot #foobar [HB] Link to "Something interesting": https://tinyurl.com/y4on389z
+
+
+tiny_url_shorten {"Link": "https://google.com/search?q=this+is+a+test", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!google this is a test
+send hortbot #foobar [HB] https://google.com/search?q=this+is+a+test
+
+tiny_url_shorten {"Link": "https://lmgtfy.com/?q=Something+interesting", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!link Something interesting
+send hortbot #foobar [HB] Link to "Something interesting": https://lmgtfy.com/?q=Something+interesting

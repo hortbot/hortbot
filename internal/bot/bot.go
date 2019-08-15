@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
@@ -41,6 +42,7 @@ type Config struct {
 	ExtraLife extralife.API
 	Twitch    twitch.API
 	Steam     steam.API
+	TinyURL   tinyurl.API
 
 	Prefix   string
 	Bullet   string
@@ -94,6 +96,7 @@ func New(config *Config) *Bot {
 		ExtraLife:       config.ExtraLife,
 		Twitch:          config.Twitch,
 		Steam:           config.Steam,
+		TinyURL:         config.TinyURL,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
 	}
