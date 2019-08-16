@@ -11,12 +11,15 @@ import (
 	"golang.org/x/net/context/ctxhttp"
 )
 
+//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
 var (
 	ErrNotFound    = errors.New("urban: not found")
 	ErrServerError = errors.New("urban: server error")
 	ErrUnknown     = errors.New("urban: unknown error")
 )
 
+//counterfeiter:generate . API
 type API interface{}
 
 type Urban struct {
