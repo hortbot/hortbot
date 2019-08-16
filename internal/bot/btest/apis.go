@@ -11,6 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
+	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"gotest.tools/assert"
 )
@@ -206,6 +207,46 @@ func (st *scriptTester) tinyURLShorten(t testing.TB, directive, args string, lin
 			}
 
 			return call.Short, err
+		})
+	})
+}
+
+func (st *scriptTester) noUrban(t testing.TB, directive, args string, lineNum int) {
+	st.addAction(func(ctx context.Context) {
+		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Urban")
+		st.bc.Urban = nil
+	})
+}
+
+func (st *scriptTester) urbanDefine(t testing.TB, directive, args string, lineNum int) {
+	var call struct {
+		Phrase string
+
+		Def string
+		Err string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.urban.DefineCalls(func(_ context.Context, s string) (string, error) {
+			assert.Equal(t, s, call.Phrase, "line %d", lineNum)
+
+			var err error
+			switch call.Err {
+			case "ErrNotFound":
+				err = urban.ErrNotFound
+			case "ErrServerError":
+				err = urban.ErrServerError
+			case "ErrUnknown":
+				err = urban.ErrUnknown
+			case "":
+			default:
+				t.Fatalf("unknown error type %s: line %d", call.Err, lineNum)
+			}
+
+			return call.Def, err
 		})
 	})
 }

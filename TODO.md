@@ -98,12 +98,12 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] Actions inside of autoreply responses
     - [x] Similarly to quotes, emulate old list behavior
     - [ ] Link to list of autoreplies (*Website*)
-- [ ] "Fun"
+- [x] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
     - [x] Winner
     - [x] ~~Hug~~ (Use a custom command.)
     - [x] Conch/helix (Requires quotes)
-    - [ ] Urban
+    - [x] Urban
     - [x] ~~Me~~ (Use a custom command.)
     - [x] ~~Race~~
     - [x] XKCD
@@ -161,7 +161,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
         - [x] `userlevel`
     - [x] ~~`songrequest`~~
     - [x] `extralifeid`
-    - [ ] `urban`
+    - [x] `urban`
     - [x] ~~`gamertag`~~
     - [x] `bullet`
     - [x] `subsRegsMinusLinks` AKA `subsMayLink` (see "differences" above)

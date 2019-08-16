@@ -1,0 +1,20 @@
+join hortbot 99 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban
+send hortbot #foobar [HB] urban is set to false.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban off
+send hortbot #foobar [HB] Urban Dictionary is already disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban on
+send hortbot #foobar [HB] Urban Dictionary is now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban on
+send hortbot #foobar [HB] Urban Dictionary is already enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban
+send hortbot #foobar [HB] urban is set to true.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban off
+send hortbot #foobar [HB] Urban Dictionary is now disabled.

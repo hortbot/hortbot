@@ -1,0 +1,40 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set urban on
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown 5
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!urban
+no_send
+
+urban_define {"Phrase": "something", "Def": "It's something."}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!urban something
+send hortbot #foobar [HB] "It's something."
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!urban something
+no_send
+
+
+clock_forward 1h
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!urban something
+send hortbot #foobar [HB] "It's something."
+
+
+urban_define {"Phrase": "something", "Err": "ErrNotFound"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!urban something
+send hortbot #foobar [HB] Definition not found.
+
+
+urban_define {"Phrase": "something", "Err": "ErrServerError"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!urban something
+send hortbot #foobar [HB] An Urban Dictionary server error has occurred.
+
+
+urban_define {"Phrase": "something", "Err": "ErrUnknown"}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!urban something
+no_send

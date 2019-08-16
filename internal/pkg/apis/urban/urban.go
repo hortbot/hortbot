@@ -20,7 +20,9 @@ var (
 )
 
 //counterfeiter:generate . API
-type API interface{}
+type API interface {
+	Define(ctx context.Context, s string) (string, error)
+}
 
 type Urban struct {
 	cli *http.Client

@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 )
 
@@ -94,4 +95,27 @@ func cmdLink(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 	return s.Replyf(`Link to "%s": %s`, args, link)
+}
+
+func cmdUrban(ctx context.Context, s *session, cmd string, args string) error {
+	if s.Deps.Urban == nil || !s.Channel.UrbanEnabled || args == "" {
+		return errBuiltinDisabled
+	}
+
+	if err := s.TryCooldown(); err != nil {
+		return err
+	}
+
+	def, err := s.Deps.Urban.Define(ctx, args)
+	switch err {
+	case nil:
+	case urban.ErrNotFound:
+		return s.Reply("Definition not found.")
+	case urban.ErrServerError:
+		return s.Reply("An Urban Dictionary server error has occurred.")
+	default:
+		return err
+	}
+
+	return s.Replyf(`"%s"`, def)
 }

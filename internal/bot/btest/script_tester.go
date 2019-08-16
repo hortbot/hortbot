@@ -21,6 +21,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam/steamfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl/tinyurlfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/urban/urbanfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube/youtubefakes"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
@@ -67,6 +68,7 @@ type scriptTester struct {
 	twitch    *twitchfakes.FakeAPI
 	steam     *steamfakes.FakeAPI
 	tinyURL   *tinyurlfakes.FakeAPI
+	urban     *urbanfakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -118,6 +120,7 @@ func (st *scriptTester) test(t testing.TB) {
 	st.twitch = newFakeTwitch(t)
 	st.steam = newFakeSteam(t)
 	st.tinyURL = newTinyURL(t)
+	st.urban = newUrban(t)
 
 	defer func() {
 		for _, cleanup := range st.cleanups {
@@ -150,6 +153,7 @@ func (st *scriptTester) test(t testing.TB) {
 		Twitch:    st.twitch,
 		Steam:     st.steam,
 		TinyURL:   st.tinyURL,
+		Urban:     st.urban,
 	}
 
 	st.clock.Set(time.Now())
@@ -344,4 +348,6 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"steam_get_owned_games":      (*scriptTester).steamGetOwnedGames,
 	"no_tiny_url":                (*scriptTester).noTinyURL,
 	"tiny_url_shorten":           (*scriptTester).tinyURLShorten,
+	"no_urban":                   (*scriptTester).noUrban,
+	"urban_define":               (*scriptTester).urbanDefine,
 }

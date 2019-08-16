@@ -14,6 +14,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl/tinyurlfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apis/urban/urbanfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube/youtubefakes"
@@ -147,6 +148,17 @@ func newTinyURL(t testing.TB) *tinyurlfakes.FakeAPI {
 
 	f.ShortenCalls(func(context.Context, string) (string, error) {
 		t.Fatal("Shorten not implemented")
+		return "", nil
+	})
+
+	return f
+}
+
+func newUrban(t testing.TB) *urbanfakes.FakeAPI {
+	f := &urbanfakes.FakeAPI{}
+
+	f.DefineCalls(func(context.Context, string) (string, error) {
+		t.Fatal("Define not implemented")
 		return "", nil
 	})
 

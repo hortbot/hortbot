@@ -28,6 +28,7 @@ var settingCommands = newHandlerMap(map[string]handlerFunc{
 	"mode":               {fn: cmdSettingMode, minLevel: levelModerator},
 	"roll":               {fn: cmdSettingsRoll, minLevel: levelModerator},
 	"steam":              {fn: cmdSettingsSteam, minLevel: levelModerator},
+	"urban":              {fn: cmdSettingUrban, minLevel: levelModerator},
 })
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -465,4 +466,18 @@ func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	return s.Replyf("Steam ID set to %s.", id)
+}
+
+func cmdSettingUrban(ctx context.Context, s *session, cmd string, args string) error {
+	return updateBoolean(
+		ctx, s, cmd, args,
+		func() bool { return s.Channel.UrbanEnabled },
+		func(v bool) { s.Channel.UrbanEnabled = v },
+		models.ChannelColumns.UrbanEnabled,
+		"urban",
+		"Urban Dictionary is already enabled.",
+		"Urban Dictionary is already disabled.",
+		"Urban Dictionary is now enabled.",
+		"Urban Dictionary is now disabled.",
+	)
 }

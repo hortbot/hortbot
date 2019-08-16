@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
@@ -43,6 +44,7 @@ type Config struct {
 	Twitch    twitch.API
 	Steam     steam.API
 	TinyURL   tinyurl.API
+	Urban     urban.API
 
 	Prefix   string
 	Bullet   string
@@ -97,6 +99,7 @@ func New(config *Config) *Bot {
 		Twitch:          config.Twitch,
 		Steam:           config.Steam,
 		TinyURL:         config.TinyURL,
+		Urban:           config.Urban,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
 	}
