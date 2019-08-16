@@ -39,7 +39,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 
 ### Commands
 
-- [ ] General commands
+- [x] General commands
     - [x] Join/part (in bot's channel)
     - [x] Part (in other channels); waiting until this can have "confirm" functionality
     - [x] ~~Topic~~
@@ -59,7 +59,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
         - [x] Set status
     - [x] statusgame/steamgame (*Steam API*)
     - [x] ~~XBox game~~
-    - [ ] Follow me (*Twitch API*)
+    - [x] Follow me (*Twitch API*)
         - Should this be automatic?
     - [x] ~~Viewer stats~~ (Use twitchtracker or sullygnome)
     - [x] ~~Punish stats~~ Twitch provides some element of this already; could bring back if wanted.

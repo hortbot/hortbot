@@ -2,11 +2,16 @@ package bot
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 	"time"
 
 	"github.com/hako/durafmt"
+	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/volatiletech/null"
+	"github.com/volatiletech/sqlboiler/boil"
 )
 
 const (
@@ -369,4 +374,44 @@ func cmdWinner(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	panic("unreachable")
+}
+
+const followAuthError = "Could not get authorization to follow your channel; please contact an admin."
+
+func cmdFollowMe(ctx context.Context, s *session, cmd string, args string) error {
+	tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(s.Channel.BotName))).One(ctx, s.Tx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return s.Reply(followAuthError)
+		}
+		return err
+	}
+
+	tok := modelsx.ModelToToken(tt)
+
+	newToken, err := s.Deps.Twitch.FollowChannel(ctx, tt.TwitchID, tok, s.RoomID)
+	if err != nil {
+		switch err {
+		case twitch.ErrServerError:
+			return s.Reply(twitchServerErrorReply)
+		case twitch.ErrNotAuthorized:
+			return s.Reply(followAuthError)
+		case nil:
+		default:
+			return err
+		}
+	}
+
+	if newToken != nil {
+		tt.AccessToken = newToken.AccessToken
+		tt.TokenType = newToken.TokenType
+		tt.RefreshToken = newToken.RefreshToken
+		tt.Expiry = newToken.Expiry
+
+		if err := tt.Update(ctx, s.Tx, boil.Blacklist()); err != nil {
+			return err
+		}
+	}
+
+	return s.Reply("Follow update sent.")
 }
