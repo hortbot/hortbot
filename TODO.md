@@ -147,8 +147,8 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] List
 - [x] ~~Raids~~ Twitch does this better now
     - May partially implement. Requires the bot account in use to be a channel editor.
-    - [x] `host`
-    - [x] `unhost`
+    - [x] `host` - *Non-functional due to Twitch API changes*
+    - [x] `unhost` - *Non-functional due to Twitch API changes*
 - [ ] Settings
     - Lots of settings here related to other items.
     - [x] ~~`topic`~~
@@ -283,8 +283,8 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [x] `(_SUBMODE_OFF_)`
 - [x] `(_GAME_IS_<GAME>_)` (*Twitch API*)
 - [x] `(_GAME_IS_NOT_<GAME>_)` (*Twitch API*)
-- [x] `(_HOST_<CHANNEL>_)`
-- [x] `(_UNHOST_)`
+- [x] `(_HOST_<CHANNEL>_)` - *Non-functional due to Twitch API changes*
+- [x] `(_UNHOST_)` - *Non-functional due to Twitch API changes*
 - [x] `(_RANDOM_<MIN>_<MAX>_)`
 - [x] `(_RANDOM_INT_<MIN>_<MAX>_)`
 - [x] `(_<COMMANDNAME>_COUNT_)`
