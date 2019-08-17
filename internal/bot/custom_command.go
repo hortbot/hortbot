@@ -51,6 +51,13 @@ func processCommand(ctx context.Context, s *session, msg string) (string, error)
 		}
 	}
 
+	msg = checkGame(ctx, s, msg, "(_GAME_IS_NOT_", false)
+	msg = checkGame(ctx, s, msg, "(_GAME_IS_", true)
+
+	if msg == "" {
+		return "", nil
+	}
+
 	if strings.Contains(msg, "(_SILENT_)") {
 		s.Silent = true
 	}
@@ -62,4 +69,53 @@ func processCommand(ctx context.Context, s *session, msg string) (string, error)
 	}
 
 	return walk(ctx, nodes, s.doAction)
+}
+
+func checkGame(ctx context.Context, s *session, msg string, prefix string, want bool) string {
+	const suffix = "_)"
+
+	if msg == "" {
+		return ""
+	}
+
+	i := strings.Index(msg, prefix)
+	if i < 0 {
+		return msg
+	}
+
+	front := msg[:i]
+	game := msg[i+len(prefix):]
+
+	i = strings.Index(game, suffix)
+	if i < 0 {
+		return msg
+	}
+
+	end := game[i+len(suffix):]
+	game = game[:i]
+
+	game = strings.Map(func(r rune) rune {
+		switch r {
+		case '-':
+			return ' '
+		default:
+			return r
+		}
+	}, game)
+
+	if game == "(Not set)" {
+		game = ""
+	}
+
+	actual := "(error)"
+	ch, err := s.TwitchChannel(ctx)
+	if err == nil {
+		actual = ch.Game
+	}
+
+	if want == strings.EqualFold(game, actual) {
+		return front + end
+	}
+
+	return ""
 }

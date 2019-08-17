@@ -281,8 +281,8 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [x] `(_ONLINE_CHECK_)` (*Twitch API*)
 - [x] `(_SUBMODE_ON_)`
 - [x] `(_SUBMODE_OFF_)`
-- [ ] `(_GAME_IS_<GAME>_)` (*Twitch API*)
-- [ ] `(_GAME_IS_NOT_<GAME>_)` (*Twitch API*)
+- [x] `(_GAME_IS_<GAME>_)` (*Twitch API*)
+- [x] `(_GAME_IS_NOT_<GAME>_)` (*Twitch API*)
 - [x] `(_HOST_<CHANNEL>_)`
 - [x] `(_UNHOST_)`
 - [x] `(_RANDOM_<MIN>_<MAX>_)`
