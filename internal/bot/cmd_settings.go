@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/flect"
+	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -29,6 +30,7 @@ var settingCommands = newHandlerMap(map[string]handlerFunc{
 	"roll":               {fn: cmdSettingsRoll, minLevel: levelModerator},
 	"steam":              {fn: cmdSettingsSteam, minLevel: levelModerator},
 	"urban":              {fn: cmdSettingUrban, minLevel: levelModerator},
+	"tweet":              {fn: cmdSettingTweet, minLevel: levelModerator},
 })
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -480,4 +482,23 @@ func cmdSettingUrban(ctx context.Context, s *session, cmd string, args string) e
 		"Urban Dictionary is now enabled.",
 		"Urban Dictionary is now disabled.",
 	)
+}
+
+func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.Replyf("Tweet is set to: %s", s.Channel.Tweet)
+	}
+
+	_, err := cbp.Parse(args)
+	if err != nil {
+		return s.Replyf("Error parsing command.")
+	}
+
+	s.Channel.Tweet = args
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Tweet)); err != nil {
+		return err
+	}
+
+	return s.Replyf("Tweet set to: %s", args)
 }

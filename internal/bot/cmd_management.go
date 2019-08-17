@@ -178,5 +178,6 @@ func NewChannel() *models.Channel {
 		FilterSymbolsMinSymbols: 5,
 		FilterMaxLength:         500,
 		FilterEmotesMax:         4,
+		Tweet:                   "Check out (_CHANNEL_URL_) playing (_GAME_) on @Twitch!",
 	}
 }

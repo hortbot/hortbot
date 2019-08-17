@@ -1,0 +1,11 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set tweet
+send hortbot #foobar [HB] Tweet is set to: Check out (_CHANNEL_URL_) playing (_GAME_) on @Twitch!
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set tweet Wowee cool
+send hortbot #foobar [HB] Tweet set to: Wowee cool
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set tweet
+send hortbot #foobar [HB] Tweet is set to: Wowee cool

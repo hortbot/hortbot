@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -257,6 +258,8 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 			return "(unavailable)", nil
 		}
 		return "http://store.steampowered.com/app/" + gameID, nil
+	case "TWEET_URL":
+		return s.actionTweet(ctx)
 	}
 
 	switch {
@@ -666,4 +669,24 @@ func (s *session) actionList(ctx context.Context, name string) (string, error) {
 
 	ctx = withCommandGuard(ctx, name)
 	return processCommand(ctx, s, item)
+}
+
+func (s *session) actionTweet(ctx context.Context) (string, error) {
+	const tweetGuard = "?tweet"
+
+	if ctx.Value(commandGuard(tweetGuard)) != nil {
+		return "", nil
+	}
+
+	ctx = withCommandGuard(ctx, tweetGuard)
+
+	tweet := s.Channel.Tweet
+	ctx = withCommandGuard(ctx, "?tweet")
+	text, err := processCommand(ctx, s, tweet)
+	if err != nil {
+		return "", err
+	}
+
+	u := "https://twitter.com/intent/tweet?text=" + url.QueryEscape(text)
+	return s.ShortenLink(ctx, u)
 }

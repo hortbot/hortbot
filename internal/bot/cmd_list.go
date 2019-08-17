@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gobuffalo/flect"
+	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/volatiletech/null"
@@ -410,6 +411,11 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 	_, exists := stringSliceIndex(list.Items, args)
 	if exists {
 		return s.Reply("The list already contains that item.")
+	}
+
+	_, err = cbp.Parse(args)
+	if err != nil {
+		return s.Replyf("Error parsing command.")
 	}
 
 	list.Items = append(list.Items, args)

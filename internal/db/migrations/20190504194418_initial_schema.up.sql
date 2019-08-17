@@ -41,6 +41,7 @@ CREATE TABLE channels (
     raffle_enabled boolean NOT NULL,
     steam_id text NOT NULL,
     urban_enabled boolean NOT NULL,
+    tweet text NOT NULL,
 
     roll_level access_level NOT NULL,
     roll_cooldown int NOT NULL,

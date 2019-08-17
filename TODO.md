@@ -171,7 +171,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] `steam` (*Steam API*)
     - [x] `mode`
     - [x] ~~`commerciallength`~~
-    - [ ] `tweet`
+    - [x] `tweet`
     - [x] `prefix`
     - [x] ~~`emoteset`~~ Doesn't seem to be particularly useful with emotes in tags.
     - [ ] `subscriberalerts`
@@ -296,7 +296,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 - [x] `(_REGULARS_ONLY_)`
 - [x] `(_COMMAND_<NAME>_)` (for autoreplies)
 - [ ] Sub message specific actions
-- [ ] `(_TWEET_URL_)`
+- [x] `(_TWEET_URL_)`
 - [x] `(_EXTRALIFE_AMOUNT_)`
 - [x] `DATE`, `TIME`, `TIME24`, `DATETIME`, `DATETIME24`
 - [x] `UNTIL`, `UNTILSHORT`, `UNTILLONG`
