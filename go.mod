@@ -35,7 +35,7 @@ require (
 	github.com/gocql/gocql v0.0.0-20190728105348-76e94bbd190c // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/gogo/protobuf v1.2.2-0.20190730201129-28a6bbf47e48 // indirect
-	github.com/golang-migrate/migrate/v4 v4.5.0
+	github.com/golang-migrate/migrate/v4 v4.5.1-0.20190817172045-97cfb4d2a638
 	github.com/google/go-cmp v0.3.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
@@ -53,7 +53,6 @@ require (
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
-	github.com/mongodb/mongo-go-driver v1.0.4 // indirect
 	github.com/nakagami/firebirdsql v0.0.0-20190609025626-90ca2b3395f5 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/ory/dockertest v3.3.4+incompatible
@@ -77,7 +76,6 @@ require (
 	github.com/volatiletech/sqlboiler v3.4.0+incompatible
 	github.com/xanzy/go-gitlab v0.19.0 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
-	go.mongodb.org/mongo-driver v1.0.4 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190701094942-4def268fd1a4 // indirect
 	golang.org/x/net v0.0.0-20190724013045-ca1201d0de80
