@@ -415,7 +415,7 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 
 	_, err = cbp.Parse(args)
 	if err != nil {
-		return s.Replyf("Error parsing command.")
+		return s.Replyf("Error parsing list item.")
 	}
 
 	list.Items = append(list.Items, args)

@@ -27,6 +27,11 @@ send hortbot #foobar [HB] Index out of range.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist get 1
 send hortbot #foobar [HB] The list is empty.
 
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add (_OOPS
+send hortbot #foobar [HB] Error parsing list item.
+
+
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Something
 send hortbot #foobar [HB] "Something" has been added to the list as item #1.
 
