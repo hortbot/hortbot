@@ -149,7 +149,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - May partially implement. Requires the bot account in use to be a channel editor.
     - [x] `host` - *Non-functional due to Twitch API changes*
     - [x] `unhost` - *Non-functional due to Twitch API changes*
-- [ ] Settings
+- [x] Settings
     - Lots of settings here related to other items.
     - [x] ~~`topic`~~
     - [x] `parseYoutube`
@@ -174,8 +174,8 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
     - [x] `tweet`
     - [x] `prefix`
     - [x] ~~`emoteset`~~ Doesn't seem to be particularly useful with emotes in tags.
-    - [ ] `subscriberalerts`
-    - [ ] `resubalerts`
+    - [ ] `subscriberalerts` (Been broken for a while, low priority)
+    - [ ] `resubalerts` (Been broken for a while, low priority)
 - [x] User levels
     - [x] Add/remove reg/mod/owner
     - [x] List
