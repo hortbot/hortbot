@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.44.3 // indirect
+	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
@@ -74,7 +75,7 @@ require (
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
-	github.com/volatiletech/sqlboiler v3.4.0+incompatible
+	github.com/volatiletech/sqlboiler v3.4.1-0.20190731234541-0b24139945ee+incompatible
 	github.com/xanzy/go-gitlab v0.20.1 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
 	go.uber.org/zap v1.10.0
@@ -86,9 +87,6 @@ require (
 	golang.org/x/tools v0.0.0-20190816200558-6889da9d5479
 	google.golang.org/genproto v0.0.0-20190817000702-55e96fffbd48 // indirect
 	google.golang.org/grpc v1.23.0 // indirect
-	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.0.0
 )
-
-replace gopkg.in/DATA-DOG/go-sqlmock.v1 => github.com/DATA-DOG/go-sqlmock v1.3.3
