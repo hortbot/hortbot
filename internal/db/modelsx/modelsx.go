@@ -8,6 +8,7 @@ import (
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 	"golang.org/x/oauth2"
 )
 
@@ -124,4 +125,31 @@ func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string,
 	}
 
 	return &infoAndCommand.CommandInfo, infoAndCommand.Message, true, nil
+}
+
+// ListActiveChannels returns a list of active IRC channels (with # prefix) for the specified bot.
+func ListActiveChannels(ctx context.Context, exec boil.Executor, botName string) ([]string, error) {
+	var channels []struct {
+		Name string
+	}
+
+	err := models.Channels(
+		qm.Select(models.ChannelColumns.Name),
+		models.ChannelWhere.Active.EQ(true),
+		models.ChannelWhere.BotName.EQ(botName),
+	).Bind(ctx, exec, &channels)
+
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]string, len(channels), len(channels)+1)
+
+	for i, c := range channels {
+		out[i] = "#" + c.Name
+	}
+
+	out = append(out, "#"+botName)
+
+	return out, nil
 }

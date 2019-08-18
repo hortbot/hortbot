@@ -11,7 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
@@ -26,7 +26,6 @@ import (
 	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
-	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
@@ -112,7 +111,7 @@ func main() {
 		logger.Fatal("error creating RDB", zap.Error(err))
 	}
 
-	channels, err := listChannels(ctx, db)
+	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 	if err != nil {
 		logger.Fatal("error listing initial channels", zap.Error(err))
 	}
@@ -240,7 +239,7 @@ func main() {
 			case <-time.After(time.Minute):
 			}
 
-			channels, err := listChannels(ctx, db)
+			channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 			if err != nil {
 				return err
 			}
@@ -256,30 +255,4 @@ func main() {
 	if err := g.WaitIgnoreStop(); err != nil {
 		logger.Info("exiting", zap.Error(err))
 	}
-}
-
-func listChannels(ctx context.Context, db *sql.DB) ([]string, error) {
-	var channels []struct {
-		Name string
-	}
-
-	err := models.Channels(
-		qm.Select(models.ChannelColumns.Name),
-		models.ChannelWhere.Active.EQ(true),
-		models.ChannelWhere.BotName.EQ(args.Nick),
-	).Bind(ctx, db, &channels)
-
-	if err != nil {
-		return nil, err
-	}
-
-	out := make([]string, len(channels), len(channels)+1)
-
-	for i, c := range channels {
-		out[i] = "#" + c.Name
-	}
-
-	out = append(out, "#"+args.Nick)
-
-	return out, nil
 }
