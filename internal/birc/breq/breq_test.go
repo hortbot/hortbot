@@ -8,7 +8,7 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 var errTest = errors.New("test error")

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestAccessLevelConversion(t *testing.T) {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/jakebailey/irc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, lineNum int) {

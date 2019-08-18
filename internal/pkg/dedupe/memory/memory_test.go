@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 const id = "id"

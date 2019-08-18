@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/leononame/clock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func (st *scriptTester) clockForward(t testing.TB, _, args string, lineNum int) {

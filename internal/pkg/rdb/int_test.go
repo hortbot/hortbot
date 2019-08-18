@@ -6,7 +6,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestIncrementInt64(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 var startTime = mustParseTime("2000-10-01T03:11:00Z")

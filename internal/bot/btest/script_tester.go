@@ -32,7 +32,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/boil"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func RunScript(t testing.TB, filename string, freshDB func(t testing.TB) (*sql.DB, func())) {

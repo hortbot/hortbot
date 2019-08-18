@@ -8,7 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/jarcoal/httpmock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestRecentTracks(t *testing.T) {

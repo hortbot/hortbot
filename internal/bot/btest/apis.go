@@ -13,7 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func (st *scriptTester) noLastFM(t testing.TB, _, _ string, _ int) {

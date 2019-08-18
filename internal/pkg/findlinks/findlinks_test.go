@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
-	"gotest.tools/assert"
-	"gotest.tools/assert/cmp"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 func TestFind(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/jarcoal/httpmock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func newTransport(t *testing.T) *httpmock.MockTransport {

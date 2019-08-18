@@ -10,7 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestConnectionUnused(t *testing.T) {

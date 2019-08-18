@@ -7,7 +7,7 @@ import (
 
 	"github.com/bmatcuk/doublestar"
 	"github.com/hortbot/hortbot/internal/bot/btest"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestScripts(t *testing.T) {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/goware/urlx"
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestHostAndPath(t *testing.T) {

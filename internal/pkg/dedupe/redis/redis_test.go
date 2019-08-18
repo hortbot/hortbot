@@ -8,7 +8,7 @@ import (
 	redislib "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 const id = "id"

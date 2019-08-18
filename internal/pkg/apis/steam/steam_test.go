@@ -8,7 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/jarcoal/httpmock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func newTransport(t *testing.T) *httpmock.MockTransport {

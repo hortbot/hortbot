@@ -8,7 +8,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestBotNewPanics(t *testing.T) {

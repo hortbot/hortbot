@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"golang.org/x/oauth2"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestStatusToError(t *testing.T) {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/jarcoal/httpmock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestGetDonationAmount(t *testing.T) {

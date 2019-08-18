@@ -87,7 +87,7 @@ require (
 	google.golang.org/genproto v0.0.0-20190817000702-55e96fffbd48 // indirect
 	google.golang.org/grpc v1.23.0 // indirect
 	gopkg.in/DATA-DOG/go-sqlmock.v1 v1.3.3 // indirect
-	gotest.tools v2.2.0+incompatible
+	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.0.0
 )
 

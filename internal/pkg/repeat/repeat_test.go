@@ -8,7 +8,7 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestDoNothing(t *testing.T) {

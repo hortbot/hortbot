@@ -7,7 +7,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/jarcoal/httpmock"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 const comic1 = `{

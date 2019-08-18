@@ -9,7 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/volatiletech/sqlboiler/boil"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func (st *scriptTester) insertChannel(t testing.TB, _, args string, lineNum int) {

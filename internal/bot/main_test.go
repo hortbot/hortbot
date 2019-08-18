@@ -13,7 +13,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/pgtest"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func init() {

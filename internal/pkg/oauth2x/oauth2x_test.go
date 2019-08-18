@@ -9,7 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xfakes"
 	"golang.org/x/oauth2"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 var (

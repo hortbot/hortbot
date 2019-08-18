@@ -8,7 +8,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"golang.org/x/oauth2"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestGetCurrentStream(t *testing.T) {

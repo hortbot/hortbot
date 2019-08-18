@@ -15,7 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func BenchmarkNop(b *testing.B) {

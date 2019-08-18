@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"gotest.tools/assert"
-	"gotest.tools/env"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/env"
 )
 
 func TestHelperSleepDur(t *testing.T) {

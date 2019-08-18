@@ -13,7 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/jarcoal/httpmock"
 	"golang.org/x/oauth2"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 type fakeTwitch struct {

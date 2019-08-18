@@ -5,7 +5,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestSetEmpty(t *testing.T) {

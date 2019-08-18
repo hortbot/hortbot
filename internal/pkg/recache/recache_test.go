@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/recache"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 const pattern = `.*\Qwinlan\E.*`

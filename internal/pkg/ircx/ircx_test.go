@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/jakebailey/irc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestNormalizeChannel(t *testing.T) {

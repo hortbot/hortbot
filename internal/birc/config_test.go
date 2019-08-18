@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/birc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 var justinfanRegex = regexp.MustCompile(`^justinfan\d+$`)

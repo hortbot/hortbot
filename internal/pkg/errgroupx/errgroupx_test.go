@@ -8,8 +8,8 @@ import (
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"gotest.tools/assert"
-	"gotest.tools/assert/cmp"
+	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 type contextKey string

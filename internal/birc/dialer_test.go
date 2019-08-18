@@ -7,7 +7,7 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
-	"gotest.tools/assert"
+	"gotest.tools/v3/assert"
 )
 
 func TestDialerCanceled(t *testing.T) {
