@@ -45,6 +45,7 @@ func BenchmarkNop(b *testing.B) {
 	}
 
 	bb := bot.New(config)
+	assert.NilError(b, bb.Init(ctx))
 
 	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
 
@@ -85,6 +86,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 	}
 
 	bb := bot.New(config)
+	assert.NilError(b, bb.Init(ctx))
 
 	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
@@ -126,6 +128,7 @@ func BenchmarkMixed(b *testing.B) {
 	}
 
 	bb := bot.New(config)
+	assert.NilError(b, bb.Init(ctx))
 
 	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
