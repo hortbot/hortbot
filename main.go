@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"log"
 	"os"
-	"os/signal"
 	"time"
 
 	"github.com/go-redis/redis/v7"
@@ -26,9 +25,9 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
+	"github.com/posener/ctxutil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
 	_ "github.com/lib/pq"                 // For postgres
@@ -66,7 +65,7 @@ var args = struct {
 }
 
 func main() {
-	ctx := withSignalCancel(context.Background(), os.Interrupt)
+	ctx := ctxutil.Interrupt()
 
 	if _, err := flags.Parse(&args); err != nil {
 		if !flags.WroteHelp(err) {
@@ -75,10 +74,8 @@ func main() {
 		os.Exit(1)
 	}
 
-	logger := buildLogger(args.Debug)
-
+	logger := ctxlog.New(args.Debug)
 	defer zap.RedirectStdLog(logger)()
-
 	ctx = ctxlog.WithLogger(ctx, logger)
 
 	db, err := sql.Open("postgres", args.DB)
@@ -259,42 +256,6 @@ func main() {
 	if err := g.WaitIgnoreStop(); err != nil {
 		logger.Info("exiting", zap.Error(err))
 	}
-}
-
-func withSignalCancel(ctx context.Context, sig ...os.Signal) context.Context {
-	ctx, cancel := context.WithCancel(ctx)
-	go func() {
-		c := make(chan os.Signal, 1)
-		signal.Notify(c, sig...)
-		defer signal.Stop(c)
-
-		select {
-		case <-c:
-			cancel()
-		case <-ctx.Done():
-		}
-	}()
-
-	return ctx
-}
-
-func buildLogger(debug bool) *zap.Logger {
-	var logConfig zap.Config
-
-	if debug {
-		logConfig = zap.NewDevelopmentConfig()
-	} else {
-		logConfig = zap.NewProductionConfig()
-	}
-
-	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
-
-	logger, err := logConfig.Build()
-	if err != nil {
-		panic(err)
-	}
-
-	return logger
 }
 
 func listChannels(ctx context.Context, db *sql.DB) ([]string, error) {

@@ -4,7 +4,28 @@ import (
 	"context"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
+
+// New creates a new zap Logger.
+func New(debug bool) *zap.Logger {
+	var logConfig zap.Config
+
+	if debug {
+		logConfig = zap.NewDevelopmentConfig()
+	} else {
+		logConfig = zap.NewProductionConfig()
+	}
+
+	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+	logger, err := logConfig.Build()
+	if err != nil {
+		panic(err)
+	}
+
+	return logger
+}
 
 type loggerKey struct{}
 

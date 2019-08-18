@@ -62,6 +62,7 @@ require (
 	github.com/pierrec/lz4 v2.2.6+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
+	github.com/posener/ctxutil v1.0.0
 	github.com/remyoudompheng/bigfft v0.0.0-20190728182440-6a916e37a237 // indirect
 	github.com/rkoesters/xkcd v0.0.0-20190613072715-c0127f09e992
 	github.com/robfig/cron/v3 v3.0.0
