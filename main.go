@@ -82,15 +82,15 @@ func main() {
 		logger.Fatal("error opening database connection", zap.Error(err))
 	}
 
-	if args.MigrateUp {
-		for i := 0; i < 5; i++ {
-			if err := db.Ping(); err == nil {
-				break
-			}
-
-			time.Sleep(100 * time.Millisecond)
+	for i := 0; i < 5; i++ {
+		if err := db.Ping(); err == nil {
+			break
 		}
 
+		time.Sleep(100 * time.Millisecond)
+	}
+
+	if args.MigrateUp {
 		if err := migrations.Up(args.DB, nil); err != nil {
 			logger.Fatal("error migrating database", zap.Error(err))
 		}
