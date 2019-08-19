@@ -282,8 +282,7 @@ func handleSession(ctx context.Context, s *session) error {
 		return err
 	}
 
-	wasCommand, err := tryCommand(ctx, s)
-	if wasCommand {
+	if ok, err := tryCommand(ctx, s); ok || err != nil {
 		switch err {
 		case errNotAuthorized, errBuiltinDisabled, errInCooldown:
 		default:
