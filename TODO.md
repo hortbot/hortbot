@@ -21,8 +21,8 @@ Some features are not currently planned to be ported and have been crossed out.
 ### Differences
 
 - The "regular" role has essentially been removed. All subs are "regulars", and all "regulars" are subs.
-This means that the `subsRegsMinusLinks` option doesn't make much sense. Instead, it may be referred to
-as `subsMayLink`, which when true means subs may link in chat.
+This means that the `subsRegsMinusLinks` option doesn't make much sense, and has been removed.
+Instead, there's `subsMayLink` which when true means subs may link in chat.
 - Subs are allowed to post links by default, as regulars would be.
 - Command lists (`!list`) may be run via repeats and schedules.
 - The special `-1`/`admin` mode has been removed; it can be reproduced using another mode.

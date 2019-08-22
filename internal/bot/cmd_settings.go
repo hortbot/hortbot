@@ -25,7 +25,7 @@ var settingCommands = newHandlerMap(map[string]handlerFunc{
 	"timeoutduration":    {fn: cmdSettingTimeoutDuration, minLevel: levelModerator},
 	"extralifeid":        {fn: cmdSettingExtraLifeID, minLevel: levelModerator},
 	"subsmaylink":        {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
-	"subsregsminuslinks": {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
+	"subsregsminuslinks": {fn: cmdSettingSubsRegsMinusLinks, minLevel: levelModerator},
 	"mode":               {fn: cmdSettingMode, minLevel: levelModerator},
 	"roll":               {fn: cmdSettingsRoll, minLevel: levelModerator},
 	"steam":              {fn: cmdSettingsSteam, minLevel: levelModerator},
@@ -289,6 +289,10 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 	}
 
 	return s.Replyf("Extra Life ID changed to %d.", id)
+}
+
+func cmdSettingSubsRegsMinusLinks(ctx context.Context, s *session, cmd string, args string) error {
+	return s.Reply("This option has been removed; use subsMayLink instead.")
 }
 
 func cmdSettingSubsMayLink(ctx context.Context, s *session, cmd string, args string) error {
