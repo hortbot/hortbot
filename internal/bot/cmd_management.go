@@ -82,7 +82,9 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return err
 		}
 
-		s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
+		if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+			return err
+		}
 
 		return s.Replyf("%s, %s will join your channel soon with prefix %s", displayName, botName, channel.Prefix)
 	}
@@ -98,7 +100,9 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
+	if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+		return err
+	}
 
 	return s.Replyf("%s, %s will join your channel soon with prefix %s", s.UserDisplay, channel.BotName, channel.Prefix)
 }
@@ -130,7 +134,9 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
+	if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+		return err
+	}
 
 	return s.Replyf("%s, %s will now leave your channel.", displayName, channel.BotName)
 }
@@ -155,7 +161,9 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	s.Deps.Notifier.NotifyChannelUpdates(s.Channel.BotName)
+	if err := s.Deps.Notifier.NotifyChannelUpdates(s.Channel.BotName); err != nil {
+		return err
+	}
 
 	return s.Replyf("%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
 }

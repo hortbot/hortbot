@@ -138,12 +138,13 @@ func main() {
 	syncJoined := make(chan struct{}, 1)
 
 	notifier := bot.NotifierFuncs{
-		NotifyChannelUpdatesFunc: func(botName string) {
+		NotifyChannelUpdatesFunc: func(botName string) error {
 			logger.Debug("notified update to channels for bot", zap.String("botName", botName))
 			select {
 			case syncJoined <- struct{}{}:
 			default:
 			}
+			return nil
 		},
 	}
 

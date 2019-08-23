@@ -21,17 +21,17 @@ func (s SenderFuncs) SendMessage(origin, target, message string) error {
 
 //counterfeiter:generate . Notifier
 type Notifier interface {
-	NotifyChannelUpdates(botName string)
+	NotifyChannelUpdates(botName string) error
 }
 
 type NotifierFuncs struct {
-	NotifyChannelUpdatesFunc func(botName string)
+	NotifyChannelUpdatesFunc func(botName string) error
 }
 
 var _ Notifier = NotifierFuncs{}
 
-func (n NotifierFuncs) NotifyChannelUpdates(botName string) {
-	n.NotifyChannelUpdatesFunc(botName)
+func (n NotifierFuncs) NotifyChannelUpdates(botName string) error {
+	return n.NotifyChannelUpdatesFunc(botName)
 }
 
 //counterfeiter:generate . Rand

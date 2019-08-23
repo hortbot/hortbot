@@ -173,7 +173,7 @@ func (nopSender) SendMessage(origin, target, message string) error { return nil 
 
 type nopNotifier struct{}
 
-func (nopNotifier) NotifyChannelUpdates(botName string) {}
+func (nopNotifier) NotifyChannelUpdates(botName string) error { return nil }
 
 func privMSG(ch string, roomID int64, user string, userID int64, msg string) *irc.Message {
 	return &irc.Message{

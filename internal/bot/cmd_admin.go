@@ -73,7 +73,9 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 			return err
 		}
 
-		s.Deps.Notifier.NotifyChannelUpdates(channel.BotName)
+		if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+			return err
+		}
 	}
 
 	return s.Replyf("%s (%d) has been blocked.", args, id)

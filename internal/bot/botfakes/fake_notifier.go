@@ -8,25 +8,37 @@ import (
 )
 
 type FakeNotifier struct {
-	NotifyChannelUpdatesStub        func(string)
+	NotifyChannelUpdatesStub        func(string) error
 	notifyChannelUpdatesMutex       sync.RWMutex
 	notifyChannelUpdatesArgsForCall []struct {
 		arg1 string
+	}
+	notifyChannelUpdatesReturns struct {
+		result1 error
+	}
+	notifyChannelUpdatesReturnsOnCall map[int]struct {
+		result1 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeNotifier) NotifyChannelUpdates(arg1 string) {
+func (fake *FakeNotifier) NotifyChannelUpdates(arg1 string) error {
 	fake.notifyChannelUpdatesMutex.Lock()
+	ret, specificReturn := fake.notifyChannelUpdatesReturnsOnCall[len(fake.notifyChannelUpdatesArgsForCall)]
 	fake.notifyChannelUpdatesArgsForCall = append(fake.notifyChannelUpdatesArgsForCall, struct {
 		arg1 string
 	}{arg1})
 	fake.recordInvocation("NotifyChannelUpdates", []interface{}{arg1})
 	fake.notifyChannelUpdatesMutex.Unlock()
 	if fake.NotifyChannelUpdatesStub != nil {
-		fake.NotifyChannelUpdatesStub(arg1)
+		return fake.NotifyChannelUpdatesStub(arg1)
 	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.notifyChannelUpdatesReturns
+	return fakeReturns.result1
 }
 
 func (fake *FakeNotifier) NotifyChannelUpdatesCallCount() int {
@@ -35,7 +47,7 @@ func (fake *FakeNotifier) NotifyChannelUpdatesCallCount() int {
 	return len(fake.notifyChannelUpdatesArgsForCall)
 }
 
-func (fake *FakeNotifier) NotifyChannelUpdatesCalls(stub func(string)) {
+func (fake *FakeNotifier) NotifyChannelUpdatesCalls(stub func(string) error) {
 	fake.notifyChannelUpdatesMutex.Lock()
 	defer fake.notifyChannelUpdatesMutex.Unlock()
 	fake.NotifyChannelUpdatesStub = stub
@@ -46,6 +58,29 @@ func (fake *FakeNotifier) NotifyChannelUpdatesArgsForCall(i int) string {
 	defer fake.notifyChannelUpdatesMutex.RUnlock()
 	argsForCall := fake.notifyChannelUpdatesArgsForCall[i]
 	return argsForCall.arg1
+}
+
+func (fake *FakeNotifier) NotifyChannelUpdatesReturns(result1 error) {
+	fake.notifyChannelUpdatesMutex.Lock()
+	defer fake.notifyChannelUpdatesMutex.Unlock()
+	fake.NotifyChannelUpdatesStub = nil
+	fake.notifyChannelUpdatesReturns = struct {
+		result1 error
+	}{result1}
+}
+
+func (fake *FakeNotifier) NotifyChannelUpdatesReturnsOnCall(i int, result1 error) {
+	fake.notifyChannelUpdatesMutex.Lock()
+	defer fake.notifyChannelUpdatesMutex.Unlock()
+	fake.NotifyChannelUpdatesStub = nil
+	if fake.notifyChannelUpdatesReturnsOnCall == nil {
+		fake.notifyChannelUpdatesReturnsOnCall = make(map[int]struct {
+			result1 error
+		})
+	}
+	fake.notifyChannelUpdatesReturnsOnCall[i] = struct {
+		result1 error
+	}{result1}
 }
 
 func (fake *FakeNotifier) Invocations() map[string][][]interface{} {
