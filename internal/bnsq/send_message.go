@@ -30,7 +30,7 @@ type SendMessageProducer struct {
 	addr string
 	clk  clock.Clock
 
-	ready    chan (struct{})
+	ready    chan struct{}
 	producer *nsq.Producer
 }
 
@@ -84,26 +84,15 @@ func (p *SendMessageProducer) SendMessage(origin, target, message string) error 
 	return p.producer.Publish(sendMessageTopic+origin, data)
 }
 
-type SendMessageHandler func(*SendMessage)
-
 type SendMessageConsumer struct {
-	addr    string
-	topic   string
-	channel string
-	handler SendMessageHandler
-}
-
-func NewSendMessageConsumer(addr string, origin string, channel string, handler SendMessageHandler) *SendMessageConsumer {
-	return &SendMessageConsumer{
-		addr:    addr,
-		topic:   sendMessageTopic + origin,
-		channel: channel,
-		handler: handler,
-	}
+	Addr    string
+	Origin  string
+	Channel string
+	Handler func(*SendMessage)
 }
 
 func (c *SendMessageConsumer) Run(ctx context.Context) error {
-	consumer, err := nsq.NewConsumer(c.topic, c.channel, newConfig())
+	consumer, err := nsq.NewConsumer(sendMessageTopic+c.Origin, c.Channel, newConfig())
 	if err != nil {
 		return err
 	}
@@ -120,11 +109,11 @@ func (c *SendMessageConsumer) Run(ctx context.Context) error {
 			return nil
 		}
 
-		c.handler(m)
+		c.Handler(m)
 		return nil
 	}))
 
-	if err := consumer.ConnectToNSQD(c.addr); err != nil {
+	if err := consumer.ConnectToNSQD(c.Addr); err != nil {
 		return err
 	}
 

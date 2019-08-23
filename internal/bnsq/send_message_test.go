@@ -39,9 +39,14 @@ func TestSendMessage(t *testing.T) {
 
 	producer := bnsq.NewSendMessageProducer(addr, clk)
 
-	consumer := bnsq.NewSendMessageConsumer(addr, origin, channel, func(m *bnsq.SendMessage) {
-		received <- m
-	})
+	consumer := bnsq.SendMessageConsumer{
+		Addr:    addr,
+		Origin:  origin,
+		Channel: channel,
+		Handler: func(m *bnsq.SendMessage) {
+			received <- m
+		},
+	}
 
 	g := errgroupx.FromContext(ctx)
 
@@ -87,9 +92,14 @@ func TestSendMessageBadAddr(t *testing.T) {
 
 	producer := bnsq.NewSendMessageProducer(addr, clk)
 
-	consumer := bnsq.NewSendMessageConsumer(addr, origin, channel, func(m *bnsq.SendMessage) {
-		received <- m
-	})
+	consumer := bnsq.SendMessageConsumer{
+		Addr:    addr,
+		Origin:  origin,
+		Channel: channel,
+		Handler: func(m *bnsq.SendMessage) {
+			received <- m
+		},
+	}
 
 	assert.ErrorContains(t, producer.Run(ctx), "connection refused")
 	assert.ErrorContains(t, consumer.Run(ctx), "connection refused")
@@ -115,9 +125,14 @@ func TestSendMessageConsumerBadChannel(t *testing.T) {
 
 	received := make(chan *bnsq.SendMessage, 10)
 
-	consumer := bnsq.NewSendMessageConsumer(addr, origin, channel, func(m *bnsq.SendMessage) {
-		received <- m
-	})
+	consumer := bnsq.SendMessageConsumer{
+		Addr:    addr,
+		Origin:  origin,
+		Channel: channel,
+		Handler: func(m *bnsq.SendMessage) {
+			received <- m
+		},
+	}
 
 	assert.ErrorContains(t, consumer.Run(ctx), "invalid channel name")
 
