@@ -13,12 +13,6 @@ const (
 	sendMessageTopic = "irc.send_message."
 )
 
-func newConfig() *nsq.Config {
-	config := nsq.NewConfig()
-	config.LookupdPollInterval = 5 * time.Second
-	return config
-}
-
 type SendMessage struct {
 	Timestamp time.Time
 	Origin    string
@@ -27,11 +21,8 @@ type SendMessage struct {
 }
 
 type SendMessageProducer struct {
-	addr string
-	clk  clock.Clock
-
-	ready    chan struct{}
-	producer *nsq.Producer
+	clk      clock.Clock
+	producer *nsqProducer
 }
 
 func NewSendMessageProducer(addr string, clk clock.Clock) *SendMessageProducer {
@@ -40,34 +31,17 @@ func NewSendMessageProducer(addr string, clk clock.Clock) *SendMessageProducer {
 	}
 
 	return &SendMessageProducer{
-		addr:  addr,
-		clk:   clk,
-		ready: make(chan struct{}),
+		clk:      clk,
+		producer: newProducer(addr),
 	}
 }
 
 func (p *SendMessageProducer) Run(ctx context.Context) error {
-	producer, err := nsq.NewProducer(p.addr, newConfig())
-	if err != nil {
-		return err
-	}
-	defer producer.Stop()
-
-	producer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
-
-	p.producer = producer
-	close(p.ready)
-
-	if err := producer.Ping(); err != nil {
-		return err
-	}
-
-	<-ctx.Done()
-	return ctx.Err()
+	return p.producer.run(ctx)
 }
 
 func (p *SendMessageProducer) SendMessage(origin, target, message string) error {
-	<-p.ready
+	producer := p.producer.get()
 
 	m := &SendMessage{
 		Timestamp: p.clk.Now(),
@@ -81,7 +55,7 @@ func (p *SendMessageProducer) SendMessage(origin, target, message string) error 
 		return err
 	}
 
-	return p.producer.Publish(sendMessageTopic+origin, data)
+	return producer.Publish(sendMessageTopic+origin, data)
 }
 
 type SendMessageConsumer struct {
