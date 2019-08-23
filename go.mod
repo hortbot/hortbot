@@ -56,6 +56,7 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
 	github.com/nakagami/firebirdsql v0.0.0-20190609025626-90ca2b3395f5 // indirect
+	github.com/nsqio/go-nsq v1.0.7
 	github.com/onsi/ginkgo v1.9.0 // indirect
 	github.com/onsi/gomega v1.6.0 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
