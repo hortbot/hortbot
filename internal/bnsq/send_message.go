@@ -9,9 +9,9 @@ const (
 )
 
 type SendMessage struct {
-	Origin  string
-	Target  string
-	Message string
+	Origin  string `json:"origin"`
+	Target  string `json:"target"`
+	Message string `json:"message"`
 }
 
 type SendMessagePublisher struct {
@@ -29,13 +29,11 @@ func (p *SendMessagePublisher) Run(ctx context.Context) error {
 }
 
 func (p *SendMessagePublisher) SendMessage(origin, target, message string) error {
-	m := &SendMessage{
+	return p.publisher.publish(sendMessageTopic+origin, &SendMessage{
 		Origin:  origin,
 		Target:  target,
 		Message: message,
-	}
-
-	return p.publisher.publish(sendMessageTopic+origin, m)
+	})
 }
 
 type SendMessageSubscriber struct {
