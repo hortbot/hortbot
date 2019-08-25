@@ -43,7 +43,7 @@ func TestSendMessage(t *testing.T) {
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
-		Handler: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage) {
 			received <- m
 		},
 	}
@@ -96,7 +96,7 @@ func TestSendMessageBadAddr(t *testing.T) {
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
-		Handler: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage) {
 			received <- m
 		},
 	}
@@ -129,7 +129,7 @@ func TestSendMessageConsumerBadChannel(t *testing.T) {
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
-		Handler: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage) {
 			received <- m
 		},
 	}

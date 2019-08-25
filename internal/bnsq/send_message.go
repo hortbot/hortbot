@@ -59,10 +59,10 @@ func (p *SendMessageProducer) SendMessage(origin, target, message string) error 
 }
 
 type SendMessageConsumer struct {
-	Addr    string
-	Origin  string
-	Channel string
-	Handler func(*SendMessage)
+	Addr          string
+	Origin        string
+	Channel       string
+	OnSendMessage func(*SendMessage)
 }
 
 func (c *SendMessageConsumer) Run(ctx context.Context) error {
@@ -83,7 +83,7 @@ func (c *SendMessageConsumer) Run(ctx context.Context) error {
 			return nil
 		}
 
-		c.Handler(m)
+		c.OnSendMessage(m)
 		return nil
 	}))
 
