@@ -2,11 +2,6 @@ package bnsq
 
 import (
 	"context"
-	"encoding/json"
-	"time"
-
-	"github.com/leononame/clock"
-	"github.com/nsqio/go-nsq"
 )
 
 const (
@@ -14,83 +9,51 @@ const (
 )
 
 type SendMessage struct {
-	Timestamp time.Time
-	Origin    string
-	Target    string
-	Message   string
+	Origin  string
+	Target  string
+	Message string
 }
 
-type SendMessageProducer struct {
-	clk      clock.Clock
-	producer *nsqProducer
+type SendMessagePublisher struct {
+	publisher *publisher
 }
 
-func NewSendMessageProducer(addr string, clk clock.Clock) *SendMessageProducer {
-	if clk == nil {
-		clk = clock.New()
-	}
-
-	return &SendMessageProducer{
-		clk:      clk,
-		producer: newProducer(addr),
+func NewSendMessagePublisher(addr string, opts ...PublisherOption) *SendMessagePublisher {
+	return &SendMessagePublisher{
+		publisher: newPublisher(addr, opts...),
 	}
 }
 
-func (p *SendMessageProducer) Run(ctx context.Context) error {
-	return p.producer.run(ctx)
+func (p *SendMessagePublisher) Run(ctx context.Context) error {
+	return p.publisher.run(ctx)
 }
 
-func (p *SendMessageProducer) SendMessage(origin, target, message string) error {
-	producer := p.producer.get()
-
+func (p *SendMessagePublisher) SendMessage(origin, target, message string) error {
 	m := &SendMessage{
-		Timestamp: p.clk.Now(),
-		Origin:    origin,
-		Target:    target,
-		Message:   message,
+		Origin:  origin,
+		Target:  target,
+		Message: message,
 	}
 
-	data, err := json.Marshal(m)
-	if err != nil {
-		return err
-	}
-
-	return producer.Publish(sendMessageTopic+origin, data)
+	return p.publisher.publish(sendMessageTopic+origin, m)
 }
 
-type SendMessageConsumer struct {
+type SendMessageSubscriber struct {
 	Addr          string
 	Origin        string
 	Channel       string
+	Opts          []SubscriberOption
 	OnSendMessage func(*SendMessage)
 }
 
-func (c *SendMessageConsumer) Run(ctx context.Context) error {
-	consumer, err := nsq.NewConsumer(sendMessageTopic+c.Origin, c.Channel, newConfig())
-	if err != nil {
-		return err
-	}
-	defer consumer.Stop()
+func (s *SendMessageSubscriber) Run(ctx context.Context) error {
+	subscriber := newSubscriber(s.Addr, sendMessageTopic+s.Origin, s.Channel, s.Opts...)
 
-	consumer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
-
-	consumer.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
-		msg.Finish()
-
-		m := &SendMessage{}
-
-		if err := json.Unmarshal(msg.Body, m); err != nil {
-			return nil
+	return subscriber.run(ctx, func(m *message) {
+		sm := &SendMessage{}
+		if err := m.payload(sm); err != nil {
+			return
 		}
-
-		c.OnSendMessage(m)
-		return nil
-	}))
-
-	if err := consumer.ConnectToNSQD(c.Addr); err != nil {
-		return err
-	}
-
-	<-ctx.Done()
-	return ctx.Err()
+		s.OnSendMessage(sm)
+	})
 }
