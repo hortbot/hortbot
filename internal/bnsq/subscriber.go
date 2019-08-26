@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
+	"go.uber.org/zap"
 )
 
 type subscriber struct {
@@ -61,6 +63,8 @@ func SubscriberMaxAge(d time.Duration) SubscriberOption {
 }
 
 func (s *subscriber) run(ctx context.Context, fn func(*message)) error {
+	logger := ctxlog.FromContext(ctx)
+
 	consumer, err := nsq.NewConsumer(s.topic, s.channel, s.config)
 	if err != nil {
 		return err
@@ -82,8 +86,12 @@ func (s *subscriber) run(ctx context.Context, fn func(*message)) error {
 			return nil
 		}
 
-		if s.maxAge > 0 && s.clk.Since(m.Timestamp) > s.maxAge {
-			return nil
+		if s.maxAge > 0 {
+			since := s.clk.Since(m.Timestamp)
+			if since > s.maxAge {
+				logger.Warn("message too old, dropping", zap.Duration("since", since))
+				return nil
+			}
 		}
 
 		fn(m)
