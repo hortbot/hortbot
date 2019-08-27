@@ -12,10 +12,12 @@ services:
       - db
       - redis
       - nsq
+      - jaeger
     depends_on:
       - db
       - redis
       - nsq
+      - jaeger
     environment:
       - HB_DEBUG=true
       - HB_NICK=${HB_NICK:-}
@@ -24,6 +26,8 @@ services:
       - HB_MIGRATE_UP=true
       - HB_REDIS=redis:6379
       - HB_NSQ_ADDR=nsq:4150
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
 
   bot:
     image: golang
@@ -36,10 +40,12 @@ services:
       - db
       - redis
       - nsq
+      - jaeger
     depends_on:
       - db
       - redis
       - nsq
+      - jaeger
     environment:
       - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
@@ -48,6 +54,8 @@ services:
       - HB_NSQ_ADDR=nsq:4150
       - HB_ADMINS=${HB_ADMINS:-}
       - HB_WHITELIST_ENABLED=${HB_WHITELIST_ENABLED:-}
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
 
   web:
     image: golang
@@ -82,3 +90,8 @@ services:
   nsq:
     image: nsqio/nsq
     command: /nsqd
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "16686:16686"

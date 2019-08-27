@@ -1,6 +1,10 @@
 package bnsq
 
-import "context"
+import (
+	"context"
+
+	"github.com/opentracing/opentracing-go"
+)
 
 const (
 	notifyChannelUpdatesTopic = "notify.channel_updates."
@@ -35,17 +39,17 @@ type NotifySubscriber struct {
 	BotName                string
 	Channel                string
 	Opts                   []SubscriberOption
-	OnNotifyChannelUpdates func(*ChannelUpdatesNotification)
+	OnNotifyChannelUpdates func(n *ChannelUpdatesNotification, ref opentracing.SpanReference)
 }
 
 func (s *NotifySubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, notifyChannelUpdatesTopic+s.BotName, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message) {
+	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) {
 		n := &ChannelUpdatesNotification{}
 		if err := m.payload(n); err != nil {
 			return
 		}
-		s.OnNotifyChannelUpdates(n)
+		s.OnNotifyChannelUpdates(n, ref)
 	})
 }

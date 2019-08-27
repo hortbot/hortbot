@@ -17,6 +17,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
+	"github.com/opentracing/opentracing-go"
 	"golang.org/x/oauth2"
 )
 
@@ -98,6 +99,9 @@ func (s *session) formatResponse(response string) string {
 }
 
 func (s *session) Reply(ctx context.Context, response string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "Reply")
+	defer span.Finish()
+
 	if s.Silent {
 		return nil
 	}
@@ -246,7 +250,10 @@ func (s *session) DeleteMessage(ctx context.Context) error {
 	return s.SendCommand(ctx, "delete", s.ID)
 }
 
-func (s *session) Links() []*url.URL {
+func (s *session) Links(ctx context.Context) []*url.URL {
+	span, _ := opentracing.StartSpanFromContext(ctx, "Links")
+	defer span.Finish()
+
 	if s.links != nil {
 		return *s.links
 	}
@@ -258,7 +265,10 @@ func (s *session) Links() []*url.URL {
 
 var errLastFMDisabled = errors.New("bot: LastFM disabled")
 
-func (s *session) Tracks() ([]lastfm.Track, error) {
+func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
+	span, _ := opentracing.StartSpanFromContext(ctx, "Tracks")
+	defer span.Finish()
+
 	if s.tracks != nil {
 		return *s.tracks, nil
 	}
@@ -276,6 +286,9 @@ func (s *session) Tracks() ([]lastfm.Track, error) {
 }
 
 func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "TwitchToken")
+	defer span.Finish()
+
 	if s.tok != nil {
 		return *s.tok, nil
 	}
@@ -296,6 +309,9 @@ func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 }
 
 func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "SetTwitchToken")
+	defer span.Finish()
+
 	s.tok = &newToken
 
 	tt := modelsx.TokenToModel(s.Channel.UserID, newToken)
@@ -303,6 +319,9 @@ func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) er
 }
 
 func (s *session) IsLive(ctx context.Context) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "IsLive")
+	defer span.Finish()
+
 	if s.isLive != nil {
 		return *s.isLive, nil
 	}
@@ -318,6 +337,9 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 }
 
 func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "TwitchChannel")
+	defer span.Finish()
+
 	if s.twitchChannel != nil {
 		return *s.twitchChannel, nil
 	}
@@ -332,6 +354,9 @@ func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 }
 
 func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "TwitchStream")
+	defer span.Finish()
+
 	if s.twitchStream != nil {
 		return *s.twitchStream, nil
 	}
@@ -346,6 +371,9 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 }
 
 func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "TwitchChatters")
+	defer span.Finish()
+
 	if s.twitchChatters != nil {
 		return *s.twitchChatters, nil
 	}
@@ -364,6 +392,9 @@ var (
 )
 
 func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "SteamSummary")
+	defer span.Finish()
+
 	if s.steamSummary != nil {
 		return *s.steamSummary, nil
 	}
@@ -382,6 +413,9 @@ func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
 }
 
 func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "SteamGames")
+	defer span.Finish()
+
 	if s.steamGames != nil {
 		return *s.steamGames, nil
 	}
@@ -400,6 +434,9 @@ func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 }
 
 func (s *session) ShortenLink(ctx context.Context, link string) (string, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "ShortenLink")
+	defer span.Finish()
+
 	if s.Deps.TinyURL == nil {
 		return link, nil
 	}

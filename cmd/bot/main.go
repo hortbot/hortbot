@@ -21,7 +21,9 @@ import (
 	deduperedis "github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/rdb"
+	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
+	"github.com/opentracing/opentracing-go"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 
@@ -70,6 +72,12 @@ func main() {
 	logger := ctxlog.New(args.Debug)
 	defer zap.RedirectStdLog(logger)()
 	ctx = ctxlog.WithLogger(ctx, logger)
+
+	stopTracing, err := tracing.Init("bot", args.Debug, logger)
+	if err != nil {
+		logger.Fatal("error initializing tracing", zap.Error(err))
+	}
+	defer stopTracing.Close()
 
 	db, err := sql.Open("postgres", args.DB)
 	if err != nil {
@@ -158,7 +166,9 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(5 * time.Second),
 		},
-		OnIncoming: func(i *bnsq.Incoming) {
+		OnIncoming: func(i *bnsq.Incoming, ref opentracing.SpanReference) {
+			span, ctx := opentracing.StartSpanFromContext(ctx, "OnIncoming", ref)
+			defer span.Finish()
 			b.Handle(ctx, i.Origin, i.Message)
 		},
 	}

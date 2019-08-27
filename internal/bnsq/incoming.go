@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jakebailey/irc"
+	"github.com/opentracing/opentracing-go"
 )
 
 const (
@@ -40,17 +41,17 @@ type IncomingSubscriber struct {
 	Addr       string
 	Channel    string
 	Opts       []SubscriberOption
-	OnIncoming func(*Incoming)
+	OnIncoming func(i *Incoming, ref opentracing.SpanReference)
 }
 
 func (s *IncomingSubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, incomingTopic, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message) {
+	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) {
 		i := &Incoming{}
 		if err := m.payload(i); err != nil {
 			return
 		}
-		s.OnIncoming(i)
+		s.OnIncoming(i, ref)
 	})
 }

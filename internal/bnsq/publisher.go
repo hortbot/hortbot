@@ -6,22 +6,24 @@ import (
 
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 )
 
 type publisher struct {
+	ready    chan struct{}
 	addr     string
 	clk      clock.Clock
 	config   *nsq.Config
 	producer *nsq.Producer
-	ready    chan struct{}
 }
 
 type PublisherOption func(*publisher)
 
 func newPublisher(addr string, opts ...PublisherOption) *publisher {
 	p := &publisher{
-		addr:  addr,
 		ready: make(chan struct{}),
+		addr:  addr,
 	}
 
 	for _, opt := range opts {
@@ -72,15 +74,29 @@ func (p *publisher) run(ctx context.Context) error {
 }
 
 func (p *publisher) publish(ctx context.Context, topic string, payload interface{}) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, topic, ext.SpanKindProducer)
+	defer span.Finish()
+
 	select {
 	case <-p.ready:
 	case <-ctx.Done():
 		return ctx.Err()
 	}
 
-	m, err := newMessage(payload, p.clk)
+	pl, err := json.Marshal(payload)
 	if err != nil {
 		return err
+	}
+
+	carrier := make(opentracing.TextMapCarrier)
+	if err := span.Tracer().Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
+		return err
+	}
+
+	m := &message{
+		Timestamp:    p.clk.Now(),
+		TraceCarrier: carrier,
+		Payload:      pl,
 	}
 
 	body, err := json.Marshal(m)

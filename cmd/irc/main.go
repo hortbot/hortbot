@@ -13,7 +13,9 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
+	"github.com/opentracing/opentracing-go"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 
@@ -48,6 +50,12 @@ func main() {
 	logger := ctxlog.New(args.Debug)
 	defer zap.RedirectStdLog(logger)()
 	ctx = ctxlog.WithLogger(ctx, logger)
+
+	stopTracing, err := tracing.Init("irc", args.Debug, logger)
+	if err != nil {
+		logger.Fatal("error initializing tracing", zap.Error(err))
+	}
+	defer stopTracing.Close()
 
 	db, err := sql.Open("postgres", args.DB)
 	if err != nil {
@@ -95,9 +103,11 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(5 * time.Second),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage, ref opentracing.SpanReference) {
+			span, ctx := opentracing.StartSpanFromContext(ctx, "OnSendMessage", ref)
+			defer span.Finish()
 			if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
-				logger.Error("error sending messag", zap.Error(err))
+				logger.Error("error sending message", zap.Error(err))
 			}
 		},
 	}
@@ -111,9 +121,13 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(time.Minute),
 		},
-		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification) {
+		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, ref opentracing.SpanReference) {
+			span, ctx := opentracing.StartSpanFromContext(ctx, "OnNotifyChannelUpdates", ref)
+			defer span.Finish()
+
 			select {
 			case syncJoined <- struct{}{}:
+			case <-ctx.Done():
 			default:
 			}
 		},

@@ -5,11 +5,15 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 )
 
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "tryAutoreplies")
+	defer span.Finish()
+
 	var autoreplies models.AutoreplySlice
 	err := queries.Raw(`
 		SELECT autoreplies.id, autoreplies.trigger, autoreplies.response, autoreplies.count

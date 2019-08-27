@@ -44,11 +44,11 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "MESSAGE_COUNT":
 		return strconv.FormatInt(s.N, 10), nil
 	case "SONG":
-		return s.actionSong(0, false)
+		return s.actionSong(ctx, 0, false)
 	case "SONG_URL":
-		return s.actionSong(0, true)
+		return s.actionSong(ctx, 0, true)
 	case "LAST_SONG":
-		return s.actionSong(1, false)
+		return s.actionSong(ctx, 1, false)
 	case "QUOTE":
 		q, err := getRandomQuote(ctx, s.Tx, s.Channel)
 		if err != nil {
@@ -382,10 +382,10 @@ func (s *session) NextParameter() string {
 	return strings.TrimSpace(param)
 }
 
-func (s *session) actionSong(i int, url bool) (string, error) {
+func (s *session) actionSong(ctx context.Context, i int, url bool) (string, error) {
 	// TODO: Precheck commands before running them for simple things (like using SONG without lastfm set).
 
-	tracks, err := s.Tracks()
+	tracks, err := s.Tracks(ctx)
 	if err != nil {
 		if err == errLastFMDisabled {
 			return "(Unknown)", nil

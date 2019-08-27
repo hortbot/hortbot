@@ -13,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil/nsqtest"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
+	"github.com/opentracing/opentracing-go"
 	"gotest.tools/v3/assert"
 )
 
@@ -47,7 +48,7 @@ func TestSendMessage(t *testing.T) {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberClock(clk),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
 			received <- m
 		},
 	}
@@ -101,7 +102,7 @@ func TestSendMessageBadAddr(t *testing.T) {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberConfig(config),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
 			received <- m
 		},
 	}
@@ -134,7 +135,7 @@ func TestSendMessageSubscriberBadChannel(t *testing.T) {
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
-		OnSendMessage: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
 			received <- m
 		},
 	}
@@ -176,7 +177,7 @@ func TestMaxAge(t *testing.T) {
 			bnsq.SubscriberClock(clk),
 			bnsq.SubscriberMaxAge(30 * time.Second),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
 			received <- m
 		},
 	}

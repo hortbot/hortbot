@@ -9,6 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
+	"github.com/opentracing/opentracing-go"
 )
 
 var filters = []func(context.Context, *session) (filtered bool, err error){
@@ -22,6 +23,9 @@ var filters = []func(context.Context, *session) (filtered bool, err error){
 }
 
 func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "tryFilter")
+	defer span.Finish()
+
 	if !s.Channel.ShouldModerate || !s.Channel.EnableFilters {
 		return false, nil
 	}
@@ -62,7 +66,7 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	links := s.Links()
+	links := s.Links(ctx)
 
 	if len(links) == 0 {
 		return false, nil

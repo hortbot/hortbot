@@ -65,7 +65,7 @@ func init() {
 			var builder strings.Builder
 			builder.WriteString("Links: ")
 
-			links := s.Links()
+			links := s.Links(ctx)
 			last := len(links) - 1
 
 			for i, link := range links {

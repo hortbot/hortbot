@@ -7,12 +7,16 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"go.uber.org/zap"
 )
 
 func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "handleCustomCommand")
+	defer span.Finish()
+
 	if err := s.TryCooldown(); err != nil {
 		return false, err
 	}
@@ -20,6 +24,9 @@ func handleCustomCommand(ctx context.Context, s *session, info *models.CommandIn
 }
 
 func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "runCommandAndCount")
+	defer span.Finish()
+
 	ctx = withCommandGuard(ctx, info.Name)
 
 	reply, err := processCommand(ctx, s, message)
@@ -42,6 +49,9 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 }
 
 func processCommand(ctx context.Context, s *session, msg string) (string, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "processCommand")
+	defer span.Finish()
+
 	logger := ctxlog.FromContext(ctx)
 
 	if strings.Contains(msg, "(_ONLINE_CHECK_)") {

@@ -4,24 +4,13 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/leononame/clock"
+	"github.com/opentracing/opentracing-go"
 )
 
 type message struct {
-	Timestamp time.Time       `json:"timestamp"`
-	Payload   json.RawMessage `json:"payload"`
-}
-
-func newMessage(payload interface{}, clk clock.Clock) (*message, error) {
-	p, err := json.Marshal(payload)
-	if err != nil {
-		return nil, err
-	}
-
-	return &message{
-		Timestamp: clk.Now(),
-		Payload:   p,
-	}, nil
+	Timestamp    time.Time                  `json:"timestamp"`
+	TraceCarrier opentracing.TextMapCarrier `json:"trace_carrier"`
+	Payload      json.RawMessage            `json:"payload"`
 }
 
 func (m *message) payload(v interface{}) error {

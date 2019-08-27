@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/nsqtest"
+	"github.com/opentracing/opentracing-go"
 	"gotest.tools/v3/assert"
 )
 
@@ -37,7 +38,7 @@ func TestIncoming(t *testing.T) {
 	subscriber := bnsq.IncomingSubscriber{
 		Addr:    addr,
 		Channel: channel,
-		OnIncoming: func(n *bnsq.Incoming) {
+		OnIncoming: func(n *bnsq.Incoming, _ opentracing.SpanReference) {
 			received <- n
 		},
 	}

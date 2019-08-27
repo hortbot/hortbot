@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
+	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/queries"
 	"go.uber.org/zap"
 )
@@ -23,6 +24,9 @@ var (
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "Handle")
+	defer span.Finish()
+
 	if !b.initialized {
 		panic("bot is not initialized")
 	}
@@ -55,6 +59,9 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 }
 
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "handle")
+	defer span.Finish()
+
 	start := b.deps.Clock.Now()
 	logger := ctxlog.FromContext(ctx)
 
@@ -211,6 +218,9 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 }
 
 func handleSession(ctx context.Context, s *session) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "handleSession")
+	defer span.Finish()
+
 	logger := ctxlog.FromContext(ctx)
 
 	s.SetUserLevel()
@@ -291,7 +301,7 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	if s.Channel.ParseYoutube && s.Deps.YouTube != nil {
-		for _, u := range s.Links() {
+		for _, u := range s.Links(ctx) {
 			title := s.Deps.YouTube.VideoTitle(u)
 			if title != "" {
 				return s.Replyf(ctx, "Linked YouTube video: \"%s\"", title)
@@ -307,6 +317,9 @@ func handleSession(ctx context.Context, s *session) error {
 }
 
 func tryCommand(ctx context.Context, s *session) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "tryCommand")
+	defer span.Finish()
+
 	if s.Me {
 		return false, nil
 	}
@@ -390,6 +403,9 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "tryBuiltinCommand")
+	defer span.Finish()
+
 	if cmd == "builtin" {
 		cmd, args = splitSpace(args)
 		cmd = cleanCommandName(cmd)

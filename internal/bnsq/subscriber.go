@@ -8,6 +8,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"go.uber.org/zap"
 )
 
@@ -62,7 +64,7 @@ func SubscriberMaxAge(d time.Duration) SubscriberOption {
 	}
 }
 
-func (s *subscriber) run(ctx context.Context, fn func(*message)) error {
+func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracing.SpanReference)) error {
 	logger := ctxlog.FromContext(ctx)
 
 	consumer, err := nsq.NewConsumer(s.topic, s.channel, s.config)
@@ -86,6 +88,10 @@ func (s *subscriber) run(ctx context.Context, fn func(*message)) error {
 			return nil
 		}
 
+		spanContext, _ := opentracing.GlobalTracer().Extract(opentracing.TextMap, m.TraceCarrier)
+		span := opentracing.StartSpan(s.topic, opentracing.FollowsFrom(spanContext), ext.SpanKindConsumer)
+		defer span.Finish()
+
 		if s.maxAge > 0 {
 			since := s.clk.Since(m.Timestamp)
 			if since > s.maxAge {
@@ -94,7 +100,9 @@ func (s *subscriber) run(ctx context.Context, fn func(*message)) error {
 			}
 		}
 
-		fn(m)
+		ref := opentracing.FollowsFrom(span.Context())
+
+		fn(m, ref)
 		return nil
 	}))
 

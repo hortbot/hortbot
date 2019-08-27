@@ -26,7 +26,7 @@ func cmdMusic(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	resp, err := getSongString(s, false)
+	resp, err := getSongString(ctx, s, false)
 	if err != nil {
 		return err
 	}
@@ -43,7 +43,7 @@ func cmdSonglink(ctx context.Context, s *session, cmd string, args string) error
 		return err
 	}
 
-	resp, err := getSongString(s, true)
+	resp, err := getSongString(ctx, s, true)
 	if err != nil {
 		return err
 	}
@@ -51,8 +51,8 @@ func cmdSonglink(ctx context.Context, s *session, cmd string, args string) error
 	return s.Reply(ctx, resp)
 }
 
-func getSongString(s *session, withURL bool) (string, error) {
-	tracks, err := s.Tracks()
+func getSongString(ctx context.Context, s *session, withURL bool) (string, error) {
+	tracks, err := s.Tracks(ctx)
 	if err != nil {
 		// TODO: reply with error message?
 		return "", err

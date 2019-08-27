@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -292,6 +293,9 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 }
 
 func handleList(ctx context.Context, s *session, info *models.CommandInfo, update bool) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "handleList")
+	defer span.Finish()
+
 	args := s.OrigCommandParams
 	cmd, args := splitSpace(args)
 	cmd = strings.ToLower(cmd)

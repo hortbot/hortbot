@@ -2,6 +2,8 @@ package bnsq
 
 import (
 	"context"
+
+	"github.com/opentracing/opentracing-go"
 )
 
 const (
@@ -41,17 +43,17 @@ type SendMessageSubscriber struct {
 	Origin        string
 	Channel       string
 	Opts          []SubscriberOption
-	OnSendMessage func(*SendMessage)
+	OnSendMessage func(sm *SendMessage, ref opentracing.SpanReference)
 }
 
 func (s *SendMessageSubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, sendMessageTopic+s.Origin, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message) {
+	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) {
 		sm := &SendMessage{}
 		if err := m.payload(sm); err != nil {
 			return
 		}
-		s.OnSendMessage(sm)
+		s.OnSendMessage(sm, ref)
 	})
 }
