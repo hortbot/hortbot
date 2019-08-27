@@ -9,7 +9,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.23.8 // indirect
+	github.com/aws/aws-sdk-go v1.23.9 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/containerd v1.2.8 // indirect
@@ -79,7 +79,7 @@ require (
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
-	github.com/volatiletech/sqlboiler v3.4.1-0.20190731234541-0b24139945ee+incompatible
+	github.com/volatiletech/sqlboiler v3.5.0+incompatible
 	github.com/xanzy/go-gitlab v0.20.1 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
 	go.uber.org/zap v1.10.0
@@ -87,8 +87,8 @@ require (
 	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190825160603-fb81701db80f // indirect
-	golang.org/x/tools v0.0.0-20190825031127-d72b05d2b1b6
+	golang.org/x/sys v0.0.0-20190826190057-c7b8b68b1456 // indirect
+	golang.org/x/tools v0.0.0-20190826234050-71894ab67ee3
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
 	google.golang.org/grpc v1.23.0 // indirect
 	gotest.tools/v3 v3.0.0
