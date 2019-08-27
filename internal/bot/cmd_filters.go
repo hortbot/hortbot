@@ -32,12 +32,12 @@ func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
 	subcommand = strings.ToLower(subcommand)
 
 	if subcommand == "" {
-		return s.ReplyUsage("<option> ...")
+		return s.ReplyUsage(ctx, "<option> ...")
 	}
 
 	ok, err := filterCommands.Run(ctx, s, subcommand, args)
 	if !ok {
-		return s.Replyf("No such filter option '%s'.", subcommand)
+		return s.Replyf(ctx, "No such filter option '%s'.", subcommand)
 	}
 
 	return err
@@ -81,16 +81,16 @@ func cmdFilterStatus(ctx context.Context, s *session, cmd string, args string) e
 	writeBool(builder, s.Channel.FilterSymbols)
 	fmt.Fprintf(builder, " {%d%%, %d}", s.Channel.FilterSymbolsPercentage, s.Channel.FilterSymbolsMinSymbols)
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 func cmdFilterOnOff(enable bool) func(ctx context.Context, s *session, cmd string, args string) error {
 	return func(ctx context.Context, s *session, cmd string, args string) error {
 		if s.Channel.EnableFilters == enable {
 			if enable {
-				return s.Reply("Filters are already enabled.")
+				return s.Reply(ctx, "Filters are already enabled.")
 			}
-			return s.Reply("Filters are already disabled.")
+			return s.Reply(ctx, "Filters are already disabled.")
 		}
 
 		s.Channel.EnableFilters = enable
@@ -100,9 +100,9 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *session, cmd strin
 		}
 
 		if enable {
-			return s.Reply("Filters are now enabled.")
+			return s.Reply(ctx, "Filters are now enabled.")
 		}
-		return s.Reply("Filters are now disabled.")
+		return s.Reply(ctx, "Filters are now disabled.")
 	}
 }
 
@@ -115,14 +115,14 @@ func cmdFilterLinks(ctx context.Context, s *session, cmd string, args string) er
 	case "off":
 		// Do nothing.
 	default:
-		return s.ReplyUsage("on|off")
+		return s.ReplyUsage(ctx, "on|off")
 	}
 
 	if s.Channel.FilterLinks == enable {
 		if enable {
-			return s.Reply("Link filter is already enabled.")
+			return s.Reply(ctx, "Link filter is already enabled.")
 		}
-		return s.Reply("Link filter is already disabled.")
+		return s.Reply(ctx, "Link filter is already disabled.")
 	}
 
 	s.Channel.FilterLinks = enable
@@ -132,14 +132,14 @@ func cmdFilterLinks(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if enable {
-		return s.Reply("Link filter is now enabled.")
+		return s.Reply(ctx, "Link filter is now enabled.")
 	}
-	return s.Reply("Link filter is now disabled.")
+	return s.Reply(ctx, "Link filter is now disabled.")
 }
 
 func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("add|delete|list ...")
+		return s.ReplyUsage(ctx, "add|delete|list ...")
 	}
 
 	subcommand, args := splitSpace(args)
@@ -155,7 +155,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 		permitted := s.Channel.PermittedLinks
 
 		if len(permitted) == 0 {
-			return s.Reply("There are no permitted link patterns.")
+			return s.Reply(ctx, "There are no permitted link patterns.")
 		}
 
 		var builder strings.Builder
@@ -171,17 +171,17 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 			builder.WriteString(p)
 		}
 
-		return s.Reply(builder.String())
+		return s.Reply(ctx, builder.String())
 
 	case "add":
 		pd, args := splitSpace(args)
 		if args != "" {
-			return s.ReplyUsage(subcommand + " <link pattern>")
+			return s.ReplyUsage(ctx, subcommand+" <link pattern>")
 		}
 
 		_, err := urlx.ParseWithDefaultScheme(pd, "https")
 		if err != nil {
-			return s.Reply("Could not parse link pattern.")
+			return s.Reply(ctx, "Could not parse link pattern.")
 		}
 
 		s.Channel.PermittedLinks = append(s.Channel.PermittedLinks, pd)
@@ -191,12 +191,12 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 		}
 
 		n := len(s.Channel.PermittedLinks)
-		return s.Replyf("Permitted link pattern #%d added.", n)
+		return s.Replyf(ctx, "Permitted link pattern #%d added.", n)
 
 	case "delete", "remove":
 		n, err := strconv.Atoi(args)
 		if err != nil || n <= 0 {
-			return s.ReplyUsage(subcommand + " <num>")
+			return s.ReplyUsage(ctx, subcommand+" <num>")
 		}
 
 		i := n - 1
@@ -204,7 +204,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 		old := s.Channel.PermittedLinks
 
 		if i >= len(old) {
-			return s.Replyf("Permitted link pattern #%d does not exist.", n)
+			return s.Replyf(ctx, "Permitted link pattern #%d does not exist.", n)
 		}
 
 		oldP := old[i]
@@ -214,7 +214,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 			return err
 		}
 
-		return s.Replyf("Permitted link pattern #%d deleted; was '%s'.", n, oldP)
+		return s.Replyf(ctx, "Permitted link pattern #%d deleted; was '%s'.", n, oldP)
 
 	default:
 		return usage()
@@ -230,7 +230,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 	switch subcommand {
 	case "on":
 		if s.Channel.FilterCaps {
-			return s.Reply("Caps filter is already enabled.")
+			return s.Reply(ctx, "Caps filter is already enabled.")
 		}
 
 		s.Channel.FilterCaps = true
@@ -239,7 +239,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 
 	case "off":
 		if !s.Channel.FilterCaps {
-			return s.Reply("Caps filter is already disabled.")
+			return s.Reply(ctx, "Caps filter is already disabled.")
 		}
 
 		s.Channel.FilterCaps = false
@@ -249,7 +249,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 	case "percent":
 		percent, err := strconv.Atoi(args)
 		if err != nil || percent < 0 || percent > 100 {
-			return s.ReplyUsage("percent <0-100>")
+			return s.ReplyUsage(ctx, "percent <0-100>")
 		}
 
 		s.Channel.FilterCapsPercentage = percent
@@ -259,7 +259,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 	case "minchars":
 		minChars, err := strconv.Atoi(args)
 		if err != nil || minChars < 0 {
-			return s.ReplyUsage("minchars <int>")
+			return s.ReplyUsage(ctx, "minchars <int>")
 		}
 
 		s.Channel.FilterCapsMinChars = minChars
@@ -269,7 +269,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 	case "mincaps":
 		minCaps, err := strconv.Atoi(args)
 		if err != nil || minCaps < 0 {
-			return s.ReplyUsage("mincaps <int>")
+			return s.ReplyUsage(ctx, "mincaps <int>")
 		}
 
 		s.Channel.FilterCapsMinCaps = minCaps
@@ -277,7 +277,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 		column = models.ChannelColumns.FilterCapsMinCaps
 
 	case "status":
-		return s.Replyf("Caps filter=%v, percent=%v, minchars=%v, mincaps=%v",
+		return s.Replyf(ctx, "Caps filter=%v, percent=%v, minchars=%v, mincaps=%v",
 			s.Channel.FilterCaps,
 			s.Channel.FilterCapsPercentage,
 			s.Channel.FilterCapsMinChars,
@@ -285,14 +285,14 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 		)
 
 	default:
-		return s.ReplyUsage("on|off|percent|minchars|mincaps|status")
+		return s.ReplyUsage(ctx, "on|off|percent|minchars|mincaps|status")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
 		return err
 	}
 
-	return s.Reply(response)
+	return s.Reply(ctx, response)
 }
 
 func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) error {
@@ -304,7 +304,7 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 	switch subcommand {
 	case "on":
 		if s.Channel.FilterSymbols {
-			return s.Reply("Symbols filter is already enabled.")
+			return s.Reply(ctx, "Symbols filter is already enabled.")
 		}
 
 		s.Channel.FilterSymbols = true
@@ -313,7 +313,7 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 
 	case "off":
 		if !s.Channel.FilterSymbols {
-			return s.Reply("Symbols filter is already disabled.")
+			return s.Reply(ctx, "Symbols filter is already disabled.")
 		}
 
 		s.Channel.FilterSymbols = false
@@ -323,7 +323,7 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 	case "percent":
 		percent, err := strconv.Atoi(args)
 		if err != nil || percent < 0 || percent > 100 {
-			return s.ReplyUsage("percent <0-100>")
+			return s.ReplyUsage(ctx, "percent <0-100>")
 		}
 
 		s.Channel.FilterSymbolsPercentage = percent
@@ -333,7 +333,7 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 	case "min":
 		min, err := strconv.Atoi(args)
 		if err != nil || min < 0 {
-			return s.ReplyUsage("min <int>")
+			return s.ReplyUsage(ctx, "min <int>")
 		}
 
 		s.Channel.FilterSymbolsMinSymbols = min
@@ -341,21 +341,21 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 		column = models.ChannelColumns.FilterSymbolsMinSymbols
 
 	case "status":
-		return s.Replyf("Symbols filter=%v, percent=%v, min=%v",
+		return s.Replyf(ctx, "Symbols filter=%v, percent=%v, min=%v",
 			s.Channel.FilterSymbols,
 			s.Channel.FilterSymbolsPercentage,
 			s.Channel.FilterSymbolsMinSymbols,
 		)
 
 	default:
-		return s.ReplyUsage("on|off|percent|min|status")
+		return s.ReplyUsage(ctx, "on|off|percent|min|status")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
 		return err
 	}
 
-	return s.Reply(response)
+	return s.Reply(ctx, response)
 }
 
 func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error {
@@ -367,14 +367,14 @@ func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error
 	case "off":
 		// Do nothing.
 	default:
-		return s.ReplyUsage("on|off")
+		return s.ReplyUsage(ctx, "on|off")
 	}
 
 	if s.Channel.FilterMe == enable {
 		if enable {
-			return s.Reply("Me filter is already enabled.")
+			return s.Reply(ctx, "Me filter is already enabled.")
 		}
-		return s.Reply("Me filter is already disabled.")
+		return s.Reply(ctx, "Me filter is already disabled.")
 	}
 
 	s.Channel.FilterMe = enable
@@ -384,19 +384,19 @@ func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error
 	}
 
 	if enable {
-		return s.Reply("Me filter is now enabled.")
+		return s.Reply(ctx, "Me filter is now enabled.")
 	}
-	return s.Reply("Me filter is now disabled.")
+	return s.Reply(ctx, "Me filter is now disabled.")
 }
 
 func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.Replyf("Max message length set to %d.", s.Channel.FilterMaxLength)
+		return s.Replyf(ctx, "Max message length set to %d.", s.Channel.FilterMaxLength)
 	}
 
 	n, err := strconv.Atoi(args)
 	if err != nil || n < 0 {
-		return s.ReplyUsage("<length>")
+		return s.ReplyUsage(ctx, "<length>")
 	}
 
 	s.Channel.FilterMaxLength = n
@@ -405,7 +405,7 @@ func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args st
 		return err
 	}
 
-	return s.Replyf("Max message length set to %d.", n)
+	return s.Replyf(ctx, "Max message length set to %d.", n)
 }
 
 func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) error {
@@ -417,7 +417,7 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 	switch subcommand {
 	case "on":
 		if s.Channel.FilterEmotes {
-			return s.Reply("Emote filter is already enabled.")
+			return s.Reply(ctx, "Emote filter is already enabled.")
 		}
 
 		s.Channel.FilterEmotes = true
@@ -426,7 +426,7 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 
 	case "off":
 		if !s.Channel.FilterEmotes {
-			return s.Reply("Emote filter is already disabled.")
+			return s.Reply(ctx, "Emote filter is already disabled.")
 		}
 
 		s.Channel.FilterEmotes = false
@@ -436,7 +436,7 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 	case "max":
 		max, err := strconv.Atoi(args)
 		if err != nil || max < 0 {
-			return s.ReplyUsage("max <num>")
+			return s.ReplyUsage(ctx, "max <num>")
 		}
 
 		s.Channel.FilterEmotesMax = max
@@ -451,14 +451,14 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 			enabled = true
 		case "off":
 		default:
-			return s.ReplyUsage("single on|off")
+			return s.ReplyUsage(ctx, "single on|off")
 		}
 
 		if s.Channel.FilterEmotesSingle == enabled {
 			if enabled {
-				return s.Reply("Single emote filter is already enabled.")
+				return s.Reply(ctx, "Single emote filter is already enabled.")
 			}
-			return s.Reply("Single emote filter is already disabled.")
+			return s.Reply(ctx, "Single emote filter is already disabled.")
 		}
 
 		s.Channel.FilterEmotesSingle = enabled
@@ -472,21 +472,21 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 		column = models.ChannelColumns.FilterEmotesSingle
 
 	case "status":
-		return s.Replyf("Emote filter=%v, max=%v, single=%v",
+		return s.Replyf(ctx, "Emote filter=%v, max=%v, single=%v",
 			s.Channel.FilterEmotes,
 			s.Channel.FilterEmotesMax,
 			s.Channel.FilterEmotesSingle,
 		)
 
 	default:
-		return s.ReplyUsage("on|off|max|single|status")
+		return s.ReplyUsage(ctx, "on|off|max|single|status")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
 		return err
 	}
 
-	return s.Reply(response)
+	return s.Reply(ctx, response)
 }
 
 func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string) error {
@@ -498,7 +498,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 	switch subcommand {
 	case "on":
 		if s.Channel.FilterBannedPhrases {
-			return s.Reply("Banned phrase filter is already enabled.")
+			return s.Reply(ctx, "Banned phrase filter is already enabled.")
 		}
 
 		s.Channel.FilterBannedPhrases = true
@@ -507,7 +507,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 
 	case "off":
 		if !s.Channel.FilterBannedPhrases {
-			return s.Reply("Banned phrase filter is already disabled.")
+			return s.Reply(ctx, "Banned phrase filter is already disabled.")
 		}
 
 		s.Channel.FilterBannedPhrases = false
@@ -523,17 +523,17 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		var pattern string
 		if strings.HasPrefix(args, "REGEX:") {
 			if !s.UserLevel.CanAccess(levelAdmin) {
-				return s.Reply("Only admins may add regex banned words.")
+				return s.Reply(ctx, "Only admins may add regex banned words.")
 			}
 
 			pattern = strings.TrimPrefix(args, "REGEX:")
 			if pattern == "" {
-				return s.replyBadPattern(errEmptyPattern)
+				return s.replyBadPattern(ctx, errEmptyPattern)
 			}
 
 			_, err := s.Deps.ReCache.Compile(pattern)
 			if err != nil {
-				return s.replyBadPattern(err)
+				return s.replyBadPattern(ctx, err)
 			}
 		} else {
 			pattern = regexp.QuoteMeta(args)
@@ -567,7 +567,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		}
 
 		if found == -1 {
-			return s.Reply("Banned phrase not found.")
+			return s.Reply(ctx, "Banned phrase not found.")
 		}
 
 		l := s.Channel.FilterBannedPhrasesPatterns
@@ -581,18 +581,18 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 
 		count := len(s.Channel.FilterBannedPhrasesPatterns)
 		if count == 1 {
-			return s.Reply("There is 1 banned phrase.")
+			return s.Reply(ctx, "There is 1 banned phrase.")
 		}
 
-		return s.Replyf("There are %d banned phrases.", count)
+		return s.Replyf(ctx, "There are %d banned phrases.", count)
 
 	default:
-		return s.ReplyUsage("on|off|add|delete|clear|list")
+		return s.ReplyUsage(ctx, "on|off|add|delete|clear|list")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
 		return err
 	}
 
-	return s.Reply(response)
+	return s.Reply(ctx, response)
 }

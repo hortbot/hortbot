@@ -2,16 +2,18 @@
 package botfakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/bot"
 )
 
 type FakeNotifier struct {
-	NotifyChannelUpdatesStub        func(string) error
+	NotifyChannelUpdatesStub        func(context.Context, string) error
 	notifyChannelUpdatesMutex       sync.RWMutex
 	notifyChannelUpdatesArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
+		arg2 string
 	}
 	notifyChannelUpdatesReturns struct {
 		result1 error
@@ -23,16 +25,17 @@ type FakeNotifier struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeNotifier) NotifyChannelUpdates(arg1 string) error {
+func (fake *FakeNotifier) NotifyChannelUpdates(arg1 context.Context, arg2 string) error {
 	fake.notifyChannelUpdatesMutex.Lock()
 	ret, specificReturn := fake.notifyChannelUpdatesReturnsOnCall[len(fake.notifyChannelUpdatesArgsForCall)]
 	fake.notifyChannelUpdatesArgsForCall = append(fake.notifyChannelUpdatesArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("NotifyChannelUpdates", []interface{}{arg1})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("NotifyChannelUpdates", []interface{}{arg1, arg2})
 	fake.notifyChannelUpdatesMutex.Unlock()
 	if fake.NotifyChannelUpdatesStub != nil {
-		return fake.NotifyChannelUpdatesStub(arg1)
+		return fake.NotifyChannelUpdatesStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
@@ -47,17 +50,17 @@ func (fake *FakeNotifier) NotifyChannelUpdatesCallCount() int {
 	return len(fake.notifyChannelUpdatesArgsForCall)
 }
 
-func (fake *FakeNotifier) NotifyChannelUpdatesCalls(stub func(string) error) {
+func (fake *FakeNotifier) NotifyChannelUpdatesCalls(stub func(context.Context, string) error) {
 	fake.notifyChannelUpdatesMutex.Lock()
 	defer fake.notifyChannelUpdatesMutex.Unlock()
 	fake.NotifyChannelUpdatesStub = stub
 }
 
-func (fake *FakeNotifier) NotifyChannelUpdatesArgsForCall(i int) string {
+func (fake *FakeNotifier) NotifyChannelUpdatesArgsForCall(i int) (context.Context, string) {
 	fake.notifyChannelUpdatesMutex.RLock()
 	defer fake.notifyChannelUpdatesMutex.RUnlock()
 	argsForCall := fake.notifyChannelUpdatesArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeNotifier) NotifyChannelUpdatesReturns(result1 error) {

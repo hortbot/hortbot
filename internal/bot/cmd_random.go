@@ -25,9 +25,9 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 
 	if args == "coin" {
 		if s.Deps.Rand.Intn(2) == 0 {
-			return s.Reply("Heads!")
+			return s.Reply(ctx, "Heads!")
 		}
-		return s.Reply("Tails!")
+		return s.Reply(ctx, "Tails!")
 	}
 
 	var builder strings.Builder
@@ -52,7 +52,7 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 				builder.WriteString(strconv.Itoa(v))
 			}
 
-			return s.Reply(builder.String())
+			return s.Reply(ctx, builder.String())
 		}
 	}
 
@@ -71,5 +71,5 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 	v := s.Deps.Rand.Intn(max) + 1
 	builder.WriteString(strconv.Itoa(v))
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }

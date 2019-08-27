@@ -57,8 +57,8 @@ func TestSendMessage(t *testing.T) {
 	g.Go(publisher.Run)
 	g.Go(subscriber.Run)
 
-	assert.NilError(t, publisher.SendMessage(origin, "#foobar", "this is my message"))
-	assert.NilError(t, publisher.SendMessage("wrong", "#other", "nobody can read this"))
+	assert.NilError(t, publisher.SendMessage(ctx, origin, "#foobar", "this is my message"))
+	assert.NilError(t, publisher.SendMessage(ctx, "wrong", "#other", "nobody can read this"))
 
 	got := <-received
 
@@ -188,7 +188,7 @@ func TestMaxAge(t *testing.T) {
 	g.Go(publisher.Run)
 	g.Go(subscriber.Run)
 
-	assert.NilError(t, publisher.SendMessage(origin, "#foobar", "this is my message"))
+	assert.NilError(t, publisher.SendMessage(ctx, origin, "#foobar", "this is my message"))
 
 	time.Sleep(10 * time.Millisecond)
 	clk.Forward(2 * time.Minute)

@@ -10,35 +10,35 @@ func cmdWhatShouldIPlay(ctx context.Context, s *session, cmd string, args string
 	games, err := s.SteamGames(ctx)
 	switch err {
 	case errSteamDisabled:
-		return s.Reply("Steam support is disabled.")
+		return s.Reply(ctx, "Steam support is disabled.")
 	case steam.ErrServerError, steam.ErrNotFound:
-		return s.Reply("A Steam API error occurred.")
+		return s.Reply(ctx, "A Steam API error occurred.")
 	case nil:
 	default:
 		return err
 	}
 
 	if len(games) == 0 {
-		return s.Reply("Your Steam profile is private, or you own no games.")
+		return s.Reply(ctx, "Your Steam profile is private, or you own no games.")
 	}
 
 	i := s.Deps.Rand.Intn(len(games))
 	game := games[i]
 
-	return s.Replyf("You could always play: %s (http://store.steampowered.com/app/%d)", game.Name, game.ID)
+	return s.Replyf(ctx, "You could always play: %s (http://store.steampowered.com/app/%d)", game.Name, game.ID)
 }
 
 func cmdStatusGame(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<new status>")
+		return s.ReplyUsage(ctx, "<new status>")
 	}
 
 	summary, err := s.SteamSummary(ctx)
 	switch err {
 	case errSteamDisabled:
-		return s.Reply("Steam support is disabled.")
+		return s.Reply(ctx, "Steam support is disabled.")
 	case steam.ErrServerError, steam.ErrNotFound:
-		return s.Reply("A Steam API error occurred.")
+		return s.Reply(ctx, "A Steam API error occurred.")
 	case nil:
 	default:
 		return err
@@ -54,16 +54,16 @@ func cmdStatusGame(ctx context.Context, s *session, cmd string, args string) err
 		return err
 	}
 
-	return s.Reply("Status and game updated.")
+	return s.Reply(ctx, "Status and game updated.")
 }
 
 func cmdSteamGame(ctx context.Context, s *session, cmd string, args string) error {
 	summary, err := s.SteamSummary(ctx)
 	switch err {
 	case errSteamDisabled:
-		return s.Reply("Steam support is disabled.")
+		return s.Reply(ctx, "Steam support is disabled.")
 	case steam.ErrServerError, steam.ErrNotFound:
-		return s.Reply("A Steam API error occurred.")
+		return s.Reply(ctx, "A Steam API error occurred.")
 	case nil:
 	default:
 		return err
@@ -74,5 +74,5 @@ func cmdSteamGame(ctx context.Context, s *session, cmd string, args string) erro
 		return err
 	}
 
-	return s.Reply("Game updated.")
+	return s.Reply(ctx, "Game updated.")
 }

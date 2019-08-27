@@ -14,7 +14,7 @@ func cmdLastFM(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	return s.Replyf("https://www.last.fm/user/%s", s.Channel.LastFM)
+	return s.Replyf(ctx, "https://www.last.fm/user/%s", s.Channel.LastFM)
 }
 
 func cmdMusic(ctx context.Context, s *session, cmd string, args string) error {
@@ -31,7 +31,7 @@ func cmdMusic(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	return s.Reply(resp)
+	return s.Reply(ctx, resp)
 }
 
 func cmdSonglink(ctx context.Context, s *session, cmd string, args string) error {
@@ -48,7 +48,7 @@ func cmdSonglink(ctx context.Context, s *session, cmd string, args string) error
 		return err
 	}
 
-	return s.Reply(resp)
+	return s.Reply(ctx, resp)
 }
 
 func getSongString(s *session, withURL bool) (string, error) {

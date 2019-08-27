@@ -78,7 +78,7 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 	}
 
 	if permitted {
-		return false, s.Replyf("Link permitted. (%s)", s.UserDisplay)
+		return false, s.Replyf(ctx, "Link permitted. (%s)", s.UserDisplay)
 	}
 
 	return true, filterDoPunish(ctx, s, "links", "please ask a moderator before posting links")
@@ -303,12 +303,12 @@ func filterDoPunish(ctx context.Context, s *session, filter, message string) err
 		}
 
 		if !warned {
-			if err := s.DeleteMessage(); err != nil {
+			if err := s.DeleteMessage(ctx); err != nil {
 				return err
 			}
 
 			if s.Channel.DisplayWarnings {
-				return s.Replyf("%s, %s - warning", s.UserDisplay, message)
+				return s.Replyf(ctx, "%s, %s - warning", s.UserDisplay, message)
 			}
 
 			return nil
@@ -318,9 +318,9 @@ func filterDoPunish(ctx context.Context, s *session, filter, message string) err
 	var err error
 
 	if s.Channel.TimeoutDuration == 0 {
-		err = s.SendCommand("timeout", s.User)
+		err = s.SendCommand(ctx, "timeout", s.User)
 	} else {
-		err = s.SendCommand("timeout", s.User, strconv.Itoa(s.Channel.TimeoutDuration))
+		err = s.SendCommand(ctx, "timeout", s.User, strconv.Itoa(s.Channel.TimeoutDuration))
 	}
 
 	if err != nil {
@@ -328,7 +328,7 @@ func filterDoPunish(ctx context.Context, s *session, filter, message string) err
 	}
 
 	if s.Channel.DisplayWarnings {
-		return s.Replyf("%s, %s - timeout", s.UserDisplay, message)
+		return s.Replyf(ctx, "%s, %s - timeout", s.UserDisplay, message)
 	}
 
 	return nil

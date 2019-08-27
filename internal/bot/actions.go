@@ -68,12 +68,12 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return "twitch.tv/" + s.Channel.Name, nil
 	case "SUBMODE_ON":
 		if s.UserLevel.CanAccess(levelModerator) {
-			return "", s.SendCommand("subscribers")
+			return "", s.SendCommand(ctx, "subscribers")
 		}
 		return "", nil
 	case "SUBMODE_OFF":
 		if s.UserLevel.CanAccess(levelModerator) {
-			return "", s.SendCommand("subscribersoff")
+			return "", s.SendCommand(ctx, "subscribersoff")
 		}
 		return "", nil
 	case "SILENT":
@@ -88,28 +88,28 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return strconv.FormatInt(count, 10), nil
 	case "UNHOST":
 		// TODO: check user level
-		return "", s.SendCommand("unhost")
+		return "", s.SendCommand(ctx, "unhost")
 	case "PURGE":
 		u, do := s.UserForModAction()
 		if do && u != "" {
-			return u, s.SendCommand("timeout", strings.ToLower(u), "1")
+			return u, s.SendCommand(ctx, "timeout", strings.ToLower(u), "1")
 		}
 		return u, nil
 	case "TIMEOUT":
 		u, do := s.UserForModAction()
 		if do && u != "" {
-			return u, s.SendCommand("timeout", strings.ToLower(u))
+			return u, s.SendCommand(ctx, "timeout", strings.ToLower(u))
 		}
 		return u, nil
 	case "BAN":
 		u, do := s.UserForModAction()
 		if do && u != "" {
-			return u, s.SendCommand("ban", strings.ToLower(u))
+			return u, s.SendCommand(ctx, "ban", strings.ToLower(u))
 		}
 		return u, nil
 	case "DELETE":
 		if s.Type == sessionAutoreply {
-			return s.User, s.DeleteMessage()
+			return s.User, s.DeleteMessage(ctx)
 		}
 		return "", nil
 	case "REGULARS_ONLY":
@@ -294,7 +294,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 	case strings.HasPrefix(action, "HOST_"):
 		ch := strings.TrimPrefix(action, "HOST_")
-		return "", s.SendCommand("host", strings.ToLower(ch))
+		return "", s.SendCommand(ctx, "host", strings.ToLower(ch))
 
 	case strings.HasPrefix(action, "VARS_"):
 		return s.actionVars(ctx, strings.TrimPrefix(action, "VARS_"))

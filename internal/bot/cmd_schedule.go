@@ -33,7 +33,7 @@ func cmdSchedule(ctx context.Context, s *session, cmd string, args string) error
 	}
 
 	if !ok {
-		return s.ReplyUsage("add|delete|on|off|list ...")
+		return s.ReplyUsage(ctx, "add|delete|on|off|list ...")
 	}
 
 	return nil
@@ -41,7 +41,7 @@ func cmdSchedule(ctx context.Context, s *session, cmd string, args string) error
 
 func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name> <pattern> [message difference]")
+		return s.ReplyUsage(ctx, "<name> <pattern> [message difference]")
 	}
 
 	name, args := splitSpace(args)
@@ -56,7 +56,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 
 	expr, err := repeat.ParseCron(pattern)
 	if err != nil {
-		return s.Replyf("Bad cron expression: %s", pattern)
+		return s.Replyf(ctx, "Bad cron expression: %s", pattern)
 	}
 
 	messageDiff := int64(1)
@@ -68,7 +68,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		}
 
 		if messageDiff <= 0 {
-			return s.Reply("Message difference must be at least 1.")
+			return s.Reply(ctx, "Message difference must be at least 1.")
 		}
 	}
 
@@ -78,12 +78,12 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
+		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
 	if scheduled != nil {
@@ -129,7 +129,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		dUnit = "messages have passed."
 	}
 
-	return s.Replyf("Command '%s' has been scheduled with '%s' and will run if at least %d %s", name, pattern, messageDiff, dUnit)
+	return s.Replyf(ctx, "Command '%s' has been scheduled with '%s' and will run if at least %d %s", name, pattern, messageDiff, dUnit)
 }
 
 func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string) error {
@@ -137,7 +137,7 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 	name = cleanCommandName(name)
 
 	if name == "" {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	info, scheduled, err := findScheduledCommand(ctx, name, s)
@@ -146,16 +146,16 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if scheduled == nil {
-		return s.Replyf("Command '%s' has no schedule.", name)
+		return s.Replyf(ctx, "Command '%s' has no schedule.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
+		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
 	if err := scheduled.Delete(ctx, s.Tx); err != nil {
@@ -164,7 +164,7 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 
 	s.Deps.UpdateSchedule(scheduled.ID, false, nil)
 
-	return s.Replyf("Command '%s' is no longer scheduled.", name)
+	return s.Replyf(ctx, "Command '%s' is no longer scheduled.", name)
 }
 
 func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) error {
@@ -172,7 +172,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	name = cleanCommandName(name)
 
 	if name == "" {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	enable := cmd == "on"
@@ -183,23 +183,23 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if scheduled == nil {
-		return s.Replyf("Command '%s' has no schedule.", name)
+		return s.Replyf(ctx, "Command '%s' has no schedule.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
+		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
 	if scheduled.Enabled == enable {
 		if enable {
-			return s.Replyf("Scheduled command '%s' is already enabled.", name)
+			return s.Replyf(ctx, "Scheduled command '%s' is already enabled.", name)
 		}
-		return s.Replyf("Scheduled command '%s' is already disabled.", name)
+		return s.Replyf(ctx, "Scheduled command '%s' is already disabled.", name)
 	}
 
 	scheduled.Enabled = enable
@@ -225,10 +225,10 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	s.Deps.UpdateSchedule(scheduled.ID, enable, expr)
 
 	if enable {
-		return s.Replyf("Scheduled command '%s' is now enabled.", name)
+		return s.Replyf(ctx, "Scheduled command '%s' is now enabled.", name)
 	}
 
-	return s.Replyf("Scheduled command '%s' is now disabled.", name)
+	return s.Replyf(ctx, "Scheduled command '%s' is now disabled.", name)
 }
 
 func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) error {
@@ -240,7 +240,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if len(scheduleds) == 0 {
-		return s.Reply("There are no scheduled commands.")
+		return s.Reply(ctx, "There are no scheduled commands.")
 	}
 
 	sort.Slice(scheduleds, func(i, j int) bool {
@@ -269,7 +269,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 		builder.WriteByte(')')
 	}
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 func findScheduledCommand(ctx context.Context, name string, s *session) (*models.CommandInfo, *models.ScheduledCommand, error) {

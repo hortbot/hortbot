@@ -71,8 +71,12 @@ func (p *publisher) run(ctx context.Context) error {
 	return ctx.Err()
 }
 
-func (p *publisher) publish(topic string, payload interface{}) error {
-	<-p.ready
+func (p *publisher) publish(ctx context.Context, topic string, payload interface{}) error {
+	select {
+	case <-p.ready:
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 
 	m, err := newMessage(payload, p.clk)
 	if err != nil {
@@ -84,5 +88,16 @@ func (p *publisher) publish(topic string, payload interface{}) error {
 		return err
 	}
 
-	return p.producer.Publish(topic, body)
+	doneChan := make(chan *nsq.ProducerTransaction, 1)
+
+	if err := p.producer.PublishAsync(topic, body, doneChan); err != nil {
+		return err
+	}
+
+	select {
+	case pt := <-doneChan:
+		return pt.Error
+	case <-ctx.Done():
+		return ctx.Err()
+	}
 }

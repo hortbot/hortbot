@@ -34,7 +34,7 @@ func cmdRaffle(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	return s.ReplyUsage("enable|disable|count|winner|reset")
+	return s.ReplyUsage(ctx, "enable|disable|count|winner|reset")
 }
 
 func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args string) error {
@@ -50,9 +50,9 @@ func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args st
 
 	if s.Channel.RaffleEnabled == enable {
 		if enable {
-			return s.Replyf("Raffle is already enabled. Use %sraffle to enter!", s.Channel.Prefix)
+			return s.Replyf(ctx, "Raffle is already enabled. Use %sraffle to enter!", s.Channel.Prefix)
 		}
-		return s.Reply("Raffle is already disabled.")
+		return s.Reply(ctx, "Raffle is already disabled.")
 	}
 
 	if enable {
@@ -68,10 +68,10 @@ func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args st
 	}
 
 	if enable {
-		return s.Replyf("Raffle enabled. Use %sraffle to enter!", s.Channel.Prefix)
+		return s.Replyf(ctx, "Raffle enabled. Use %sraffle to enter!", s.Channel.Prefix)
 	}
 
-	return s.Reply("Raffle disabled.")
+	return s.Reply(ctx, "Raffle disabled.")
 }
 
 func cmdRaffleCount(ctx context.Context, s *session, cmd string, args string) error {
@@ -81,7 +81,7 @@ func cmdRaffleCount(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if count == 0 {
-		return s.Reply("Raffle has no entries.")
+		return s.Reply(ctx, "Raffle has no entries.")
 	}
 
 	entries := "entries"
@@ -89,7 +89,7 @@ func cmdRaffleCount(ctx context.Context, s *session, cmd string, args string) er
 		entries = "entry"
 	}
 
-	return s.Replyf("Raffle has %d %s.", count, entries)
+	return s.Replyf(ctx, "Raffle has %d %s.", count, entries)
 }
 
 func cmdRaffleWinner(ctx context.Context, s *session, cmd string, args string) error {
@@ -99,10 +99,10 @@ func cmdRaffleWinner(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if !ok {
-		return s.Reply("Raffle has no entries.")
+		return s.Reply(ctx, "Raffle has no entries.")
 	}
 
-	return s.Replyf("Winner is %s!", winner)
+	return s.Replyf(ctx, "Winner is %s!", winner)
 }
 
 func cmdRaffleReset(ctx context.Context, s *session, cmd string, args string) error {
@@ -110,5 +110,5 @@ func cmdRaffleReset(ctx context.Context, s *session, cmd string, args string) er
 		return err
 	}
 
-	return s.Reply("Raffle reset.")
+	return s.Reply(ctx, "Raffle reset.")
 }

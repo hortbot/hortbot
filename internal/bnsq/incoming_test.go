@@ -50,8 +50,8 @@ func TestIncoming(t *testing.T) {
 	m1 := ircx.PrivMsg("#foobar", "test")
 	m2 := ircx.PrivMsg("#someone", "other test")
 
-	assert.NilError(t, publisher.Publish("hortbot", m1))
-	assert.NilError(t, publisher.Publish("otherbot", m2))
+	assert.NilError(t, publisher.Publish(ctx, "hortbot", m1))
+	assert.NilError(t, publisher.Publish(ctx, "otherbot", m2))
 
 	got1 := <-received
 	got2 := <-received

@@ -97,7 +97,7 @@ func (s *session) formatResponse(response string) string {
 	return bullet + " " + response
 }
 
-func (s *session) Reply(response string) error {
+func (s *session) Reply(ctx context.Context, response string) error {
 	if s.Silent {
 		return nil
 	}
@@ -108,15 +108,15 @@ func (s *session) Reply(response string) error {
 		return nil
 	}
 
-	return s.Deps.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
+	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
 }
 
-func (s *session) Replyf(format string, args ...interface{}) error {
+func (s *session) Replyf(ctx context.Context, format string, args ...interface{}) error {
 	response := fmt.Sprintf(format, args...)
-	return s.Reply(response)
+	return s.Reply(ctx, response)
 }
 
-func (s *session) ReplyUsage(usage string) error {
+func (s *session) ReplyUsage(ctx context.Context, usage string) error {
 	var builder strings.Builder
 	builder.WriteString("Usage: ")
 
@@ -127,7 +127,7 @@ func (s *session) ReplyUsage(usage string) error {
 	builder.WriteString(s.usageContext)
 	builder.WriteString(usage)
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 func (s *session) UsageContext(command string) func() {
@@ -208,7 +208,7 @@ func (s *session) IsAdmin() bool {
 	return s.UserLevel.CanAccess(levelAdmin)
 }
 
-func (s *session) SendCommand(command string, args ...string) error {
+func (s *session) SendCommand(ctx context.Context, command string, args ...string) error {
 	switch command {
 	case "slow":
 	case "slowoff":
@@ -239,11 +239,11 @@ func (s *session) SendCommand(command string, args ...string) error {
 		builder.WriteString(arg)
 	}
 
-	return s.Deps.Sender.SendMessage(s.Origin, "#"+s.IRCChannel, builder.String())
+	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, builder.String())
 }
 
-func (s *session) DeleteMessage() error {
-	return s.SendCommand("delete", s.ID)
+func (s *session) DeleteMessage(ctx context.Context) error {
+	return s.SendCommand(ctx, "delete", s.ID)
 }
 
 func (s *session) Links() []*url.URL {

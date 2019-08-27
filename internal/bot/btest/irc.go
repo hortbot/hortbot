@@ -66,7 +66,7 @@ func (st *scriptTester) send(t testing.TB, _, args string, lineNum int) {
 
 	st.addAction(func(context.Context) {
 		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
-		origin, target, message := st.sender.SendMessageArgsForCall(callNum)
+		_, origin, target, message := st.sender.SendMessageArgsForCall(callNum)
 		assert.Equal(t, origin, sent[0], "line %d", lineNum)
 		assert.Equal(t, target, sent[1], "line %d", lineNum)
 		assert.Equal(t, message, sent[2], "line %d", lineNum)
@@ -87,7 +87,7 @@ func (st *scriptTester) sendMatch(t testing.TB, _, args string, lineNum int) {
 
 	st.addAction(func(context.Context) {
 		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
-		origin, target, message := st.sender.SendMessageArgsForCall(callNum)
+		_, origin, target, message := st.sender.SendMessageArgsForCall(callNum)
 		assert.Equal(t, origin, sent[0], "line %d", lineNum)
 		assert.Equal(t, target, sent[1], "line %d", lineNum)
 		assert.Assert(t, pattern.MatchString(message), "pattern=`%s`, message=`%s`: line %d", pattern, message, lineNum)
@@ -101,7 +101,7 @@ func (st *scriptTester) noSend(t testing.TB, _, _ string, lineNum int) {
 		sentAfter := st.sender.SendMessageCallCount()
 
 		if st.sentBefore != sentAfter {
-			origin, target, message := st.sender.SendMessageArgsForCall(sentAfter - 1)
+			_, origin, target, message := st.sender.SendMessageArgsForCall(sentAfter - 1)
 			t.Errorf("sent message: origin=%s, target=%s, message=%s: line %d", origin, target, message, lineNum)
 			t.FailNow()
 		}
@@ -127,7 +127,7 @@ func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, l
 
 	st.addAction(func(context.Context) {
 		assert.Assert(t, st.notifier.NotifyChannelUpdatesCallCount() > callNum, "NotifyChannelUpdates not called: line %d", lineNum)
-		botName := st.notifier.NotifyChannelUpdatesArgsForCall(callNum)
+		_, botName := st.notifier.NotifyChannelUpdatesArgsForCall(callNum)
 		assert.Equal(t, botName, expected, "line %d", lineNum)
 	})
 
@@ -139,7 +139,7 @@ func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string, lineNu
 		notifyAfter := st.notifier.NotifyChannelUpdatesCallCount()
 
 		if st.notifyChannelUpdatesBefore != notifyAfter {
-			botName := st.notifier.NotifyChannelUpdatesArgsForCall(notifyAfter - 1)
+			_, botName := st.notifier.NotifyChannelUpdatesArgsForCall(notifyAfter - 1)
 			t.Errorf("notified channel updates for %s: line %d", botName, lineNum)
 			t.FailNow()
 		}

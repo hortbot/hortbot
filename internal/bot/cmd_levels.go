@@ -25,7 +25,7 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 	}
 
 	usage := func() error {
-		return s.ReplyUsage("list|add|remove ...")
+		return s.ReplyUsage(ctx, "list|add|remove ...")
 	}
 
 	getter := func() []string {
@@ -78,16 +78,16 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 	switch subcommand {
 	case "list":
 		if len(existing) == 0 {
-			return s.Replyf("There are no %s.", cmds)
+			return s.Replyf(ctx, "There are no %s.", cmds)
 		}
 
 		sort.Strings(existing)
 
-		return s.Replyf("%s: %s", cmds, strings.Join(existing, ", "))
+		return s.Replyf(ctx, "%s: %s", cmds, strings.Join(existing, ", "))
 
 	case "add":
 		if _, found := stringSliceIndex(existing, user); found {
-			return s.Replyf("%s is already in %s.", user, cmds)
+			return s.Replyf(ctx, "%s is already in %s.", user, cmds)
 		}
 
 		existing = append(existing, user)
@@ -96,12 +96,12 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 			return err
 		}
 
-		return s.Replyf("%s added to %s.", user, cmds)
+		return s.Replyf(ctx, "%s added to %s.", user, cmds)
 
 	case "remove", "delete":
 		i, found := stringSliceIndex(existing, user)
 		if !found {
-			return s.Replyf("%s is not in %s.", user, cmds)
+			return s.Replyf(ctx, "%s is not in %s.", user, cmds)
 		}
 
 		existing[i] = existing[len(existing)-1]
@@ -111,7 +111,7 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 			return err
 		}
 
-		return s.Replyf("%s removed from %s.", user, cmds)
+		return s.Replyf(ctx, "%s removed from %s.", user, cmds)
 	}
 
 	return usage()

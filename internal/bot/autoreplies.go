@@ -61,7 +61,7 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 			return true, err
 		}
 
-		if err := s.Reply(reply); err != nil {
+		if err := s.Reply(ctx, reply); err != nil {
 			return true, err
 		}
 

@@ -50,8 +50,8 @@ func TestNotify(t *testing.T) {
 	g.Go(publisher.Run)
 	g.Go(subscriber.Run)
 
-	assert.NilError(t, publisher.NotifyChannelUpdates(botName))
-	assert.NilError(t, publisher.NotifyChannelUpdates("wrong"))
+	assert.NilError(t, publisher.NotifyChannelUpdates(ctx, botName))
+	assert.NilError(t, publisher.NotifyChannelUpdates(ctx, "wrong"))
 
 	got := <-received
 

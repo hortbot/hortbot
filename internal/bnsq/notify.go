@@ -24,8 +24,8 @@ func (p *NotifyPublisher) Run(ctx context.Context) error {
 	return p.publisher.run(ctx)
 }
 
-func (p *NotifyPublisher) NotifyChannelUpdates(botName string) error {
-	return p.publisher.publish(notifyChannelUpdatesTopic+botName, &ChannelUpdatesNotification{
+func (p *NotifyPublisher) NotifyChannelUpdates(ctx context.Context, botName string) error {
+	return p.publisher.publish(ctx, notifyChannelUpdatesTopic+botName, &ChannelUpdatesNotification{
 		BotName: botName,
 	})
 }

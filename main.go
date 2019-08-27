@@ -129,23 +129,21 @@ func main() {
 
 	conn := birc.NewPool(pc)
 
-	sender := bot.SenderFuncs{
-		SendMessageFunc: func(origin, target, message string) error {
-			return conn.SendMessage(ctx, target, message)
-		},
+	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
+		return conn.SendMessage(ctx, target, message)
 	}
 
 	syncJoined := make(chan struct{}, 1)
 
-	notifier := bot.NotifierFuncs{
-		NotifyChannelUpdatesFunc: func(botName string) error {
-			logger.Debug("notified update to channels for bot", zap.String("botName", botName))
-			select {
-			case syncJoined <- struct{}{}:
-			default:
-			}
-			return nil
-		},
+	var notifier notiferFunc = func(ctx context.Context, botName string) error {
+		logger.Debug("notified update to channels for bot", zap.String("botName", botName))
+		select {
+		case syncJoined <- struct{}{}:
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+		return nil
 	}
 
 	var lastFM lastfm.API
@@ -256,4 +254,16 @@ func main() {
 	if err := g.WaitIgnoreStop(); err != nil {
 		logger.Info("exiting", zap.Error(err))
 	}
+}
+
+type senderFunc func(ctx context.Context, origin, target, message string) error
+
+func (s senderFunc) SendMessage(ctx context.Context, origin, target, message string) error {
+	return s(ctx, origin, target, message)
+}
+
+type notiferFunc func(ctx context.Context, botName string) error
+
+func (n notiferFunc) NotifyChannelUpdates(ctx context.Context, botName string) error {
+	return n(ctx, botName)
 }

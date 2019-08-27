@@ -35,25 +35,25 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if strings.HasPrefix(subcommand, "#") {
-		return s.Deps.Sender.SendMessage(s.Origin, subcommand, args)
+		return s.Deps.Sender.SendMessage(ctx, s.Origin, subcommand, args)
 	}
 
-	return s.Replyf("Bad command %s", subcommand)
+	return s.Replyf(ctx, "Bad command %s", subcommand)
 }
 
 func cmdAdminRoundtrip(ctx context.Context, s *session, cmd string, args string) error {
 	now := s.Deps.Clock.Now()
-	return s.Replyf("total=%v, handle=%v", now.Sub(s.TMISent), now.Sub(s.Start))
+	return s.Replyf(ctx, "total=%v, handle=%v", now.Sub(s.TMISent), now.Sub(s.Start))
 }
 
 func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<username>")
+		return s.ReplyUsage(ctx, "<username>")
 	}
 
 	id, err := s.Deps.Twitch.GetIDForUsername(ctx, args)
 	if err != nil {
-		return s.Replyf("Error getting ID from Twitch: %s", err.Error())
+		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
 
 	bu := &models.BlockedUser{TwitchID: id}
@@ -73,29 +73,29 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 			return err
 		}
 
-		if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+		if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
 			return err
 		}
 	}
 
-	return s.Replyf("%s (%d) has been blocked.", args, id)
+	return s.Replyf(ctx, "%s (%d) has been blocked.", args, id)
 }
 
 func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<username>")
+		return s.ReplyUsage(ctx, "<username>")
 	}
 
 	id, err := s.Deps.Twitch.GetIDForUsername(ctx, args)
 	if err != nil {
-		return s.Replyf("Error getting ID from Twitch: %s", err.Error())
+		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
 
 	if err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(id)).DeleteAll(ctx, s.Tx); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s (%d) has been unblocked.", args, id)
+	return s.Replyf(ctx, "%s (%d) has been unblocked.", args, id)
 }
 
 func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) error {
@@ -109,24 +109,24 @@ func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) 
 		ch = "channel"
 	}
 
-	return s.Replyf("Currently in %d %s.", count, ch)
+	return s.Replyf(ctx, "Currently in %d %s.", count, ch)
 }
 
 func cmdAdminColor(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<color>")
+		return s.ReplyUsage(ctx, "<color>")
 	}
 
-	if err := s.SendCommand("color", args); err != nil {
+	if err := s.SendCommand(ctx, "color", args); err != nil {
 		return err
 	}
 
-	return s.Replyf("Color set to %s.", args)
+	return s.Replyf(ctx, "Color set to %s.", args)
 }
 
 func cmdAdminSpam(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<num> <message>")
+		return s.ReplyUsage(ctx, "<num> <message>")
 	}
 
 	if args == "" {
@@ -153,7 +153,7 @@ func cmdAdminSpam(ctx context.Context, s *session, cmd string, args string) erro
 		builder.WriteString(message)
 	}
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error {
@@ -161,13 +161,13 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 	name = strings.ToLower(name)
 
 	if name == "" {
-		return s.ReplyUsage("<channel> <message>")
+		return s.ReplyUsage(ctx, "<channel> <message>")
 	}
 
 	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("Channel %s does not exist.", name)
+			return s.Replyf(ctx, "Channel %s does not exist.", name)
 		}
 		return err
 	}

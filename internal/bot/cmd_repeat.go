@@ -33,7 +33,7 @@ func cmdRepeat(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if !ok {
-		return s.ReplyUsage("add|delete|on|off|list ...")
+		return s.ReplyUsage(ctx, "add|delete|on|off|list ...")
 	}
 
 	return nil
@@ -41,7 +41,7 @@ func cmdRepeat(ctx context.Context, s *session, cmd string, args string) error {
 
 func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name> <delay in seconds> [message difference]")
+		return s.ReplyUsage(ctx, "<name> <delay in seconds> [message difference]")
 	}
 
 	name, args := splitSpace(args)
@@ -58,7 +58,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	if delay < 30 {
-		return s.Reply("Delay must be at least 30 seconds.")
+		return s.Reply(ctx, "Delay must be at least 30 seconds.")
 	}
 
 	messageDiff := int64(1)
@@ -70,7 +70,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		}
 
 		if messageDiff <= 0 {
-			return s.Reply("Message difference must be at least 1.")
+			return s.Reply(ctx, "Message difference must be at least 1.")
 		}
 	}
 
@@ -80,12 +80,12 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
+		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
 
 	if repeat != nil {
@@ -131,7 +131,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		dUnit = "messages have passed."
 	}
 
-	return s.Replyf("Command '%s' will now repeat every %d seconds if at least %d %s", name, delay, messageDiff, dUnit)
+	return s.Replyf(ctx, "Command '%s' will now repeat every %d seconds if at least %d %s", name, delay, messageDiff, dUnit)
 }
 
 func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) error {
@@ -139,7 +139,7 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 	name = cleanCommandName(name)
 
 	if name == "" {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	info, repeat, err := findRepeatedCommand(ctx, name, s)
@@ -148,16 +148,16 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if repeat == nil {
-		return s.Replyf("Command '%s' has no repeat.", name)
+		return s.Replyf(ctx, "Command '%s' has no repeat.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
+		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
 
 	if err := repeat.Delete(ctx, s.Tx); err != nil {
@@ -166,7 +166,7 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 
 	s.Deps.UpdateRepeat(repeat.ID, false, 0, 0)
 
-	return s.Replyf("Command '%s' will no longer repeat.", name)
+	return s.Replyf(ctx, "Command '%s' will no longer repeat.", name)
 }
 
 func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) error {
@@ -174,7 +174,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	name = cleanCommandName(name)
 
 	if name == "" {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	enable := cmd == "on"
@@ -185,23 +185,23 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if repeat == nil {
-		return s.Replyf("Command '%s' has no repeat.", name)
+		return s.Replyf(ctx, "Command '%s' has no repeat.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
+		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
 
 	if repeat.Enabled == enable {
 		if enable {
-			return s.Replyf("Repeated command '%s' is already enabled.", name)
+			return s.Replyf(ctx, "Repeated command '%s' is already enabled.", name)
 		}
-		return s.Replyf("Repeated command '%s' is already disabled.", name)
+		return s.Replyf(ctx, "Repeated command '%s' is already disabled.", name)
 	}
 
 	repeat.Enabled = enable
@@ -222,10 +222,10 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	s.Deps.UpdateRepeat(repeat.ID, enable, time.Duration(repeat.Delay)*time.Second, 0)
 
 	if enable {
-		return s.Replyf("Repeated command '%s' is now enabled.", name)
+		return s.Replyf(ctx, "Repeated command '%s' is now enabled.", name)
 	}
 
-	return s.Replyf("Repeated command '%s' is now disabled.", name)
+	return s.Replyf(ctx, "Repeated command '%s' is now disabled.", name)
 }
 
 func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) error {
@@ -237,7 +237,7 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if len(repeats) == 0 {
-		return s.Reply("There are no repeated commands.")
+		return s.Reply(ctx, "There are no repeated commands.")
 	}
 
 	sort.Slice(repeats, func(i, j int) bool {
@@ -266,7 +266,7 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 		builder.WriteByte(')')
 	}
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.CommandInfo, *models.RepeatedCommand, error) {

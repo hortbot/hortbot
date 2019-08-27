@@ -53,7 +53,7 @@ func cmdList(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if !ok {
-		return s.ReplyUsage("add|delete|restrict|rename ...")
+		return s.ReplyUsage(ctx, "add|delete|restrict|rename ...")
 	}
 
 	return nil
@@ -77,7 +77,7 @@ func cmdListAddEveryone(ctx context.Context, s *session, cmd string, args string
 
 func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel) error {
 	usage := func() error {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	name, _ := splitSpace(args)
@@ -88,7 +88,7 @@ func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel)
 	}
 
 	if reservedCommandNames[name] {
-		return s.Replyf("List name '%s' is reserved.", name)
+		return s.Replyf(ctx, "List name '%s' is reserved.", name)
 	}
 
 	// TODO: remove this warning
@@ -104,13 +104,13 @@ func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel)
 
 	if info != nil {
 		if list == nil {
-			return s.Replyf("A command or list with name '%s' already exists.", name)
+			return s.Replyf(ctx, "A command or list with name '%s' already exists.", name)
 		}
-		return s.Replyf("List '%s' already exists. Use %s%s add|delete|get|... to access it.", name, s.Channel.Prefix, name)
+		return s.Replyf(ctx, "List '%s' already exists. Use %s%s add|delete|get|... to access it.", name, s.Channel.Prefix, name)
 	}
 
 	if !s.UserLevel.CanAccess(level) {
-		return s.Replyf("Your level is %s; you cannot add a list with level %s.", s.UserLevel.PGEnum(), level.PGEnum())
+		return s.Replyf(ctx, "Your level is %s; you cannot add a list with level %s.", s.UserLevel.PGEnum(), level.PGEnum())
 	}
 
 	list = &models.CommandList{
@@ -135,12 +135,12 @@ func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel)
 	}
 
 	al := flect.Pluralize(info.AccessLevel)
-	return s.Replyf("List '%s' added, restricted to %s and above.%s", name, al, warning)
+	return s.Replyf(ctx, "List '%s' added, restricted to %s and above.%s", name, al, warning)
 }
 
 func cmdListDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	name, _ := splitSpace(args)
@@ -156,16 +156,16 @@ func cmdListDelete(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if info == nil {
-		return s.Replyf("List '%s' does not exist.", name)
+		return s.Replyf(ctx, "List '%s' does not exist.", name)
 	}
 
 	if list == nil {
-		return s.Replyf("'%s' is not a list.", name)
+		return s.Replyf(ctx, "'%s' is not a list.", name)
 	}
 
 	level := newAccessLevel(info.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
-		return s.Replyf("Your level is %s; you cannot delete a list with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot delete a list with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
 	repeated, scheduled, err := modelsx.DeleteCommandInfo(ctx, s.Tx, info)
@@ -186,15 +186,15 @@ func cmdListDelete(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if deletedRepeat {
-		return s.Replyf("List '%s' and its repeat/schedule have been deleted.", name)
+		return s.Replyf(ctx, "List '%s' and its repeat/schedule have been deleted.", name)
 	}
 
-	return s.Replyf("List '%s' deleted.", name)
+	return s.Replyf(ctx, "List '%s' deleted.", name)
 }
 
 func cmdListRestrict(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name> everyone|regulars|subs|mods|broadcaster|admin")
+		return s.ReplyUsage(ctx, "<name> everyone|regulars|subs|mods|broadcaster|admin")
 	}
 
 	name, level := splitSpace(args)
@@ -207,13 +207,13 @@ func cmdListRestrict(ctx context.Context, s *session, cmd string, args string) e
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("List '%s' does not exist.", name)
+			return s.Replyf(ctx, "List '%s' does not exist.", name)
 		}
 		return err
 	}
 
 	if !info.CommandListID.Valid {
-		return s.Replyf("'%s' is not a list.", name)
+		return s.Replyf(ctx, "'%s' is not a list.", name)
 	}
 
 	return handleListRestrict(ctx, s, info, level, usage)
@@ -221,7 +221,7 @@ func cmdListRestrict(ctx context.Context, s *session, cmd string, args string) e
 
 func cmdListRename(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<old> <new>")
+		return s.ReplyUsage(ctx, "<old> <new>")
 	}
 
 	oldName, args := splitSpace(args)
@@ -235,24 +235,24 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if oldName == newName {
-		return s.Replyf("'%s' is already called '%s'!", oldName, oldName)
+		return s.Replyf(ctx, "'%s' is already called '%s'!", oldName, oldName)
 	}
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(oldName), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("List '%s' does not exist.", oldName)
+			return s.Replyf(ctx, "List '%s' does not exist.", oldName)
 		}
 		return err
 	}
 
 	if !info.CommandListID.Valid {
-		return s.Replyf("'%s' is not a list.", oldName)
+		return s.Replyf(ctx, "'%s' is not a list.", oldName)
 	}
 
 	level := newAccessLevel(info.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
-		return s.Replyf("Your level is %s; you cannot rename a list with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot rename a list with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
 	exists, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(newName)).Exists(ctx, s.Tx)
@@ -261,7 +261,7 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if exists {
-		return s.Replyf("A command or list with name '%s' already exists.", newName)
+		return s.Replyf(ctx, "A command or list with name '%s' already exists.", newName)
 	}
 
 	info.Name = newName
@@ -271,7 +271,7 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 		return err
 	}
 
-	return s.Replyf("List '%s' has been renamed to '%s'.", oldName, newName)
+	return s.Replyf(ctx, "List '%s' has been renamed to '%s'.", oldName, newName)
 }
 
 func findCommandList(ctx context.Context, s *session, name string) (*models.CommandInfo, *models.CommandList, error) {
@@ -318,7 +318,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 		return true, handleListDelete(ctx, s, info, cmd, args)
 	case "restrict":
 		return true, handleListRestrict(ctx, s, info, args, func() error {
-			return s.ReplyUsage("restrict everyone|regulars|subs|mods|broadcaster|admin")
+			return s.ReplyUsage(ctx, "restrict everyone|regulars|subs|mods|broadcaster|admin")
 		})
 	case "random", "":
 		random = true
@@ -332,13 +332,13 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 		var err error
 		num, err = strconv.Atoi(cmd)
 		if err != nil {
-			return true, s.ReplyUsage("get <index>")
+			return true, s.ReplyUsage(ctx, "get <index>")
 		}
 
 		num--
 
 		if num < 0 {
-			return true, s.Reply("Index out of range.")
+			return true, s.Reply(ctx, "Index out of range.")
 		}
 	}
 
@@ -351,13 +351,13 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 		if random {
 			return false, nil
 		}
-		return true, s.Reply("The list is empty.")
+		return true, s.Reply(ctx, "The list is empty.")
 	}
 
 	if random {
 		num = s.Deps.Rand.Intn(len(list.Items))
 	} else if num >= len(list.Items) {
-		return true, s.Reply("Index out of range.")
+		return true, s.Reply(ctx, "Index out of range.")
 	}
 
 	item := list.Items[num]
@@ -370,7 +370,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 
 func handleListRestrict(ctx context.Context, s *session, info *models.CommandInfo, level string, usage func() error) error {
 	if level == "" {
-		return s.Replyf("List '%s' is restricted to %s and above.", info.Name, flect.Pluralize(info.AccessLevel))
+		return s.Replyf(ctx, "List '%s' is restricted to %s and above.", info.Name, flect.Pluralize(info.AccessLevel))
 	}
 
 	level = strings.ToLower(level)
@@ -381,11 +381,11 @@ func handleListRestrict(ctx context.Context, s *session, info *models.CommandInf
 	}
 
 	if !s.UserLevel.CanAccess(newAccessLevel(info.AccessLevel)) {
-		return s.Replyf("Your level is %s; you cannot restrict a list with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot restrict a list with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
 	if !s.UserLevel.CanAccess(newAccessLevel(newLevel)) {
-		return s.Replyf("Your level is %s; you cannot restrict a list to level %s.", s.UserLevel.PGEnum(), newLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot restrict a list to level %s.", s.UserLevel.PGEnum(), newLevel)
 	}
 
 	info.AccessLevel = newLevel
@@ -395,12 +395,12 @@ func handleListRestrict(ctx context.Context, s *session, info *models.CommandInf
 		return err
 	}
 
-	return s.Replyf("List '%s' restricted to %s and above.", info.Name, flect.Pluralize(info.AccessLevel))
+	return s.Replyf(ctx, "List '%s' restricted to %s and above.", info.Name, flect.Pluralize(info.AccessLevel))
 }
 
 func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, args string) error {
 	if args == "" {
-		return s.ReplyUsage("add <item>")
+		return s.ReplyUsage(ctx, "add <item>")
 	}
 
 	list, err := info.CommandList(qm.For("UPDATE")).One(ctx, s.Tx)
@@ -410,12 +410,12 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 
 	_, exists := stringSliceIndex(list.Items, args)
 	if exists {
-		return s.Reply("The list already contains that item.")
+		return s.Reply(ctx, "The list already contains that item.")
 	}
 
 	_, err = cbp.Parse(args)
 	if err != nil {
-		return s.Replyf("Error parsing list item.")
+		return s.Replyf(ctx, "Error parsing list item.")
 	}
 
 	list.Items = append(list.Items, args)
@@ -430,12 +430,12 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 		return err
 	}
 
-	return s.Replyf(`"%s" has been added to the list as item #%d.`, args, len(list.Items))
+	return s.Replyf(ctx, `"%s" has been added to the list as item #%d.`, args, len(list.Items))
 }
 
 func handleListDelete(ctx context.Context, s *session, info *models.CommandInfo, cmd, args string) error {
 	usage := func() error {
-		return s.ReplyUsage(cmd + " <num>")
+		return s.ReplyUsage(ctx, cmd+" <num>")
 	}
 
 	idxStr, _ := splitSpace(args)
@@ -472,5 +472,5 @@ func handleListDelete(ctx context.Context, s *session, info *models.CommandInfo,
 		return err
 	}
 
-	return s.Replyf(`"%s" has been removed.`, removed)
+	return s.Replyf(ctx, `"%s" has been removed.`, removed)
 }

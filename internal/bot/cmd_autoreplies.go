@@ -29,7 +29,7 @@ var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
 
 func cmdAutoreply(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("add|remove|editresponse|editpattern|list")
+		return s.ReplyUsage(ctx, "add|remove|editresponse|editpattern|list")
 	}
 
 	subcommand, args := splitSpace(args)
@@ -51,16 +51,16 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 	pattern, response := splitSpace(args)
 
 	if pattern == "" || response == "" {
-		return s.ReplyUsage("<pattern> <response>")
+		return s.ReplyUsage(ctx, "<pattern> <response>")
 	}
 
 	trigger, err := s.patternToTrigger(pattern)
 	if err != nil {
-		return s.replyBadPattern(err)
+		return s.replyBadPattern(ctx, err)
 	}
 
 	if _, err := cbp.Parse(response); err != nil {
-		return s.Reply("Error parsing response.")
+		return s.Reply(ctx, "Error parsing response.")
 	}
 
 	var row struct {
@@ -90,12 +90,12 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf("Autoreply #%d added.", autoreply.Num)
+	return s.Replyf(ctx, "Autoreply #%d added.", autoreply.Num)
 }
 
 func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index>")
+		return s.ReplyUsage(ctx, "<index>")
 	}
 
 	if args == "" {
@@ -113,7 +113,7 @@ func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Autoreply #%d does not exist.", num)
+		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
 	if err != nil {
@@ -124,12 +124,12 @@ func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string
 		return err
 	}
 
-	return s.Replyf("Autoreply #%d has been deleted.", num)
+	return s.Replyf(ctx, "Autoreply #%d has been deleted.", num)
 }
 
 func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index> <response>")
+		return s.ReplyUsage(ctx, "<index> <response>")
 	}
 
 	numStr, response := splitSpace(args)
@@ -144,7 +144,7 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 	}
 
 	if _, err := cbp.Parse(response); err != nil {
-		return s.Reply("Error parsing response.")
+		return s.Reply(ctx, "Error parsing response.")
 	}
 
 	autoreply, err := s.Channel.Autoreplies(
@@ -153,7 +153,7 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Autoreply #%d does not exist.", num)
+		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
 	if err != nil {
@@ -167,12 +167,12 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		return err
 	}
 
-	return s.Replyf("Autoreply #%d's response has been edited.", num)
+	return s.Replyf(ctx, "Autoreply #%d's response has been edited.", num)
 }
 
 func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index> <pattern>")
+		return s.ReplyUsage(ctx, "<index> <pattern>")
 	}
 
 	numStr, pattern := splitSpace(args)
@@ -188,7 +188,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 
 	trigger, err := s.patternToTrigger(pattern)
 	if err != nil {
-		return s.replyBadPattern(err)
+		return s.replyBadPattern(ctx, err)
 	}
 
 	autoreply, err := s.Channel.Autoreplies(
@@ -197,7 +197,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Autoreply #%d does not exist.", num)
+		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
 	if err != nil {
@@ -212,7 +212,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 		return err
 	}
 
-	return s.Replyf("Autoreply #%d's pattern has been edited.", num)
+	return s.Replyf(ctx, "Autoreply #%d's pattern has been edited.", num)
 }
 
 func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) error {
@@ -226,7 +226,7 @@ func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if len(autoreplies) == 0 {
-		return s.Reply("There are no autoreplies.")
+		return s.Reply(ctx, "There are no autoreplies.")
 	}
 
 	var builder strings.Builder
@@ -244,7 +244,7 @@ func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) 
 		builder.WriteString(autoreply.Response)
 	}
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 const regexPrefix = "REGEX:"
@@ -310,7 +310,7 @@ func (s *session) patternToTrigger(pattern string) (string, error) {
 	return trigger, err
 }
 
-func (s *session) replyBadPattern(err error) error {
+func (s *session) replyBadPattern(ctx context.Context, err error) error {
 	var errStr string
 	if reErr, ok := err.(*syntax.Error); ok {
 		errStr = reErr.Code.String()
@@ -318,7 +318,7 @@ func (s *session) replyBadPattern(err error) error {
 		errStr = err.Error()
 	}
 
-	return s.Replyf("Error parsing pattern: %s", errStr)
+	return s.Replyf(ctx, "Error parsing pattern: %s", errStr)
 }
 
 const autoreplyCompactQuery = `
@@ -335,7 +335,7 @@ WHERE q3.id = q.id AND q3.id != q3.new_num
 
 func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<num>")
+		return s.ReplyUsage(ctx, "<num>")
 	}
 
 	if args == "" {
@@ -357,5 +357,5 @@ func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args strin
 		return err
 	}
 
-	return s.Replyf("Compacted autoreplies %d and above (%d affected).", num, affected)
+	return s.Replyf(ctx, "Compacted autoreplies %d and above (%d affected).", num, affected)
 }

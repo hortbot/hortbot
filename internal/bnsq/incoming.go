@@ -29,8 +29,8 @@ func (p *IncomingPublisher) Run(ctx context.Context) error {
 	return p.publisher.run(ctx)
 }
 
-func (p *IncomingPublisher) Publish(origin string, m *irc.Message) error {
-	return p.publisher.publish(incomingTopic, &Incoming{
+func (p *IncomingPublisher) Publish(ctx context.Context, origin string, m *irc.Message) error {
+	return p.publisher.publish(ctx, incomingTopic, &Incoming{
 		Origin:  origin,
 		Message: m,
 	})

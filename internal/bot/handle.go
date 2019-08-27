@@ -294,7 +294,7 @@ func handleSession(ctx context.Context, s *session) error {
 		for _, u := range s.Links() {
 			title := s.Deps.YouTube.VideoTitle(u)
 			if title != "" {
-				return s.Replyf("Linked YouTube video: \"%s\"", title)
+				return s.Replyf(ctx, "Linked YouTube video: \"%s\"", title)
 			}
 		}
 	}
@@ -328,7 +328,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	}
 
 	if name == "+whatprefix" && s.UserLevel.CanAccess(levelAdmin) {
-		return true, s.Reply("The prefix for this channel is: " + prefix)
+		return true, s.Reply(ctx, "The prefix for this channel is: "+prefix)
 	}
 
 	if !strings.HasPrefix(name, prefix) {
@@ -361,7 +361,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(foreignChannel)).One(ctx, s.Tx)
 		if err != nil {
 			if err == sql.ErrNoRows {
-				return true, s.Replyf("Channel %s does not exist.", foreignChannel)
+				return true, s.Replyf(ctx, "Channel %s does not exist.", foreignChannel)
 			}
 			return true, err
 		}

@@ -47,7 +47,7 @@ func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {
 
 func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<quote>")
+		return s.ReplyUsage(ctx, "<quote>")
 	}
 
 	var row struct {
@@ -76,12 +76,12 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 		return err
 	}
 
-	return s.Replyf("%s added as quote #%d.", args, nextNum)
+	return s.Replyf(ctx, "%s added as quote #%d.", args, nextNum)
 }
 
 func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index>")
+		return s.ReplyUsage(ctx, "<index>")
 	}
 
 	if args == "" {
@@ -99,7 +99,7 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Quote #%d does not exist.", num)
+		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
 	if err != nil {
@@ -110,12 +110,12 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 		return err
 	}
 
-	return s.Replyf("Quote #%d has been deleted.", quote.Num)
+	return s.Replyf(ctx, "Quote #%d has been deleted.", quote.Num)
 }
 
 func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index> <quote>")
+		return s.ReplyUsage(ctx, "<index> <quote>")
 	}
 
 	idx, newQuote := splitSpace(args)
@@ -135,7 +135,7 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Quote #%d does not exist.", num)
+		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
 	if err != nil {
@@ -149,12 +149,12 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 		return err
 	}
 
-	return s.Replyf("Quote #%d edited.", num)
+	return s.Replyf(ctx, "Quote #%d edited.", num)
 }
 
 func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<quote>")
+		return s.ReplyUsage(ctx, "<quote>")
 	}
 
 	quote, err := s.Channel.Quotes(
@@ -162,19 +162,19 @@ func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) 
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Reply("Quote not found; make sure your quote is exact.")
+		return s.Reply(ctx, "Quote not found; make sure your quote is exact.")
 	}
 
 	if err != nil {
 		return err
 	}
 
-	return s.Replyf("That's quote #%d.", quote.Num)
+	return s.Replyf(ctx, "That's quote #%d.", quote.Num)
 }
 
 func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index>")
+		return s.ReplyUsage(ctx, "<index>")
 	}
 
 	if args == "" {
@@ -191,14 +191,14 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Quote #%d does not exist.", num)
+		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	return s.Replyf("Quote #%d: %s", quote.Num, quote.Quote)
+	return s.Replyf(ctx, "Quote #%d: %s", quote.Num, quote.Quote)
 }
 
 func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *models.Channel) (*models.Quote, error) {
@@ -217,17 +217,17 @@ func cmdQuoteRandom(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if quote == nil {
-		return s.Reply("There are no quotes.")
+		return s.Reply(ctx, "There are no quotes.")
 	}
 
-	return s.Replyf("Quote #%d: %s", quote.Num, quote.Quote)
+	return s.Replyf(ctx, "Quote #%d: %s", quote.Num, quote.Quote)
 }
 
 var likeEscaper = strings.NewReplacer(`%`, `\%`, `_`, `\_`)
 
 func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.ReplyUsage("<phrase>")
+		return s.ReplyUsage(ctx, "<phrase>")
 	}
 
 	pattern := "%" + likeEscaper.Replace(args) + "%"
@@ -247,9 +247,9 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 
 	switch len(quotes) {
 	case 0:
-		return s.Reply("No quote contained that phrase.")
+		return s.Reply(ctx, "No quote contained that phrase.")
 	case 1:
-		return s.Replyf("Phrase found in quote %d.", quotes[0].Num)
+		return s.Replyf(ctx, "Phrase found in quote %d.", quotes[0].Num)
 	}
 
 	var builder strings.Builder
@@ -272,12 +272,12 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 
 	builder.WriteByte('.')
 
-	return s.Reply(builder.String())
+	return s.Reply(ctx, builder.String())
 }
 
 func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<index>")
+		return s.ReplyUsage(ctx, "<index>")
 	}
 
 	if args == "" {
@@ -294,14 +294,14 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf("Quote #%d does not exist.", num)
+		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
 	if err != nil {
 		return err
 	}
 
-	return s.Replyf("Quote #%d was last edited by %s.", quote.Num, quote.Editor)
+	return s.Replyf(ctx, "Quote #%d was last edited by %s.", quote.Num, quote.Editor)
 }
 
 const quoteCompactQuery = `
@@ -318,7 +318,7 @@ WHERE q3.id = q.id AND q3.id != q3.new_num
 
 func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<num>")
+		return s.ReplyUsage(ctx, "<num>")
 	}
 
 	if args == "" {
@@ -340,5 +340,5 @@ func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf("Compacted quotes %d and above (%d affected).", num, affected)
+	return s.Replyf(ctx, "Compacted quotes %d and above (%d affected).", num, affected)
 }

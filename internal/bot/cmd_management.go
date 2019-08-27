@@ -46,7 +46,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		var err error
 		userID, err = s.Deps.Twitch.GetIDForUsername(ctx, name)
 		if err != nil {
-			return s.Replyf("Error getting ID from Twitch: %s", err.Error())
+			return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 		}
 
 		displayName = name
@@ -82,15 +82,15 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return err
 		}
 
-		if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+		if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
 			return err
 		}
 
-		return s.Replyf("%s, %s will join your channel soon with prefix %s", displayName, botName, channel.Prefix)
+		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", displayName, botName, channel.Prefix)
 	}
 
 	if channel.Active {
-		return s.Replyf("%s, %s is already active in your channel with prefix %s", displayName, channel.BotName, channel.Prefix)
+		return s.Replyf(ctx, "%s, %s is already active in your channel with prefix %s", displayName, channel.BotName, channel.Prefix)
 	}
 
 	channel.Active = true
@@ -100,11 +100,11 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s, %s will join your channel soon with prefix %s", s.UserDisplay, channel.BotName, channel.Prefix)
+	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", s.UserDisplay, channel.BotName, channel.Prefix)
 }
 
 func handleLeave(ctx context.Context, s *session, name string) error {
@@ -134,11 +134,11 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(channel.BotName); err != nil {
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s, %s will now leave your channel.", displayName, channel.BotName)
+	return s.Replyf(ctx, "%s, %s will now leave your channel.", displayName, channel.BotName)
 }
 
 const leaveConfirmSeconds = 10
@@ -152,7 +152,7 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if !confirmed {
-		return s.Replyf("%s, if you are sure you want %s to leave this channel, run %s%s again in the next %s.", s.UserDisplay, s.Channel.BotName, s.Channel.Prefix, cmd, leaveConfirmReadable)
+		return s.Replyf(ctx, "%s, if you are sure you want %s to leave this channel, run %s%s again in the next %s.", s.UserDisplay, s.Channel.BotName, s.Channel.Prefix, cmd, leaveConfirmReadable)
 	}
 
 	s.Channel.Active = false
@@ -161,11 +161,11 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(s.Channel.BotName); err != nil {
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, s.Channel.BotName); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
+	return s.Replyf(ctx, "%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
 }
 
 // NewChannel creates a new Channel object with the defaults set.

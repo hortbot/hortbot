@@ -27,7 +27,7 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 		return err
 	}
 
-	if err := s.Reply(reply); err != nil {
+	if err := s.Reply(ctx, reply); err != nil {
 		return err
 	}
 

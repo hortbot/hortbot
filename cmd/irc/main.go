@@ -137,7 +137,7 @@ func main() {
 					return nil
 				}
 
-				if err := incomingPub.Publish(args.Nick, m); err != nil {
+				if err := incomingPub.Publish(ctx, args.Nick, m); err != nil {
 					logger.Error("error publishing incoming message", zap.Error(err))
 				}
 			}

@@ -27,21 +27,21 @@ func init() {
 
 	bot.TestingBuiltin("testing_access_level",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.Reply(s.UserLevel.String())
+			return s.Reply(ctx, s.UserLevel.String())
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_name",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.Reply(s.User)
+			return s.Reply(ctx, s.User)
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_display_name",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.Reply(s.UserDisplay)
+			return s.Reply(ctx, s.UserDisplay)
 		},
 		bot.LevelEveryone,
 	)
@@ -76,28 +76,28 @@ func init() {
 				}
 			}
 
-			return s.Reply(builder.String())
+			return s.Reply(ctx, builder.String())
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_bad_command",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.SendCommand("fake")
+			return s.SendCommand(ctx, "fake")
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_delete",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.DeleteMessage()
+			return s.DeleteMessage(ctx)
 		},
 		bot.LevelEveryone,
 	)
 
 	bot.TestingBuiltin("testing_message_count",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.Replyf("%v", s.N)
+			return s.Replyf(ctx, "%v", s.N)
 		},
 		bot.LevelEveryone,
 	)
@@ -114,7 +114,7 @@ func init() {
 				return err
 			}
 
-			return s.Replyf("%s", j)
+			return s.Replyf(ctx, "%s", j)
 		},
 		bot.LevelEveryone,
 	)

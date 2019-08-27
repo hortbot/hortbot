@@ -38,12 +38,12 @@ func cmdSettings(ctx context.Context, s *session, cmd string, args string) error
 	subcommand = strings.ToLower(subcommand)
 
 	if subcommand == "" {
-		return s.ReplyUsage("<setting> <value>")
+		return s.ReplyUsage(ctx, "<setting> <value>")
 	}
 
 	ok, err := settingCommands.Run(ctx, s, subcommand, args)
 	if !ok {
-		return s.Replyf("No such setting '%s'.", subcommand)
+		return s.Replyf(ctx, "No such setting '%s'.", subcommand)
 	}
 
 	return err
@@ -58,12 +58,12 @@ func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) 
 			bullet = s.Deps.DefaultBullet + " (default)"
 		}
 
-		return s.Replyf("Bullet is %s", bullet)
+		return s.Replyf(ctx, "Bullet is %s", bullet)
 	}
 
 	switch args[0] {
 	case '/', '.':
-		return s.Reply("Bullet cannot be a command.")
+		return s.Reply(ctx, "Bullet cannot be a command.")
 	}
 
 	reset := strings.EqualFold(args, "reset")
@@ -79,20 +79,20 @@ func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if reset {
-		return s.Reply("Bullet reset to default.")
+		return s.Reply(ctx, "Bullet reset to default.")
 	}
 
-	return s.Replyf("Bullet changed to %s", args)
+	return s.Replyf(ctx, "Bullet changed to %s", args)
 }
 
 func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.Replyf("Prefix is %s", s.Channel.Prefix)
+		return s.Replyf(ctx, "Prefix is %s", s.Channel.Prefix)
 	}
 
 	switch args[0] {
 	case '/', '.':
-		return s.Replyf("Prefix cannot begin with %c", args[0])
+		return s.Replyf(ctx, "Prefix cannot begin with %c", args[0])
 	}
 
 	reset := strings.EqualFold(args, "reset")
@@ -108,10 +108,10 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if reset {
-		return s.Replyf("Prefix reset to %s", s.Channel.Prefix)
+		return s.Replyf(ctx, "Prefix reset to %s", s.Channel.Prefix)
 	}
 
-	return s.Replyf("Prefix changed to %s", args)
+	return s.Replyf(ctx, "Prefix changed to %s", args)
 }
 
 func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string) error {
@@ -120,9 +120,9 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 	if args == "" {
 		cooldown = s.Channel.Cooldown
 		if cooldown.Valid {
-			return s.Replyf("Cooldown is %d seconds.", s.Channel.Cooldown.Int)
+			return s.Replyf(ctx, "Cooldown is %d seconds.", s.Channel.Cooldown.Int)
 		}
-		return s.Replyf("Cooldown is %d seconds (default).", s.Deps.DefaultCooldown)
+		return s.Replyf(ctx, "Cooldown is %d seconds (default).", s.Deps.DefaultCooldown)
 	}
 
 	reset := strings.EqualFold(args, "reset")
@@ -130,7 +130,7 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 	if !reset {
 		v, err := strconv.Atoi(args)
 		if err != nil {
-			return s.Reply("New cooldown must be an integer.")
+			return s.Reply(ctx, "New cooldown must be an integer.")
 		}
 		cooldown = null.IntFrom(v)
 	}
@@ -142,10 +142,10 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 	}
 
 	if reset {
-		return s.Replyf("Cooldown reset to %d seconds (default).", cooldown.Int)
+		return s.Replyf(ctx, "Cooldown reset to %d seconds (default).", cooldown.Int)
 	}
 
-	return s.Replyf("Cooldown changed to %d seconds.", cooldown.Int)
+	return s.Replyf(ctx, "Cooldown changed to %d seconds.", cooldown.Int)
 }
 
 func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args string) error {
@@ -170,10 +170,10 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 		lfm := s.Channel.LastFM
 
 		if lfm == "" {
-			return s.Reply("LastFM user is not set.")
+			return s.Reply(ctx, "LastFM user is not set.")
 		}
 
-		return s.Replyf("LastFM user is set to %s.", lfm)
+		return s.Replyf(ctx, "LastFM user is set to %s.", lfm)
 
 	case "off":
 		s.Channel.LastFM = ""
@@ -187,10 +187,10 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if args == "off" {
-		return s.Reply("LastFM support has been disabled.")
+		return s.Reply(ctx, "LastFM support has been disabled.")
 	}
 
-	return s.Replyf("LastFM user changed to %s.", args)
+	return s.Replyf(ctx, "LastFM user changed to %s.", args)
 }
 
 func cmdSettingParseYoutube(ctx context.Context, s *session, cmd string, args string) error {
@@ -238,18 +238,18 @@ func cmdSettingDisplayWarnings(ctx context.Context, s *session, cmd string, args
 func cmdSettingTimeoutDuration(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		if s.Channel.TimeoutDuration == 0 {
-			return s.Reply("Timeout duration is set to Twitch default.")
+			return s.Reply(ctx, "Timeout duration is set to Twitch default.")
 		}
-		return s.Replyf("Timeout duration is set to %d seconds.", s.Channel.TimeoutDuration)
+		return s.Replyf(ctx, "Timeout duration is set to %d seconds.", s.Channel.TimeoutDuration)
 	}
 
 	dur, err := strconv.Atoi(args)
 	if err != nil {
-		return s.ReplyUsage("<seconds>")
+		return s.ReplyUsage(ctx, "<seconds>")
 	}
 
 	if dur < 0 {
-		return s.Reply("Timeout duration must not be negative.")
+		return s.Reply(ctx, "Timeout duration must not be negative.")
 	}
 
 	s.Channel.TimeoutDuration = dur
@@ -259,23 +259,23 @@ func cmdSettingTimeoutDuration(ctx context.Context, s *session, cmd string, args
 	}
 
 	if dur == 0 {
-		return s.Reply("Timeout duration changed to Twitch default.")
+		return s.Reply(ctx, "Timeout duration changed to Twitch default.")
 	}
 
-	return s.Replyf("Timeout duration changed to %d seconds.", dur)
+	return s.Replyf(ctx, "Timeout duration changed to %d seconds.", dur)
 }
 
 func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
 		if s.Channel.ExtraLifeID == 0 {
-			return s.Reply("Extra Life ID is not set.")
+			return s.Reply(ctx, "Extra Life ID is not set.")
 		}
-		return s.Replyf("Extra Life ID is set to %d.", s.Channel.ExtraLifeID)
+		return s.Replyf(ctx, "Extra Life ID is set to %d.", s.Channel.ExtraLifeID)
 	}
 
 	id, err := strconv.Atoi(args)
 	if err != nil || id < 0 {
-		return s.ReplyUsage("<participant ID>")
+		return s.ReplyUsage(ctx, "<participant ID>")
 	}
 
 	s.Channel.ExtraLifeID = id
@@ -285,14 +285,14 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 	}
 
 	if id == 0 {
-		return s.Reply("Extra Life ID has been unset.")
+		return s.Reply(ctx, "Extra Life ID has been unset.")
 	}
 
-	return s.Replyf("Extra Life ID changed to %d.", id)
+	return s.Replyf(ctx, "Extra Life ID changed to %d.", id)
 }
 
 func cmdSettingSubsRegsMinusLinks(ctx context.Context, s *session, cmd string, args string) error {
-	return s.Reply("This option has been removed; use subsMayLink instead.")
+	return s.Reply(ctx, "This option has been removed; use subsMayLink instead.")
 }
 
 func cmdSettingSubsMayLink(ctx context.Context, s *session, cmd string, args string) error {
@@ -311,7 +311,7 @@ func cmdSettingSubsMayLink(ctx context.Context, s *session, cmd string, args str
 
 func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.Replyf("Mode is set to %s.", s.Channel.Mode)
+		return s.Replyf(ctx, "Mode is set to %s.", s.Channel.Mode)
 	}
 
 	var newMode accessLevel
@@ -326,13 +326,13 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 	case "3", "subs", "subscribers", "regs", "regulars":
 		newMode = levelSubscriber
 	default:
-		return s.Replyf("%s is not a valid mode.", args)
+		return s.Replyf(ctx, "%s is not a valid mode.", args)
 	}
 
 	newModePG := newMode.PGEnum()
 
 	if s.Channel.Mode == newModePG {
-		return s.Replyf("Mode is already set to %s.", newMode.PGEnum())
+		return s.Replyf(ctx, "Mode is already set to %s.", newMode.PGEnum())
 	}
 
 	s.Channel.Mode = newModePG
@@ -341,7 +341,7 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 		return err
 	}
 
-	return s.Replyf("Mode set to %s.", newModePG)
+	return s.Replyf(ctx, "Mode set to %s.", newModePG)
 }
 
 func updateBoolean(
@@ -355,22 +355,22 @@ func updateBoolean(
 
 	switch args {
 	case "":
-		return s.Replyf("%s is set to %v.", name, get())
+		return s.Replyf(ctx, "%s is set to %v.", name, get())
 
 	case "on", "enabled", "true", "1", "yes":
 		if get() {
-			return s.Reply(alreadyTrue)
+			return s.Reply(ctx, alreadyTrue)
 		}
 
 		v = true
 
 	case "off", "disabled", "false", "0", "no":
 		if !get() {
-			return s.Reply(alreadyFalse)
+			return s.Reply(ctx, alreadyFalse)
 		}
 
 	default:
-		return s.ReplyUsage("on|off")
+		return s.ReplyUsage(ctx, "on|off")
 	}
 
 	set(v)
@@ -380,10 +380,10 @@ func updateBoolean(
 	}
 
 	if v {
-		return s.Reply(setTrue)
+		return s.Reply(ctx, setTrue)
 	}
 
-	return s.Reply(setFalse)
+	return s.Reply(ctx, setFalse)
 }
 
 func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) error {
@@ -395,12 +395,12 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 	switch opt {
 	case "default":
 		if args == "" {
-			return s.Replyf("Default roll size is set to %d.", s.Channel.RollDefault)
+			return s.Replyf(ctx, "Default roll size is set to %d.", s.Channel.RollDefault)
 		}
 
 		def, err := strconv.Atoi(args)
 		if err != nil || def <= 0 {
-			return s.ReplyUsage("default <num>")
+			return s.ReplyUsage(ctx, "default <num>")
 		}
 
 		s.Channel.RollDefault = def
@@ -409,12 +409,12 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 
 	case "cooldown":
 		if args == "" {
-			return s.Replyf("Roll command cooldown is set to %d seconds.", s.Channel.RollCooldown)
+			return s.Replyf(ctx, "Roll command cooldown is set to %d seconds.", s.Channel.RollCooldown)
 		}
 
 		cooldown, err := strconv.Atoi(args)
 		if err != nil || cooldown < 0 {
-			return s.ReplyUsage("cooldown <seconds>")
+			return s.ReplyUsage(ctx, "cooldown <seconds>")
 		}
 
 		s.Channel.RollCooldown = cooldown
@@ -423,13 +423,13 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 
 	case "userlevel":
 		if args == "" {
-			return s.Replyf("Roll command is available to %s and above.", flect.Pluralize(s.Channel.RollLevel))
+			return s.Replyf(ctx, "Roll command is available to %s and above.", flect.Pluralize(s.Channel.RollLevel))
 		}
 
 		args = strings.ToLower(args)
 		level := parseLevelPG(args)
 		if level == "" {
-			return s.ReplyUsage("userlevel everyone|regulars|subs|mods|broadcaster|admin")
+			return s.ReplyUsage(ctx, "userlevel everyone|regulars|subs|mods|broadcaster|admin")
 		}
 
 		s.Channel.RollLevel = level
@@ -437,14 +437,14 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 		reply = "Roll command is now available to " + flect.Pluralize(level) + " and above."
 
 	default:
-		return s.ReplyUsage("default|cooldown|userlevel ...")
+		return s.ReplyUsage(ctx, "default|cooldown|userlevel ...")
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
 		return err
 	}
 
-	return s.Reply(reply)
+	return s.Reply(ctx, reply)
 }
 
 func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) error {
@@ -452,9 +452,9 @@ func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) 
 
 	if id == "" {
 		if s.Channel.SteamID == "" {
-			return s.Reply("Steam ID is not set.")
+			return s.Reply(ctx, "Steam ID is not set.")
 		}
-		return s.Replyf("Steam ID is set to %s.", s.Channel.SteamID)
+		return s.Replyf(ctx, "Steam ID is set to %s.", s.Channel.SteamID)
 	}
 
 	if strings.EqualFold(id, "off") {
@@ -468,10 +468,10 @@ func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if id == "" {
-		return s.Reply("Steam ID unset.")
+		return s.Reply(ctx, "Steam ID unset.")
 	}
 
-	return s.Replyf("Steam ID set to %s.", id)
+	return s.Replyf(ctx, "Steam ID set to %s.", id)
 }
 
 func cmdSettingUrban(ctx context.Context, s *session, cmd string, args string) error {
@@ -490,12 +490,12 @@ func cmdSettingUrban(ctx context.Context, s *session, cmd string, args string) e
 
 func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.Replyf("Tweet is set to: %s", s.Channel.Tweet)
+		return s.Replyf(ctx, "Tweet is set to: %s", s.Channel.Tweet)
 	}
 
 	_, err := cbp.Parse(args)
 	if err != nil {
-		return s.Replyf("Error parsing command.")
+		return s.Replyf(ctx, "Error parsing command.")
 	}
 
 	s.Channel.Tweet = args
@@ -504,5 +504,5 @@ func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf("Tweet set to: %s", args)
+	return s.Replyf(ctx, "Tweet set to: %s", args)
 }

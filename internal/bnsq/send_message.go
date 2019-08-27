@@ -28,8 +28,8 @@ func (p *SendMessagePublisher) Run(ctx context.Context) error {
 	return p.publisher.run(ctx)
 }
 
-func (p *SendMessagePublisher) SendMessage(origin, target, message string) error {
-	return p.publisher.publish(sendMessageTopic+origin, &SendMessage{
+func (p *SendMessagePublisher) SendMessage(ctx context.Context, origin, target, message string) error {
+	return p.publisher.publish(ctx, sendMessageTopic+origin, &SendMessage{
 		Origin:  origin,
 		Target:  target,
 		Message: message,

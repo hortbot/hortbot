@@ -55,7 +55,7 @@ func cmdCommand(ctx context.Context, s *session, cmd string, args string) error 
 	}
 
 	if !ok {
-		return s.ReplyUsage("add|delete|restrict|...")
+		return s.ReplyUsage(ctx, "add|delete|restrict|...")
 	}
 
 	return nil
@@ -83,7 +83,7 @@ func cmdCommandAddEveryone(ctx context.Context, s *session, cmd string, args str
 
 func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLevel, forceLevel bool) error {
 	usage := func() error {
-		return s.ReplyUsage("<name> <text>")
+		return s.ReplyUsage(ctx, "<name> <text>")
 	}
 
 	name, text := splitSpace(args)
@@ -94,7 +94,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 	}
 
 	if reservedCommandNames[name] {
-		return s.Replyf("Command name '%s' is reserved.", name)
+		return s.Replyf(ctx, "Command name '%s' is reserved.", name)
 	}
 
 	// TODO: remove this warning
@@ -105,7 +105,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 
 	_, err := cbp.Parse(text)
 	if err != nil {
-		return s.Replyf("Error parsing command.%s", warning)
+		return s.Replyf(ctx, "Error parsing command.%s", warning)
 	}
 
 	info, command, err := findCustomCommand(ctx, s, name, true)
@@ -114,7 +114,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 	}
 
 	if info != nil && command == nil {
-		return s.Replyf("A command or list with name '%s' already exists.", name)
+		return s.Replyf(ctx, "A command or list with name '%s' already exists.", name)
 	}
 
 	update := command != nil
@@ -125,7 +125,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 			a = "update"
 		}
 
-		return s.Replyf("Your level is %s; you cannot %s a command with level %s.", s.UserLevel.PGEnum(), a, level.PGEnum())
+		return s.Replyf(ctx, "Your level is %s; you cannot %s a command with level %s.", s.UserLevel.PGEnum(), a, level.PGEnum())
 	}
 
 	if !forceLevel {
@@ -147,7 +147,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 	if update {
 		if !s.UserLevel.CanAccessPG(info.AccessLevel) {
 			al := flect.Pluralize(info.AccessLevel)
-			return s.Replyf("Command '%s' is restricted to %s; only %s and above can update it.", name, al, al)
+			return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can update it.", name, al, al)
 		}
 
 		command.Message = text
@@ -167,7 +167,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 		}
 
 		al := flect.Pluralize(info.AccessLevel)
-		return s.Replyf("Command '%s' updated, restricted to %s and above.%s", name, al, warning)
+		return s.Replyf(ctx, "Command '%s' updated, restricted to %s and above.%s", name, al, warning)
 	}
 
 	command = &models.CustomCommand{
@@ -193,12 +193,12 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 	}
 
 	al := flect.Pluralize(info.AccessLevel)
-	return s.Replyf("Command '%s' added, restricted to %s and above.%s", name, al, warning)
+	return s.Replyf(ctx, "Command '%s' added, restricted to %s and above.%s", name, al, warning)
 }
 
 func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	name, _ := splitSpace(args)
@@ -214,15 +214,15 @@ func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if command == nil {
-		return s.Replyf("'%s' is not a custom command.", name)
+		return s.Replyf(ctx, "'%s' is not a custom command.", name)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		return s.Replyf("Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot delete a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
 	repeated, scheduled, err := modelsx.DeleteCommandInfo(ctx, s.Tx, info)
@@ -243,15 +243,15 @@ func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if deletedRepeat {
-		return s.Replyf("Command '%s' and its repeat/schedule have been deleted.", name)
+		return s.Replyf(ctx, "Command '%s' and its repeat/schedule have been deleted.", name)
 	}
 
-	return s.Replyf("Command '%s' deleted.", name)
+	return s.Replyf(ctx, "Command '%s' deleted.", name)
 }
 
 func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name> everyone|regulars|subs|mods|broadcaster|admin")
+		return s.ReplyUsage(ctx, "<name> everyone|regulars|subs|mods|broadcaster|admin")
 	}
 
 	name, level := splitSpace(args)
@@ -264,17 +264,17 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("Command '%s' does not exist.", name)
+			return s.Replyf(ctx, "Command '%s' does not exist.", name)
 		}
 		return err
 	}
 
 	if !info.CustomCommandID.Valid {
-		return s.Replyf("'%s' is not a custom command.", name)
+		return s.Replyf(ctx, "'%s' is not a custom command.", name)
 	}
 
 	if level == "" {
-		return s.Replyf("Command '%s' is restricted to %s and above.", name, flect.Pluralize(info.AccessLevel))
+		return s.Replyf(ctx, "Command '%s' is restricted to %s and above.", name, flect.Pluralize(info.AccessLevel))
 	}
 
 	level = strings.ToLower(level)
@@ -285,11 +285,11 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		return s.Replyf("Your level is %s; you cannot restrict a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot restrict a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
 	if !s.UserLevel.CanAccess(newAccessLevel(newLevel)) {
-		return s.Replyf("Your level is %s; you cannot restrict a command to level %s.", s.UserLevel.PGEnum(), newLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot restrict a command to level %s.", s.UserLevel.PGEnum(), newLevel)
 	}
 
 	info.AccessLevel = newLevel
@@ -299,7 +299,7 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 		return err
 	}
 
-	return s.Replyf("Command '%s' restricted to %s and above.", name, flect.Pluralize(info.AccessLevel))
+	return s.Replyf(ctx, "Command '%s' restricted to %s and above.", name, flect.Pluralize(info.AccessLevel))
 }
 
 func cmdCommandProperty(ctx context.Context, s *session, prop string, args string) error {
@@ -307,24 +307,24 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 	name = cleanCommandName(name)
 
 	if name == "" {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("Command '%s' does not exist.", name)
+			return s.Replyf(ctx, "Command '%s' does not exist.", name)
 		}
 		return err
 	}
 
 	if !info.CustomCommandID.Valid {
-		return s.Replyf("'%s' is not a custom command.", name)
+		return s.Replyf(ctx, "'%s' is not a custom command.", name)
 	}
 
 	switch prop {
 	case "editor", "author":
-		return s.Replyf("Command '%s' was last modified by %s.", name, info.Editor) // TODO: include the date/time?
+		return s.Replyf(ctx, "Command '%s' was last modified by %s.", name, info.Editor) // TODO: include the date/time?
 	case "count":
 		u := "times"
 
@@ -332,7 +332,7 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 			u = "time"
 		}
 
-		return s.Replyf("Command '%s' has been used %d %s.", name, info.Count, u)
+		return s.Replyf(ctx, "Command '%s' has been used %d %s.", name, info.Count, u)
 	}
 
 	panic("unreachable")
@@ -340,7 +340,7 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 
 func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<old> <new>")
+		return s.ReplyUsage(ctx, "<old> <new>")
 	}
 
 	oldName, args := splitSpace(args)
@@ -354,24 +354,24 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if oldName == newName {
-		return s.Replyf("'%s' is already called '%s'!", oldName, oldName)
+		return s.Replyf(ctx, "'%s' is already called '%s'!", oldName, oldName)
 	}
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(oldName), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("Command '%s' does not exist.", oldName)
+			return s.Replyf(ctx, "Command '%s' does not exist.", oldName)
 		}
 		return err
 	}
 
 	if !info.CustomCommandID.Valid {
-		return s.Replyf("'%s' is not a custom command.", oldName)
+		return s.Replyf(ctx, "'%s' is not a custom command.", oldName)
 	}
 
 	level := newAccessLevel(info.AccessLevel)
 	if !s.UserLevel.CanAccess(level) {
-		return s.Replyf("Your level is %s; you cannot rename a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
+		return s.Replyf(ctx, "Your level is %s; you cannot rename a command with level %s.", s.UserLevel.PGEnum(), info.AccessLevel)
 	}
 
 	exists, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(newName)).Exists(ctx, s.Tx)
@@ -380,7 +380,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if exists {
-		return s.Replyf("A command or list with name '%s' already exists.", newName)
+		return s.Replyf(ctx, "A command or list with name '%s' already exists.", newName)
 	}
 
 	info.Name = newName
@@ -390,12 +390,12 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 		return err
 	}
 
-	return s.Replyf("Command '%s' has been renamed to '%s'.", oldName, newName)
+	return s.Replyf(ctx, "Command '%s' has been renamed to '%s'.", oldName, newName)
 }
 
 func cmdCommandGet(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("<name>")
+		return s.ReplyUsage(ctx, "<name>")
 	}
 
 	name, _ := splitSpace(args)
@@ -411,19 +411,19 @@ func cmdCommandGet(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if info == nil {
-		return s.Replyf("Command '%s' does not exist.", name)
+		return s.Replyf(ctx, "Command '%s' does not exist.", name)
 	}
 
 	if command == nil {
-		return s.Replyf("'%s' is not a custom command.", name)
+		return s.Replyf(ctx, "'%s' is not a custom command.", name)
 	}
 
-	return s.Replyf("Command '%s': %s", name, command.Message)
+	return s.Replyf(ctx, "Command '%s': %s", name, command.Message)
 }
 
 func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage("#<channel> <name>")
+		return s.ReplyUsage(ctx, "#<channel> <name>")
 	}
 
 	other, args := splitSpace(args)
@@ -445,13 +445,13 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 	if exists {
-		return s.Replyf("A command or list with name '%s' already exists.", name)
+		return s.Replyf(ctx, "A command or list with name '%s' already exists.", name)
 	}
 
 	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(other)).One(ctx, s.Tx)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return s.Replyf("Channel %s does not exist.", other)
+			return s.Replyf(ctx, "Channel %s does not exist.", other)
 		}
 		return err
 	}
@@ -462,11 +462,11 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if !found {
-		return s.Replyf("Channel %s does not have a command named '%s'.", other, name)
+		return s.Replyf(ctx, "Channel %s does not have a command named '%s'.", other, name)
 	}
 
 	if !commandMessage.Valid {
-		return s.Replyf("'%s' is not a command.", name)
+		return s.Replyf(ctx, "'%s' is not a command.", name)
 	}
 
 	command := &models.CustomCommand{
@@ -491,7 +491,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf("Command '%s' has been cloned from channel %s.", name, other)
+	return s.Replyf(ctx, "Command '%s' has been cloned from channel %s.", name, other)
 }
 
 func findCustomCommand(ctx context.Context, s *session, name string, forUpdate bool) (*models.CommandInfo, *models.CustomCommand, error) {

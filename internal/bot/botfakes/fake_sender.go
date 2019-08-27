@@ -2,18 +2,20 @@
 package botfakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/bot"
 )
 
 type FakeSender struct {
-	SendMessageStub        func(string, string, string) error
+	SendMessageStub        func(context.Context, string, string, string) error
 	sendMessageMutex       sync.RWMutex
 	sendMessageArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
 		arg2 string
 		arg3 string
+		arg4 string
 	}
 	sendMessageReturns struct {
 		result1 error
@@ -25,18 +27,19 @@ type FakeSender struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeSender) SendMessage(arg1 string, arg2 string, arg3 string) error {
+func (fake *FakeSender) SendMessage(arg1 context.Context, arg2 string, arg3 string, arg4 string) error {
 	fake.sendMessageMutex.Lock()
 	ret, specificReturn := fake.sendMessageReturnsOnCall[len(fake.sendMessageArgsForCall)]
 	fake.sendMessageArgsForCall = append(fake.sendMessageArgsForCall, struct {
-		arg1 string
+		arg1 context.Context
 		arg2 string
 		arg3 string
-	}{arg1, arg2, arg3})
-	fake.recordInvocation("SendMessage", []interface{}{arg1, arg2, arg3})
+		arg4 string
+	}{arg1, arg2, arg3, arg4})
+	fake.recordInvocation("SendMessage", []interface{}{arg1, arg2, arg3, arg4})
 	fake.sendMessageMutex.Unlock()
 	if fake.SendMessageStub != nil {
-		return fake.SendMessageStub(arg1, arg2, arg3)
+		return fake.SendMessageStub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1
@@ -51,17 +54,17 @@ func (fake *FakeSender) SendMessageCallCount() int {
 	return len(fake.sendMessageArgsForCall)
 }
 
-func (fake *FakeSender) SendMessageCalls(stub func(string, string, string) error) {
+func (fake *FakeSender) SendMessageCalls(stub func(context.Context, string, string, string) error) {
 	fake.sendMessageMutex.Lock()
 	defer fake.sendMessageMutex.Unlock()
 	fake.SendMessageStub = stub
 }
 
-func (fake *FakeSender) SendMessageArgsForCall(i int) (string, string, string) {
+func (fake *FakeSender) SendMessageArgsForCall(i int) (context.Context, string, string, string) {
 	fake.sendMessageMutex.RLock()
 	defer fake.sendMessageMutex.RUnlock()
 	argsForCall := fake.sendMessageArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
 }
 
 func (fake *FakeSender) SendMessageReturns(result1 error) {

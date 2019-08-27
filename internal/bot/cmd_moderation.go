@@ -27,37 +27,37 @@ func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
-		return s.Reply("Usage: +b <user>")
+		return s.Reply(ctx, "Usage: +b <user>")
 	}
 
 	user = strings.ToLower(user)
 
-	if err := s.SendCommand("ban", user); err != nil {
+	if err := s.SendCommand(ctx, "ban", user); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s has been banned.", user)
+	return s.Replyf(ctx, "%s has been banned.", user)
 }
 
 func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
-		return s.Reply("Usage: -b <user>")
+		return s.Reply(ctx, "Usage: -b <user>")
 	}
 
 	user = strings.ToLower(user)
 
-	if err := s.SendCommand("unban", user); err != nil {
+	if err := s.SendCommand(ctx, "unban", user); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s has been unbanned.", user)
+	return s.Replyf(ctx, "%s has been unbanned.", user)
 }
 
 func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.Reply("Usage: +t <user> [seconds]")
+		return s.Reply(ctx, "Usage: +t <user> [seconds]")
 	}
 
 	user, args := splitSpace(args)
@@ -70,52 +70,52 @@ func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) err
 	user = strings.ToLower(user)
 
 	if seconds == "" {
-		if err := s.SendCommand("timeout", user); err != nil {
+		if err := s.SendCommand(ctx, "timeout", user); err != nil {
 			return err
 		}
 
-		return s.Replyf("%s has been timed out.", user)
+		return s.Replyf(ctx, "%s has been timed out.", user)
 	}
 
 	if _, err := strconv.Atoi(seconds); err != nil {
 		return usage()
 	}
 
-	if err := s.SendCommand("timeout", user, seconds); err != nil {
+	if err := s.SendCommand(ctx, "timeout", user, seconds); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s has been timed out for %s seconds.", user, seconds)
+	return s.Replyf(ctx, "%s has been timed out for %s seconds.", user, seconds)
 }
 
 func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
 	if user == "" {
-		return s.Reply("Usage: -t <user>")
+		return s.Reply(ctx, "Usage: -t <user>")
 	}
 
 	user = strings.ToLower(user)
 
-	if err := s.SendCommand("untimeout", user); err != nil {
+	if err := s.SendCommand(ctx, "untimeout", user); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s is no longer timed out.", user)
+	return s.Replyf(ctx, "%s is no longer timed out.", user)
 }
 
 func cmdChangeMode(command, message string) func(ctx context.Context, s *session, cmd string, args string) error {
 	return func(ctx context.Context, s *session, cmd string, args string) error {
-		if err := s.SendCommand(command); err != nil {
+		if err := s.SendCommand(ctx, command); err != nil {
 			return err
 		}
-		return s.Reply(message)
+		return s.Reply(ctx, message)
 	}
 }
 
 func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.Reply("Usage: +p <user>")
+		return s.Reply(ctx, "Usage: +p <user>")
 	}
 
 	user, _ := splitSpace(args)
@@ -129,15 +129,15 @@ func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error
 
 	user = strings.ToLower(user)
 
-	if err := s.SendCommand("timeout", user, "1"); err != nil {
+	if err := s.SendCommand(ctx, "timeout", user, "1"); err != nil {
 		return err
 	}
 
-	return s.Replyf("%s's chat history has been purged.", user)
+	return s.Replyf(ctx, "%s's chat history has been purged.", user)
 }
 
 func cmdModClear(ctx context.Context, s *session, cmd string, args string) error {
-	return s.SendCommand("clear")
+	return s.SendCommand(ctx, "clear")
 }
 
 const permitDur = 5 * time.Minute
@@ -154,7 +154,7 @@ func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 
 	user, _ := splitSpace(args)
 	if user == "" {
-		return s.ReplyUsage("<user>")
+		return s.ReplyUsage(ctx, "<user>")
 	}
 	user = strings.ToLower(user)
 
@@ -162,5 +162,5 @@ func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	return s.Replyf("%s may now post one link within "+permitDurReadable+".", user)
+	return s.Replyf(ctx, "%s may now post one link within "+permitDurReadable+".", user)
 }

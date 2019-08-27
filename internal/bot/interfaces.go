@@ -1,37 +1,20 @@
 package bot
 
-import "math/rand"
+import (
+	"context"
+	"math/rand"
+)
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 //counterfeiter:generate . Sender
 type Sender interface {
-	SendMessage(origin, target, message string) error
-}
-
-type SenderFuncs struct {
-	SendMessageFunc func(origin, target, message string) error
-}
-
-var _ Sender = SenderFuncs{}
-
-func (s SenderFuncs) SendMessage(origin, target, message string) error {
-	return s.SendMessageFunc(origin, target, message)
+	SendMessage(ctx context.Context, origin, target, message string) error
 }
 
 //counterfeiter:generate . Notifier
 type Notifier interface {
-	NotifyChannelUpdates(botName string) error
-}
-
-type NotifierFuncs struct {
-	NotifyChannelUpdatesFunc func(botName string) error
-}
-
-var _ Notifier = NotifierFuncs{}
-
-func (n NotifierFuncs) NotifyChannelUpdates(botName string) error {
-	return n.NotifyChannelUpdatesFunc(botName)
+	NotifyChannelUpdates(ctx context.Context, botName string) error
 }
 
 //counterfeiter:generate . Rand

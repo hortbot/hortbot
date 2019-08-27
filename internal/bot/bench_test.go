@@ -169,11 +169,11 @@ func getNextUserID() (int64, string) {
 
 type nopSender struct{}
 
-func (nopSender) SendMessage(origin, target, message string) error { return nil }
+func (nopSender) SendMessage(ctx context.Context, origin, target, message string) error { return nil }
 
 type nopNotifier struct{}
 
-func (nopNotifier) NotifyChannelUpdates(botName string) error { return nil }
+func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
 
 func privMSG(ch string, roomID int64, user string, userID int64, msg string) *irc.Message {
 	return &irc.Message{
