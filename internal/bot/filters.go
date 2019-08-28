@@ -76,7 +76,7 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	permitted, err := s.HasLinkPermit(s.User)
+	permitted, err := s.HasLinkPermit(ctx, s.User)
 	if err != nil {
 		return false, err
 	}
@@ -301,7 +301,7 @@ func containsSpace(s string) bool {
 
 func filterDoPunish(ctx context.Context, s *session, filter, message string) error {
 	if s.Channel.EnableWarnings {
-		warned, err := s.FilterWarned(s.User, filter)
+		warned, err := s.FilterWarned(ctx, s.User, filter)
 		if err != nil {
 			return err
 		}

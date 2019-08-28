@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/db/dbtrace"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
@@ -20,6 +21,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
+	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
@@ -60,7 +62,7 @@ type Bot struct {
 	initialized bool
 	stopOnce    sync.Once
 
-	db   *sql.DB
+	db   dbtrace.ContextBeginExecutor
 	deps *sharedDeps
 	rep  *repeat.Repeater
 
@@ -136,7 +138,7 @@ func New(config *Config) *Bot {
 	}
 
 	b := &Bot{
-		db:   config.DB,
+		db:   dbtrace.DB(config.DB),
 		deps: deps,
 	}
 
@@ -151,6 +153,9 @@ func New(config *Config) *Bot {
 }
 
 func (b *Bot) Init(ctx context.Context) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "Init")
+	defer span.Finish()
+
 	b.rep = repeat.New(ctx, b.deps.Clock)
 
 	repeats, err := models.RepeatedCommands(

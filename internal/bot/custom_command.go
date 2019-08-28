@@ -17,7 +17,7 @@ func handleCustomCommand(ctx context.Context, s *session, info *models.CommandIn
 	span, ctx := opentracing.StartSpanFromContext(ctx, "handleCustomCommand")
 	defer span.Finish()
 
-	if err := s.TryCooldown(); err != nil {
+	if err := s.TryCooldown(ctx); err != nil {
 		return false, err
 	}
 	return true, runCommandAndCount(ctx, s, info, message, update)

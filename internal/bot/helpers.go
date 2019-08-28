@@ -1,9 +1,11 @@
 package bot
 
 import (
-	"database/sql"
 	"strings"
 	"unicode"
+
+	"github.com/hortbot/hortbot/internal/db/dbtrace"
+	"github.com/volatiletech/sqlboiler/boil"
 )
 
 func splitFirstSep(s string, sep string) (string, string) {
@@ -37,12 +39,13 @@ func parseBadges(badgeTag string) map[string]string {
 	return d
 }
 
-func transact(db *sql.DB, fn func(*sql.Tx) error) (err error) {
-	var tx *sql.Tx
-	tx, err = db.Begin()
+func transact(db boil.Beginner, fn func(boil.ContextExecutor) error) (err error) {
+	dtx, err := db.Begin()
 	if err != nil {
 		return err
 	}
+
+	tx := dbtrace.Tx(dtx)
 
 	rollback := true
 

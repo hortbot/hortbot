@@ -118,7 +118,7 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 	}
 
 	if checkCooldown && !bc.skipCooldown {
-		if err := s.TryCooldown(); err != nil {
+		if err := s.TryCooldown(ctx); err != nil {
 			return false, err
 		}
 	}

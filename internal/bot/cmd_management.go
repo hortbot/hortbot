@@ -150,7 +150,7 @@ const leaveConfirmSeconds = 10
 var leaveConfirmReadable = durafmt.Parse(leaveConfirmSeconds * time.Second).String()
 
 func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
-	confirmed, err := s.Confirm(s.User, "leave", leaveConfirmSeconds)
+	confirmed, err := s.Confirm(ctx, s.User, "leave", leaveConfirmSeconds)
 	if err != nil {
 		return err
 	}

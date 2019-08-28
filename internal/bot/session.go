@@ -18,6 +18,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
 	"github.com/opentracing/opentracing-go"
+	"github.com/volatiletech/sqlboiler/boil"
 	"golang.org/x/oauth2"
 )
 
@@ -40,7 +41,7 @@ type session struct {
 	M      *irc.Message
 
 	Deps *sharedDeps
-	Tx   *sql.Tx
+	Tx   boil.ContextExecutor
 
 	Start   time.Time
 	TMISent time.Time

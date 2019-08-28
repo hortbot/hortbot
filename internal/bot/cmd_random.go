@@ -12,11 +12,11 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 		return errNotAuthorized
 	}
 
-	if err := s.TryRollCooldown(); err != nil {
+	if err := s.TryRollCooldown(ctx); err != nil {
 		return err
 	}
 
-	if err := s.TryCooldown(); err != nil {
+	if err := s.TryCooldown(ctx); err != nil {
 		return err
 	}
 

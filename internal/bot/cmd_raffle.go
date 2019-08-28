@@ -22,7 +22,7 @@ func cmdRaffle(ctx context.Context, s *session, cmd string, args string) error {
 
 	if subcommand == "" {
 		if s.Channel.RaffleEnabled {
-			if err := s.RaffleAdd(s.User); err != nil {
+			if err := s.RaffleAdd(ctx, s.User); err != nil {
 				return err
 			}
 		}
@@ -56,7 +56,7 @@ func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args st
 	}
 
 	if enable {
-		if err := s.RaffleReset(); err != nil {
+		if err := s.RaffleReset(ctx); err != nil {
 			return err
 		}
 	}
@@ -75,7 +75,7 @@ func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args st
 }
 
 func cmdRaffleCount(ctx context.Context, s *session, cmd string, args string) error {
-	count, err := s.RaffleCount()
+	count, err := s.RaffleCount(ctx)
 	if err != nil {
 		return err
 	}
@@ -93,7 +93,7 @@ func cmdRaffleCount(ctx context.Context, s *session, cmd string, args string) er
 }
 
 func cmdRaffleWinner(ctx context.Context, s *session, cmd string, args string) error {
-	winner, ok, err := s.RaffleWinner()
+	winner, ok, err := s.RaffleWinner(ctx)
 	if err != nil {
 		return err
 	}
@@ -106,7 +106,7 @@ func cmdRaffleWinner(ctx context.Context, s *session, cmd string, args string) e
 }
 
 func cmdRaffleReset(ctx context.Context, s *session, cmd string, args string) error {
-	if err := s.RaffleReset(); err != nil {
+	if err := s.RaffleReset(ctx); err != nil {
 		return err
 	}
 

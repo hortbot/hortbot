@@ -13,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
 	"github.com/opentracing/opentracing-go"
+	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"go.uber.org/zap"
 )
@@ -39,6 +40,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		return
 	}
 
+	span.SetTag("irc_command", m.Command)
 	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("irc_command", m.Command))
 
 	var start time.Time
@@ -211,7 +213,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return transact(b.db, func(tx *sql.Tx) error {
+	return transact(b.db, func(tx boil.ContextExecutor) error {
 		s.Tx = tx
 		return handleSession(ctx, s)
 	})
@@ -287,7 +289,7 @@ func handleSession(ctx context.Context, s *session) error {
 		return nil
 	}
 
-	s.N, err = s.IncrementMessageCount()
+	s.N, err = s.IncrementMessageCount(ctx)
 	if err != nil {
 		return err
 	}

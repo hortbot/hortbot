@@ -10,7 +10,7 @@ func cmdLastFM(ctx context.Context, s *session, cmd string, args string) error {
 		return errBuiltinDisabled
 	}
 
-	if err := s.TryCooldown(); err != nil {
+	if err := s.TryCooldown(ctx); err != nil {
 		return err
 	}
 
@@ -22,7 +22,7 @@ func cmdMusic(ctx context.Context, s *session, cmd string, args string) error {
 		return errBuiltinDisabled
 	}
 
-	if err := s.TryCooldown(); err != nil {
+	if err := s.TryCooldown(ctx); err != nil {
 		return err
 	}
 
@@ -39,7 +39,7 @@ func cmdSonglink(ctx context.Context, s *session, cmd string, args string) error
 		return errBuiltinDisabled
 	}
 
-	if err := s.TryCooldown(); err != nil {
+	if err := s.TryCooldown(ctx); err != nil {
 		return err
 	}
 

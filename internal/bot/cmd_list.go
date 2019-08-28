@@ -307,7 +307,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 		}
 	}
 
-	if err := s.TryCooldown(); err != nil {
+	if err := s.TryCooldown(ctx); err != nil {
 		return false, err
 	}
 

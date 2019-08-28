@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/opentracing/opentracing-go"
 	"github.com/robfig/cron/v3"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -31,6 +32,9 @@ func (b *Bot) updateScheduledCommand(id int64, add bool, expr cron.Schedule) {
 }
 
 func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "runRepeatedCommand")
+	defer span.Finish()
+
 	start := b.deps.Clock.Now()
 
 	s := &session{
@@ -44,7 +48,7 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 		zap.Int64("repeatedCommand", id),
 	)
 
-	err := transact(b.db, func(tx *sql.Tx) error {
+	err := transact(b.db, func(tx boil.ContextExecutor) error {
 		s.Tx = tx
 		return handleRepeatedCommand(ctx, s, id)
 	})
@@ -57,6 +61,9 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 }
 
 func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "handleRepeatedCommand")
+	defer span.Finish()
+
 	repeat, err := models.RepeatedCommands(
 		models.RepeatedCommandWhere.ID.EQ(id),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
@@ -78,7 +85,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return nil
 	}
 
-	if err := repeatPopulateSession(s, repeat.R.Channel); err != nil {
+	if err := repeatPopulateSession(ctx, s, repeat.R.Channel); err != nil {
 		return err
 	}
 
@@ -86,7 +93,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return nil
 	}
 
-	if ok, err := s.RepeatAllowed(id, repeat.Delay-1); !ok || err != nil {
+	if ok, err := s.RepeatAllowed(ctx, id, repeat.Delay-1); !ok || err != nil {
 		return err
 	}
 
@@ -126,6 +133,9 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "runScheduledCommand")
+	defer span.Finish()
+
 	start := b.deps.Clock.Now()
 
 	s := &session{
@@ -139,7 +149,7 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 		zap.Int64("scheduledCommand", id),
 	)
 
-	err := transact(b.db, func(tx *sql.Tx) error {
+	err := transact(b.db, func(tx boil.ContextExecutor) error {
 		s.Tx = tx
 		return handleScheduledCommand(ctx, s, id)
 	})
@@ -152,6 +162,9 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 }
 
 func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "handleScheduledCommand")
+	defer span.Finish()
+
 	scheduled, err := models.ScheduledCommands(
 		models.ScheduledCommandWhere.ID.EQ(id),
 		models.ScheduledCommandWhere.Enabled.EQ(true),
@@ -173,7 +186,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		return nil
 	}
 
-	if err := repeatPopulateSession(s, scheduled.R.Channel); err != nil {
+	if err := repeatPopulateSession(ctx, s, scheduled.R.Channel); err != nil {
 		return err
 	}
 
@@ -185,7 +198,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	// according to the clock rather than at an interval with an arbitrary
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
-	if ok, err := s.ScheduledAllowed(id, 29); !ok || err != nil {
+	if ok, err := s.ScheduledAllowed(ctx, id, 29); !ok || err != nil {
 		return err
 	}
 
@@ -224,7 +237,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	return runCommandAndCount(ctx, s, info, item, true)
 }
 
-func repeatPopulateSession(s *session, channel *models.Channel) error {
+func repeatPopulateSession(ctx context.Context, s *session, channel *models.Channel) error {
 	s.Channel = channel
 	s.Origin = s.Channel.BotName
 	s.IRCChannel = s.Channel.Name
@@ -232,6 +245,6 @@ func repeatPopulateSession(s *session, channel *models.Channel) error {
 	s.RoomIDStr = strconv.FormatInt(s.RoomID, 10)
 
 	var err error
-	s.N, err = s.MessageCount()
+	s.N, err = s.MessageCount(ctx)
 	return err
 }
