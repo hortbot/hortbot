@@ -1,10 +1,12 @@
 package bot
 
 import (
+	"context"
 	"strings"
 	"unicode"
 
 	"github.com/hortbot/hortbot/internal/db/dbtrace"
+	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
@@ -39,7 +41,10 @@ func parseBadges(badgeTag string) map[string]string {
 	return d
 }
 
-func transact(db boil.Beginner, fn func(boil.ContextExecutor) error) (err error) {
+func transact(ctx context.Context, db boil.Beginner, fn func(context.Context, boil.ContextExecutor) error) (err error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "transact")
+	defer span.Finish()
+
 	dtx, err := db.Begin()
 	if err != nil {
 		return err
@@ -57,7 +62,7 @@ func transact(db boil.Beginner, fn func(boil.ContextExecutor) error) (err error)
 		}
 	}()
 
-	err = fn(tx)
+	err = fn(ctx, tx)
 	rollback = false
 
 	if err != nil {

@@ -213,7 +213,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return transact(b.db, func(tx boil.ContextExecutor) error {
+	return transact(ctx, b.db, func(ctx context.Context, tx boil.ContextExecutor) error {
 		s.Tx = tx
 		return handleSession(ctx, s)
 	})

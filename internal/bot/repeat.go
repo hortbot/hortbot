@@ -48,7 +48,7 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 		zap.Int64("repeatedCommand", id),
 	)
 
-	err := transact(b.db, func(tx boil.ContextExecutor) error {
+	err := transact(ctx, b.db, func(ctx context.Context, tx boil.ContextExecutor) error {
 		s.Tx = tx
 		return handleRepeatedCommand(ctx, s, id)
 	})
@@ -149,7 +149,7 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 		zap.Int64("scheduledCommand", id),
 	)
 
-	err := transact(b.db, func(tx boil.ContextExecutor) error {
+	err := transact(ctx, b.db, func(ctx context.Context, tx boil.ContextExecutor) error {
 		s.Tx = tx
 		return handleScheduledCommand(ctx, s, id)
 	})
