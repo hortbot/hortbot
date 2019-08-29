@@ -174,6 +174,8 @@ github.com/go-logfmt/logfmt v0.3.0/go.mod h1:Qt1PoO58o5twSAckw1HlFXLmHsOX5/0LbT9
 github.com/go-logfmt/logfmt v0.4.0/go.mod h1:3RMwSq7FuexP4Kalkev3ejPJsZTpXXBr9+V4qmtdjCk=
 github.com/go-redis/redis/v7 v7.0.0-beta.3 h1:p5g3p597f83HyVxg6qvGLLDqCYWodYWC9XmSbKPwuto=
 github.com/go-redis/redis/v7 v7.0.0-beta.3/go.mod h1:dohSoK1cSNPaisjbZhSk7RYyPhVx2k+4sAbJdPK5KPs=
+github.com/go-redis/redis_rate/v8 v8.0.0-beta h1:HXEYE0I9+VFoCW8fHeVNrAZ5wj970o12uA5msqveneQ=
+github.com/go-redis/redis_rate/v8 v8.0.0-beta/go.mod h1:ITsJdV9pvvB9uMSjeStdSzbrabHs7SBEQHldJRVRhTE=
 github.com/go-sql-driver/mysql v1.4.1 h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=
 github.com/go-sql-driver/mysql v1.4.1/go.mod h1:zAC/RDZ24gD3HViQzih4MyKcchzm+sOG5ZlKdlhCg5w=
 github.com/go-stack/stack v1.8.0 h1:5SgMzNM5HxrEjV0ww2lTmX6E2Izsfxas4+YHWRs3Lsk=

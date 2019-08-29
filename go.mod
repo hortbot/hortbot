@@ -33,6 +33,7 @@ require (
 	github.com/fsouza/fake-gcs-server v1.11.6 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.3
+	github.com/go-redis/redis_rate/v8 v8.0.0-beta
 	github.com/gobuffalo/flect v0.1.6
 	github.com/gocql/gocql v0.0.0-20190810123941-df4b9cc33030 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
@@ -78,7 +79,6 @@ require (
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
-	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/uber/jaeger-client-go v2.16.0+incompatible

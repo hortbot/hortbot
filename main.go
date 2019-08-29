@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 	"time"
 
 	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis_rate/v8"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
@@ -33,23 +35,22 @@ import (
 )
 
 var args = struct {
+	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+
 	Nick string `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
 	Pass string `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
 
-	DB    string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
-	Redis string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
+	DB        string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
+	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
+	Redis     string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
 
 	Admins []string `long:"admin" env:"HB_ADMINS" env-delim:"," description:"Bot admins"`
 
 	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
 	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
 
-	DefaultCooldown int `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
-
-	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
-
-	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
+	DefaultCooldown int    `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
+	LastFMKey       string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
 
 	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
 	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
@@ -58,9 +59,16 @@ var args = struct {
 	SteamKey string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
 
 	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
+
+	RateLimitRate   int           `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Rate limit rate for sending messages"`
+	RateLimitBurst  int           `long:"rate-limit-burst" env:"HB_RATE_LIMIT_BURT" description:"Rate limit burst rate for sending messages"`
+	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period for sending messages"`
 }{
 	DefaultCooldown: 5,
 	WebAddr:         ":5000",
+	RateLimitRate:   15,
+	RateLimitBurst:  10,
+	RateLimitPeriod: 30 * time.Second,
 }
 
 func main() {
@@ -101,6 +109,12 @@ func main() {
 	})
 	defer rClient.Close()
 
+	rateLimiter := redis_rate.NewLimiter(rClient, &redis_rate.Limit{
+		Rate:   args.RateLimitRate,
+		Burst:  args.RateLimitBurst,
+		Period: args.RateLimitPeriod,
+	})
+
 	botRDB, err := rdb.New(rClient, rdb.KeyPrefix("bot"))
 	if err != nil {
 		logger.Fatal("error creating RDB", zap.Error(err))
@@ -130,7 +144,21 @@ func main() {
 	conn := birc.NewPool(pc)
 
 	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
-		return conn.SendMessage(ctx, target, message)
+		for i := 0; i < 2; i++ {
+			result, err := rateLimiter.Allow("ratelimit:" + origin)
+			if err != nil {
+				return err
+			}
+
+			if result.Allowed {
+				return conn.SendMessage(ctx, target, message)
+			}
+
+			ctxlog.FromContext(ctx).Warn("rate limited, sleeping", zap.Duration("sleep", result.RetryAfter))
+			time.Sleep(result.RetryAfter)
+		}
+
+		return errors.New("rate limited")
 	}
 
 	syncJoined := make(chan struct{}, 1)
@@ -166,7 +194,6 @@ func main() {
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
-	// TODO: Combine clients
 	bc := &bot.Config{
 		DB:               db,
 		RDB:              botRDB,
