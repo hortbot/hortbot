@@ -9,12 +9,12 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.23.9 // indirect
+	github.com/aws/aws-sdk-go v1.23.12 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/containerd/containerd v1.2.8 // indirect
-	github.com/containerd/continuity v0.0.0-20190822154759-403b5be3d72b // indirect
+	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
 	github.com/cznic/b v0.0.0-20181122101859-a26611c4d92d // indirect
 	github.com/cznic/fileutil v0.0.0-20181122101858-4d67cfea8c87 // indirect
 	github.com/cznic/golex v0.0.0-20181122101858-9c343928389c // indirect
@@ -32,10 +32,10 @@ require (
 	github.com/frankban/quicktest v1.4.1 // indirect
 	github.com/fsouza/fake-gcs-server v1.11.6 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible
-	github.com/go-redis/redis/v7 v7.0.0-beta.3
+	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/go-redis/redis_rate/v8 v8.0.0-beta
 	github.com/gobuffalo/flect v0.1.6
-	github.com/gocql/gocql v0.0.0-20190810123941-df4b9cc33030 // indirect
+	github.com/gocql/gocql v0.0.0-20190829130954-e163eff7a8c6 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/gogo/protobuf v1.2.2-0.20190730201129-28a6bbf47e48 // indirect
 	github.com/golang-migrate/migrate/v4 v4.6.1
@@ -59,8 +59,8 @@ require (
 	github.com/mjibson/esc v0.2.0
 	github.com/nakagami/firebirdsql v0.0.0-20190824054517-c3a44fa12b19 // indirect
 	github.com/nsqio/go-nsq v1.0.7
-	github.com/onsi/ginkgo v1.9.0 // indirect
-	github.com/onsi/gomega v1.6.0 // indirect
+	github.com/onsi/ginkgo v1.10.0 // indirect
+	github.com/onsi/gomega v1.7.0 // indirect
 	github.com/opencontainers/runc v0.1.1 // indirect
 	github.com/opentracing/opentracing-go v1.1.0
 	github.com/ory/dockertest v3.3.5+incompatible
@@ -89,12 +89,13 @@ require (
 	github.com/xanzy/go-gitlab v0.20.1 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/crypto v0.0.0-20190820162420-60c769a6c586 // indirect
-	golang.org/x/net v0.0.0-20190813141303-74dc4d7220e7
+	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect
+	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190826190057-c7b8b68b1456 // indirect
-	golang.org/x/tools v0.0.0-20190826234050-71894ab67ee3
+	golang.org/x/sys v0.0.0-20190830023255-19e00faab6ad // indirect
+	golang.org/x/tools v0.0.0-20190829210313-340205e581e5
+	google.golang.org/appengine v1.6.2 // indirect
 	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
 	google.golang.org/grpc v1.23.0 // indirect
 	gotest.tools/v3 v3.0.0
