@@ -39,6 +39,11 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 		}
 	}()
 
+	// Ensure the container is cleaned up, even if the process exits.
+	if err := resource.Expire(300); err != nil {
+		return nil, "", nil, err
+	}
+
 	connStr = pgConnStr(resource.GetHostPort("5432/tcp"))
 
 	err = pool.Retry(func() error {

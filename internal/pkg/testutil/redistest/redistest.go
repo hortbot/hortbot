@@ -22,6 +22,11 @@ func New() (client *redis.Client, cleanup func(), retErr error) {
 		}
 	}()
 
+	// Ensure the container is cleaned up, even if the process exits.
+	if err := resource.Expire(300); err != nil {
+		return nil, nil, err
+	}
+
 	err = pool.Retry(func() error {
 		client = redis.NewClient(&redis.Options{
 			Addr: resource.GetHostPort("6379/tcp"),

@@ -28,6 +28,11 @@ func New() (addr string, cleanup func(), retErr error) {
 		}
 	}()
 
+	// Ensure the container is cleaned up, even if the process exits.
+	if err := resource.Expire(300); err != nil {
+		return "", nil, err
+	}
+
 	addr = resource.GetHostPort("4150/tcp")
 
 	err = pool.Retry(func() error {
