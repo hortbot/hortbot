@@ -3,6 +3,7 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
+	cloud.google.com/go/bigquery v1.0.1 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.14 // indirect
@@ -53,6 +54,7 @@ require (
 	github.com/kshvakov/clickhouse v1.3.11 // indirect
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.2.0
+	github.com/luna-duclos/instrumentedsql v0.0.0-20190806155234-7b258886497e
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mattn/go-sqlite3 v1.11.0 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2

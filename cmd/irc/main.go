@@ -15,12 +15,14 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
+	"github.com/lib/pq"
+	"github.com/luna-duclos/instrumentedsql"
+	sqltracing "github.com/luna-duclos/instrumentedsql/opentracing"
 	"github.com/opentracing/opentracing-go"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
-	_ "github.com/lib/pq"                 // For postgres
 )
 
 var args = struct {
@@ -57,7 +59,14 @@ func main() {
 	}
 	defer stopTracing.Close()
 
-	db, err := sql.Open("postgres", args.DB)
+	sql.Register("postgres-opentracing",
+		instrumentedsql.WrapDriver(&pq.Driver{},
+			instrumentedsql.WithTracer(sqltracing.NewTracer(true)),
+			instrumentedsql.WithOmitArgs(),
+		),
+	)
+
+	db, err := sql.Open("postgres-opentracing", args.DB)
 	if err != nil {
 		logger.Fatal("error opening database connection", zap.Error(err))
 	}
