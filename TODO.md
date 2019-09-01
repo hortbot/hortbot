@@ -6,10 +6,10 @@
     - MVP
     - Need configuration setup
 - [ ] Multi process mode
-    - Messaging over NSQ
-    - Redis for k/v, dedupe, expiration, cooldowns
-    - No-downtime upgrades
-    - Figure out global prevention
+    - [x] Messaging over NSQ
+    - [x] Redis for k/v, dedupe, expiration, cooldowns
+    - [ ] No-downtime upgrades
+    - [ ] Rate limiting
 - [ ] Website
     - Needed for OAuth stuff
 - [ ] JSON configuration transferer
