@@ -7,12 +7,14 @@ import (
 	"os"
 	"time"
 
+	"github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
 	"github.com/lib/pq"
@@ -33,10 +35,16 @@ var args = struct {
 	NSQAddr    string `long:"nsq-addr" env:"HB_NSQ_ADDR" description:"NSQD address" required:"true"`
 	NSQChannel string `long:"nsq-channel" env:"HB_NSQ_CHANNEL" description:"NSQ subscription channel"`
 
-	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
+	Debug     bool   `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
+	Redis     string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
+
+	RateLimitRate   int `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
+	RateLimitPeriod int `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period in seconds"`
 }{
-	NSQChannel: "queue",
+	NSQChannel:      "queue",
+	RateLimitRate:   15,
+	RateLimitPeriod: 30,
 }
 
 func main() {
@@ -85,6 +93,16 @@ func main() {
 		}
 	}
 
+	rClient := redis.NewClient(&redis.Options{
+		Addr: args.Redis,
+	})
+	defer rClient.Close()
+
+	ircRDB, err := rdb.New(rClient, rdb.KeyPrefix("irc"))
+	if err != nil {
+		logger.Fatal("error creating RDB", zap.Error(err))
+	}
+
 	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 	if err != nil {
 		logger.Fatal("error listing initial channels", zap.Error(err))
@@ -115,6 +133,18 @@ func main() {
 		OnSendMessage: func(m *bnsq.SendMessage, ref opentracing.SpanReference) {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "OnSendMessage", ref)
 			defer span.Finish()
+
+			allowed, err := ircRDB.RateLimit(args.RateLimitRate, args.RateLimitPeriod, m.Origin, "send_rate_limit")
+			if err != nil {
+				logger.Error("error checking rate limit", zap.Error(err))
+				return
+			}
+
+			if !allowed {
+				// TODO: Requeue
+				return
+			}
+
 			if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
 				logger.Error("error sending message", zap.Error(err))
 			}
