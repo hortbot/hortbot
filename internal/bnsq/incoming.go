@@ -41,17 +41,17 @@ type IncomingSubscriber struct {
 	Addr       string
 	Channel    string
 	Opts       []SubscriberOption
-	OnIncoming func(i *Incoming, ref opentracing.SpanReference)
+	OnIncoming func(i *Incoming, ref opentracing.SpanReference) error
 }
 
 func (s *IncomingSubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, incomingTopic, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) {
+	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) error {
 		i := &Incoming{}
 		if err := m.payload(i); err != nil {
-			return
+			return err
 		}
-		s.OnIncoming(i, ref)
+		return s.OnIncoming(i, ref)
 	})
 }

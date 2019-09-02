@@ -43,17 +43,17 @@ type SendMessageSubscriber struct {
 	Origin        string
 	Channel       string
 	Opts          []SubscriberOption
-	OnSendMessage func(sm *SendMessage, ref opentracing.SpanReference)
+	OnSendMessage func(sm *SendMessage, ref opentracing.SpanReference) error
 }
 
 func (s *SendMessageSubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, sendMessageTopic+s.Origin, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) {
+	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) error {
 		sm := &SendMessage{}
 		if err := m.payload(sm); err != nil {
-			return
+			return err
 		}
-		s.OnSendMessage(sm, ref)
+		return s.OnSendMessage(sm, ref)
 	})
 }

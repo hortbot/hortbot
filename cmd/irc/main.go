@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -130,24 +131,27 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(5 * time.Second),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, ref opentracing.SpanReference) {
+		OnSendMessage: func(m *bnsq.SendMessage, ref opentracing.SpanReference) error {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "OnSendMessage", ref)
 			defer span.Finish()
 
 			allowed, err := ircRDB.RateLimit(args.RateLimitRate, args.RateLimitPeriod, m.Origin, "send_rate_limit")
 			if err != nil {
 				logger.Error("error checking rate limit", zap.Error(err))
-				return
+				return err
 			}
 
 			if !allowed {
-				// TODO: Requeue
-				return
+				logger.Error("rate limited, requeueing")
+				return errors.New("rate limited")
 			}
 
 			if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
 				logger.Error("error sending message", zap.Error(err))
+				return err
 			}
+
+			return nil
 		},
 	}
 
@@ -160,15 +164,18 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(time.Minute),
 		},
-		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, ref opentracing.SpanReference) {
+		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, ref opentracing.SpanReference) error {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "OnNotifyChannelUpdates", ref)
 			defer span.Finish()
 
 			select {
 			case syncJoined <- struct{}{}:
 			case <-ctx.Done():
+				return ctx.Err()
 			default:
 			}
+
+			return nil
 		},
 	}
 

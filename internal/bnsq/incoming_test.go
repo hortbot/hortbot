@@ -38,8 +38,9 @@ func TestIncoming(t *testing.T) {
 	subscriber := bnsq.IncomingSubscriber{
 		Addr:    addr,
 		Channel: channel,
-		OnIncoming: func(n *bnsq.Incoming, _ opentracing.SpanReference) {
+		OnIncoming: func(n *bnsq.Incoming, _ opentracing.SpanReference) error {
 			received <- n
+			return nil
 		},
 	}
 

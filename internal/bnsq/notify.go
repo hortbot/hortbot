@@ -39,17 +39,17 @@ type NotifySubscriber struct {
 	BotName                string
 	Channel                string
 	Opts                   []SubscriberOption
-	OnNotifyChannelUpdates func(n *ChannelUpdatesNotification, ref opentracing.SpanReference)
+	OnNotifyChannelUpdates func(n *ChannelUpdatesNotification, ref opentracing.SpanReference) error
 }
 
 func (s *NotifySubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, notifyChannelUpdatesTopic+s.BotName, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) {
+	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) error {
 		n := &ChannelUpdatesNotification{}
 		if err := m.payload(n); err != nil {
-			return
+			return err
 		}
-		s.OnNotifyChannelUpdates(n, ref)
+		return s.OnNotifyChannelUpdates(n, ref)
 	})
 }

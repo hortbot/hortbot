@@ -175,10 +175,11 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(5 * time.Second),
 		},
-		OnIncoming: func(i *bnsq.Incoming, ref opentracing.SpanReference) {
+		OnIncoming: func(i *bnsq.Incoming, ref opentracing.SpanReference) error {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "OnIncoming", ref)
 			defer span.Finish()
 			b.Handle(ctx, i.Origin, i.Message)
+			return nil
 		},
 	}
 

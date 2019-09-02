@@ -48,8 +48,9 @@ func TestSendMessage(t *testing.T) {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberClock(clk),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) error {
 			received <- m
+			return nil
 		},
 	}
 
@@ -102,8 +103,9 @@ func TestSendMessageBadAddr(t *testing.T) {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberConfig(config),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) error {
 			received <- m
+			return nil
 		},
 	}
 
@@ -135,8 +137,9 @@ func TestSendMessageSubscriberBadChannel(t *testing.T) {
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
-		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) error {
 			received <- m
+			return nil
 		},
 	}
 
@@ -177,8 +180,9 @@ func TestMaxAge(t *testing.T) {
 			bnsq.SubscriberClock(clk),
 			bnsq.SubscriberMaxAge(30 * time.Second),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) {
+		OnSendMessage: func(m *bnsq.SendMessage, _ opentracing.SpanReference) error {
 			received <- m
+			return nil
 		},
 	}
 

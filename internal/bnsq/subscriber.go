@@ -64,7 +64,7 @@ func SubscriberMaxAge(d time.Duration) SubscriberOption {
 	}
 }
 
-func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracing.SpanReference)) error {
+func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracing.SpanReference) error) error {
 	logger := ctxlog.FromContext(ctx)
 
 	consumer, err := nsq.NewConsumer(s.topic, s.channel, s.config)
@@ -76,8 +76,6 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracin
 	consumer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
 
 	consumer.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
-		msg.Finish()
-
 		if testingSleep != 0 {
 			s.clk.Sleep(testingSleep)
 		}
@@ -101,9 +99,7 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracin
 		}
 
 		ref := opentracing.FollowsFrom(span.Context())
-
-		fn(m, ref)
-		return nil
+		return fn(m, ref)
 	}))
 
 	if err := consumer.ConnectToNSQD(s.addr); err != nil {

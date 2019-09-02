@@ -41,8 +41,9 @@ func TestNotify(t *testing.T) {
 		Addr:    addr,
 		BotName: botName,
 		Channel: channel,
-		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, _ opentracing.SpanReference) {
+		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, _ opentracing.SpanReference) error {
 			received <- n
+			return nil
 		},
 	}
 
