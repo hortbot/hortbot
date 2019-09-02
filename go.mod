@@ -37,7 +37,7 @@ require (
 	github.com/gobuffalo/flect v0.1.6
 	github.com/gocql/gocql v0.0.0-20190829130954-e163eff7a8c6 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/gogo/protobuf v1.2.2-0.20190730201129-28a6bbf47e48 // indirect
+	github.com/gogo/protobuf v1.3.0 // indirect
 	github.com/golang-migrate/migrate/v4 v4.6.1
 	github.com/google/go-cmp v0.3.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
@@ -67,7 +67,7 @@ require (
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pelletier/go-toml v1.4.0 // indirect
-	github.com/pierrec/lz4 v2.2.6+incompatible // indirect
+	github.com/pierrec/lz4 v2.2.7+incompatible // indirect
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/posener/ctxutil v1.0.0
@@ -80,6 +80,7 @@ require (
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
+	github.com/stretchr/testify v1.4.0 // indirect
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/uber/jaeger-client-go v2.17.0+incompatible
