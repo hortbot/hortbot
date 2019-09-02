@@ -34,7 +34,6 @@ require (
 	github.com/fsouza/fake-gcs-server v1.11.6 // indirect
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
-	github.com/go-redis/redis_rate/v8 v8.0.0-beta
 	github.com/gobuffalo/flect v0.1.6
 	github.com/gocql/gocql v0.0.0-20190829130954-e163eff7a8c6 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible

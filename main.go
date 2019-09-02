@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v7"
-	"github.com/go-redis/redis_rate/v8"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
@@ -60,15 +59,13 @@ var args = struct {
 
 	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 
-	RateLimitRate   int           `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Rate limit rate for sending messages"`
-	RateLimitBurst  int           `long:"rate-limit-burst" env:"HB_RATE_LIMIT_BURT" description:"Rate limit burst rate for sending messages"`
-	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period for sending messages"`
+	RateLimitRate   int `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
+	RateLimitPeriod int `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period in seconds"`
 }{
 	DefaultCooldown: 5,
 	WebAddr:         ":5000",
 	RateLimitRate:   15,
-	RateLimitBurst:  10,
-	RateLimitPeriod: 30 * time.Second,
+	RateLimitPeriod: 30,
 }
 
 func main() {
@@ -109,11 +106,10 @@ func main() {
 	})
 	defer rClient.Close()
 
-	rateLimiter := redis_rate.NewLimiter(rClient, &redis_rate.Limit{
-		Rate:   args.RateLimitRate,
-		Burst:  args.RateLimitBurst,
-		Period: args.RateLimitPeriod,
-	})
+	ircRDB, err := rdb.New(rClient, rdb.KeyPrefix("irc"))
+	if err != nil {
+		logger.Fatal("error creating RDB", zap.Error(err))
+	}
 
 	botRDB, err := rdb.New(rClient, rdb.KeyPrefix("bot"))
 	if err != nil {
@@ -144,18 +140,13 @@ func main() {
 	conn := birc.NewPool(pc)
 
 	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
-		for i := 0; i < 2; i++ {
-			result, err := rateLimiter.Allow("ratelimit:" + origin)
-			if err != nil {
-				return err
-			}
+		allowed, err := ircRDB.RateLimit(args.RateLimitRate, args.RateLimitPeriod, origin, "send_rate_limit")
+		if err != nil {
+			return err
+		}
 
-			if result.Allowed {
-				return conn.SendMessage(ctx, target, message)
-			}
-
-			ctxlog.FromContext(ctx).Warn("rate limited, sleeping", zap.Duration("sleep", result.RetryAfter))
-			time.Sleep(result.RetryAfter)
+		if allowed {
+			return conn.SendMessage(ctx, target, message)
 		}
 
 		return errors.New("rate limited")
