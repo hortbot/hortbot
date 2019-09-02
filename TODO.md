@@ -9,7 +9,8 @@
     - [x] Messaging over NSQ
     - [x] Redis for k/v, dedupe, expiration, cooldowns
     - [ ] No-downtime upgrades
-    - [ ] Rate limiting
+    - [x] Rate limiting
+        - [ ] Needs to check userstate/badges/etc to "unlock" a faster rate.
 - [ ] Website
     - Needed for OAuth stuff
 - [ ] JSON configuration transferer
