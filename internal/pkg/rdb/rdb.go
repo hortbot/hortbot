@@ -35,6 +35,10 @@ func New(client redis.Cmdable, options ...Option) (*DB, error) {
 		return nil, err
 	}
 
+	if err := rateLimit.Load(client).Err(); err != nil {
+		return nil, err
+	}
+
 	d := &DB{
 		client: client,
 	}

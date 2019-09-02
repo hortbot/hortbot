@@ -20,6 +20,7 @@ func (st *scriptTester) clockForward(t testing.TB, _, args string, lineNum int) 
 	st.addAction(func(ctx context.Context) {
 		st.clock.Forward(dur)
 		st.redis.FastForward(dur)
+		st.redis.SetTime(st.clock.Now())
 	})
 }
 

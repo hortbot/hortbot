@@ -25,3 +25,11 @@ func ReplaceMarkOrDelete(source string) func() {
 		markOrDelete = old
 	}
 }
+
+func ReplaceRateLimit(source string) func() {
+	old := rateLimit
+	rateLimit = redis.NewScript(source)
+	return func() {
+		rateLimit = old
+	}
+}
