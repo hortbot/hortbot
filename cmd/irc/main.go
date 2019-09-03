@@ -8,14 +8,14 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
 	"github.com/lib/pq"
@@ -40,12 +40,12 @@ var args = struct {
 	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
 	Redis     string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
 
-	RateLimitRate   int `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
-	RateLimitPeriod int `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period in seconds"`
+	RateLimitRate   int           `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
+	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 }{
 	NSQChannel:      "queue",
 	RateLimitRate:   15,
-	RateLimitPeriod: 30,
+	RateLimitPeriod: 30 * time.Second,
 }
 
 func main() {
@@ -94,15 +94,12 @@ func main() {
 		}
 	}
 
-	rClient := redis.NewClient(&redis.Options{
+	rClient := goredis.NewClient(&goredis.Options{
 		Addr: args.Redis,
 	})
 	defer rClient.Close()
 
-	ircRDB, err := rdb.New(rClient, rdb.KeyPrefix("irc"))
-	if err != nil {
-		logger.Fatal("error creating RDB", zap.Error(err))
-	}
+	rdb := redis.New(rClient)
 
 	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 	if err != nil {
@@ -135,7 +132,7 @@ func main() {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "OnSendMessage", ref)
 			defer span.Finish()
 
-			allowed, err := ircRDB.RateLimit(args.RateLimitRate, args.RateLimitPeriod, m.Origin, "send_rate_limit")
+			allowed, err := rdb.SendMessageAllowed(ctx, m.Origin, args.RateLimitRate, args.RateLimitPeriod)
 			if err != nil {
 				logger.Error("error checking rate limit", zap.Error(err))
 				return err

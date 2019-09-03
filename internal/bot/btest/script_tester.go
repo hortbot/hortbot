@@ -16,6 +16,7 @@ import (
 	"github.com/alicebob/miniredis/v2"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm/lastfmfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam/steamfakes"
@@ -27,7 +28,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	dedupemem "github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
@@ -134,14 +134,11 @@ func (st *scriptTester) test(t testing.TB) {
 	assert.NilError(t, err)
 	defer rCleanup()
 
-	rDB, err := rdb.New(rClient)
-	assert.NilError(t, err)
-
 	st.redis = rServer
 
 	st.bc = bot.Config{
 		DB:        st.db,
-		RDB:       rDB,
+		Redis:     redis.New(rClient),
 		Dedupe:    dedupe.NeverSeen,
 		Sender:    st.sender,
 		Notifier:  st.notifier,

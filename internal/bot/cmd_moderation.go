@@ -142,10 +142,7 @@ func cmdModClear(ctx context.Context, s *session, cmd string, args string) error
 
 const permitDur = 5 * time.Minute
 
-var (
-	permitSeconds     = int(permitDur.Seconds())
-	permitDurReadable = durafmt.Parse(permitDur).String()
-)
+var permitDurReadable = durafmt.Parse(permitDur).String()
 
 func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 	if !s.Channel.EnableFilters || !s.Channel.FilterLinks {
@@ -158,7 +155,7 @@ func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 	}
 	user = strings.ToLower(user)
 
-	if err := s.LinkPermit(ctx, user, permitSeconds); err != nil {
+	if err := s.LinkPermit(ctx, user, permitDur); err != nil {
 		return err
 	}
 

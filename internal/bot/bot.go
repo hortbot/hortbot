@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/dbtrace"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
@@ -17,7 +18,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
@@ -32,7 +32,7 @@ const (
 
 type Config struct {
 	DB       *sql.DB
-	RDB      *rdb.DB
+	Redis    *redis.DB
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
@@ -74,7 +74,7 @@ func New(config *Config) *Bot {
 	switch {
 	case config.DB == nil:
 		panic("db is nil")
-	case config.RDB == nil:
+	case config.Redis == nil:
 		panic("redis is nil")
 	case config.Dedupe == nil:
 		panic("dedupe is nil")
@@ -87,7 +87,7 @@ func New(config *Config) *Bot {
 	}
 
 	deps := &sharedDeps{
-		RDB:             config.RDB,
+		Redis:           config.Redis,
 		Dedupe:          config.Dedupe,
 		Sender:          config.Sender,
 		Notifier:        config.Notifier,

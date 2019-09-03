@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/db/migrations"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
@@ -69,21 +69,18 @@ func main() {
 		}
 	}
 
-	rClient := redis.NewClient(&redis.Options{
+	rClient := goredis.NewClient(&goredis.Options{
 		Addr: args.Redis,
 	})
 	defer rClient.Close()
 
-	webRDB, err := rdb.New(rClient, rdb.KeyPrefix("web"))
-	if err != nil {
-		logger.Fatal("error creating RDB", zap.Error(err))
-	}
+	rdb := redis.New(rClient)
 
 	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
 
 	a := web.App{
 		Addr:   args.WebAddr,
-		RDB:    webRDB,
+		Redis:  rdb,
 		DB:     db,
 		Twitch: twitchAPI,
 	}

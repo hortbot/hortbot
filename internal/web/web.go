@@ -6,20 +6,19 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/volatiletech/null"
 	"go.uber.org/zap"
 )
-
-const rdbKey = "auth_state"
 
 var botScopes = []string{
 	"user_follows_edit",
@@ -29,7 +28,7 @@ type App struct {
 	Addr   string
 	RealIP bool
 
-	RDB    *rdb.DB
+	Redis  *redis.DB
 	DB     *sql.DB
 	Twitch *twitch.Twitch
 }
@@ -80,7 +79,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 		state = strings.ToLower(botName) + ":" + state
 	}
 
-	if err := a.RDB.Mark(60*60, rdbKey, state); err != nil {
+	if err := a.Redis.SetAuthState(r.Context(), state, time.Minute); err != nil {
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -103,7 +102,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := a.RDB.CheckAndDelete(rdbKey, state)
+	ok, err := a.Redis.CheckAuthState(ctx, state)
 	if err != nil {
 		httpError(w, http.StatusInternalServerError)
 		return

@@ -8,11 +8,12 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
@@ -23,7 +24,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
@@ -59,13 +59,13 @@ var args = struct {
 
 	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 
-	RateLimitRate   int `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
-	RateLimitPeriod int `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period in seconds"`
+	RateLimitRate   int           `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
+	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 }{
 	DefaultCooldown: 5,
 	WebAddr:         ":5000",
 	RateLimitRate:   15,
-	RateLimitPeriod: 30,
+	RateLimitPeriod: 30 * time.Second,
 }
 
 func main() {
@@ -101,25 +101,12 @@ func main() {
 		}
 	}
 
-	rClient := redis.NewClient(&redis.Options{
+	rClient := goredis.NewClient(&goredis.Options{
 		Addr: args.Redis,
 	})
 	defer rClient.Close()
 
-	ircRDB, err := rdb.New(rClient, rdb.KeyPrefix("irc"))
-	if err != nil {
-		logger.Fatal("error creating RDB", zap.Error(err))
-	}
-
-	botRDB, err := rdb.New(rClient, rdb.KeyPrefix("bot"))
-	if err != nil {
-		logger.Fatal("error creating RDB", zap.Error(err))
-	}
-
-	webRDB, err := rdb.New(rClient, rdb.KeyPrefix("web"))
-	if err != nil {
-		logger.Fatal("error creating RDB", zap.Error(err))
-	}
+	rdb := redis.New(rClient)
 
 	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 	if err != nil {
@@ -140,7 +127,7 @@ func main() {
 	conn := birc.NewPool(pc)
 
 	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
-		allowed, err := ircRDB.RateLimit(args.RateLimitRate, args.RateLimitPeriod, origin, "send_rate_limit")
+		allowed, err := rdb.SendMessageAllowed(ctx, origin, args.RateLimitRate, args.RateLimitPeriod)
 		if err != nil {
 			return err
 		}
@@ -187,7 +174,7 @@ func main() {
 
 	bc := &bot.Config{
 		DB:               db,
-		RDB:              botRDB,
+		Redis:            rdb,
 		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,
@@ -217,7 +204,7 @@ func main() {
 	g.Go(func(ctx context.Context) error {
 		a := web.App{
 			Addr:   args.WebAddr,
-			RDB:    webRDB,
+			Redis:  rdb,
 			DB:     db,
 			Twitch: twitchAPI,
 		}

@@ -3,6 +3,7 @@ package bot
 import (
 	"time"
 
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
@@ -12,14 +13,13 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
 )
 
 type sharedDeps struct {
-	RDB      *rdb.DB
+	Redis    *redis.DB
 	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier

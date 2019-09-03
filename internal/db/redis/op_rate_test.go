@@ -1,17 +1,16 @@
-package rdb_test
+package redis
 
 import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
 	"gotest.tools/v3/assert"
 )
 
 func TestRateLimit(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 
 	type pair struct {
 		dur     time.Duration
@@ -21,7 +20,7 @@ func TestRateLimit(t *testing.T) {
 	tests := []struct {
 		name   string
 		limit  int
-		window int
+		window time.Duration
 		checks []pair
 	}{
 		{
@@ -47,7 +46,7 @@ func TestRateLimit(t *testing.T) {
 		{
 			name:   "Negative window",
 			limit:  10,
-			window: -10,
+			window: -10 * time.Second,
 			checks: []pair{
 				{0, false},
 			},
@@ -55,7 +54,7 @@ func TestRateLimit(t *testing.T) {
 		{
 			name:   "Allowed then disallowed",
 			limit:  5,
-			window: 10,
+			window: 10 * time.Second,
 			checks: []pair{
 				{time.Second, true},
 				{time.Second, true},
@@ -82,7 +81,7 @@ func TestRateLimit(t *testing.T) {
 		{
 			name:   "Sub-second",
 			limit:  5,
-			window: 1,
+			window: time.Second,
 			checks: []pair{
 				{time.Second / 10, true},
 				{time.Second / 10, true},
@@ -111,7 +110,7 @@ func TestRateLimit(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			// t.Parallel()
+			t.Parallel()
 
 			clk := clock.NewMock()
 
@@ -119,30 +118,16 @@ func TestRateLimit(t *testing.T) {
 			assert.NilError(t, err)
 			defer cleanup()
 
-			db, err := rdb.New(c)
-			assert.NilError(t, err)
-
 			for i, check := range test.checks {
 				s.FastForward(check.dur)
 				clk.Forward(check.dur)
 				s.SetTime(clk.Now()) // Hack, as FastForward doesn't actually change TIME.
 
-				allowed, err := db.RateLimit(test.limit, test.window, "some", "key")
+				allowed, err := rateLimit(c, "some:key", test.limit, test.window)
 
 				assert.NilError(t, err)
 				assert.Equal(t, check.allowed, allowed, "check %d", i)
 			}
 		})
 	}
-}
-
-func TestBadRateLimitScript(t *testing.T) {
-	defer rdb.ReplaceRateLimit("local")()
-
-	_, c, cleanup, err := miniredistest.New()
-	assert.NilError(t, err)
-	defer cleanup()
-
-	_, err = rdb.New(c)
-	assert.ErrorContains(t, err, "syntax error")
 }

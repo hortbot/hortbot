@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/opentracing/opentracing-go"
@@ -45,7 +46,7 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 			msg = strings.ReplaceAll(msg, "(_REGULARS_ONLY_)", "")
 		}
 
-		allowed, err := s.AutoreplyAllowed(ctx, autoreply.ID, 30)
+		allowed, err := s.AutoreplyAllowed(ctx, autoreply.ID, 30*time.Second)
 		if err != nil {
 			return true, err
 		}

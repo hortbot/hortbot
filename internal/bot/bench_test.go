@@ -10,9 +10,9 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
@@ -30,14 +30,11 @@ func BenchmarkNop(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
-	rDB, err := rdb.New(rClient)
-	assert.NilError(b, err)
-
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:       db,
-		RDB:      rDB,
+		Redis:    redis.New(rClient),
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
@@ -66,9 +63,6 @@ func BenchmarkCustomCommand(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
-	rDB, err := rdb.New(rClient)
-	assert.NilError(b, err)
-
 	db, undb := freshDB(b)
 	defer undb()
 
@@ -78,7 +72,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 
 	config := &bot.Config{
 		DB:       db,
-		RDB:      rDB,
+		Redis:    redis.New(rClient),
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
@@ -108,9 +102,6 @@ func BenchmarkMixed(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
-	rDB, err := rdb.New(rClient)
-	assert.NilError(b, err)
-
 	db, undb := freshDB(b)
 	defer undb()
 
@@ -120,7 +111,7 @@ func BenchmarkMixed(b *testing.B) {
 
 	config := &bot.Config{
 		DB:       db,
-		RDB:      rDB,
+		Redis:    redis.New(rClient),
 		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},

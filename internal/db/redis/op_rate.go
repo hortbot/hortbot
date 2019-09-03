@@ -1,6 +1,10 @@
-package rdb
+package redis
 
-import "github.com/go-redis/redis/v7"
+import (
+	"time"
+
+	"github.com/go-redis/redis/v7"
+)
 
 // This script implements a sliding-window rate limiter using a sorted set.
 // Set items and their scores are timestamps, and querying the set for the
@@ -13,15 +17,15 @@ import "github.com/go-redis/redis/v7"
 //    Otherwise, add the current timestamp to the set, and allow the request.
 //    Also mark the set to expire after the window that starts at the current time,
 //    since if the data isn't read by then, the set won't contain any useful data.
-var rateLimit = redis.NewScript(`
+var scriptRateLimit = redis.NewScript(`
 local key = KEYS[1]
 local limit = tonumber(ARGV[1])
-local window_secs = tonumber(ARGV[2])
+local window_microsecs = tonumber(ARGV[2])
 
 local redistime = redis.call("TIME")
-local now = redistime[1] * 1e6 + redistime[2] -- In microseconds.
+local now = (redistime[1] * 1e6) + redistime[2]
 
-local window_start = now - window_secs * 1e6
+local window_start = now - window_microsecs
 redis.call("ZREMRANGEBYSCORE", key, "-inf", window_start)
 
 local count = redis.call("ZCARD", key)
@@ -30,22 +34,22 @@ if count >= limit then
 end
 
 redis.call("ZADD", key, "NX", now, now)
-redis.call("EXPIRE", key, window_secs + 1)
+redis.call("EXPIRE", key, (window_microsecs / 1e6) + 1)
 return 1
 `)
 
-// RateLimit rate limits an action using a sliding-window rate limiter, where
-// "limit" events can occur within a "windowSecs" seconds long window.
+// rateLimit rate limits an action using a sliding-window rate limiter, where
+// "limit" events can occur within a "window" long window.
 // Rate limiting is accurate to the microsecond, as it does not use EXPIRE for
 // something like a token bucket.
 //
 // This may be pulled out into its own library at some point since it's
 // generally helpful.
-func (d *DB) RateLimit(limit int, windowSecs int, key string, more ...string) (allowed bool, err error) {
-	if limit <= 0 || windowSecs <= 0 {
+func rateLimit(client redis.Cmdable, key string, limit int, window time.Duration) (allowed bool, err error) {
+	windowMicro := int64(window / time.Microsecond)
+	if limit <= 0 || windowMicro <= 0 {
 		return false, nil
 	}
 
-	k := d.buildKey(key, more...)
-	return d.runScript(rateLimit, k, limit, windowSecs)
+	return scriptRateLimit.Run(client, []string{key}, limit, windowMicro).Bool()
 }

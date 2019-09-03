@@ -1,9 +1,8 @@
-package rdb_test
+package redis
 
 import (
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/v3/assert"
 )
@@ -15,21 +14,18 @@ func TestSetEmpty(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	db, err := rdb.New(c)
-	assert.NilError(t, err)
-
-	l, err := db.SetLen("foo", "bar")
+	l, err := setLen(c, "foo")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(0))
 
-	s, ok, err := db.SetPop("foo", "bar")
+	s, ok, err := setPop(c, "foo")
 	assert.NilError(t, err)
 	assert.Equal(t, s, "")
 	assert.Assert(t, !ok)
 
-	assert.NilError(t, db.SetClear("foo", "bar"))
+	assert.NilError(t, setClear(c, "foo"))
 
-	l, err = db.SetLen("foo", "bar")
+	l, err = setLen(c, "foo")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(0))
 }
@@ -41,28 +37,25 @@ func TestSetAdd(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	db, err := rdb.New(c)
-	assert.NilError(t, err)
-
-	l, err := db.SetLen("foobar")
+	l, err := setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(0))
 
-	assert.NilError(t, db.SetAdd("v1", "foobar"))
+	assert.NilError(t, setAdd(c, "foobar", "v1"))
 
-	l, err = db.SetLen("foobar")
+	l, err = setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(1))
 
-	assert.NilError(t, db.SetAdd("v2", "foobar"))
+	assert.NilError(t, setAdd(c, "foobar", "v2"))
 
-	l, err = db.SetLen("foobar")
+	l, err = setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(2))
 
-	assert.NilError(t, db.SetAdd("v2", "foobar"))
+	assert.NilError(t, setAdd(c, "foobar", "v2"))
 
-	l, err = db.SetLen("foobar")
+	l, err = setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(2))
 }
@@ -74,24 +67,21 @@ func TestSetClear(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	db, err := rdb.New(c)
-	assert.NilError(t, err)
-
-	l, err := db.SetLen("foobar")
+	l, err := setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(0))
 
-	assert.NilError(t, db.SetAdd("v1", "foobar"))
-	assert.NilError(t, db.SetAdd("v2", "foobar"))
-	assert.NilError(t, db.SetAdd("v3", "foobar"))
+	assert.NilError(t, setAdd(c, "foobar", "v1"))
+	assert.NilError(t, setAdd(c, "foobar", "v2"))
+	assert.NilError(t, setAdd(c, "foobar", "v3"))
 
-	l, err = db.SetLen("foobar")
+	l, err = setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(3))
 
-	assert.NilError(t, db.SetClear("foobar"))
+	assert.NilError(t, setClear(c, "foobar"))
 
-	l, err = db.SetLen("foobar")
+	l, err = setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(0))
 }
@@ -105,33 +95,30 @@ func TestSetPop(t *testing.T) {
 
 	s.Seed(311)
 
-	db, err := rdb.New(c)
-	assert.NilError(t, err)
-
-	l, err := db.SetLen("foobar")
+	l, err := setLen(c, "foobar")
 	assert.NilError(t, err)
 	assert.Equal(t, l, int64(0))
 
-	assert.NilError(t, db.SetAdd("v1", "foobar"))
-	assert.NilError(t, db.SetAdd("v2", "foobar"))
-	assert.NilError(t, db.SetAdd("v3", "foobar"))
+	assert.NilError(t, setAdd(c, "foobar", "v1"))
+	assert.NilError(t, setAdd(c, "foobar", "v2"))
+	assert.NilError(t, setAdd(c, "foobar", "v3"))
 
-	v, ok, err := db.SetPop("foobar")
+	v, ok, err := setPop(c, "foobar")
 	assert.NilError(t, err)
 	assert.Assert(t, ok)
 	assert.Equal(t, v, "v2")
 
-	v, ok, err = db.SetPop("foobar")
+	v, ok, err = setPop(c, "foobar")
 	assert.NilError(t, err)
 	assert.Assert(t, ok)
 	assert.Equal(t, v, "v3")
 
-	v, ok, err = db.SetPop("foobar")
+	v, ok, err = setPop(c, "foobar")
 	assert.NilError(t, err)
 	assert.Assert(t, ok)
 	assert.Equal(t, v, "v1")
 
-	v, ok, err = db.SetPop("foobar")
+	v, ok, err = setPop(c, "foobar")
 	assert.NilError(t, err)
 	assert.Assert(t, !ok)
 	assert.Equal(t, v, "")

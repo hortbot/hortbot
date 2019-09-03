@@ -145,18 +145,18 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 	return s.Replyf(ctx, "%s, %s will now leave your channel.", displayName, channel.BotName)
 }
 
-const leaveConfirmSeconds = 10
+const leaveConfirmDur = 10 * time.Second
 
-var leaveConfirmReadable = durafmt.Parse(leaveConfirmSeconds * time.Second).String()
+var leaveConfirmDurReadable = durafmt.Parse(leaveConfirmDur).String()
 
 func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
-	confirmed, err := s.Confirm(ctx, s.User, "leave", leaveConfirmSeconds)
+	confirmed, err := s.Confirm(ctx, s.User, "leave", leaveConfirmDur)
 	if err != nil {
 		return err
 	}
 
 	if !confirmed {
-		return s.Replyf(ctx, "%s, if you are sure you want %s to leave this channel, run %s%s again in the next %s.", s.UserDisplay, s.Channel.BotName, s.Channel.Prefix, cmd, leaveConfirmReadable)
+		return s.Replyf(ctx, "%s, if you are sure you want %s to leave this channel, run %s%s again in the next %s.", s.UserDisplay, s.Channel.BotName, s.Channel.Prefix, cmd, leaveConfirmDurReadable)
 	}
 
 	s.Channel.Active = false

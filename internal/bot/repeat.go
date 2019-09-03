@@ -93,7 +93,8 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return nil
 	}
 
-	if ok, err := s.RepeatAllowed(ctx, id, repeat.Delay-1); !ok || err != nil {
+	expiry := time.Duration(repeat.Delay-1) * time.Second
+	if ok, err := s.RepeatAllowed(ctx, id, expiry); !ok || err != nil {
 		return err
 	}
 
@@ -198,7 +199,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	// according to the clock rather than at an interval with an arbitrary
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
-	if ok, err := s.ScheduledAllowed(ctx, id, 29); !ok || err != nil {
+	if ok, err := s.ScheduledAllowed(ctx, id, 29*time.Second); !ok || err != nil {
 		return err
 	}
 

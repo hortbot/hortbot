@@ -6,10 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
+	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
@@ -20,7 +21,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	deduperedis "github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/rdb"
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
 	"github.com/lib/pq"
@@ -107,15 +107,12 @@ func main() {
 		}
 	}
 
-	rClient := redis.NewClient(&redis.Options{
+	rClient := goredis.NewClient(&goredis.Options{
 		Addr: args.Redis,
 	})
 	defer rClient.Close()
 
-	botRDB, err := rdb.New(rClient, rdb.KeyPrefix("bot"))
-	if err != nil {
-		logger.Fatal("error creating RDB", zap.Error(err))
-	}
+	rdb := redis.New(rClient)
 
 	var lastFM lastfm.API
 
@@ -134,7 +131,7 @@ func main() {
 		logger.Warn("no Steam API key provided, functionality will be disabled")
 	}
 
-	ddp, err := deduperedis.New(rClient, 5*time.Minute)
+	ddp, err := deduperedis.New(rdb, 5*time.Minute)
 	if err != nil {
 		logger.Fatal("error making redis dedupe", zap.Error(err))
 	}
@@ -144,7 +141,7 @@ func main() {
 
 	bc := &bot.Config{
 		DB:               db,
-		RDB:              botRDB,
+		Redis:            rdb,
 		Dedupe:           ddp,
 		Sender:           sendPub,
 		Notifier:         notifyPub,
