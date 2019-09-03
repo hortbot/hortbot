@@ -59,12 +59,14 @@ var args = struct {
 
 	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 
-	RateLimitRate   int           `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
+	RateLimitSlow   int           `long:"rate-limit-slow" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
+	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
 	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 }{
 	DefaultCooldown: 5,
 	WebAddr:         ":5000",
-	RateLimitRate:   15,
+	RateLimitSlow:   15,
+	RateLimitFast:   80,
 	RateLimitPeriod: 30 * time.Second,
 }
 
@@ -127,7 +129,7 @@ func main() {
 	conn := birc.NewPool(pc)
 
 	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
-		allowed, err := rdb.SendMessageAllowed(ctx, origin, args.RateLimitRate, args.RateLimitPeriod)
+		allowed, err := rdb.SendMessageAllowed(ctx, origin, target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
 		if err != nil {
 			return err
 		}

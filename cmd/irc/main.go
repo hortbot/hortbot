@@ -40,11 +40,13 @@ var args = struct {
 	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
 	Redis     string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
 
-	RateLimitRate   int           `long:"rate-limit-rate" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period"`
+	RateLimitSlow   int           `long:"rate-limit-slow" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
+	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
 	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 }{
 	NSQChannel:      "queue",
-	RateLimitRate:   15,
+	RateLimitSlow:   15,
+	RateLimitFast:   80,
 	RateLimitPeriod: 30 * time.Second,
 }
 
@@ -132,7 +134,7 @@ func main() {
 			span, ctx := opentracing.StartSpanFromContext(ctx, "OnSendMessage", ref)
 			defer span.Finish()
 
-			allowed, err := rdb.SendMessageAllowed(ctx, m.Origin, args.RateLimitRate, args.RateLimitPeriod)
+			allowed, err := rdb.SendMessageAllowed(ctx, m.Origin, m.Target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
 			if err != nil {
 				logger.Error("error checking rate limit", zap.Error(err))
 				return err

@@ -17,39 +17,57 @@ import (
 //    Otherwise, add the current timestamp to the set, and allow the request.
 //    Also mark the set to expire after the window that starts at the current time,
 //    since if the data isn't read by then, the set won't contain any useful data.
+//
+// KEYS[1] = overall key
+// KEYS[2] = a key which is true when only a fast token is needed
+// ARGV[1] = window in microseconds
+// ARGV[2] = slow limit
+// ARGV[3] = fast limit
 var scriptRateLimit = redis.NewScript(`
-local key = KEYS[1]
-local limit = tonumber(ARGV[1])
-local window_microsecs = tonumber(ARGV[2])
+local slow_key = KEYS[1] .. ":slow"
+local fast_key = KEYS[1] .. ":fast"
+local window_microsecs = tonumber(ARGV[1])
+local slow_limit = tonumber(ARGV[2])
+local fast_limit = tonumber(ARGV[3])
+local only_fast = redis.call("GET", KEYS[2]) == "1"
 
 local redistime = redis.call("TIME")
 local now = (redistime[1] * 1e6) + redistime[2]
-
 local window_start = now - window_microsecs
-redis.call("ZREMRANGEBYSCORE", key, "-inf", window_start)
 
-local count = redis.call("ZCARD", key)
-if count >= limit then
+local function block(k, limit)
+	redis.call("ZREMRANGEBYSCORE", k, "-inf", window_start)
+	return redis.call("ZCARD", k) >= limit
+end
+
+local function add(k)
+	redis.call("ZADD", k, "NX", now, now)
+	redis.call("EXPIRE", k, (window_microsecs / 1e6) + 1)
+end
+
+if block(fast_key, fast_limit) then
 	return 0
 end
 
-redis.call("ZADD", key, "NX", now, now)
-redis.call("EXPIRE", key, (window_microsecs / 1e6) + 1)
+if only_fast then
+	add(fast_key)
+	return 1
+end
+
+if block(slow_key, slow_limit) then
+	return 0
+end
+
+add(fast_key)
+add(slow_key)
+
 return 1
 `)
 
-// rateLimit rate limits an action using a sliding-window rate limiter, where
-// "limit" events can occur within a "window" long window.
-// Rate limiting is accurate to the microsecond, as it does not use EXPIRE for
-// something like a token bucket.
-//
-// This may be pulled out into its own library at some point since it's
-// generally helpful.
-func rateLimit(client redis.Cmdable, key string, limit int, window time.Duration) (allowed bool, err error) {
+func rateLimit(client redis.Cmdable, key string, window time.Duration, slowLimit, fastLimit int, onlyFastKey string) (allowed bool, err error) {
 	windowMicro := int64(window / time.Microsecond)
-	if limit <= 0 || windowMicro <= 0 {
+	if windowMicro <= 0 {
 		return false, nil
 	}
-
-	return scriptRateLimit.Run(client, []string{key}, limit, windowMicro).Bool()
+	return scriptRateLimit.Run(client, []string{key, onlyFastKey}, windowMicro, slowLimit, fastLimit).Bool()
 }

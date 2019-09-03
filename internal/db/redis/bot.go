@@ -183,10 +183,14 @@ func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (boo
 	defer span.Finish()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(botName, userState, ircChannel)
+	key := userStateKey(botName, ircChannel)
 	r, err := client.Get(key).Result()
 	if err == redis.Nil {
 		err = nil
 	}
 	return r == "1", err
+}
+
+func userStateKey(botName, target string) string {
+	return buildKey(botName, userState, target)
 }

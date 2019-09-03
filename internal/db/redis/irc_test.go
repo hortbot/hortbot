@@ -27,32 +27,60 @@ func TestSendMessageAllowed(t *testing.T) {
 	defer cancel()
 
 	const (
-		botName = "hortbot"
-		limit   = 2
-		window  = 10 * time.Second
+		botName   = "hortbot"
+		target    = "#foobar"
+		slowLimit = 2
+		fastLimit = 10
+		window    = 10 * time.Second
 	)
 
-	allowed, err := db.SendMessageAllowed(ctx, botName, limit, window)
+	allowed, err := db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, true)
 
 	forward(s, clk, time.Second)
 
-	allowed, err = db.SendMessageAllowed(ctx, botName, limit, window)
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, true)
 
 	forward(s, clk, time.Second)
 
-	allowed, err = db.SendMessageAllowed(ctx, botName, limit, window)
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, false)
 
 	forward(s, clk, window)
 
-	allowed, err = db.SendMessageAllowed(ctx, botName, limit, window)
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, true)
+
+	forward(s, clk, time.Second)
+
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, true)
+
+	forward(s, clk, time.Second)
+
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false)
+
+	err = db.SetUserState(ctx, botName, target, true, time.Hour)
+	assert.NilError(t, err)
+
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, true)
+
+	err = db.SetUserState(ctx, botName, target, false, time.Hour)
+	assert.NilError(t, err)
+
+	allowed, err = db.SendMessageAllowed(ctx, botName, target, slowLimit, fastLimit, window)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false)
 }
 
 func forward(s *miniredis.Miniredis, clk *clock.Mock, dur time.Duration) {

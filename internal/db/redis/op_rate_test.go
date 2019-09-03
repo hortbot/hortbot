@@ -18,10 +18,10 @@ func TestRateLimit(t *testing.T) {
 	}
 
 	tests := []struct {
-		name   string
-		limit  int
-		window time.Duration
-		checks []pair
+		name      string
+		slowLimit int
+		window    time.Duration
+		checks    []pair
 	}{
 		{
 			name: "Zero limit",
@@ -30,31 +30,31 @@ func TestRateLimit(t *testing.T) {
 			},
 		},
 		{
-			name:  "Negative limit",
-			limit: -10,
+			name:      "Negative limit",
+			slowLimit: -10,
 			checks: []pair{
 				{0, false},
 			},
 		},
 		{
-			name:  "Zero window",
-			limit: 10,
+			name:      "Zero window",
+			slowLimit: 10,
 			checks: []pair{
 				{0, false},
 			},
 		},
 		{
-			name:   "Negative window",
-			limit:  10,
-			window: -10 * time.Second,
+			name:      "Negative window",
+			slowLimit: 10,
+			window:    -10 * time.Second,
 			checks: []pair{
 				{0, false},
 			},
 		},
 		{
-			name:   "Allowed then disallowed",
-			limit:  5,
-			window: 10 * time.Second,
+			name:      "Allowed then disallowed",
+			slowLimit: 5,
+			window:    10 * time.Second,
 			checks: []pair{
 				{time.Second, true},
 				{time.Second, true},
@@ -79,9 +79,9 @@ func TestRateLimit(t *testing.T) {
 			},
 		},
 		{
-			name:   "Sub-second",
-			limit:  5,
-			window: time.Second,
+			name:      "Sub-second",
+			slowLimit: 5,
+			window:    time.Second,
 			checks: []pair{
 				{time.Second / 10, true},
 				{time.Second / 10, true},
@@ -118,12 +118,14 @@ func TestRateLimit(t *testing.T) {
 			assert.NilError(t, err)
 			defer cleanup()
 
+			const onlyFastKey = "only_fast"
+
 			for i, check := range test.checks {
 				s.FastForward(check.dur)
 				clk.Forward(check.dur)
 				s.SetTime(clk.Now()) // Hack, as FastForward doesn't actually change TIME.
 
-				allowed, err := rateLimit(c, "some:key", test.limit, test.window)
+				allowed, err := rateLimit(c, "some:key", test.window, test.slowLimit, test.slowLimit, onlyFastKey)
 
 				assert.NilError(t, err)
 				assert.Equal(t, check.allowed, allowed, "check %d", i)
