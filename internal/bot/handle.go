@@ -67,6 +67,15 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	start := b.deps.Clock.Now()
 	logger := ctxlog.FromContext(ctx)
 
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(testingPanic); ok {
+				panic(r)
+			}
+			logger.Error("panic during handle", zap.Any("value", r), zap.Stack("stack"))
+		}
+	}()
+
 	if m.Command != "PRIVMSG" {
 		// TODO: handle other types of messages
 		logger.Debug("unhandled command", zap.Any("message", m))
@@ -85,15 +94,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	if id == "" {
 		return errInvalidMessage
 	}
-
-	defer func() {
-		if r := recover(); r != nil {
-			if _, ok := r.(testingPanic); ok {
-				panic(r)
-			}
-			logger.Error("panic during handle", zap.Any("value", r), zap.Stack("stack"))
-		}
-	}()
 
 	seen, err := b.deps.Dedupe.CheckAndMark(id)
 	if err != nil {
