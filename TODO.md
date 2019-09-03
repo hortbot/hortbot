@@ -10,7 +10,7 @@
     - [x] Redis for k/v, dedupe, expiration, cooldowns
     - [ ] No-downtime upgrades
     - [x] Rate limiting
-        - [ ] Needs to check userstate/badges/etc to "unlock" a faster rate.
+        - [x] Needs to check userstate/badges/etc to "unlock" a faster rate.
 - [ ] Website
     - Needed for OAuth stuff
 - [ ] JSON configuration transferer
