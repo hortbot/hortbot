@@ -1,0 +1,57 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=false
+
+handle hortbot @mod=1;subscriber=0;user-type=mod;badge-info;badges=moderator/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #foobar
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=true
+
+clock_forward 48h
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=false
+
+
+handle hortbot :tmi.twitch.tv USERSTATE #foobar
+no_send
+
+handle hortbot @mod=1;subscriber=0;user-type=mod;badge-info;badges=moderator/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE
+no_send
+
+handle hortbot @mod=1;subscriber=0;user-type=mod;badge-info;badges=moderator/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #
+no_send
+
+handle hortbot @mod=1;subscriber=0;user-type=mod;badge-info;badges=moderator/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #hortbot
+no_send
+
+
+handle hortbot @user-type=mod;badge-info;badges=moderator/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #foobar
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=true
+
+
+handle hortbot @badges=moderator/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #foobar
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=true
+
+
+handle hortbot @display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #foobar
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=false
+
+
+handle hortbot @badges=vip/1;color=#1E90FF;display-name=HortBot;emote-sets=0 :tmi.twitch.tv USERSTATE #foobar
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_user_state
+send hortbot #foobar [HB] fast=true

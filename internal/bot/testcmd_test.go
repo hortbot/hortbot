@@ -118,4 +118,15 @@ func init() {
 		},
 		bot.LevelEveryone,
 	)
+
+	bot.TestingBuiltin("testing_user_state",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			fast, err := s.Deps.Redis.GetUserState(ctx, s.Origin, "#"+s.IRCChannel)
+			if err != nil {
+				return err
+			}
+			return s.Replyf(ctx, "fast=%v", fast)
+		},
+		bot.LevelEveryone,
+	)
 }

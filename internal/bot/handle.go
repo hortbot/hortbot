@@ -76,8 +76,12 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		}
 	}()
 
-	if m.Command != "PRIVMSG" {
-		// TODO: handle other types of messages
+	switch m.Command {
+	case "PRIVMSG":
+		// Continue
+	case "USERSTATE":
+		return b.handleUserState(ctx, origin, m)
+	default:
 		logger.Debug("unhandled command", zap.Any("message", m))
 		return nil
 	}

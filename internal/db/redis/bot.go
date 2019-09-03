@@ -19,6 +19,7 @@ const (
 	filterWarned     = "filter_warning"
 	raffle           = "raffle"
 	cooldown         = "cooldown"
+	userState        = "user_state"
 )
 
 func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.Duration) error {
@@ -161,4 +162,31 @@ func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, exp
 	client := db.client.WithContext(ctx)
 	rkey := buildKey(channel, cooldown, key)
 	return checkAndMark(client, rkey, expiry)
+}
+
+func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast bool, expiry time.Duration) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "SetUserState")
+	defer span.Finish()
+
+	v := "0"
+	if fast {
+		v = "1"
+	}
+
+	client := db.client.WithContext(ctx)
+	key := buildKey(botName, userState, ircChannel)
+	return client.Set(key, v, expiry).Err()
+}
+
+func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (bool, error) {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "GetUserState")
+	defer span.Finish()
+
+	client := db.client.WithContext(ctx)
+	key := buildKey(botName, userState, ircChannel)
+	r, err := client.Get(key).Result()
+	if err == redis.Nil {
+		err = nil
+	}
+	return r == "1", err
 }

@@ -127,3 +127,56 @@ func TestLinkPermit(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, false)
 }
+
+func TestUserState(t *testing.T) {
+	t.Parallel()
+
+	s, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	db := redis.New(c)
+	clk := clock.NewMock()
+	s.SetTime(clk.Now())
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const (
+		botName = "hortbot"
+		channel = "#foobar"
+	)
+
+	fast, err := db.GetUserState(ctx, botName, channel)
+	assert.NilError(t, err)
+	assert.Equal(t, fast, false)
+
+	err = db.SetUserState(ctx, botName, channel, true, time.Minute)
+	assert.NilError(t, err)
+
+	forward(s, clk, time.Second)
+
+	fast, err = db.GetUserState(ctx, botName, channel)
+	assert.NilError(t, err)
+	assert.Equal(t, fast, true)
+
+	forward(s, clk, time.Hour)
+
+	err = db.SetUserState(ctx, botName, channel, true, time.Minute)
+	assert.NilError(t, err)
+
+	forward(s, clk, time.Second)
+
+	fast, err = db.GetUserState(ctx, botName, channel)
+	assert.NilError(t, err)
+	assert.Equal(t, fast, true)
+
+	err = db.SetUserState(ctx, botName, channel, false, time.Minute)
+	assert.NilError(t, err)
+
+	forward(s, clk, time.Second)
+
+	fast, err = db.GetUserState(ctx, botName, channel)
+	assert.NilError(t, err)
+	assert.Equal(t, fast, false)
+}
