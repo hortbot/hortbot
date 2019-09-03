@@ -30,6 +30,8 @@ Instead, there's `subsMayLink` which when true means subs may link in chat.
 - When quotes are deleted, quotes after it do not have their numbers changed.
 The new `!quote compact <num>` command can be used to compact the quote list and remove
 any holes left by deleted quotes. (The same applies to autoreplies.)
+- HortBot keeps track of USERSTATE messages so that it always know how fast it can send messages
+depending on its mod/vip status in a particular channel.
 
 ### Functionality
 
