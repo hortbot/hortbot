@@ -242,8 +242,8 @@ github.com/jackc/pgx v3.5.0+incompatible h1:BRJ4G3UPtvml5R1ey0biqqGuYUGayMYekm3w
 github.com/jackc/pgx v3.5.0+incompatible/go.mod h1:0ZGrqGqkRlliWnWB4zKnWtjbSWbGkVEFm4TeybAXq+I=
 github.com/jaegertracing/jaeger-client-go v2.17.0+incompatible h1:MqOsXtFjyIeqsHQGLK9jKUHAKqiu7Re3viZYAcdGlnQ=
 github.com/jaegertracing/jaeger-client-go v2.17.0+incompatible/go.mod h1:HWG7INeOG1ZE17I/S8eeb+svquXmBS/hf1Obi6hJUyQ=
-github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230 h1:OvxsiBBKadHDt/6X4zMK+B/+xKJuN8lOKMpSfCa4eHc=
-github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230/go.mod h1:Da6A3mzy0GeqBABYskU5htYoIIHHI0Yfabiz70GWWUQ=
+github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0 h1:97I7wm4ImsWcPLcAFe1m/UvxdmX83wOX7WetyIfsdcY=
+github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0/go.mod h1:M2qiwJ/Bj1nZZ/EmlPp1k3wQYuf8omnQZYEUvjxpfZs=
 github.com/jarcoal/httpmock v1.0.4 h1:jp+dy/+nonJE4g4xbVtl9QdrUNbn6/3hDT5R4nDIZnA=
 github.com/jarcoal/httpmock v1.0.4/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
 github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4 h1:xKkUL6QBojwguhKKetf1SocCAKqc6W7S/mGm9xEGllo=
@@ -397,6 +397,8 @@ github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
 github.com/stretchr/testify v1.3.0 h1:TivCn/peBQ7UY8ooIcPgZFpTNSz0Q2U6UrFlUfqbe0Q=
 github.com/stretchr/testify v1.3.0/go.mod h1:M5WIy9Dh21IEIfnGCwXGc5bZfKNJtfHm1UVUgZn+9EI=
+github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
+github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
 github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51 h1:BP2bjP495BBPaBcS5rmqviTfrOkN5rO5ceKAMRZCRFc=
 github.com/tidwall/pretty v0.0.0-20180105212114-65a9db5fad51/go.mod h1:XNkn88O1ChpSDQmQeStsy+sBenx6DDtFZJxhVysOjyk=
 github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5/go.mod h1:ncp9v5uamzpCO7NfCPTXjqaC+bZgJeR0sMTm6dMHP7U=

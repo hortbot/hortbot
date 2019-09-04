@@ -41,7 +41,7 @@ require (
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/jackc/pgx v3.5.0+incompatible // indirect
 	github.com/jaegertracing/jaeger-client-go v2.17.0+incompatible
-	github.com/jakebailey/irc v0.0.0-20190407213833-8d2a5d226230
+	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/joho/godotenv v1.3.0
