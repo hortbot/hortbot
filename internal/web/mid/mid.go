@@ -3,9 +3,8 @@ package mid
 import (
 	"context"
 	"net/http"
-	"time"
 
-	"github.com/go-chi/chi/middleware"
+	"github.com/felixge/httpsnoop"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/rs/xid"
 	"go.uber.org/zap"
@@ -66,24 +65,16 @@ func GetRequestID(r *http.Request) xid.ID {
 
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ww := middleware.NewWrapResponseWriter(w, r.ProtoMajor)
-		start := time.Now()
-
-		defer func() {
-			duration := time.Since(start)
-			logger := ctxlog.FromContext(r.Context())
-
-			logger.Debug("http request",
-				zap.String("method", r.Method),
-				zap.String("url", r.RequestURI),
-				zap.String("proto", r.Proto),
-				zap.Int("status", ww.Status()),
-				zap.Int("size", ww.BytesWritten()),
-				zap.Duration("duration", duration),
-			)
-		}()
-
-		next.ServeHTTP(ww, r)
+		m := httpsnoop.CaptureMetrics(next, w, r)
+		logger := ctxlog.FromContext(r.Context())
+		logger.Debug("http request",
+			zap.String("method", r.Method),
+			zap.String("url", r.RequestURI),
+			zap.String("proto", r.Proto),
+			zap.Int("status", m.Code),
+			zap.Int64("size", m.Written),
+			zap.Duration("duration", m.Duration),
+		)
 	})
 }
 

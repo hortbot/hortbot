@@ -27,6 +27,7 @@ require (
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190729173012-f05d33913e5a // indirect
+	github.com/felixge/httpsnoop v1.0.0
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
