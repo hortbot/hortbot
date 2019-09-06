@@ -3,15 +3,14 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
-	cloud.google.com/go v0.44.3 // indirect
-	cloud.google.com/go/bigquery v1.0.1 // indirect
+	cloud.google.com/go/pubsub v1.0.1 // indirect
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/Microsoft/go-winio v0.4.14 // indirect
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.23.14 // indirect
+	github.com/aws/aws-sdk-go v1.23.16 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
@@ -23,7 +22,7 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190830225923-3302f0226fbd // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190906004059-62cf760a6c9e // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190729173012-f05d33913e5a // indirect
@@ -39,7 +38,6 @@ require (
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
-	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/jackc/pgx v3.5.0+incompatible // indirect
 	github.com/jaegertracing/jaeger-client-go v2.17.0+incompatible
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
@@ -69,6 +67,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/xid v1.2.1
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
+	github.com/shopspring/decimal v0.0.0-20190905144223-a36b5d85f337 // indirect
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/spf13/cobra v0.0.5 // indirect
@@ -82,16 +81,18 @@ require (
 	github.com/volatiletech/sqlboiler v3.5.0+incompatible
 	github.com/xanzy/go-gitlab v0.20.1 // indirect
 	github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036 // indirect
+	go.mongodb.org/mongo-driver v1.1.1 // indirect
+	go.opencensus.io v0.22.1 // indirect
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect
 	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190904005037-43c01164e931 // indirect
-	golang.org/x/tools v0.0.0-20190903163617-be0da057c5e3
-	google.golang.org/api v0.9.0 // indirect
+	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect
+	golang.org/x/tools v0.0.0-20190905235650-93dcc2f048f5
+	google.golang.org/api v0.10.0 // indirect
 	google.golang.org/appengine v1.6.2 // indirect
-	google.golang.org/genproto v0.0.0-20190819201941-24fa4b261c55 // indirect
+	google.golang.org/genproto v0.0.0-20190905072037-92dd089d5514 // indirect
 	google.golang.org/grpc v1.23.0 // indirect
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.0.0
