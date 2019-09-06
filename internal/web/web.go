@@ -16,12 +16,18 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/web/mid"
+	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/volatiletech/null"
 	"go.uber.org/zap"
 )
 
 var botScopes = []string{
 	"user_follows_edit",
+	"channel:moderate",
+	"chat:edit",
+	"chat:read",
+	"whispers:read",
+	"whispers:edit",
 }
 
 type App struct {
@@ -49,6 +55,8 @@ func (a *App) Run(ctx context.Context) error {
 
 	r.Use(mid.RequestLogger)
 	r.Use(mid.Recoverer)
+
+	r.Get("/", a.index)
 
 	r.Get("/auth/twitch", a.authTwitch)
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
@@ -155,6 +163,11 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "Success for user %s (%d) as bot.\n", user.Name, user.ID)
 	}
+}
+
+func (a *App) index(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	templates.WritePageTemplate(w, ctx, &templates.IndexPage{})
 }
 
 func httpError(w http.ResponseWriter, code int) {

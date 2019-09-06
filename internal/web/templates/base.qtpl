@@ -1,0 +1,57 @@
+{% import "context" %}
+
+{% interface Page {
+    PageTitle(ctx context.Context)
+    PageBody(ctx context.Context)
+    PageMeta(ctx context.Context)
+    PageScripts(ctx context.Context)
+} %}
+
+{% func PageTemplate(ctx context.Context, p Page) %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>{%= p.PageTitle(ctx) %}</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.3.1/darkly/bootstrap.min.css" integrity="sha256-6W1mxPaAt4a6pkJVW5x5Xmq/LvxuQpR9dlzgy77SeZs=" crossorigin="anonymous" />
+
+        {%= p.PageMeta(ctx) %}
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top box-shadow">
+            <div class="container">
+                <a class="navbar-brand" href="/">HortBot</a>
+                <div class="nav-item">
+                    <a class="nav-link active text-white" href="/channels">Channels</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link active text-white" href="/docs">Documentation</a>
+                </div>
+                <div class="nav-item">
+                    <a class="nav-link text-white" href="/about">About</a>
+                </div>
+                <div class="nav-item ml-auto">
+                    <a class="nav-link text-white" href="/login">Log In</a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            {%= p.PageBody(ctx) %}
+        </div>
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha256-ZvOgfh+ptkpoa2Y4HkRY28ir89u/+VRyDE7sB7hEEcI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
+
+        {%= p.PageScripts(ctx) %}
+    </body>
+</html>
+{% endfunc %}
+
+{% code type BasePage struct {} %}
+{% func (p *BasePage) PageTitle(ctx context.Context) %}HortBot{% endfunc %}
+{% func (p *BasePage) PageBody(ctx context.Context) %}{% endfunc %}
+{% func (p *BasePage) PageMeta(ctx context.Context) %}{% endfunc %}
+{% func (p *BasePage) PageScripts(ctx context.Context) %}{% endfunc %}

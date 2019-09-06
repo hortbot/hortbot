@@ -68,10 +68,12 @@ services:
       - db
       - redis
       - nsq
+      - jaeger
     depends_on:
       - db
       - redis
       - nsq
+      - jaeger
     ports:
       - "5000:5000"
     environment:
@@ -80,6 +82,8 @@ services:
       - HB_MIGRATE_UP=true
       - HB_REDIS=redis:6379
       - HB_NSQ_ADDR=nsq:4150
+      - JAEGER_AGENT_HOST=jaeger
+      - JAEGER_AGENT_PORT=6831
 
   db:
     image: zikaeroh/postgres-initialized
