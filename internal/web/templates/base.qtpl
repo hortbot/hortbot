@@ -1,22 +1,22 @@
 {% import "context" %}
 
 {% interface Page {
-    PageTitle(ctx context.Context)
-    PageBody(ctx context.Context)
-    PageMeta(ctx context.Context)
-    PageScripts(ctx context.Context)
+    PageTitle()
+    PageBody()
+    PageMeta()
+    PageScripts()
 } %}
 
-{% func PageTemplate(ctx context.Context, p Page) %}
+{% func PageTemplate(p Page) %}
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <title>{%= p.PageTitle(ctx) %}</title>
+        <title>{%= p.PageTitle() %}</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.3.1/darkly/bootstrap.min.css" integrity="sha256-6W1mxPaAt4a6pkJVW5x5Xmq/LvxuQpR9dlzgy77SeZs=" crossorigin="anonymous" />
 
-        {%= p.PageMeta(ctx) %}
+        {%= p.PageMeta() %}
     </head>
     <body>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top box-shadow">
@@ -38,20 +38,19 @@
         </nav>
 
         <div class="container">
-            {%= p.PageBody(ctx) %}
+            {%= p.PageBody() %}
         </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha256-ZvOgfh+ptkpoa2Y4HkRY28ir89u/+VRyDE7sB7hEEcI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
 
-        {%= p.PageScripts(ctx) %}
+        {%= p.PageScripts() %}
     </body>
 </html>
 {% endfunc %}
 
 {% code type BasePage struct {} %}
-{% func (p *BasePage) PageTitle(ctx context.Context) %}HortBot{% endfunc %}
-{% func (p *BasePage) PageBody(ctx context.Context) %}{% endfunc %}
-{% func (p *BasePage) PageMeta(ctx context.Context) %}{% endfunc %}
-{% func (p *BasePage) PageScripts(ctx context.Context) %}{% endfunc %}
+{% func (p *BasePage) PageBody() %}{% endfunc %}
+{% func (p *BasePage) PageMeta() %}{% endfunc %}
+{% func (p *BasePage) PageScripts() %}{% endfunc %}

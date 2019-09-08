@@ -4,8 +4,6 @@
 package templates
 
 import (
-	"context"
-
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
@@ -20,79 +18,41 @@ type IndexPage struct {
 	BasePage
 }
 
-func (p *IndexPage) StreamPageTitle(qw422016 *qt422016.Writer, ctx context.Context) {
+func (p *IndexPage) StreamPageTitle(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-    HortBot
+HortBot
 `)
 }
 
-func (p *IndexPage) WritePageTitle(qq422016 qtio422016.Writer, ctx context.Context) {
+func (p *IndexPage) WritePageTitle(qq422016 qtio422016.Writer) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageTitle(qw422016, ctx)
+	p.StreamPageTitle(qw422016)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func (p *IndexPage) PageTitle(ctx context.Context) string {
+func (p *IndexPage) PageTitle() string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageTitle(qb422016, ctx)
+	p.WritePageTitle(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
 }
 
-func (p *IndexPage) StreamPageMeta(qw422016 *qt422016.Writer, ctx context.Context) {
+func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
+This is the home page.
 `)
 }
 
-func (p *IndexPage) WritePageMeta(qq422016 qtio422016.Writer, ctx context.Context) {
+func (p *IndexPage) WritePageBody(qq422016 qtio422016.Writer) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageMeta(qw422016, ctx)
+	p.StreamPageBody(qw422016)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func (p *IndexPage) PageMeta(ctx context.Context) string {
+func (p *IndexPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageMeta(qb422016, ctx)
-	qs422016 := string(qb422016.B)
-	qt422016.ReleaseByteBuffer(qb422016)
-	return qs422016
-}
-
-func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer, ctx context.Context) {
-	qw422016.N().S(`
-    This is the home page.
-`)
-}
-
-func (p *IndexPage) WritePageBody(qq422016 qtio422016.Writer, ctx context.Context) {
-	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageBody(qw422016, ctx)
-	qt422016.ReleaseWriter(qw422016)
-}
-
-func (p *IndexPage) PageBody(ctx context.Context) string {
-	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageBody(qb422016, ctx)
-	qs422016 := string(qb422016.B)
-	qt422016.ReleaseByteBuffer(qb422016)
-	return qs422016
-}
-
-func (p *IndexPage) StreamPageScripts(qw422016 *qt422016.Writer, ctx context.Context) {
-	qw422016.N().S(`
-`)
-}
-
-func (p *IndexPage) WritePageScripts(qq422016 qtio422016.Writer, ctx context.Context) {
-	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageScripts(qw422016, ctx)
-	qt422016.ReleaseWriter(qw422016)
-}
-
-func (p *IndexPage) PageScripts(ctx context.Context) string {
-	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageScripts(qb422016, ctx)
+	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016

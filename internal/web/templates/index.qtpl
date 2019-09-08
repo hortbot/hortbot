@@ -1,21 +1,13 @@
-{% import "context" %}
-
 {% code
 type IndexPage struct {
     BasePage
 }
 %}
 
-{% func (p *IndexPage) PageTitle(ctx context.Context) %}
-    HortBot
+{% func (p *IndexPage) PageTitle() %}
+HortBot
 {% endfunc %}
 
-{% func (p *IndexPage) PageMeta(ctx context.Context) %}
-{% endfunc %}
-
-{% func (p *IndexPage) PageBody(ctx context.Context) %}
-    This is the home page.
-{% endfunc %}
-
-{% func (p *IndexPage) PageScripts(ctx context.Context) %}
+{% func (p *IndexPage) PageBody() %}
+This is the home page.
 {% endfunc %}

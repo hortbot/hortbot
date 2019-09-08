@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
@@ -18,6 +19,7 @@ import (
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/volatiletech/null"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
 )
 
@@ -57,6 +59,7 @@ func (a *App) Run(ctx context.Context) error {
 	r.Use(mid.Recoverer)
 
 	r.Get("/", a.index)
+	r.Get("/channels", a.channels)
 
 	r.Get("/auth/twitch", a.authTwitch)
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
@@ -80,6 +83,9 @@ func (a *App) Run(ctx context.Context) error {
 }
 
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+
 	state := uuid.Must(uuid.NewV4()).String()
 
 	botName := chi.URLParam(r, "botName")
@@ -88,6 +94,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := a.Redis.SetAuthState(r.Context(), state, time.Minute); err != nil {
+		logger.Error("error setting auth state", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -103,6 +110,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
 
 	state := r.FormValue("state")
 	if state == "" {
@@ -112,6 +120,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	ok, err := a.Redis.CheckAuthState(ctx, state)
 	if err != nil {
+		logger.Error("error checking auth state", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -130,12 +139,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	tok, err := a.Twitch.Exchange(ctx, code)
 	if err != nil {
+		logger.Error("error exchanging code", zap.Error(err))
 		httpError(w, http.StatusBadRequest)
 		return
 	}
 
 	user, newToken, err := a.Twitch.GetUserForToken(ctx, tok)
 	if err != nil {
+		logger.Error("error getting user for token", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -154,6 +165,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
+		logger.Error("error upserting token", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -166,8 +178,26 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
+	templates.WritePageTemplate(w, &templates.IndexPage{})
+}
+
+func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	templates.WritePageTemplate(w, ctx, &templates.IndexPage{})
+	logger := ctxlog.FromContext(ctx)
+
+	channels, err := models.Channels(
+		models.ChannelWhere.Active.EQ(true),
+		qm.OrderBy(models.ChannelColumns.Name),
+	).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying channels", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	templates.WritePageTemplate(w, &templates.ChannelsPage{
+		Channels: channels,
+	})
 }
 
 func httpError(w http.ResponseWriter, code int) {

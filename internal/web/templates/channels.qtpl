@@ -1,0 +1,31 @@
+{% import (
+    "github.com/hortbot/hortbot/internal/db/models"
+) %}
+
+{% code
+type ChannelsPage struct {
+    BasePage
+    Channels models.ChannelSlice
+}
+%}
+
+{% func (p *ChannelsPage) PageTitle() %}
+HortBot - Channels
+{% endfunc %}
+
+
+{% func (p *ChannelsPage) PageBody() %}
+<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <h1 class="mb-3">Channels</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-8">
+        <ul class="list-group">
+            {% for _, channel := range p.Channels %}
+                <a class="list-group-item" href="/c/{%u channel.Name %}">{%s channel.Name %}</a>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endfunc %}

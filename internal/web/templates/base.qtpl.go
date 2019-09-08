@@ -4,8 +4,6 @@
 package templates
 
 import (
-	"context"
-
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
@@ -17,21 +15,21 @@ var (
 )
 
 type Page interface {
-	PageTitle(ctx context.Context) string
-	StreamPageTitle(qw422016 *qt422016.Writer, ctx context.Context)
-	WritePageTitle(qq422016 qtio422016.Writer, ctx context.Context)
-	PageBody(ctx context.Context) string
-	StreamPageBody(qw422016 *qt422016.Writer, ctx context.Context)
-	WritePageBody(qq422016 qtio422016.Writer, ctx context.Context)
-	PageMeta(ctx context.Context) string
-	StreamPageMeta(qw422016 *qt422016.Writer, ctx context.Context)
-	WritePageMeta(qq422016 qtio422016.Writer, ctx context.Context)
-	PageScripts(ctx context.Context) string
-	StreamPageScripts(qw422016 *qt422016.Writer, ctx context.Context)
-	WritePageScripts(qq422016 qtio422016.Writer, ctx context.Context)
+	PageTitle() string
+	StreamPageTitle(qw422016 *qt422016.Writer)
+	WritePageTitle(qq422016 qtio422016.Writer)
+	PageBody() string
+	StreamPageBody(qw422016 *qt422016.Writer)
+	WritePageBody(qq422016 qtio422016.Writer)
+	PageMeta() string
+	StreamPageMeta(qw422016 *qt422016.Writer)
+	WritePageMeta(qq422016 qtio422016.Writer)
+	PageScripts() string
+	StreamPageScripts(qw422016 *qt422016.Writer)
+	WritePageScripts(qq422016 qtio422016.Writer)
 }
 
-func StreamPageTemplate(qw422016 *qt422016.Writer, ctx context.Context, p Page) {
+func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
 	qw422016.N().S(`
 <!DOCTYPE html>
 <html>
@@ -39,12 +37,12 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, ctx context.Context, p Page) 
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>`)
-	p.StreamPageTitle(qw422016, ctx)
+	p.StreamPageTitle(qw422016)
 	qw422016.N().S(`</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.3.1/darkly/bootstrap.min.css" integrity="sha256-6W1mxPaAt4a6pkJVW5x5Xmq/LvxuQpR9dlzgy77SeZs=" crossorigin="anonymous" />
 
         `)
-	p.StreamPageMeta(qw422016, ctx)
+	p.StreamPageMeta(qw422016)
 	qw422016.N().S(`
     </head>
     <body>
@@ -68,31 +66,31 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, ctx context.Context, p Page) 
 
         <div class="container">
             `)
-	p.StreamPageBody(qw422016, ctx)
+	p.StreamPageBody(qw422016)
 	qw422016.N().S(`
         </div>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha256-ZvOgfh+ptkpoa2Y4HkRY28ir89u/+VRyDE7sB7hEEcI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
 
         `)
-	p.StreamPageScripts(qw422016, ctx)
+	p.StreamPageScripts(qw422016)
 	qw422016.N().S(`
     </body>
 </html>
 `)
 }
 
-func WritePageTemplate(qq422016 qtio422016.Writer, ctx context.Context, p Page) {
+func WritePageTemplate(qq422016 qtio422016.Writer, p Page) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	StreamPageTemplate(qw422016, ctx, p)
+	StreamPageTemplate(qw422016, p)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func PageTemplate(ctx context.Context, p Page) string {
+func PageTemplate(p Page) string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	WritePageTemplate(qb422016, ctx, p)
+	WritePageTemplate(qb422016, p)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
@@ -100,70 +98,52 @@ func PageTemplate(ctx context.Context, p Page) string {
 
 type BasePage struct{}
 
-func (p *BasePage) StreamPageTitle(qw422016 *qt422016.Writer, ctx context.Context) {
-	qw422016.N().S(`HortBot`)
+func (p *BasePage) StreamPageBody(qw422016 *qt422016.Writer) {
 }
 
-func (p *BasePage) WritePageTitle(qq422016 qtio422016.Writer, ctx context.Context) {
+func (p *BasePage) WritePageBody(qq422016 qtio422016.Writer) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageTitle(qw422016, ctx)
+	p.StreamPageBody(qw422016)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func (p *BasePage) PageTitle(ctx context.Context) string {
+func (p *BasePage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageTitle(qb422016, ctx)
+	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
 }
 
-func (p *BasePage) StreamPageBody(qw422016 *qt422016.Writer, ctx context.Context) {
+func (p *BasePage) StreamPageMeta(qw422016 *qt422016.Writer) {
 }
 
-func (p *BasePage) WritePageBody(qq422016 qtio422016.Writer, ctx context.Context) {
+func (p *BasePage) WritePageMeta(qq422016 qtio422016.Writer) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageBody(qw422016, ctx)
+	p.StreamPageMeta(qw422016)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func (p *BasePage) PageBody(ctx context.Context) string {
+func (p *BasePage) PageMeta() string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageBody(qb422016, ctx)
+	p.WritePageMeta(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
 }
 
-func (p *BasePage) StreamPageMeta(qw422016 *qt422016.Writer, ctx context.Context) {
+func (p *BasePage) StreamPageScripts(qw422016 *qt422016.Writer) {
 }
 
-func (p *BasePage) WritePageMeta(qq422016 qtio422016.Writer, ctx context.Context) {
+func (p *BasePage) WritePageScripts(qq422016 qtio422016.Writer) {
 	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageMeta(qw422016, ctx)
+	p.StreamPageScripts(qw422016)
 	qt422016.ReleaseWriter(qw422016)
 }
 
-func (p *BasePage) PageMeta(ctx context.Context) string {
+func (p *BasePage) PageScripts() string {
 	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageMeta(qb422016, ctx)
-	qs422016 := string(qb422016.B)
-	qt422016.ReleaseByteBuffer(qb422016)
-	return qs422016
-}
-
-func (p *BasePage) StreamPageScripts(qw422016 *qt422016.Writer, ctx context.Context) {
-}
-
-func (p *BasePage) WritePageScripts(qq422016 qtio422016.Writer, ctx context.Context) {
-	qw422016 := qt422016.AcquireWriter(qq422016)
-	p.StreamPageScripts(qw422016, ctx)
-	qt422016.ReleaseWriter(qw422016)
-}
-
-func (p *BasePage) PageScripts(ctx context.Context) string {
-	qb422016 := qt422016.AcquireByteBuffer()
-	p.WritePageScripts(qb422016, ctx)
+	p.WritePageScripts(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
