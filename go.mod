@@ -10,7 +10,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.23.16 // indirect
+	github.com/aws/aws-sdk-go v1.23.18 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
@@ -22,18 +22,18 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190906004059-62cf760a6c9e // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190910031613-909fa798c9ef // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20190729173012-f05d33913e5a // indirect
-	github.com/felixge/httpsnoop v1.0.0
+	github.com/felixge/httpsnoop v1.0.1
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
 	github.com/gobuffalo/flect v0.1.6
 	github.com/gocql/gocql v0.0.0-20190829130954-e163eff7a8c6 // indirect
 	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.6.1
+	github.com/golang-migrate/migrate/v4 v4.6.2
 	github.com/google/go-cmp v0.3.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
@@ -75,7 +75,7 @@ require (
 	github.com/spf13/viper v1.4.0 // indirect
 	github.com/uber-go/atomic v1.4.0 // indirect
 	github.com/uber/jaeger-client-go v2.17.0+incompatible
-	github.com/uber/jaeger-lib v2.0.0+incompatible
+	github.com/uber/jaeger-lib v2.1.1+incompatible
 	github.com/valyala/quicktemplate v1.2.0
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
@@ -85,12 +85,12 @@ require (
 	go.mongodb.org/mongo-driver v1.1.1 // indirect
 	go.opencensus.io v0.22.1 // indirect
 	go.uber.org/zap v1.10.0
-	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect
-	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297
+	golang.org/x/crypto v0.0.0-20190909091759-094676da4a83 // indirect
+	golang.org/x/net v0.0.0-20190909003024-a7b16738d86b
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
-	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect
-	golang.org/x/tools v0.0.0-20190905235650-93dcc2f048f5
+	golang.org/x/sys v0.0.0-20190909082730-f460065e899a // indirect
+	golang.org/x/tools v0.0.0-20190909214602-067311248421
 	google.golang.org/api v0.10.0 // indirect
 	google.golang.org/appengine v1.6.2 // indirect
 	google.golang.org/genproto v0.0.0-20190905072037-92dd089d5514 // indirect
