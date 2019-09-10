@@ -60,6 +60,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	r.Get("/", a.index)
 	r.Get("/channels", a.channels)
+	r.Get("/c/{channel}/commands", a.channelCommands)
 
 	r.Get("/auth/twitch", a.authTwitch)
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
@@ -197,6 +198,29 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 
 	templates.WritePageTemplate(w, &templates.ChannelsPage{
 		Channels: channels,
+	})
+}
+
+func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+	name := chi.URLParam(r, "channel")
+
+	channel, err := models.Channels(models.ChannelWhere.Name.EQ(strings.ToLower(name))).One(ctx, a.DB)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			httpError(w, http.StatusNotFound)
+		} else {
+			logger.Error("error querying channel", zap.Error(err))
+			httpError(w, http.StatusInternalServerError)
+		}
+		return
+	}
+
+	templates.WritePageTemplate(w, &templates.ChannelCommandsPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
 	})
 }
 

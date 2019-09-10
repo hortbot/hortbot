@@ -40,7 +40,16 @@ func (p *IndexPage) PageTitle() string {
 
 func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-This is the home page.
+<section class="section">
+    <div class="container">
+        <h1 class="title">
+            Welcome
+        </h1>
+        <h2 class="subtitle">
+            To the index
+        </h2>
+    </div>
+</section>
 `)
 }
 

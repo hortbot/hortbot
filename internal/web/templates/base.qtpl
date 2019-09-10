@@ -12,38 +12,32 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{%= p.PageTitle() %}</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/4.3.1/darkly/bootstrap.min.css" integrity="sha256-6W1mxPaAt4a6pkJVW5x5Xmq/LvxuQpR9dlzgy77SeZs=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.7.2/darkly/bulmaswatch.min.css" integrity="sha256-5wlj5TjqB2oqvRZhQYNAD3fH9QiapPtu/MkIgWMkf8s=" crossorigin="anonymous" />
 
         {%= p.PageMeta() %}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top box-shadow">
-            <div class="container">
-                <a class="navbar-brand" href="/">HortBot</a>
-                <div class="nav-item">
-                    <a class="nav-link active text-white" href="/channels">Channels</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link active text-white" href="/docs">Documentation</a>
-                </div>
-                <div class="nav-item">
-                    <a class="nav-link text-white" href="/about">About</a>
-                </div>
-                <div class="nav-item ml-auto">
-                    <a class="nav-link text-white" href="/login">Log In</a>
-                </div>
+        <nav class="navbar">
+            <div class="navbar-brand">
+                <a class="navbar-item is-active" href="/">HortBot</a>
+            </div>
+            <div class="navbar-start">
+                <a class="navbar-item" href="/channels">Channels</a>
+                <a class="navbar-item" href="/docs">Documentation</a>
+                <a class="navbar-item" href="/about">About</a>
+            </div>
+
+            <div class="navbar-end">
+                <a class="navbar-item" href="/login">Login</a>
             </div>
         </nav>
 
-        <div class="container">
-            {%= p.PageBody() %}
-        </div>
+        {%= p.PageBody() %}
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha256-fTuUgtT7O2rqoImwjrhDgbXTKUwyxxujIMRIK7TbuNU=" crossorigin="anonymous"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha256-CjSoeELFOcH0/uxWu6mC/Vlrc1AARqbm/jiiImDGV3s=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/js/all.min.js" integrity="sha256-iZGp5HAiwRmkbOKVYv5FUER4iXp5QbiEudkZOdwLrjw=" crossorigin="anonymous"></script>
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script> -->
 
         {%= p.PageScripts() %}
     </body>

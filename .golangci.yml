@@ -21,6 +21,7 @@ linters:
     - dupl
     # https://github.com/golangci/golangci-lint/issues/484
     - govet
+    - funlen
 
 
   # fast: true

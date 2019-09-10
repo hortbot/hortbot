@@ -9,5 +9,14 @@ HortBot
 {% endfunc %}
 
 {% func (p *IndexPage) PageBody() %}
-This is the home page.
+<section class="section">
+    <div class="container">
+        <h1 class="title">
+            Welcome
+        </h1>
+        <h2 class="subtitle">
+            To the index
+        </h2>
+    </div>
+</section>
 {% endfunc %}

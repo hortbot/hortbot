@@ -1,0 +1,91 @@
+{% import (
+    "github.com/hortbot/hortbot/internal/db/models"
+) %}
+
+{% code
+type ChannelPage struct {
+    BasePage
+    Channel *models.Channel
+}
+%}
+
+{% func (p *ChannelPage) PageTitle() %}
+HortBot - {%s p.Channel.Name %}
+{% endfunc %}
+
+
+{% func (p *ChannelPage) PageMeta() %}
+<style>
+html {
+    overflow-y: hidden;
+}
+
+.is-sidebar-menu {
+    padding: 2.5rem;
+    background: #444444;
+    width: 20em;
+    overflow-y: auto;
+    border-right: 1px solid #777777;
+    margin-top: 0.75rem;
+}
+
+.columns.is-fullheight {
+    min-height: calc(100vh - ( 4rem - .75rem ) );
+    max-height: calc(100vh - ( 4rem - .75rem ) );
+    height: calc(100vh - ( 4rem - .75rem ) );
+    display: flex;
+    flex-direction: row;
+    justify-content: stretch;
+    margin-bottom: 0;
+}
+.columns.is-fullheight .column {
+    overflow-y: auto;
+}
+
+.is-main-content {
+    margin-top: 0.75rem;
+    margin-right: 0.75rem;
+}
+</style>
+{% endfunc %}
+
+{% func isActive(a, b string) %}{% if a == b %}is-active{% endif %}{% endfunc %}
+
+{% func (p *ChannelPage) Sidebar(item string) %}
+<div class="is-sidebar-menu">
+    <aside class="menu">
+        <p class="menu-label">
+            General
+        </p>
+        <ul class="menu-list">
+            <li><a href="/c/{%u p.Channel.Name %}/commands" class='{%= isActive(item, "commands") %}'>Commands</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/quotes" class='{%= isActive(item, "quotes") %}'>Quotes</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/lists" class='{%= isActive(item, "lists") %}'>Lists</a></li>
+        </ul>
+        <p class="menu-label">
+            Settings
+        </p>
+        <ul class="menu-list">
+            <li><a href="/c/{%u p.Channel.Name %}/regulars" class='{%= isActive(item, "regulars") %}'>Regulars</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/rules" class='{%= isActive(item, "rules") %}'>Chat rules</a></li>
+        </ul>
+    </aside>
+</div>
+{% endfunc %}
+
+{% code
+type ChannelCommandsPage struct {
+    ChannelPage
+}
+%}
+
+{% func (p *ChannelCommandsPage) PageBody() %}
+<div class="columns is-fullheight" style="overflow: hidden;">
+    {%= p.Sidebar("commands") %}
+
+    <div class="column is-main-content">
+
+    </div>
+</div>
+
+{% endfunc %}

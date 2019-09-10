@@ -43,27 +43,31 @@ func (p *ChannelsPage) PageTitle() string {
 
 func (p *ChannelsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
-    <h1 class="mb-3">Channels</h1>
-</div>
+<section class="section">
+    <div class="container">
+        <h1 class="title has-text-centered">
+            Channels
+        </h1>
 
-<div class="row justify-content-center">
-    <div class="col-8">
-        <ul class="list-group">
-            `)
+        <div class="columns">
+            <div class="column is-8 is-offset-2">
+                <div class="list">
+                    `)
 	for _, channel := range p.Channels {
 		qw422016.N().S(`
-                <a class="list-group-item" href="/c/`)
+                        <a class="list-item" href="/c/`)
 		qw422016.N().U(channel.Name)
 		qw422016.N().S(`">`)
 		qw422016.E().S(channel.Name)
 		qw422016.N().S(`</a>
-            `)
+                    `)
 	}
 	qw422016.N().S(`
-        </ul>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 `)
 }
 
