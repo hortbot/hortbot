@@ -62,6 +62,7 @@ func (a *App) Run(ctx context.Context) error {
 	r.Get("/", a.index)
 	r.Get("/channels", a.channels)
 	r.Get("/c/{channel}/commands", a.channelCommands)
+	r.Get("/c/{channel}/quotes", a.channelQuotes)
 
 	r.Get("/auth/twitch", a.authTwitch)
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
@@ -205,16 +206,9 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
-	name := chi.URLParam(r, "channel")
 
-	channel, err := models.Channels(models.ChannelWhere.Name.EQ(strings.ToLower(name))).One(ctx, a.DB)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			httpError(w, http.StatusNotFound)
-		} else {
-			logger.Error("error querying channel", zap.Error(err))
-			httpError(w, http.StatusInternalServerError)
-		}
+	channel := a.findChannel(w, r)
+	if channel == nil {
 		return
 	}
 
@@ -235,6 +229,48 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 		},
 		Commands: commands,
 	})
+}
+
+func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+
+	channel := a.findChannel(w, r)
+	if channel == nil {
+		return
+	}
+
+	quotes, err := channel.Quotes(qm.OrderBy(models.QuoteColumns.Num)).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying quotes", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	templates.WritePageTemplate(w, &templates.ChannelQuotesPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
+		Quotes: quotes,
+	})
+}
+
+func (a *App) findChannel(w http.ResponseWriter, r *http.Request) *models.Channel {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+	name := chi.URLParam(r, "channel")
+
+	channel, err := models.Channels(models.ChannelWhere.Name.EQ(strings.ToLower(name))).One(ctx, a.DB)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			httpError(w, http.StatusNotFound)
+		} else {
+			logger.Error("error querying channel", zap.Error(err))
+			httpError(w, http.StatusInternalServerError)
+		}
+		return nil
+	}
+	return channel
 }
 
 func httpError(w http.ResponseWriter, code int) {

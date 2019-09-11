@@ -201,6 +201,53 @@ type ChannelCommandsPage struct {
 	Commands models.CustomCommandSlice
 }
 
+func streamaccessLevel(qw422016 *qt422016.Writer, level string) {
+	qw422016.N().S(`
+`)
+	switch level {
+	case models.AccessLevelEveryone:
+		qw422016.N().S(`
+All
+`)
+	case models.AccessLevelSubscriber:
+		qw422016.N().S(`
+<span class="has-text-success">Subs</span>
+`)
+	case models.AccessLevelModerator:
+		qw422016.N().S(`
+<span class="has-text-warning">Mods</span>
+`)
+	case models.AccessLevelBroadcaster:
+		qw422016.N().S(`
+<span class="has-text-danger">Broadcaster</span>
+`)
+	case models.AccessLevelAdmin:
+		qw422016.N().S(`
+<span class="has-text-info">Admins</span>
+`)
+	default:
+		qw422016.N().S(`
+Unknown
+`)
+	}
+	qw422016.N().S(`
+`)
+}
+
+func writeaccessLevel(qq422016 qtio422016.Writer, level string) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	streamaccessLevel(qw422016, level)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func accessLevel(level string) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	writeaccessLevel(qb422016, level)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
 func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <div class="columns is-fullheight" style="overflow: hidden;">
@@ -244,23 +291,25 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		for _, c := range p.Commands {
 			qw422016.N().S(`
                 <tr>
-                    <th><code class="has-text-light">`)
+                    <td><code class="has-text-white">`)
 			qw422016.E().S(p.Channel.Prefix)
 			qw422016.E().S(c.R.CommandInfo.Name)
-			qw422016.N().S(`</code></th>
-                    <th>Subs</th>
-                    <th>`)
+			qw422016.N().S(`</code></td>
+                    <td>`)
+			streamaccessLevel(qw422016, c.R.CommandInfo.AccessLevel)
+			qw422016.N().S(`</td>
+                    <td>`)
 			qw422016.E().S(c.Message)
-			qw422016.N().S(`</th>
-                    <th>`)
+			qw422016.N().S(`</td>
+                    <td>`)
 			qw422016.E().V(c.R.CommandInfo.Count)
-			qw422016.N().S(`</th>
-                    <th>`)
+			qw422016.N().S(`</td>
+                    <td>`)
 			qw422016.E().S(c.R.CommandInfo.Editor)
-			qw422016.N().S(`</th>
-                    <th>`)
+			qw422016.N().S(`</td>
+                    <td>`)
 			qw422016.E().V(c.UpdatedAt)
-			qw422016.N().S(`</th>
+			qw422016.N().S(`</td>
                 </tr>
                 `)
 		}
@@ -273,7 +322,6 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     </div>
 </div>
-
 `)
 }
 
@@ -284,6 +332,93 @@ func (p *ChannelCommandsPage) WritePageBody(qq422016 qtio422016.Writer) {
 }
 
 func (p *ChannelCommandsPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelQuotesPage struct {
+	ChannelPage
+	Quotes models.QuoteSlice
+}
+
+func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+    <div class="columns is-fullheight" style="overflow: hidden;">
+        `)
+	p.StreamSidebar(qw422016, "quotes")
+	qw422016.N().S(`
+    
+        <div class="column is-main-content">
+            <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Quotes</span>
+            <hr>
+    
+            `)
+	if len(p.Quotes) == 0 {
+		qw422016.N().S(`
+            <h2>No quotes.</h2>
+            `)
+	} else {
+		qw422016.N().S(`
+            <table
+                class="table is-striped is-hoverable is-fullwidth"
+                data-toggle="table"
+                data-sort-class="table-active"
+                data-sort-name="number"
+                data-search="true"
+                data-sortable="true"
+            >
+                <thead>
+                    <tr>
+                        <th data-sortable="true" data-field="number">#</th>
+                        <th data-sortable="true">Quote</th>
+                        <th data-sortable="true">Editor</th>
+                        <th data-sortable="true">Edited</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    `)
+		for _, q := range p.Quotes {
+			qw422016.N().S(`
+                    <tr>
+                        <td>`)
+			qw422016.N().D(q.Num)
+			qw422016.N().S(`</td>
+                        <td>`)
+			qw422016.E().S(q.Quote)
+			qw422016.N().S(`</td>
+                        <td>`)
+			qw422016.E().S(q.Editor)
+			qw422016.N().S(`</td>
+                        <td>`)
+			qw422016.E().V(q.UpdatedAt)
+			qw422016.N().S(`</td>
+                    </tr>
+                    `)
+		}
+		qw422016.N().S(`
+                </tbody>
+            </table>
+            `)
+	}
+	qw422016.N().S(`
+    
+        </div>
+    </div>
+    `)
+}
+
+func (p *ChannelQuotesPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelQuotesPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)
