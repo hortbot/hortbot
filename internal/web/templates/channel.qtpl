@@ -45,9 +45,18 @@ html {
 .is-main-content {
     margin-top: 0.75rem;
     margin-right: 0.75rem;
+    padding: 2.5rem;
 }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
 {% endfunc %}
+
+{% func (p *ChannelPage) PageScripts() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
+{% endfunc %}
+
 
 {% func isActive(a, b string) %}{% if a == b %}is-active{% endif %}{% endfunc %}
 
@@ -76,6 +85,7 @@ html {
 {% code
 type ChannelCommandsPage struct {
     ChannelPage
+    Commands models.CustomCommandSlice
 }
 %}
 
@@ -84,6 +94,44 @@ type ChannelCommandsPage struct {
     {%= p.Sidebar("commands") %}
 
     <div class="column is-main-content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Commands</span>
+        <hr>
+
+        {% if len(p.Commands) == 0 %}
+        <h2>No commands.</h2>
+        {% else %}
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="command"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="command">Command</th>
+                    <th data-sortable="true">Access</th>
+                    <th data-sortable="true">Response</th>
+                    <th data-sortable="true">Count</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, c := range p.Commands %}
+                <tr>
+                    <th><code class="has-text-light">{%s p.Channel.Prefix %}{%s c.R.CommandInfo.Name %}</code></th>
+                    <th>Subs</th>
+                    <th>{%s c.Message %}</th>
+                    <th>{%v c.R.CommandInfo.Count %}</th>
+                    <th>{%s c.R.CommandInfo.Editor %}</th>
+                    <th>{%v c.UpdatedAt %}</th>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
 
     </div>
 </div>

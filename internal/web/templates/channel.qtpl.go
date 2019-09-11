@@ -75,8 +75,10 @@ html {
 .is-main-content {
     margin-top: 0.75rem;
     margin-right: 0.75rem;
+    padding: 2.5rem;
 }
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
 `)
 }
 
@@ -89,6 +91,28 @@ func (p *ChannelPage) WritePageMeta(qq422016 qtio422016.Writer) {
 func (p *ChannelPage) PageMeta() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageMeta(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
+`)
+}
+
+func (p *ChannelPage) WritePageScripts(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageScripts(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelPage) PageScripts() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageScripts(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
@@ -174,6 +198,7 @@ func (p *ChannelPage) Sidebar(item string) string {
 
 type ChannelCommandsPage struct {
 	ChannelPage
+	Commands models.CustomCommandSlice
 }
 
 func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
@@ -184,6 +209,67 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 
     <div class="column is-main-content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Commands</span>
+        <hr>
+
+        `)
+	if len(p.Commands) == 0 {
+		qw422016.N().S(`
+        <h2>No commands.</h2>
+        `)
+	} else {
+		qw422016.N().S(`
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="command"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="command">Command</th>
+                    <th data-sortable="true">Access</th>
+                    <th data-sortable="true">Response</th>
+                    <th data-sortable="true">Count</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+		for _, c := range p.Commands {
+			qw422016.N().S(`
+                <tr>
+                    <th><code class="has-text-light">`)
+			qw422016.E().S(p.Channel.Prefix)
+			qw422016.E().S(c.R.CommandInfo.Name)
+			qw422016.N().S(`</code></th>
+                    <th>Subs</th>
+                    <th>`)
+			qw422016.E().S(c.Message)
+			qw422016.N().S(`</th>
+                    <th>`)
+			qw422016.E().V(c.R.CommandInfo.Count)
+			qw422016.N().S(`</th>
+                    <th>`)
+			qw422016.E().S(c.R.CommandInfo.Editor)
+			qw422016.N().S(`</th>
+                    <th>`)
+			qw422016.E().V(c.UpdatedAt)
+			qw422016.N().S(`</th>
+                </tr>
+                `)
+		}
+		qw422016.N().S(`
+            </tbody>
+        </table>
+        `)
+	}
+	qw422016.N().S(`
 
     </div>
 </div>

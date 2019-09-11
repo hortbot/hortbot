@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"sort"
 	"strings"
 	"time"
 
@@ -217,10 +218,22 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	commands, err := channel.CustomCommands(qm.Load(models.CustomCommandRels.CommandInfo)).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying custom commands", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	sort.Slice(commands, func(i, j int) bool {
+		return commands[i].R.CommandInfo.Name < commands[j].R.CommandInfo.Name
+	})
+
 	templates.WritePageTemplate(w, &templates.ChannelCommandsPage{
 		ChannelPage: templates.ChannelPage{
 			Channel: channel,
 		},
+		Commands: commands,
 	})
 }
 
