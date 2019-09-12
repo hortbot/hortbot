@@ -63,11 +63,12 @@ func (p *publisher) run(ctx context.Context) error {
 	producer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
 
 	p.producer = producer
-	close(p.ready)
 
 	if err := producer.Ping(); err != nil {
 		return err
 	}
+
+	close(p.ready)
 
 	<-ctx.Done()
 	return ctx.Err()
