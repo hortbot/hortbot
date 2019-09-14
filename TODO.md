@@ -313,6 +313,24 @@ depending on its mod/vip status in a particular channel.
 - [ ] `(_n_)` ("args")
 
 
+### Website
+
+- [ ] Homepage
+- [x] Channel list
+    - [ ] Place live channels at the top (batch Twitch API)
+- [ ] Documentation
+- [ ] Login
+- [ ] Join
+- [ ] About/FAQ
+- [ ] Channel
+    - [ ] Overview (links, simple info)
+    - [ ] Commands
+    - [ ] Quotes
+    - [ ] Lists
+    - [ ] Autoreplies
+    - [ ] Regular list
+    - [ ] Chat rules
+
 ## New features
 
 - [ ] A new command language (scripting!)
