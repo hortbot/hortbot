@@ -3,7 +3,7 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
-	cloud.google.com/go v0.45.1 // indirect
+	cloud.google.com/go/spanner v1.0.0 // indirect
 	contrib.go.opencensus.io/exporter/jaeger v0.1.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.4
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
@@ -12,7 +12,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.9.1
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
-	github.com/aws/aws-sdk-go v1.23.20 // indirect
+	github.com/aws/aws-sdk-go v1.23.21 // indirect
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
@@ -23,10 +23,10 @@ require (
 	github.com/cznic/sortutil v0.0.0-20181122101858-f5f958428db8 // indirect
 	github.com/cznic/strutil v0.0.0-20181122101858-275e90344537 // indirect
 	github.com/cznic/zappy v0.0.0-20181122101859-ca47d358d4b1 // indirect
-	github.com/denisenkom/go-mssqldb v0.0.0-20190911214653-29d79fd0cae2 // indirect
+	github.com/denisenkom/go-mssqldb v0.0.0-20190912031109-19fca521dbdf // indirect
 	github.com/docker/go-units v0.4.0 // indirect
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
-	github.com/ericlagergren/decimal v0.0.0-20190729173012-f05d33913e5a // indirect
+	github.com/ericlagergren/decimal v0.0.0-20190912144844-2c3e3e1ef942 // indirect
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi v4.0.2+incompatible
@@ -40,7 +40,6 @@ require (
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
 	github.com/jackc/pgx v3.5.0+incompatible // indirect
-	github.com/jaegertracing/jaeger-client-go v2.17.0+incompatible
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -55,7 +54,6 @@ require (
 	github.com/nakagami/firebirdsql v0.0.0-20190824054517-c3a44fa12b19 // indirect
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/opencontainers/runc v0.1.1 // indirect
-	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/ory/dockertest v3.3.5+incompatible
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pelletier/go-toml v1.4.0 // indirect
@@ -73,8 +71,6 @@ require (
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
-	github.com/uber/jaeger-client-go v2.17.0+incompatible
-	github.com/uber/jaeger-lib v2.1.1+incompatible
 	github.com/valyala/quicktemplate v1.2.0
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
@@ -85,14 +81,14 @@ require (
 	go.opencensus.io v0.22.1
 	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190911031432-227b76d455e7 // indirect
-	golang.org/x/net v0.0.0-20190909003024-a7b16738d86b
+	golang.org/x/exp v0.0.0-20190912063710-ac5d2bfcbfe0 // indirect
+	golang.org/x/net v0.0.0-20190912160710-24e19bdeb0f2
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/sys v0.0.0-20190911201528-7ad0cfa0b7b5 // indirect
-	golang.org/x/tools v0.0.0-20190911230505-6bfd74cf029c
+	golang.org/x/sys v0.0.0-20190913121621-c3b328c6e5a7 // indirect
+	golang.org/x/tools v0.0.0-20190913181337-0240832f5c3d
 	google.golang.org/api v0.10.0 // indirect
 	google.golang.org/appengine v1.6.2 // indirect
-	google.golang.org/genproto v0.0.0-20190911173649-1774047e7e51 // indirect
 	google.golang.org/grpc v1.23.1 // indirect
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.0.0
