@@ -12,9 +12,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
-	"github.com/opentracing/opentracing-go"
-	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
@@ -25,8 +24,8 @@ var (
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "Handle")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "Handle")
+	defer span.End()
 
 	if !b.initialized {
 		panic("bot is not initialized")
@@ -40,7 +39,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		return
 	}
 
-	span.SetTag("irc_command", m.Command)
+	span.AddAttributes(trace.StringAttribute("irc_command", m.Command))
 	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("irc_command", m.Command))
 
 	var start time.Time
@@ -61,8 +60,8 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 }
 
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handle")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handle")
+	defer span.End()
 
 	start := b.deps.Clock.Now()
 	logger := ctxlog.FromContext(ctx)
@@ -217,15 +216,15 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	return transact(ctx, b.db, func(ctx context.Context, tx boil.ContextExecutor) error {
+	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
 		return handleSession(ctx, s)
 	})
 }
 
 func handleSession(ctx context.Context, s *session) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handleSession")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handleSession")
+	defer span.End()
 
 	logger := ctxlog.FromContext(ctx)
 
@@ -323,8 +322,8 @@ func handleSession(ctx context.Context, s *session) error {
 }
 
 func tryCommand(ctx context.Context, s *session) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "tryCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "tryCommand")
+	defer span.End()
 
 	if s.Me {
 		return false, nil
@@ -409,8 +408,8 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "tryBuiltinCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "tryBuiltinCommand")
+	defer span.End()
 
 	if cmd == "builtin" {
 		cmd, args = splitSpace(args)

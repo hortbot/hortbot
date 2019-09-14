@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jakebailey/irc"
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 )
 
 const (
@@ -41,17 +41,17 @@ type IncomingSubscriber struct {
 	Addr       string
 	Channel    string
 	Opts       []SubscriberOption
-	OnIncoming func(i *Incoming, ref opentracing.SpanReference) error
+	OnIncoming func(i *Incoming, parent trace.SpanContext) error
 }
 
 func (s *IncomingSubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, incomingTopic, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) error {
+	return subscriber.run(ctx, func(m *message, parent trace.SpanContext) error {
 		i := &Incoming{}
 		if err := m.payload(i); err != nil {
 			return err
 		}
-		return s.OnIncoming(i, ref)
+		return s.OnIncoming(i, parent)
 	})
 }

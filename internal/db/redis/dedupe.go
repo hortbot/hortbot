@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 )
 
 const dedupe = "dedupe"
 
 func (db *DB) DedupeMark(ctx context.Context, id string, expiry time.Duration) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "DedupeMark")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "DedupeMark")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(dedupe, id)
@@ -19,8 +19,8 @@ func (db *DB) DedupeMark(ctx context.Context, id string, expiry time.Duration) e
 }
 
 func (db *DB) DedupeCheck(ctx context.Context, id string, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "DedupeCheck")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "DedupeCheck")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(dedupe, id)
@@ -28,8 +28,8 @@ func (db *DB) DedupeCheck(ctx context.Context, id string, expiry time.Duration) 
 }
 
 func (db *DB) DedupeCheckAndMark(ctx context.Context, id string, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "DedupeCheckAndMark")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "DedupeCheckAndMark")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(dedupe, id)

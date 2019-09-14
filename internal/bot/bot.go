@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/db/dbtrace"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
@@ -21,8 +20,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
-	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/queries/qm"
+	"go.opencensus.io/trace"
 )
 
 const (
@@ -62,7 +61,7 @@ type Bot struct {
 	initialized bool
 	stopOnce    sync.Once
 
-	db   dbtrace.ContextBeginExecutor
+	db   *sql.DB
 	deps *sharedDeps
 	rep  *repeat.Repeater
 
@@ -138,7 +137,7 @@ func New(config *Config) *Bot {
 	}
 
 	b := &Bot{
-		db:   dbtrace.DB(config.DB),
+		db:   config.DB,
 		deps: deps,
 	}
 
@@ -153,8 +152,8 @@ func New(config *Config) *Bot {
 }
 
 func (b *Bot) Init(ctx context.Context) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "Init")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "Init")
+	defer span.End()
 
 	b.rep = repeat.New(ctx, b.deps.Clock)
 

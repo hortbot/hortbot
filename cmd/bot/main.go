@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"contrib.go.opencensus.io/integrations/ocsql"
 	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/bot"
@@ -24,10 +25,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/jessevdk/go-flags"
 	"github.com/lib/pq"
-	"github.com/luna-duclos/instrumentedsql"
-	sqltracing "github.com/luna-duclos/instrumentedsql/opentracing"
-	"github.com/opentracing/opentracing-go"
 	"github.com/posener/ctxutil"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
@@ -56,6 +55,8 @@ var args = struct {
 	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
 
 	SteamKey string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
+
+	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
 }{
 	DefaultCooldown: 5,
 	NSQChannel:      "queue",
@@ -75,23 +76,20 @@ func main() {
 	defer zap.RedirectStdLog(logger)()
 	ctx = ctxlog.WithLogger(ctx, logger)
 
-	stopTracing, err := tracing.Init("bot", args.Debug, logger)
-	if err != nil {
-		logger.Fatal("error initializing tracing", zap.Error(err))
+	if args.JaegerAgent != "" {
+		flush, err := tracing.Init("bot", args.JaegerAgent, args.Debug)
+		if err != nil {
+			logger.Fatal("error initializing tracing", zap.Error(err))
+		}
+		defer flush()
 	}
-	defer stopTracing.Close()
 
-	sql.Register("postgres-opentracing",
-		instrumentedsql.WrapDriver(&pq.Driver{},
-			instrumentedsql.WithTracer(sqltracing.NewTracer(true)),
-			instrumentedsql.WithOmitArgs(),
-		),
-	)
-
-	db, err := sql.Open("postgres-opentracing", args.DB)
+	connector, err := pq.NewConnector(args.DB)
 	if err != nil {
-		logger.Fatal("error opening database connection", zap.Error(err))
+		logger.Fatal("error creating postgres connector", zap.Error(err))
 	}
+
+	db := sql.OpenDB(ocsql.WrapConnector(connector, ocsql.WithAllTraceOptions(), ocsql.WithQueryParams(args.Debug)))
 
 	for i := 0; i < 5; i++ {
 		if err := db.Ping(); err == nil {
@@ -172,9 +170,9 @@ func main() {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(5 * time.Second),
 		},
-		OnIncoming: func(i *bnsq.Incoming, ref opentracing.SpanReference) error {
-			span, ctx := opentracing.StartSpanFromContext(ctx, "OnIncoming", ref)
-			defer span.Finish()
+		OnIncoming: func(i *bnsq.Incoming, parent trace.SpanContext) error {
+			ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", parent)
+			defer span.End()
 			b.Handle(ctx, i.Origin, i.Message)
 			return nil
 		},

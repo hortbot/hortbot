@@ -8,10 +8,10 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/opentracing/opentracing-go"
 	"github.com/robfig/cron/v3"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
@@ -32,8 +32,8 @@ func (b *Bot) updateScheduledCommand(id int64, add bool, expr cron.Schedule) {
 }
 
 func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "runRepeatedCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "runRepeatedCommand")
+	defer span.End()
 
 	start := b.deps.Clock.Now()
 
@@ -48,7 +48,7 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 		zap.Int64("repeatedCommand", id),
 	)
 
-	err := transact(ctx, b.db, func(ctx context.Context, tx boil.ContextExecutor) error {
+	err := transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
 		return handleRepeatedCommand(ctx, s, id)
 	})
@@ -61,8 +61,8 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 }
 
 func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handleRepeatedCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handleRepeatedCommand")
+	defer span.End()
 
 	repeat, err := models.RepeatedCommands(
 		models.RepeatedCommandWhere.ID.EQ(id),
@@ -134,8 +134,8 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "runScheduledCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "runScheduledCommand")
+	defer span.End()
 
 	start := b.deps.Clock.Now()
 
@@ -150,7 +150,7 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 		zap.Int64("scheduledCommand", id),
 	)
 
-	err := transact(ctx, b.db, func(ctx context.Context, tx boil.ContextExecutor) error {
+	err := transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
 		return handleScheduledCommand(ctx, s, id)
 	})
@@ -163,8 +163,8 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 }
 
 func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handleScheduledCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handleScheduledCommand")
+	defer span.End()
 
 	scheduled, err := models.ScheduledCommands(
 		models.ScheduledCommandWhere.ID.EQ(id),

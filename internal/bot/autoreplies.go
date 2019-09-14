@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
+	"go.opencensus.io/trace"
 )
 
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "tryAutoreplies")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "tryAutoreplies")
+	defer span.End()
 
 	var autoreplies models.AutoreplySlice
 	err := queries.Raw(`

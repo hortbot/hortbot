@@ -26,8 +26,7 @@ services:
       - HB_MIGRATE_UP=true
       - HB_REDIS=redis:6379
       - HB_NSQ_ADDR=nsq:4150
-      - JAEGER_AGENT_HOST=jaeger
-      - JAEGER_AGENT_PORT=6831
+      - HB_JAEGER_AGENT=jaeger:6831
 
   bot:
     image: golang
@@ -54,8 +53,7 @@ services:
       - HB_NSQ_ADDR=nsq:4150
       - HB_ADMINS=${HB_ADMINS:-}
       - HB_WHITELIST_ENABLED=${HB_WHITELIST_ENABLED:-}
-      - JAEGER_AGENT_HOST=jaeger
-      - JAEGER_AGENT_PORT=6831
+      - HB_JAEGER_AGENT=jaeger:6831
 
   web:
     image: golang
@@ -82,8 +80,7 @@ services:
       - HB_MIGRATE_UP=true
       - HB_REDIS=redis:6379
       - HB_NSQ_ADDR=nsq:4150
-      - JAEGER_AGENT_HOST=jaeger
-      - JAEGER_AGENT_PORT=6831
+      - HB_JAEGER_AGENT=jaeger:6831
 
   db:
     image: zikaeroh/postgres-initialized

@@ -9,14 +9,14 @@ import (
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/sqlboiler/boil"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
 func handleManagement(ctx context.Context, s *session) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handleManagement")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handleManagement")
+	defer span.End()
 
 	var cmd string
 

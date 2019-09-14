@@ -10,10 +10,10 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
+	"go.opencensus.io/trace"
 )
 
 // TODO: Merge the code between custom commands and lists; they are identical other than some wordings.
@@ -293,8 +293,8 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 }
 
 func handleList(ctx context.Context, s *session, info *models.CommandInfo, update bool) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handleList")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handleList")
+	defer span.End()
 
 	args := s.OrigCommandParams
 	cmd, args := splitSpace(args)

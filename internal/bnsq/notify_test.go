@@ -11,7 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/nsqtest"
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 	"gotest.tools/v3/assert"
 )
 
@@ -41,7 +41,7 @@ func TestNotify(t *testing.T) {
 		Addr:    addr,
 		BotName: botName,
 		Channel: channel,
-		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, _ opentracing.SpanReference) error {
+		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, _ trace.SpanContext) error {
 			received <- n
 			return nil
 		},

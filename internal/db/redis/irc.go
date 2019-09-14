@@ -4,12 +4,12 @@ import (
 	"context"
 	"time"
 
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 )
 
 func (db *DB) SendMessageAllowed(ctx context.Context, botName, target string, limitSlow, limitFast int, window time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "SendMessageAllowed")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "SendMessageAllowed")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	onlyFastKey := userStateKey(botName, target)

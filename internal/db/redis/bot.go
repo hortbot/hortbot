@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-redis/redis/v7"
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 )
 
 const (
@@ -23,8 +23,8 @@ const (
 )
 
 func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.Duration) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "LinkPermit")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "LinkPermit")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, linkPermit, user)
@@ -32,8 +32,8 @@ func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.
 }
 
 func (db *DB) HasLinkPermit(ctx context.Context, channel, user string) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "HasLinkPermit")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "HasLinkPermit")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, linkPermit, user)
@@ -41,8 +41,8 @@ func (db *DB) HasLinkPermit(ctx context.Context, channel, user string) (bool, er
 }
 
 func (db *DB) Confirm(ctx context.Context, channel, user, key string, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "Confirm")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "Confirm")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	rkey := buildKey(channel, confirm, user, key)
@@ -50,8 +50,8 @@ func (db *DB) Confirm(ctx context.Context, channel, user, key string, expiry tim
 }
 
 func (db *DB) RepeatAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "RepeatAllowed")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "RepeatAllowed")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, repeatedCommand, strconv.FormatInt(id, 10))
@@ -60,8 +60,8 @@ func (db *DB) RepeatAllowed(ctx context.Context, channel string, id int64, expir
 }
 
 func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "ScheduledAllowed")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "ScheduledAllowed")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, scheduledCommand, strconv.FormatInt(id, 10))
@@ -70,8 +70,8 @@ func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, ex
 }
 
 func (db *DB) MessageCount(ctx context.Context, channel string) (int64, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "MessageCount")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "MessageCount")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, messageCount)
@@ -83,8 +83,8 @@ func (db *DB) MessageCount(ctx context.Context, channel string) (int64, error) {
 }
 
 func (db *DB) IncrementMessageCount(ctx context.Context, channel string) (int64, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "IncrementMessageCount")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "IncrementMessageCount")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, messageCount)
@@ -92,8 +92,8 @@ func (db *DB) IncrementMessageCount(ctx context.Context, channel string) (int64,
 }
 
 func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "AutoreplyAllowed")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "AutoreplyAllowed")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, autoreply, strconv.FormatInt(id, 10))
@@ -102,8 +102,8 @@ func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, ex
 }
 
 func (db *DB) FilterWarned(ctx context.Context, channel, user, filter string, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "FilterWarned")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "FilterWarned")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, filterWarned, user, filter)
@@ -111,8 +111,8 @@ func (db *DB) FilterWarned(ctx context.Context, channel, user, filter string, ex
 }
 
 func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "RaffleAdd")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "RaffleAdd")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, raffle)
@@ -120,8 +120,8 @@ func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
 }
 
 func (db *DB) RaffleReset(ctx context.Context, channel string) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "RaffleReset")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "RaffleReset")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, raffle)
@@ -129,8 +129,8 @@ func (db *DB) RaffleReset(ctx context.Context, channel string) error {
 }
 
 func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "RaffleWinner")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "RaffleWinner")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, raffle)
@@ -138,8 +138,8 @@ func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, e
 }
 
 func (db *DB) RaffleCount(ctx context.Context, channel string) (int64, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "RaffleCount")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "RaffleCount")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := buildKey(channel, raffle)
@@ -147,8 +147,8 @@ func (db *DB) RaffleCount(ctx context.Context, channel string) (int64, error) {
 }
 
 func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time.Duration) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "MarkCooldown")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "MarkCooldown")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	rkey := buildKey(channel, cooldown, key)
@@ -156,8 +156,8 @@ func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time
 }
 
 func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, expiry time.Duration) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "CheckAndMarkCooldown")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "CheckAndMarkCooldown")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	rkey := buildKey(channel, cooldown, key)
@@ -165,8 +165,8 @@ func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, exp
 }
 
 func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast bool, expiry time.Duration) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "SetUserState")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "SetUserState")
+	defer span.End()
 
 	v := "0"
 	if fast {
@@ -179,8 +179,8 @@ func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast
 }
 
 func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "GetUserState")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "GetUserState")
+	defer span.End()
 
 	client := db.client.WithContext(ctx)
 	key := userStateKey(botName, ircChannel)

@@ -8,8 +8,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
+	"go.opencensus.io/trace"
+	"go.opencensus.io/trace/propagation"
 	"go.uber.org/zap"
 )
 
@@ -64,7 +64,7 @@ func SubscriberMaxAge(d time.Duration) SubscriberOption {
 	}
 }
 
-func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracing.SpanReference) error) error {
+func (s *subscriber) run(ctx context.Context, fn func(m *message, parent trace.SpanContext) error) error {
 	logger := ctxlog.FromContext(ctx)
 
 	consumer, err := nsq.NewConsumer(s.topic, s.channel, s.config)
@@ -86,9 +86,7 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracin
 			return nil
 		}
 
-		spanContext, _ := opentracing.GlobalTracer().Extract(opentracing.TextMap, m.TraceCarrier)
-		span := opentracing.StartSpan(s.topic, opentracing.FollowsFrom(spanContext), ext.SpanKindConsumer)
-		defer span.Finish()
+		parent, _ := propagation.FromBinary(m.TraceSpan)
 
 		if s.maxAge > 0 {
 			since := s.clk.Since(m.Timestamp)
@@ -98,8 +96,7 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message, ref opentracin
 			}
 		}
 
-		ref := opentracing.FollowsFrom(span.Context())
-		return fn(m, ref)
+		return fn(m, parent)
 	}))
 
 	if err := consumer.ConnectToNSQD(s.addr); err != nil {

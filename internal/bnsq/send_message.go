@@ -3,7 +3,7 @@ package bnsq
 import (
 	"context"
 
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 )
 
 const (
@@ -43,17 +43,17 @@ type SendMessageSubscriber struct {
 	Origin        string
 	Channel       string
 	Opts          []SubscriberOption
-	OnSendMessage func(sm *SendMessage, ref opentracing.SpanReference) error
+	OnSendMessage func(sm *SendMessage, parent trace.SpanContext) error
 }
 
 func (s *SendMessageSubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, sendMessageTopic+s.Origin, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message, ref opentracing.SpanReference) error {
+	return subscriber.run(ctx, func(m *message, parent trace.SpanContext) error {
 		sm := &SendMessage{}
 		if err := m.payload(sm); err != nil {
 			return err
 		}
-		return s.OnSendMessage(sm, ref)
+		return s.OnSendMessage(sm, parent)
 	})
 }

@@ -7,15 +7,15 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/opentracing/opentracing-go"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
+	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
 func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) (bool, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "handleCustomCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "handleCustomCommand")
+	defer span.End()
 
 	if err := s.TryCooldown(ctx); err != nil {
 		return false, err
@@ -24,8 +24,8 @@ func handleCustomCommand(ctx context.Context, s *session, info *models.CommandIn
 }
 
 func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "runCommandAndCount")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "runCommandAndCount")
+	defer span.End()
 
 	ctx = withCommandGuard(ctx, info.Name)
 
@@ -49,8 +49,8 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 }
 
 func processCommand(ctx context.Context, s *session, msg string) (string, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "processCommand")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "processCommand")
+	defer span.End()
 
 	logger := ctxlog.FromContext(ctx)
 

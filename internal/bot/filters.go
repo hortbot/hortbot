@@ -9,7 +9,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
-	"github.com/opentracing/opentracing-go"
+	"go.opencensus.io/trace"
 )
 
 var filters = []func(context.Context, *session) (filtered bool, err error){
@@ -23,8 +23,8 @@ var filters = []func(context.Context, *session) (filtered bool, err error){
 }
 
 func tryFilter(ctx context.Context, s *session) (filtered bool, err error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "tryFilter")
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, "tryFilter")
+	defer span.End()
 
 	if !s.Channel.ShouldModerate || !s.Channel.EnableFilters {
 		return false, nil

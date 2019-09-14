@@ -57,6 +57,7 @@ func (a *App) Run(ctx context.Context) error {
 	}
 
 	r.Use(mid.RequestLogger)
+	r.Use(mid.Tracer)
 	r.Use(mid.Recoverer)
 
 	r.Get("/", a.index)

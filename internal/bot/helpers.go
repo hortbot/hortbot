@@ -2,12 +2,11 @@ package bot
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 	"unicode"
 
-	"github.com/hortbot/hortbot/internal/db/dbtrace"
-	"github.com/opentracing/opentracing-go"
-	"github.com/volatiletech/sqlboiler/boil"
+	"go.opencensus.io/trace"
 )
 
 func splitFirstSep(s string, sep string) (string, string) {
@@ -41,16 +40,14 @@ func parseBadges(badgeTag string) map[string]string {
 	return d
 }
 
-func transact(ctx context.Context, db boil.Beginner, fn func(context.Context, boil.ContextExecutor) error) (err error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "transact")
-	defer span.Finish()
+func transact(ctx context.Context, db *sql.DB, fn func(context.Context, *sql.Tx) error) (err error) {
+	ctx, span := trace.StartSpan(ctx, "transact")
+	defer span.End()
 
-	dtx, err := db.Begin()
+	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
-
-	tx := dbtrace.Tx(dtx)
 
 	rollback := true
 

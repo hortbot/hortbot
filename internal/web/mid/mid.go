@@ -6,9 +6,8 @@ import (
 
 	"github.com/felixge/httpsnoop"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
 	"github.com/rs/xid"
+	"go.opencensus.io/plugin/ochttp"
 	"go.uber.org/zap"
 )
 
@@ -67,13 +66,6 @@ func GetRequestID(r *http.Request) xid.ID {
 
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		span, ctx := opentracing.StartSpanFromContext(r.Context(), "http")
-		defer span.Finish()
-
-		r = r.WithContext(ctx)
-		ext.HTTPUrl.Set(span, r.URL.Path)
-		ext.HTTPMethod.Set(span, r.Method)
-
 		m := httpsnoop.CaptureMetrics(next, w, r)
 
 		logger := ctxlog.FromContext(r.Context())
@@ -85,8 +77,6 @@ func RequestLogger(next http.Handler) http.Handler {
 			zap.Int64("size", m.Written),
 			zap.Duration("duration", m.Duration),
 		)
-
-		ext.HTTPStatusCode.Set(span, uint16(m.Code))
 	})
 }
 
@@ -109,4 +99,10 @@ func Recoverer(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
+}
+
+func Tracer(next http.Handler) http.Handler {
+	return &ochttp.Handler{
+		Handler: next,
+	}
 }

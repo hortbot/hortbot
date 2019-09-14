@@ -6,8 +6,8 @@ import (
 
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
-	"github.com/opentracing/opentracing-go"
-	"github.com/opentracing/opentracing-go/ext"
+	"go.opencensus.io/trace"
+	"go.opencensus.io/trace/propagation"
 )
 
 type publisher struct {
@@ -75,8 +75,8 @@ func (p *publisher) run(ctx context.Context) error {
 }
 
 func (p *publisher) publish(ctx context.Context, topic string, payload interface{}) error {
-	span, ctx := opentracing.StartSpanFromContext(ctx, topic, ext.SpanKindProducer)
-	defer span.Finish()
+	ctx, span := trace.StartSpan(ctx, topic)
+	defer span.End()
 
 	select {
 	case <-p.ready:
@@ -89,15 +89,10 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 		return err
 	}
 
-	carrier := make(opentracing.TextMapCarrier)
-	if err := span.Tracer().Inject(span.Context(), opentracing.TextMap, carrier); err != nil {
-		return err
-	}
-
 	m := &message{
-		Timestamp:    p.clk.Now(),
-		TraceCarrier: carrier,
-		Payload:      pl,
+		Timestamp: p.clk.Now(),
+		TraceSpan: propagation.Binary(span.SpanContext()),
+		Payload:   pl,
 	}
 
 	body, err := json.Marshal(m)
