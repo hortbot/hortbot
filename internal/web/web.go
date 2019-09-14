@@ -61,8 +61,12 @@ func (a *App) Run(ctx context.Context) error {
 
 	r.Get("/", a.index)
 	r.Get("/channels", a.channels)
-	r.Get("/c/{channel}/commands", a.channelCommands)
-	r.Get("/c/{channel}/quotes", a.channelQuotes)
+
+	r.Route("/c/{channel}", func(r chi.Router) {
+		r.Use(a.channelMiddleware("channel"))
+		r.Get("/commands", a.channelCommands)
+		r.Get("/quotes", a.channelQuotes)
+	})
 
 	r.Get("/auth/twitch", a.authTwitch)
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
@@ -206,11 +210,7 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
-
-	channel := a.findChannel(w, r)
-	if channel == nil {
-		return
-	}
+	channel := getChannel(ctx)
 
 	commands, err := channel.CustomCommands(qm.Load(models.CustomCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
@@ -234,11 +234,7 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
-
-	channel := a.findChannel(w, r)
-	if channel == nil {
-		return
-	}
+	channel := getChannel(ctx)
 
 	quotes, err := channel.Quotes(qm.OrderBy(models.QuoteColumns.Num)).All(ctx, a.DB)
 	if err != nil {
@@ -253,24 +249,6 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 		},
 		Quotes: quotes,
 	})
-}
-
-func (a *App) findChannel(w http.ResponseWriter, r *http.Request) *models.Channel {
-	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
-	name := chi.URLParam(r, "channel")
-
-	channel, err := models.Channels(models.ChannelWhere.Name.EQ(strings.ToLower(name))).One(ctx, a.DB)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			httpError(w, http.StatusNotFound)
-		} else {
-			logger.Error("error querying channel", zap.Error(err))
-			httpError(w, http.StatusInternalServerError)
-		}
-		return nil
-	}
-	return channel
 }
 
 func httpError(w http.ResponseWriter, code int) {
