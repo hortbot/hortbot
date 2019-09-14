@@ -98,7 +98,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return errInvalidMessage
 	}
 
-	seen, err := b.deps.Dedupe.CheckAndMark(id)
+	seen, err := b.deps.Dedupe.CheckAndMark(ctx, id)
 	if err != nil {
 		logger.Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
 		return err

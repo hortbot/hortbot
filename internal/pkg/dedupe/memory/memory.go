@@ -1,6 +1,7 @@
 package memory
 
 import (
+	"context"
 	"sync"
 	"time"
 
@@ -29,13 +30,13 @@ func New(expiry time.Duration, pruneInterval time.Duration) *Dedupe {
 
 var _ dedupe.Deduplicator = (*Dedupe)(nil)
 
-func (d *Dedupe) Mark(id string) error {
+func (d *Dedupe) Mark(_ context.Context, id string) error {
 	var expire interface{} = time.Now().Add(d.expiry)
 	d.m.Store(id, expire)
 	return nil
 }
 
-func (d *Dedupe) Check(id string) (seen bool, err error) {
+func (d *Dedupe) Check(_ context.Context, id string) (seen bool, err error) {
 	_, seen = d.m.Load(id)
 	if seen {
 		var expire interface{} = time.Now().Add(d.expiry)
@@ -45,7 +46,7 @@ func (d *Dedupe) Check(id string) (seen bool, err error) {
 	return seen, nil
 }
 
-func (d *Dedupe) CheckAndMark(id string) (seen bool, err error) {
+func (d *Dedupe) CheckAndMark(_ context.Context, id string) (seen bool, err error) {
 	var expire interface{} = time.Now().Add(d.expiry)
 
 	_, seen = d.m.LoadOrStore(id, expire)

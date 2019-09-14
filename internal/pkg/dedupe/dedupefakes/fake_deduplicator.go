@@ -2,16 +2,18 @@
 package dedupefakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 )
 
 type FakeDeduplicator struct {
-	CheckStub        func(string) (bool, error)
+	CheckStub        func(context.Context, string) (bool, error)
 	checkMutex       sync.RWMutex
 	checkArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
+		arg2 string
 	}
 	checkReturns struct {
 		result1 bool
@@ -21,10 +23,11 @@ type FakeDeduplicator struct {
 		result1 bool
 		result2 error
 	}
-	CheckAndMarkStub        func(string) (bool, error)
+	CheckAndMarkStub        func(context.Context, string) (bool, error)
 	checkAndMarkMutex       sync.RWMutex
 	checkAndMarkArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
+		arg2 string
 	}
 	checkAndMarkReturns struct {
 		result1 bool
@@ -34,10 +37,11 @@ type FakeDeduplicator struct {
 		result1 bool
 		result2 error
 	}
-	MarkStub        func(string) error
+	MarkStub        func(context.Context, string) error
 	markMutex       sync.RWMutex
 	markArgsForCall []struct {
-		arg1 string
+		arg1 context.Context
+		arg2 string
 	}
 	markReturns struct {
 		result1 error
@@ -49,16 +53,17 @@ type FakeDeduplicator struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeDeduplicator) Check(arg1 string) (bool, error) {
+func (fake *FakeDeduplicator) Check(arg1 context.Context, arg2 string) (bool, error) {
 	fake.checkMutex.Lock()
 	ret, specificReturn := fake.checkReturnsOnCall[len(fake.checkArgsForCall)]
 	fake.checkArgsForCall = append(fake.checkArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("Check", []interface{}{arg1})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("Check", []interface{}{arg1, arg2})
 	fake.checkMutex.Unlock()
 	if fake.CheckStub != nil {
-		return fake.CheckStub(arg1)
+		return fake.CheckStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -73,17 +78,17 @@ func (fake *FakeDeduplicator) CheckCallCount() int {
 	return len(fake.checkArgsForCall)
 }
 
-func (fake *FakeDeduplicator) CheckCalls(stub func(string) (bool, error)) {
+func (fake *FakeDeduplicator) CheckCalls(stub func(context.Context, string) (bool, error)) {
 	fake.checkMutex.Lock()
 	defer fake.checkMutex.Unlock()
 	fake.CheckStub = stub
 }
 
-func (fake *FakeDeduplicator) CheckArgsForCall(i int) string {
+func (fake *FakeDeduplicator) CheckArgsForCall(i int) (context.Context, string) {
 	fake.checkMutex.RLock()
 	defer fake.checkMutex.RUnlock()
 	argsForCall := fake.checkArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeDeduplicator) CheckReturns(result1 bool, result2 error) {
@@ -112,16 +117,17 @@ func (fake *FakeDeduplicator) CheckReturnsOnCall(i int, result1 bool, result2 er
 	}{result1, result2}
 }
 
-func (fake *FakeDeduplicator) CheckAndMark(arg1 string) (bool, error) {
+func (fake *FakeDeduplicator) CheckAndMark(arg1 context.Context, arg2 string) (bool, error) {
 	fake.checkAndMarkMutex.Lock()
 	ret, specificReturn := fake.checkAndMarkReturnsOnCall[len(fake.checkAndMarkArgsForCall)]
 	fake.checkAndMarkArgsForCall = append(fake.checkAndMarkArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("CheckAndMark", []interface{}{arg1})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("CheckAndMark", []interface{}{arg1, arg2})
 	fake.checkAndMarkMutex.Unlock()
 	if fake.CheckAndMarkStub != nil {
-		return fake.CheckAndMarkStub(arg1)
+		return fake.CheckAndMarkStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -136,17 +142,17 @@ func (fake *FakeDeduplicator) CheckAndMarkCallCount() int {
 	return len(fake.checkAndMarkArgsForCall)
 }
 
-func (fake *FakeDeduplicator) CheckAndMarkCalls(stub func(string) (bool, error)) {
+func (fake *FakeDeduplicator) CheckAndMarkCalls(stub func(context.Context, string) (bool, error)) {
 	fake.checkAndMarkMutex.Lock()
 	defer fake.checkAndMarkMutex.Unlock()
 	fake.CheckAndMarkStub = stub
 }
 
-func (fake *FakeDeduplicator) CheckAndMarkArgsForCall(i int) string {
+func (fake *FakeDeduplicator) CheckAndMarkArgsForCall(i int) (context.Context, string) {
 	fake.checkAndMarkMutex.RLock()
 	defer fake.checkAndMarkMutex.RUnlock()
 	argsForCall := fake.checkAndMarkArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeDeduplicator) CheckAndMarkReturns(result1 bool, result2 error) {
@@ -175,16 +181,17 @@ func (fake *FakeDeduplicator) CheckAndMarkReturnsOnCall(i int, result1 bool, res
 	}{result1, result2}
 }
 
-func (fake *FakeDeduplicator) Mark(arg1 string) error {
+func (fake *FakeDeduplicator) Mark(arg1 context.Context, arg2 string) error {
 	fake.markMutex.Lock()
 	ret, specificReturn := fake.markReturnsOnCall[len(fake.markArgsForCall)]
 	fake.markArgsForCall = append(fake.markArgsForCall, struct {
-		arg1 string
-	}{arg1})
-	fake.recordInvocation("Mark", []interface{}{arg1})
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("Mark", []interface{}{arg1, arg2})
 	fake.markMutex.Unlock()
 	if fake.MarkStub != nil {
-		return fake.MarkStub(arg1)
+		return fake.MarkStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
@@ -199,17 +206,17 @@ func (fake *FakeDeduplicator) MarkCallCount() int {
 	return len(fake.markArgsForCall)
 }
 
-func (fake *FakeDeduplicator) MarkCalls(stub func(string) error) {
+func (fake *FakeDeduplicator) MarkCalls(stub func(context.Context, string) error) {
 	fake.markMutex.Lock()
 	defer fake.markMutex.Unlock()
 	fake.MarkStub = stub
 }
 
-func (fake *FakeDeduplicator) MarkArgsForCall(i int) string {
+func (fake *FakeDeduplicator) MarkArgsForCall(i int) (context.Context, string) {
 	fake.markMutex.RLock()
 	defer fake.markMutex.RUnlock()
 	argsForCall := fake.markArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeDeduplicator) MarkReturns(result1 error) {

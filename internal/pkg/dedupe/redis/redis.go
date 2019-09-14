@@ -29,14 +29,14 @@ func New(rdb *redis.DB, expiry time.Duration) (*Dedupe, error) {
 
 var _ dedupe.Deduplicator = (*Dedupe)(nil)
 
-func (d *Dedupe) Mark(id string) error {
-	return d.db.DedupeMark(context.TODO(), id, d.expiry)
+func (d *Dedupe) Mark(ctx context.Context, id string) error {
+	return d.db.DedupeMark(ctx, id, d.expiry)
 }
 
-func (d *Dedupe) Check(id string) (seen bool, err error) {
-	return d.db.DedupeCheck(context.TODO(), id, d.expiry)
+func (d *Dedupe) Check(ctx context.Context, id string) (seen bool, err error) {
+	return d.db.DedupeCheck(ctx, id, d.expiry)
 }
 
-func (d *Dedupe) CheckAndMark(id string) (seen bool, err error) {
-	return d.db.DedupeCheckAndMark(context.TODO(), id, d.expiry)
+func (d *Dedupe) CheckAndMark(ctx context.Context, id string) (seen bool, err error) {
+	return d.db.DedupeCheckAndMark(ctx, id, d.expiry)
 }

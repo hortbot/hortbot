@@ -1,6 +1,7 @@
 package redis_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -15,6 +16,9 @@ const id = "id"
 func TestCheckNotFound(t *testing.T) {
 	t.Parallel()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	_, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
@@ -24,7 +28,7 @@ func TestCheckNotFound(t *testing.T) {
 	d, err := redis.New(rdb, time.Second)
 	assert.NilError(t, err)
 
-	seen, err := d.Check(id)
+	seen, err := d.Check(ctx, id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
 }
@@ -32,6 +36,9 @@ func TestCheckNotFound(t *testing.T) {
 func TestMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
@@ -41,10 +48,10 @@ func TestMarkThenCheck(t *testing.T) {
 	d, err := redis.New(rdb, time.Minute)
 	assert.NilError(t, err)
 
-	assert.NilError(t, d.Mark(id))
+	assert.NilError(t, d.Mark(ctx, id))
 	s.FastForward(time.Second)
 
-	seen, err := d.Check(id)
+	seen, err := d.Check(ctx, id)
 	assert.Assert(t, seen)
 	assert.NilError(t, err)
 }
@@ -52,6 +59,9 @@ func TestMarkThenCheck(t *testing.T) {
 func TestMarkMarkThenCheck(t *testing.T) {
 	t.Parallel()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
@@ -61,13 +71,13 @@ func TestMarkMarkThenCheck(t *testing.T) {
 	d, err := redis.New(rdb, time.Minute)
 	assert.NilError(t, err)
 
-	assert.NilError(t, d.Mark(id))
+	assert.NilError(t, d.Mark(ctx, id))
 	s.FastForward(time.Second)
 
-	assert.NilError(t, d.Mark(id))
+	assert.NilError(t, d.Mark(ctx, id))
 	s.FastForward(time.Second)
 
-	seen, err := d.Check(id)
+	seen, err := d.Check(ctx, id)
 	assert.Assert(t, seen)
 	assert.NilError(t, err)
 }
@@ -75,6 +85,9 @@ func TestMarkMarkThenCheck(t *testing.T) {
 func TestCheckAndMark(t *testing.T) {
 	t.Parallel()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
@@ -84,13 +97,13 @@ func TestCheckAndMark(t *testing.T) {
 	d, err := redis.New(rdb, time.Minute)
 	assert.NilError(t, err)
 
-	seen, err := d.CheckAndMark(id)
+	seen, err := d.CheckAndMark(ctx, id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
 
 	s.FastForward(time.Second)
 
-	seen, err = d.Check(id)
+	seen, err = d.Check(ctx, id)
 	assert.Assert(t, seen)
 	assert.NilError(t, err)
 }
@@ -98,6 +111,9 @@ func TestCheckAndMark(t *testing.T) {
 func TestCheckAndMarkTwice(t *testing.T) {
 	t.Parallel()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
 	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
 	defer cleanup()
@@ -107,19 +123,22 @@ func TestCheckAndMarkTwice(t *testing.T) {
 	d, err := redis.New(rdb, time.Minute)
 	assert.NilError(t, err)
 
-	seen, err := d.CheckAndMark(id)
+	seen, err := d.CheckAndMark(ctx, id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
 
 	s.FastForward(time.Second)
 
-	seen, err = d.CheckAndMark(id)
+	seen, err = d.CheckAndMark(ctx, id)
 	assert.Assert(t, seen)
 	assert.NilError(t, err)
 }
 
 func TestExpire(t *testing.T) {
 	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
 	assert.NilError(t, err)
@@ -130,13 +149,13 @@ func TestExpire(t *testing.T) {
 	d, err := redis.New(rdb, time.Second)
 	assert.NilError(t, err)
 
-	seen, err := d.CheckAndMark(id)
+	seen, err := d.CheckAndMark(ctx, id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
 
 	s.FastForward(2 * time.Second)
 
-	seen, err = d.Check(id)
+	seen, err = d.Check(ctx, id)
 	assert.Assert(t, !seen)
 	assert.NilError(t, err)
 }
