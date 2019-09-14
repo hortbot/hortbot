@@ -308,8 +308,8 @@ github.com/leononame/clock v0.1.6/go.mod h1:vmv7g0tKoub285L0YQPoru1sawW5/5HE2l8p
 github.com/lib/pq v1.0.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lib/pq v1.2.0 h1:LXpIM/LZ5xGFhOpXAQUIMM1HdyqzVYM13zNdjCEEcA0=
 github.com/lib/pq v1.2.0/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
-github.com/luna-duclos/instrumentedsql v1.0.0 h1:x2ssH6Teqnxa7jo5Gwh2FRs5UKkXdo2mhWElO1orAh0=
-github.com/luna-duclos/instrumentedsql v1.0.0/go.mod h1:MhbSEWyse2+eujKswpnB00QyHUOJXWKr4a7fsHva4Sc=
+github.com/luna-duclos/instrumentedsql v1.0.1 h1:h2Dk+7bHh5az7QQ/oPem4vpfnNciU/BK3GKp8eSQwJ4=
+github.com/luna-duclos/instrumentedsql v1.0.1/go.mod h1:MhbSEWyse2+eujKswpnB00QyHUOJXWKr4a7fsHva4Sc=
 github.com/magiconair/properties v1.8.0 h1:LLgXmsheXeRoUOBOjtwPQCWIYqM/LU1ayDtDePerRcY=
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=

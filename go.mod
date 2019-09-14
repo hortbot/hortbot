@@ -45,7 +45,7 @@ require (
 	github.com/kshvakov/clickhouse v1.3.11 // indirect
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.2.0
-	github.com/luna-duclos/instrumentedsql v1.0.0
+	github.com/luna-duclos/instrumentedsql v1.0.1
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
