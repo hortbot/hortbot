@@ -1,13 +1,12 @@
+# A prod-like configuration using "real" images.
+
 version: "3"
 
 services:
   irc:
-    image: golang
-    volumes:
-      - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
-    working_dir: /app
-    command: go run -mod=readonly -v ./cmd/irc
+    build:
+      dockerfile: ./docker/Dockerfile.irc
+      context: .
     links:
       - db
       - redis
@@ -28,12 +27,9 @@ services:
       - HB_JAEGER_AGENT=jaeger:6831
 
   bot:
-    image: golang
-    volumes:
-      - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
-    working_dir: /app
-    command: go run -mod=readonly -v ./cmd/bot
+    build:
+      dockerfile: ./docker/Dockerfile.bot
+      context: .
     links:
       - db
       - redis
@@ -59,12 +55,9 @@ services:
       - HB_STEAM_KEY=${HB_STEAM_KEY:-}
 
   web:
-    image: golang
-    volumes:
-      - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
-    working_dir: /app
-    command: go run -mod=readonly -v ./cmd/web
+    build:
+      dockerfile: ./docker/Dockerfile.web
+      context: .
     links:
       - db
       - redis
