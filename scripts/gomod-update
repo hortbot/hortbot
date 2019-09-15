@@ -5,29 +5,11 @@
 # the dependencies of the dependencies of the listed packages (rather than just
 # the dependencies themselves).
 
-function summod {
-    sha256sum go.mod | cut -d ' ' -f 1
-}
-
-cd $(go list -f '{{.Module.Dir}}' .)
+cd "${0%/*}/.."
 
 module=$(go list -f '{{.Module.Path}}' .)
 
 go mod tidy
-
-before=$(summod)
-
-# Upgrade in a loop, since updating one indirect dependency can add another.
-while true; do
-    go get -d -t $(go mod graph | grep "^$module" | cut -d ' ' -f 2 | sed 's/@.*/@upgrade/g')
-    go mod tidy
-    after=$(summod)
-
-    if [ "$before" = "$after" ]; then
-        break
-    fi
-
-    before="$after"
-done
-
+go get -d -t $(go mod graph | grep "^$module" | cut -d ' ' -f 2 | sed 's/@.*/@upgrade/g')
+go mod tidy
 go mod download
