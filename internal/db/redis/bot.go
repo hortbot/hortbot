@@ -10,24 +10,35 @@ import (
 )
 
 const (
-	linkPermit       = "link_permit"
-	confirm          = "confirm"
-	repeatedCommand  = "repeated_command"
-	scheduledCommand = "scheduled_command"
-	messageCount     = "message_count"
-	autoreply        = "autoreply"
-	filterWarned     = "filter_warning"
-	raffle           = "raffle"
-	cooldown         = "cooldown"
-	userState        = "user_state"
+	keyKey              = keyStr("key")
+	keyChannel          = keyStr("channel")
+	keyLinkPermit       = keyStr("link_permit")
+	keyConfirm          = keyStr("confirm")
+	keyRepeatedCommand  = keyStr("repeated_command")
+	keyScheduledCommand = keyStr("scheduled_command")
+	keyMessageCount     = keyStr("message_count")
+	keyAutoreply        = keyStr("autoreply")
+	keyFilterWarned     = keyStr("filter_warning")
+	keyRaffle           = keyStr("raffle")
+	keyCooldown         = keyStr("cooldown")
+	keyUserState        = keyStr("user_state")
+	keyFilter           = keyStr("filter")
+	keyBotName          = keyStr("bot_name")
 )
+
+func linkPermitKey(channel string, user string) string {
+	return buildKey(
+		keyChannel.is(channel),
+		keyLinkPermit.is(user),
+	)
+}
 
 func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.Duration) error {
 	ctx, span := trace.StartSpan(ctx, "LinkPermit")
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, linkPermit, user)
+	key := linkPermitKey(channel, user)
 	return mark(client, key, expiry)
 }
 
@@ -36,7 +47,7 @@ func (db *DB) HasLinkPermit(ctx context.Context, channel, user string) (bool, er
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, linkPermit, user)
+	key := linkPermitKey(channel, user)
 	return checkAndDelete(client, key)
 }
 
@@ -45,7 +56,12 @@ func (db *DB) Confirm(ctx context.Context, channel, user, key string, expiry tim
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	rkey := buildKey(channel, confirm, user, key)
+	rkey := buildKey(
+		keyChannel.is(channel),
+		keyConfirm.is(user),
+		keyKey.is(key),
+	)
+
 	return markOrDelete(client, rkey, expiry)
 }
 
@@ -54,7 +70,10 @@ func (db *DB) RepeatAllowed(ctx context.Context, channel string, id int64, expir
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, repeatedCommand, strconv.FormatInt(id, 10))
+	key := buildKey(
+		keyChannel.is(channel),
+		keyRepeatedCommand.is(strconv.FormatInt(id, 10)),
+	)
 	seen, err := checkAndMark(client, key, expiry)
 	return !seen, err
 }
@@ -64,9 +83,19 @@ func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, ex
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, scheduledCommand, strconv.FormatInt(id, 10))
+	key := buildKey(
+		keyChannel.is(channel),
+		keyScheduledCommand.is(strconv.FormatInt(id, 10)),
+	)
 	seen, err := checkAndMark(client, key, expiry)
 	return !seen, err
+}
+
+func messageCountKey(channel string) string {
+	return buildKey(
+		keyChannel.is(channel),
+		keyMessageCount.is(""),
+	)
 }
 
 func (db *DB) MessageCount(ctx context.Context, channel string) (int64, error) {
@@ -74,7 +103,7 @@ func (db *DB) MessageCount(ctx context.Context, channel string) (int64, error) {
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, messageCount)
+	key := messageCountKey(channel)
 	v, err := client.Get(key).Int64()
 	if err == redis.Nil {
 		err = nil
@@ -87,7 +116,7 @@ func (db *DB) IncrementMessageCount(ctx context.Context, channel string) (int64,
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, messageCount)
+	key := messageCountKey(channel)
 	return client.Incr(key).Result()
 }
 
@@ -96,7 +125,10 @@ func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, ex
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, autoreply, strconv.FormatInt(id, 10))
+	key := buildKey(
+		keyChannel.is(channel),
+		keyAutoreply.is(strconv.FormatInt(id, 10)),
+	)
 	seen, err := checkAndMark(client, key, expiry)
 	return !seen, err
 }
@@ -106,8 +138,19 @@ func (db *DB) FilterWarned(ctx context.Context, channel, user, filter string, ex
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, filterWarned, user, filter)
+	key := buildKey(
+		keyChannel.is(channel),
+		keyFilterWarned.is(user),
+		keyFilter.is(filter),
+	)
 	return checkAndRefresh(client, key, expiry)
+}
+
+func raffleKey(channel string) string {
+	return buildKey(
+		keyChannel.is(channel),
+		keyRaffle.is(""),
+	)
 }
 
 func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
@@ -115,7 +158,7 @@ func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, raffle)
+	key := raffleKey(channel)
 	return setAdd(client, key, user)
 }
 
@@ -124,7 +167,7 @@ func (db *DB) RaffleReset(ctx context.Context, channel string) error {
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, raffle)
+	key := raffleKey(channel)
 	return setClear(client, key)
 }
 
@@ -133,7 +176,7 @@ func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, e
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, raffle)
+	key := raffleKey(channel)
 	return setPop(client, key)
 }
 
@@ -142,8 +185,15 @@ func (db *DB) RaffleCount(ctx context.Context, channel string) (int64, error) {
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(channel, raffle)
+	key := raffleKey(channel)
 	return setLen(client, key)
+}
+
+func cooldownKey(channel string, key string) string {
+	return buildKey(
+		keyChannel.is(channel),
+		keyCooldown.is(key),
+	)
 }
 
 func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time.Duration) error {
@@ -151,7 +201,7 @@ func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	rkey := buildKey(channel, cooldown, key)
+	rkey := cooldownKey(channel, key)
 	return mark(client, rkey, expiry)
 }
 
@@ -160,8 +210,15 @@ func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, exp
 	defer span.End()
 
 	client := db.client.WithContext(ctx)
-	rkey := buildKey(channel, cooldown, key)
+	rkey := cooldownKey(channel, key)
 	return checkAndMark(client, rkey, expiry)
+}
+
+func userStateKey(botName, target string) string {
+	return buildKey(
+		keyBotName.is(botName),
+		keyUserState.is(target),
+	)
 }
 
 func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast bool, expiry time.Duration) error {
@@ -174,7 +231,7 @@ func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast
 	}
 
 	client := db.client.WithContext(ctx)
-	key := buildKey(botName, userState, ircChannel)
+	key := userStateKey(botName, ircChannel)
 	return client.Set(key, v, expiry).Err()
 }
 
@@ -189,8 +246,4 @@ func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (boo
 		err = nil
 	}
 	return r == "1", err
-}
-
-func userStateKey(botName, target string) string {
-	return buildKey(botName, userState, target)
 }

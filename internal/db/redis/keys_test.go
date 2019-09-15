@@ -8,20 +8,20 @@ import (
 
 func TestBuildKey(t *testing.T) {
 	tests := []struct {
-		input []string
+		input []keyPair
 		want  string
 	}{
 		{
-			input: []string{"first"},
-			want:  "first",
+			input: []keyPair{keyStr("first").is("v")},
+			want:  "first:v",
 		},
 		{
-			input: []string{"first", "second"},
-			want:  "first:second",
+			input: []keyPair{keyStr("first").is(""), keyStr("second").is("sec")},
+			want:  "first::second:sec",
 		},
 		{
-			input: []string{"first", "second", "third", "ok"},
-			want:  "first:second:third:ok",
+			input: []keyPair{keyStr("first").is(""), keyStr("second").is("sec"), keyStr("third").is("ok")},
+			want:  "first::second:sec:third:ok",
 		},
 	}
 
@@ -49,7 +49,7 @@ func TestBuildKeyPanic(t *testing.T) {
 		defer func() {
 			recovered = recover()
 		}()
-		buildKey("this", "is:bad")
+		buildKey(keyStr("this").is("bad:value"))
 	}()
 
 	assert.Assert(t, recovered != nil)
