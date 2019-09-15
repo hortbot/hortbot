@@ -32,6 +32,8 @@ cache:
 
 before_install:
   - GO111MODULE=off go get -v -u github.com/mattn/goveralls
+  - docker pull zikaeroh/postgres-initialized
+  - docker pull nsqio/nsq
 
 script:
   - go mod tidy
