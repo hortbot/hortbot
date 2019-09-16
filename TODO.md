@@ -323,9 +323,9 @@ depending on its mod/vip status in a particular channel.
 - [ ] Join
 - [ ] About/FAQ
 - [ ] Channel
-    - [ ] Overview (links, simple info)
-    - [ ] Commands
-    - [ ] Quotes
+    - [x] Overview (links, simple info)
+    - [x] Commands
+    - [x] Quotes
     - [ ] Lists
     - [ ] Autoreplies
     - [ ] Regular list

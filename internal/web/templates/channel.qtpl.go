@@ -77,6 +77,11 @@ html {
     margin-right: 0.75rem;
     padding: 2.5rem;
 }
+
+code {
+    color: white !important;
+}
+
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
 `)
@@ -148,6 +153,11 @@ func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
         <ul class="menu-list">
             <li><a href="/c/`)
 	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`" class='`)
+	streamisActive(qw422016, item, "overview")
+	qw422016.N().S(`'>Overview</a></li>
+            <li><a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
 	qw422016.N().S(`/commands" class='`)
 	streamisActive(qw422016, item, "commands")
 	qw422016.N().S(`'>Commands</a></li>
@@ -191,6 +201,93 @@ func (p *ChannelPage) WriteSidebar(qq422016 qtio422016.Writer, item string) {
 func (p *ChannelPage) Sidebar(item string) string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WriteSidebar(qb422016, item)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="columns is-fullheight" style="overflow: hidden;">
+    `)
+	p.StreamSidebar(qw422016, "overview")
+	qw422016.N().S(`
+
+    <div class="column is-main-content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span>
+        <hr>
+
+        <a class="button is-outlined" href="https://www.twitch.tv/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`" target="_blank">
+            <span class="icon is-small"><i class="fab fa-twitch"></i></span>
+            <span>Twitch</span>
+        </a>
+
+        `)
+	if p.Channel.LastFM != "" {
+		qw422016.N().S(`
+            <a class="button is-outlined" href="https://www.last.fm/user/`)
+		qw422016.N().U(p.Channel.LastFM)
+		qw422016.N().S(`" target="_blank">
+                <span class="icon is-small"><i class="fab fa-lastfm"></i></span>
+                <span>LastFM</span>
+            </a>
+        `)
+	}
+	qw422016.N().S(`
+
+        `)
+	if p.Channel.SteamID != "" {
+		qw422016.N().S(`
+            <a class="button is-outlined" href="https://steamcommunity.com/profiles/`)
+		qw422016.N().U(p.Channel.SteamID)
+		qw422016.N().S(`" target="_blank">
+                <span class="icon is-small"><i class="fab fa-steam"></i></span>
+                <span>Steam</span>
+            </a>
+        `)
+	}
+	qw422016.N().S(`
+
+        `)
+	if p.Channel.ExtraLifeID != 0 {
+		qw422016.N().S(`
+            <a class="button is-outlined" href="https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID=`)
+		qw422016.N().D(p.Channel.ExtraLifeID)
+		qw422016.N().S(`" target="_blank">
+                <span class="icon is-small"><i class="fas fa-gamepad"></i></span>
+                <span>Extra-Life</span>
+            </a>
+        `)
+	}
+	qw422016.N().S(`
+
+        <br>
+        <br>
+
+        <p><b>Bot name:</b> <code>`)
+	qw422016.E().S(p.Channel.BotName)
+	qw422016.N().S(`</code></p>
+        <p><b>Command prefix:</b> <code>`)
+	qw422016.E().S(p.Channel.Prefix)
+	qw422016.N().S(`</code></p>
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
@@ -291,7 +388,9 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		for _, c := range p.Commands {
 			qw422016.N().S(`
                 <tr>
-                    <td><code class="has-text-white">`)
+                    <td><code`)
+			qw422016.N().S("`")
+			qw422016.N().S(`>`)
 			qw422016.E().S(p.Channel.Prefix)
 			qw422016.E().S(c.R.CommandInfo.Name)
 			qw422016.N().S(`</code></td>

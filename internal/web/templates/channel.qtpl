@@ -47,6 +47,11 @@ html {
     margin-right: 0.75rem;
     padding: 2.5rem;
 }
+
+code {
+    color: white !important;
+}
+
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
 {% endfunc %}
@@ -67,6 +72,7 @@ html {
             General
         </p>
         <ul class="menu-list">
+            <li><a href="/c/{%u p.Channel.Name %}" class='{%= isActive(item, "overview") %}'>Overview</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/commands" class='{%= isActive(item, "commands") %}'>Commands</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/quotes" class='{%= isActive(item, "quotes") %}'>Quotes</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/lists" class='{%= isActive(item, "lists") %}'>Lists</a></li>
@@ -79,6 +85,49 @@ html {
             <li><a href="/c/{%u p.Channel.Name %}/rules" class='{%= isActive(item, "rules") %}'>Chat rules</a></li>
         </ul>
     </aside>
+</div>
+{% endfunc %}
+
+{% func (p *ChannelPage) PageBody() %}
+<div class="columns is-fullheight" style="overflow: hidden;">
+    {%= p.Sidebar("overview") %}
+
+    <div class="column is-main-content">
+        <span class="title is-1">{%s p.Channel.Name %}</span>
+        <hr>
+
+        <a class="button is-outlined" href="https://www.twitch.tv/{%u p.Channel.Name %}" target="_blank">
+            <span class="icon is-small"><i class="fab fa-twitch"></i></span>
+            <span>Twitch</span>
+        </a>
+
+        {% if p.Channel.LastFM != "" %}
+            <a class="button is-outlined" href="https://www.last.fm/user/{%u p.Channel.LastFM %}" target="_blank">
+                <span class="icon is-small"><i class="fab fa-lastfm"></i></span>
+                <span>LastFM</span>
+            </a>
+        {% endif %}
+
+        {% if p.Channel.SteamID != "" %}
+            <a class="button is-outlined" href="https://steamcommunity.com/profiles/{%u p.Channel.SteamID %}" target="_blank">
+                <span class="icon is-small"><i class="fab fa-steam"></i></span>
+                <span>Steam</span>
+            </a>
+        {% endif %}
+
+        {% if p.Channel.ExtraLifeID != 0 %}
+            <a class="button is-outlined" href="https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID={%d p.Channel.ExtraLifeID %}" target="_blank">
+                <span class="icon is-small"><i class="fas fa-gamepad"></i></span>
+                <span>Extra-Life</span>
+            </a>
+        {% endif %}
+
+        <br>
+        <br>
+
+        <p><b>Bot name:</b> <code>{%s p.Channel.BotName %}</code></p>
+        <p><b>Command prefix:</b> <code>{%s p.Channel.Prefix %}</code></p>
+    </div>
 </div>
 {% endfunc %}
 
@@ -138,7 +187,7 @@ Unknown
             <tbody>
                 {% for _, c := range p.Commands %}
                 <tr>
-                    <td><code class="has-text-white">{%s p.Channel.Prefix %}{%s c.R.CommandInfo.Name %}</code></td>
+                    <td><code`>{%s p.Channel.Prefix %}{%s c.R.CommandInfo.Name %}</code></td>
                     <td>{%= accessLevel(c.R.CommandInfo.AccessLevel) %}</td>
                     <td>{%s c.Message %}</td>
                     <td>{%v c.R.CommandInfo.Count %}</td>

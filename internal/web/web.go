@@ -65,6 +65,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	r.Route("/c/{channel}", func(r chi.Router) {
 		r.Use(a.channelMiddleware("channel"))
+		r.Get("/", a.channel)
 		r.Get("/commands", a.channelCommands)
 		r.Get("/quotes", a.channelQuotes)
 	})
@@ -205,6 +206,15 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 
 	templates.WritePageTemplate(w, &templates.ChannelsPage{
 		Channels: channels,
+	})
+}
+
+func (a *App) channel(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	channel := getChannel(ctx)
+
+	templates.WritePageTemplate(w, &templates.ChannelPage{
+		Channel: channel,
 	})
 }
 
