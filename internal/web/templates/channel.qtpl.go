@@ -81,7 +81,9 @@ html {
 code {
     color: white !important;
 }
-
+ol {
+    list-style-position: inside;
+}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
 `)
@@ -393,9 +395,7 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		for _, c := range p.Commands {
 			qw422016.N().S(`
                 <tr>
-                    <td><code`)
-			qw422016.N().S("`")
-			qw422016.N().S(`>`)
+                    <td><code>`)
 			qw422016.E().S(p.Channel.Prefix)
 			qw422016.E().S(c.R.CommandInfo.Name)
 			qw422016.N().S(`</code></td>
@@ -624,6 +624,163 @@ func (p *ChannelAutorepliesPage) WritePageBody(qq422016 qtio422016.Writer) {
 func (p *ChannelAutorepliesPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelListsPage struct {
+	ChannelPage
+	Lists models.CommandListSlice
+}
+
+func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="columns is-fullheight" style="overflow: hidden;">
+    `)
+	p.StreamSidebar(qw422016, "lists")
+	qw422016.N().S(`
+
+    <div class="column is-main-content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Lists</span>
+        <hr>
+
+        `)
+	if len(p.Lists) == 0 {
+		qw422016.N().S(`
+        <h2>No lists.</h2>
+        `)
+	} else {
+		qw422016.N().S(`
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="command"
+            data-search="true"
+            data-sortable="true"
+            data-detail-view="true"
+            data-detail-formatter="detailFormatter"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="command">Command</th>
+                    <th data-sortable="true">Access</th>
+                    <th data-sortable="true">Count</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+		for _, l := range p.Lists {
+			qw422016.N().S(`
+                <tr data-has-detail-view="true">
+                    <td><code>`)
+			qw422016.E().S(p.Channel.Prefix)
+			qw422016.E().S(l.R.CommandInfo.Name)
+			qw422016.N().S(`</code></td>
+                    <td>`)
+			streamaccessLevel(qw422016, l.R.CommandInfo.AccessLevel)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().V(l.R.CommandInfo.Count)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().S(l.R.CommandInfo.Editor)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().V(l.UpdatedAt)
+			qw422016.N().S(`</td>
+                </tr>
+                `)
+		}
+		qw422016.N().S(`
+            </tbody>
+        </table>
+        `)
+	}
+	qw422016.N().S(`
+
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelListsPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelListsPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+func (p *ChannelListsPage) StreamPageScripts(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.ChannelPage.StreamPageScripts(qw422016)
+	qw422016.N().S(`
+<script>
+`)
+	qw422016.N().S(`var all = [`)
+	for i, l := range p.Lists {
+		if i != 0 {
+			qw422016.N().S(`,`)
+		}
+		qw422016.N().S(`[`)
+		for j, item := range l.Items {
+			if j != 0 {
+				qw422016.N().S(`,`)
+			}
+			qw422016.N().Q(item)
+		}
+		qw422016.N().S(`]`)
+	}
+	qw422016.N().S(`];`)
+	qw422016.N().S(`
+
+function detailFormatter(index, row) {
+    var html = ["<p><ol>"];
+
+    var items = all[index];
+
+    if (items.length == 0) {
+        return "<p>No items.</p>"
+    }
+
+    for (var i = 0; i < items.length; i++) {
+        html.push("<li>");
+        var div = document.createElement("div");
+        div.innerText = items[i];
+        html.push(div.innerHTML);
+        html.push("</li>");
+    }
+
+    html.push("</ol></p>")
+
+    return html.join("");
+}
+</script>
+`)
+}
+
+func (p *ChannelListsPage) WritePageScripts(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageScripts(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelListsPage) PageScripts() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageScripts(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016

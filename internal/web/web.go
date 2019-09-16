@@ -69,6 +69,7 @@ func (a *App) Run(ctx context.Context) error {
 		r.Get("/commands", a.channelCommands)
 		r.Get("/quotes", a.channelQuotes)
 		r.Get("/autoreplies", a.channelAutoreplies)
+		r.Get("/lists", a.channelLists)
 	})
 
 	r.Get("/auth/twitch", a.authTwitch)
@@ -280,6 +281,30 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 			Channel: channel,
 		},
 		Autoreplies: autoreplies,
+	})
+}
+
+func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+	channel := getChannel(ctx)
+
+	lists, err := channel.CommandLists(qm.Load(models.CommandListRels.CommandInfo)).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying command lists", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	sort.Slice(lists, func(i, j int) bool {
+		return lists[i].R.CommandInfo.Name < lists[j].R.CommandInfo.Name
+	})
+
+	templates.WritePageTemplate(w, &templates.ChannelListsPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
+		Lists: lists,
 	})
 }
 
