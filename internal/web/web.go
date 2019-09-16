@@ -68,6 +68,7 @@ func (a *App) Run(ctx context.Context) error {
 		r.Get("/", a.channel)
 		r.Get("/commands", a.channelCommands)
 		r.Get("/quotes", a.channelQuotes)
+		r.Get("/autoreplies", a.channelAutoreplies)
 	})
 
 	r.Get("/auth/twitch", a.authTwitch)
@@ -259,6 +260,26 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 			Channel: channel,
 		},
 		Quotes: quotes,
+	})
+}
+
+func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+	channel := getChannel(ctx)
+
+	autoreplies, err := channel.Autoreplies(qm.OrderBy(models.AutoreplyColumns.Num)).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying autoreplies", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	templates.WritePageTemplate(w, &templates.ChannelAutorepliesPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
+		Autoreplies: autoreplies,
 	})
 }
 

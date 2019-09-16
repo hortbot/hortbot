@@ -171,6 +171,11 @@ func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
 	qw422016.N().S(`/lists" class='`)
 	streamisActive(qw422016, item, "lists")
 	qw422016.N().S(`'>Lists</a></li>
+            <li><a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/autoreplies" class='`)
+	streamisActive(qw422016, item, "autoreplies")
+	qw422016.N().S(`'>Autoreplies</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -445,70 +450,70 @@ type ChannelQuotesPage struct {
 
 func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-    <div class="columns is-fullheight" style="overflow: hidden;">
-        `)
+<div class="columns is-fullheight" style="overflow: hidden;">
+    `)
 	p.StreamSidebar(qw422016, "quotes")
 	qw422016.N().S(`
-    
-        <div class="column is-main-content">
-            <span class="title is-1">`)
+
+    <div class="column is-main-content">
+        <span class="title is-1">`)
 	qw422016.E().S(p.Channel.Name)
 	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Quotes</span>
-            <hr>
-    
-            `)
+        <hr>
+
+        `)
 	if len(p.Quotes) == 0 {
 		qw422016.N().S(`
-            <h2>No quotes.</h2>
-            `)
+        <h2>No quotes.</h2>
+        `)
 	} else {
 		qw422016.N().S(`
-            <table
-                class="table is-striped is-hoverable is-fullwidth"
-                data-toggle="table"
-                data-sort-class="table-active"
-                data-sort-name="number"
-                data-search="true"
-                data-sortable="true"
-            >
-                <thead>
-                    <tr>
-                        <th data-sortable="true" data-field="number">#</th>
-                        <th data-sortable="true">Quote</th>
-                        <th data-sortable="true">Editor</th>
-                        <th data-sortable="true">Edited</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    `)
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="number"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="number">#</th>
+                    <th data-sortable="true">Quote</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
 		for _, q := range p.Quotes {
 			qw422016.N().S(`
-                    <tr>
-                        <td>`)
+                <tr>
+                    <td>`)
 			qw422016.N().D(q.Num)
 			qw422016.N().S(`</td>
-                        <td>`)
+                    <td>`)
 			qw422016.E().S(q.Quote)
 			qw422016.N().S(`</td>
-                        <td>`)
+                    <td>`)
 			qw422016.E().S(q.Editor)
 			qw422016.N().S(`</td>
-                        <td>`)
+                    <td>`)
 			qw422016.E().V(q.UpdatedAt)
 			qw422016.N().S(`</td>
-                    </tr>
-                    `)
+                </tr>
+                `)
 		}
 		qw422016.N().S(`
-                </tbody>
-            </table>
-            `)
+            </tbody>
+        </table>
+        `)
 	}
 	qw422016.N().S(`
-    
-        </div>
+
     </div>
-    `)
+</div>
+`)
 }
 
 func (p *ChannelQuotesPage) WritePageBody(qq422016 qtio422016.Writer) {
@@ -518,6 +523,105 @@ func (p *ChannelQuotesPage) WritePageBody(qq422016 qtio422016.Writer) {
 }
 
 func (p *ChannelQuotesPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelAutorepliesPage struct {
+	ChannelPage
+	Autoreplies models.AutoreplySlice
+}
+
+func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="columns is-fullheight" style="overflow: hidden;">
+    `)
+	p.StreamSidebar(qw422016, "autoreplies")
+	qw422016.N().S(`
+
+    <div class="column is-main-content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Autoreplies</span>
+        <hr>
+
+        `)
+	if len(p.Autoreplies) == 0 {
+		qw422016.N().S(`
+        <h2>No autoreplies.</h2>
+        `)
+	} else {
+		qw422016.N().S(`
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="number"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="number">#</th>
+                    <th data-sortable="true">Trigger</th>
+                    <th data-sortable="true">Regex</th>
+                    <th data-sortable="true">Response</th>
+                    <th data-sortable="true">Count</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+		for _, a := range p.Autoreplies {
+			qw422016.N().S(`
+                <tr>
+                    <td>`)
+			qw422016.N().D(a.Num)
+			qw422016.N().S(`</td>
+                    <td><code>`)
+			qw422016.E().S(a.OrigPattern.String)
+			qw422016.N().S(`</code></td>
+                    <td><code>`)
+			qw422016.E().S(a.Trigger)
+			qw422016.N().S(`</code></td>
+                    <td>`)
+			qw422016.E().S(a.Response)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.N().D(a.Count)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().S(a.Editor)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().V(a.UpdatedAt)
+			qw422016.N().S(`</td>
+                </tr>
+                `)
+		}
+		qw422016.N().S(`
+            </tbody>
+        </table>
+        `)
+	}
+	qw422016.N().S(`
+
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelAutorepliesPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelAutorepliesPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)

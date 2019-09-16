@@ -76,6 +76,7 @@ code {
             <li><a href="/c/{%u p.Channel.Name %}/commands" class='{%= isActive(item, "commands") %}'>Commands</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/quotes" class='{%= isActive(item, "quotes") %}'>Quotes</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/lists" class='{%= isActive(item, "lists") %}'>Lists</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/autoreplies" class='{%= isActive(item, "autoreplies") %}'>Autoreplies</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -204,53 +205,110 @@ Unknown
 {% endfunc %}
 
 {% code
-    type ChannelQuotesPage struct {
-        ChannelPage
-        Quotes models.QuoteSlice
-    }
-    %}
-    
-    {% func (p *ChannelQuotesPage) PageBody() %}
-    <div class="columns is-fullheight" style="overflow: hidden;">
-        {%= p.Sidebar("quotes") %}
-    
-        <div class="column is-main-content">
-            <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Quotes</span>
-            <hr>
-    
-            {% if len(p.Quotes) == 0 %}
-            <h2>No quotes.</h2>
-            {% else %}
-            <table
-                class="table is-striped is-hoverable is-fullwidth"
-                data-toggle="table"
-                data-sort-class="table-active"
-                data-sort-name="number"
-                data-search="true"
-                data-sortable="true"
-            >
-                <thead>
-                    <tr>
-                        <th data-sortable="true" data-field="number">#</th>
-                        <th data-sortable="true">Quote</th>
-                        <th data-sortable="true">Editor</th>
-                        <th data-sortable="true">Edited</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for _, q := range p.Quotes %}
-                    <tr>
-                        <td>{%d q.Num %}</td>
-                        <td>{%s q.Quote %}</td>
-                        <td>{%s q.Editor %}</td>
-                        <td>{%v q.UpdatedAt %}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endif %}
-    
-        </div>
+type ChannelQuotesPage struct {
+    ChannelPage
+    Quotes models.QuoteSlice
+}
+%}
+
+{% func (p *ChannelQuotesPage) PageBody() %}
+<div class="columns is-fullheight" style="overflow: hidden;">
+    {%= p.Sidebar("quotes") %}
+
+    <div class="column is-main-content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Quotes</span>
+        <hr>
+
+        {% if len(p.Quotes) == 0 %}
+        <h2>No quotes.</h2>
+        {% else %}
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="number"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="number">#</th>
+                    <th data-sortable="true">Quote</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, q := range p.Quotes %}
+                <tr>
+                    <td>{%d q.Num %}</td>
+                    <td>{%s q.Quote %}</td>
+                    <td>{%s q.Editor %}</td>
+                    <td>{%v q.UpdatedAt %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
     </div>
-    {% endfunc %}
-    
+</div>
+{% endfunc %}
+
+
+{% code
+type ChannelAutorepliesPage struct {
+    ChannelPage
+    Autoreplies models.AutoreplySlice
+}
+%}
+
+{% func (p *ChannelAutorepliesPage) PageBody() %}
+<div class="columns is-fullheight" style="overflow: hidden;">
+    {%= p.Sidebar("autoreplies") %}
+
+    <div class="column is-main-content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Autoreplies</span>
+        <hr>
+
+        {% if len(p.Autoreplies) == 0 %}
+        <h2>No autoreplies.</h2>
+        {% else %}
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="number"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="number">#</th>
+                    <th data-sortable="true">Trigger</th>
+                    <th data-sortable="true">Regex</th>
+                    <th data-sortable="true">Response</th>
+                    <th data-sortable="true">Count</th>
+                    <th data-sortable="true">Editor</th>
+                    <th data-sortable="true">Edited</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, a := range p.Autoreplies %}
+                <tr>
+                    <td>{%d a.Num %}</td>
+                    <td><code>{%s a.OrigPattern.String %}</code></td>
+                    <td><code>{%s a.Trigger %}</code></td>
+                    <td>{%s a.Response %}</td>
+                    <td>{%d a.Count %}</td>
+                    <td>{%s a.Editor %}</td>
+                    <td>{%v a.UpdatedAt %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+    </div>
+</div>
+{% endfunc %}
