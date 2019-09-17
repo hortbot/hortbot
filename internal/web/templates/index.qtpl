@@ -1,6 +1,12 @@
+{% import (
+    "github.com/dustin/go-humanize"
+) %}
+
 {% code
 type IndexPage struct {
     BasePage
+    ChannelCount int64
+    BotCount int64
 }
 %}
 
@@ -17,6 +23,21 @@ HortBot
         <h2 class="subtitle">
             To the index
         </h2>
+
+        <div class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Active channels</p>
+                    <p class="title">{%s humanize.Comma(p.ChannelCount) %}</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Active bots</p>
+                    <p class="title">{%s humanize.Comma(p.BotCount) %}</p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 {% endfunc %}

@@ -19,6 +19,7 @@ import (
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/volatiletech/null"
+	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.uber.org/zap"
 )
@@ -192,7 +193,30 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
-	templates.WritePageTemplate(w, &templates.IndexPage{})
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+
+	channels, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying channels", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	var row struct {
+		BotCount int64
+	}
+
+	if err := queries.Raw("SELECT COUNT(DISTINCT bot_name) AS bot_count FROM channels WHERE active").Bind(ctx, a.DB, &row); err != nil {
+		logger.Error("error querying bot names", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	templates.WritePageTemplate(w, &templates.IndexPage{
+		ChannelCount: channels,
+		BotCount:     row.BotCount,
+	})
 }
 
 func (a *App) channels(w http.ResponseWriter, r *http.Request) {

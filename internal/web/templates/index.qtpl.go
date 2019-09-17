@@ -4,6 +4,8 @@
 package templates
 
 import (
+	"github.com/dustin/go-humanize"
+
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
@@ -16,6 +18,8 @@ var (
 
 type IndexPage struct {
 	BasePage
+	ChannelCount int64
+	BotCount     int64
 }
 
 func (p *IndexPage) StreamPageTitle(qw422016 *qt422016.Writer) {
@@ -48,6 +52,25 @@ func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer) {
         <h2 class="subtitle">
             To the index
         </h2>
+
+        <div class="level">
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Active channels</p>
+                    <p class="title">`)
+	qw422016.E().S(humanize.Comma(p.ChannelCount))
+	qw422016.N().S(`</p>
+                </div>
+            </div>
+            <div class="level-item has-text-centered">
+                <div>
+                    <p class="heading">Active bots</p>
+                    <p class="title">`)
+	qw422016.E().S(humanize.Comma(p.BotCount))
+	qw422016.N().S(`</p>
+                </div>
+            </div>
+        </div>
     </div>
 </section>
 `)
