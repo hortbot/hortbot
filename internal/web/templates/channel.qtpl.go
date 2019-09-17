@@ -122,6 +122,62 @@ func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
+<script>
+function commandFormatter(value) {
+    var output = "";
+    var level = 0;
+
+    for (var i = 0; i < value.length; i++) {
+        var c = value.charAt(i);
+        
+        if ((i + 1) == value.length) {
+            output += c;
+            continue;
+        }
+
+        var next = value.charAt(i+1)
+
+        if (c == "(" && next == "_") {
+            level++;
+            i++;
+            if (level == 1) {
+                output += "<code>";
+            } else {
+                output += "(_";
+            }
+            continue;
+        }
+
+        if (c == "_" && next == ")") {
+            level--;
+            i++;
+            if (level == 0) {
+                output += "</code>"
+            } else {
+                output += "_)";
+            }
+            continue;
+        }
+
+        output += c;
+    }
+
+    if (level > 0) {
+        output += "</code>";
+    }
+
+    return output;
+}
+
+function timeFormatter(value) {
+    var d = new Date(value);
+    return d.toLocaleString();
+}
+
+function timeSorter(a, b) {
+    return Date.parse(a) - Date.parse(b);
+}
+</script>
 `)
 }
 
@@ -423,10 +479,10 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <tr>
                     <th data-sortable="true" data-field="command">Command</th>
                     <th data-sortable="true">Access</th>
-                    <th data-sortable="true">Response</th>
+                    <th data-sortable="true" data-formatter="commandFormatter">Response</th>
                     <th data-sortable="true">Count</th>
                     <th data-sortable="true">Editor</th>
-                    <th data-sortable="true">Edited</th>
+                    <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
                 </tr>
             </thead>
             <tbody>
@@ -519,10 +575,10 @@ func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
                     <th data-sortable="true" data-field="number">#</th>
                     <th data-sortable="true">Quote</th>
                     <th data-sortable="true">Editor</th>
-                    <th data-sortable="true">Edited</th>
+                    <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody> data-formatter="commandFormatter"
                 `)
 		for _, q := range p.Quotes {
 			qw422016.N().S(`
@@ -605,10 +661,10 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
                     <th data-sortable="true" data-field="number">#</th>
                     <th data-sortable="true">Trigger</th>
                     <th data-sortable="true">Regex</th>
-                    <th data-sortable="true">Response</th>
+                    <th data-sortable="true" data-formatter="commandFormatter">Response</th>
                     <th data-sortable="true">Count</th>
                     <th data-sortable="true">Editor</th>
-                    <th data-sortable="true">Edited</th>
+                    <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
                 </tr>
             </thead>
             <tbody>
@@ -707,7 +763,7 @@ func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                     <th data-sortable="true">Access</th>
                     <th data-sortable="true">Count</th>
                     <th data-sortable="true">Editor</th>
-                    <th data-sortable="true">Edited</th>
+                    <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
                 </tr>
             </thead>
             <tbody>
