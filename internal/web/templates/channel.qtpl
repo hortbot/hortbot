@@ -15,6 +15,7 @@ HortBot - {%s p.Channel.Name %}
 
 
 {% func (p *ChannelPage) PageMeta() %}
+{%= p.BasePage.PageMeta() %}
 <style>
 html {
     overflow-y: hidden;
@@ -51,14 +52,20 @@ html {
 code {
     color: white !important;
 }
+
 ol {
     list-style-position: inside;
+}
+
+.subtitle {
+    padding-left: 1rem;
 }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
 {% endfunc %}
 
 {% func (p *ChannelPage) PageScripts() %}
+{%= p.BasePage.PageScripts() %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
@@ -85,7 +92,7 @@ ol {
         </p>
         <ul class="menu-list">
             <li><a href="/c/{%u p.Channel.Name %}/regulars" class='{%= isActive(item, "regulars") %}'>Regulars</a></li>
-            <li><a href="/c/{%u p.Channel.Name %}/rules" class='{%= isActive(item, "rules") %}'>Chat rules</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/chatrules" class='{%= isActive(item, "chatrules") %}'>Chat rules</a></li>
         </ul>
     </aside>
 </div>
@@ -95,7 +102,7 @@ ol {
 <div class="columns is-fullheight" style="overflow: hidden;">
     {%= p.Sidebar("overview") %}
 
-    <div class="column is-main-content">
+    <div class="column is-main-content content">
         <span class="title is-1">{%s p.Channel.Name %}</span>
         <hr>
 
@@ -132,6 +139,26 @@ ol {
         <p><b>Command prefix:</b> <code>{%s p.Channel.Prefix %}</code></p>
     </div>
 </div>
+
+<script>
+var hash = window.location.hash;
+if (hash) {
+    if (hash == "#overview") {
+        history.replaceState(null, null, ' ');
+    } else {
+        var redirect = {
+            "#commands": "commands",
+            "#quotes": "quotes",
+            "#autoreplies": "autoreplies",
+            "#scheduled": "scheduled",
+            "#regulars": "regulars",
+            "#chatrules": "chatrules",
+        }[hash];
+
+        window.location.href = "./" + redirect;
+    }
+}
+</script>
 {% endfunc %}
 
 {% code
@@ -162,12 +189,12 @@ Unknown
 <div class="columns is-fullheight" style="overflow: hidden;">
     {%= p.Sidebar("commands") %}
 
-    <div class="column is-main-content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Commands</span>
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Commands</span>
         <hr>
 
         {% if len(p.Commands) == 0 %}
-        <h2>No commands.</h2>
+        <p>No commands.</p>
         {% else %}
         <table
             class="table is-striped is-hoverable is-fullwidth"
@@ -201,7 +228,6 @@ Unknown
             </tbody>
         </table>
         {% endif %}
-
     </div>
 </div>
 {% endfunc %}
@@ -217,12 +243,12 @@ type ChannelQuotesPage struct {
 <div class="columns is-fullheight" style="overflow: hidden;">
     {%= p.Sidebar("quotes") %}
 
-    <div class="column is-main-content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Quotes</span>
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Quotes</span>
         <hr>
 
         {% if len(p.Quotes) == 0 %}
-        <h2>No quotes.</h2>
+        <p>No quotes.</p>
         {% else %}
         <table
             class="table is-striped is-hoverable is-fullwidth"
@@ -252,7 +278,6 @@ type ChannelQuotesPage struct {
             </tbody>
         </table>
         {% endif %}
-
     </div>
 </div>
 {% endfunc %}
@@ -269,12 +294,12 @@ type ChannelAutorepliesPage struct {
 <div class="columns is-fullheight" style="overflow: hidden;">
     {%= p.Sidebar("autoreplies") %}
 
-    <div class="column is-main-content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Autoreplies</span>
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Autoreplies</span>
         <hr>
 
         {% if len(p.Autoreplies) == 0 %}
-        <h2>No autoreplies.</h2>
+        <p>No autoreplies.</p>
         {% else %}
         <table
             class="table is-striped is-hoverable is-fullwidth"
@@ -327,12 +352,12 @@ type ChannelListsPage struct {
 <div class="columns is-fullheight" style="overflow: hidden;">
     {%= p.Sidebar("lists") %}
 
-    <div class="column is-main-content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3" style="padding-left: 1rem">Lists</span>
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Lists</span>
         <hr>
 
         {% if len(p.Lists) == 0 %}
-        <h2>No lists.</h2>
+        <p>No lists.</p>
         {% else %}
         <table
             class="table is-striped is-hoverable is-fullwidth"
@@ -366,7 +391,6 @@ type ChannelListsPage struct {
             </tbody>
         </table>
         {% endif %}
-
     </div>
 </div>
 {% endfunc %}
@@ -411,4 +435,76 @@ function detailFormatter(index, row) {
     return html.join("");
 }
 </script>
+{% endfunc %}
+
+
+{% code
+type ChannelRegularsPage struct {
+    ChannelPage
+}
+%}
+
+{% func (p *ChannelRegularsPage) PageBody() %}
+<div class="columns is-fullheight" style="overflow: hidden;">
+    {%= p.Sidebar("regulars") %}
+
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Regulars</span>
+        <hr>
+
+        {% if len(p.Channel.CustomRegulars) == 0 %}
+        <p>No regulars.</p>
+        {% else %}
+        <p>The following users are considered regulars in chat:</p>
+        <ul>
+            {% for _, reg := range p.Channel.CustomRegulars %}
+            <li>{%s reg %}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endfunc %}
+
+
+{% code
+type ChannelRulesPage struct {
+    ChannelPage
+}
+%}
+
+{% func (p *ChannelRulesPage) PageBody() %}
+<div class="columns is-fullheight" style="overflow: hidden;">
+    {%= p.Sidebar("chatrules") %}
+
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Chat rules</span>
+        <hr>
+
+        <h2>Allowed URLs</h2>
+
+        {% if len(p.Channel.PermittedLinks) == 0 %}
+        <p>No allowed URLs.</p>
+        {% else %}
+        <p>The following URL patterns are allowed:</p>
+        <ul>
+            {% for _, link := range p.Channel.PermittedLinks %}
+            <li><code>{%s link %}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <h2>Banned phrases</h2>
+        {% if len(p.Channel.FilterBannedPhrasesPatterns) == 0 %}
+        <p>No banned phrases.</p>
+        {% else %}
+        <p>The following phrases are banned:</p>
+        <ul>
+            {% for _, p := range p.Channel.FilterBannedPhrasesPatterns %}
+            <li><code>{%s p %}</code></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
 {% endfunc %}

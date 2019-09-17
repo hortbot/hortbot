@@ -326,10 +326,11 @@ depending on its mod/vip status in a particular channel.
     - [x] Overview (links, simple info)
     - [x] Commands
     - [x] Quotes
-    - [ ] Lists
-    - [ ] Autoreplies
-    - [ ] Regular list
-    - [ ] Chat rules
+    - [x] Lists
+    - [x] Autoreplies
+    - [ ] Repeat/scheduled commands
+    - [x] Regular list
+    - [x] Chat rules
 
 ## New features
 

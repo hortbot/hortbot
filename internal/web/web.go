@@ -70,6 +70,8 @@ func (a *App) Run(ctx context.Context) error {
 		r.Get("/quotes", a.channelQuotes)
 		r.Get("/autoreplies", a.channelAutoreplies)
 		r.Get("/lists", a.channelLists)
+		r.Get("/regulars", a.channelRegulars)
+		r.Get("/chatrules", a.channelChatRules)
 	})
 
 	r.Get("/auth/twitch", a.authTwitch)
@@ -305,6 +307,28 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 			Channel: channel,
 		},
 		Lists: lists,
+	})
+}
+
+func (a *App) channelRegulars(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	channel := getChannel(ctx)
+
+	templates.WritePageTemplate(w, &templates.ChannelRegularsPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
+	})
+}
+
+func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	channel := getChannel(ctx)
+
+	templates.WritePageTemplate(w, &templates.ChannelRulesPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
 	})
 }
 

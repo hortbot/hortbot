@@ -45,6 +45,9 @@ func (p *ChannelPage) PageTitle() string {
 
 func (p *ChannelPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
+`)
+	p.BasePage.StreamPageMeta(qw422016)
+	qw422016.N().S(`
 <style>
 html {
     overflow-y: hidden;
@@ -81,8 +84,13 @@ html {
 code {
     color: white !important;
 }
+
 ol {
     list-style-position: inside;
+}
+
+.subtitle {
+    padding-left: 1rem;
 }
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
@@ -104,6 +112,9 @@ func (p *ChannelPage) PageMeta() string {
 }
 
 func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.BasePage.StreamPageScripts(qw422016)
 	qw422016.N().S(`
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
@@ -190,8 +201,8 @@ func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
 	qw422016.N().S(`'>Regulars</a></li>
             <li><a href="/c/`)
 	qw422016.N().U(p.Channel.Name)
-	qw422016.N().S(`/rules" class='`)
-	streamisActive(qw422016, item, "rules")
+	qw422016.N().S(`/chatrules" class='`)
+	streamisActive(qw422016, item, "chatrules")
 	qw422016.N().S(`'>Chat rules</a></li>
         </ul>
     </aside>
@@ -220,7 +231,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	p.StreamSidebar(qw422016, "overview")
 	qw422016.N().S(`
 
-    <div class="column is-main-content">
+    <div class="column is-main-content content">
         <span class="title is-1">`)
 	qw422016.E().S(p.Channel.Name)
 	qw422016.N().S(`</span>
@@ -283,6 +294,26 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`</code></p>
     </div>
 </div>
+
+<script>
+var hash = window.location.hash;
+if (hash) {
+    if (hash == "#overview") {
+        history.replaceState(null, null, ' ');
+    } else {
+        var redirect = {
+            "#commands": "commands",
+            "#quotes": "quotes",
+            "#autoreplies": "autoreplies",
+            "#scheduled": "scheduled",
+            "#regulars": "regulars",
+            "#chatrules": "chatrules",
+        }[hash];
+
+        window.location.href = "./" + redirect;
+    }
+}
+</script>
 `)
 }
 
@@ -359,16 +390,16 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	p.StreamSidebar(qw422016, "commands")
 	qw422016.N().S(`
 
-    <div class="column is-main-content">
+    <div class="column is-main-content content">
         <span class="title is-1">`)
 	qw422016.E().S(p.Channel.Name)
-	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Commands</span>
+	qw422016.N().S(`</span><span class="subtitle is-3">Commands</span>
         <hr>
 
         `)
 	if len(p.Commands) == 0 {
 		qw422016.N().S(`
-        <h2>No commands.</h2>
+        <p>No commands.</p>
         `)
 	} else {
 		qw422016.N().S(`
@@ -423,7 +454,6 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         `)
 	}
 	qw422016.N().S(`
-
     </div>
 </div>
 `)
@@ -455,16 +485,16 @@ func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	p.StreamSidebar(qw422016, "quotes")
 	qw422016.N().S(`
 
-    <div class="column is-main-content">
+    <div class="column is-main-content content">
         <span class="title is-1">`)
 	qw422016.E().S(p.Channel.Name)
-	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Quotes</span>
+	qw422016.N().S(`</span><span class="subtitle is-3">Quotes</span>
         <hr>
 
         `)
 	if len(p.Quotes) == 0 {
 		qw422016.N().S(`
-        <h2>No quotes.</h2>
+        <p>No quotes.</p>
         `)
 	} else {
 		qw422016.N().S(`
@@ -510,7 +540,6 @@ func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
         `)
 	}
 	qw422016.N().S(`
-
     </div>
 </div>
 `)
@@ -542,16 +571,16 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	p.StreamSidebar(qw422016, "autoreplies")
 	qw422016.N().S(`
 
-    <div class="column is-main-content">
+    <div class="column is-main-content content">
         <span class="title is-1">`)
 	qw422016.E().S(p.Channel.Name)
-	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Autoreplies</span>
+	qw422016.N().S(`</span><span class="subtitle is-3">Autoreplies</span>
         <hr>
 
         `)
 	if len(p.Autoreplies) == 0 {
 		qw422016.N().S(`
-        <h2>No autoreplies.</h2>
+        <p>No autoreplies.</p>
         `)
 	} else {
 		qw422016.N().S(`
@@ -641,16 +670,16 @@ func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	p.StreamSidebar(qw422016, "lists")
 	qw422016.N().S(`
 
-    <div class="column is-main-content">
+    <div class="column is-main-content content">
         <span class="title is-1">`)
 	qw422016.E().S(p.Channel.Name)
-	qw422016.N().S(`</span><span class="subtitle is-3" style="padding-left: 1rem">Lists</span>
+	qw422016.N().S(`</span><span class="subtitle is-3">Lists</span>
         <hr>
 
         `)
 	if len(p.Lists) == 0 {
 		qw422016.N().S(`
-        <h2>No lists.</h2>
+        <p>No lists.</p>
         `)
 	} else {
 		qw422016.N().S(`
@@ -703,7 +732,6 @@ func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         `)
 	}
 	qw422016.N().S(`
-
     </div>
 </div>
 `)
@@ -781,6 +809,148 @@ func (p *ChannelListsPage) WritePageScripts(qq422016 qtio422016.Writer) {
 func (p *ChannelListsPage) PageScripts() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageScripts(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelRegularsPage struct {
+	ChannelPage
+}
+
+func (p *ChannelRegularsPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="columns is-fullheight" style="overflow: hidden;">
+    `)
+	p.StreamSidebar(qw422016, "regulars")
+	qw422016.N().S(`
+
+    <div class="column is-main-content content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3">Regulars</span>
+        <hr>
+
+        `)
+	if len(p.Channel.CustomRegulars) == 0 {
+		qw422016.N().S(`
+        <p>No regulars.</p>
+        `)
+	} else {
+		qw422016.N().S(`
+        <p>The following users are considered regulars in chat:</p>
+        <ul>
+            `)
+		for _, reg := range p.Channel.CustomRegulars {
+			qw422016.N().S(`
+            <li>`)
+			qw422016.E().S(reg)
+			qw422016.N().S(`</li>
+            `)
+		}
+		qw422016.N().S(`
+        </ul>
+        `)
+	}
+	qw422016.N().S(`
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelRegularsPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelRegularsPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelRulesPage struct {
+	ChannelPage
+}
+
+func (p *ChannelRulesPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="columns is-fullheight" style="overflow: hidden;">
+    `)
+	p.StreamSidebar(qw422016, "chatrules")
+	qw422016.N().S(`
+
+    <div class="column is-main-content content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3">Chat rules</span>
+        <hr>
+
+        <h2>Allowed URLs</h2>
+
+        `)
+	if len(p.Channel.PermittedLinks) == 0 {
+		qw422016.N().S(`
+        <p>No allowed URLs.</p>
+        `)
+	} else {
+		qw422016.N().S(`
+        <p>The following URL patterns are allowed:</p>
+        <ul>
+            `)
+		for _, link := range p.Channel.PermittedLinks {
+			qw422016.N().S(`
+            <li><code>`)
+			qw422016.E().S(link)
+			qw422016.N().S(`</code></li>
+            `)
+		}
+		qw422016.N().S(`
+        </ul>
+        `)
+	}
+	qw422016.N().S(`
+
+        <h2>Banned phrases</h2>
+        `)
+	if len(p.Channel.FilterBannedPhrasesPatterns) == 0 {
+		qw422016.N().S(`
+        <p>No banned phrases.</p>
+        `)
+	} else {
+		qw422016.N().S(`
+        <p>The following phrases are banned:</p>
+        <ul>
+            `)
+		for _, p := range p.Channel.FilterBannedPhrasesPatterns {
+			qw422016.N().S(`
+            <li><code>`)
+			qw422016.E().S(p)
+			qw422016.N().S(`</code></li>
+            `)
+		}
+		qw422016.N().S(`
+        </ul>
+        `)
+	}
+	qw422016.N().S(`
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelRulesPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelRulesPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
