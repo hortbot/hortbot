@@ -1,0 +1,71 @@
+{% code
+type LoginPage struct {
+    BasePage
+}
+%}
+
+{% func (p *LoginPage) PageTitle() %}
+HortBot - Log in
+{% endfunc %}
+
+
+{% func (p *LoginPage) PageBody() %}
+<section class="section">
+    <div class="container content">
+        <h1 class="title has-text-centered">
+            Log in
+        </h1>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2 has-text-centered">
+                <p>
+                    The full site is still a work in progress, but for now,
+                    you can authorize the bot to access your Twitch account
+                    by clicking here:
+                </p>
+                <a class="button is-large is-info is-focused" href="/auth/twitch">
+                    <span class="icon is-small"><i class="fab fa-twitch"></i></span>
+                    <span>Log in with Twitch</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfunc %}
+
+{% code
+type LoginSuccessPage struct {
+    BasePage
+    Name string
+    ID int64
+    Bot bool
+}
+%}
+
+{% func (p *LoginSuccessPage) PageTitle() %}
+HortBot - Log in - Success!
+{% endfunc %}
+
+
+{% func (p *LoginSuccessPage) PageBody() %}
+<section class="section">
+    <div class="container content">
+        <h1 class="title has-text-centered">
+            Success!
+        </h1>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2 has-text-centered">
+                <p>
+                    The bot is now authorized to access your Twitch account.
+                </p>
+
+                <p>
+                    {%s p.Name %} ({%v p.ID %}){% if p.Bot %}as bot{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfunc %}
+

@@ -319,7 +319,7 @@ depending on its mod/vip status in a particular channel.
 - [x] Channel list
     - [ ] Place live channels at the top (batch Twitch API)
 - [ ] Documentation
-- [ ] Login
+- [x] Login
 - [ ] Join
 - [ ] About/FAQ
 - [ ] Channel
@@ -331,7 +331,8 @@ depending on its mod/vip status in a particular channel.
     - [x] Repeat/scheduled commands
     - [x] Regular list
     - [x] Chat rules
-    - [ ] Command formatting
+    - [x] Command formatting
+- [ ] Online editing of everything, real login system
 
 ## New features
 

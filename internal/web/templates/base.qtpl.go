@@ -57,7 +57,7 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
             </div>
 
             <div class="navbar-end">
-                <a class="navbar-item" href="/login">Login</a>
+                <a class="navbar-item" href="/login">Log in</a>
             </div>
         </nav>
 

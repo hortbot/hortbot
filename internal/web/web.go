@@ -3,7 +3,6 @@ package web
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
 	"sort"
 	"strings"
@@ -75,6 +74,7 @@ func (a *App) Run(ctx context.Context) error {
 		r.Get("/scheduled", a.channelScheduled)
 	})
 
+	r.Get("/login", a.login)
 	r.Get("/auth/twitch", a.authTwitch)
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
 	r.Get("/auth/twitch/callback", a.authTwitchCallback)
@@ -184,11 +184,11 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if botName == "" {
-		fmt.Fprintf(w, "Success for user %s (%d).\n", user.Name, user.ID)
-	} else {
-		fmt.Fprintf(w, "Success for user %s (%d) as bot.\n", user.Name, user.ID)
-	}
+	templates.WritePageTemplate(w, &templates.LoginSuccessPage{
+		Name: user.Name,
+		ID:   user.ID,
+		Bot:  botName != "",
+	})
 }
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
@@ -375,6 +375,10 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 		Repeated:  repeated,
 		Scheduled: scheduled,
 	})
+}
+
+func (a *App) login(w http.ResponseWriter, r *http.Request) {
+	templates.WritePageTemplate(w, &templates.LoginPage{})
 }
 
 func httpError(w http.ResponseWriter, code int) {
