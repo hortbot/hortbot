@@ -1,4 +1,7 @@
 {% import (
+    "time"
+
+    "github.com/hako/durafmt"
     "github.com/hortbot/hortbot/internal/db/models"
 ) %}
 
@@ -86,6 +89,7 @@ ol {
             <li><a href="/c/{%u p.Channel.Name %}/quotes" class='{%= isActive(item, "quotes") %}'>Quotes</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/lists" class='{%= isActive(item, "lists") %}'>Lists</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/autoreplies" class='{%= isActive(item, "autoreplies") %}'>Autoreplies</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/scheduled" class='{%= isActive(item, "scheduled") %}'>Repeated / scheduled</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -99,7 +103,7 @@ ol {
 {% endfunc %}
 
 {% func (p *ChannelPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("overview") %}
 
     <div class="column is-main-content content">
@@ -186,7 +190,7 @@ Unknown
 {% endfunc %}
 
 {% func (p *ChannelCommandsPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("commands") %}
 
     <div class="column is-main-content content">
@@ -240,7 +244,7 @@ type ChannelQuotesPage struct {
 %}
 
 {% func (p *ChannelQuotesPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("quotes") %}
 
     <div class="column is-main-content content">
@@ -291,7 +295,7 @@ type ChannelAutorepliesPage struct {
 %}
 
 {% func (p *ChannelAutorepliesPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("autoreplies") %}
 
     <div class="column is-main-content content">
@@ -349,7 +353,7 @@ type ChannelListsPage struct {
 %}
 
 {% func (p *ChannelListsPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("lists") %}
 
     <div class="column is-main-content content">
@@ -445,7 +449,7 @@ type ChannelRegularsPage struct {
 %}
 
 {% func (p *ChannelRegularsPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("regulars") %}
 
     <div class="column is-main-content content">
@@ -474,7 +478,7 @@ type ChannelRulesPage struct {
 %}
 
 {% func (p *ChannelRulesPage) PageBody() %}
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("chatrules") %}
 
     <div class="column is-main-content content">
@@ -508,3 +512,102 @@ type ChannelRulesPage struct {
     </div>
 </div>
 {% endfunc %}
+
+
+{% code
+type ChannelScheduledPage struct {
+    ChannelPage
+    Repeated models.RepeatedCommandSlice
+    Scheduled models.ScheduledCommandSlice
+}
+%}
+
+{% func yesNo(b bool) %}
+{% if b %}
+<span class="has-text-success">Yes</span>
+{% else %}
+<span class="has-text-danger">No</span>
+{% endif %}
+{% endfunc %}
+
+{% func (p *ChannelScheduledPage) PageBody() %}
+<div class="columns is-fullheight is-clipped">
+    {%= p.Sidebar("scheduled") %}
+
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Repeated / scheduled commands</span>
+        <hr>
+
+        <h2>Repeated commands</h2>
+
+        {% if len(p.Repeated) == 0 %}
+        <p>No repeated commands.</p>
+        {% else %}
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="enabled"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true">Command</th>
+                    <th data-sortable="true" data-field="enabled">Enabled</th>
+                    <th data-sortable="true">Interval</th>
+                    <th data-sortable="true">Message diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, c := range p.Repeated %}
+                <tr>
+                    <td><code>{%s p.Channel.Prefix %}{%s c.R.CommandInfo.Name %}</code></td>
+                    <td>{%= yesNo(c.Enabled) %}</td>
+                    <td>Every {%s durafmt.Parse(time.Duration(c.Delay) * time.Second).String() %}</td>
+                    <td>{%v c.MessageDiff %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+
+        <h2>Scheduled commands</h2>
+
+        {% if len(p.Scheduled) == 0 %}
+        <p>No scheduled commands.</p>
+        {% else %}
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="enabled"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true">Command</th>
+                    <th data-sortable="true" data-field="enabled">Enabled</th>
+                    <th data-sortable="true">Cron expression</th>
+                    <th data-sortable="true">Message diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, c := range p.Scheduled %}
+                <tr>
+                    <td><code>{%s p.Channel.Prefix %}{%s c.R.CommandInfo.Name %}</code></td>
+                    <td>{%= yesNo(c.Enabled) %}</td>
+                    <td><code>{%s c.CronExpression %}</code></td>
+                    <td>{%v c.MessageDiff %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endfunc %}
+    

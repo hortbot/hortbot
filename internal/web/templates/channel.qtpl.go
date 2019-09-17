@@ -4,6 +4,9 @@
 package templates
 
 import (
+	"time"
+
+	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
 
 	qtio422016 "io"
@@ -189,6 +192,11 @@ func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
 	qw422016.N().S(`/autoreplies" class='`)
 	streamisActive(qw422016, item, "autoreplies")
 	qw422016.N().S(`'>Autoreplies</a></li>
+            <li><a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/scheduled" class='`)
+	streamisActive(qw422016, item, "scheduled")
+	qw422016.N().S(`'>Repeated / scheduled</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -226,7 +234,7 @@ func (p *ChannelPage) Sidebar(item string) string {
 
 func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "overview")
 	qw422016.N().S(`
@@ -385,7 +393,7 @@ func accessLevel(level string) string {
 
 func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "commands")
 	qw422016.N().S(`
@@ -480,7 +488,7 @@ type ChannelQuotesPage struct {
 
 func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "quotes")
 	qw422016.N().S(`
@@ -566,7 +574,7 @@ type ChannelAutorepliesPage struct {
 
 func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "autoreplies")
 	qw422016.N().S(`
@@ -665,7 +673,7 @@ type ChannelListsPage struct {
 
 func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "lists")
 	qw422016.N().S(`
@@ -820,7 +828,7 @@ type ChannelRegularsPage struct {
 
 func (p *ChannelRegularsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "regulars")
 	qw422016.N().S(`
@@ -878,7 +886,7 @@ type ChannelRulesPage struct {
 
 func (p *ChannelRulesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-<div class="columns is-fullheight" style="overflow: hidden;">
+<div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "chatrules")
 	qw422016.N().S(`
@@ -949,6 +957,181 @@ func (p *ChannelRulesPage) WritePageBody(qq422016 qtio422016.Writer) {
 }
 
 func (p *ChannelRulesPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelScheduledPage struct {
+	ChannelPage
+	Repeated  models.RepeatedCommandSlice
+	Scheduled models.ScheduledCommandSlice
+}
+
+func streamyesNo(qw422016 *qt422016.Writer, b bool) {
+	qw422016.N().S(`
+`)
+	if b {
+		qw422016.N().S(`
+<span class="has-text-success">Yes</span>
+`)
+	} else {
+		qw422016.N().S(`
+<span class="has-text-danger">No</span>
+`)
+	}
+	qw422016.N().S(`
+`)
+}
+
+func writeyesNo(qq422016 qtio422016.Writer, b bool) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	streamyesNo(qw422016, b)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func yesNo(b bool) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	writeyesNo(qb422016, b)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+func (p *ChannelScheduledPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="columns is-fullheight is-clipped">
+    `)
+	p.StreamSidebar(qw422016, "scheduled")
+	qw422016.N().S(`
+
+    <div class="column is-main-content content">
+        <span class="title is-1">`)
+	qw422016.E().S(p.Channel.Name)
+	qw422016.N().S(`</span><span class="subtitle is-3">Repeated / scheduled commands</span>
+        <hr>
+
+        <h2>Repeated commands</h2>
+
+        `)
+	if len(p.Repeated) == 0 {
+		qw422016.N().S(`
+        <p>No repeated commands.</p>
+        `)
+	} else {
+		qw422016.N().S(`
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="enabled"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true">Command</th>
+                    <th data-sortable="true" data-field="enabled">Enabled</th>
+                    <th data-sortable="true">Interval</th>
+                    <th data-sortable="true">Message diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+		for _, c := range p.Repeated {
+			qw422016.N().S(`
+                <tr>
+                    <td><code>`)
+			qw422016.E().S(p.Channel.Prefix)
+			qw422016.E().S(c.R.CommandInfo.Name)
+			qw422016.N().S(`</code></td>
+                    <td>`)
+			streamyesNo(qw422016, c.Enabled)
+			qw422016.N().S(`</td>
+                    <td>Every `)
+			qw422016.E().S(durafmt.Parse(time.Duration(c.Delay) * time.Second).String())
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().V(c.MessageDiff)
+			qw422016.N().S(`</td>
+                </tr>
+                `)
+		}
+		qw422016.N().S(`
+            </tbody>
+        </table>
+        `)
+	}
+	qw422016.N().S(`
+
+        <h2>Scheduled commands</h2>
+
+        `)
+	if len(p.Scheduled) == 0 {
+		qw422016.N().S(`
+        <p>No scheduled commands.</p>
+        `)
+	} else {
+		qw422016.N().S(`
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="enabled"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true">Command</th>
+                    <th data-sortable="true" data-field="enabled">Enabled</th>
+                    <th data-sortable="true">Cron expression</th>
+                    <th data-sortable="true">Message diff</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+		for _, c := range p.Scheduled {
+			qw422016.N().S(`
+                <tr>
+                    <td><code>`)
+			qw422016.E().S(p.Channel.Prefix)
+			qw422016.E().S(c.R.CommandInfo.Name)
+			qw422016.N().S(`</code></td>
+                    <td>`)
+			streamyesNo(qw422016, c.Enabled)
+			qw422016.N().S(`</td>
+                    <td><code>`)
+			qw422016.E().S(c.CronExpression)
+			qw422016.N().S(`</code></td>
+                    <td>`)
+			qw422016.E().V(c.MessageDiff)
+			qw422016.N().S(`</td>
+                </tr>
+                `)
+		}
+		qw422016.N().S(`
+            </tbody>
+        </table>
+        `)
+	}
+	qw422016.N().S(`
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelScheduledPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelScheduledPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)

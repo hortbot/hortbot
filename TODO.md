@@ -328,9 +328,10 @@ depending on its mod/vip status in a particular channel.
     - [x] Quotes
     - [x] Lists
     - [x] Autoreplies
-    - [ ] Repeat/scheduled commands
+    - [x] Repeat/scheduled commands
     - [x] Regular list
     - [x] Chat rules
+    - [ ] Command formatting
 
 ## New features
 

@@ -72,6 +72,7 @@ func (a *App) Run(ctx context.Context) error {
 		r.Get("/lists", a.channelLists)
 		r.Get("/regulars", a.channelRegulars)
 		r.Get("/chatrules", a.channelChatRules)
+		r.Get("/scheduled", a.channelScheduled)
 	})
 
 	r.Get("/auth/twitch", a.authTwitch)
@@ -329,6 +330,50 @@ func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 		ChannelPage: templates.ChannelPage{
 			Channel: channel,
 		},
+	})
+}
+
+func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	logger := ctxlog.FromContext(ctx)
+	channel := getChannel(ctx)
+
+	repeated, err := channel.RepeatedCommands(qm.Load(models.RepeatedCommandRels.CommandInfo)).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying repeated commands", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	scheduled, err := channel.ScheduledCommands(qm.Load(models.ScheduledCommandRels.CommandInfo)).All(ctx, a.DB)
+	if err != nil {
+		logger.Error("error querying scheduled commands", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+
+	sort.Slice(repeated, func(i, j int) bool {
+		return repeated[i].R.CommandInfo.Name < repeated[j].R.CommandInfo.Name
+	})
+
+	sort.SliceStable(repeated, func(i, j int) bool {
+		return repeated[i].Enabled && !repeated[j].Enabled
+	})
+
+	sort.Slice(scheduled, func(i, j int) bool {
+		return scheduled[i].R.CommandInfo.Name < scheduled[j].R.CommandInfo.Name
+	})
+
+	sort.SliceStable(scheduled, func(i, j int) bool {
+		return scheduled[i].Enabled && !scheduled[j].Enabled
+	})
+
+	templates.WritePageTemplate(w, &templates.ChannelScheduledPage{
+		ChannelPage: templates.ChannelPage{
+			Channel: channel,
+		},
+		Repeated:  repeated,
+		Scheduled: scheduled,
 	})
 }
 
