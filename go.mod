@@ -23,6 +23,7 @@ require (
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.6.2
 	github.com/google/go-cmp v0.3.1
+	github.com/gorilla/sessions v1.2.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84

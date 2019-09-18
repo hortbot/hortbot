@@ -11,6 +11,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gofrs/uuid"
+	"github.com/gorilla/sessions"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -34,17 +35,26 @@ var botScopes = []string{
 }
 
 type App struct {
-	Addr   string
-	RealIP bool
+	Addr       string
+	RealIP     bool
+	SessionKey []byte
 
 	Redis  *redis.DB
 	DB     *sql.DB
 	Twitch *twitch.Twitch
+
+	store *sessions.CookieStore
 }
 
 func (a *App) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
+
+	if len(a.SessionKey) == 0 {
+		panic("empty session key")
+	}
+
+	a.store = sessions.NewCookieStore(a.SessionKey)
 
 	r := chi.NewRouter()
 
@@ -149,6 +159,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	if i := strings.IndexByte(state, ':'); i > 0 {
 		botName = strings.ToLower(state[:i])
 	}
+	isBot := botName != ""
 
 	code := r.FormValue("code")
 
@@ -185,16 +196,31 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if !isBot {
+		session := a.getSession(r)
+		session.setTwitchID(user.ID)
+		session.setUsername(user.Name)
+
+		if err := session.save(w, r); err != nil {
+			logger.Error("error saving session", zap.Error(err))
+			httpError(w, http.StatusInternalServerError)
+			return
+		}
+	}
+
 	templates.WritePageTemplate(w, &templates.LoginSuccessPage{
 		Name: user.Name,
 		ID:   user.ID,
-		Bot:  botName != "",
+		Bot:  isBot,
 	})
 }
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
+
+	session := a.getSession(r)
+	logger.Debug("session", zap.Int64("twitch_id", session.getTwitchID()), zap.String("username", session.getUsername()))
 
 	channels, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, a.DB)
 	if err != nil {

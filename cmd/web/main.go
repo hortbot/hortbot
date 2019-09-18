@@ -30,14 +30,16 @@ var args = struct {
 	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
 	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
 
-	WebAddr string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
+	WebAddr       string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
+	WebSessionKey string `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
 
 	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
 
 	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
 }{
-	WebAddr: ":5000",
+	WebAddr:       ":5000",
+	WebSessionKey: "this-is-insecure-do-not-use-this",
 }
 
 func main() {
@@ -93,10 +95,11 @@ func main() {
 	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
 
 	a := web.App{
-		Addr:   args.WebAddr,
-		Redis:  rdb,
-		DB:     db,
-		Twitch: twitchAPI,
+		Addr:       args.WebAddr,
+		SessionKey: []byte(args.WebSessionKey),
+		Redis:      rdb,
+		DB:         db,
+		Twitch:     twitchAPI,
 	}
 
 	err = a.Run(ctx)
