@@ -15,3 +15,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-t someone
 no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-t @random
+send hortbot #foobar /untimeout random
+send hortbot #foobar [HB] random is no longer timed out.

@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/hako/durafmt"
@@ -30,7 +29,7 @@ func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 		return s.Reply(ctx, "Usage: +b <user>")
 	}
 
-	user = strings.ToLower(user)
+	user = cleanUsername(user)
 
 	if err := s.SendCommand(ctx, "ban", user); err != nil {
 		return err
@@ -46,7 +45,7 @@ func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error
 		return s.Reply(ctx, "Usage: -b <user>")
 	}
 
-	user = strings.ToLower(user)
+	user = cleanUsername(user)
 
 	if err := s.SendCommand(ctx, "unban", user); err != nil {
 		return err
@@ -67,7 +66,7 @@ func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) err
 		return usage()
 	}
 
-	user = strings.ToLower(user)
+	user = cleanUsername(user)
 
 	if seconds == "" {
 		if err := s.SendCommand(ctx, "timeout", user); err != nil {
@@ -95,7 +94,7 @@ func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) e
 		return s.Reply(ctx, "Usage: -t <user>")
 	}
 
-	user = strings.ToLower(user)
+	user = cleanUsername(user)
 
 	if err := s.SendCommand(ctx, "untimeout", user); err != nil {
 		return err
@@ -127,7 +126,7 @@ func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error
 		return usage()
 	}
 
-	user = strings.ToLower(user)
+	user = cleanUsername(user)
 
 	if err := s.SendCommand(ctx, "timeout", user, "1"); err != nil {
 		return err
@@ -153,7 +152,7 @@ func cmdPermit(ctx context.Context, s *session, cmd string, args string) error {
 	if user == "" {
 		return s.ReplyUsage(ctx, "<user>")
 	}
-	user = strings.ToLower(user)
+	user = cleanUsername(user)
 
 	if err := s.LinkPermit(ctx, user, permitDur); err != nil {
 		return err

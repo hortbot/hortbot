@@ -32,6 +32,8 @@ The new `!quote compact <num>` command can be used to compact the quote list and
 any holes left by deleted quotes. (The same applies to autoreplies.)
 - HortBot keeps track of USERSTATE messages so that it always know how fast it can send messages
 depending on its mod/vip status in a particular channel.
+- Commands that accept usernames (`permit`, `+b`, etc) will strip leading `@` to make it easy to
+autocomplete usernames in the chat input box.
 
 ### Functionality
 

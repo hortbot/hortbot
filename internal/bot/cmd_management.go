@@ -47,6 +47,8 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	displayName := s.UserDisplay
 	userID := s.UserID
 
+	name = cleanUsername(name)
+
 	if name != "" && s.IsAdmin() {
 		var err error
 		userID, err = s.Deps.Twitch.GetIDForUsername(ctx, name)
@@ -111,6 +113,8 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 func handleLeave(ctx context.Context, s *session, name string) error {
 	var channel *models.Channel
 	var err error
+
+	name = cleanUsername(name)
 
 	displayName := s.UserDisplay
 

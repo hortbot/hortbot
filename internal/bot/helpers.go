@@ -99,3 +99,8 @@ func writeBool(b *strings.Builder, v bool) {
 		b.WriteString("false")
 	}
 }
+
+func cleanUsername(user string) string {
+	user = strings.TrimPrefix(user, "@")
+	return strings.ToLower(user)
+}

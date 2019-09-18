@@ -19,3 +19,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+t someone
 no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+t @random 12
+send hortbot #foobar /timeout random 12
+send hortbot #foobar [HB] random has been timed out for 12 seconds.
