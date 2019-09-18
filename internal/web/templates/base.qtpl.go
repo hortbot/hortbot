@@ -41,6 +41,12 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
 	qw422016.N().S(`</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.7.2/darkly/bulmaswatch.min.css" integrity="sha256-5wlj5TjqB2oqvRZhQYNAD3fH9QiapPtu/MkIgWMkf8s=" crossorigin="anonymous" />
 
+        <style>
+        code {
+            color: white !important;
+        }
+        </style>
+
         `)
 	p.StreamPageMeta(qw422016)
 	qw422016.N().S(`
@@ -57,7 +63,10 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
             </div>
 
             <div class="navbar-end">
-                <a class="navbar-item" href="/login">Log in</a>
+                <a class="navbar-item" href="/login">
+                    <span>Log in</span>
+                    <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+                </a>
             </div>
         </nav>
 

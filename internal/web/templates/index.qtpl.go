@@ -46,28 +46,61 @@ func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <section class="section">
     <div class="container">
-        <h1 class="title">
-            Welcome
-        </h1>
-        <h2 class="subtitle">
-            To the index
-        </h2>
-
-        <div class="level">
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Active channels</p>
-                    <p class="title">`)
-	qw422016.E().S(humanize.Comma(p.ChannelCount))
-	qw422016.N().S(`</p>
+        <div class="tile is-ancestor is-vertical content">
+            <div class="tile">
+                <div class="tile is-parent">
+                    <div class="tile is-child box">
+                        <p class="title">HortBot</p>
+                        <p>
+                            HortBot is a Twitch chat bot, with:
+                        </p>
+                        <ul>
+                            <li>Moderation</li>
+                            <li>Custom commands</li>
+                            <li>Repeated commands</li>
+                            <li>Quotes</li>
+                            <li>Variables</li>
+                            <li>LastFM, Steam integration, and more!</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="tile is-4 is-vertical is-parent">
+                    <div class="tile is-child box">
+                        <p class="title">Join</p>
+                        <p>
+                            To have the bot join your channel, simply type <code>!join</code> in the bot's Twitch chat.
+                            You may need to <a href="/login">log in</a> to enable some features.
+                        </p>
+                    </div>
+                    <div class="tile is-child box">
+                        <p class="title">Help</p>
+                        <p>
+                            Check out the <a href="/docs">documentation</a> for information about the builtin commands,
+                            custom commands, and more.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="level-item has-text-centered">
-                <div>
-                    <p class="heading">Active bots</p>
-                    <p class="title">`)
+            <div class="tile is-parent">
+                <div class="tile is-child box">
+                    <div class="level">
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Active channels</p>
+                                <p class="title">`)
+	qw422016.E().S(humanize.Comma(p.ChannelCount))
+	qw422016.N().S(`</p>
+                            </div>
+                        </div>
+                        <div class="level-item has-text-centered">
+                            <div>
+                                <p class="heading">Active bots</p>
+                                <p class="title">`)
 	qw422016.E().S(humanize.Comma(p.BotCount))
 	qw422016.N().S(`</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

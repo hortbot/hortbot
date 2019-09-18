@@ -52,10 +52,6 @@ html {
     padding: 2.5rem;
 }
 
-code {
-    color: white !important;
-}
-
 ol {
     list-style-position: inside;
 }
@@ -167,27 +163,27 @@ function timeSorter(a, b) {
         <hr>
 
         <a class="button is-outlined" href="https://www.twitch.tv/{%u p.Channel.Name %}" target="_blank">
-            <span class="icon is-small"><i class="fab fa-twitch"></i></span>
+            <span class="icon"><i class="fab fa-twitch"></i></span>
             <span>Twitch</span>
         </a>
 
         {% if p.Channel.LastFM != "" %}
             <a class="button is-outlined" href="https://www.last.fm/user/{%u p.Channel.LastFM %}" target="_blank">
-                <span class="icon is-small"><i class="fab fa-lastfm"></i></span>
+                <span class="icon"><i class="fab fa-lastfm"></i></span>
                 <span>LastFM</span>
             </a>
         {% endif %}
 
         {% if p.Channel.SteamID != "" %}
             <a class="button is-outlined" href="https://steamcommunity.com/profiles/{%u p.Channel.SteamID %}" target="_blank">
-                <span class="icon is-small"><i class="fab fa-steam"></i></span>
+                <span class="icon"><i class="fab fa-steam"></i></span>
                 <span>Steam</span>
             </a>
         {% endif %}
 
         {% if p.Channel.ExtraLifeID != 0 %}
             <a class="button is-outlined" href="https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID={%d p.Channel.ExtraLifeID %}" target="_blank">
-                <span class="icon is-small"><i class="fas fa-gamepad"></i></span>
+                <span class="icon"><i class="fas fa-gamepad"></i></span>
                 <span>Extra-Life</span>
             </a>
         {% endif %}

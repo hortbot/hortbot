@@ -84,10 +84,6 @@ html {
     padding: 2.5rem;
 }
 
-code {
-    color: white !important;
-}
-
 ol {
     list-style-position: inside;
 }
@@ -304,7 +300,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
         <a class="button is-outlined" href="https://www.twitch.tv/`)
 	qw422016.N().U(p.Channel.Name)
 	qw422016.N().S(`" target="_blank">
-            <span class="icon is-small"><i class="fab fa-twitch"></i></span>
+            <span class="icon"><i class="fab fa-twitch"></i></span>
             <span>Twitch</span>
         </a>
 
@@ -314,7 +310,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <a class="button is-outlined" href="https://www.last.fm/user/`)
 		qw422016.N().U(p.Channel.LastFM)
 		qw422016.N().S(`" target="_blank">
-                <span class="icon is-small"><i class="fab fa-lastfm"></i></span>
+                <span class="icon"><i class="fab fa-lastfm"></i></span>
                 <span>LastFM</span>
             </a>
         `)
@@ -327,7 +323,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <a class="button is-outlined" href="https://steamcommunity.com/profiles/`)
 		qw422016.N().U(p.Channel.SteamID)
 		qw422016.N().S(`" target="_blank">
-                <span class="icon is-small"><i class="fab fa-steam"></i></span>
+                <span class="icon"><i class="fab fa-steam"></i></span>
                 <span>Steam</span>
             </a>
         `)
@@ -340,7 +336,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <a class="button is-outlined" href="https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID=`)
 		qw422016.N().D(p.Channel.ExtraLifeID)
 		qw422016.N().S(`" target="_blank">
-                <span class="icon is-small"><i class="fas fa-gamepad"></i></span>
+                <span class="icon"><i class="fas fa-gamepad"></i></span>
                 <span>Extra-Life</span>
             </a>
         `)
