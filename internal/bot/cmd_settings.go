@@ -8,6 +8,7 @@ import (
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 )
@@ -98,7 +99,7 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 	reset := strings.EqualFold(args, "reset")
 
 	if reset {
-		s.Channel.Prefix = s.Deps.DefaultPrefix
+		s.Channel.Prefix = modelsx.DefaultPrefix
 	} else {
 		s.Channel.Prefix = args
 	}

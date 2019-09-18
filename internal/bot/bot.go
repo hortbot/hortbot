@@ -25,7 +25,6 @@ import (
 )
 
 const (
-	DefaultPrefix = "!"
 	DefaultBullet = "[HB]"
 )
 
@@ -47,7 +46,6 @@ type Config struct {
 	TinyURL   tinyurl.API
 	Urban     urban.API
 
-	Prefix   string
 	Bullet   string
 	Cooldown int
 
@@ -91,7 +89,6 @@ func New(config *Config) *Bot {
 		Sender:          config.Sender,
 		Notifier:        config.Notifier,
 		LastFM:          config.LastFM,
-		DefaultPrefix:   config.Prefix,
 		DefaultBullet:   config.Bullet,
 		DefaultCooldown: config.Cooldown,
 		YouTube:         config.YouTube,
@@ -107,10 +104,6 @@ func New(config *Config) *Bot {
 
 	if deps.DefaultBullet == "" {
 		deps.DefaultBullet = DefaultBullet
-	}
-
-	if deps.DefaultPrefix == "" {
-		deps.DefaultPrefix = DefaultPrefix
 	}
 
 	if config.Clock != nil {

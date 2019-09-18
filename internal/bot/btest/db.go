@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -13,7 +12,7 @@ import (
 )
 
 func (st *scriptTester) insertChannel(t testing.TB, _, args string, lineNum int) {
-	channel := bot.NewChannel()
+	channel := modelsx.NewChannel(0, "", "")
 	assert.NilError(t, json.Unmarshal([]byte(args), channel), "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {

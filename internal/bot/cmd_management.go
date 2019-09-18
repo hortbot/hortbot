@@ -8,6 +8,7 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/sqlboiler/boil"
 	"go.opencensus.io/trace"
@@ -76,11 +77,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	botName := strings.TrimLeft(s.Origin, "#")
 
 	if err == sql.ErrNoRows {
-		channel = NewChannel()
-		channel.UserID = userID
-		channel.Name = name
-		channel.BotName = botName
-		channel.Prefix = s.Deps.DefaultPrefix
+		channel = modelsx.NewChannel(userID, name, botName)
 
 		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {
 			return err
@@ -170,26 +167,4 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	return s.Replyf(ctx, "%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
-}
-
-// NewChannel creates a new Channel object with the defaults set.
-func NewChannel() *models.Channel {
-	return &models.Channel{
-		Active:                  true,
-		Mode:                    models.AccessLevelEveryone,
-		ShouldModerate:          true,
-		EnableWarnings:          true,
-		SubsMayLink:             true,
-		TimeoutDuration:         600,
-		RollLevel:               models.AccessLevelSubscriber,
-		RollCooldown:            10,
-		RollDefault:             20,
-		FilterCapsPercentage:    50,
-		FilterCapsMinCaps:       6,
-		FilterSymbolsPercentage: 50,
-		FilterSymbolsMinSymbols: 5,
-		FilterMaxLength:         500,
-		FilterEmotesMax:         4,
-		Tweet:                   "Check out (_CHANNEL_URL_) playing (_GAME_) on @Twitch!",
-	}
 }
