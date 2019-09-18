@@ -114,7 +114,7 @@ func (h *Helper) ServerMessages() <-chan *irc.Message {
 
 func (h *Helper) StopServer() {
 	h.t.Helper()
-	h.StopServerErr() //nolint:errcheck
+	_ = h.StopServerErr()
 }
 
 func (h *Helper) StopServerErr() (err error) {

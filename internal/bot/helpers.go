@@ -63,7 +63,7 @@ func transact(ctx context.Context, db *sql.DB, fn func(context.Context, *sql.Tx)
 	rollback = false
 
 	if err != nil {
-		tx.Rollback() //nolint:errcheck
+		_ = tx.Rollback()
 		return err
 	}
 

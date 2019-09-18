@@ -28,12 +28,12 @@ func BenchmarkCompile(b *testing.B) {
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		c.Compile(pattern) //nolint:errcheck
+		_, _ = c.Compile(pattern)
 	}
 }
 
 func BenchmarkCompileNative(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		regexp.Compile(pattern) //nolint:errcheck
+		_, _ = regexp.Compile(pattern)
 	}
 }

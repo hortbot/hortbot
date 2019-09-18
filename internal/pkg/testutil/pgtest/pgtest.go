@@ -35,7 +35,7 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 
 	defer func() {
 		if retErr != nil {
-			pool.Purge(resource) //nolint:errcheck
+			_ = pool.Purge(resource)
 		}
 	}()
 
@@ -73,7 +73,7 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 
 	return db, connStr, func() {
 		db.Close()
-		pool.Purge(resource) //nolint:errcheck
+		_ = pool.Purge(resource)
 	}, nil
 }
 

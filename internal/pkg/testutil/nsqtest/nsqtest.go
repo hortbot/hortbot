@@ -24,7 +24,7 @@ func New() (addr string, cleanup func(), retErr error) {
 
 	defer func() {
 		if retErr != nil {
-			pool.Purge(resource) //nolint:errcheck
+			_ = pool.Purge(resource)
 		}
 	}()
 
@@ -47,7 +47,7 @@ func New() (addr string, cleanup func(), retErr error) {
 	}
 
 	return addr, func() {
-		pool.Purge(resource) //nolint:errcheck
+		_ = pool.Purge(resource)
 	}, nil
 }
 
