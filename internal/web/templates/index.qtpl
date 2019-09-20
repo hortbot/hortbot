@@ -11,7 +11,7 @@ type IndexPage struct {
 %}
 
 {% func (p *IndexPage) PageTitle() %}
-HortBot
+{%= p.PageBrand() %}
 {% endfunc %}
 
 {% func (p *IndexPage) PageBody() %}
@@ -21,9 +21,9 @@ HortBot
             <div class="tile">
                 <div class="tile is-parent">
                     <div class="tile is-child box">
-                        <p class="title">HortBot</p>
+                        <p class="title">{%= p.PageBrand() %}</p>
                         <p>
-                            HortBot is a Twitch chat bot, with:
+                            {%= p.PageBrand() %} is a Twitch chat bot, with:
                         </p>
                         <ul>
                             <li>Moderation</li>

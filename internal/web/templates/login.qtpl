@@ -5,7 +5,7 @@ type LoginPage struct {
 %}
 
 {% func (p *LoginPage) PageTitle() %}
-HortBot - Log in
+{%= p.PageBrand() %} - Log in
 {% endfunc %}
 
 
@@ -43,7 +43,7 @@ type LoginSuccessPage struct {
 %}
 
 {% func (p *LoginSuccessPage) PageTitle() %}
-HortBot - Log in - Success!
+{%= p.PageBrand() %} - Log in - Success!
 {% endfunc %}
 
 

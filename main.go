@@ -59,6 +59,7 @@ var args = struct {
 
 	WebAddr       string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 	WebSessionKey string `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
+	WebBrand      string `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server branding"`
 
 	RateLimitSlow   int           `long:"rate-limit-slow" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
 	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
@@ -67,6 +68,7 @@ var args = struct {
 	DefaultCooldown: 5,
 	WebAddr:         ":5000",
 	WebSessionKey:   "this-is-insecure-do-not-use-this",
+	WebBrand:        "HortBot",
 	RateLimitSlow:   15,
 	RateLimitFast:   80,
 	RateLimitPeriod: 30 * time.Second,
@@ -209,6 +211,7 @@ func main() {
 		a := web.App{
 			Addr:       args.WebAddr,
 			SessionKey: []byte(args.WebSessionKey),
+			Brand:      args.WebBrand,
 			Redis:      rdb,
 			DB:         db,
 			Twitch:     twitchAPI,

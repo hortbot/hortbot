@@ -24,7 +24,9 @@ type IndexPage struct {
 
 func (p *IndexPage) StreamPageTitle(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-HortBot
+`)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(`
 `)
 }
 
@@ -50,9 +52,13 @@ func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <div class="tile">
                 <div class="tile is-parent">
                     <div class="tile is-child box">
-                        <p class="title">HortBot</p>
+                        <p class="title">`)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(`</p>
                         <p>
-                            HortBot is a Twitch chat bot, with:
+                            `)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(` is a Twitch chat bot, with:
                         </p>
                         <ul>
                             <li>Moderation</li>

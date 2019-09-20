@@ -15,6 +15,9 @@ var (
 )
 
 type Page interface {
+	PageBrand() string
+	StreamPageBrand(qw422016 *qt422016.Writer)
+	WritePageBrand(qq422016 qtio422016.Writer)
 	PageTitle() string
 	StreamPageTitle(qw422016 *qt422016.Writer)
 	WritePageTitle(qq422016 qtio422016.Writer)
@@ -54,7 +57,9 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
     <body>
         <nav class="navbar">
             <div class="navbar-brand">
-                <a class="navbar-item is-active" href="/">HortBot</a>
+                <a class="navbar-item is-active" href="/">`)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(`</a>
             </div>
             <div class="navbar-start">
                 <a class="navbar-item" href="/channels">Channels</a>
@@ -98,7 +103,27 @@ func PageTemplate(p Page) string {
 	return qs422016
 }
 
-type BasePage struct{}
+type BasePage struct {
+	Brand string
+}
+
+func (p *BasePage) StreamPageBrand(qw422016 *qt422016.Writer) {
+	qw422016.E().S(nonempty(p.Brand))
+}
+
+func (p *BasePage) WritePageBrand(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBrand(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *BasePage) PageBrand() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBrand(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
 
 func (p *BasePage) StreamPageBody(qw422016 *qt422016.Writer) {
 }
@@ -149,4 +174,11 @@ func (p *BasePage) PageScripts() string {
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
+}
+
+func nonempty(s string) string {
+	if s == "" {
+		panic("empty string")
+	}
+	return s
 }

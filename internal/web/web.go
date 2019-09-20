@@ -39,6 +39,8 @@ type App struct {
 	RealIP     bool
 	SessionKey []byte
 
+	Brand string
+
 	Redis  *redis.DB
 	DB     *sql.DB
 	Twitch *twitch.Twitch
@@ -208,11 +210,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	templates.WritePageTemplate(w, &templates.LoginSuccessPage{
+	page := &templates.LoginSuccessPage{
 		Name: user.Name,
 		ID:   user.ID,
 		Bot:  isBot,
-	})
+	}
+	page.Brand = a.Brand
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
@@ -239,10 +244,13 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templates.WritePageTemplate(w, &templates.IndexPage{
+	page := &templates.IndexPage{
 		ChannelCount: channels,
 		BotCount:     row.BotCount,
-	})
+	}
+	page.Brand = a.Brand
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channels(w http.ResponseWriter, r *http.Request) {
@@ -259,18 +267,23 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templates.WritePageTemplate(w, &templates.ChannelsPage{
+	page := &templates.ChannelsPage{
 		Channels: channels,
-	})
+	}
+	page.Brand = a.Brand
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channel(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	templates.WritePageTemplate(w, &templates.ChannelPage{
+	page := &templates.ChannelPage{
 		Channel: channel,
-	})
+	}
+	page.Brand = a.Brand
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
@@ -289,12 +302,13 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 		return commands[i].R.CommandInfo.Name < commands[j].R.CommandInfo.Name
 	})
 
-	templates.WritePageTemplate(w, &templates.ChannelCommandsPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
+	page := &templates.ChannelCommandsPage{
 		Commands: commands,
-	})
+	}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
@@ -309,12 +323,13 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templates.WritePageTemplate(w, &templates.ChannelQuotesPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
+	page := &templates.ChannelQuotesPage{
 		Quotes: quotes,
-	})
+	}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
@@ -329,12 +344,13 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	templates.WritePageTemplate(w, &templates.ChannelAutorepliesPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
+	page := &templates.ChannelAutorepliesPage{
 		Autoreplies: autoreplies,
-	})
+	}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
@@ -353,34 +369,35 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 		return lists[i].R.CommandInfo.Name < lists[j].R.CommandInfo.Name
 	})
 
-	templates.WritePageTemplate(w, &templates.ChannelListsPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
+	page := &templates.ChannelListsPage{
 		Lists: lists,
-	})
+	}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelRegulars(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	templates.WritePageTemplate(w, &templates.ChannelRegularsPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
-	})
+	page := &templates.ChannelRegularsPage{}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	templates.WritePageTemplate(w, &templates.ChannelRulesPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
-	})
+	page := &templates.ChannelRulesPage{}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
@@ -418,17 +435,21 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 		return scheduled[i].Enabled && !scheduled[j].Enabled
 	})
 
-	templates.WritePageTemplate(w, &templates.ChannelScheduledPage{
-		ChannelPage: templates.ChannelPage{
-			Channel: channel,
-		},
+	page := &templates.ChannelScheduledPage{
 		Repeated:  repeated,
 		Scheduled: scheduled,
-	})
+	}
+	page.Brand = a.Brand
+	page.Channel = channel
+
+	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
-	templates.WritePageTemplate(w, &templates.LoginPage{})
+	page := &templates.LoginPage{}
+	page.Brand = a.Brand
+
+	templates.WritePageTemplate(w, page)
 }
 
 func httpError(w http.ResponseWriter, code int) {

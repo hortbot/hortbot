@@ -1,6 +1,7 @@
 {% import "context" %}
 
 {% interface Page {
+    PageBrand()
     PageTitle()
     PageBody()
     PageMeta()
@@ -27,7 +28,7 @@
     <body>
         <nav class="navbar">
             <div class="navbar-brand">
-                <a class="navbar-item is-active" href="/">HortBot</a>
+                <a class="navbar-item is-active" href="/">{%= p.PageBrand() %}</a>
             </div>
             <div class="navbar-start">
                 <a class="navbar-item" href="/channels">Channels</a>
@@ -52,7 +53,17 @@
 </html>
 {% endfunc %}
 
-{% code type BasePage struct {} %}
+{% code type BasePage struct {
+    Brand string
+} %}
+{% func (p *BasePage) PageBrand() %}{%s nonempty(p.Brand) %}{% endfunc %}
 {% func (p *BasePage) PageBody() %}{% endfunc %}
 {% func (p *BasePage) PageMeta() %}{% endfunc %}
 {% func (p *BasePage) PageScripts() %}{% endfunc %}
+
+{% code func nonempty(s string) string {
+    if s == "" {
+        panic("empty string")
+    }
+    return s
+} %}

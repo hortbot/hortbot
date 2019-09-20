@@ -32,6 +32,7 @@ var args = struct {
 
 	WebAddr       string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 	WebSessionKey string `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
+	WebBrand      string `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server branding"`
 
 	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
@@ -40,6 +41,7 @@ var args = struct {
 }{
 	WebAddr:       ":5000",
 	WebSessionKey: "this-is-insecure-do-not-use-this",
+	WebBrand:      "HortBot",
 }
 
 func main() {
@@ -97,6 +99,7 @@ func main() {
 	a := web.App{
 		Addr:       args.WebAddr,
 		SessionKey: []byte(args.WebSessionKey),
+		Brand:      args.WebBrand,
 		Redis:      rdb,
 		DB:         db,
 		Twitch:     twitchAPI,

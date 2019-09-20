@@ -23,7 +23,9 @@ type ChannelsPage struct {
 
 func (p *ChannelsPage) StreamPageTitle(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-HortBot - Channels
+`)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(` - Channels
 `)
 }
 

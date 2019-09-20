@@ -20,7 +20,9 @@ type LoginPage struct {
 
 func (p *LoginPage) StreamPageTitle(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-HortBot - Log in
+`)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(` - Log in
 `)
 }
 
@@ -87,7 +89,9 @@ type LoginSuccessPage struct {
 
 func (p *LoginSuccessPage) StreamPageTitle(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
-HortBot - Log in - Success!
+`)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(` - Log in - Success!
 `)
 }
 

@@ -10,7 +10,7 @@ type ChannelsPage struct {
 %}
 
 {% func (p *ChannelsPage) PageTitle() %}
-HortBot - Channels
+{%= p.PageBrand() %} - Channels
 {% endfunc %}
 
 

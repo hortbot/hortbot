@@ -13,7 +13,7 @@ type ChannelPage struct {
 %}
 
 {% func (p *ChannelPage) PageTitle() %}
-HortBot - {%s p.Channel.Name %}
+{%= p.PageBrand() %} - {%s p.Channel.Name %}
 {% endfunc %}
 
 
