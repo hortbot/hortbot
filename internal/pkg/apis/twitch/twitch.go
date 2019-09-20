@@ -50,7 +50,7 @@ const (
 //
 //counterfeiter:generate . API
 type API interface {
-	GetIDForUsername(ctx context.Context, username string) (int64, error)
+	GetUserForUsername(ctx context.Context, username string) (*User, error)
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

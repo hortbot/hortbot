@@ -1,4 +1,4 @@
-twitch_get_id_for_username {"someone": 1234, "foobar": 1}
+twitch_get_user_for_username {"someone": {"user_id": 1234, "user_name": "someone", "display_name": "Someone"}, "foobar": {"user_id": 1, "user_name": "foobar"}}
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block
@@ -35,7 +35,7 @@ handle hortbot @id=__UUID__;room-id=1234;user-id=1234 :someone!someone@someone.t
 send_any
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block someone
-send hortbot #hortbot [HB] someone (1234) has been blocked.
+send hortbot #hortbot [HB] Someone (1234) has been blocked.
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1234;user-id=1234 :someone!someone@someone.tmi.twitch.tv PRIVMSG #someone :!command
@@ -43,7 +43,7 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock someone
-send hortbot #hortbot [HB] someone (1234) has been unblocked.
+send hortbot #hortbot [HB] Someone (1234) has been unblocked.
 no_notify_channel_updates
 
 join hortbot 2 someone 1234

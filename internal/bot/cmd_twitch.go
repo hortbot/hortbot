@@ -235,7 +235,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		return s.Replyf(ctx, "No, %s isn't live.", s.Channel.Name)
 	}
 
-	id, err := s.Deps.Twitch.GetIDForUsername(ctx, name)
+	u, err := s.Deps.Twitch.GetUserForUsername(ctx, name)
 	if err != nil {
 		switch err {
 		case twitch.ErrNotFound:
@@ -246,7 +246,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, id)
+	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, u.ID)
 	if err != nil {
 		switch err {
 		case twitch.ErrServerError:

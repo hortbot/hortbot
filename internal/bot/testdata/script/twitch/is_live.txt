@@ -1,4 +1,4 @@
-twitch_get_id_for_username {"foobar": 1, "liveguy": 1234, "notlivegal": 1337}
+twitch_get_user_for_username {"foobar": {"user_id": 1, "user_name": "foobar"}, "liveguy": {"user_id": 1234, "user_name": "liveguy", "display_name": "LiveGuy"}, "notlivegal": {"user_id": 1337, "user_name": "notlivegal"}}
 
 join hortbot 999 foobar 1
 

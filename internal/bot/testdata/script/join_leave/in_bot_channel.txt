@@ -44,14 +44,14 @@ handle hortbot @id=__UUID__;room-id=2;user-id=3 :nobody!nobody@nobody.tmi.twitch
 no_send
 no_notify_channel_updates
 
-twitch_get_id_for_username {"someone": 1234}
+twitch_get_user_for_username {"someone": {"user_id": 1234, "user_name": "someone", "display_name": "Someone"}}
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone
-send hortbot #hortbot [HB] someone, hortbot will join your channel soon with prefix !
+send hortbot #hortbot [HB] Someone, hortbot will join your channel soon with prefix !
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join someone
-send hortbot #hortbot [HB] someone, hortbot is already active in your channel with prefix !
+send hortbot #hortbot [HB] Someone, hortbot is already active in your channel with prefix !
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!part someone

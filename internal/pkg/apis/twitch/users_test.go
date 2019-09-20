@@ -93,7 +93,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
-func TestGetIDForUsername(t *testing.T) {
+func TestGetUserForUsername(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -109,12 +109,16 @@ func TestGetIDForUsername(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	id, err := tw.GetIDForUsername(ctx, "foobar")
+	u, err := tw.GetUserForUsername(ctx, "foobar")
 	assert.NilError(t, err)
-	assert.Equal(t, id, int64(1234))
+	assert.DeepEqual(t, u, &twitch.User{
+		ID:          1234,
+		Name:        "foobar",
+		DisplayName: "Foobar",
+	})
 }
 
-func TestGetIDForUsernameServerError(t *testing.T) {
+func TestGetUserForUsernameServerError(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -130,11 +134,11 @@ func TestGetIDForUsernameServerError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetIDForUsername(ctx, "servererror")
+	_, err := tw.GetUserForUsername(ctx, "servererror")
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
-func TestGetIDForUsernameNotFound(t *testing.T) {
+func TestGetUserForUsernameNotFound(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -150,11 +154,11 @@ func TestGetIDForUsernameNotFound(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetIDForUsername(ctx, "notfound")
+	_, err := tw.GetUserForUsername(ctx, "notfound")
 	assert.Equal(t, err, twitch.ErrNotFound)
 }
 
-func TestGetIDForUsernameNotFoundEmpty(t *testing.T) {
+func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -170,11 +174,11 @@ func TestGetIDForUsernameNotFoundEmpty(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetIDForUsername(ctx, "notfound2")
+	_, err := tw.GetUserForUsername(ctx, "notfound2")
 	assert.Equal(t, err, twitch.ErrNotFound)
 }
 
-func TestGetIDForUsernameDecodeError(t *testing.T) {
+func TestGetUserForUsernameDecodeError(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -190,7 +194,7 @@ func TestGetIDForUsernameDecodeError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetIDForUsername(ctx, "decodeerror")
+	_, err := tw.GetUserForUsername(ctx, "decodeerror")
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
@@ -237,4 +241,15 @@ func TestFollowChannel(t *testing.T) {
 	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), nil, 500)
 	assert.Equal(t, err, twitch.ErrNotAuthorized)
 	assert.Assert(t, newToken == nil)
+}
+
+func TestUserDispName(t *testing.T) {
+	u := &twitch.User{
+		Name: "somename",
+	}
+
+	assert.Equal(t, u.DispName(), u.Name)
+
+	u.DisplayName = "SomeName"
+	assert.Equal(t, u.DispName(), u.DisplayName)
 }

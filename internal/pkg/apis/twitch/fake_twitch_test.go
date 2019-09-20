@@ -130,7 +130,7 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/servererror/chatters", httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/badbody/chatters", httpmock.NewStringResponder(200, "}"))
 
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=foobar", httpmock.NewStringResponder(200, `{"users": [{"_id": 1234}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=foobar", httpmock.NewStringResponder(200, `{"users": [{"_id": 1234, "name": "foobar", "display_name": "Foobar"}]}`))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound", httpmock.NewStringResponder(404, ""))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound2", httpmock.NewStringResponder(200, `{"users": []}`))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=servererror", httpmock.NewStringResponder(500, ""))

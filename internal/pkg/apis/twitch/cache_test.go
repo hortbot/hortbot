@@ -11,7 +11,7 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestCachedGetIDForUsername(t *testing.T) {
+func TestCachedGetUserForUsername(t *testing.T) {
 	ctx := context.Background()
 
 	ft := newFakeTwitch(t)
@@ -29,13 +29,17 @@ func TestCachedGetIDForUsername(t *testing.T) {
 		twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli)),
 	)
 
-	id, err := tw.GetIDForUsername(ctx, "foobar")
+	u, err := tw.GetUserForUsername(ctx, "foobar")
 	assert.NilError(t, err)
-	assert.Equal(t, id, int64(1234))
+	assert.DeepEqual(t, u, &twitch.User{
+		ID:          1234,
+		Name:        "foobar",
+		DisplayName: "Foobar",
+	})
 
-	id2, err2 := tw.GetIDForUsername(ctx, "foobar")
+	u2, err2 := tw.GetUserForUsername(ctx, "foobar")
 	assert.NilError(t, err2)
-	assert.Equal(t, id2, int64(1234))
+	assert.Equal(t, u, u2)
 }
 
 func TestCachedGetChannelByID(t *testing.T) {

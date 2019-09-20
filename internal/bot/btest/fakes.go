@@ -99,9 +99,9 @@ func newFakeTwitch(t testing.TB) *twitchfakes.FakeAPI {
 		return nil, nil, nil
 	})
 
-	f.GetIDForUsernameCalls(func(context.Context, string) (int64, error) {
-		t.Fatal("GetIDForUsername not implemented")
-		return 0, nil
+	f.GetUserForUsernameCalls(func(context.Context, string) (*twitch.User, error) {
+		t.Fatal("GetUserForUsername not implemented")
+		return nil, nil
 	})
 
 	f.SetChannelGameCalls(func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error) {

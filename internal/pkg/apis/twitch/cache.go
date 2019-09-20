@@ -27,23 +27,23 @@ func (ca *CachedAPI) Flush() {
 	ca.cache.Flush()
 }
 
-func (ca *CachedAPI) GetIDForUsername(ctx context.Context, username string) (int64, error) {
-	key := "GetIDForUsername/" + username
+func (ca *CachedAPI) GetUserForUsername(ctx context.Context, username string) (*User, error) {
+	key := "GetUserForUsername/" + username
 
 	type result struct {
-		id  int64
+		u   *User
 		err error
 	}
 
 	cached, ok := ca.cache.Get(key)
 	if ok {
 		r := cached.(result)
-		return r.id, r.err
+		return r.u, r.err
 	}
 
-	id, err := ca.api.GetIDForUsername(ctx, username)
-	ca.cache.SetDefault(key, result{id: id, err: err})
-	return id, err
+	user, err := ca.api.GetUserForUsername(ctx, username)
+	ca.cache.SetDefault(key, result{u: user, err: err})
+	return user, err
 }
 
 func (ca *CachedAPI) GetChannelByID(ctx context.Context, id int64) (*Channel, error) {

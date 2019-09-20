@@ -50,13 +50,13 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	name = cleanUsername(name)
 
 	if name != "" && s.IsAdmin() {
-		var err error
-		userID, err = s.Deps.Twitch.GetIDForUsername(ctx, name)
+		u, err := s.Deps.Twitch.GetUserForUsername(ctx, name)
 		if err != nil {
 			return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 		}
 
-		displayName = name
+		userID = u.ID
+		displayName = u.DispName()
 	} else {
 		name = s.User
 	}
@@ -107,7 +107,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", s.UserDisplay, channel.BotName, channel.Prefix)
+	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", displayName, channel.BotName, channel.Prefix)
 }
 
 func handleLeave(ctx context.Context, s *session, name string) error {
@@ -120,7 +120,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 
 	if name != "" && s.IsAdmin() {
 		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
-		displayName = name
+		displayName = name // TODO: Fetch this from the database when the column exists.
 	} else {
 		channel, err = models.Channels(models.ChannelWhere.UserID.EQ(s.UserID)).One(ctx, s.Tx)
 	}

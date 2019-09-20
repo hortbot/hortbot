@@ -10,8 +10,16 @@ import (
 )
 
 type User struct {
-	ID   int64  `json:"user_id"`
-	Name string `json:"user_name"`
+	ID          int64  `json:"user_id"`
+	Name        string `json:"user_name"`
+	DisplayName string `json:"display_name,omitempty"`
+}
+
+func (u User) DispName() string {
+	if u.DisplayName != "" {
+		return u.DisplayName
+	}
+	return u.Name
 }
 
 // GetUserForToken gets the Twitch user for the specified token.
@@ -47,38 +55,44 @@ func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (
 	}, newToken, nil
 }
 
-// GetIDForUsername gets the Twitch user ID for the specified username.
+// GetUserForUsername gets the Twitch user for the specified username.
 //
 // GET https://api.twitch.tv/kraken/users?login=<username>
-func (t *Twitch) GetIDForUsername(ctx context.Context, username string) (int64, error) {
+func (t *Twitch) GetUserForUsername(ctx context.Context, username string) (*User, error) {
 	cli := t.krakenCli
 
 	resp, err := cli.Get(ctx, krakenRoot+"/users?login="+url.QueryEscape(username))
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if err := statusToError(resp.StatusCode); err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	body := &struct {
 		Users []struct {
-			ID IDStr `json:"_id"`
+			ID          IDStr  `json:"_id"`
+			Name        string `json:"name"`
+			DisplayName string `json:"display_name"`
 		}
 	}{}
 
 	if err := json.NewDecoder(resp.Body).Decode(body); err != nil {
-		return 0, ErrServerError
+		return nil, ErrServerError
 	}
 
 	users := body.Users
 	if len(users) == 0 {
-		return 0, ErrNotFound
+		return nil, ErrNotFound
 	}
 
-	return users[0].ID.AsInt64(), nil
+	return &User{
+		ID:          users[0].ID.AsInt64(),
+		Name:        users[0].Name,
+		DisplayName: users[0].DisplayName,
+	}, nil
 }
 
 // FollowChannel makes one channel follow another. This requires the
