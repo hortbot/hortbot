@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
+	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
@@ -243,6 +244,13 @@ func handleSession(ctx context.Context, s *session) error {
 			return nil
 		}
 		return err
+	}
+
+	if s.IRCChannel == s.User && channel.DisplayName != s.UserDisplay {
+		channel.DisplayName = s.UserDisplay
+		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.DisplayName)); err != nil {
+			return err
+		}
 	}
 
 	if !s.Imp {

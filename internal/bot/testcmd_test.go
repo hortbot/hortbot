@@ -129,4 +129,11 @@ func init() {
 		},
 		bot.LevelEveryone,
 	)
+
+	bot.TestingBuiltin("testing_channel_display_name",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			return s.Reply(ctx, s.Channel.DisplayName)
+		},
+		bot.LevelEveryone,
+	)
 }

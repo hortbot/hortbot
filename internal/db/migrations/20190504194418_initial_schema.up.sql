@@ -21,6 +21,7 @@ CREATE TABLE channels (
 
     user_id bigint NOT NULL UNIQUE,
     name text NOT NULL,
+    display_name text NOT NULL,
     bot_name text NOT NULL,
     active boolean NOT NULL,
     prefix text NOT NULL,

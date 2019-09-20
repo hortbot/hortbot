@@ -12,7 +12,7 @@ import (
 )
 
 func (st *scriptTester) insertChannel(t testing.TB, _, args string, lineNum int) {
-	channel := modelsx.NewChannel(0, "", "")
+	channel := modelsx.NewChannel(0, "", "", "")
 	assert.NilError(t, json.Unmarshal([]byte(args), channel), "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {

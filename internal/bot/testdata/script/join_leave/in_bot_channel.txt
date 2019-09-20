@@ -55,7 +55,7 @@ send hortbot #hortbot [HB] Someone, hortbot is already active in your channel wi
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!part someone
-send hortbot #hortbot [HB] someone, hortbot will now leave your channel.
+send hortbot #hortbot [HB] Someone, hortbot will now leave your channel.
 notify_channel_updates hortbot
 
 

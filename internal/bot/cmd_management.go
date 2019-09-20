@@ -79,7 +79,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	botName := strings.TrimLeft(s.Origin, "#")
 
 	if err == sql.ErrNoRows {
-		channel = modelsx.NewChannel(userID, name, botName)
+		channel = modelsx.NewChannel(userID, name, displayName, botName)
 
 		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {
 			return err
@@ -116,12 +116,12 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 
 	name = cleanUsername(name)
 
-	displayName := s.UserDisplay
+	displayName := name
 
 	if name != "" && s.IsAdmin() {
 		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
-		displayName = name // TODO: Fetch this from the database when the column exists.
 	} else {
+		displayName = s.UserDisplay
 		channel, err = models.Channels(models.ChannelWhere.UserID.EQ(s.UserID)).One(ctx, s.Tx)
 	}
 
@@ -129,8 +129,16 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return nil
 	}
 
+	if err != nil {
+		return err
+	}
+
 	if !channel.Active {
 		return nil
+	}
+
+	if name != "" && channel.DisplayName != "" {
+		displayName = channel.DisplayName
 	}
 
 	channel.Active = false
