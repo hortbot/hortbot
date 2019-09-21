@@ -61,7 +61,7 @@ type LoginSuccessPage struct {
                 </p>
 
                 <p>
-                    {%s p.Name %} ({%v p.ID %}){% if p.Bot %}as bot{% endif %}
+                    {%s p.Name %} ({%v p.ID %}){% if p.Bot %} as bot{% endif %}
                 </p>
             </div>
         </div>

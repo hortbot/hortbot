@@ -93,8 +93,8 @@ func (a *App) Run(ctx context.Context) error {
 	})
 
 	r.Get("/login", a.login)
-	r.Get("/auth/twitch", a.authTwitch)
-	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
+	r.Get("/auth/twitch", a.authTwitchNormal)
+	r.Get("/auth/twitch/bot", a.authTwitchBot)
 	r.Get("/auth/twitch/callback", a.authTwitchCallback)
 
 	if a.Debug {
@@ -145,20 +145,19 @@ func (a *App) getBrand(r *http.Request) string {
 }
 
 type authState struct {
-	Host    string
-	BotName string
+	Host string
+	Bot  bool
 }
 
-func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
+func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
 
 	state := uuid.Must(uuid.NewV4()).String()
 
-	botName := chi.URLParam(r, "botName")
 	stateVal := &authState{
-		Host:    r.Host,
-		BotName: botName,
+		Host: r.Host,
+		Bot:  bot,
 	}
 
 	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
@@ -168,12 +167,20 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var extraScopes []string
-	if botName != "" {
+	if bot {
 		extraScopes = botScopes
 	}
 
 	url := a.Twitch.AuthCodeURL(state, extraScopes...)
 	http.Redirect(w, r, url, http.StatusSeeOther)
+}
+
+func (a *App) authTwitchNormal(w http.ResponseWriter, r *http.Request) {
+	a.authTwitch(w, r, false)
+}
+
+func (a *App) authTwitchBot(w http.ResponseWriter, r *http.Request) {
+	a.authTwitch(w, r, true)
 }
 
 func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
@@ -214,11 +221,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	botName := stateVal.BotName
-	isBot := botName != ""
-	code := r.FormValue("code")
-
-	tok, err := a.Twitch.Exchange(ctx, code)
+	tok, err := a.Twitch.Exchange(ctx, r.FormValue("code"))
 	if err != nil {
 		logger.Error("error exchanging code", zap.Error(err))
 		httpError(w, http.StatusBadRequest)
@@ -237,12 +240,8 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	tt := modelsx.TokenToModel(user.ID, tok)
 
-	if isBot {
-		if botName != user.Name {
-			httpError(w, http.StatusBadRequest)
-			return
-		}
-		tt.BotName = null.StringFrom(botName)
+	if stateVal.Bot {
+		tt.BotName = null.StringFrom(user.Name)
 	}
 
 	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
@@ -251,7 +250,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if !isBot {
+	if stateVal.Bot {
 		session := a.getSession(r)
 		session.setTwitchID(user.ID)
 		session.setUsername(user.Name)
@@ -266,7 +265,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	page := &templates.LoginSuccessPage{
 		Name: user.Name,
 		ID:   user.ID,
-		Bot:  isBot,
+		Bot:  stateVal.Bot,
 	}
 	page.Brand = a.getBrand(r)
 

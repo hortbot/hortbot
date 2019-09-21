@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/migrations"
+	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
@@ -27,6 +28,7 @@ import (
 	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
+	"github.com/volatiletech/null"
 	"go.uber.org/zap"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
@@ -79,6 +81,7 @@ var args = struct {
 	RateLimitPeriod: 30 * time.Second,
 }
 
+//nolint:gocyclo
 func main() {
 	ctx := ctxutil.Interrupt()
 
@@ -124,11 +127,24 @@ func main() {
 		logger.Fatal("error listing initial channels", zap.Error(err))
 	}
 
+	nick := args.Nick
+	pass := args.Pass
+
+	token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(nick))).One(ctx, db)
+	if err != nil {
+		if err != sql.ErrNoRows {
+			logger.Fatal("error querying for bot token", zap.Error(err))
+		}
+	} else {
+		logger.Debug("using oauth token from database")
+		pass = "oauth:" + token.AccessToken
+	}
+
 	pc := birc.PoolConfig{
 		Config: birc.Config{
 			UserConfig: birc.UserConfig{
-				Nick: args.Nick,
-				Pass: args.Pass,
+				Nick: nick,
+				Pass: pass,
 			},
 			InitialChannels: channels,
 			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},

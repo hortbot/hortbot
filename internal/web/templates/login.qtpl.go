@@ -130,7 +130,7 @@ func (p *LoginSuccessPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.E().V(p.ID)
 	qw422016.N().S(`)`)
 	if p.Bot {
-		qw422016.N().S(`as bot`)
+		qw422016.N().S(` as bot`)
 	}
 	qw422016.N().S(`
                 </p>
