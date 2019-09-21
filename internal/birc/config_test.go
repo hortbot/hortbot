@@ -3,6 +3,7 @@ package birc_test
 import (
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/birc"
 	"gotest.tools/v3/assert"
@@ -63,5 +64,22 @@ func TestConfig(t *testing.T) {
 		c.Setup()
 
 		assert.Assert(t, c.RecvBuffer == 0)
+	})
+
+	t.Run("Ping", func(t *testing.T) {
+		test := func(interval, intervalWant time.Duration, deadline, deadlineWant time.Duration) func(t *testing.T) {
+			return func(t *testing.T) {
+				c := birc.Config{
+					PingInterval: interval,
+					PingDeadline: deadline,
+				}
+				c.Setup()
+				assert.Equal(t, c.PingInterval, intervalWant)
+				assert.Equal(t, c.PingDeadline, deadlineWant)
+			}
+		}
+
+		t.Run("Negative interval", test(-1, 0, 0, 0))
+		t.Run("Negative deadline", test(10, 0, -1, 0))
 	})
 }

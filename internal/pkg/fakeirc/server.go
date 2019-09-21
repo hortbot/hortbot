@@ -39,6 +39,8 @@ type Server struct {
 
 	conns   map[irc.Conn]map[string]bool
 	connsMu sync.RWMutex
+
+	pong bool
 }
 
 func Start(opts ...Option) (*Server, error) {
@@ -47,6 +49,7 @@ func Start(opts ...Option) (*Server, error) {
 		recvChan: make(chan *irc.Message),
 		sendChan: make(chan *irc.Message),
 		conns:    make(map[irc.Conn]map[string]bool),
+		pong:     true,
 	}
 
 	for _, opt := range opts {
@@ -226,6 +229,17 @@ func (s *Server) handle(ctx context.Context, conn irc.Conn) error {
 			if err := s.send(m, conn); err != nil {
 				return err
 			}
+		case "PING":
+			if !s.pong {
+				continue
+			}
+
+			pong := *m
+			pong.Command = "PONG"
+			if err := conn.Encode(&pong); err != nil {
+				return err
+			}
+			continue
 		}
 
 		select {
@@ -273,6 +287,12 @@ type Option func(s *Server)
 func TLS(config *tls.Config) Option {
 	return func(s *Server) {
 		s.tlsConfig = config
+	}
+}
+
+func Pong(enable bool) Option {
+	return func(s *Server) {
+		s.pong = enable
 	}
 }
 

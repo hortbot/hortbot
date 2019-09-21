@@ -33,6 +33,14 @@ type Config struct {
 	// This includes automatically handled PING/RECONNECT messages, so a slow
 	// consumer may negatively impact the connection.
 	RecvBuffer int
+
+	// PingInterval is how often the connection will send a PING to the server.
+	// If zero, PINGs are disabled.
+	PingInterval time.Duration
+
+	// PingDeadline is how long the connection will wait for a response to a
+	// PING before disconnecting.
+	PingDeadline time.Duration
 }
 
 func (c *Config) Setup() {
@@ -44,6 +52,11 @@ func (c *Config) Setup() {
 
 	if c.RecvBuffer < 0 {
 		c.RecvBuffer = 0
+	}
+
+	if c.PingInterval < 0 || c.PingDeadline < 0 {
+		c.PingInterval = 0
+		c.PingDeadline = 0
 	}
 }
 

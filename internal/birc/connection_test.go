@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"testing"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
@@ -574,16 +575,20 @@ func TestConnectionReadOnly(t *testing.T) {
 	})
 }
 
-func TestConnectionSendPing(t *testing.T) {
-	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
+func TestConnectionPing(t *testing.T) {
+	doTestSecureInsecure(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
 		serverMessages := h.CollectFromServer()
+
+		const dur = time.Second / 2
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
 				Nick: "nick",
 				Pass: "pass",
 			},
-			Dialer: &d,
+			Dialer:       &d,
+			PingInterval: dur,
+			PingDeadline: dur / 2,
 		}
 
 		connErr := make(chan error, 1)
@@ -593,12 +598,14 @@ func TestConnectionSendPing(t *testing.T) {
 			connErr <- conn.Run(ctx)
 		}()
 
-		clientMessages := h.CollectFromChannel(conn.Incoming())
+		_ = h.CollectFromChannel(conn.Incoming())
 
 		assert.NilError(t, conn.WaitUntilReady(ctx))
 		h.Sleep()
 
-		assert.NilError(t, conn.Ping(ctx, "foo.bar"))
+		time.Sleep(3 * dur / 2)
+
+		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
 		if quitErr != birc.ErrConnectionClosed {
@@ -613,10 +620,51 @@ func TestConnectionSendPing(t *testing.T) {
 		h.AssertMessages(serverMessages,
 			ircx.Pass("pass"),
 			ircx.Nick("nick"),
-			&irc.Message{Command: "PING", Trailing: "foo.bar"},
 			ircx.Quit(),
 		)
-
-		h.AssertMessages(clientMessages)
 	})
+}
+
+func TestConnectionPingNoPong(t *testing.T) {
+	doTestSecureInsecure(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
+		serverMessages := h.CollectFromServer()
+
+		const dur = time.Second / 2
+
+		c := birc.Config{
+			UserConfig: birc.UserConfig{
+				Nick: "nick",
+				Pass: "pass",
+			},
+			Dialer:       &d,
+			PingInterval: dur,
+			PingDeadline: dur / 2,
+		}
+
+		connErr := make(chan error, 1)
+		conn := birc.NewConnection(c)
+
+		go func() {
+			connErr <- conn.Run(ctx)
+		}()
+
+		_ = h.CollectFromChannel(conn.Incoming())
+
+		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
+
+		time.Sleep(3 * dur / 2)
+
+		h.Sleep()
+
+		assert.Equal(t, birc.ErrFailedPing, errFromErrChan(ctx, connErr))
+
+		h.StopServer()
+		h.Wait()
+
+		h.AssertMessages(serverMessages,
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+		)
+	}, fakeirc.Pong(false))
 }

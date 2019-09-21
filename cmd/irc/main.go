@@ -28,8 +28,10 @@ import (
 )
 
 var args = struct {
-	Nick string `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
-	Pass string `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
+	Nick         string        `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
+	Pass         string        `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
+	PingInterval time.Duration `long:"ping-interval" env:"HB_PING_INTERVAL" description:"How often to ping the IRC server"`
+	PingDeadline time.Duration `long:"ping-deadline" env:"HB_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
 
 	DB         string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
 	NSQAddr    string `long:"nsq-addr" env:"HB_NSQ_ADDR" description:"NSQD address" required:"true"`
@@ -45,6 +47,8 @@ var args = struct {
 
 	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
 }{
+	PingInterval:    5 * time.Minute,
+	PingDeadline:    5 * time.Second,
 	NSQChannel:      "queue",
 	RateLimitSlow:   15,
 	RateLimitFast:   80,
@@ -114,6 +118,8 @@ func main() {
 			},
 			InitialChannels: channels,
 			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},
+			PingInterval:    args.PingInterval,
+			PingDeadline:    args.PingDeadline,
 		},
 	}
 

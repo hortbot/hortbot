@@ -624,14 +624,6 @@ func (p *Pool) SendMessage(ctx context.Context, target, message string) error {
 	return p.send(ctx, ircx.PrivMsg(target, message))
 }
 
-// Ping sends a PING message via one of the subconns.
-func (p *Pool) Ping(ctx context.Context, target string) error {
-	return p.send(ctx, &irc.Message{
-		Command:  "PING",
-		Trailing: target,
-	})
-}
-
 func (p *Pool) Quit(ctx context.Context) error {
 	return p.send(ctx, &irc.Message{Command: "QUIT"})
 }

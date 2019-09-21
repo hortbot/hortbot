@@ -36,8 +36,10 @@ import (
 var args = struct {
 	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 
-	Nick string `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
-	Pass string `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
+	Nick         string        `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
+	Pass         string        `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
+	PingInterval time.Duration `long:"ping-interval" env:"HB_PING_INTERVAL" description:"How often to ping the IRC server"`
+	PingDeadline time.Duration `long:"ping-deadline" env:"HB_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
 
 	DB        string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
 	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
@@ -66,6 +68,8 @@ var args = struct {
 	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
 	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 }{
+	PingInterval:    5 * time.Minute,
+	PingDeadline:    5 * time.Second,
 	DefaultCooldown: 5,
 	WebAddr:         ":5000",
 	WebSessionKey:   "this-is-insecure-do-not-use-this",
@@ -128,6 +132,8 @@ func main() {
 			},
 			InitialChannels: channels,
 			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},
+			PingInterval:    args.PingInterval,
+			PingDeadline:    args.PingDeadline,
 		},
 	}
 

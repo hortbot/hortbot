@@ -5,7 +5,9 @@ import (
 	"net"
 	"sort"
 	"sync"
+	"time"
 
+	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
@@ -26,6 +28,9 @@ var (
 
 	// ErrReadOnly is returned when a read only connection is used to send a message.
 	ErrReadOnly = errors.New("birc: connection is marked read only")
+
+	// ErrFailedPing is returned when a server fails to respond to a PING.
+	ErrFailedPing = errors.New("birc: server did not respond to PING")
 )
 
 // Connection manages a single connection to an IRC server.
@@ -47,6 +52,9 @@ type Connection struct {
 
 	ready      chan struct{}
 	reconnnect bool
+
+	pongMu    sync.RWMutex
+	pongChans map[string]chan *irc.Message
 }
 
 // NewConnection creates a new Connection.
@@ -64,6 +72,7 @@ func newConnection(config *Config) *Connection {
 		closed:       make(chan struct{}),
 		joined:       make(map[string]bool),
 		ready:        make(chan struct{}),
+		pongChans:    make(map[string]chan *irc.Message, 1),
 	}
 }
 
@@ -139,6 +148,12 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 		return c.Close()
 	})
 
+	if c.config.PingInterval > 0 {
+		g.Go(func(ctx context.Context) error {
+			return c.pinger(ctx, g)
+		})
+	}
+
 	close(c.ready)
 
 	err = g.Wait()
@@ -213,6 +228,21 @@ func (c *Connection) receiver(ctx context.Context) error {
 					logger.Error("error sending pong", zap.Error(err))
 				}
 			}()
+		}
+
+		if m.Command == "PONG" {
+			c.pongMu.RLock()
+			ch := c.pongChans[m.Trailing]
+			c.pongMu.RUnlock()
+
+			if ch != nil {
+				select {
+				case ch <- m:
+					continue
+				case <-ctx.Done():
+					return ctx.Err()
+				}
+			}
 		}
 
 		select {
@@ -375,17 +405,54 @@ func (c *Connection) doJoinPart(ctx context.Context, join bool, channels ...stri
 	return c.send(ctx, m)
 }
 
-// Ping sends a PING message to the target. If any response is received, it
-// will be delivered like any other message.
-func (c *Connection) Ping(ctx context.Context, target string) error {
-	return c.send(ctx, &irc.Message{
-		Command:  "PING",
-		Trailing: target,
-	})
-}
-
 // Quit sends a QUIT to the IRC server, which may cause the client to
 // disconnect.
 func (c *Connection) Quit(ctx context.Context) error {
 	return c.send(ctx, &irc.Message{Command: "QUIT"})
+}
+
+func (c *Connection) pinger(ctx context.Context, g *errgroupx.Group) error {
+	ticker := time.NewTicker(c.config.PingInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ticker.C:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+
+		id := uuid.Must(uuid.NewV4()).String()
+		ch := make(chan *irc.Message, 1)
+
+		c.pongMu.Lock()
+		c.pongChans[id] = ch
+		c.pongMu.Unlock()
+
+		m := &irc.Message{
+			Command:  "PING",
+			Trailing: id,
+		}
+
+		if err := c.send(ctx, m); err != nil {
+			return err
+		}
+
+		g.Go(func(ctx context.Context) error {
+			defer func() {
+				c.pongMu.Lock()
+				delete(c.pongChans, id)
+				c.pongMu.Unlock()
+			}()
+
+			select {
+			case <-ch:
+				return nil
+			case <-time.After(c.config.PingDeadline):
+				return ErrFailedPing
+			case <-ctx.Done():
+				return ctx.Err()
+			}
+		})
+	}
 }

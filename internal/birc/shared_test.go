@@ -31,7 +31,6 @@ type connCommon interface {
 	Incoming() <-chan *irc.Message
 	Join(ctx context.Context, channels ...string) error
 	Part(ctx context.Context, channels ...string) error
-	Ping(ctx context.Context, target string) error
 }
 
 var _ connCommon = (*birc.Connection)(nil)
@@ -40,6 +39,7 @@ var _ connCommon = (*birc.Pool)(nil)
 func doTestSecureInsecure(
 	t *testing.T,
 	fn func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message),
+	opts ...fakeirc.Option,
 ) {
 	t.Helper()
 
@@ -54,7 +54,7 @@ func doTestSecureInsecure(
 	for _, test := range tests {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
-			doTestHelper(t, test.insecure, fn)
+			doTestHelper(t, test.insecure, fn, opts...)
 		})
 	}
 }
@@ -62,15 +62,17 @@ func doTestSecureInsecure(
 func doTest(
 	t *testing.T,
 	fn func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message),
+	opts ...fakeirc.Option,
 ) {
 	t.Helper()
-	doTestHelper(t, true, fn)
+	doTestHelper(t, true, fn, opts...)
 }
 
 func doTestHelper(
 	t *testing.T,
 	insecure bool,
 	fn func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message),
+	opts ...fakeirc.Option,
 ) {
 	t.Helper()
 
@@ -81,10 +83,8 @@ func doTestHelper(
 
 	defer leaktest.Check(t)()
 
-	var opts []fakeirc.Option
-
 	if !insecure {
-		opts = []fakeirc.Option{fakeirc.TLS(fakeirc.TLSConfig)}
+		opts = append(opts, fakeirc.TLS(fakeirc.TLSConfig))
 	}
 
 	ctx, cancel := testContext()

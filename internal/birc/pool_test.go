@@ -544,57 +544,6 @@ func TestPoolQuitRejoin(t *testing.T) {
 	})
 }
 
-func TestPoolPing(t *testing.T) {
-	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
-
-		c := birc.PoolConfig{
-			Config: birc.Config{
-				UserConfig: birc.UserConfig{
-					Nick: "nick",
-					Pass: "pass",
-				},
-				Dialer: &d,
-			},
-			JoinRate: -1,
-		}
-
-		errChan := make(chan error, 1)
-		pool := birc.NewPool(c)
-		defer pool.Stop()
-
-		go func() {
-			errChan <- pool.Run(ctx)
-		}()
-
-		clientMessages := h.CollectFromChannel(pool.Incoming())
-
-		assert.NilError(t, pool.WaitUntilReady(ctx))
-		h.Sleep()
-
-		assert.NilError(t, pool.Join(ctx, "#foobar"))
-		assert.NilError(t, pool.Ping(ctx, "test"))
-
-		h.Sleep()
-
-		pool.Stop()
-
-		assert.Equal(t, birc.ErrPoolStopped, errFromErrChan(ctx, errChan))
-
-		h.StopServer()
-		h.Wait()
-
-		h.AssertMessages(serverMessages,
-			ircx.Pass("pass"),
-			ircx.Nick("nick"),
-			ircx.Join("#foobar"),
-			&irc.Message{Command: "PING", Trailing: "test"},
-		)
-
-		h.AssertMessages(clientMessages)
-	})
-}
-
 func TestPoolNotJoinedSend(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
 		serverMessages := h.CollectFromServer()
