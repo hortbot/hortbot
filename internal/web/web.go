@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -145,6 +144,11 @@ func (a *App) getBrand(r *http.Request) string {
 	return a.Brand
 }
 
+type authState struct {
+	Host    string
+	BotName string
+}
+
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
@@ -152,11 +156,12 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
 	state := uuid.Must(uuid.NewV4()).String()
 
 	botName := chi.URLParam(r, "botName")
-	if botName != "" {
-		state = strings.ToLower(botName) + ":" + state
+	stateVal := &authState{
+		Host:    r.Host,
+		BotName: botName,
 	}
 
-	if err := a.Redis.SetAuthState(r.Context(), state, time.Minute); err != nil {
+	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
 		logger.Error("error setting auth state", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
@@ -181,7 +186,9 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok, err := a.Redis.CheckAuthState(ctx, state)
+	var stateVal authState
+
+	ok, err := a.Redis.GetAuthState(ctx, state, &stateVal)
 	if err != nil {
 		logger.Error("error checking auth state", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
@@ -193,12 +200,22 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var botName string
-	if i := strings.IndexByte(state, ':'); i > 0 {
-		botName = strings.ToLower(state[:i])
-	}
-	isBot := botName != ""
+	if stateVal.Host != r.Host {
+		// This came to the wrong host. Put the state back and redirect.
+		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, time.Minute); err != nil {
+			logger.Error("error setting auth state", zap.Error(err))
+			httpError(w, http.StatusInternalServerError)
+			return
+		}
 
+		u := *r.URL
+		u.Host = stateVal.Host
+		templates.WriteMetaRedirect(w, u.String())
+		return
+	}
+
+	botName := stateVal.BotName
+	isBot := botName != ""
 	code := r.FormValue("code")
 
 	tok, err := a.Twitch.Exchange(ctx, code)
@@ -220,7 +237,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	tt := modelsx.TokenToModel(user.ID, tok)
 
-	if botName != "" {
+	if isBot {
 		if botName != user.Name {
 			httpError(w, http.StatusBadRequest)
 			return

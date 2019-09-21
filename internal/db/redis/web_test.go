@@ -19,34 +19,51 @@ func TestAuthState(t *testing.T) {
 
 	db := redis.New(c)
 
-	const state = "some_state"
+	const key = "some_state"
+
+	type value struct {
+		S string
+		X int
+		T time.Time
+	}
+
+	orig := &value{
+		S: "string",
+		X: 1234,
+		T: time.Time{}.Add(time.Hour),
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	ok, err := db.CheckAuthState(ctx, state)
+	var got value
+	ok, err := db.GetAuthState(ctx, key, &got)
 	assert.NilError(t, err)
 	assert.Equal(t, ok, false)
 
-	err = db.SetAuthState(ctx, state, time.Hour)
+	err = db.SetAuthState(ctx, key, orig, time.Hour)
 	assert.NilError(t, err)
 
 	s.FastForward(time.Hour / 2)
 
-	ok, err = db.CheckAuthState(ctx, state)
+	got = value{}
+	ok, err = db.GetAuthState(ctx, key, &got)
 	assert.NilError(t, err)
 	assert.Equal(t, ok, true)
+	assert.DeepEqual(t, &got, orig)
 
-	ok, err = db.CheckAuthState(ctx, state)
+	got = value{}
+	ok, err = db.GetAuthState(ctx, key, &got)
 	assert.NilError(t, err)
 	assert.Equal(t, ok, false)
 
-	err = db.SetAuthState(ctx, state, time.Hour)
+	err = db.SetAuthState(ctx, key, orig, time.Hour)
 	assert.NilError(t, err)
 
 	s.FastForward(time.Hour * 2)
 
-	ok, err = db.CheckAuthState(ctx, state)
+	got = value{}
+	ok, err = db.GetAuthState(ctx, key, &got)
 	assert.NilError(t, err)
 	assert.Equal(t, ok, false)
 }

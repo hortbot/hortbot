@@ -77,6 +77,7 @@ services:
       - jaeger
     ports:
       - "5000:5000"
+      - "5001:5000"
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true

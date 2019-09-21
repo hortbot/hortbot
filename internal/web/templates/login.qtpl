@@ -69,3 +69,17 @@ type LoginSuccessPage struct {
 </section>
 {% endfunc %}
 
+{% func MetaRedirect(url string) %}
+<!DOCTYPE html>
+<html>
+	<head>
+        <style>
+            html {
+                background-color: #1f2424;
+            }
+        </style>
+	    <meta http-equiv="Refresh" content="0; url={%s url %}" />
+	</head>
+	<body></body>
+</html>
+{% endfunc %}

@@ -154,3 +154,36 @@ func (p *LoginSuccessPage) PageBody() string {
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
 }
+
+func StreamMetaRedirect(qw422016 *qt422016.Writer, url string) {
+	qw422016.N().S(`
+<!DOCTYPE html>
+<html>
+	<head>
+        <style>
+            html {
+                background-color: #1f2424;
+            }
+        </style>
+	    <meta http-equiv="Refresh" content="0; url=`)
+	qw422016.E().S(url)
+	qw422016.N().S(`" />
+	</head>
+	<body></body>
+</html>
+`)
+}
+
+func WriteMetaRedirect(qq422016 qtio422016.Writer, url string) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	StreamMetaRedirect(qw422016, url)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func MetaRedirect(url string) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	WriteMetaRedirect(qb422016, url)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
