@@ -57,9 +57,10 @@ var args = struct {
 
 	SteamKey string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
 
-	WebAddr       string `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
-	WebSessionKey string `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
-	WebBrand      string `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server branding"`
+	WebAddr       string            `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
+	WebSessionKey string            `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
+	WebBrand      string            `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server default branding"`
+	WebBrandMap   map[string]string `long:"web-brand-map" env:"HB_WEB_BRAND_MAP" env-delim:"," description:"Web server brand mapping from domains to branding (ex: 'example.com:SomeBot,other.net:WhoAmI')"`
 
 	RateLimitSlow   int           `long:"rate-limit-slow" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
 	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
@@ -212,6 +213,8 @@ func main() {
 			Addr:       args.WebAddr,
 			SessionKey: []byte(args.WebSessionKey),
 			Brand:      args.WebBrand,
+			BrandMap:   args.WebBrandMap,
+			Debug:      args.Debug,
 			Redis:      rdb,
 			DB:         db,
 			Twitch:     twitchAPI,

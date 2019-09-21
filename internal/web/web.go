@@ -3,7 +3,10 @@ package web
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"net"
 	"net/http"
+	"net/http/httputil"
 	"sort"
 	"strings"
 	"time"
@@ -39,7 +42,10 @@ type App struct {
 	RealIP     bool
 	SessionKey []byte
 
-	Brand string
+	Brand    string
+	BrandMap map[string]string
+
+	Debug bool
 
 	Redis  *redis.DB
 	DB     *sql.DB
@@ -92,6 +98,21 @@ func (a *App) Run(ctx context.Context) error {
 	r.Get("/auth/twitch/bot/{botName}", a.authTwitch)
 	r.Get("/auth/twitch/callback", a.authTwitchCallback)
 
+	if a.Debug {
+		r.Route("/debug", func(r chi.Router) {
+			r.Use(middleware.NoCache)
+			r.Get("/request", func(w http.ResponseWriter, r *http.Request) {
+				b, err := httputil.DumpRequest(r, true)
+				if err != nil {
+					logger.Error("error dumping request", zap.Error(err))
+					httpError(w, http.StatusInternalServerError)
+					return
+				}
+				fmt.Fprintf(w, "%s", b)
+			})
+		})
+	}
+
 	srv := http.Server{
 		Addr:    a.Addr,
 		Handler: r,
@@ -107,6 +128,21 @@ func (a *App) Run(ctx context.Context) error {
 	logger.Info("web server listening", zap.String("addr", srv.Addr))
 
 	return srv.ListenAndServe()
+}
+
+func (a *App) getBrand(r *http.Request) string {
+	if a.BrandMap == nil {
+		return a.Brand
+	}
+
+	host, _, _ := net.SplitHostPort(r.Host)
+	if host != "" {
+		if brand := a.BrandMap[host]; brand != "" {
+			return brand
+		}
+	}
+
+	return a.Brand
 }
 
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request) {
@@ -215,7 +251,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		ID:   user.ID,
 		Bot:  isBot,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 
 	templates.WritePageTemplate(w, page)
 }
@@ -223,9 +259,6 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	logger := ctxlog.FromContext(ctx)
-
-	session := a.getSession(r)
-	logger.Debug("session", zap.Int64("twitch_id", session.getTwitchID()), zap.String("username", session.getUsername()))
 
 	channels, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, a.DB)
 	if err != nil {
@@ -248,7 +281,7 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 		ChannelCount: channels,
 		BotCount:     row.BotCount,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 
 	templates.WritePageTemplate(w, page)
 }
@@ -270,7 +303,7 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelsPage{
 		Channels: channels,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 
 	templates.WritePageTemplate(w, page)
 }
@@ -282,7 +315,7 @@ func (a *App) channel(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelPage{
 		Channel: channel,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	templates.WritePageTemplate(w, page)
 }
 
@@ -305,7 +338,7 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelCommandsPage{
 		Commands: commands,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -326,7 +359,7 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelQuotesPage{
 		Quotes: quotes,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -347,7 +380,7 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelAutorepliesPage{
 		Autoreplies: autoreplies,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -372,7 +405,7 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelListsPage{
 		Lists: lists,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -383,7 +416,7 @@ func (a *App) channelRegulars(w http.ResponseWriter, r *http.Request) {
 	channel := getChannel(ctx)
 
 	page := &templates.ChannelRegularsPage{}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -394,7 +427,7 @@ func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 	channel := getChannel(ctx)
 
 	page := &templates.ChannelRulesPage{}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -439,7 +472,7 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 		Repeated:  repeated,
 		Scheduled: scheduled,
 	}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 	page.Channel = channel
 
 	templates.WritePageTemplate(w, page)
@@ -447,7 +480,7 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
 	page := &templates.LoginPage{}
-	page.Brand = a.Brand
+	page.Brand = a.getBrand(r)
 
 	templates.WritePageTemplate(w, page)
 }
