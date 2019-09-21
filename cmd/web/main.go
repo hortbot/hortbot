@@ -8,6 +8,7 @@ import (
 
 	"contrib.go.opencensus.io/integrations/ocsql"
 	goredis "github.com/go-redis/redis/v7"
+	"github.com/hortbot/hortbot/internal/cmdargs"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
@@ -23,26 +24,19 @@ import (
 )
 
 var args = struct {
-	DB    string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
-	Redis string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
-
-	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
-	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
-	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
-
-	WebAddr       string            `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
-	WebSessionKey string            `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
-	WebBrand      string            `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server default branding"`
-	WebBrandMap   map[string]string `long:"web-brand-map" env:"HB_WEB_BRAND_MAP" env-delim:"," description:"Web server brand mapping from domains to branding (ex: 'example.com:SomeBot,other.net:WhoAmI')"`
-
-	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
-
-	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
+	cmdargs.Common
+	cmdargs.SQL
+	cmdargs.Redis
+	cmdargs.Twitch
+	cmdargs.Web
+	cmdargs.Jaeger
 }{
-	WebAddr:       ":5000",
-	WebSessionKey: "this-is-insecure-do-not-use-this",
-	WebBrand:      "HortBot",
+	Common: cmdargs.DefaultCommon,
+	SQL:    cmdargs.DefaultSQL,
+	Redis:  cmdargs.DefaultRedis,
+	Twitch: cmdargs.DefaultTwitch,
+	Web:    cmdargs.DefaultWeb,
+	Jaeger: cmdargs.DefaultJaeger,
 }
 
 func main() {
@@ -89,7 +83,7 @@ func main() {
 	}
 
 	rClient := goredis.NewClient(&goredis.Options{
-		Addr: args.Redis,
+		Addr: args.RedisAddr,
 	})
 	defer rClient.Close()
 

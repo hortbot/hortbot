@@ -12,6 +12,7 @@ import (
 	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bnsq"
+	"github.com/hortbot/hortbot/internal/cmdargs"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -30,31 +31,23 @@ import (
 )
 
 var args = struct {
-	Nick         string        `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
-	Pass         string        `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
-	PingInterval time.Duration `long:"ping-interval" env:"HB_PING_INTERVAL" description:"How often to ping the IRC server"`
-	PingDeadline time.Duration `long:"ping-deadline" env:"HB_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
-
-	DB         string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
-	NSQAddr    string `long:"nsq-addr" env:"HB_NSQ_ADDR" description:"NSQD address" required:"true"`
-	NSQChannel string `long:"nsq-channel" env:"HB_NSQ_CHANNEL" description:"NSQ subscription channel"`
-
-	Debug     bool   `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
-	Redis     string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
-
-	RateLimitSlow   int           `long:"rate-limit-slow" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
-	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
-	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
-
-	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
+	cmdargs.Common
+	cmdargs.IRC
+	cmdargs.SQL
+	cmdargs.Redis
+	cmdargs.Bot
+	cmdargs.RateLimit
+	cmdargs.NSQ
+	cmdargs.Jaeger
 }{
-	PingInterval:    5 * time.Minute,
-	PingDeadline:    5 * time.Second,
-	NSQChannel:      "queue",
-	RateLimitSlow:   15,
-	RateLimitFast:   80,
-	RateLimitPeriod: 30 * time.Second,
+	Common:    cmdargs.DefaultCommon,
+	IRC:       cmdargs.DefaultIRC,
+	SQL:       cmdargs.DefaultSQL,
+	Redis:     cmdargs.DefaultRedis,
+	Bot:       cmdargs.DefaultBot,
+	RateLimit: cmdargs.DefaultRateLimit,
+	NSQ:       cmdargs.DefaultNSQ,
+	Jaeger:    cmdargs.DefaultJaeger,
 }
 
 //nolint:gocyclo
@@ -102,7 +95,7 @@ func main() {
 	}
 
 	rClient := goredis.NewClient(&goredis.Options{
-		Addr: args.Redis,
+		Addr: args.RedisAddr,
 	})
 	defer rClient.Close()
 

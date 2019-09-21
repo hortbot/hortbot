@@ -10,6 +10,7 @@ import (
 	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/cmdargs"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
@@ -33,33 +34,25 @@ import (
 )
 
 var args = struct {
-	DB         string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
-	Redis      string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
-	NSQAddr    string `long:"nsq-addr" env:"HB_NSQ_ADDR" description:"NSQD address" required:"true"`
-	NSQChannel string `long:"nsq-channel" env:"HB_NSQ_CHANNEL" description:"NSQ subscription channel"`
-
-	Admins []string `long:"admin" env:"HB_ADMINS" env-delim:"," description:"Bot admins"`
-
-	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
-	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
-
-	DefaultCooldown int `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
-
-	Debug     bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	MigrateUp bool `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
-
-	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
-
-	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
-	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
-	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
-
-	SteamKey string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
-
-	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
+	cmdargs.Common
+	cmdargs.SQL
+	cmdargs.Redis
+	cmdargs.Bot
+	cmdargs.LastFM
+	cmdargs.Twitch
+	cmdargs.Steam
+	cmdargs.NSQ
+	cmdargs.Jaeger
 }{
-	DefaultCooldown: 5,
-	NSQChannel:      "queue",
+	Common: cmdargs.DefaultCommon,
+	SQL:    cmdargs.DefaultSQL,
+	Redis:  cmdargs.DefaultRedis,
+	Bot:    cmdargs.DefaultBot,
+	LastFM: cmdargs.DefaultLastFM,
+	Twitch: cmdargs.DefaultTwitch,
+	Steam:  cmdargs.DefaultSteam,
+	NSQ:    cmdargs.DefaultNSQ,
+	Jaeger: cmdargs.DefaultJaeger,
 }
 
 func main() {
@@ -106,7 +99,7 @@ func main() {
 	}
 
 	rClient := goredis.NewClient(&goredis.Options{
-		Addr: args.Redis,
+		Addr: args.RedisAddr,
 	})
 	defer rClient.Close()
 

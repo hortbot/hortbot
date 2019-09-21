@@ -23,7 +23,7 @@ services:
       - HB_PASS=${HB_PASS:-}
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
-      - HB_REDIS=redis:6379
+      - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
 
@@ -47,7 +47,7 @@ services:
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
-      - HB_REDIS=redis:6379
+      - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
       - HB_ADMINS=${HB_ADMINS:-}
@@ -81,7 +81,7 @@ services:
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
-      - HB_REDIS=redis:6379
+      - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
       - HB_TWITCH_CLIENT_ID=${HB_TWITCH_CLIENT_ID:-}

@@ -11,6 +11,7 @@ import (
 	goredis "github.com/go-redis/redis/v7"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/cmdargs"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -36,49 +37,27 @@ import (
 )
 
 var args = struct {
-	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-
-	Nick         string        `long:"nick" env:"HB_NICK" description:"IRC nick" required:"true"`
-	Pass         string        `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
-	PingInterval time.Duration `long:"ping-interval" env:"HB_PING_INTERVAL" description:"How often to ping the IRC server"`
-	PingDeadline time.Duration `long:"ping-deadline" env:"HB_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
-
-	DB        string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
-	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
-	Redis     string `long:"redis" env:"HB_REDIS" description:"Redis address" required:"true"`
-
-	Admins []string `long:"admin" env:"HB_ADMINS" env-delim:"," description:"Bot admins"`
-
-	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
-	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
-
-	DefaultCooldown int    `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
-	LastFMKey       string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
-
-	TwitchClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
-	TwitchClientSecret string `long:"twitch-client-secret" env:"HB_TWITCH_CLIENT_SECRET" description:"Twitch OAuth client secret" required:"true"`
-	TwitchRedirectURL  string `long:"twitch-redirect-url" env:"HB_TWITCH_REDIRECT_URL" description:"Twitch OAuth redirect URL" required:"true"`
-
-	SteamKey string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
-
-	WebAddr       string            `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
-	WebSessionKey string            `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
-	WebBrand      string            `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server default branding"`
-	WebBrandMap   map[string]string `long:"web-brand-map" env:"HB_WEB_BRAND_MAP" env-delim:"," description:"Web server brand mapping from domains to branding (ex: 'example.com:SomeBot,other.net:WhoAmI')"`
-
-	RateLimitSlow   int           `long:"rate-limit-slow" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
-	RateLimitFast   int           `long:"rate-limit-fast" env:"HB_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
-	RateLimitPeriod time.Duration `long:"rate-limit-period" env:"HB_RATE_LIMIT_PERIOD" description:"Rate limit period"`
+	cmdargs.Common
+	cmdargs.IRC
+	cmdargs.SQL
+	cmdargs.Redis
+	cmdargs.Bot
+	cmdargs.LastFM
+	cmdargs.Twitch
+	cmdargs.Steam
+	cmdargs.Web
+	cmdargs.RateLimit
 }{
-	PingInterval:    5 * time.Minute,
-	PingDeadline:    5 * time.Second,
-	DefaultCooldown: 5,
-	WebAddr:         ":5000",
-	WebSessionKey:   "this-is-insecure-do-not-use-this",
-	WebBrand:        "HortBot",
-	RateLimitSlow:   15,
-	RateLimitFast:   80,
-	RateLimitPeriod: 30 * time.Second,
+	Common:    cmdargs.DefaultCommon,
+	IRC:       cmdargs.DefaultIRC,
+	SQL:       cmdargs.DefaultSQL,
+	Redis:     cmdargs.DefaultRedis,
+	Bot:       cmdargs.DefaultBot,
+	LastFM:    cmdargs.DefaultLastFM,
+	Twitch:    cmdargs.DefaultTwitch,
+	Steam:     cmdargs.DefaultSteam,
+	Web:       cmdargs.DefaultWeb,
+	RateLimit: cmdargs.DefaultRateLimit,
 }
 
 //nolint:gocyclo
@@ -116,7 +95,7 @@ func main() {
 	}
 
 	rClient := goredis.NewClient(&goredis.Options{
-		Addr: args.Redis,
+		Addr: args.RedisAddr,
 	})
 	defer rClient.Close()
 
