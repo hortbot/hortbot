@@ -460,3 +460,7 @@ func (s *session) WebAddr() string {
 func (s *session) HelpMessage() string {
 	return "You can find help at: " + s.WebAddr()
 }
+
+func (s *session) TwitchNotAuthMessage() string {
+	return "The bot wasn't authorized to perform this action. Log in on the website to give permission: " + s.WebAddr() + "/login"
+}

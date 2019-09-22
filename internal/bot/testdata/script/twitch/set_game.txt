@@ -1,3 +1,4 @@
+bot_config {"WebAddr": "http://localhost:5000"}
 twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": "This is the status!", "Game": "Garry's Mod"}}
 
 join hortbot 999 foobar 1
@@ -13,7 +14,7 @@ send hortbot #foobar [HB] Current game: Garry's Mod
 
 twitch_set_channel_game {"ID": 1, "New": "Just Chatting", "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting
-send hortbot #foobar [HB] The bot wasn't authorized. Head over to the website to give the bot permission.
+send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log in on the website to give permission: http://localhost:5000/login
 
 
 upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
@@ -32,7 +33,7 @@ send hortbot #foobar [HB] A Twitch server error occurred.
 
 twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Just Chatting", "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting
-send hortbot #foobar [HB] The bot wasn't authorized. Head over to the website to give the bot permission.
+send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log in on the website to give permission: http://localhost:5000/login
 
 twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Just Chatting", "Set": "Just Chatting"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting

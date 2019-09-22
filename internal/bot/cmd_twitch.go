@@ -14,10 +14,7 @@ import (
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
-const (
-	twitchNotAuthorizedReply = "The bot wasn't authorized. Head over to the website to give the bot permission." // TODO: provide link
-	twitchServerErrorReply   = "A Twitch server error occurred."
-)
+const twitchServerErrorReply = "A Twitch server error occurred."
 
 func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 	if args != "" && s.UserLevel.CanAccess(levelModerator) {
@@ -68,7 +65,7 @@ func setStatus(ctx context.Context, s *session, status string) (bool, error) {
 	if err != nil {
 		switch err {
 		case twitch.ErrNotAuthorized:
-			return true, s.Reply(ctx, twitchNotAuthorizedReply)
+			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
 		case twitch.ErrServerError:
 			return true, s.Reply(ctx, twitchServerErrorReply)
 		}
@@ -133,7 +130,7 @@ func setGame(ctx context.Context, s *session, game string) (bool, error) {
 	if err != nil {
 		switch err {
 		case twitch.ErrNotAuthorized:
-			return true, s.Reply(ctx, twitchNotAuthorizedReply)
+			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
 		case twitch.ErrServerError:
 			return true, s.Reply(ctx, twitchServerErrorReply)
 		}
