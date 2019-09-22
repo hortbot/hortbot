@@ -45,6 +45,9 @@ type sharedDeps struct {
 
 	Admins    map[string]bool
 	Whitelist map[string]bool
+
+	WebAddr    string
+	WebAddrMap map[string]string
 }
 
 func (s *sharedDeps) IsAllowed(name string) bool {

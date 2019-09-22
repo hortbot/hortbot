@@ -40,10 +40,14 @@ type Bot struct {
 	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
 
 	DefaultCooldown int `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
+
+	BotWebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
+	BotWebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" description:"Bot name to web address mapping"`
 }
 
 var DefaultBot = Bot{
 	DefaultCooldown: 5,
+	BotWebAddr:      "http://localhost:5000",
 }
 
 type Web struct {

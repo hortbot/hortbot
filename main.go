@@ -197,6 +197,8 @@ func main() {
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,
 		Cooldown:         args.DefaultCooldown,
+		WebAddr:          args.BotWebAddr,
+		WebAddrMap:       args.BotWebAddrMap,
 	}
 
 	b := bot.New(bc)

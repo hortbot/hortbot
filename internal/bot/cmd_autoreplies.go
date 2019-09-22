@@ -216,7 +216,9 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 }
 
 func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) error {
-	// TODO: Just link to website?
+	if !isTesting {
+		return s.Replyf(ctx, "You can find the list of autoreplies at: %s/c/%s/autoreplies", s.WebAddr(), s.IRCChannel)
+	}
 
 	autoreplies, err := s.Channel.Autoreplies(
 		qm.OrderBy(models.AutoreplyColumns.Num),

@@ -1,0 +1,24 @@
+bot_config {"WebAddr": "http://localhost:5000", "WebAddrMap": {"otherbot": "https://example.org", "extrabot": "https://d.va"}}
+
+join hortbot 999 foobar 1
+join otherbot 888 other 10
+join extrabot 777 what 11
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quotes
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quotes
+send hortbot #foobar [HB] You can find the list of quotes at: http://localhost:5000/c/foobar/quotes
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!commands
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!commands
+send hortbot #foobar [HB] You can find the list of commands at: http://localhost:5000/c/foobar/commands
+
+
+handle otherbot @id=__UUID__;room-id=10;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #other :!quotes
+send otherbot #other [HB] You can find the list of quotes at: https://example.org/c/other/quotes
+
+handle extrabot @id=__UUID__;room-id=11;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #what :!commands
+send extrabot #what [HB] You can find the list of commands at: https://d.va/c/what/commands

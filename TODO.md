@@ -82,7 +82,7 @@ autocomplete usernames in the chat input box.
     - [x] Editor (undocumented)
     - [x] Clone
     - [x] Automatic restriction based on known actions
-    - [ ] Link to list of commands (*Website*)
+    - [x] Link to list of commands (*Website*)
 - [x] Repeats
     - [x] Add
     - [x] Delete
@@ -102,7 +102,7 @@ autocomplete usernames in the chat input box.
     - [x] List
     - [x] Actions inside of autoreply responses
     - [x] Similarly to quotes, emulate old list behavior
-    - [ ] Link to list of autoreplies (*Website*)
+    - [x] Link to list of autoreplies (*Website*)
 - [x] "Fun"
     - [x] ~~Throw~~ (Use a custom command.)
     - [x] Winner
@@ -126,7 +126,7 @@ autocomplete usernames in the chat input box.
     - [x] Random
     - [x] Search
     - [x] CoeBot would delete a quote and shift quotes after it backwards; HortBot doesn't. There needs to be a command to emulate this behavior.
-    - [ ] Link to quotes page on website (*Website*)
+    - [x] Link to quotes page on website (*Website*)
 - [x] ~~Poll~~
 - [x] ~~Giveaways~~
 - [x] Raffles

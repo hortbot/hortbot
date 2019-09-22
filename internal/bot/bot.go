@@ -53,6 +53,9 @@ type Config struct {
 
 	WhitelistEnabled bool
 	Whitelist        []string
+
+	WebAddr    string
+	WebAddrMap map[string]string
 }
 
 type Bot struct {
@@ -100,6 +103,8 @@ func New(config *Config) *Bot {
 		Urban:           config.Urban,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
+		WebAddr:         config.WebAddr,
+		WebAddrMap:      config.WebAddrMap,
 	}
 
 	if deps.DefaultBullet == "" {

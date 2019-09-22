@@ -63,6 +63,9 @@ func init() {
 		"link":            {fn: cmdLink, minLevel: levelSubscriber},
 		"followme":        {fn: cmdFollowMe, minLevel: levelBroadcaster},
 		"urban":           {fn: cmdUrban, minLevel: levelSubscriber, skipCooldown: true},
+		"commands":        {fn: cmdCommands, minLevel: levelSubscriber},
+		"coemands":        {fn: cmdCommands, minLevel: levelSubscriber},
+		"quotes":          {fn: cmdQuotes, minLevel: levelSubscriber},
 	})
 }
 

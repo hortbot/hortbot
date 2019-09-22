@@ -447,3 +447,12 @@ func (s *session) ShortenLink(ctx context.Context, link string) (string, error) 
 	}
 	return short, err
 }
+
+func (s *session) WebAddr() string {
+	if s.Deps.WebAddrMap != nil {
+		if adr := s.Deps.WebAddrMap[s.Channel.BotName]; adr != "" {
+			return adr
+		}
+	}
+	return s.Deps.WebAddr
+}
