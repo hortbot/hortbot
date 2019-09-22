@@ -1,0 +1,8 @@
+bot_config {"WebAddr": "http://localhost:5000"}
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add bhelp (_BOT_HELP_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!bhelp
+send hortbot #foobar [HB] You can find help at: http://localhost:5000

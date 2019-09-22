@@ -260,6 +260,9 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return "http://store.steampowered.com/app/" + gameID, nil
 	case "TWEET_URL":
 		return s.actionTweet(ctx)
+
+	case "BOT_HELP":
+		return s.HelpMessage(), nil
 	}
 
 	switch {

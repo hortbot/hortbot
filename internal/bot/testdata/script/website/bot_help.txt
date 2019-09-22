@@ -1,0 +1,8 @@
+bot_config {"WebAddr": "http://localhost:5000"}
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!help
+send hortbot #foobar [HB] You can find help at: http://localhost:5000
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!bothelp
+send hortbot #foobar [HB] You can find help at: http://localhost:5000

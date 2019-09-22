@@ -456,3 +456,7 @@ func (s *session) WebAddr() string {
 	}
 	return s.Deps.WebAddr
 }
+
+func (s *session) HelpMessage() string {
+	return "You can find help at: " + s.WebAddr()
+}

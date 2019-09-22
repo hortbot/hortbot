@@ -66,6 +66,8 @@ func init() {
 		"commands":        {fn: cmdCommands, minLevel: levelSubscriber},
 		"coemands":        {fn: cmdCommands, minLevel: levelSubscriber},
 		"quotes":          {fn: cmdQuotes, minLevel: levelSubscriber},
+		"bothelp":         {fn: cmdHelp, minLevel: levelEveryone},
+		"help":            {fn: cmdHelp, minLevel: levelEveryone},
 	})
 }
 

@@ -11,8 +11,7 @@
     - [ ] No-downtime upgrades
     - [x] Rate limiting
         - [x] Needs to check userstate/badges/etc to "unlock" a faster rate.
-- [ ] Website
-    - Needed for OAuth stuff
+- [x] Website (see below)
 - [ ] JSON configuration transferer
 
 ## CoeBot features
@@ -54,7 +53,7 @@ autocomplete usernames in the chat input box.
     - [x] LastFM
         - [x] `music`
         - [x] Song link
-    - [ ] Bot help (*Website*)
+    - [x] Bot help (*Website*)
     - [x] ~~Commercial~~
     - [x] Game (*Twitch API*)
         - [x] Get game
@@ -273,7 +272,7 @@ autocomplete usernames in the chat input box.
 - [x] `(_SONG_)`
 - [x] `(_SONG_URL_)`
 - [x] `(_LAST_SONG_)`
-- [ ] `(_BOT_HELP_)` (*Website*)
+- [x] `(_BOT_HELP_)` (*Website*)
 - [x] `(_USER_)`
 - [x] `(_QUOTE_)`
 - [x] ~~`(_COMMERCIAL_)`~~
@@ -317,7 +316,7 @@ autocomplete usernames in the chat input box.
 
 ### Website
 
-- [ ] Homepage
+- [x] Homepage
 - [x] Channel list
     - [ ] Place live channels at the top (batch Twitch API)
 - [ ] Documentation

@@ -9,3 +9,7 @@ func cmdCommands(ctx context.Context, s *session, cmd string, args string) error
 func cmdQuotes(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Replyf(ctx, "You can find the list of quotes at: %s/c/%s/quotes", s.WebAddr(), s.IRCChannel)
 }
+
+func cmdHelp(ctx context.Context, s *session, cmd string, args string) error {
+	return s.Reply(ctx, s.HelpMessage())
+}
