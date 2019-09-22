@@ -110,27 +110,29 @@ func main() {
 	nick := args.Nick
 	pass := args.Pass
 
-	token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(nick))).One(ctx, db)
-	if err != nil {
-		if err != sql.ErrNoRows {
-			logger.Fatal("error querying for bot token", zap.Error(err))
-		}
-	} else {
-		logger.Debug("using oauth token from database")
-
-		twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
-		user, newTok, err := twitchAPI.GetUserForToken(ctx, modelsx.ModelToToken(token))
+	if !args.NoToken {
+		token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(nick))).One(ctx, db)
 		if err != nil {
-			logger.Fatal("error refreshing auth token", zap.Error(err))
-		}
-		if newTok != nil {
-			token = modelsx.TokenToModel(user.ID, newTok)
-			if err := modelsx.UpsertToken(ctx, db, token); err != nil {
-				logger.Fatal("error upserting new token", zap.Error(err))
+			if err != sql.ErrNoRows {
+				logger.Fatal("error querying for bot token", zap.Error(err))
 			}
-			logger.Debug("token was refreshed")
+		} else {
+			logger.Debug("using oauth token from database")
+
+			twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
+			user, newTok, err := twitchAPI.GetUserForToken(ctx, modelsx.ModelToToken(token))
+			if err != nil {
+				logger.Fatal("error refreshing auth token", zap.Error(err))
+			}
+			if newTok != nil {
+				token = modelsx.TokenToModel(user.ID, newTok)
+				if err := modelsx.UpsertToken(ctx, db, token); err != nil {
+					logger.Fatal("error upserting new token", zap.Error(err))
+				}
+				logger.Debug("token was refreshed")
+			}
+			pass = "oauth:" + token.AccessToken
 		}
-		pass = "oauth:" + token.AccessToken
 	}
 
 	pc := birc.PoolConfig{

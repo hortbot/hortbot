@@ -13,6 +13,7 @@ type IRC struct {
 	Pass         string        `long:"pass" env:"HB_PASS" description:"IRC pass" required:"true"`
 	PingInterval time.Duration `long:"ping-interval" env:"HB_PING_INTERVAL" description:"How often to ping the IRC server"`
 	PingDeadline time.Duration `long:"ping-deadline" env:"HB_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
+	NoToken      bool          `long:"no-token" env:"HB_NO_TOKEN" description:"Don't use a token from the database"`
 }
 
 var DefaultIRC = IRC{
