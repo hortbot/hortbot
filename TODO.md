@@ -322,8 +322,8 @@ autocomplete usernames in the chat input box.
 - [ ] Documentation
 - [x] Login
 - [ ] Join
-- [ ] About/FAQ
-- [ ] Channel
+- [x] About/FAQ
+- [x] Channel
     - [x] Overview (links, simple info)
     - [x] Commands
     - [x] Quotes
@@ -334,6 +334,7 @@ autocomplete usernames in the chat input box.
     - [x] Chat rules
     - [x] Command formatting
 - [ ] Online editing of everything, real login system
+- [ ] Fun stuff, error pages and art
 
 ## New features
 

@@ -78,6 +78,7 @@ func (a *App) Run(ctx context.Context) error {
 	r.Use(mid.Recoverer)
 
 	r.Get("/", a.index)
+	r.Get("/about", a.about)
 	r.Get("/channels", a.channels)
 
 	r.Route("/c/{channel}", func(r chi.Router) {
@@ -299,6 +300,12 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Brand = a.getBrand(r)
 
+	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) about(w http.ResponseWriter, r *http.Request) {
+	page := &templates.AboutPage{}
+	page.Brand = a.getBrand(r)
 	templates.WritePageTemplate(w, page)
 }
 
