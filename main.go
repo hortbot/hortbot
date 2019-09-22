@@ -109,6 +109,8 @@ func main() {
 	nick := args.Nick
 	pass := args.Pass
 
+	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
+
 	token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(nick))).One(ctx, db)
 	if err != nil {
 		if err != sql.ErrNoRows {
@@ -116,6 +118,18 @@ func main() {
 		}
 	} else {
 		logger.Debug("using oauth token from database")
+
+		user, newTok, err := twitchAPI.GetUserForToken(ctx, modelsx.ModelToToken(token))
+		if err != nil {
+			logger.Fatal("error refreshing auth token", zap.Error(err))
+		}
+		if newTok != nil {
+			token = modelsx.TokenToModel(user.ID, newTok)
+			if err := modelsx.UpsertToken(ctx, db, token); err != nil {
+				logger.Fatal("error upserting new token", zap.Error(err))
+			}
+			logger.Debug("token was refreshed")
+		}
 		pass = "oauth:" + token.AccessToken
 	}
 
@@ -167,8 +181,6 @@ func main() {
 	} else {
 		logger.Warn("no LastFM API key provided, functionality will be disabled")
 	}
-
-	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
 
 	var steamAPI steam.API
 	if args.SteamKey != "" {

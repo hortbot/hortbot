@@ -17,6 +17,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
@@ -35,7 +36,7 @@ var args = struct {
 	cmdargs.IRC
 	cmdargs.SQL
 	cmdargs.Redis
-	cmdargs.Bot
+	cmdargs.Twitch
 	cmdargs.RateLimit
 	cmdargs.NSQ
 	cmdargs.Jaeger
@@ -44,7 +45,7 @@ var args = struct {
 	IRC:       cmdargs.DefaultIRC,
 	SQL:       cmdargs.DefaultSQL,
 	Redis:     cmdargs.DefaultRedis,
-	Bot:       cmdargs.DefaultBot,
+	Twitch:    cmdargs.DefaultTwitch,
 	RateLimit: cmdargs.DefaultRateLimit,
 	NSQ:       cmdargs.DefaultNSQ,
 	Jaeger:    cmdargs.DefaultJaeger,
@@ -116,6 +117,19 @@ func main() {
 		}
 	} else {
 		logger.Debug("using oauth token from database")
+
+		twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
+		user, newTok, err := twitchAPI.GetUserForToken(ctx, modelsx.ModelToToken(token))
+		if err != nil {
+			logger.Fatal("error refreshing auth token", zap.Error(err))
+		}
+		if newTok != nil {
+			token = modelsx.TokenToModel(user.ID, newTok)
+			if err := modelsx.UpsertToken(ctx, db, token); err != nil {
+				logger.Fatal("error upserting new token", zap.Error(err))
+			}
+			logger.Debug("token was refreshed")
+		}
 		pass = "oauth:" + token.AccessToken
 	}
 
