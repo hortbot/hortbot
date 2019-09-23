@@ -33,7 +33,6 @@ func ModelToToken(tt *models.TwitchToken) *oauth2.Token {
 
 var tokenUpdate = boil.Whitelist(
 	models.TwitchTokenColumns.UpdatedAt,
-	models.TwitchTokenColumns.BotName,
 	models.TwitchTokenColumns.AccessToken,
 	models.TwitchTokenColumns.TokenType,
 	models.TwitchTokenColumns.RefreshToken,
@@ -42,6 +41,19 @@ var tokenUpdate = boil.Whitelist(
 
 func UpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
 	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, tokenUpdate, boil.Infer())
+}
+
+var fullTokenUpdate = boil.Whitelist(
+	models.TwitchTokenColumns.UpdatedAt,
+	models.TwitchTokenColumns.BotName,
+	models.TwitchTokenColumns.AccessToken,
+	models.TwitchTokenColumns.TokenType,
+	models.TwitchTokenColumns.RefreshToken,
+	models.TwitchTokenColumns.Expiry,
+)
+
+func FullUpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
+	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, fullTokenUpdate, boil.Infer())
 }
 
 func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *models.CommandInfo) (repeated *models.RepeatedCommand, scheduled *models.ScheduledCommand, err error) {

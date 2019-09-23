@@ -55,7 +55,7 @@ func (st *scriptTester) upsertTwitchToken(t testing.TB, _, args string, lineNum 
 
 	st.addAction(func(ctx context.Context) {
 		ctx = boil.SkipTimestamps(ctx)
-		assert.NilError(t, modelsx.UpsertToken(ctx, st.db, &tt), "line %d", lineNum)
+		assert.NilError(t, modelsx.FullUpsertToken(ctx, st.db, &tt), "line %d", lineNum)
 	})
 }
 

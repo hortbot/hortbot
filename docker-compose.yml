@@ -26,6 +26,16 @@ services:
       - HB_ADMINS=${HB_ADMINS:-}
       - HB_WHITELIST_ENABLED=${HB_WHITELIST_ENABLED:-}
 
+  pgweb:
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
+
+
   db:
     image: zikaeroh/postgres-initialized
 

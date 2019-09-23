@@ -91,6 +91,15 @@ services:
       - HB_TWITCH_CLIENT_SECRET=${HB_TWITCH_CLIENT_SECRET:-}
       - HB_TWITCH_REDIRECT_URL=${HB_TWITCH_REDIRECT_URL:-}
 
+  pgweb:
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
+
   db:
     image: zikaeroh/postgres-initialized
 

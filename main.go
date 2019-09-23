@@ -13,7 +13,6 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/cmdargs"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
@@ -26,10 +25,10 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/twitchx"
 	"github.com/hortbot/hortbot/internal/web"
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
-	"github.com/volatiletech/null"
 	"go.uber.org/zap"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
@@ -112,25 +111,12 @@ func main() {
 	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
 
 	if !args.NoToken {
-		token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(nick))).One(ctx, db)
+		token, err := twitchx.FindBotToken(ctx, db, twitchAPI, nick)
 		if err != nil {
-			if err != sql.ErrNoRows {
-				logger.Fatal("error querying for bot token", zap.Error(err))
-			}
-		} else {
-			logger.Debug("using oauth token from database")
-
-			user, newTok, err := twitchAPI.GetUserForToken(ctx, modelsx.ModelToToken(token))
-			if err != nil {
-				logger.Fatal("error refreshing auth token", zap.Error(err))
-			}
-			if newTok != nil {
-				token = modelsx.TokenToModel(user.ID, newTok)
-				if err := modelsx.UpsertToken(ctx, db, token); err != nil {
-					logger.Fatal("error upserting new token", zap.Error(err))
-				}
-				logger.Debug("token was refreshed")
-			}
+			logger.Fatal("error querying for bot token", zap.Error(err))
+		}
+		if token != nil {
+			logger.Debug("using token from database")
 			pass = "oauth:" + token.AccessToken
 		}
 	}

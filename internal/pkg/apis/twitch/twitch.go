@@ -32,6 +32,7 @@ var (
 var userScopes = []string{
 	"user_read",
 	"channel_editor",
+	"channel_subscriptions",
 }
 
 var twitchEndpoint = oauth2.Endpoint{
@@ -149,14 +150,10 @@ func HTTPClient(cli *http.Client) Option {
 //
 // extraScopes can be specified to request more scopes than the defaults.
 func (t *Twitch) AuthCodeURL(state string, extraScopes ...string) string {
-	if len(extraScopes) == 0 {
-		return t.forUser.AuthCodeURL(state, oauth2.AccessTypeOffline)
-	}
-
 	c := *t.forUser
 	c.Scopes = append([]string(nil), c.Scopes...)
 	c.Scopes = append(c.Scopes, extraScopes...)
-	return c.AuthCodeURL(state, oauth2.AccessTypeOffline)
+	return c.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("force_verify", "true"))
 }
 
 // Exchange provides the Twitch OAuth server with the code and exchanges it

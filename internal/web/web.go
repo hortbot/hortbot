@@ -240,12 +240,11 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tt := modelsx.TokenToModel(user.ID, tok)
-
 	if stateVal.Bot {
 		tt.BotName = null.StringFrom(user.Name)
 	}
 
-	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
+	if err := modelsx.FullUpsertToken(ctx, a.DB, tt); err != nil {
 		logger.Error("error upserting token", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
