@@ -20,6 +20,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/twitchx"
@@ -54,9 +55,13 @@ var args = struct {
 	RateLimit: cmdargs.DefaultRateLimit,
 }
 
-//nolint:gocyclo
 func main() {
-	ctx, logger := cmdargs.Parse(&args)
+	cmdargs.Run(&args, mainCtx)
+}
+
+//nolint:gocyclo
+func mainCtx(ctx context.Context) {
+	logger := ctxlog.FromContext(ctx)
 
 	db, err := sql.Open("postgres", args.DB)
 	if err != nil {
