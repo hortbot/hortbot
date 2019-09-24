@@ -76,7 +76,7 @@ func TestAuthExchange(t *testing.T) {
 
 	assert.Equal(t,
 		tw.AuthCodeURL(state),
-		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&redirect_uri=%s&response_type=code&scope=user_read+channel_editor&state=%s", clientID, url.QueryEscape(redirectURL), state),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=user_read+channel_editor+channel_subscriptions&state=%s", clientID, url.QueryEscape(redirectURL), state),
 	)
 
 	code := ft.codeForUser(1234)
@@ -87,6 +87,6 @@ func TestAuthExchange(t *testing.T) {
 
 	assert.Equal(t,
 		tw.AuthCodeURL(state, "user_follows_edit"),
-		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&redirect_uri=%s&response_type=code&scope=user_read+channel_editor+user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), state),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=user_read+channel_editor+channel_subscriptions+user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), state),
 	)
 }

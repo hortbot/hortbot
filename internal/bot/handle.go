@@ -99,15 +99,17 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return errInvalidMessage
 	}
 
-	seen, err := b.deps.Dedupe.CheckAndMark(ctx, id)
-	if err != nil {
-		logger.Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
-		return err
-	}
+	if !b.noDedupe {
+		seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
+		if err != nil {
+			logger.Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
+			return err
+		}
 
-	if seen {
-		logger.Debug("message already seen", zap.String("id", id))
-		return nil
+		if seen {
+			logger.Debug("message already seen", zap.String("id", id))
+			return nil
+		}
 	}
 
 	user := strings.ToLower(m.Prefix.Name)
@@ -164,6 +166,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	}
 	s.RoomIDStr = roomID
 
+	var err error
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
 		logger.Debug("error parsing room ID", zap.String("parsed", roomID), zap.Error(err))

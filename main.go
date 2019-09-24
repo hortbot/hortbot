@@ -15,7 +15,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cmdargs/webargs"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"go.uber.org/zap"
 )
@@ -80,10 +79,7 @@ func mainCtx(ctx context.Context) {
 		return nil
 	}
 
-	ddp := memory.New(time.Minute, 5*time.Minute)
-	defer ddp.Stop()
-
-	b := args.NewBot(ctx, db, rdb, ddp, sender, notifier, twitchAPI)
+	b := args.NewBot(ctx, db, rdb, sender, notifier, twitchAPI)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)

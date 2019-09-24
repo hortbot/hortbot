@@ -16,7 +16,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
@@ -31,7 +30,6 @@ const (
 type Config struct {
 	DB       *sql.DB
 	Redis    *redis.DB
-	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock
@@ -56,6 +54,8 @@ type Config struct {
 
 	WebAddr    string
 	WebAddrMap map[string]string
+
+	NoDedupe bool
 }
 
 type Bot struct {
@@ -67,6 +67,8 @@ type Bot struct {
 	rep  *repeat.Repeater
 
 	testingHelper *testingHelper
+
+	noDedupe bool
 }
 
 func New(config *Config) *Bot {
@@ -76,8 +78,6 @@ func New(config *Config) *Bot {
 		panic("db is nil")
 	case config.Redis == nil:
 		panic("redis is nil")
-	case config.Dedupe == nil:
-		panic("dedupe is nil")
 	case config.Sender == nil:
 		panic("sender is nil")
 	case config.Notifier == nil:
@@ -88,7 +88,6 @@ func New(config *Config) *Bot {
 
 	deps := &sharedDeps{
 		Redis:           config.Redis,
-		Dedupe:          config.Dedupe,
 		Sender:          config.Sender,
 		Notifier:        config.Notifier,
 		LastFM:          config.LastFM,
@@ -135,8 +134,9 @@ func New(config *Config) *Bot {
 	}
 
 	b := &Bot{
-		db:   config.DB,
-		deps: deps,
+		db:       config.DB,
+		deps:     deps,
+		noDedupe: config.NoDedupe,
 	}
 
 	deps.UpdateRepeat = b.updateRepeatedCommand

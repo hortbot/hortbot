@@ -15,7 +15,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"go.uber.org/zap"
 )
 
@@ -43,7 +42,6 @@ func (args *Bot) NewBot(
 	ctx context.Context,
 	db *sql.DB,
 	rdb *redis.DB,
-	ddp dedupe.Deduplicator,
 	sender bot.Sender,
 	notifier bot.Notifier,
 	twitchAPI twitch.API,
@@ -67,7 +65,6 @@ func (args *Bot) NewBot(
 	b := bot.New(&bot.Config{
 		DB:               db,
 		Redis:            rdb,
-		Dedupe:           ddp,
 		Sender:           sender,
 		Notifier:         notifier,
 		LastFM:           lastFM,

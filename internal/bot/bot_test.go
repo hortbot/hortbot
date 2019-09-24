@@ -6,7 +6,6 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/v3/assert"
 )
@@ -22,7 +21,6 @@ func TestBotNewPanics(t *testing.T) {
 	config := &bot.Config{
 		DB:       db,
 		Redis:    redis.New(rClient),
-		Dedupe:   &struct{ dedupe.Deduplicator }{},
 		Sender:   &struct{ bot.Sender }{},
 		Notifier: &struct{ bot.Notifier }{},
 		Twitch:   &struct{ twitch.API }{},
@@ -52,11 +50,6 @@ func TestBotNewPanics(t *testing.T) {
 	config.Redis = nil
 	assert.Equal(t, checkPanic(), "redis is nil")
 	config.Redis = oldRedis
-
-	oldDedupe := config.Dedupe
-	config.Dedupe = nil
-	assert.Equal(t, checkPanic(), "dedupe is nil")
-	config.Dedupe = oldDedupe
 
 	oldSender := config.Sender
 	config.Sender = nil

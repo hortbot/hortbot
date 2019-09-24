@@ -26,8 +26,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube/youtubefakes"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe"
-	dedupemem "github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
@@ -139,7 +137,6 @@ func (st *scriptTester) test(t testing.TB) {
 	st.bc = bot.Config{
 		DB:        st.db,
 		Redis:     redis.New(rClient),
-		Dedupe:    dedupe.NeverSeen,
 		Sender:    st.sender,
 		Notifier:  st.notifier,
 		Clock:     st.clock,
@@ -151,6 +148,7 @@ func (st *scriptTester) test(t testing.TB) {
 		Steam:     st.steam,
 		TinyURL:   st.tinyURL,
 		Urban:     st.urban,
+		NoDedupe:  true,
 	}
 
 	st.clock.Set(time.Now())
@@ -239,27 +237,13 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 	var bcj struct {
 		*bot.Config
 
-		Dedupe string
-		Clock  string
-		Rand   *int
+		Clock string
+		Rand  *int
 	}
 
 	bcj.Config = &st.bc
 
 	assert.NilError(t, json.Unmarshal([]byte(args), &bcj), "line %d", lineNum)
-
-	switch bcj.Dedupe {
-	case "", "never":
-		st.bc.Dedupe = dedupe.NeverSeen
-
-	case "memory":
-		d := dedupemem.New(time.Minute, 5*time.Minute)
-		st.addCleanup(d.Stop)
-		st.bc.Dedupe = d
-
-	default:
-		t.Fatalf("line %d: unknown dedupe type %s", lineNum, bcj.Dedupe)
-	}
 
 	switch bcj.Clock {
 	case "real":

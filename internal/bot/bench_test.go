@@ -12,7 +12,6 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
@@ -35,10 +34,10 @@ func BenchmarkNop(b *testing.B) {
 	config := &bot.Config{
 		DB:       db,
 		Redis:    redis.New(rClient),
-		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
 	}
 
 	bb := bot.New(config)
@@ -73,10 +72,10 @@ func BenchmarkCustomCommand(b *testing.B) {
 	config := &bot.Config{
 		DB:       db,
 		Redis:    redis.New(rClient),
-		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
 	}
 
 	bb := bot.New(config)
@@ -112,10 +111,10 @@ func BenchmarkMixed(b *testing.B) {
 	config := &bot.Config{
 		DB:       db,
 		Redis:    redis.New(rClient),
-		Dedupe:   dedupe.NeverSeen,
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
 	}
 
 	bb := bot.New(config)

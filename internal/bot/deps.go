@@ -12,7 +12,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
-	"github.com/hortbot/hortbot/internal/pkg/dedupe"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
@@ -20,7 +19,6 @@ import (
 
 type sharedDeps struct {
 	Redis    *redis.DB
-	Dedupe   dedupe.Deduplicator
 	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock

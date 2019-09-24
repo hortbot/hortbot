@@ -13,7 +13,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cmdargs/sqlargs"
 	"github.com/hortbot/hortbot/internal/cmdargs/twitchargs"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	deduperedis "github.com/hortbot/hortbot/internal/pkg/dedupe/redis"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
@@ -51,16 +50,10 @@ func mainCtx(ctx context.Context) {
 	db := args.OpenDB(ctx, connector)
 	rdb := args.RedisClient()
 	twitchAPI := args.TwitchClient()
-
-	ddp, err := deduperedis.New(rdb, 5*time.Minute)
-	if err != nil {
-		logger.Fatal("error making redis dedupe", zap.Error(err))
-	}
-
 	sender := args.NewSendMessagePublisher()
 	notifier := args.NewNotifyPublisher()
 
-	b := args.NewBot(ctx, db, rdb, ddp, sender, notifier, twitchAPI)
+	b := args.NewBot(ctx, db, rdb, sender, notifier, twitchAPI)
 	defer b.Stop()
 
 	incomingSub := args.NewIncomingSubscriber(5*time.Second, func(i *bnsq.Incoming, parent trace.SpanContext) error {

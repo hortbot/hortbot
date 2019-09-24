@@ -1,4 +1,4 @@
-bot_config {"Dedupe": "memory"}
+bot_config {"NoDedupe": false}
 
 join hortbot 999 foobar 1
 
