@@ -11,3 +11,7 @@ func New(client *redis.Client) *DB {
 		client: client,
 	}
 }
+
+func (db *DB) Close() error {
+	return db.client.Close()
+}

@@ -2,48 +2,43 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"time"
 
-	"contrib.go.opencensus.io/integrations/ocsql"
-	goredis "github.com/go-redis/redis/v7"
-	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/cmdargs"
-	"github.com/hortbot/hortbot/internal/db/migrations"
+	"github.com/hortbot/hortbot/internal/cmdargs/ircargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/jaegerargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/nsqargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/redisargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/rlargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/sqlargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/twitchargs"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/db/redis"
-	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/tracing"
-	"github.com/hortbot/hortbot/internal/pkg/twitchx"
-	"github.com/lib/pq"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
-
-	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
 )
 
 var args = struct {
 	cmdargs.Common
-	cmdargs.IRC
-	cmdargs.SQL
-	cmdargs.Redis
-	cmdargs.Twitch
-	cmdargs.RateLimit
-	cmdargs.NSQ
-	cmdargs.Jaeger
+	sqlargs.SQL
+	twitchargs.Twitch
+	ircargs.IRC
+	redisargs.Redis
+	nsqargs.NSQ
+	jaegerargs.Jaeger
+	rlargs.RateLimit
 }{
 	Common:    cmdargs.DefaultCommon,
-	IRC:       cmdargs.DefaultIRC,
-	SQL:       cmdargs.DefaultSQL,
-	Redis:     cmdargs.DefaultRedis,
-	Twitch:    cmdargs.DefaultTwitch,
-	RateLimit: cmdargs.DefaultRateLimit,
-	NSQ:       cmdargs.DefaultNSQ,
-	Jaeger:    cmdargs.DefaultJaeger,
+	SQL:       sqlargs.DefaultSQL,
+	Twitch:    twitchargs.DefaultTwitch,
+	IRC:       ircargs.DefaultIRC,
+	Redis:     redisargs.DefaultRedis,
+	NSQ:       nsqargs.DefaultNSQ,
+	Jaeger:    jaegerargs.DefaultJaeger,
+	RateLimit: rlargs.DefaultRateLimit,
 }
 
 func main() {
@@ -54,134 +49,56 @@ func main() {
 func mainCtx(ctx context.Context) {
 	logger := ctxlog.FromContext(ctx)
 
-	if args.JaegerAgent != "" {
-		flush, err := tracing.Init("irc", args.JaegerAgent, args.Debug)
-		if err != nil {
-			logger.Fatal("error initializing tracing", zap.Error(err))
-		}
-		defer flush()
-	}
+	defer args.InitJaeger(ctx, "irc", args.Debug)()
 
-	connector, err := pq.NewConnector(args.DB)
-	if err != nil {
-		logger.Fatal("error creating postgres connector", zap.Error(err))
-	}
+	connector := args.DBConnector(ctx)
+	connector = args.TraceDB(args.Debug, connector)
+	db := args.OpenDB(ctx, connector)
 
-	db := sql.OpenDB(ocsql.WrapConnector(connector, ocsql.WithAllTraceOptions(), ocsql.WithQueryParams(args.Debug)))
-
-	for i := 0; i < 5; i++ {
-		if err := db.Ping(); err == nil {
-			break
-		}
-
-		time.Sleep(100 * time.Millisecond)
-	}
-
-	if args.MigrateUp {
-		if err := migrations.Up(args.DB, nil); err != nil {
-			logger.Fatal("error migrating database", zap.Error(err))
-		}
-	}
-
-	rClient := goredis.NewClient(&goredis.Options{
-		Addr: args.RedisAddr,
-	})
-	defer rClient.Close()
-
-	rdb := redis.New(rClient)
-
-	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
-	if err != nil {
-		logger.Fatal("error listing initial channels", zap.Error(err))
-	}
-
-	nick := args.Nick
-	pass := args.Pass
-
-	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
-
-	if !args.NoToken {
-		token, err := twitchx.FindBotToken(ctx, db, twitchAPI, nick)
-		if err != nil {
-			logger.Fatal("error querying for bot token", zap.Error(err))
-		}
-		if token != nil {
-			logger.Debug("using token from database")
-			pass = "oauth:" + token.AccessToken
-		}
-	}
-
-	pc := birc.PoolConfig{
-		Config: birc.Config{
-			UserConfig: birc.UserConfig{
-				Nick: nick,
-				Pass: pass,
-			},
-			InitialChannels: channels,
-			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},
-			PingInterval:    args.PingInterval,
-			PingDeadline:    args.PingDeadline,
-		},
-	}
-
-	conn := birc.NewPool(pc)
+	rdb := args.RedisClient()
+	twitchAPI := args.TwitchClient()
+	conn := args.IRCPool(ctx, db, twitchAPI)
 
 	incomingPub := bnsq.NewIncomingPublisher(args.NSQAddr)
 
-	sendSub := &bnsq.SendMessageSubscriber{
-		Addr:    args.NSQAddr,
-		Origin:  args.Nick,
-		Channel: args.NSQChannel,
-		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberMaxAge(5 * time.Second),
-		},
-		OnSendMessage: func(m *bnsq.SendMessage, parent trace.SpanContext) error {
-			ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", parent)
-			defer span.End()
+	sendSub := args.NewSendMessageSubscriber(args.Nick, 5*time.Second, func(m *bnsq.SendMessage, parent trace.SpanContext) error {
+		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", parent)
+		defer span.End()
 
-			allowed, err := rdb.SendMessageAllowed(ctx, m.Origin, m.Target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
-			if err != nil {
-				logger.Error("error checking rate limit", zap.Error(err))
-				return err
-			}
+		allowed, err := args.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
+		if err != nil {
+			logger.Error("error checking rate limit", zap.Error(err))
+			return err
+		}
 
-			if !allowed {
-				logger.Error("rate limited, requeueing")
-				return errors.New("rate limited")
-			}
+		if !allowed {
+			logger.Error("rate limited, requeueing")
+			return errors.New("rate limited")
+		}
 
-			if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
-				logger.Error("error sending message", zap.Error(err))
-				return err
-			}
+		if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
+			logger.Error("error sending message", zap.Error(err))
+			return err
+		}
 
-			return nil
-		},
-	}
+		return nil
+	})
 
 	syncJoined := make(chan struct{}, 1)
 
-	notifySub := &bnsq.NotifySubscriber{
-		Addr:    args.NSQAddr,
-		BotName: args.Nick,
-		Channel: args.NSQChannel,
-		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberMaxAge(time.Minute),
-		},
-		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error {
-			ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", parent)
-			defer span.End()
+	notifySub := args.NewNotifySubscriber(args.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error {
+		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", parent)
+		defer span.End()
 
-			select {
-			case syncJoined <- struct{}{}:
-			case <-ctx.Done():
-				return ctx.Err()
-			default:
-			}
+		select {
+		case syncJoined <- struct{}{}:
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
 
-			return nil
-		},
-	}
+		return nil
+	})
 
 	g := errgroupx.FromContext(ctx)
 

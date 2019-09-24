@@ -2,57 +2,42 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"time"
 
-	goredis "github.com/go-redis/redis/v7"
-	"github.com/hortbot/hortbot/internal/birc"
-	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/cmdargs"
-	"github.com/hortbot/hortbot/internal/db/migrations"
+	"github.com/hortbot/hortbot/internal/cmdargs/botargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/ircargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/redisargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/rlargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/sqlargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/twitchargs"
+	"github.com/hortbot/hortbot/internal/cmdargs/webargs"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/db/redis"
-	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
-	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
-	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
-	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
-	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
-	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
-	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/twitchx"
-	"github.com/hortbot/hortbot/internal/web"
 	"go.uber.org/zap"
-
-	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
-	_ "github.com/lib/pq"                 // For postgres
 )
 
 var args = struct {
 	cmdargs.Common
-	cmdargs.IRC
-	cmdargs.SQL
-	cmdargs.Redis
-	cmdargs.Bot
-	cmdargs.LastFM
-	cmdargs.Twitch
-	cmdargs.Steam
-	cmdargs.Web
-	cmdargs.RateLimit
+	sqlargs.SQL
+	twitchargs.Twitch
+	ircargs.IRC
+	redisargs.Redis
+	webargs.Web
+	botargs.Bot
+	rlargs.RateLimit
 }{
 	Common:    cmdargs.DefaultCommon,
-	IRC:       cmdargs.DefaultIRC,
-	SQL:       cmdargs.DefaultSQL,
-	Redis:     cmdargs.DefaultRedis,
-	Bot:       cmdargs.DefaultBot,
-	LastFM:    cmdargs.DefaultLastFM,
-	Twitch:    cmdargs.DefaultTwitch,
-	Steam:     cmdargs.DefaultSteam,
-	Web:       cmdargs.DefaultWeb,
-	RateLimit: cmdargs.DefaultRateLimit,
+	SQL:       sqlargs.DefaultSQL,
+	Twitch:    twitchargs.DefaultTwitch,
+	IRC:       ircargs.DefaultIRC,
+	Redis:     redisargs.DefaultRedis,
+	Web:       webargs.DefaultWeb,
+	Bot:       botargs.DefaultBot,
+	RateLimit: rlargs.DefaultRateLimit,
 }
 
 func main() {
@@ -63,70 +48,14 @@ func main() {
 func mainCtx(ctx context.Context) {
 	logger := ctxlog.FromContext(ctx)
 
-	db, err := sql.Open("postgres", args.DB)
-	if err != nil {
-		logger.Fatal("error opening database connection", zap.Error(err))
-	}
-
-	for i := 0; i < 5; i++ {
-		if err := db.Ping(); err == nil {
-			break
-		}
-
-		time.Sleep(100 * time.Millisecond)
-	}
-
-	if args.MigrateUp {
-		if err := migrations.Up(args.DB, nil); err != nil {
-			logger.Fatal("error migrating database", zap.Error(err))
-		}
-	}
-
-	rClient := goredis.NewClient(&goredis.Options{
-		Addr: args.RedisAddr,
-	})
-	defer rClient.Close()
-
-	rdb := redis.New(rClient)
-
-	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
-	if err != nil {
-		logger.Fatal("error listing initial channels", zap.Error(err))
-	}
-
-	nick := args.Nick
-	pass := args.Pass
-
-	twitchAPI := twitch.New(args.TwitchClientID, args.TwitchClientSecret, args.TwitchRedirectURL)
-
-	if !args.NoToken {
-		token, err := twitchx.FindBotToken(ctx, db, twitchAPI, nick)
-		if err != nil {
-			logger.Fatal("error querying for bot token", zap.Error(err))
-		}
-		if token != nil {
-			logger.Debug("using token from database")
-			pass = "oauth:" + token.AccessToken
-		}
-	}
-
-	pc := birc.PoolConfig{
-		Config: birc.Config{
-			UserConfig: birc.UserConfig{
-				Nick: nick,
-				Pass: pass,
-			},
-			InitialChannels: channels,
-			Caps:            []string{birc.TwitchCapCommands, birc.TwitchCapTags},
-			PingInterval:    args.PingInterval,
-			PingDeadline:    args.PingDeadline,
-		},
-	}
-
-	conn := birc.NewPool(pc)
+	db := args.OpenDB(ctx, args.DBConnector(ctx))
+	rdb := args.RedisClient()
+	twitchAPI := args.TwitchClient()
+	conn := args.IRCPool(ctx, db, twitchAPI)
+	a := args.WebApp(args.Debug, rdb, db, twitchAPI)
 
 	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
-		allowed, err := rdb.SendMessageAllowed(ctx, origin, target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
+		allowed, err := args.SendMessageAllowed(ctx, rdb, origin, target)
 		if err != nil {
 			return err
 		}
@@ -151,69 +80,15 @@ func mainCtx(ctx context.Context) {
 		return nil
 	}
 
-	var lastFM lastfm.API
-
-	if args.LastFMKey != "" {
-		lastFM = lastfm.New(args.LastFMKey)
-	} else {
-		logger.Warn("no LastFM API key provided, functionality will be disabled")
-	}
-
-	var steamAPI steam.API
-	if args.SteamKey != "" {
-		steamAPI = steam.New(args.SteamKey)
-	} else {
-		logger.Warn("no Steam API key provided, functionality will be disabled")
-	}
-
 	ddp := memory.New(time.Minute, 5*time.Minute)
 	defer ddp.Stop()
 
-	bc := &bot.Config{
-		DB:               db,
-		Redis:            rdb,
-		Dedupe:           ddp,
-		Sender:           sender,
-		Notifier:         notifier,
-		LastFM:           lastFM,
-		YouTube:          youtube.New(),
-		XKCD:             xkcd.New(),
-		ExtraLife:        extralife.New(),
-		Twitch:           twitchAPI,
-		Steam:            steamAPI,
-		TinyURL:          tinyurl.New(),
-		Admins:           args.Admins,
-		WhitelistEnabled: args.WhitelistEnabled,
-		Whitelist:        args.Whitelist,
-		Cooldown:         args.DefaultCooldown,
-		WebAddr:          args.BotWebAddr,
-		WebAddrMap:       args.BotWebAddrMap,
-	}
-
-	b := bot.New(bc)
-
-	if err := b.Init(ctx); err != nil {
-		logger.Fatal("error initializing bot", zap.Error(err))
-	}
-
+	b := args.NewBot(ctx, db, rdb, ddp, sender, notifier, twitchAPI)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
 
-	g.Go(func(ctx context.Context) error {
-		a := web.App{
-			Addr:       args.WebAddr,
-			SessionKey: []byte(args.WebSessionKey),
-			Brand:      args.WebBrand,
-			BrandMap:   args.WebBrandMap,
-			Debug:      args.Debug,
-			Redis:      rdb,
-			DB:         db,
-			Twitch:     twitchAPI,
-		}
-
-		return a.Run(ctx)
-	})
+	g.Go(a.Run)
 
 	g.Go(func(ctx context.Context) error {
 		inc := conn.Incoming()
