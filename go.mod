@@ -54,10 +54,10 @@ require (
 	github.com/volatiletech/sqlboiler v3.5.0+incompatible
 	go.opencensus.io v0.22.1
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190918130420-a8b05e9114ab
+	golang.org/x/net v0.0.0-20190923162816-aa69164e4478
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20190919031856-7460b8e10b7e
+	golang.org/x/tools v0.0.0-20190924052046-3ac2a5bbd98a
 	gotest.tools/v3 v3.0.0
-	mvdan.cc/xurls/v2 v2.0.0
+	mvdan.cc/xurls/v2 v2.1.0
 )
