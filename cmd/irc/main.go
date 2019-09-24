@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
-	"os"
 	"time"
 
 	"contrib.go.opencensus.io/integrations/ocsql"
@@ -21,9 +19,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/tracing"
 	"github.com/hortbot/hortbot/internal/pkg/twitchx"
-	"github.com/jessevdk/go-flags"
 	"github.com/lib/pq"
-	"github.com/posener/ctxutil"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 
@@ -50,20 +46,13 @@ var args = struct {
 	Jaeger:    cmdargs.DefaultJaeger,
 }
 
-//nolint:gocyclo
 func main() {
-	ctx := ctxutil.Interrupt()
+	cmdargs.Run(&args, mainCtx)
+}
 
-	if _, err := flags.Parse(&args); err != nil {
-		if !flags.WroteHelp(err) {
-			log.Fatalln(err)
-		}
-		os.Exit(1)
-	}
-
-	logger := ctxlog.New(args.Debug)
-	defer zap.RedirectStdLog(logger)()
-	ctx = ctxlog.WithLogger(ctx, logger)
+//nolint:gocyclo
+func mainCtx(ctx context.Context) {
+	logger := ctxlog.FromContext(ctx)
 
 	if args.JaegerAgent != "" {
 		flush, err := tracing.Init("irc", args.JaegerAgent, args.Debug)

@@ -1,9 +1,28 @@
+// Package cmdargs consolidates arguments and main function handling.
 package cmdargs
 
-import "time"
+import (
+	"context"
+	"log"
+	"os"
+	"time"
+
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/jessevdk/go-flags"
+	"github.com/posener/ctxutil"
+	"go.uber.org/zap"
+)
 
 type Common struct {
 	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+}
+
+func (c Common) debug() bool {
+	return c.Debug
+}
+
+type common interface {
+	debug() bool
 }
 
 var DefaultCommon = Common{}
@@ -110,3 +129,27 @@ type Jaeger struct {
 }
 
 var DefaultJaeger = Jaeger{}
+
+func Run(args interface{}, main func(context.Context)) {
+	ctx := ctxutil.Interrupt()
+
+	if _, err := flags.Parse(args); err != nil {
+		if !flags.WroteHelp(err) {
+			log.Fatalln(err)
+		}
+		os.Exit(1)
+	}
+
+	debug := false
+
+	c, ok := args.(common)
+	if ok {
+		debug = c.debug()
+	}
+
+	logger := ctxlog.New(debug)
+	defer zap.RedirectStdLog(logger)()
+	ctx = ctxlog.WithLogger(ctx, logger)
+
+	main(ctx)
+}

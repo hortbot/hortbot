@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"log"
-	"os"
 	"time"
 
 	goredis "github.com/go-redis/redis/v7"
@@ -22,13 +20,10 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dedupe/memory"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/twitchx"
 	"github.com/hortbot/hortbot/internal/web"
-	"github.com/jessevdk/go-flags"
-	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 
 	_ "github.com/joho/godotenv/autoload" // Pull .env into env vars.
@@ -61,18 +56,7 @@ var args = struct {
 
 //nolint:gocyclo
 func main() {
-	ctx := ctxutil.Interrupt()
-
-	if _, err := flags.Parse(&args); err != nil {
-		if !flags.WroteHelp(err) {
-			log.Fatalln(err)
-		}
-		os.Exit(1)
-	}
-
-	logger := ctxlog.New(args.Debug)
-	defer zap.RedirectStdLog(logger)()
-	ctx = ctxlog.WithLogger(ctx, logger)
+	ctx, logger := cmdargs.Parse(&args)
 
 	db, err := sql.Open("postgres", args.DB)
 	if err != nil {
