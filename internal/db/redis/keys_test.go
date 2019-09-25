@@ -53,5 +53,4 @@ func TestBuildKeyPanic(t *testing.T) {
 	}()
 
 	assert.Assert(t, recovered != nil)
-
 }

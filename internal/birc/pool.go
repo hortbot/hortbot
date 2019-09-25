@@ -432,7 +432,6 @@ func (p *Pool) joinableConn(ctx context.Context) (*Connection, error) {
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
-
 }
 
 func (p *Pool) findJoinable() *Connection {

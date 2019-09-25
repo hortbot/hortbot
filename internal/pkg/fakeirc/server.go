@@ -116,7 +116,6 @@ func (s *Server) Addr() string {
 func (s *Server) Dial() (irc.Conn, error) {
 	if s.tlsConfig == nil {
 		return irc.BaseDial(s.Addr())
-
 	}
 
 	conn, err := tls.Dial("tcp", s.Addr(), s.tlsConfig)
