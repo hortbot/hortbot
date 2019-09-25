@@ -77,6 +77,11 @@ CREATE TABLE channels (
     filter_banned_phrases boolean NOT NULL,
     filter_banned_phrases_patterns text[] DEFAULT '{}' NOT NULL,
 
+    sub_message text NOT NULL,
+    sub_message_enabled boolean NOT NULL,
+    resub_message text NOT NULL,
+    resub_message_enabled boolean NOT NULL,
+
     CHECK (prefix != ''),
     CHECK (filter_caps_percentage BETWEEN 0 and 100),
     CHECK (filter_symbols_percentage BETWEEN 0 and 100),
