@@ -28,9 +28,10 @@ func TestGetChannelByID(t *testing.T) {
 	ft.setClientTokens(tok)
 
 	c := &twitch.Channel{
-		ID:     1234,
-		Status: "What a cool stream!",
-		Game:   "Garry's Mod",
+		ID:          1234,
+		DisplayName: "FooBar",
+		Status:      "What a cool stream!",
+		Game:        "Garry's Mod",
 	}
 
 	ft.setChannel(c)
@@ -60,9 +61,10 @@ func TestSetChannelStatus(t *testing.T) {
 	ft.setClientTokens(tok)
 
 	c := &twitch.Channel{
-		ID:     1234,
-		Status: "What a cool stream!",
-		Game:   "Garry's Mod",
+		ID:          1234,
+		DisplayName: "FooBar",
+		Status:      "What a cool stream!",
+		Game:        "Garry's Mod",
 	}
 
 	ft.setChannel(c)
@@ -94,9 +96,10 @@ func TestSetChannelStatusNilToken(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
 	c := &twitch.Channel{
-		ID:     1234,
-		Status: "What a cool stream!",
-		Game:   "Garry's Mod",
+		ID:          1234,
+		DisplayName: "FooBar",
+		Status:      "What a cool stream!",
+		Game:        "Garry's Mod",
 	}
 
 	ft.setChannel(c)
@@ -123,9 +126,10 @@ func TestSetChannelGame(t *testing.T) {
 	ft.setClientTokens(tok)
 
 	c := &twitch.Channel{
-		ID:     1234,
-		Status: "What a cool stream!",
-		Game:   "Garry's Mod",
+		ID:          1234,
+		DisplayName: "FooBar",
+		Status:      "What a cool stream!",
+		Game:        "Garry's Mod",
 	}
 
 	ft.setChannel(c)

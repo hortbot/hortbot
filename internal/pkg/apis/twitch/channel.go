@@ -12,10 +12,11 @@ import (
 // channel/channels endpoint. Some fields are missing (but may be added as
 // needed in the future).
 type Channel struct {
-	ID     IDStr  `json:"_id"`
-	Name   string `json:"name"`
-	Game   string `json:"game"`
-	Status string `json:"status"`
+	ID          IDStr  `json:"_id"`
+	Name        string `json:"name"`
+	DisplayName string `json:"display_name"`
+	Game        string `json:"game"`
+	Status      string `json:"status"`
 }
 
 // GetChannelByID gets a channel using the client's token.
