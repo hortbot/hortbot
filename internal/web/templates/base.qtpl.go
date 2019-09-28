@@ -55,7 +55,7 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
 	qw422016.N().S(`
     </head>
     <body>
-        <nav class="navbar">
+        <nav class="navbar" id="header">
             <div class="navbar-brand">
                 <a class="navbar-item is-active" href="/">`)
 	p.StreamPageBrand(qw422016)

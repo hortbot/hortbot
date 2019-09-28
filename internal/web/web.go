@@ -79,6 +79,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	r.Get("/", a.index)
 	r.Get("/about", a.about)
+	r.Get("/docs", a.docs)
 	r.Get("/channels", a.channels)
 
 	r.Route("/c/{channel}", func(r chi.Router) {
@@ -304,6 +305,12 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) about(w http.ResponseWriter, r *http.Request) {
 	page := &templates.AboutPage{}
+	page.Brand = a.getBrand(r)
+	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) docs(w http.ResponseWriter, r *http.Request) {
+	page := &templates.DocsPage{}
 	page.Brand = a.getBrand(r)
 	templates.WritePageTemplate(w, page)
 }

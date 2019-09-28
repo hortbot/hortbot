@@ -53,43 +53,10 @@ func (p *ChannelPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 `)
 	p.BasePage.StreamPageMeta(qw422016)
 	qw422016.N().S(`
+`)
+	streamsidebarStyle(qw422016)
+	qw422016.N().S(`
 <style>
-html {
-    overflow-y: hidden;
-}
-
-.is-sidebar-menu {
-    padding: 2.5rem;
-    background: #444444;
-    width: 20em;
-    overflow-y: auto;
-    border-right: 1px solid #777777;
-    margin-top: 0.75rem;
-}
-
-.columns.is-fullheight {
-    min-height: calc(100vh - ( 4rem - .75rem ) );
-    max-height: calc(100vh - ( 4rem - .75rem ) );
-    height: calc(100vh - ( 4rem - .75rem ) );
-    display: flex;
-    flex-direction: row;
-    justify-content: stretch;
-    margin-bottom: 0;
-}
-.columns.is-fullheight .column {
-    overflow-y: auto;
-}
-
-.is-main-content {
-    margin-top: 0.75rem;
-    margin-right: 0.75rem;
-    padding: 2.5rem;
-}
-
-ol {
-    list-style-position: inside;
-}
-
 .subtitle {
     padding-left: 1rem;
 }

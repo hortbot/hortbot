@@ -26,7 +26,7 @@
         {%= p.PageMeta() %}
     </head>
     <body>
-        <nav class="navbar">
+        <nav class="navbar" id="header">
             <div class="navbar-brand">
                 <a class="navbar-item is-active" href="/">{%= p.PageBrand() %}</a>
             </div>
