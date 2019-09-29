@@ -263,6 +263,46 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
         <section id="schedule" class="page">
             <h2 class="title">Schedule</h2>
+
+            <p>
+                The schedule command sets up a command repetition via a <a href="https://en.wikipedia.org/wiki/Cron" target="_blank">cron expression</a>.
+                Like repeated commands, a message difference can be specified.
+            </p>
+
+            <dl>
+                `)
+	streamcommand(qw422016,
+		"!schedule add <name> <pattern></pattern> [message difference]",
+		`Schedules a command, and enables it.`,
+		"mods",
+		`Example: <code>!schedule add discord *_5_*_*_*</code> &mdash; Schedules the command "discord" to at 5AM every day.`,
+		`Example: <code>!schedule add discord hourly 10</code> &mdash; Schedules the command "discord" to run hourly if at least 10 messages have passed.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!schedule delete <name>",
+		`Deletes a command's schedule.`,
+		"mods",
+		`Example: <code>!schedule delete discord</code> &mdash; Unschedules the "discord" command and deletes its schedule.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!schedule on|off <name>",
+		`Enables or disables a command's repetition.`,
+		"mods",
+		`Example: <code>!schedule on discord</code> &mdash; Enables the schedule of the "discord" command.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!schedule list",
+		`Lists command schedules.`,
+		"mods",
+	)
+	qw422016.N().S(`
+            </dl>
         </section>
     </div>
 </div>
