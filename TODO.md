@@ -319,7 +319,7 @@ autocomplete usernames in the chat input box.
 - [x] Homepage
 - [x] Channel list
     - [ ] Place live channels at the top (batch Twitch API)
-- [ ] Documentation
+- [x] Documentation
 - [x] Login
 - [ ] Join
 - [x] About/FAQ
