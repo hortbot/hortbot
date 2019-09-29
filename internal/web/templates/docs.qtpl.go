@@ -49,10 +49,6 @@ func (p *DocsPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 	streamsidebarStyle(qw422016)
 	qw422016.N().S(`
 <style>
-h2.title {
-    padding-top: 2rem;
-}
-
 dt {
     padding-top: 1rem;
 }
@@ -118,6 +114,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <ul class="menu-list">
                 <li><a href="#commands">Commands</a></li>
             </ul>
+
             <p class="menu-label">
                 Custom commands
             </p>
@@ -126,6 +123,13 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <li><a href="#repeats">Repeats</a></li>
                 <li><a href="#schedule">Schedule</a></li>
                 <li><a href="#autoreplies">Autoreplies</a></li>
+            </ul>
+
+            <p class="menu-label">
+                Fun
+            </p>
+            <ul class="menu-list">
+                <li><a href="#quotes">Quotes</a></li>
             </ul>
         </aside>
     </div>
@@ -140,6 +144,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <dl>
                 `)
 	streamcommand(qw422016, "!join", `Tells the bot to join your channel. Must be executed in the bot's channel.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!part", `Tells the bot to leave your channel.`, "everyone")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -358,6 +365,61 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016,
 		"!autoreply list",
 		`Links to the list of autoreplies for the channel.`,
+		"mods",
+	)
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <h1 class="title">Fun</h1>
+
+        <section id="quotes" class="page">
+            <h2 class="title">Quotes</h2>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!quote", `Gets a random quote.`, "subs")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote add <quote>",
+		`Adds a quote.`,
+		"mods",
+		`Example: <code>!quote add "This is a quote!"</code> &mdash; Adds a the quote "This is a quote!".`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote delete <num>",
+		`Removes a quote.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote get <num>",
+		`Gets a quote.`,
+		"subs",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote random",
+		`Gets a random quote.`,
+		"subs",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote getindex <exact quote>",
+		`Returns the number of the exact quote specified.`,
+		"subs",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote search <phrase>",
+		`Searches all quotes for a phrase.`,
 		"mods",
 	)
 	qw422016.N().S(`

@@ -12,10 +12,6 @@ type DocsPage struct {
 {%= p.BasePage.PageMeta() %}
 {%= sidebarStyle() %}
 <style>
-h2.title {
-    padding-top: 2rem;
-}
-
 dt {
     padding-top: 1rem;
 }
@@ -49,6 +45,7 @@ dd {
             <ul class="menu-list">
                 <li><a href="#commands">Commands</a></li>
             </ul>
+
             <p class="menu-label">
                 Custom commands
             </p>
@@ -57,6 +54,13 @@ dd {
                 <li><a href="#repeats">Repeats</a></li>
                 <li><a href="#schedule">Schedule</a></li>
                 <li><a href="#autoreplies">Autoreplies</a></li>
+            </ul>
+
+            <p class="menu-label">
+                Fun
+            </p>
+            <ul class="menu-list">
+                <li><a href="#quotes">Quotes</a></li>
             </ul>
         </aside>
     </div>
@@ -70,6 +74,7 @@ dd {
 
             <dl>
                 {%= command("!join", `Tells the bot to join your channel. Must be executed in the bot's channel.`, "everyone") %}
+                {%= command("!part", `Tells the bot to leave your channel.`, "everyone") %}
             </dl>
         </section>
 
@@ -244,6 +249,47 @@ dd {
                 {%= command(
                     "!autoreply list",
                     `Links to the list of autoreplies for the channel.`,
+                    "mods",
+                ) %}
+            </dl>
+        </section>
+
+        <h1 class="title">Fun</h1>
+
+        <section id="quotes" class="page">
+            <h2 class="title">Quotes</h2>
+
+            <dl>
+                {%= command("!quote", `Gets a random quote.`, "subs") %}
+                {%= command(
+                    "!quote add <quote>",
+                    `Adds a quote.`,
+                    "mods",
+                    `Example: <code>!quote add "This is a quote!"</code> &mdash; Adds a the quote "This is a quote!".`,
+                ) %}
+                {%= command(
+                    "!quote delete <num>",
+                    `Removes a quote.`,
+                    "mods",
+                ) %}
+                {%= command(
+                    "!quote get <num>",
+                    `Gets a quote.`,
+                    "subs",
+                ) %}
+                {%= command(
+                    "!quote random",
+                    `Gets a random quote.`,
+                    "subs",
+                ) %}
+                {%= command(
+                    "!quote getindex <exact quote>",
+                    `Returns the number of the exact quote specified.`,
+                    "subs",
+                ) %}
+                {%= command(
+                    "!quote search <phrase>",
+                    `Searches all quotes for a phrase.`,
                     "mods",
                 ) %}
             </dl>
