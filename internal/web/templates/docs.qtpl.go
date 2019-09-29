@@ -131,6 +131,8 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </p>
             <ul class="menu-list">
                 <li><a href="#general-utilities">General utilities</a></li>
+                <li><a href="#twitch">Twitch</a></li>
+                <li><a href="#raffles">Raffles</a></li>
             </ul>
         </aside>
     </div>
@@ -546,6 +548,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!conch", `Magic 8 ball.`, "subs")
 	qw422016.N().S(`
                 `)
+	streamcommand(qw422016, "!winner", `Picks a random chat member.`, "mods")
+	qw422016.N().S(`
+                `)
 	streamcommand(qw422016, "!xkcd <num>", `Gets the requested XKCD comic.`, "subs")
 	qw422016.N().S(`
                 `)
@@ -650,6 +655,78 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!whatshouldiplay", `Picks a random game from the channel's Steam library.`, "broadcaster")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="twitch" class="page">
+            <h2 class="title">Twitch</h2>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!game", `Gets the current game.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!game <new game>", `Sets the current game.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!status", `Gets the current status.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!status <new status>", `Sets the current status.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!uptime", `Gets the current uptime.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!viewers", `Gets the current viewer count.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!chatters", `Gets the current chatter count.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!ishere <user>", `Checks if a user is in chat.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!islive <user>", `Checks if a user is live.`, "mods")
+	qw422016.N().S(`
+
+                `)
+	streamcommand(qw422016, "!statusgame <new status>", `Sets the current game to the current Steam game. and sets the status.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!steamgame", `Sets the current game to the current Steam game.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!host <user>", `Starts hosting the specified user. This may no longer work due to Twitch authentication changes.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!unhost", `Stops host mode. This may no longer work due to Twitch authentication changes.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!followme", `Make the bot follow you. Useful if the bot cannot speak due to follower-only mode.`, "broadcaster")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="raffles" class="page">
+            <h2 class="title">Raffles</h2>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!raffle", `Enters into the active raffle.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!raffle enable|disable", `Enables/disables the raffle. Enabling the raffle clears the previous entries..`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!raffle reset", `Resets the raffle entries.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!raffle count", `Counts the number of raffle entries.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!raffle winner", `Picks a random winner.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
