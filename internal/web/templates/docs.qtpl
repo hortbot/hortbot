@@ -87,7 +87,8 @@ dd {
                 Settings
             </p>
             <ul class="menu-list">
-                <li><a href="#settings">General settings</a></li>
+                <li><a href="#general-settings">General settings</a></li>
+                <li><a href="#roll-settings">Roll</a></li>
             </ul>
 
             <p class="menu-label">
@@ -558,7 +559,30 @@ dd {
             <h3 class="title">General settings</h3>
 
             <dl>
-                {%= command("!set", ``, "mods") %}
+                {%= command("!set prefix <prefix>", `Sets the prefix used to access commands.`, "broadcaster") %}
+                {%= command("!set bullet <bullet>", `Sets the bullet prepended to all bot messages.`, "broadcaster") %}
+                {%= command("!set cooldown <seconds>", `Sets the command cooldown.`, "mods") %}
+                {%= command("!set shouldModerate on|off", `Enables moderation.`, "mods") %}
+                {%= command("!set lastfm off|<name>", `Sets the channel's LastFM profile name.`, "mods") %}
+                {%= command("!set enableWarnings on|off", `Enable warnings before moderation actions.`, "mods") %}
+                {%= command("!set displayWarnings on|off", `Show warnings on warns.`, "mods") %}
+                {%= command("!set timeoutDuration <seconds>", `Sets the moderation timeout duration.`, "mods") %}
+                {%= command("!set extraLifeID <ID>", `Sets the Extra-Life ID.`, "mods") %}
+                {%= command("!set subsMayLink on|off", `Allow subscribers to link.`, "mods") %}
+                {%= command("!set mode all|subs|mods|owner", `Sets the minimum user level for the bot to respond to.`, "mods") %}
+                {%= command("!set steam <ID>", `Sets the channel's Steam ID.`, "mods") %}
+                {%= command("!set urban on|off", `Enables/disables the urban command.`, "mods") %}
+                {%= command("!set tweet <message>", `Sets the ClickToTweet message.`, "mods") %}
+            </dl>
+        </section>
+
+        <section id="roll-settings" class="page">
+            <h3 class="title">Roll</h3>
+
+            <dl>
+                {%= command("!set roll default <num>", `Set the default roll amount.`, "mods") %}
+                {%= command("!set roll cooldown <seconds>", `Set the roll cooldown.`, "mods") %}
+                {%= command("!set roll userlevel all|subs|mods|owner", `Set the minimum user level for roll/random.`, "mods") %}
             </dl>
         </section>
 

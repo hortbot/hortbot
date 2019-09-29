@@ -140,7 +140,8 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 Settings
             </p>
             <ul class="menu-list">
-                <li><a href="#settings">General settings</a></li>
+                <li><a href="#general-settings">General settings</a></li>
+                <li><a href="#roll-settings">Roll</a></li>
             </ul>
 
             <p class="menu-label">
@@ -808,7 +809,62 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!set prefix <prefix>", `Sets the prefix used to access commands.`, "broadcaster")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set bullet <bullet>", `Sets the bullet prepended to all bot messages.`, "broadcaster")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set cooldown <seconds>", `Sets the command cooldown.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set shouldModerate on|off", `Enables moderation.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set lastfm off|<name>", `Sets the channel's LastFM profile name.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set enableWarnings on|off", `Enable warnings before moderation actions.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set displayWarnings on|off", `Show warnings on warns.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set timeoutDuration <seconds>", `Sets the moderation timeout duration.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set extraLifeID <ID>", `Sets the Extra-Life ID.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set subsMayLink on|off", `Allow subscribers to link.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set mode all|subs|mods|owner", `Sets the minimum user level for the bot to respond to.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set steam <ID>", `Sets the channel's Steam ID.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set urban on|off", `Enables/disables the urban command.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set tweet <message>", `Sets the ClickToTweet message.`, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="roll-settings" class="page">
+            <h3 class="title">Roll</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set roll default <num>", `Set the default roll amount.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set roll cooldown <seconds>", `Set the roll cooldown.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!set roll userlevel all|subs|mods|owner", `Set the minimum user level for roll/random.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
