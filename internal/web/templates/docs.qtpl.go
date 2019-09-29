@@ -49,8 +49,12 @@ func (p *DocsPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 	streamsidebarStyle(qw422016)
 	qw422016.N().S(`
 <style>
-.title {
+h2.title {
     padding-top: 2rem;
+}
+
+dt {
+    padding-top: 1rem;
 }
 
 dd {
@@ -119,6 +123,8 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </p>
             <ul class="menu-list">
                 <li><a href="#triggers">Triggers</a></li>
+                <li><a href="#repeats">Repeats</a></li>
+                <li><a href="#schedule">Schedule</a></li>
             </ul>
         </aside>
     </div>
@@ -139,10 +145,17 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
         <h1 class="title">Custom commands</h1>
 
-        <section id="custom-commands" class="page">
-            <!-- <h2 class="title"></h2> -->
+        <section id="triggers" class="page">
+            <h2 class="title">Triggers</h2>
 
             <dl>
+                `)
+	streamcommand(qw422016,
+		"!commands",
+		`Links to the list of commands for the channel.`,
+		"subs",
+	)
+	qw422016.N().S(`
                 `)
 	streamcommand(qw422016,
 		"!command add <name> <text>",
@@ -153,12 +166,103 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		`Example: <code>!command adda useful Here's some useful info: example.org</code> &mdash; Adds a command available to all users immediately.`,
 	)
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command delete <name>",
+		`Deletes a command.`,
+		"mods",
+		`Example: <code>!command delete pan</code> &mdash; Deletes the command called "pan".`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command restrict <name> all|subs|mods|owner",
+		`Restricts a command to a specific group.`,
+		"mods",
+		`Example: <code>!command restrict pan mods</code> &mdash; Restricts "pan" to moderators and above.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command editor <name>",
+		`Gets the last editor of a command.`,
+		"mods",
+		`Example: <code>!command editor pan</code> &mdash; Gets the last editor of the "pan" command.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command count <name>",
+		`Gets the number of times a command has been run.`,
+		"mods",
+		`Example: <code>!command count pan</code> &mdash; Gets the number of times the "pan" command have been used.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command rename <old> <new>",
+		`Renames a command.`,
+		"mods",
+		`Example: <code>!command rename pan oldpan</code> &mdash; Renames the command "pan" to "oldpan".`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command rename <name>",
+		`Gets the response for a command.`,
+		"mods",
+		`Example: <code>!command get pan</code> &mdash; Gets the response for the "pan" command.`,
+	)
+	qw422016.N().S(`
             </dl>
         </section>
 
-        <section id="triggers" class="page">
-            <h2 class="title">Triggers</h2>
+        <section id="repeats" class="page">
+            <h2 class="title">Repeats</h2>
+            
+            <p>
+                The repeat command sets up a command repetition. When enabled,
+                the bot will repeat every X seconds so long as Y messages have
+                passed.
+            </p>
 
+            <dl>
+                `)
+	streamcommand(qw422016,
+		"!repeat add <name> <delay in seconds> [message difference]",
+		`Sets a command to repeat, and enables it.`,
+		"mods",
+		`Example: <code>!repeat add discord 300 10</code> &mdash; Sets the command "discord" to repeat every 300 seconds if at least 10 messages have passed.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!repeat delete <name>",
+		`Deletes a command's repeat info.`,
+		"mods",
+		`Example: <code>!repeat delete discord</code> &mdash; Stops repeating the "discord" command and deletes its repeat info.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!repeat on|off <name>",
+		`Enables or disables a command's repetition.`,
+		"mods",
+		`Example: <code>!repeat on discord</code> &mdash; Enables repetition of the "discord" command.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!repeat list",
+		`Lists command repetition info.`,
+		"mods",
+	)
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="schedule" class="page">
+            <h2 class="title">Schedule</h2>
         </section>
     </div>
 </div>
@@ -200,9 +304,9 @@ $(function() {
     spy = new Gumshoe("#sidebar a", {
         navClass: "is-active",
         contentClass: "is-active",
-        offset: function() {
-            return header.getBoundingClientRect().height;
-        },
+        // offset: function() {
+        //     return header.getBoundingClientRect().height;
+        // },
         events: true
     });
 
