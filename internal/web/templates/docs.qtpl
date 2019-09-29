@@ -545,7 +545,7 @@ dd {
 
             <dl>
                 {%= command("!raffle", `Enters into the active raffle.`, "everyone") %}
-                {%= command("!raffle enable|disable", `Enables/disables the raffle. Enabling the raffle clears the previous entries..`, "mods") %}
+                {%= command("!raffle enable|disable", `Enables/disables the raffle. Enabling the raffle clears the previous entries.`, "mods") %}
                 {%= command("!raffle reset", `Resets the raffle entries.`, "mods") %}
                 {%= command("!raffle count", `Counts the number of raffle entries.`, "mods") %}
                 {%= command("!raffle winner", `Picks a random winner.`, "mods") %}
@@ -665,9 +665,64 @@ dd {
         <section id="actions" class="page">
             <h2 class="title">Actions</h2>
 
-            <p>
-                TODO
-            </p>
+            <dl>
+                {%= action("PARAMETER", `The next command parameter (split by semicolon).`) %}
+                {%= action("PARAMETER_CAPS", `The next command parameter, in all caps.`) %}
+                {%= action("MESSAGE_COUNT", `The current message count in this channel.`) %}
+                {%= action("SONG", `Current song.`) %}
+                {%= action("SONG_URL", `Current song's URL.`) %}
+                {%= action("LAST_SONG", `The previous song.`) %}
+                {%= action("QUOTE", `A random quote.`) %}
+                {%= action("USER", `The user's name.`) %}
+                {%= action("CHANNEL_URL", `The current channel's URL.`) %}
+                {%= action("SUBMODE_ON", `Enables submode.`) %}
+                {%= action("SUBMODE_OFF", `Disables submode.`) %}
+                {%= action("SILENT", `Silences the message containing this action.`) %}
+                {%= action("NUMCHANNELS", `The number of channels the bot is active in.`) %}
+                {%= action("HOST_<CHANNEL>", `Start hosting the specified channel.`) %}
+                {%= action("UNHOST", `Deactivates host mode.`) %}
+                {%= action("PURGE", `Purges the messages of the user in the first parameter, or the sender if used in an autoreply.`) %}
+                {%= action("BAN", `Bans the user in the first parameter, or the sender if used in an autoreply.`) %}
+                {%= action("TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply.`) %}
+                {%= action("DELETE", `Delete's the message if used in an autoreply.`) %}
+                {%= action("REGULARS_ONLY", `Only allow regulars (subs) to use the command.`) %}
+                {%= action("EXTRALIFE_AMOUNT", `The current Extra-Life amount.`) %}
+                {%= action("ONLINE_CHECK", `If offline, the command is disabled.`) %}
+                {%= action("GAME", `The current game.`) %}
+                {%= action("GAME_CLEAN", `The current game, URL-safe.`) %}
+                {%= action("STATUS", `The current stream status.`) %}
+                {%= action("VIEWERS", `The current viewer count.`) %}
+                {%= action("CHATTERS", `The current chatter count.`) %}
+                {%= action("DATE", `The current date, UTC.`) %}
+                {%= action("DATE_<TZ>", `The current date, in the specified timezone (like "America/Chicago" or "MST").`) %}
+                {%= action("TIME", `The current time, UTC.`) %}
+                {%= action("TIME_<TZ>", `The current time, in the specified timezone (like "America/Chicago" or "MST").`) %}
+                {%= action("TIME24", `The current 24-hour time, UTC.`) %}
+                {%= action("TIME24_<TZ>", `The current 24-hour time, in the specified timezone (like "America/Chicago" or "MST").`) %}
+                {%= action("DATETIME", `The current date and time, UTC.`) %}
+                {%= action("DATETIME_<TZ>", `The current date and time, in the specified timezone (like "America/Chicago" or "MST").`) %}
+                {%= action("DATETIME24", `The current date and 24-hour time, UTC.`) %}
+                {%= action("DATETIME24_<TZ>", `The current date and 24-hour time, in the specified timezone (like "America/Chicago" or "MST")..`) %}
+                {%= action("UNTIL_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form).`) %}
+                {%= action("UNTILSHORT_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), short style.`) %}
+                {%= action("UNTILLONG_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), long style.`) %}
+                {%= action("STEAM_PROFILE", `The link to the channel's Steam profile.`) %}
+                {%= action("STEAM_GAME", `The current Steam game.`) %}
+                {%= action("STEAM_SERVER", `The current Steam game's server.`) %}
+                {%= action("STEAM_STORE", `A link to the current Steam game.`) %}
+                {%= action("TWEET_URL", `A link to Twitter which will send a tweet about the stream.`) %}
+                {%= action("BOT_HELP", `The bot's help message.`) %}
+                {%= action("RANDOM_<MIN>_<MAX>", `A random number between &lt;MIN&gt; and &lt;MIN&gt;, up to one decimal place.`) %}
+                {%= action("RANDOM_INT_<MIN>_<MAX>", `A random integer between &lt;MIN&gt; and &lt;MIN&gt;.`) %}
+                {%= action("VARS_<NAME>_GET", `Gets a variable.`) %}
+                {%= action("VARS_<NAME>_GET_<CHANNEL>", `Gets a variable from a specific channel.`) %}
+                {%= action("VARS_<NAME>_SET_<VALUE>", `Set's a variable to a value.`) %}
+                {%= action("VARS_<NAME>_INCREMENT_<NUM>", `Increments a variable if it is an integer.`) %}
+                {%= action("VARS_<NAME>_DECREMENT_<NUM>", `Decrements a variable if it is an integer.`) %}
+                {%= action("LIST_<NAME>_RANDOM", `A random item from a list.`) %}
+                {%= action("COMMAND_<COMMAND>", `Insert the specified command's response.`) %}
+                {%= action("<COMMAND>_COUNT", `The number of times a command has been used.`) %}
+            </dl>
         </section>
     </div>
 </div>
@@ -720,6 +775,10 @@ $(function() {
     </p>
     {% endfor %}
 </dd>
+{% endfunc %}
+
+{% func action(name, desc string, extra ...string) %}
+{%= command("(_" + name + "_)", desc, "", extra...) %}
 {% endfunc %}
 
 {% func docLevelTag(level string) %}
