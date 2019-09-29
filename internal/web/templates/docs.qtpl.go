@@ -49,7 +49,7 @@ func (p *DocsPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 	streamsidebarStyle(qw422016)
 	qw422016.N().S(`
 <style>
-h2.title {
+h3.title {
     padding-top: 1rem;
 }
 
@@ -107,6 +107,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <li><a href="#schedule">Schedule</a></li>
                 <li><a href="#autoreplies">Autoreplies</a></li>
                 <li><a href="#lists">Lists</a></li>
+                <li><a href="#variables">Variables</a></li>
             </ul>
 
             <p class="menu-label">
@@ -134,15 +135,34 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <li><a href="#twitch">Twitch</a></li>
                 <li><a href="#raffles">Raffles</a></li>
             </ul>
+
+            <p class="menu-label">
+                Command actions
+            </p>
+            <ul class="menu-list">
+                <li><a href="#actions">Actions</a></li>
+            </ul>
         </aside>
     </div>
 
                     
     <div class="column is-main-content content" id="main">
-        <h1 class="title">General</h1>
+        <h1 class="title">Documentation</h1>
+
+        <p>
+            This page contains documentation for all of `)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(`'s features.
+            Note that <code>!</code> is used as a prefix in the documentation, but may differ
+            per channel.
+        </p>
+
+        <hr>
+
+        <h2 class="title">General</h2>
 
         <section id="commands" class="page">
-            <h2 class="title">Commands</h2>
+            <h3 class="title">Commands</h3>
 
             <dl>
                 `)
@@ -157,10 +177,10 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
-        <h1 class="title">Custom commands</h1>
+        <h2 class="title">Custom commands</h2>
 
         <section id="triggers" class="page">
-            <h2 class="title">Triggers</h2>
+            <h3 class="title">Triggers</h3>
 
             <dl>
                 `)
@@ -232,7 +252,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="repeats" class="page">
-            <h2 class="title">Repeats</h2>
+            <h3 class="title">Repeats</h3>
             
             <p>
                 The repeat command sets up a command repetition. When enabled,
@@ -276,7 +296,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="schedule" class="page">
-            <h2 class="title">Schedule</h2>
+            <h3 class="title">Schedule</h3>
 
             <p>
                 The schedule command sets up a command repetition via a <a href="https://en.wikipedia.org/wiki/Cron" target="_blank">cron expression</a>.
@@ -320,7 +340,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="autoreplies" class="page">
-            <h2 class="title">Autoreplies</h2>
+            <h3 class="title">Autoreplies</h3>
 
             <p>
                 Autoreplies are like custom commands, but are run when a message matches a pattern.
@@ -378,7 +398,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="lists" class="page">
-            <h2 class="title">Lists</h2>
+            <h3 class="title">Lists</h3>
 
             <p>
                 Lists are collections of command-like responses, which can be accessed directly, or via the <code>(_LIST_&lt;name&gt;_RANDOM_)</code> action.
@@ -456,10 +476,36 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
-        <h1 class="title">Moderation</h1>
+        <section id="variables" class="page">
+            <h3 class="title">Variables</h3>
+
+            <p>
+                Variables store persistent information between commands, and are accessible directly or through actions.
+            </p>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!var set <name> <value>", `Sets a variable.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!var get <name>", `Gets a variable's value.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!var delete <name>", `Removes a variable.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!var increment <name> <amount>", `Increments a variable as an integer.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!var decrement <name> <amount>", `Decrements a variable as an integer.`, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <h2 class="title">Moderation</h2>
 
         <section id="shortcuts" class="page">
-            <h2 class="title">Shortcuts</h2>
+            <h3 class="title">Shortcuts</h3>
 
             <dl>
                 `)
@@ -499,7 +545,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="ignores" class="page">
-            <h2 class="title">Ignores</h2>
+            <h3 class="title">Ignores</h3>
 
             <p>
                 Ignored users may not use `)
@@ -521,7 +567,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="user-levels" class="page">
-            <h2 class="title">User levels</h2>
+            <h3 class="title">User levels</h3>
 
             <p>
                 Custom user levels reclassify users to have different levels. Regulars are equivalent
@@ -538,10 +584,10 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
-        <h1 class="title">Fun</h1>
+        <h2 class="title">Fun</h2>
 
         <section id="general-fun" class="page">
-            <h2 class="title">General fun</h2>
+            <h3 class="title">General fun</h3>
 
             <dl>
                 `)
@@ -578,7 +624,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="quotes" class="page">
-            <h2 class="title">Quotes</h2>
+            <h3 class="title">Quotes</h3>
 
             <dl>
                 `)
@@ -638,10 +684,10 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
-        <h1 class="title">Utilities</h1>
+        <h2 class="title">Utilities</h2>
 
         <section id="general-utilities" class="page">
-            <h2 class="title">General utilities</h2>
+            <h3 class="title">General utilities</h3>
 
             <dl>
                 `)
@@ -660,7 +706,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="twitch" class="page">
-            <h2 class="title">Twitch</h2>
+            <h3 class="title">Twitch</h3>
 
             <dl>
                 `)
@@ -710,7 +756,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </section>
 
         <section id="raffles" class="page">
-            <h2 class="title">Raffles</h2>
+            <h3 class="title">Raffles</h3>
 
             <dl>
                 `)
