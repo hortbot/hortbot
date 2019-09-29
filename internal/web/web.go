@@ -147,8 +147,9 @@ func (a *App) getBrand(r *http.Request) string {
 }
 
 type authState struct {
-	Host string
-	Bot  bool
+	Host     string
+	Bot      bool
+	Redirect string
 }
 
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
@@ -160,6 +161,10 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	stateVal := &authState{
 		Host: r.Host,
 		Bot:  bot,
+	}
+
+	if redirect := r.URL.Query()["redirect"]; len(redirect) > 0 {
+		stateVal.Redirect = redirect[0]
 	}
 
 	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
@@ -261,6 +266,11 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 			httpError(w, http.StatusInternalServerError)
 			return
 		}
+	}
+
+	if stateVal.Redirect != "" {
+		http.Redirect(w, r, stateVal.Redirect, http.StatusSeeOther)
+		return
 	}
 
 	page := &templates.LoginSuccessPage{
