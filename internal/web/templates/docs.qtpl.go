@@ -125,6 +125,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <li><a href="#triggers">Triggers</a></li>
                 <li><a href="#repeats">Repeats</a></li>
                 <li><a href="#schedule">Schedule</a></li>
+                <li><a href="#autoreplies">Autoreplies</a></li>
             </ul>
         </aside>
     </div>
@@ -272,7 +273,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <dl>
                 `)
 	streamcommand(qw422016,
-		"!schedule add <name> <pattern></pattern> [message difference]",
+		"!schedule add <name> <pattern> [message difference]",
 		`Schedules a command, and enables it.`,
 		"mods",
 		`Example: <code>!schedule add discord *_5_*_*_*</code> &mdash; Schedules the command "discord" to at 5AM every day.`,
@@ -299,6 +300,64 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016,
 		"!schedule list",
 		`Lists command schedules.`,
+		"mods",
+	)
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="autoreplies" class="page">
+            <h2 class="title">Autoreplies</h2>
+
+            <p>
+                Autoreplies are like custom commands, but are run when a message matches a pattern.
+            </p>
+
+            <dl>
+                `)
+	streamcommand(qw422016,
+		"!autoreply add <pattern> <response>",
+		`Adds an autoreply which will respond with the provided response when a message matches the pattern.`,
+		"mods",
+		`In the pattern, spaces should be replaced with underscores.`,
+		`Example: <code>!autoreply add *what*game* This is (_GAME_).</code> &mdash; Adds an autoreply that will reply with the current game if a message matches the pattern "*what*game".`,
+		`Example: <code>!autoreply add REGEX:^too_many_[^_]+$ TOO MANY COOKS (_REGULARS_ONLY_)</code> &mdash; Adds an autoreply which uses a raw regex pattern.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!autoreply delete <num>",
+		`Removes an autoreply.`,
+		"mods",
+		`Note that deleting an autoreply that isn't the last does not shift the numbers down. Use <code>!autoreply compact</code> to do this.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!autoreply editresponse <num> <response>",
+		`Edits an autoreply's response.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!autoreply editpattern <num> <pattern>",
+		`Edits an autoreply's pattern.`,
+		"mods",
+		`In the pattern, spaces should be replaced with underscores.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!autoreply compact <num>",
+		`Compats autoreplies "num" and higher. This is useful after removing an autoreply in the middle of the list.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!autoreply list",
+		`Links to the list of autoreplies for the channel.`,
 		"mods",
 	)
 	qw422016.N().S(`
