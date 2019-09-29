@@ -52,6 +52,15 @@ func (p *DocsPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 .title {
     padding-top: 2rem;
 }
+
+dd {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.tag {
+    margin-left: 1rem;
+}
 </style>
 `)
 }
@@ -114,49 +123,42 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         </aside>
     </div>
 
+                    
     <div class="column is-main-content content" id="main">
-        <h1>General</h1>
+        <h1 class="title">General</h1>
 
         <section id="commands" class="page">
             <h2 class="title">Commands</h2>
 
-            `)
-	streamipsum(qw422016)
+            <dl>
+                `)
+	streamcommand(qw422016, "!join", `Tells the bot to join your channel. Must be executed in the bot's channel.`, "everyone")
 	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
+            </dl>
         </section>
 
-        <h1>Custom commands</h1>
+        <h1 class="title">Custom commands</h1>
+
+        <section id="custom-commands" class="page">
+            <!-- <h2 class="title"></h2> -->
+
+            <dl>
+                `)
+	streamcommand(qw422016,
+		"!command add <name> <text>",
+		`Creates a command <code>!name</code> that responds with the specified text.`,
+		"mods",
+		`By default, commands are available to subs. Using <code>adda</code> or <code>addm</code> instead of <code>add</code> will pre-restrict the command to all users or moderators, respectively.`,
+		`Example: <code>!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?</code> &mdash; Adds a command called "pan".`,
+		`Example: <code>!command adda useful Here's some useful info: example.org</code> &mdash; Adds a command available to all users immediately.`,
+	)
+	qw422016.N().S(`
+            </dl>
+        </section>
 
         <section id="triggers" class="page">
             <h2 class="title">Triggers</h2>
 
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
-            `)
-	streamipsum(qw422016)
-	qw422016.N().S(`
         </section>
     </div>
 </div>
@@ -229,21 +231,64 @@ func (p *DocsPage) PageScripts() string {
 	return qs422016
 }
 
+func streamcommand(qw422016 *qt422016.Writer, name, desc, level string, extra ...string) {
+	qw422016.N().S(`
+<dt><code>`)
+	qw422016.E().S(name)
+	qw422016.N().S(`</code></dt>
+<dd>
+    <p>
+        `)
+	qw422016.N().S(desc)
+	qw422016.N().S(`
+        `)
+	streamdocLevelTag(qw422016, level)
+	qw422016.N().S(`
+    </p>
+    `)
+	for _, ex := range extra {
+		qw422016.N().S(`
+    <p>
+        `)
+		qw422016.N().S(ex)
+		qw422016.N().S(`
+    </p>
+    `)
+	}
+	qw422016.N().S(`
+</dd>
+`)
+}
+
+func writecommand(qq422016 qtio422016.Writer, name, desc, level string, extra ...string) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	streamcommand(qw422016, name, desc, level, extra...)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func command(name, desc, level string, extra ...string) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	writecommand(qb422016, name, desc, level, extra...)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
 func streamdocLevelTag(qw422016 *qt422016.Writer, level string) {
 	qw422016.N().S(`
 `)
 	switch level {
 	case "everyone":
 		qw422016.N().S(`
-<span class="tag is-dark">Everyone</span>
+<span class="tag is-light">Everyone</span>
 `)
 	case "subs":
 		qw422016.N().S(`
-<span class="tag is-success">Subs</span>
+<span class="tag is-info">Subs</span>
 `)
 	case "mods":
 		qw422016.N().S(`
-<span class="tag is-warning">Mods</span>
+<span class="tag is-success">Mods</span>
 `)
 	case "broadcaster":
 		qw422016.N().S(`
@@ -251,7 +296,7 @@ func streamdocLevelTag(qw422016 *qt422016.Writer, level string) {
 `)
 	case "admin":
 		qw422016.N().S(`
-<span class="tag is-info">Admins</span>
+<span class="tag is-black">Admins</span>
 `)
 	default:
 		qw422016.N().S(`

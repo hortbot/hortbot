@@ -47,6 +47,7 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
         <style>
         code {
             color: white !important;
+            background-color: #333333 !important;
         }
         </style>
 

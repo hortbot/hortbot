@@ -15,6 +15,15 @@ type DocsPage struct {
 .title {
     padding-top: 2rem;
 }
+
+dd {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.tag {
+    margin-left: 1rem;
+}
 </style>
 {% endfunc %}
 
@@ -45,29 +54,38 @@ type DocsPage struct {
         </aside>
     </div>
 
+                    
     <div class="column is-main-content content" id="main">
-        <h1>General</h1>
+        <h1 class="title">General</h1>
 
         <section id="commands" class="page">
             <h2 class="title">Commands</h2>
 
-            {%= ipsum() %}
-            {%= ipsum() %}
-            {%= ipsum() %}
-            {%= ipsum() %}
-            {%= ipsum() %}
+            <dl>
+                {%= command("!join", `Tells the bot to join your channel. Must be executed in the bot's channel.`, "everyone") %}
+            </dl>
         </section>
 
-        <h1>Custom commands</h1>
+        <h1 class="title">Custom commands</h1>
+
+        <section id="custom-commands" class="page">
+            <!-- <h2 class="title"></h2> -->
+
+            <dl>
+                {%= command(
+                    "!command add <name> <text>",
+                    `Creates a command <code>!name</code> that responds with the specified text.`,
+                    "mods",
+                    `By default, commands are available to subs. Using <code>adda</code> or <code>addm</code> instead of <code>add</code> will pre-restrict the command to all users or moderators, respectively.`,
+                    `Example: <code>!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?</code> &mdash; Adds a command called "pan".`,
+                    `Example: <code>!command adda useful Here's some useful info: example.org</code> &mdash; Adds a command available to all users immediately.`,
+                ) %}
+            </dl>
+        </section>
 
         <section id="triggers" class="page">
             <h2 class="title">Triggers</h2>
 
-            {%= ipsum() %}
-            {%= ipsum() %}
-            {%= ipsum() %}
-            {%= ipsum() %}
-            {%= ipsum() %}
         </section>
     </div>
 </div>
@@ -107,18 +125,33 @@ $(function() {
 </script>
 {% endfunc %}
 
+{% func command(name, desc, level string, extra ...string) %}
+<dt><code>{%s name %}</code></dt>
+<dd>
+    <p>
+        {%s= desc %}
+        {%= docLevelTag(level) %}
+    </p>
+    {% for _, ex := range extra %}
+    <p>
+        {%s= ex %}
+    </p>
+    {% endfor %}
+</dd>
+{% endfunc %}
+
 {% func docLevelTag(level string) %}
 {% switch level %}
 {% case "everyone" %}
-<span class="tag is-dark">Everyone</span>
+<span class="tag is-light">Everyone</span>
 {% case "subs" %}
-<span class="tag is-success">Subs</span>
+<span class="tag is-info">Subs</span>
 {% case "mods" %}
-<span class="tag is-warning">Mods</span>
+<span class="tag is-success">Mods</span>
 {% case "broadcaster" %}
 <span class="tag is-danger">Broadcaster</span>
 {% case "admin" %}
-<span class="tag is-info">Admins</span>
+<span class="tag is-black">Admins</span>
 {% default %}
 {% endswitch %}
 {% endfunc %}

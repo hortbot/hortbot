@@ -375,11 +375,11 @@ All
 `)
 	case models.AccessLevelSubscriber:
 		qw422016.N().S(`
-<span class="has-text-success">Subs</span>
+<span class="has-text-info">Subs</span>
 `)
 	case models.AccessLevelModerator:
 		qw422016.N().S(`
-<span class="has-text-warning">Mods</span>
+<span class="has-text-success">Mods</span>
 `)
 	case models.AccessLevelBroadcaster:
 		qw422016.N().S(`
@@ -387,7 +387,7 @@ All
 `)
 	case models.AccessLevelAdmin:
 		qw422016.N().S(`
-<span class="has-text-info">Admins</span>
+<span>Admins</span>
 `)
 	default:
 		qw422016.N().S(`

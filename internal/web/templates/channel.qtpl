@@ -194,13 +194,13 @@ type ChannelCommandsPage struct {
 {% case models.AccessLevelEveryone %}
 All
 {% case models.AccessLevelSubscriber %}
-<span class="has-text-success">Subs</span>
+<span class="has-text-info">Subs</span>
 {% case models.AccessLevelModerator %}
-<span class="has-text-warning">Mods</span>
+<span class="has-text-success">Mods</span>
 {% case models.AccessLevelBroadcaster %}
 <span class="has-text-danger">Broadcaster</span>
 {% case models.AccessLevelAdmin %}
-<span class="has-text-info">Admins</span>
+<span>Admins</span>
 {% default %}
 Unknown
 {% endswitch %}

@@ -20,6 +20,7 @@
         <style>
         code {
             color: white !important;
+            background-color: #333333 !important;
         }
         </style>
 
