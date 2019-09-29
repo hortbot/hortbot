@@ -10,6 +10,7 @@ import (
 
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 )
@@ -94,6 +95,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		repeat.Enabled = true
 		repeat.LastCount = s.N
 		repeat.Editor = s.User
+		repeat.InitTimestamp = null.Time{}
 
 		columns := boil.Whitelist(
 			models.RepeatedCommandColumns.UpdatedAt,
@@ -102,6 +104,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 			models.RepeatedCommandColumns.Enabled,
 			models.RepeatedCommandColumns.LastCount,
 			models.RepeatedCommandColumns.Editor,
+			models.RepeatedCommandColumns.InitTimestamp,
 		)
 
 		if err := repeat.Update(ctx, s.Tx, columns); err != nil {
@@ -207,12 +210,14 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	repeat.Enabled = enable
 	repeat.LastCount = s.N
 	repeat.Editor = s.User
+	repeat.InitTimestamp = null.Time{}
 
 	columns := boil.Whitelist(
 		models.RepeatedCommandColumns.UpdatedAt,
 		models.RepeatedCommandColumns.Enabled,
 		models.RepeatedCommandColumns.LastCount,
 		models.RepeatedCommandColumns.Editor,
+		models.RepeatedCommandColumns.InitTimestamp,
 	)
 
 	if err := repeat.Update(ctx, s.Tx, columns); err != nil {

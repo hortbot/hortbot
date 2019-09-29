@@ -167,7 +167,12 @@ func (b *Bot) Init(ctx context.Context) error {
 		delay := time.Duration(repeat.Delay) * time.Second
 		delayNano := delay.Nanoseconds()
 
-		sinceUpdateNano := b.deps.Clock.Since(repeat.UpdatedAt).Nanoseconds()
+		start := repeat.UpdatedAt
+		if repeat.InitTimestamp.Valid {
+			start = repeat.InitTimestamp.Time
+		}
+
+		sinceUpdateNano := b.deps.Clock.Since(start).Nanoseconds()
 
 		offsetNano := delayNano - sinceUpdateNano%delayNano
 		offset := time.Duration(offsetNano) * time.Nanosecond

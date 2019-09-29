@@ -237,6 +237,7 @@ CREATE TABLE repeated_commands (
     delay int NOT NULL,
     message_diff bigint DEFAULT 1 NOT NULL,
     last_count bigint NOT NULL,
+    init_timestamp timestamptz,
 
     creator text NOT NULL,
     editor text NOT NULL

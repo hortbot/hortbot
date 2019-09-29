@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -32,6 +33,7 @@ type RepeatedCommand struct {
 	Delay         int       `boil:"delay" json:"delay" toml:"delay" yaml:"delay"`
 	MessageDiff   int64     `boil:"message_diff" json:"message_diff" toml:"message_diff" yaml:"message_diff"`
 	LastCount     int64     `boil:"last_count" json:"last_count" toml:"last_count" yaml:"last_count"`
+	InitTimestamp null.Time `boil:"init_timestamp" json:"init_timestamp,omitempty" toml:"init_timestamp" yaml:"init_timestamp,omitempty"`
 	Creator       string    `boil:"creator" json:"creator" toml:"creator" yaml:"creator"`
 	Editor        string    `boil:"editor" json:"editor" toml:"editor" yaml:"editor"`
 
@@ -49,6 +51,7 @@ var RepeatedCommandColumns = struct {
 	Delay         string
 	MessageDiff   string
 	LastCount     string
+	InitTimestamp string
 	Creator       string
 	Editor        string
 }{
@@ -61,6 +64,7 @@ var RepeatedCommandColumns = struct {
 	Delay:         "delay",
 	MessageDiff:   "message_diff",
 	LastCount:     "last_count",
+	InitTimestamp: "init_timestamp",
 	Creator:       "creator",
 	Editor:        "editor",
 }
@@ -77,6 +81,7 @@ var RepeatedCommandWhere = struct {
 	Delay         whereHelperint
 	MessageDiff   whereHelperint64
 	LastCount     whereHelperint64
+	InitTimestamp whereHelpernull_Time
 	Creator       whereHelperstring
 	Editor        whereHelperstring
 }{
@@ -89,6 +94,7 @@ var RepeatedCommandWhere = struct {
 	Delay:         whereHelperint{field: "\"repeated_commands\".\"delay\""},
 	MessageDiff:   whereHelperint64{field: "\"repeated_commands\".\"message_diff\""},
 	LastCount:     whereHelperint64{field: "\"repeated_commands\".\"last_count\""},
+	InitTimestamp: whereHelpernull_Time{field: "\"repeated_commands\".\"init_timestamp\""},
 	Creator:       whereHelperstring{field: "\"repeated_commands\".\"creator\""},
 	Editor:        whereHelperstring{field: "\"repeated_commands\".\"editor\""},
 }
@@ -117,8 +123,8 @@ func (*repeatedCommandR) NewStruct() *repeatedCommandR {
 type repeatedCommandL struct{}
 
 var (
-	repeatedCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "command_info_id", "enabled", "delay", "message_diff", "last_count", "creator", "editor"}
-	repeatedCommandColumnsWithoutDefault = []string{"channel_id", "command_info_id", "enabled", "delay", "last_count", "creator", "editor"}
+	repeatedCommandAllColumns            = []string{"id", "created_at", "updated_at", "channel_id", "command_info_id", "enabled", "delay", "message_diff", "last_count", "init_timestamp", "creator", "editor"}
+	repeatedCommandColumnsWithoutDefault = []string{"channel_id", "command_info_id", "enabled", "delay", "last_count", "init_timestamp", "creator", "editor"}
 	repeatedCommandColumnsWithDefault    = []string{"id", "created_at", "updated_at", "message_diff"}
 	repeatedCommandPrimaryKeyColumns     = []string{"id"}
 )
