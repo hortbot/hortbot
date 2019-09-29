@@ -137,6 +137,25 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </ul>
 
             <p class="menu-label">
+                Settings
+            </p>
+            <ul class="menu-list">
+                <li><a href="#settings">General settings</a></li>
+            </ul>
+
+            <p class="menu-label">
+                Filters
+            </p>
+            <ul class="menu-list">
+                <li><a href="#filters">General filters</a></li>
+                <li><a href="#filter-links">Links</a></li>
+                <li><a href="#filter-capitals">Capitals</a></li>
+                <li><a href="#filter-banned">Banned phrases</a></li>
+                <li><a href="#filter-symbols">Symbols</a></li>
+                <li><a href="#filter-emotes">Emotes</a></li>
+            </ul>
+
+            <p class="menu-label">
                 Command actions
             </p>
             <ul class="menu-list">
@@ -177,6 +196,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
+        <hr>
         <h2 class="title">Custom commands</h2>
 
         <section id="triggers" class="page">
@@ -502,6 +522,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
+        <hr>
         <h2 class="title">Moderation</h2>
 
         <section id="shortcuts" class="page">
@@ -584,6 +605,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
+        <hr>
         <h2 class="title">Fun</h2>
 
         <section id="general-fun" class="page">
@@ -684,6 +706,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
+        <hr>
         <h2 class="title">Utilities</h2>
 
         <section id="general-utilities" class="page">
@@ -775,6 +798,92 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!raffle winner", `Picks a random winner.`, "mods")
 	qw422016.N().S(`
             </dl>
+        </section>
+
+        <hr>
+        <h2 class="title">Settings</h2>
+
+        <section id="general-settings" class="page">
+            <h3 class="title">General settings</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <hr>
+        <h2 class="title">Filters</h2>
+
+        <section id="general-filters" class="page">
+            <h3 class="title">General filters</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="filter-links" class="page">
+            <h3 class="title">Links</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="filter-capitals" class="page">
+            <h3 class="title">Capitals</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="filter-banned" class="page">
+            <h3 class="title">Banned phrases</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="filter-symbols" class="page">
+            <h3 class="title">Symbols</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="filter-emotes" class="page">
+            <h3 class="title">Emotes</h3>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!set", ``, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <hr>
+        
+        <section id="actions" class="page">
+            <h2 class="title">Actions</h2>
+
+            <p>
+                TODO
+            </p>
         </section>
     </div>
 </div>
