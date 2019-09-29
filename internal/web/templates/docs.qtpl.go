@@ -49,6 +49,10 @@ func (p *DocsPage) StreamPageMeta(qw422016 *qt422016.Writer) {
 	streamsidebarStyle(qw422016)
 	qw422016.N().S(`
 <style>
+h2.title {
+    padding-top: 1rem;
+}
+
 dt {
     padding-top: 1rem;
 }
@@ -357,7 +361,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016,
 		"!autoreply compact <num>",
-		`Compats autoreplies "num" and higher. This is useful after removing an autoreply in the middle of the list.`,
+		`Compacts autoreplies "num" and higher. This is useful after removing an autoreply in the middle of the list.`,
 		"mods",
 	)
 	qw422016.N().S(`
@@ -393,6 +397,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		"!quote delete <num>",
 		`Removes a quote.`,
 		"mods",
+		`Note that deleting a quote that isn't the last does not shift the numbers down. Use <code>!quote compact</code> to do this.`,
 	)
 	qw422016.N().S(`
                 `)
@@ -420,6 +425,13 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016,
 		"!quote search <phrase>",
 		`Searches all quotes for a phrase.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote compact <num>",
+		`Compacts quotes "num" and higher. This is useful after removing a quote in the middle of the list.`,
 		"mods",
 	)
 	qw422016.N().S(`
