@@ -877,7 +877,16 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!filter on|off", `Enables/disables all filters.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter status", `Shows the status of all filters.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter me on|off", `Enables/disables the /me filter.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter messagelength <length>", `Sets the maximum message length.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -887,7 +896,20 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!filter links on|off", `Toggles link filtering.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!filter pd add|delete <link pattern>",
+		`Toggles link filtering.`,
+		"mods",
+		`Link patterns can just be domains, or contain wildcard characters.`,
+		`Example: <code>!filter pd add clips.twitch.tv</code> &mdash; Allow old-style Twitch clip links.`,
+		`Example: <code>!filter pd add twitch.tv/*/clips</code> &mdash; Allow new-style Twitch clip links.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter pd list", `Lists permitted links.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -897,7 +919,19 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!filter caps on|off", `Toggles caps filtering.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter caps status", `Shows caps filter status.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter percent <percent>", `Sets minimum caps percentage to be filtered.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter mincaps <num>", `Sets minimum caps count to be filtered.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter minchars <num>", `Sets minimum message length to be filtered.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -907,7 +941,13 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!filter banphrase on|off", `Toggles banned phrase filtering.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter banphrase list", `Lists banned phrases.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter banphrase add|delete <phrase>", `Adds/removes a banned phrase.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -917,7 +957,16 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!filter symbols on|off", `Toggles symbol filtering.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter symbols status", `Shows symbol filter status.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter symbols percent <percent>", `Sets minimum symbol percentage to be filtered.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter symbols min <num>", `Sets minimum symbol count to be filtered.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -927,7 +976,13 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!set", ``, "mods")
+	streamcommand(qw422016, "!filter emotes on|off", `Toggles emote filtering.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter emotes max <num>", `Sets max emotes allowed per message.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter emotes single on|off", `Toggles filter for single emote messages.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
