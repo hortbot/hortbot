@@ -53,6 +53,15 @@ dd {
             </ul>
 
             <p class="menu-label">
+                Moderation
+            </p>
+            <ul class="menu-list">
+                <li><a href="#shortcuts">Shortcuts</a></li>
+                <li><a href="#ignores">Ignores</a></li>
+                <li><a href="#user-levels">User levels</a></li>
+            </ul>
+
+            <p class="menu-label">
                 Fun
             </p>
             <ul class="menu-list">
@@ -247,6 +256,54 @@ dd {
                     `Links to the list of autoreplies for the channel.`,
                     "mods",
                 ) %}
+            </dl>
+        </section>
+
+        <h1 class="title">Moderation</h1>
+
+        <section id="shortcuts" class="page">
+            <h2 class="title">Shortcuts</h2>
+
+            <dl>
+                {%= command("+b <user>", `Bans a user.`, "mods") %}
+                {%= command("-b <user>", `Unbans a user.`, "mods") %}
+                {%= command("+t <user> [seconds]", `Times out a user (with an optional duration).`, "mods") %}
+                {%= command("-t <user>", `Removes a user's timeout.`, "mods") %}
+                {%= command("+p <user>", `Purges a user's messages.`, "mods") %}
+                {%= command("!permit <user>", `Permits a user to post one link.`, "mods") %}
+                {%= command("!clear", `Clears chat.`, "mods") %}
+                {%= command("+m", `Turns slow mode on.`, "mods") %}
+                {%= command("-m", `Turns slow mode off.`, "mods") %}
+                {%= command("+s", `Turns sub only mode on.`, "mods") %}
+                {%= command("-s", `Turns sub only mode off.`, "mods") %}
+            </dl>
+        </section>
+
+        <section id="ignores" class="page">
+            <h2 class="title">Ignores</h2>
+
+            <p>
+                Ignored users may not use {%= p.PageBrand() %}, but will still be subject to filters.
+            </p>
+
+            <dl>
+                {%= command("!ignore add <user>", `Adds a user to the ignore list.`, "mods") %}
+                {%= command("!ignore delete <user>", `Removes a user from the ignore list.`, "mods") %}
+                {%= command("!ignore list", `Lists users in the ignore list.`, "mods") %}
+            </dl>
+        </section>
+
+        <section id="user-levels" class="page">
+            <h2 class="title">User levels</h2>
+
+            <p>
+                Custom user levels reclassify users to have different levels. Regulars are equivalent
+                to subscribers, owners are equivalent to the channel broadcaster, and mods are mods.
+            </p>
+
+            <dl>
+                {%= command("!owner|mod|regular list", `Lists users in that group.`, "mods") %}
+                {%= command("!owner|mod|regular add|remove <user>", `Adds or removes a user from a group.`, "mods") %}
             </dl>
         </section>
 

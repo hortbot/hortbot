@@ -106,6 +106,15 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </ul>
 
             <p class="menu-label">
+                Moderation
+            </p>
+            <ul class="menu-list">
+                <li><a href="#shortcuts">Shortcuts</a></li>
+                <li><a href="#ignores">Ignores</a></li>
+                <li><a href="#user-levels">User levels</a></li>
+            </ul>
+
+            <p class="menu-label">
                 Fun
             </p>
             <ul class="menu-list">
@@ -347,6 +356,88 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		`Links to the list of autoreplies for the channel.`,
 		"mods",
 	)
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <h1 class="title">Moderation</h1>
+
+        <section id="shortcuts" class="page">
+            <h2 class="title">Shortcuts</h2>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "+b <user>", `Bans a user.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "-b <user>", `Unbans a user.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "+t <user> [seconds]", `Times out a user (with an optional duration).`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "-t <user>", `Removes a user's timeout.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "+p <user>", `Purges a user's messages.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!permit <user>", `Permits a user to post one link.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!clear", `Clears chat.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "+m", `Turns slow mode on.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "-m", `Turns slow mode off.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "+s", `Turns sub only mode on.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "-s", `Turns sub only mode off.`, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="ignores" class="page">
+            <h2 class="title">Ignores</h2>
+
+            <p>
+                Ignored users may not use `)
+	p.StreamPageBrand(qw422016)
+	qw422016.N().S(`, but will still be subject to filters.
+            </p>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!ignore add <user>", `Adds a user to the ignore list.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!ignore delete <user>", `Removes a user from the ignore list.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!ignore list", `Lists users in the ignore list.`, "mods")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <section id="user-levels" class="page">
+            <h2 class="title">User levels</h2>
+
+            <p>
+                Custom user levels reclassify users to have different levels. Regulars are equivalent
+                to subscribers, owners are equivalent to the channel broadcaster, and mods are mods.
+            </p>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!owner|mod|regular list", `Lists users in that group.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!owner|mod|regular add|remove <user>", `Adds or removes a user from a group.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
