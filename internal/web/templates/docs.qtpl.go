@@ -106,6 +106,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <li><a href="#repeats">Repeats</a></li>
                 <li><a href="#schedule">Schedule</a></li>
                 <li><a href="#autoreplies">Autoreplies</a></li>
+                <li><a href="#lists">Lists</a></li>
             </ul>
 
             <p class="menu-label">
@@ -374,6 +375,85 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             </dl>
         </section>
 
+        <section id="lists" class="page">
+            <h2 class="title">Lists</h2>
+
+            <p>
+                Lists are collections of command-like responses, which can be accessed directly, or via the <code>(_LIST_&lt;name&gt;_RANDOM_)</code> action.
+                They may contain command actions themselves, and share the same namespace as custom commands.
+            </p>
+
+            <dl>
+                `)
+	streamcommand(qw422016,
+		"!list add <name>",
+		`Adds a list.`,
+		"mods",
+		`By default, lists are available to subs. Using <code>adda</code> or <code>addm</code> instead of <code>add</code> will pre-restrict the list to all users or moderators, respectively.`,
+		`Example: <code>!list add hatspells</code> &mdash; Adds a list called "hatspells".`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!list delete <name>",
+		`Removes a list.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!list restrict <name> all|subs|mods|owner",
+		`Restricts a list.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!list rename <old> <new>",
+		`Renames a list.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!<name>",
+		`Gets a random item from the list. Or use <code>!&lt;name&gt; random</code>.`,
+		"varies",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!<name> add <item>",
+		`Adds an item to the named list.`,
+		"mods",
+		`Example: <code>!hatspells add Solar Eruption</code> &mdash; Adds "Solar Eruption" to the "hatspells" list.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!<name> delete <item>",
+		`Removes an item from the named list.`,
+		"mods",
+		`Example: <code>!hatspells remove Solar Eruption</code> &mdash; Removes "Solar Eruption" from the "hatspells" list.`,
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!<name> restrict",
+		`Same as <code>!list restrict &lt;name&gt;</code>.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!<name> get <num>",
+		`Gets a specific item from the list.`,
+		"varies",
+	)
+	qw422016.N().S(`
+            </dl>
+        </section>
+
         <h1 class="title">Moderation</h1>
 
         <section id="shortcuts" class="page">
@@ -613,9 +693,9 @@ $(function() {
     spy = new Gumshoe("#sidebar a", {
         navClass: "is-active",
         contentClass: "is-active",
-        // offset: function() {
-        //     return header.getBoundingClientRect().height;
-        // },
+        offset: function() {
+            return header.getBoundingClientRect().height;
+        },
         events: true
     });
 
