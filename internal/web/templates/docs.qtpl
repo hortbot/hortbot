@@ -27,6 +27,9 @@ dd {
 
 .tag {
     margin-left: 1rem;
+    height: 1.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
 }
 </style>
 {% endfunc %}
@@ -65,7 +68,15 @@ dd {
                 Fun
             </p>
             <ul class="menu-list">
+                <li><a href="#general-fun">General fun</a></li>
                 <li><a href="#quotes">Quotes</a></li>
+            </ul>
+
+            <p class="menu-label">
+                Utilities
+            </p>
+            <ul class="menu-list">
+                <li><a href="#general-utilities">General utilities</a></li>
             </ul>
         </aside>
     </div>
@@ -80,6 +91,7 @@ dd {
             <dl>
                 {%= command("!join", `Tells ` + p.Brand + ` to join your channel. Must be executed in the bot's channel.`, "everyone") %}
                 {%= command("!part", `Tells ` + p.Brand + ` to leave your channel.`, "everyone") %}
+                {%= command("!bothelp", `Returns a helpful message.`, "everyone") %}
             </dl>
         </section>
 
@@ -309,6 +321,22 @@ dd {
 
         <h1 class="title">Fun</h1>
 
+        <section id="general-fun" class="page">
+            <h2 class="title">General fun</h2>
+
+            <dl>
+                {%= command("!conch", `Magic 8 ball.`, "subs") %}
+                {%= command("!xkcd <num>", `Gets the requested XKCD comic.`, "subs") %}
+                {%= command("!random coin", `Flips a coin.`, "varies") %}
+                {%= command("!random <integer>", `Picks a random number.`, "varies") %}
+                {%= command("!roll <dice>", `Rolls the specified dice.`, "varies", `Example: <code>!roll 2d20</code> &mdash; Rolls two D20s.`) %}
+                {%= command("!google <query>", `Googles something.`, "subs") %}
+                {%= command("!link <query>", `Links something.`, "subs") %}
+                {%= command("!me <phrase>", `Sends a /me command.`, "mods") %}
+                {%= command("!urban <phrase>", `Looks up something in the Urban Dictionary. Be warned, these are not filtered.`, "subs") %}
+            </dl>
+        </section>
+
         <section id="quotes" class="page">
             <h2 class="title">Quotes</h2>
 
@@ -351,6 +379,19 @@ dd {
                     `Compacts quotes "num" and higher. This is useful after removing a quote in the middle of the list.`,
                     "mods",
                 ) %}
+            </dl>
+        </section>
+
+        <h1 class="title">Utilities</h1>
+
+        <section id="general-utilities" class="page">
+            <h2 class="title">General utilities</h2>
+
+            <dl>
+                {%= command("!lastfm", `Links to the channel's LastFM profile.`, "everyone") %}
+                {%= command("!music", `Gets the currently playing song.`, "everyone") %}
+                {%= command("!songlink", `Gets a link to the currently playing song.`, "everyone") %}
+                {%= command("!whatshouldiplay", `Picks a random game from the channel's Steam library.`, "broadcaster") %}
             </dl>
         </section>
     </div>
@@ -418,6 +459,8 @@ $(function() {
 <span class="tag is-danger">Broadcaster</span>
 {% case "admin" %}
 <span class="tag is-black">Admins</span>
+{% case "varies" %}
+<span class="tag is-warning">Varies</span>
 {% default %}
 {% endswitch %}
 {% endfunc %}

@@ -64,6 +64,9 @@ dd {
 
 .tag {
     margin-left: 1rem;
+    height: 1.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
 }
 </style>
 `)
@@ -118,7 +121,15 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 Fun
             </p>
             <ul class="menu-list">
+                <li><a href="#general-fun">General fun</a></li>
                 <li><a href="#quotes">Quotes</a></li>
+            </ul>
+
+            <p class="menu-label">
+                Utilities
+            </p>
+            <ul class="menu-list">
+                <li><a href="#general-utilities">General utilities</a></li>
             </ul>
         </aside>
     </div>
@@ -136,6 +147,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!part", `Tells `+p.Brand+` to leave your channel.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!bothelp", `Returns a helpful message.`, "everyone")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -444,6 +458,40 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
         <h1 class="title">Fun</h1>
 
+        <section id="general-fun" class="page">
+            <h2 class="title">General fun</h2>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!conch", `Magic 8 ball.`, "subs")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!xkcd <num>", `Gets the requested XKCD comic.`, "subs")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!random coin", `Flips a coin.`, "varies")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!random <integer>", `Picks a random number.`, "varies")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!roll <dice>", `Rolls the specified dice.`, "varies", `Example: <code>!roll 2d20</code> &mdash; Rolls two D20s.`)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!google <query>", `Googles something.`, "subs")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!link <query>", `Links something.`, "subs")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!me <phrase>", `Sends a /me command.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!urban <phrase>", `Looks up something in the Urban Dictionary. Be warned, these are not filtered.`, "subs")
+	qw422016.N().S(`
+            </dl>
+        </section>
+
         <section id="quotes" class="page">
             <h2 class="title">Quotes</h2>
 
@@ -501,6 +549,27 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		`Compacts quotes "num" and higher. This is useful after removing a quote in the middle of the list.`,
 		"mods",
 	)
+	qw422016.N().S(`
+            </dl>
+        </section>
+
+        <h1 class="title">Utilities</h1>
+
+        <section id="general-utilities" class="page">
+            <h2 class="title">General utilities</h2>
+
+            <dl>
+                `)
+	streamcommand(qw422016, "!lastfm", `Links to the channel's LastFM profile.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!music", `Gets the currently playing song.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!songlink", `Gets a link to the currently playing song.`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!whatshouldiplay", `Picks a random game from the channel's Steam library.`, "broadcaster")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -641,6 +710,10 @@ func streamdocLevelTag(qw422016 *qt422016.Writer, level string) {
 	case "admin":
 		qw422016.N().S(`
 <span class="tag is-black">Admins</span>
+`)
+	case "varies":
+		qw422016.N().S(`
+<span class="tag is-warning">Varies</span>
 `)
 	default:
 		qw422016.N().S(`
