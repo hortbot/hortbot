@@ -55,7 +55,8 @@ type Config struct {
 	WebAddr    string
 	WebAddrMap map[string]string
 
-	NoDedupe bool
+	NoDedupe      bool
+	NoChannelLock bool
 }
 
 type Bot struct {
@@ -68,7 +69,8 @@ type Bot struct {
 
 	testingHelper *testingHelper
 
-	noDedupe bool
+	noDedupe      bool
+	noChannelLock bool
 }
 
 func New(config *Config) *Bot {
@@ -134,9 +136,10 @@ func New(config *Config) *Bot {
 	}
 
 	b := &Bot{
-		db:       config.DB,
-		deps:     deps,
-		noDedupe: config.NoDedupe,
+		db:            config.DB,
+		deps:          deps,
+		noDedupe:      config.NoDedupe,
+		noChannelLock: config.NoChannelLock,
 	}
 
 	deps.UpdateRepeat = b.updateRepeatedCommand

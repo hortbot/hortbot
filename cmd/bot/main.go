@@ -16,6 +16,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
+	"golang.org/x/sync/semaphore"
 )
 
 var args = struct {
@@ -56,14 +57,30 @@ func mainCtx(ctx context.Context) {
 	b := args.NewBot(ctx, db, rdb, sender, notifier, twitchAPI)
 	defer b.Stop()
 
+	sem := semaphore.NewWeighted(int64(args.Workers))
+
+	g := errgroupx.FromContext(ctx)
+
 	incomingSub := args.NewIncomingSubscriber(5*time.Second, func(i *bnsq.Incoming, parent trace.SpanContext) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", parent)
 		defer span.End()
-		b.Handle(ctx, i.Origin, i.Message)
+
+		if err := sem.Acquire(ctx, 1); err != nil {
+			return err
+		}
+
+		g.Go(func(ctx context.Context) error {
+			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
+			defer span.End()
+
+			defer sem.Release(1)
+			b.Handle(ctx, i.Origin, i.Message)
+			return ctx.Err()
+		})
+
 		return nil
 	})
 
-	g := errgroupx.FromContext(ctx)
 	g.Go(sender.Run)
 	g.Go(notifier.Run)
 	g.Go(incomingSub.Run)

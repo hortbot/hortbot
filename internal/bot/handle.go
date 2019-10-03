@@ -19,9 +19,10 @@ import (
 )
 
 var (
-	errInvalidMessage  = errors.New("bot: invalid message")
-	errNotAuthorized   = errors.New("bot: user is not authorized to use this command")
-	errBuiltinDisabled = errors.New("bot: builtin disabled")
+	errInvalidMessage      = errors.New("bot: invalid message")
+	errNotAuthorized       = errors.New("bot: user is not authorized to use this command")
+	errBuiltinDisabled     = errors.New("bot: builtin disabled")
+	errCouldNotLockChannel = errors.New("bot: could not obtain channel lock")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -60,6 +61,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	}
 }
 
+//nolint:gocyclo
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
@@ -219,6 +221,27 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		zap.Int64("roomID", s.RoomID),
 		zap.String("channel", s.IRCChannel),
 	)
+
+	if !b.noChannelLock {
+		const (
+			ttl     = time.Second / 2
+			maxWait = 2 * time.Second
+		)
+
+		lock, got, err := b.deps.Redis.LockChannel(ctx, s.IRCChannel, ttl, maxWait)
+		if err != nil {
+			return err
+		}
+		if !got {
+			return errCouldNotLockChannel
+		}
+
+		defer func() {
+			if err := lock.Unlock(); err != nil {
+				logger.Warn("error unlocking channel", zap.Error(err))
+			}
+		}()
+	}
 
 	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx

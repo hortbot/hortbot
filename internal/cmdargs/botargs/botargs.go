@@ -4,6 +4,7 @@ package botargs
 import (
 	"context"
 	"database/sql"
+	"runtime"
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -31,11 +32,14 @@ type Bot struct {
 
 	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
 	SteamKey  string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
+
+	Workers int `long:"workers" env:"HB_WORKERS" description:"number of concurrent workers for handling"`
 }
 
 var DefaultBot = Bot{
 	DefaultCooldown: 5,
 	BotWebAddr:      "http://localhost:5000",
+	Workers:         runtime.GOMAXPROCS(0),
 }
 
 func (args *Bot) NewBot(

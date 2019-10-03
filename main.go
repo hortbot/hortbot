@@ -86,24 +86,24 @@ func mainCtx(ctx context.Context) {
 
 	g.Go(a.Run)
 
-	g.Go(func(ctx context.Context) error {
-		inc := conn.Incoming()
+	for i := 0; i < args.Workers; i++ {
+		g.Go(func(ctx context.Context) error {
+			inc := conn.Incoming()
 
-		for {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
+			for {
+				select {
+				case <-ctx.Done():
+					return ctx.Err()
 
-			case m, ok := <-inc:
-				if !ok {
-					return nil
+				case m, ok := <-inc:
+					if !ok {
+						return nil
+					}
+					b.Handle(ctx, args.Nick, m)
 				}
-
-				// TODO: Do this in g.Go once there is a channel lock.
-				b.Handle(ctx, args.Nick, m)
 			}
-		}
-	})
+		})
+	}
 
 	g.Go(func(ctx context.Context) error {
 		for {
