@@ -47,5 +47,4 @@ func TestPublicJoin(t *testing.T) {
 	v, err = db.PublicJoin(ctx, channel)
 	assert.NilError(t, err)
 	assert.Assert(t, v == nil)
-
 }
