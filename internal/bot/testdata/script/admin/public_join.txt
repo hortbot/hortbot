@@ -1,0 +1,76 @@
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin
+send hortbot #foobar [HB] Public join unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin on
+send hortbot #foobar [HB] Public join enabled for hortbot.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin
+send hortbot #foobar [HB] Public join set to: true
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin off
+send hortbot #foobar [HB] Public join disabled for hortbot.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin
+send hortbot #foobar [HB] Public join set to: false
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin unset
+send hortbot #foobar [HB] Public join unset for hortbot.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin
+send hortbot #foobar [HB] Public join unset.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin default
+send hortbot #foobar [HB] Public join unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin on default
+send hortbot #foobar [HB] Default public join enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin default
+send hortbot #foobar [HB] Public join unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin off default
+send hortbot #foobar [HB] Default public join disabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin default
+send hortbot #foobar [HB] Public join unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin unset default
+send hortbot #foobar [HB] Default public join unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin default
+send hortbot #foobar [HB] Public join unset.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin otherbot
+send hortbot #foobar [HB] Public join unset.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin on otherbot
+send hortbot #foobar [HB] Public join enabled for otherbot.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin off
+send hortbot #foobar [HB] Public join disabled for hortbot.
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
+no_send
+no_notify_channel_updates
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin unset
+send hortbot #foobar [HB] Public join unset for hortbot.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin publicjoin off default
+send hortbot #foobar [HB] Default public join disabled.
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
+no_send
+no_notify_channel_updates
+
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
+send hortbot #hortbot [HB] otheruser, hortbot will join your channel soon with prefix !
+notify_channel_updates hortbot

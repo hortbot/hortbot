@@ -15,13 +15,14 @@ var adminCommands handlerMap
 func init() {
 	// To prevent initialization loop.
 	adminCommands = newHandlerMap(map[string]handlerFunc{
-		"roundtrip": {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
-		"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
-		"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
-		"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
-		"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
-		"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
-		"imp":       {fn: cmdAdminImp, minLevel: levelAdmin},
+		"roundtrip":  {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
+		"block":      {fn: cmdAdminBlock, minLevel: levelAdmin},
+		"unblock":    {fn: cmdAdminUnblock, minLevel: levelAdmin},
+		"channels":   {fn: cmdAdminChannels, minLevel: levelAdmin},
+		"color":      {fn: cmdAdminColor, minLevel: levelAdmin},
+		"spam":       {fn: cmdAdminSpam, minLevel: levelAdmin},
+		"imp":        {fn: cmdAdminImp, minLevel: levelAdmin},
+		"publicjoin": {fn: cmdAdminPublicJoin, minLevel: levelAdmin},
 	})
 }
 
@@ -177,4 +178,65 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 	s.Imp = true
 
 	return handleSession(ctx, s)
+}
+
+func cmdAdminPublicJoin(ctx context.Context, s *session, cmd string, args string) error {
+	onOff, args := splitSpace(args)
+	botName, _ := splitSpace(args)
+
+	onOff = strings.ToLower(onOff)
+	botName = strings.ToLower(botName)
+
+	switch botName {
+	case "":
+		botName = s.Origin
+	case "default":
+		botName = ""
+	}
+
+	unset := false
+	enable := false
+
+	switch onOff {
+	case "on":
+		enable = true
+	case "off":
+	case "unset":
+		unset = true
+	default:
+		v, err := s.Deps.Redis.PublicJoin(ctx, botName)
+		if err != nil {
+			return err
+		}
+
+		if v == nil {
+			return s.Reply(ctx, "Public join unset.")
+		}
+
+		return s.Replyf(ctx, "Public join set to: %v", *v)
+	}
+
+	action := "unset"
+
+	if unset {
+		if err := s.Deps.Redis.UnsetPublicJoin(ctx, botName); err != nil {
+			return err
+		}
+	} else {
+		if enable {
+			action = "enabled"
+		} else {
+			action = "disabled"
+		}
+
+		if err := s.Deps.Redis.SetPublicJoin(ctx, botName, enable); err != nil {
+			return err
+		}
+	}
+
+	if botName != "" {
+		return s.Replyf(ctx, "Public join %s for %s.", action, botName)
+	}
+
+	return s.Replyf(ctx, "Default public join %s.", action)
 }

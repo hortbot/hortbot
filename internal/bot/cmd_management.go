@@ -49,7 +49,9 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 
 	name = cleanUsername(name)
 
-	if name != "" && s.IsAdmin() {
+	isAdmin := s.IsAdmin()
+
+	if name != "" && isAdmin {
 		u, err := s.Deps.Twitch.GetUserForUsername(ctx, name)
 		if err != nil {
 			return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
@@ -58,6 +60,24 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		userID = u.ID
 		displayName = u.DispName()
 	} else {
+		if !isAdmin {
+			enabled, err := s.Deps.Redis.PublicJoin(ctx, s.Origin)
+			if err != nil {
+				return err
+			}
+
+			if enabled == nil {
+				enabled, err = s.Deps.Redis.PublicJoin(ctx, "")
+				if err != nil {
+					return err
+				}
+			}
+
+			if enabled != nil && !*enabled {
+				return nil
+			}
+		}
+
 		name = s.User
 	}
 
