@@ -30,8 +30,6 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 		if err == twitch.ErrServerError {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
-		// Any other type of error is the bot's fault.
-		// TODO: Reply?
 		return err
 	}
 
@@ -93,10 +91,8 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
 		if err == twitch.ErrServerError {
-			return s.Reply(ctx, "A Twitch server error occurred.")
+			return s.Reply(ctx, twitchServerErrorReply)
 		}
-		// Any other type of error is the bot's fault.
-		// TODO: Reply?
 		return err
 	}
 

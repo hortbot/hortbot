@@ -47,7 +47,6 @@ func TestPoolRunStop(t *testing.T) {
 		assert.NilError(t, pool.WaitUntilReady(ctx))
 		h.Sleep()
 
-		// TODO: Make WaitUntilReady wait for the initial connection to occur.
 		h.Sleep()
 		h.Sleep()
 		assert.Assert(t, pool.NumConns() == 1)

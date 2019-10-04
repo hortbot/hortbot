@@ -200,8 +200,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	tmiSentTs, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
 	s.TMISent = time.Unix(tmiSentTs/1000, 0)
 
-	// TODO: atomic locking on the channel
-
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
 		logger.Debug("bad channel name", zap.Strings("params", m.Params))
@@ -287,7 +285,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 		if channel.Name != s.IRCChannel {
 			logger.Error("channel name mismatch", zap.String("fromMessage", s.IRCChannel), zap.String("fromDB", channel.Name))
-			return errors.New("channel name mismatch") // TODO
+			return errors.New("channel name mismatch") // TODO: Handle name changes.
 		}
 
 		if channel.BotName != s.Origin {

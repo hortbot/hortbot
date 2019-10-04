@@ -43,10 +43,9 @@ func TestDialerBadUpgrade(t *testing.T) {
 	tlsConfig := fakeirc.TLSConfig.Clone()
 	tlsConfig.ClientCAs = nil
 
-	// This test doesn't work in TLS 1.3 because when Dialing, no data
-	// is read back from the server. Since with this IRC client PASS/NICK
-	// get sent and then more data handled (which will never be sent),
-	// the client wrongly succeeds. TODO: figure out the implications of this.
+	// In TLS 1.3, errors are propogated on the first client read.
+	// This test checks a code path which can be triggered with such
+	// an error, so set it to 1.2 to test the behavior.
 	tlsConfig.MaxVersion = tls.VersionTLS12
 
 	h := fakeirc.NewHelper(ctx, t, fakeirc.TLS(tlsConfig))

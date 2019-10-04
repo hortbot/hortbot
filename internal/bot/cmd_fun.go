@@ -65,7 +65,6 @@ func cmdXKCD(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if err != nil {
-		// TODO: reply with error message?
 		return err
 	}
 

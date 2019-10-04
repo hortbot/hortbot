@@ -87,7 +87,6 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 		return strconv.FormatInt(count, 10), nil
 	case "UNHOST":
-		// TODO: check user level
 		return "", s.SendCommand(ctx, "unhost")
 	case "PURGE":
 		u, do := s.UserForModAction()
@@ -386,16 +385,12 @@ func (s *session) NextParameter() string {
 }
 
 func (s *session) actionSong(ctx context.Context, i int, url bool) (string, error) {
-	// TODO: Precheck commands before running them for simple things (like using SONG without lastfm set).
-
 	tracks, err := s.Tracks(ctx)
 	if err != nil {
 		if err == errLastFMDisabled {
 			return "(Unknown)", nil
 		}
-
-		// TODO: return a message here?
-		return "", err
+		return "(error)", err
 	}
 
 	if len(tracks) < i+1 {

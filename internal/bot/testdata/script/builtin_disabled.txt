@@ -1,5 +1,10 @@
+youtube_video_titles {"https://www.youtube.com/watch?v=dQw4w9WgXcQ": "Rick Astley - Never Gonna Give You Up (Video)", "https://youtu.be/4o5baMYWdtQ": "Arf.mp4"}
 join hortbot 2 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_disabled
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set parseYoutube on
+send_any
 
-# TODO: after this, check that other things happen (like youtube parsing or similar)
+# testing_disabled is a disabled builtin, so it will not really execute and filters/youtube parsing should still occur
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_disabled https://youtu.be/4o5baMYWdtQ
+send hortbot #foobar [HB] Linked YouTube video: "Arf.mp4"

@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-var isTesting = false // TODO: check for benchmark?
+var isTesting = false
 
 type testingPanic string
 

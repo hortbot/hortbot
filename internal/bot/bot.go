@@ -74,7 +74,6 @@ type Bot struct {
 }
 
 func New(config *Config) *Bot {
-	// TODO: don't panic, return errors.
 	switch {
 	case config.DB == nil:
 		panic("db is nil")
