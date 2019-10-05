@@ -1,5 +1,6 @@
 join hortbot 999 foobar 1
 join hortbot 999 otherchan 10
+join hortbot 999 under_score 11
 
 
 # GET
@@ -37,6 +38,16 @@ send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] =
+
+
+handle hortbot @id=__UUID__;room-id=11;user-id=11 :under_score!under_score@under_score.tmi.twitch.tv PRIVMSG #under_score :!var set othervar Hi from under_score!
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_othervar_GET_Under_Score_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] = Hi from under_score!
 
 
 # SET
