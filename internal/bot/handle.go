@@ -23,6 +23,8 @@ var (
 	errNotAuthorized       = errors.New("bot: user is not authorized to use this command")
 	errBuiltinDisabled     = errors.New("bot: builtin disabled")
 	errCouldNotLockChannel = errors.New("bot: could not obtain channel lock")
+	errNotAllowed          = errors.New("bot: user not allowed")
+	errDuplicateMessage    = errors.New("bot: duplicate message")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -61,7 +63,6 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	}
 }
 
-//nolint:gocyclo
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
@@ -88,59 +89,62 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return nil
 	}
 
-	if len(m.Tags) == 0 {
-		return errInvalidMessage
+	s, err := b.buildSession(ctx, origin, m)
+	if err != nil {
+		return err
 	}
 
-	if len(m.Params) == 0 {
-		return errInvalidMessage
+	s.Start = start
+
+	if s.User == s.Origin {
+		return nil
+	}
+
+	ctx, _ = ctxlog.FromContextWith(ctx,
+		zap.Int64("roomID", s.RoomID),
+		zap.String("channel", s.IRCChannel),
+	)
+
+	unlock, err := b.lockChannel(ctx, s.IRCChannel)
+	if err != nil {
+		return err
+	}
+	if unlock != nil {
+		defer unlock()
+	}
+
+	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+		s.Tx = tx
+		return handleSession(ctx, s)
+	})
+}
+
+func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (*session, error) {
+	ctx, span := trace.StartSpan(ctx, "buildSession")
+	defer span.End()
+
+	if len(m.Tags) == 0 || len(m.Params) == 0 {
+		return nil, errInvalidMessage
 	}
 
 	id := m.Tags["id"]
 	if id == "" {
-		return errInvalidMessage
+		return nil, errInvalidMessage
 	}
 
-	if !b.noDedupe {
-		seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
-		if err != nil {
-			logger.Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
-			return err
-		}
-
-		if seen {
-			logger.Debug("message already seen", zap.String("id", id))
-			return nil
-		}
+	if err := b.maybeDedupe(ctx, id); err != nil {
+		return nil, err
 	}
 
 	user := strings.ToLower(m.Prefix.Name)
 
 	if !b.deps.IsAllowed(user) {
-		return nil
+		return nil, errNotAllowed
 	}
 
-	message := m.Trailing
-
+	message, me := readMessage(m)
 	if message == "" {
-		return nil
-	}
-
-	me := false
-	if c, a, ok := irc.ParseCTCP(message); ok {
-		if c != "ACTION" {
-			logger.Warn("unknown CTCP", zap.String("ctcpCommand", c), zap.String("ctcpArgs", a))
-			return nil
-		}
-
-		message = a
-		me = true
-	}
-
-	message = strings.TrimSpace(message)
-
-	if message == "" {
-		return nil
+		return nil, nil
 	}
 
 	s := &session{
@@ -148,7 +152,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		Origin:  origin,
 		M:       m,
 		Deps:    b.deps,
-		Start:   start,
 		ID:      id,
 		User:    user,
 		Message: message,
@@ -163,38 +166,38 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	roomID := m.Tags["room-id"]
 	if roomID == "" {
-		logger.Debug("no room ID")
-		return errInvalidMessage
+		ctxlog.FromContext(ctx).Debug("no room ID")
+		return nil, errInvalidMessage
 	}
 	s.RoomIDStr = roomID
 
 	var err error
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
-		logger.Debug("error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
-		return err
+		ctxlog.FromContext(ctx).Debug("error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
+		return nil, err
 	}
 
 	if s.RoomID == 0 {
-		logger.Debug("room ID cannot be zero")
-		return errInvalidMessage
+		ctxlog.FromContext(ctx).Debug("room ID cannot be zero")
+		return nil, errInvalidMessage
 	}
 
 	userID := m.Tags["user-id"]
 	if userID == "" {
-		logger.Debug("no user ID")
-		return errInvalidMessage
+		ctxlog.FromContext(ctx).Debug("no user ID")
+		return nil, errInvalidMessage
 	}
 
 	s.UserID, err = strconv.ParseInt(userID, 10, 64)
 	if err != nil {
-		logger.Debug("error parsing user ID", zap.String("parsed", userID), zap.Error(err))
-		return err
+		ctxlog.FromContext(ctx).Debug("error parsing user ID", zap.String("parsed", userID), zap.Error(err))
+		return nil, err
 	}
 
 	if s.UserID == 0 {
-		logger.Debug("user ID cannot be zero")
-		return errInvalidMessage
+		ctxlog.FromContext(ctx).Debug("user ID cannot be zero")
+		return nil, errInvalidMessage
 	}
 
 	tmiSentTs, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
@@ -202,8 +205,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
-		logger.Debug("bad channel name", zap.Strings("params", m.Params))
-		return errInvalidMessage
+		ctxlog.FromContext(ctx).Debug("bad channel name", zap.Strings("params", m.Params))
+		return nil, errInvalidMessage
 	}
 
 	s.IRCChannel = channelName[1:]
@@ -211,40 +214,57 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	b.testingHelper.checkUserNameID(s.User, s.UserID)
 	b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
 
-	if s.User == s.Origin {
+	return s, nil
+}
+
+func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
+	ctx, span := trace.StartSpan(ctx, "maybeDedupe")
+	defer span.End()
+
+	if b.noDedupe {
 		return nil
 	}
 
-	ctx, _ = ctxlog.FromContextWith(ctx,
-		zap.Int64("roomID", s.RoomID),
-		zap.String("channel", s.IRCChannel),
-	)
-
-	if !b.noChannelLock {
-		const (
-			ttl     = time.Second / 2
-			maxWait = 2 * time.Second
-		)
-
-		lock, got, err := b.deps.Redis.LockChannel(ctx, s.IRCChannel, ttl, maxWait)
-		if err != nil {
-			return err
-		}
-		if !got {
-			return errCouldNotLockChannel
-		}
-
-		defer func() {
-			if err := lock.Unlock(); err != nil {
-				logger.Warn("error unlocking channel", zap.Error(err))
-			}
-		}()
+	seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
+	if err != nil {
+		ctxlog.FromContext(ctx).Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
+		return err
 	}
 
-	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
-		s.Tx = tx
-		return handleSession(ctx, s)
-	})
+	if seen {
+		ctxlog.FromContext(ctx).Debug("message already seen", zap.String("id", id))
+		return errDuplicateMessage
+	}
+
+	return nil
+}
+
+func (b *Bot) lockChannel(ctx context.Context, channel string) (unlock func(), err error) {
+	ctx, span := trace.StartSpan(ctx, "lockChannel")
+	defer span.End()
+
+	if b.noChannelLock {
+		return nil, nil
+	}
+
+	const (
+		ttl     = time.Second / 2
+		maxWait = 2 * time.Second
+	)
+
+	lock, got, err := b.deps.Redis.LockChannel(ctx, channel, ttl, maxWait)
+	if err != nil {
+		return nil, err
+	}
+	if !got {
+		return nil, errCouldNotLockChannel
+	}
+
+	return func() {
+		if err := lock.Unlock(); err != nil {
+			ctxlog.FromContext(ctx).Warn("error unlocking channel", zap.Error(err))
+		}
+	}, nil
 }
 
 func handleSession(ctx context.Context, s *session) error {

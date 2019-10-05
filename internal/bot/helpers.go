@@ -6,6 +6,7 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/jakebailey/irc"
 	"go.opencensus.io/trace"
 )
 
@@ -103,4 +104,19 @@ func writeBool(b *strings.Builder, v bool) {
 func cleanUsername(user string) string {
 	user = strings.TrimPrefix(user, "@")
 	return strings.ToLower(user)
+}
+
+func readMessage(m *irc.Message) (message string, me bool) {
+	message = m.Trailing
+
+	if c, a, ok := irc.ParseCTCP(message); ok {
+		if c != "ACTION" {
+			return "", false
+		}
+
+		message = a
+		me = true
+	}
+
+	return strings.TrimSpace(message), me
 }
