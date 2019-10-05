@@ -283,9 +283,14 @@ func handleSession(ctx context.Context, s *session) error {
 			return nil
 		}
 
+		// TODO: Handle name changes.
+
 		if channel.Name != s.IRCChannel {
-			logger.Error("channel name mismatch", zap.String("fromMessage", s.IRCChannel), zap.String("fromDB", channel.Name))
-			return errors.New("channel name mismatch") // TODO: Handle name changes.
+			logger.Warn("channel name mismatch",
+				zap.String("fromMessage", s.IRCChannel),
+				zap.String("fromDB", channel.Name),
+			)
+			return nil
 		}
 
 		if channel.BotName != s.Origin {
