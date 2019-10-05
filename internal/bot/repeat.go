@@ -48,6 +48,8 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 		zap.Int64("repeatedCommand", id),
 	)
 
+	defer s.UnlockChannel(ctx)
+
 	err := transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
 		return handleRepeatedCommand(ctx, s, id)
@@ -95,6 +97,10 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 
 	expiry := time.Duration(repeat.Delay-1) * time.Second
 	if ok, err := s.RepeatAllowed(ctx, id, expiry); !ok || err != nil {
+		return err
+	}
+
+	if err := s.LockChannel(ctx); err != nil {
 		return err
 	}
 
@@ -150,6 +156,8 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 		zap.Int64("scheduledCommand", id),
 	)
 
+	defer s.UnlockChannel(ctx)
+
 	err := transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
 		return handleScheduledCommand(ctx, s, id)
@@ -200,6 +208,10 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
 	if ok, err := s.ScheduledAllowed(ctx, id, 29*time.Second); !ok || err != nil {
+		return err
+	}
+
+	if err := s.LockChannel(ctx); err != nil {
 		return err
 	}
 

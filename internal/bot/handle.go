@@ -105,14 +105,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		zap.String("channel", s.IRCChannel),
 	)
 
-	unlock, err := b.lockChannel(ctx, s.IRCChannel)
-	if err != nil {
-		return err
-	}
-	if unlock != nil {
-		defer unlock()
-	}
-
 	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
 		return handleSession(ctx, s)
@@ -156,6 +148,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 		User:    user,
 		Message: message,
 		Me:      me,
+		NoLock:  b.noChannelLock,
 	}
 
 	if displayName := m.Tags["display-name"]; displayName != "" {
@@ -237,34 +230,6 @@ func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
 	}
 
 	return nil
-}
-
-func (b *Bot) lockChannel(ctx context.Context, channel string) (unlock func(), err error) {
-	ctx, span := trace.StartSpan(ctx, "lockChannel")
-	defer span.End()
-
-	if b.noChannelLock {
-		return nil, nil
-	}
-
-	const (
-		ttl     = time.Second / 2
-		maxWait = 2 * time.Second
-	)
-
-	lock, got, err := b.deps.Redis.LockChannel(ctx, channel, ttl, maxWait)
-	if err != nil {
-		return nil, err
-	}
-	if !got {
-		return nil, errCouldNotLockChannel
-	}
-
-	return func() {
-		if err := lock.Unlock(); err != nil {
-			ctxlog.FromContext(ctx).Warn("error unlocking channel", zap.Error(err))
-		}
-	}, nil
 }
 
 func handleSession(ctx context.Context, s *session) error {
@@ -353,6 +318,9 @@ func handleSession(ctx context.Context, s *session) error {
 	if err != nil {
 		return err
 	}
+
+	// tryCommand and tryAutoreplies both call LockChannel.
+	defer s.UnlockChannel(ctx)
 
 	if ok, err := tryCommand(ctx, s); ok || err != nil {
 		switch err {
@@ -446,6 +414,10 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, channelID, name, thisChannel)
 	if err != nil {
 		logger.Error("error looking up command name in database", zap.Error(err))
+		return true, err
+	}
+
+	if err := s.LockChannel(ctx); err != nil {
 		return true, err
 	}
 
