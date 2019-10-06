@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"sync"
-	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -19,7 +18,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
-	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
 )
 
@@ -158,45 +156,22 @@ func (b *Bot) Init(ctx context.Context) error {
 	b.rep = repeat.New(ctx, b.deps.Clock)
 
 	repeats, err := models.RepeatedCommands(
-		qm.Select(models.RepeatedCommandColumns.ID, models.RepeatedCommandColumns.UpdatedAt, models.RepeatedCommandColumns.Delay),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
 	).All(ctx, b.db)
 	if err != nil {
 		return err
 	}
 
-	for _, repeat := range repeats {
-		delay := time.Duration(repeat.Delay) * time.Second
-		delayNano := delay.Nanoseconds()
-
-		start := repeat.UpdatedAt
-		if repeat.InitTimestamp.Valid {
-			start = repeat.InitTimestamp.Time
-		}
-
-		sinceUpdateNano := b.deps.Clock.Since(start).Nanoseconds()
-
-		offsetNano := delayNano - sinceUpdateNano%delayNano
-		offset := time.Duration(offsetNano) * time.Nanosecond
-
-		b.updateRepeatedCommand(repeat.ID, true, delay, offset)
-	}
+	updateRepeating(b.deps, repeats, true)
 
 	scheduleds, err := models.ScheduledCommands(
-		qm.Select(models.ScheduledCommandColumns.ID, models.ScheduledCommandColumns.UpdatedAt, models.ScheduledCommandColumns.CronExpression),
 		models.ScheduledCommandWhere.Enabled.EQ(true),
 	).All(ctx, b.db)
 	if err != nil {
 		return err
 	}
 
-	for _, scheduled := range scheduleds {
-		expr, err := repeat.ParseCron(scheduled.CronExpression)
-		if err != nil {
-			panic(err)
-		}
-		b.updateScheduledCommand(scheduled.ID, true, expr)
-	}
+	updateScheduleds(b.deps, scheduleds, true)
 
 	b.initialized = true
 

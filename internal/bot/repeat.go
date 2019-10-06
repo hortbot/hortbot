@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/robfig/cron/v3"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -260,4 +261,43 @@ func repeatPopulateSession(ctx context.Context, s *session, channel *models.Chan
 	var err error
 	s.N, err = s.MessageCount(ctx)
 	return err
+}
+
+func updateRepeating(deps *sharedDeps, repeats []*models.RepeatedCommand, enable bool) {
+	for _, repeat := range repeats {
+		if !enable || !repeat.Enabled {
+			deps.UpdateRepeat(repeat.ID, false, 0, 0)
+			continue
+		}
+
+		delay := time.Duration(repeat.Delay) * time.Second
+		delayNano := delay.Nanoseconds()
+
+		start := repeat.UpdatedAt
+		if repeat.InitTimestamp.Valid {
+			start = repeat.InitTimestamp.Time
+		}
+
+		sinceUpdateNano := deps.Clock.Since(start).Nanoseconds()
+
+		offsetNano := delayNano - sinceUpdateNano%delayNano
+		offset := time.Duration(offsetNano) * time.Nanosecond
+
+		deps.UpdateRepeat(repeat.ID, true, delay, offset)
+	}
+}
+
+func updateScheduleds(deps *sharedDeps, scheduleds []*models.ScheduledCommand, enable bool) {
+	for _, scheduled := range scheduleds {
+		if !enable || !scheduled.Enabled {
+			deps.UpdateSchedule(scheduled.ID, false, nil)
+			continue
+		}
+
+		expr, err := repeat.ParseCron(scheduled.CronExpression)
+		if err != nil {
+			panic(err)
+		}
+		deps.UpdateSchedule(scheduled.ID, true, expr)
+	}
 }

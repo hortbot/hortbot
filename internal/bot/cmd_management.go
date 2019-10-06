@@ -11,6 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
@@ -91,7 +92,11 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return nil
 	}
 
-	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(userID)).One(ctx, s.Tx)
+	channel, err := models.Channels(
+		models.ChannelWhere.UserID.EQ(userID),
+		qm.Load(models.ChannelRels.RepeatedCommands),
+		qm.Load(models.ChannelRels.ScheduledCommands),
+	).One(ctx, s.Tx)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
@@ -127,6 +132,9 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
+	updateRepeating(s.Deps, channel.R.RepeatedCommands, true)
+	updateScheduleds(s.Deps, channel.R.ScheduledCommands, true)
+
 	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", displayName, channel.BotName, channel.Prefix)
 }
 
@@ -139,10 +147,18 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 	displayName := name
 
 	if name != "" && s.IsAdmin() {
-		channel, err = models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
+		channel, err = models.Channels(
+			models.ChannelWhere.Name.EQ(name),
+			qm.Load(models.ChannelRels.RepeatedCommands),
+			qm.Load(models.ChannelRels.ScheduledCommands),
+		).One(ctx, s.Tx)
 	} else {
 		displayName = s.UserDisplay
-		channel, err = models.Channels(models.ChannelWhere.UserID.EQ(s.UserID)).One(ctx, s.Tx)
+		channel, err = models.Channels(
+			models.ChannelWhere.UserID.EQ(s.UserID),
+			qm.Load(models.ChannelRels.RepeatedCommands),
+			qm.Load(models.ChannelRels.ScheduledCommands),
+		).One(ctx, s.Tx)
 	}
 
 	if err == sql.ErrNoRows {
@@ -171,6 +187,9 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
+	updateRepeating(s.Deps, channel.R.RepeatedCommands, false)
+	updateScheduleds(s.Deps, channel.R.ScheduledCommands, false)
+
 	return s.Replyf(ctx, "%s, %s will now leave your channel.", displayName, channel.BotName)
 }
 
@@ -197,6 +216,18 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, s.Channel.BotName); err != nil {
 		return err
 	}
+
+	repeated, err := s.Channel.RepeatedCommands().All(ctx, s.Tx)
+	if err != nil {
+		return err
+	}
+	updateRepeating(s.Deps, repeated, false)
+
+	scheduleds, err := s.Channel.ScheduledCommands().All(ctx, s.Tx)
+	if err != nil {
+		return err
+	}
+	updateScheduleds(s.Deps, scheduleds, false)
 
 	return s.Replyf(ctx, "%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
 }
