@@ -33,6 +33,7 @@ any holes left by deleted quotes. (The same applies to autoreplies.)
 depending on its mod/vip status in a particular channel.
 - Commands that accept usernames (`permit`, `+b`, etc) will strip leading `@` to make it easy to
 autocomplete usernames in the chat input box.
+- Doing a `!join` when your username changes will cause the bot to handle the name change and rejoin.
 
 ### Functionality
 

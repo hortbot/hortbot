@@ -118,7 +118,22 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	}
 
 	if channel.Active {
-		return s.Replyf(ctx, "%s, %s is already active in your channel with prefix %s", displayName, channel.BotName, channel.Prefix)
+		if channel.Name == name {
+			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix %s", displayName, channel.BotName, channel.Prefix)
+		}
+
+		channel.Name = name
+		channel.DisplayName = displayName
+
+		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Name, models.ChannelColumns.DisplayName)); err != nil {
+			return err
+		}
+
+		if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+			return err
+		}
+
+		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
 	}
 
 	channel.Active = true
