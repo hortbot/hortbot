@@ -20,7 +20,7 @@ CREATE TABLE channels (
     updated_at timestamptz DEFAULT NOW() NOT NULL,
 
     user_id bigint NOT NULL UNIQUE,
-    name text NOT NULL,
+    name text NOT NULL UNIQUE,
     display_name text NOT NULL,
     bot_name text NOT NULL,
     active boolean NOT NULL,
