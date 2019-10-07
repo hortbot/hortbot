@@ -83,3 +83,11 @@ clock_forward 3h
 handle hortbot @id=86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca;room-id=1;user-id=3;display-name=SubMan;subscriber=1 :subman!subman@subman.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar /delete 86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca
 send hortbot #foobar [HB] SubMan, please ask a moderator before posting links - warning
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular add subman
+send_any
+
+clock_forward 3h
+handle hortbot @id=86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca;room-id=1;user-id=3;display-name=SubMan;subscriber=1 :subman!subman@subman.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+no_send

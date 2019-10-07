@@ -66,6 +66,10 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
+	if _, found := stringSliceIndex(s.Channel.CustomRegulars, s.User); found {
+		return false, nil
+	}
+
 	links := s.Links(ctx)
 
 	if len(links) == 0 {
