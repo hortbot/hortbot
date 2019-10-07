@@ -25,7 +25,8 @@ type Bot struct {
 	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
 	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
 
-	DefaultCooldown int `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
+	BulletMap       map[string]string `long:"bullet-map" env:"HB_BULLET_MAP" description:"Mapping from bot name to default bullet"`
+	DefaultCooldown int               `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
 
 	BotWebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
 	BotWebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" description:"Bot name to web address mapping"`
@@ -84,6 +85,7 @@ func (args *Bot) NewBot(
 		Cooldown:         args.DefaultCooldown,
 		WebAddr:          args.BotWebAddr,
 		WebAddrMap:       args.BotWebAddrMap,
+		BulletMap:        args.BulletMap,
 	})
 
 	if err := b.Init(ctx); err != nil {

@@ -95,13 +95,25 @@ func (s *session) formatResponse(response string) string {
 		}
 	}
 
-	bullet := s.Deps.DefaultBullet
+	return s.bullet() + " " + response
+}
 
+func (s *session) bullet() string {
 	if s.Channel != nil && s.Channel.Bullet.Valid {
-		bullet = s.Channel.Bullet.String
+		return s.Channel.Bullet.String
 	}
 
-	return bullet + " " + response
+	return s.defaultBullet()
+}
+
+func (s *session) defaultBullet() string {
+	if s.Deps.BulletMap != nil {
+		if b := s.Deps.BulletMap[s.Origin]; b != "" {
+			return b
+		}
+	}
+
+	return DefaultBullet
 }
 
 func (s *session) Reply(ctx context.Context, response string) error {

@@ -1,4 +1,4 @@
-bot_config {"Bullet": "WOW"}
+bot_config {"BulletMap": {"hortbot": "WOW"}}
 join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?

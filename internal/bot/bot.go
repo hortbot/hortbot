@@ -42,8 +42,8 @@ type Config struct {
 	TinyURL   tinyurl.API
 	Urban     urban.API
 
-	Bullet   string
-	Cooldown int
+	BulletMap map[string]string
+	Cooldown  int
 
 	Admins []string
 
@@ -90,7 +90,7 @@ func New(config *Config) *Bot {
 		Sender:          config.Sender,
 		Notifier:        config.Notifier,
 		LastFM:          config.LastFM,
-		DefaultBullet:   config.Bullet,
+		BulletMap:       config.BulletMap,
 		DefaultCooldown: config.Cooldown,
 		YouTube:         config.YouTube,
 		XKCD:            config.XKCD,
@@ -103,10 +103,6 @@ func New(config *Config) *Bot {
 		Admins:          make(map[string]bool),
 		WebAddr:         config.WebAddr,
 		WebAddrMap:      config.WebAddrMap,
-	}
-
-	if deps.DefaultBullet == "" {
-		deps.DefaultBullet = DefaultBullet
 	}
 
 	if config.Clock != nil {

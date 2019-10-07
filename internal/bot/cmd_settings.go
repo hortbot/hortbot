@@ -56,7 +56,7 @@ func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) 
 		if s.Channel.Bullet.Valid {
 			bullet = s.Channel.Bullet.String
 		} else {
-			bullet = s.Deps.DefaultBullet + " (default)"
+			bullet = s.defaultBullet() + " (default)"
 		}
 
 		return s.Replyf(ctx, "Bullet is %s", bullet)

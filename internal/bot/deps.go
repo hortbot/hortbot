@@ -38,7 +38,8 @@ type sharedDeps struct {
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
 	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
 
-	DefaultBullet   string
+	BulletMap map[string]string
+
 	DefaultCooldown int
 
 	Admins    map[string]bool
