@@ -11,7 +11,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.10.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.1.5
-	github.com/bsm/redislock v0.0.0-00010101000000-000000000000
+	github.com/bsm/redislock v0.4.0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
 	github.com/dustin/go-humanize v1.0.0
@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
-	github.com/hako/durafmt v0.0.0-20190612201238-650ed9f29a84
+	github.com/hako/durafmt v0.0.0-20191006220717-1c866fa03a4f
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -55,10 +55,10 @@ require (
 	github.com/volatiletech/sqlboiler v3.5.0+incompatible
 	go.opencensus.io v0.22.1
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20190923162816-aa69164e4478
+	golang.org/x/net v0.0.0-20191007182048-72f939374954
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20190924052046-3ac2a5bbd98a
+	golang.org/x/tools v0.0.0-20191007185444-6536af71d98a
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
