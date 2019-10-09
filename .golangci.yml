@@ -23,7 +23,8 @@ linters:
     - govet
     - funlen
     - godox
-
+    - wsl
+    - gocognit
 
   # fast: true
   # enable:
