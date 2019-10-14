@@ -13,6 +13,8 @@
         - [x] Needs to check userstate/badges/etc to "unlock" a faster rate.
 - [x] Website (see below)
 - [ ] JSON configuration transferer
+    - [x] CoeBot/CoeBot.tv config/DB to models
+    - [ ] Model import and refresh
 
 ## CoeBot features
 

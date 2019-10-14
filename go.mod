@@ -20,6 +20,7 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/go-redis/redis/v7 v7.0.0-beta.4
+	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gobuffalo/flect v0.1.6
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.6.2
@@ -31,6 +32,7 @@ require (
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
+	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.2.0
