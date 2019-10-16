@@ -55,10 +55,6 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 			return true, nil
 		}
 
-		if err := s.LockChannel(ctx); err != nil {
-			return true, err
-		}
-
 		oldType := s.Type
 		s.Type = sessionAutoreply
 		defer func() {

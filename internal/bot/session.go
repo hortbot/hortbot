@@ -11,16 +11,13 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
 	"go.opencensus.io/trace"
-	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
 
@@ -81,8 +78,6 @@ type session struct {
 	twitchChatters **twitch.Chatters
 	steamSummary   **steam.Summary
 	steamGames     *[]*steam.Game
-
-	lock redis.Lock
 }
 
 func (s *session) formatResponse(response string) string {
@@ -481,42 +476,4 @@ func (s *session) HelpMessage() string {
 
 func (s *session) TwitchNotAuthMessage() string {
 	return "The bot wasn't authorized to perform this action. Log in on the website to give permission: " + s.WebAddr() + "/login"
-}
-
-func (s *session) LockChannel(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "LockChannel")
-	defer span.End()
-
-	if s.NoLock {
-		return nil
-	}
-
-	if s.lock != nil {
-		ctxlog.FromContext(ctx).Warn("channel lock has already been obtained, skipping")
-		return nil
-	}
-
-	const (
-		ttl     = time.Second / 2
-		maxWait = 2 * time.Second
-	)
-
-	lock, got, err := s.Deps.Redis.LockChannel(ctx, s.IRCChannel, ttl, maxWait)
-	if err != nil {
-		return err
-	}
-	if !got {
-		return errCouldNotLockChannel
-	}
-
-	s.lock = lock
-	return nil
-}
-
-func (s *session) UnlockChannel(ctx context.Context) {
-	if s.lock != nil {
-		if err := s.lock.Unlock(); err != nil {
-			ctxlog.FromContext(ctx).Warn("error unlocking channel", zap.Error(err))
-		}
-	}
 }

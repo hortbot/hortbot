@@ -96,6 +96,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		models.ChannelWhere.UserID.EQ(userID),
 		qm.Load(models.ChannelRels.RepeatedCommands),
 		qm.Load(models.ChannelRels.ScheduledCommands),
+		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 	if err != nil && err != sql.ErrNoRows {
 		return err
@@ -166,6 +167,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 			models.ChannelWhere.Name.EQ(name),
 			qm.Load(models.ChannelRels.RepeatedCommands),
 			qm.Load(models.ChannelRels.ScheduledCommands),
+			qm.For("UPDATE"),
 		).One(ctx, s.Tx)
 	} else {
 		displayName = s.UserDisplay
@@ -173,6 +175,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 			models.ChannelWhere.UserID.EQ(s.UserID),
 			qm.Load(models.ChannelRels.RepeatedCommands),
 			qm.Load(models.ChannelRels.ScheduledCommands),
+			qm.For("UPDATE"),
 		).One(ctx, s.Tx)
 	}
 

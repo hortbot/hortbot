@@ -19,15 +19,17 @@ import (
 )
 
 var (
-	errInvalidMessage      = errors.New("bot: invalid message")
-	errNotAuthorized       = errors.New("bot: user is not authorized to use this command")
-	errBuiltinDisabled     = errors.New("bot: builtin disabled")
-	errCouldNotLockChannel = errors.New("bot: could not obtain channel lock")
-	errNotAllowed          = errors.New("bot: user not allowed")
-	errDuplicateMessage    = errors.New("bot: duplicate message")
+	errInvalidMessage   = errors.New("bot: invalid message")
+	errNotAuthorized    = errors.New("bot: user is not authorized to use this command")
+	errBuiltinDisabled  = errors.New("bot: builtin disabled")
+	errNotAllowed       = errors.New("bot: user not allowed")
+	errDuplicateMessage = errors.New("bot: duplicate message")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
+	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+
 	ctx, span := trace.StartSpan(ctx, "Handle")
 	defer span.End()
 
@@ -245,8 +247,9 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	// This is the most frequent query; speed it up by executing a hand written query.
+	// FOR UPDATE to get a lock on the channel.
 	channel := &models.Channel{}
-	err := queries.Raw(`SELECT * FROM channels WHERE user_id = $1`, s.RoomID).Bind(ctx, s.Tx, channel)
+	err := queries.Raw(`SELECT * FROM channels WHERE user_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			logger.Debug("channel not found in database")
@@ -318,9 +321,6 @@ func handleSession(ctx context.Context, s *session) error {
 	if err != nil {
 		return err
 	}
-
-	// tryCommand and tryAutoreplies both call LockChannel.
-	defer s.UnlockChannel(ctx)
 
 	if ok, err := tryCommand(ctx, s); ok || err != nil {
 		switch err {
@@ -414,10 +414,6 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, channelID, name, thisChannel)
 	if err != nil {
 		logger.Error("error looking up command name in database", zap.Error(err))
-		return true, err
-	}
-
-	if err := s.LockChannel(ctx); err != nil {
 		return true, err
 	}
 
