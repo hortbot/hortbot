@@ -28,7 +28,7 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
-	github.com/hako/durafmt v0.0.0-20191006220717-1c866fa03a4f
+	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -57,10 +57,10 @@ require (
 	github.com/volatiletech/sqlboiler v3.5.0+incompatible
 	go.opencensus.io v0.22.1
 	go.uber.org/zap v1.10.0
-	golang.org/x/net v0.0.0-20191007182048-72f939374954
+	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191007185444-6536af71d98a
+	golang.org/x/tools v0.0.0-20191015211201-9c6d90b5a7d0
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
