@@ -60,7 +60,12 @@ func transact(ctx context.Context, db *sql.DB, fn func(context.Context, *sql.Tx)
 		}
 	}()
 
-	err = fn(ctx, tx)
+	err = func() error {
+		if _, err := tx.ExecContext(ctx, "SET LOCAL lock_timeout = '5s'"); err != nil {
+			return err
+		}
+		return fn(ctx, tx)
+	}()
 	rollback = false
 
 	if err != nil {
