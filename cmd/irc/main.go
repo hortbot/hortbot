@@ -61,7 +61,7 @@ func mainCtx(ctx context.Context) {
 
 	incomingPub := bnsq.NewIncomingPublisher(args.NSQAddr)
 
-	sendSub := args.NewSendMessageSubscriber(args.Nick, 5*time.Second, func(m *bnsq.SendMessage, parent trace.SpanContext) error {
+	sendSub := args.NewSendMessageSubscriber(args.Nick, 15*time.Second, func(m *bnsq.SendMessage, parent trace.SpanContext) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", parent)
 		defer span.End()
 

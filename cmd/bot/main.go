@@ -61,7 +61,7 @@ func mainCtx(ctx context.Context) {
 
 	g := errgroupx.FromContext(ctx)
 
-	incomingSub := args.NewIncomingSubscriber(5*time.Second, func(i *bnsq.Incoming, parent trace.SpanContext) error {
+	incomingSub := args.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, parent trace.SpanContext) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", parent)
 		defer span.End()
 
