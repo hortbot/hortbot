@@ -120,9 +120,10 @@ func TestParseError(t *testing.T) {
 	runTest := func(name string, input string, want cbp.Error, errMsg string) {
 		t.Helper()
 		t.Run(name, func(t *testing.T) {
-			_, err := cbp.Parse(input)
+			c, err := cbp.Parse(input)
 			assert.Check(t, cmp.Equal(want, err))
 			assert.Check(t, cmp.Error(err, errMsg))
+			assert.Check(t, cmp.DeepEqual([]cbp.Node{}, c, cmpopts.EquateEmpty()))
 		})
 	}
 
@@ -158,8 +159,6 @@ func TestParseError(t *testing.T) {
 }
 
 func TestBadErrorCode(t *testing.T) {
-	t.Parallel()
-
 	err := cbp.Error{
 		Pos:  123,
 		Code: -1,
