@@ -31,9 +31,6 @@ send hortbot #foobar [HB] Error parsing pattern: empty pattern
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add REGEX:) hey
 send hortbot #foobar [HB] Error parsing pattern: unexpected )
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *foo* (_
-send hortbot #foobar [HB] Error parsing response.
-
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
 send hortbot #foobar [HB] There are no autoreplies.
 
@@ -74,3 +71,7 @@ send hortbot #foobar [HB] Autoreply #2 added.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 1: .*(a|b)[0-9]\d\s+ -> Wow cool. ; 2: ^.*hey.*chat.*peeps.*$ -> hey
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *foo* (_
+send hortbot #foobar [HB] Autoreply #3 added. Warning: response contains stray (_ or _) separators and may not be processed correctly.

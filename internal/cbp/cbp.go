@@ -1,22 +1,19 @@
 package cbp
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 const sliceCap = 3
 
-func Parse(s string) ([]Node, error) {
+func Parse(s string) (nodes []Node, malformed bool) {
 	if s == "" {
-		return nil, nil
+		return nil, false
 	}
 
 	switch {
 	case strings.Contains(s, "(_"):
 	case strings.Contains(s, "_)"):
 	default:
-		return []Node{TextNode(s)}, nil
+		return []Node{TextNode(s)}, false
 	}
 
 	sc := scanner{input: s}
@@ -24,6 +21,14 @@ func Parse(s string) ([]Node, error) {
 	stack := make([]Node, 1, sliceCap)
 	stack[0].Children = make([]Node, 0, sliceCap)
 	curr := &stack[0].Children
+
+	pop := func() Node {
+		end := len(stack) - 1
+		last := stack[end]
+
+		curr, stack = &stack[end-1].Children, stack[:end]
+		return last
+	}
 
 	for sc.scan() {
 		if sc.sep {
@@ -34,27 +39,46 @@ func Parse(s string) ([]Node, error) {
 				curr = &stack[len(stack)-1].Children
 			} else {
 				if len(stack) <= 1 {
-					return nil, Error{Pos: sc.idx - 2, Code: ErrorUnexpectedClose}
+					malformed = true
+					appendText(curr, "_)")
+					continue
 				}
 
-				end := len(stack) - 1
-				last := stack[end]
-
-				curr, stack = &stack[end-1].Children, stack[:end]
+				last := pop()
 				*curr = append(*curr, last)
 			}
 		} else if sc.text != "" {
-			*curr = append(*curr, Node{
-				Text: sc.text,
-			})
+			appendText(curr, sc.text)
 		}
 	}
 
-	if len(stack) != 1 {
-		return nil, Error{Pos: sc.idx, Code: ErrorMissingClose}
+	for len(stack) > 1 {
+		malformed = true
+
+		last := pop()
+		appendText(curr, "(_")
+
+		for _, child := range last.Children {
+			if child.Text != "" {
+				appendText(curr, child.Text)
+			} else {
+				*curr = append(*curr, child)
+			}
+		}
 	}
 
-	return *curr, nil
+	return *curr, malformed
+}
+
+func appendText(curr *[]Node, text string) {
+	if end := len(*curr) - 1; end >= 0 && (*curr)[end].Text != "" {
+		(*curr)[end].Text += text
+		return
+	}
+
+	*curr = append(*curr, Node{
+		Text: text,
+	})
 }
 
 // Node is a CoeBot command node. If Text is set, then the node is a text node.
@@ -125,28 +149,4 @@ func findSep(s string) (found bool, open bool, end int) {
 	}
 
 	return false, false, len(s)
-}
-
-type ErrorCode int
-
-const (
-	ErrorUnexpectedClose ErrorCode = iota
-	ErrorMissingClose
-)
-
-// Error is returned from Parse if the command does not parse.
-type Error struct {
-	Pos  int
-	Code ErrorCode
-}
-
-func (e Error) Error() string {
-	switch e.Code {
-	case ErrorUnexpectedClose:
-		return fmt.Sprintf("syntax error at position %d; unexpected action close", e.Pos)
-	case ErrorMissingClose:
-		return fmt.Sprintf("syntax error at position %d; input ended unexpectedly", e.Pos)
-	default:
-		return fmt.Sprintf("syntax error at position %d; unknown error code %v", e.Pos, e.Code)
-	}
 }

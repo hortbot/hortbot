@@ -5,7 +5,10 @@ send hortbot #foobar [HB] Tweet is set to: Check out (_CHANNEL_URL_) playing (_G
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set tweet Wowee cool
-send hortbot #foobar [HB] Tweet set to: Wowee cool
+send hortbot #foobar [HB] Tweet set to: "Wowee cool"
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set tweet
 send hortbot #foobar [HB] Tweet is set to: Wowee cool
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set tweet Wowee cool (_
+send hortbot #foobar [HB] Tweet set to: "Wowee cool (_" - Warning: message contains stray (_ or _) separators and may not be processed correctly.

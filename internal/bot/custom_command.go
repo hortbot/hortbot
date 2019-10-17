@@ -6,11 +6,9 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"go.opencensus.io/trace"
-	"go.uber.org/zap"
 )
 
 func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) (bool, error) {
@@ -52,8 +50,6 @@ func processCommand(ctx context.Context, s *session, msg string) (string, error)
 	ctx, span := trace.StartSpan(ctx, "processCommand")
 	defer span.End()
 
-	logger := ctxlog.FromContext(ctx)
-
 	if strings.Contains(msg, "(_ONLINE_CHECK_)") {
 		isLive, err := s.IsLive(ctx)
 		if err != nil || !isLive {
@@ -72,12 +68,7 @@ func processCommand(ctx context.Context, s *session, msg string) (string, error)
 		s.Silent = true
 	}
 
-	nodes, err := cbp.Parse(msg)
-	if err != nil {
-		logger.Error("command did not parse, which should not happen", zap.Error(err))
-		return "", err
-	}
-
+	nodes, _ := cbp.Parse(msg)
 	return walk(ctx, nodes, s.doAction)
 }
 

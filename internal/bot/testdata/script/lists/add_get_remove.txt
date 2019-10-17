@@ -28,10 +28,6 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] The list is empty.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add (_OOPS
-send hortbot #foobar [HB] Error parsing list item.
-
-
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add Something
 send hortbot #foobar [HB] "Something" has been added to the list as item #1.
 
@@ -98,3 +94,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :user2!user2@user2.tmi.twitch.tv PRIVMSG #foobar :!mylist remove 1
 no_send
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add (_OOPS
+send hortbot #foobar [HB] "(_OOPS" has been added to the list as item #1. Warning: item contains stray (_ or _) separators and may not be processed correctly.

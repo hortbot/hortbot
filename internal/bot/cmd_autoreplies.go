@@ -59,8 +59,9 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 		return s.replyBadPattern(ctx, err)
 	}
 
-	if _, err := cbp.Parse(response); err != nil {
-		return s.Reply(ctx, "Error parsing response.")
+	var warning string
+	if _, malformed := cbp.Parse(response); malformed {
+		warning += " Warning: response contains stray (_ or _) separators and may not be processed correctly."
 	}
 
 	var row struct {
@@ -90,7 +91,7 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf(ctx, "Autoreply #%d added.", autoreply.Num)
+	return s.Replyf(ctx, "Autoreply #%d added.%s", autoreply.Num, warning)
 }
 
 func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string) error {
@@ -143,8 +144,9 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		return usage()
 	}
 
-	if _, err := cbp.Parse(response); err != nil {
-		return s.Reply(ctx, "Error parsing response.")
+	var warning string
+	if _, malformed := cbp.Parse(response); malformed {
+		warning += " Warning: response contains stray (_ or _) separators and may not be processed correctly."
 	}
 
 	autoreply, err := s.Channel.Autoreplies(
@@ -167,7 +169,7 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		return err
 	}
 
-	return s.Replyf(ctx, "Autoreply #%d's response has been edited.", num)
+	return s.Replyf(ctx, "Autoreply #%d's response has been edited.%s", num, warning)
 }
 
 func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args string) error {

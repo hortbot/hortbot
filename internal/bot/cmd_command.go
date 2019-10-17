@@ -97,15 +97,13 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 		return s.Replyf(ctx, "Command name '%s' is reserved.", name)
 	}
 
-	// TODO: remove this warning
 	var warning string
 	if isBuiltinName(name) {
-		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
+		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name + "."
 	}
 
-	_, err := cbp.Parse(text)
-	if err != nil {
-		return s.Replyf(ctx, "Error parsing command.%s", warning)
+	if _, malformed := cbp.Parse(text); malformed {
+		warning += " Warning: command contains stray (_ or _) separators and may not be processed correctly."
 	}
 
 	info, command, err := findCustomCommand(ctx, s, name, true)

@@ -13,4 +13,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Usage: !command add <name> <text>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS, HAVE YE?
-send hortbot #foobar [HB] Error parsing command.
+send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above. Warning: command contains stray (_ or _) separators and may not be processed correctly.

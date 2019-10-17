@@ -494,9 +494,9 @@ func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) e
 		return s.Replyf(ctx, "Tweet is set to: %s", s.Channel.Tweet)
 	}
 
-	_, err := cbp.Parse(args)
-	if err != nil {
-		return s.Replyf(ctx, "Error parsing command.")
+	var warning string
+	if _, malformed := cbp.Parse(args); malformed {
+		warning += " - Warning: message contains stray (_ or _) separators and may not be processed correctly."
 	}
 
 	s.Channel.Tweet = args
@@ -505,5 +505,5 @@ func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	return s.Replyf(ctx, "Tweet set to: %s", args)
+	return s.Replyf(ctx, `Tweet set to: "%s"%s`, args, warning)
 }

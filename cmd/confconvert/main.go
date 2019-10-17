@@ -410,7 +410,7 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 		}
 
 		command := &models.CustomCommand{
-			Message: fixCommand(ctx, cmd.Value),
+			Message: checkCommand(ctx, cmd.Value),
 		}
 
 		commands[info.Name] = &confimport.Command{
@@ -432,7 +432,7 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 		}
 
 		for i, v := range l.Items {
-			list.Items[i] = fixCommand(ctx, v)
+			list.Items[i] = checkCommand(ctx, v)
 		}
 
 		commands[info.Name] = &confimport.Command{
@@ -531,7 +531,7 @@ func (c *coeBotConfig) loadAutoreplies(ctx context.Context) []*models.Autoreply 
 		autoreplies = append(autoreplies, &models.Autoreply{
 			Num:      i + 1,
 			Trigger:  trigger,
-			Response: fixCommand(ctx, a.Response),
+			Response: checkCommand(ctx, a.Response),
 		})
 	}
 
@@ -615,11 +615,9 @@ func commandLevelToLevel(l int) string {
 	}
 }
 
-func fixCommand(ctx context.Context, m string) string {
-	if _, err := cbp.Parse(m); err != nil {
-		ctxlog.FromContext(ctx).Error("error parsing command", PlainError(err), zap.String("message", m))
-		m = strings.ReplaceAll(m, `(_`, `\(\_`)
-		m = strings.ReplaceAll(m, `_)`, `\_\)`)
+func checkCommand(ctx context.Context, m string) string {
+	if _, malformed := cbp.Parse(m); malformed {
+		ctxlog.FromContext(ctx).Warn("malformed command", zap.String("message", m))
 	}
 	return m
 }

@@ -92,7 +92,6 @@ func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel)
 		return s.Replyf(ctx, "List name '%s' is reserved.", name)
 	}
 
-	// TODO: remove this warning
 	var warning string
 	if isBuiltinName(name) {
 		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
@@ -417,9 +416,9 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 		return s.Reply(ctx, "The list already contains that item.")
 	}
 
-	_, err = cbp.Parse(args)
-	if err != nil {
-		return s.Replyf(ctx, "Error parsing list item.")
+	var warning string
+	if _, malformed := cbp.Parse(args); malformed {
+		warning += " Warning: item contains stray (_ or _) separators and may not be processed correctly."
 	}
 
 	list.Items = append(list.Items, args)
@@ -434,7 +433,7 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 		return err
 	}
 
-	return s.Replyf(ctx, `"%s" has been added to the list as item #%d.`, args, len(list.Items))
+	return s.Replyf(ctx, `"%s" has been added to the list as item #%d.%s`, args, len(list.Items), warning)
 }
 
 func handleListDelete(ctx context.Context, s *session, info *models.CommandInfo, cmd, args string) error {

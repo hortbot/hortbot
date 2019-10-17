@@ -4,7 +4,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Command name 'command' is reserved.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add ignore FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send hortbot #foobar [HB] Command 'ignore' added, restricted to subscribers and above. Warning: 'ignore' is a builtin command and will now only be accessible via !builtin ignore
+send hortbot #foobar [HB] Command 'ignore' added, restricted to subscribers and above. Warning: 'ignore' is a builtin command and will now only be accessible via !builtin ignore.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore WOW
 send hortbot #foobar [HB] FOUND THE WOW, HAVE YE?
@@ -13,4 +13,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] somebody added to ignored users.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add ignore FOUND THE (_PARAMETER_), HAVE YE?
-send hortbot #foobar [HB] Command 'ignore' updated, restricted to subscribers and above. Warning: 'ignore' is a builtin command and will now only be accessible via !builtin ignore
+send hortbot #foobar [HB] Command 'ignore' updated, restricted to subscribers and above. Warning: 'ignore' is a builtin command and will now only be accessible via !builtin ignore.

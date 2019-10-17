@@ -20,7 +20,7 @@ An IRC bot for Twitch.
 - Zero-downtime updates
 - Multi-domain website
 - OAuth token management for both users and bot instances
-- Syntax checking for custom commands
+- A real command parser (instead of ordered string replacements)
 - Improved URL filtering
 
 
