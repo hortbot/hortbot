@@ -150,7 +150,6 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 		User:    user,
 		Message: message,
 		Me:      me,
-		NoLock:  b.noChannelLock,
 	}
 
 	if displayName := m.Tags["display-name"]; displayName != "" {

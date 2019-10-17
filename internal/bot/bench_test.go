@@ -32,13 +32,12 @@ func BenchmarkNop(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:            db,
-		Redis:         redis.New(rClient),
-		Sender:        nopSender{},
-		Notifier:      nopNotifier{},
-		Twitch:        &twitchfakes.FakeAPI{},
-		NoDedupe:      true,
-		NoChannelLock: true,
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Sender:   nopSender{},
+		Notifier: nopNotifier{},
+		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
 	}
 
 	bb := bot.New(config)
@@ -71,13 +70,12 @@ func BenchmarkCustomCommand(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:            db,
-		Redis:         redis.New(rClient),
-		Sender:        nopSender{},
-		Notifier:      nopNotifier{},
-		Twitch:        &twitchfakes.FakeAPI{},
-		NoDedupe:      true,
-		NoChannelLock: true,
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Sender:   nopSender{},
+		Notifier: nopNotifier{},
+		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
 	}
 
 	bb := bot.New(config)
@@ -111,13 +109,12 @@ func BenchmarkMixed(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:            db,
-		Redis:         redis.New(rClient),
-		Sender:        nopSender{},
-		Notifier:      nopNotifier{},
-		Twitch:        &twitchfakes.FakeAPI{},
-		NoDedupe:      true,
-		NoChannelLock: true,
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Sender:   nopSender{},
+		Notifier: nopNotifier{},
+		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
 	}
 
 	bb := bot.New(config)
