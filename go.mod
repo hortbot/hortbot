@@ -11,7 +11,6 @@ require (
 	github.com/alicebob/miniredis/v2 v2.10.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.1.5
-	github.com/bsm/redislock v0.4.0
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
 	github.com/dustin/go-humanize v1.0.0
@@ -64,5 +63,3 @@ require (
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
-
-replace github.com/bsm/redislock => github.com/zikaeroh/redislock v0.4.1-0.20191002065247-cf262f70bba2
