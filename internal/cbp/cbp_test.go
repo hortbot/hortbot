@@ -15,7 +15,8 @@ func TestParse(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			c, gotMalformed := cbp.Parse(input)
 			assert.Check(t, cmp.DeepEqual(result, c, cmpopts.EquateEmpty()))
-			assert.Check(t, malformed == gotMalformed)
+			assert.Check(t, cmp.Equal(malformed, gotMalformed))
+			assert.Check(t, cmp.Equal(input, cbp.NodesString(c)))
 		})
 	}
 
@@ -150,6 +151,20 @@ func TestParse(t *testing.T) {
 			cbp.TextNode("ONLINE_CHECK"),
 		),
 	)
+}
+
+func TestString(t *testing.T) {
+	n := cbp.TextNode("foo")
+	assert.Check(t, cmp.Equal("foo", n.String()))
+
+	n2 := cbp.ActionNode(
+		cbp.TextNode("hello"),
+		cbp.ActionNode(
+			cbp.TextNode("what"),
+		),
+		cbp.TextNode("there"),
+	)
+	assert.Check(t, cmp.Equal("(_hello(_what_)there_)", n2.String()))
 }
 
 func BenchmarkParse(b *testing.B) {

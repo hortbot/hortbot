@@ -100,6 +100,35 @@ func ActionNode(nodes ...Node) Node {
 	}
 }
 
+func (n *Node) String() string {
+	var b strings.Builder
+	n.string(&b)
+	return b.String()
+}
+
+func (n *Node) string(b *strings.Builder) {
+	if n.Text != "" {
+		b.WriteString(n.Text)
+		return
+	}
+
+	b.WriteString("(_")
+	nodesString(b, n.Children)
+	b.WriteString("_)")
+}
+
+func nodesString(b *strings.Builder, nodes []Node) {
+	for _, child := range nodes {
+		child.string(b)
+	}
+}
+
+func NodesString(nodes []Node) string {
+	var b strings.Builder
+	nodesString(&b, nodes)
+	return b.String()
+}
+
 type scanner struct {
 	input string
 	idx   int
