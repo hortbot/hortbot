@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
+	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 
 	qtio422016 "io"
@@ -88,52 +89,6 @@ func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
 <script>
-function commandFormatter(value) {
-    var output = "";
-    var level = 0;
-
-    for (var i = 0; i < value.length; i++) {
-        var c = value.charAt(i);
-        
-        if ((i + 1) == value.length) {
-            output += c;
-            continue;
-        }
-
-        var next = value.charAt(i+1)
-
-        if (c == "(" && next == "_") {
-            level++;
-            i++;
-            if (level == 1) {
-                output += "<code>";
-            } else {
-                output += "(_";
-            }
-            continue;
-        }
-
-        if (c == "_" && next == ")") {
-            level--;
-            i++;
-            if (level == 0) {
-                output += "</code>"
-            } else {
-                output += "_)";
-            }
-            continue;
-        }
-
-        output += c;
-    }
-
-    if (level > 0) {
-        output += "</code>";
-    }
-
-    return output;
-}
-
 function timeFormatter(value) {
     var d = new Date(value);
     return d.toLocaleString();
@@ -412,6 +367,34 @@ func accessLevel(level string) string {
 	return qs422016
 }
 
+func streamconvertCommand(qw422016 *qt422016.Writer, s string) {
+	c, _ := cbp.Parse(s)
+
+	for _, node := range c {
+		if node.Text != "" {
+			qw422016.E().S(node.Text)
+		} else {
+			qw422016.N().S(`<code>`)
+			qw422016.E().S(cbp.NodesString(node.Children))
+			qw422016.N().S(`</code>`)
+		}
+	}
+}
+
+func writeconvertCommand(qq422016 qtio422016.Writer, s string) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	streamconvertCommand(qw422016, s)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func convertCommand(s string) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	writeconvertCommand(qb422016, s)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
 func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
@@ -444,7 +427,7 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <tr>
                     <th data-sortable="true" data-field="command">Command</th>
                     <th data-sortable="true">Access</th>
-                    <th data-sortable="true" data-formatter="commandFormatter">Response</th>
+                    <th data-sortable="true">Response</th>
                     <th data-sortable="true">Count</th>
                     <th data-sortable="true">Editor</th>
                     <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
@@ -463,7 +446,7 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 			streamaccessLevel(qw422016, c.R.CommandInfo.AccessLevel)
 			qw422016.N().S(`</td>
                     <td>`)
-			qw422016.E().S(c.Message)
+			qw422016.N().S(convertCommand(c.Message))
 			qw422016.N().S(`</td>
                     <td>`)
 			qw422016.E().V(c.R.CommandInfo.Count)
@@ -543,7 +526,7 @@ func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
                     <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
                 </tr>
             </thead>
-            <tbody> data-formatter="commandFormatter"
+            <tbody>
                 `)
 		for _, q := range p.Quotes {
 			qw422016.N().S(`
@@ -626,7 +609,7 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
                     <th data-sortable="true" data-field="number">#</th>
                     <th data-sortable="true">Trigger</th>
                     <th data-sortable="true">Regex</th>
-                    <th data-sortable="true" data-formatter="commandFormatter">Response</th>
+                    <th data-sortable="true">Response</th>
                     <th data-sortable="true">Count</th>
                     <th data-sortable="true">Editor</th>
                     <th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
@@ -647,7 +630,7 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 			qw422016.E().S(a.Trigger)
 			qw422016.N().S(`</code></td>
                     <td>`)
-			qw422016.E().S(a.Response)
+			qw422016.N().S(convertCommand(a.Response))
 			qw422016.N().S(`</td>
                     <td>`)
 			qw422016.N().D(a.Count)
