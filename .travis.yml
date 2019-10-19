@@ -1,5 +1,8 @@
 dist: xenial
 
+git:
+  depth: false
+
 language: go
 
 matrix:
@@ -40,19 +43,19 @@ script:
   - test -z "$(git status --porcelain go.mod go.sum)"
   - go test -race -covermode=atomic -coverprofile=cover.out ./...
   - if [ "$COVERAGE" = true ]; then
-      $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out
+      $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out;
     fi
 
 after_success:
   - if [[ "$BUILD_IMAGE" = true ]] && [[ "$TRAVIS_BRANCH" = "master" ]]; then
-      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      export IMAGE_TAG=$(git describe --always --long --tags)
+      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
+      export IMAGE_TAG=$(git describe --always --long --tags);
 
-      docker build -f ./docker/Dockerfile.bot -t "hortbot/bot:$IMAGE_TAG" .
-      docker build -f ./docker/Dockerfile.irc -t "hortbot/irc:$IMAGE_TAG" .
-      docker build -f ./docker/Dockerfile.web -t "hortbot/web:$IMAGE_TAG" .
-      
-      docker push "hortbot/bot:$IMAGE_TAG"
-      docker push "hortbot/irc:$IMAGE_TAG"
-      docker push "hortbot/web:$IMAGE_TAG"
+      docker build -f ./docker/Dockerfile.bot -t "hortbot/bot:$IMAGE_TAG" .;
+      docker build -f ./docker/Dockerfile.irc -t "hortbot/irc:$IMAGE_TAG" .;
+      docker build -f ./docker/Dockerfile.web -t "hortbot/web:$IMAGE_TAG" .;
+
+      docker push "hortbot/bot:$IMAGE_TAG";
+      docker push "hortbot/irc:$IMAGE_TAG";
+      docker push "hortbot/web:$IMAGE_TAG";
     fi
