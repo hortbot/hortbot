@@ -4,10 +4,10 @@ language: go
 
 matrix:
   include:
+    - go: "1.13.x"
+      env: GO111MODULE=on COVERAGE=true BUILD_IMAGE=true
     - go: "1.12.x"
       env: GO111MODULE=on
-    - go: "1.13.x"
-      env: GO111MODULE=on COVERAGE=true
     - go: "tip"
       env: GO111MODULE=on
   allow_failures:
@@ -39,4 +39,20 @@ script:
   - go mod tidy
   - test -z "$(git status --porcelain go.mod go.sum)"
   - go test -race -covermode=atomic -coverprofile=cover.out ./...
-  - if [ "$COVERAGE" = true ]; then $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out; fi
+  - if [ "$COVERAGE" = true ]; then
+      $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out
+    fi
+
+after_success:
+  - if [[ "$BUILD_IMAGE" = true ]] && [[ "$TRAVIS_BRANCH" = "master" ]]; then
+      echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      export IMAGE_TAG=$(git describe --always --long --tags)
+
+      docker build -f ./docker/Dockerfile.bot -t "hortbot/bot:$IMAGE_TAG" .
+      docker build -f ./docker/Dockerfile.irc -t "hortbot/irc:$IMAGE_TAG" .
+      docker build -f ./docker/Dockerfile.web -t "hortbot/web:$IMAGE_TAG" .
+      
+      docker push "hortbot/bot:$IMAGE_TAG"
+      docker push "hortbot/irc:$IMAGE_TAG"
+      docker push "hortbot/web:$IMAGE_TAG"
+    fi
