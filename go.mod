@@ -14,7 +14,7 @@ require (
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
 	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
 	github.com/dustin/go-humanize v1.0.0
-	github.com/ericlagergren/decimal v0.0.0-20190912144844-2c3e3e1ef942 // indirect
+	github.com/ericlagergren/decimal v0.0.0-20191018222636-98d6b4cb4b5e // indirect
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi v4.0.2+incompatible
@@ -50,7 +50,7 @@ require (
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/viper v1.4.0 // indirect
-	github.com/valyala/quicktemplate v1.2.0
+	github.com/valyala/quicktemplate v1.3.1
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.5.0+incompatible
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20191014212845-da9a3fd4c582
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191015211201-9c6d90b5a7d0
+	golang.org/x/tools v0.0.0-20191018212557-ed542cd5b28a
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
