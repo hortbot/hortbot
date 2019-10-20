@@ -28,3 +28,4 @@ pkg/cbparse/cmd/cbparse/cbpara
 .gobincache/
 
 docker/
+.git/

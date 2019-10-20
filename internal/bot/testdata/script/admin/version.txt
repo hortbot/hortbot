@@ -1,0 +1,2 @@
+handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin version
+send hortbot #hortbot [HB] hortbot version (devel)

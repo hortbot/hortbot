@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
 	"github.com/joho/godotenv"
 	"github.com/posener/ctxutil"
@@ -41,6 +42,8 @@ func Run(args Args, main func(context.Context)) {
 	logger := ctxlog.New(args.debug())
 	defer zap.RedirectStdLog(logger)()
 	ctx = ctxlog.WithLogger(ctx, logger)
+
+	logger.Info("starting", zap.String("version", version.Version()))
 
 	main(ctx)
 }

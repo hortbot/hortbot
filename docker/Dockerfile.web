@@ -10,7 +10,8 @@ RUN go mod download
 
 COPY ./ ./
 
-RUN CGO_ENABLED=0 go build -v -ldflags="-w -s" -o /web github.com/hortbot/hortbot/cmd/web
+ARG version
+RUN CGO_ENABLED=0 go build -v -ldflags="-w -s -X github.com/hortbot/hortbot/internal/version.version=${version}" -o /web github.com/hortbot/hortbot/cmd/web
 
 FROM scratch
 

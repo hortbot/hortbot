@@ -13,11 +13,10 @@ func New(debug bool) *zap.Logger {
 
 	if debug {
 		logConfig = zap.NewDevelopmentConfig()
+		logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	} else {
 		logConfig = zap.NewProductionConfig()
 	}
-
-	logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 
 	logger, err := logConfig.Build()
 	if err != nil {

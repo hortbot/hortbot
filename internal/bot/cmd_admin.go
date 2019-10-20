@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/version"
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
@@ -23,6 +24,7 @@ func init() {
 		"spam":       {fn: cmdAdminSpam, minLevel: levelAdmin},
 		"imp":        {fn: cmdAdminImp, minLevel: levelAdmin},
 		"publicjoin": {fn: cmdAdminPublicJoin, minLevel: levelAdmin},
+		"version":    {fn: cmdAdminVersion, minLevel: levelAdmin},
 	})
 }
 
@@ -240,4 +242,8 @@ func cmdAdminPublicJoin(ctx context.Context, s *session, cmd string, args string
 	}
 
 	return s.Replyf(ctx, "Default public join %s.", action)
+}
+
+func cmdAdminVersion(ctx context.Context, s *session, _ string, _ string) error {
+	return s.Replyf(ctx, "hortbot version %s", version.Version())
 }
