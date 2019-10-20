@@ -8,11 +8,6 @@ services:
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
     command: go run -mod=readonly -v ./cmd/irc
-    links:
-      - db
-      - redis
-      - nsq
-      - jaeger
     depends_on:
       - db
       - redis
@@ -37,11 +32,6 @@ services:
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
     command: go run -mod=readonly -v ./cmd/bot
-    links:
-      - db
-      - redis
-      - nsq
-      - jaeger
     depends_on:
       - db
       - redis
@@ -68,11 +58,6 @@ services:
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
     command: go run -mod=readonly -v ./cmd/web
-    links:
-      - db
-      - redis
-      - nsq
-      - jaeger
     depends_on:
       - db
       - redis

@@ -7,11 +7,6 @@ services:
     build:
       dockerfile: ./docker/Dockerfile.irc
       context: .
-    links:
-      - db
-      - redis
-      - nsq
-      - jaeger
     depends_on:
       - db
       - redis
@@ -33,11 +28,6 @@ services:
     build:
       dockerfile: ./docker/Dockerfile.bot
       context: .
-    links:
-      - db
-      - redis
-      - nsq
-      - jaeger
     depends_on:
       - db
       - redis
@@ -61,11 +51,6 @@ services:
     build:
       dockerfile: ./docker/Dockerfile.web
       context: .
-    links:
-      - db
-      - redis
-      - nsq
-      - jaeger
     depends_on:
       - db
       - redis
