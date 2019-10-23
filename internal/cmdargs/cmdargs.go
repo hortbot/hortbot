@@ -16,7 +16,7 @@ import (
 
 type Common struct {
 	Debug  bool                  `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	Config func(filename string) `long:"config" description:"A path to an INI config file - may be passed more than once"`
+	Config func(filename string) `short:"c" long:"config" description:"A path to an INI config file - may be passed more than once"`
 }
 
 func (args *Common) debug() bool {
@@ -38,14 +38,14 @@ func Run(args Args, main func(context.Context)) {
 	ctx := ctxutil.Interrupt()
 	_ = godotenv.Load()
 
-	parser := flags.NewParser(args, flags.Default)
+	parser := flags.NewParser(args, flags.HelpFlag|flags.PassDoubleDash)
 	args.configFunc(func(filename string) {
 		err := flags.NewIniParser(parser).ParseFile(filename)
-		checkParseError(err, true)
+		checkParseError(err)
 	})
 
 	_, err := parser.Parse()
-	checkParseError(err, false)
+	checkParseError(err)
 
 	logger := ctxlog.New(args.debug())
 	defer zap.RedirectStdLog(logger)()
@@ -56,22 +56,16 @@ func Run(args Args, main func(context.Context)) {
 	main(ctx)
 }
 
-func checkParseError(err error, print bool) {
+func checkParseError(err error) {
 	if err == nil {
 		return
 	}
 
-	print = print && !flags.WroteHelp(err)
-
 	if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
-		if print {
-			fmt.Fprintln(os.Stdout, err)
-		}
+		fmt.Fprintln(os.Stdout, err)
 		os.Exit(0)
 	} else {
-		if print {
-			fmt.Fprintln(os.Stderr, err)
-		}
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 }
