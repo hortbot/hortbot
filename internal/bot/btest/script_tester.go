@@ -73,6 +73,7 @@ type scriptTester struct {
 
 	counts map[string]int
 
+	ctx      context.Context
 	actions  []func(context.Context)
 	cleanups []func()
 
@@ -126,7 +127,7 @@ func (st *scriptTester) test(t testing.TB) {
 		}
 	}()
 
-	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
+	st.ctx = ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(t, err)
@@ -203,7 +204,7 @@ func (st *scriptTester) test(t testing.TB) {
 	}()
 
 	for _, action := range st.actions {
-		action(ctx)
+		action(st.ctx)
 	}
 
 	assert.Equal(t, st.sender.SendMessageCallCount(), st.counts[countSend])
@@ -219,15 +220,9 @@ func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
 }
 
 func (st *scriptTester) boilDebug(t testing.TB, _, _ string, _ int) {
-	oldMode := boil.DebugMode
-	oldWriter := boil.DebugWriter
-
-	boil.DebugMode = true
-	boil.DebugWriter = testutil.Writer{T: t}
-
-	st.addCleanup(func() {
-		boil.DebugMode = oldMode
-		boil.DebugWriter = oldWriter
+	st.addAction(func(_ context.Context) {
+		st.ctx = boil.WithDebug(st.ctx, true)
+		st.ctx = boil.WithDebugWriter(st.ctx, testutil.Writer{T: t})
 	})
 }
 
