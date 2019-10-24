@@ -9,7 +9,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
-	"github.com/joho/godotenv"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 )
@@ -36,7 +35,6 @@ var DefaultCommon = Common{}
 
 func Run(args Args, main func(context.Context)) {
 	ctx := ctxutil.Interrupt()
-	_ = godotenv.Load()
 
 	parser := flags.NewParser(args, flags.HelpFlag|flags.PassDoubleDash)
 	args.configFunc(func(filename string) {

@@ -33,7 +33,6 @@ require (
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/jmoiron/sqlx v1.2.0
-	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
 	github.com/lib/pq v1.2.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2

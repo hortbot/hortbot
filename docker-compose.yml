@@ -7,7 +7,7 @@ services:
       - .:/app:ro
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
-    command: go run -mod=readonly -v .
+    command: go run -mod=readonly -v . -c config/bot.ini -c config/twitch.ini -c config/irc.ini
     links:
       - db
       - redis
@@ -18,13 +18,9 @@ services:
       - "5000:5000"
     environment:
       - HB_DEBUG=true
-      - HB_NICK=${HB_NICK:-}
-      - HB_PASS=${HB_PASS:-}
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
-      - HB_ADMINS=${HB_ADMINS:-}
-      - HB_WHITELIST_ENABLED=${HB_WHITELIST_ENABLED:-}
 
   pgweb:
     image: sosedoff/pgweb

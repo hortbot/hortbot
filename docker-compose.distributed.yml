@@ -7,21 +7,17 @@ services:
       - .:/app:ro
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
-    command: go run -mod=readonly -v ./cmd/irc
+    command: go run -mod=readonly -v ./cmd/irc -c config/irc.ini -c config/twitch.ini
     depends_on:
       - db
       - redis
       - nsq
       - jaeger
     environment:
-      - HB_NICK=${HB_NICK:-}
-      - HB_PASS=${HB_PASS:-}
+      - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
-      - HB_TWITCH_CLIENT_ID=${HB_TWITCH_CLIENT_ID:-}
-      - HB_TWITCH_CLIENT_SECRET=${HB_TWITCH_CLIENT_SECRET:-}
-      - HB_TWITCH_REDIRECT_URL=${HB_TWITCH_REDIRECT_URL:-}
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
 
@@ -31,25 +27,19 @@ services:
       - .:/app:ro
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
-    command: go run -mod=readonly -v ./cmd/bot
+    command: go run -mod=readonly -v ./cmd/bot -c config/bot.ini -c config/twitch.ini
     depends_on:
       - db
       - redis
       - nsq
       - jaeger
     environment:
+      - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
-      - HB_ADMINS=${HB_ADMINS:-}
-      - HB_WHITELIST_ENABLED=${HB_WHITELIST_ENABLED:-}
-      - HB_TWITCH_CLIENT_ID=${HB_TWITCH_CLIENT_ID:-}
-      - HB_TWITCH_CLIENT_SECRET=${HB_TWITCH_CLIENT_SECRET:-}
-      - HB_TWITCH_REDIRECT_URL=${HB_TWITCH_REDIRECT_URL:-}
-      - HB_LASTFM_KEY=${HB_LASTFM_KEY:-}
-      - HB_STEAM_KEY=${HB_STEAM_KEY:-}
 
   web:
     image: golang
@@ -57,7 +47,7 @@ services:
       - .:/app:ro
       - $GOPATH/pkg/mod:/go/pkg/mod:ro
     working_dir: /app
-    command: go run -mod=readonly -v ./cmd/web
+    command: go run -mod=readonly -v ./cmd/web -c config/twitch.ini
     depends_on:
       - db
       - redis
@@ -67,14 +57,12 @@ services:
       - "5000:5000"
       - "5001:5000"
     environment:
+      - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
-      - HB_TWITCH_CLIENT_ID=${HB_TWITCH_CLIENT_ID:-}
-      - HB_TWITCH_CLIENT_SECRET=${HB_TWITCH_CLIENT_SECRET:-}
-      - HB_TWITCH_REDIRECT_URL=${HB_TWITCH_REDIRECT_URL:-}
 
   pgweb:
     image: sosedoff/pgweb

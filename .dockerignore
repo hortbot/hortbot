@@ -15,7 +15,10 @@
 
 # Project binaries
 hortbot
-pkg/cbparse/cmd/cbparse/cbpara
+cmd/bot/bot
+cmd/confconvert/confconvert
+cmd/irc/irc
+cmd/web/web
 
 # IDEs
 .vscode/*
@@ -29,3 +32,4 @@ pkg/cbparse/cmd/cbparse/cbpara
 
 docker/
 .git/
+config/
