@@ -11,7 +11,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin reloadrepeats
-send hortbot #foobar [HB] Reloaded 1 repeats and 0 schedules in 0s.
+send hortbot #foobar [HB] Reloaded 1 repeat and 0 schedules in 0s.
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme2 Hello there!
@@ -21,4 +21,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin reloadrepeats
-send hortbot #foobar [HB] Reloaded 1 repeats and 1 schedules in 0s.
+send hortbot #foobar [HB] Reloaded 1 repeat and 1 schedule in 0s.

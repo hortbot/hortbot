@@ -125,3 +125,24 @@ func readMessage(m *irc.Message) (message string, me bool) {
 
 	return strings.TrimSpace(message), me
 }
+
+func pluralInt(n int, singular, plural string) string {
+	if n == 1 {
+		return singular
+	}
+	return plural
+}
+
+func pluralInt64(n int64, singular, plural string) string {
+	if n == 1 {
+		return singular
+	}
+	return plural
+}
+
+func choose(b bool, tru, fals string) string {
+	if b {
+		return tru
+	}
+	return fals
+}

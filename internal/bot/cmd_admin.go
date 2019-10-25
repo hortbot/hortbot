@@ -108,11 +108,7 @@ func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) 
 		return err
 	}
 
-	ch := "channels"
-	if count == 1 {
-		ch = "channel"
-	}
-
+	ch := pluralInt64(count, "channel", "channels")
 	return s.Replyf(ctx, "Currently in %d %s.", count, ch)
 }
 
@@ -227,11 +223,7 @@ func cmdAdminPublicJoin(ctx context.Context, s *session, cmd string, args string
 			return err
 		}
 	} else {
-		if enable {
-			action = "enabled"
-		} else {
-			action = "disabled"
-		}
+		action = choose(enable, "enabled", "disabled")
 
 		if err := s.Deps.Redis.SetPublicJoin(ctx, botName, enable); err != nil {
 			return err
@@ -257,5 +249,8 @@ func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) 
 	}
 
 	repeats, schedules := s.Deps.CountRepeats()
-	return s.Replyf(ctx, "Reloaded %d repeats and %d schedules in %v.", repeats, schedules, s.Deps.Clock.Since(before))
+	repeatStr := pluralInt(repeats, "repeat", "repeats")
+	scheduleStr := pluralInt(schedules, "schedule", "schedules")
+
+	return s.Replyf(ctx, "Reloaded %d %s and %d %s in %v.", repeats, repeatStr, schedules, scheduleStr, s.Deps.Clock.Since(before))
 }
