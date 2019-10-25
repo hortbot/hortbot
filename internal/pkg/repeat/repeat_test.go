@@ -254,3 +254,34 @@ func TestCorrectID(t *testing.T) {
 
 	r.Stop()
 }
+
+func TestReset(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	clk := clock.NewMock()
+
+	r := repeat.New(context.Background(), clk)
+
+	repeats, schedules := r.Count()
+	assert.Equal(t, repeats, 0)
+	assert.Equal(t, schedules, 0)
+
+	fn := func(ctx context.Context, id int64) {}
+	r.Add(0, fn, time.Second, 0)
+
+	repeats, schedules = r.Count()
+	assert.Equal(t, repeats, 1)
+	assert.Equal(t, schedules, 0)
+
+	r.AddCron(0, fn, mustParseCron("0 * * * *"))
+
+	repeats, schedules = r.Count()
+	assert.Equal(t, repeats, 1)
+	assert.Equal(t, schedules, 1)
+
+	r.Reset()
+
+	repeats, schedules = r.Count()
+	assert.Equal(t, repeats, 0)
+	assert.Equal(t, schedules, 0)
+}

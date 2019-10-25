@@ -32,6 +32,32 @@ func (b *Bot) updateScheduledCommand(id int64, add bool, expr cron.Schedule) {
 	}
 }
 
+func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {
+	if reset {
+		b.rep.Reset()
+	}
+
+	repeats, err := models.RepeatedCommands(
+		models.RepeatedCommandWhere.Enabled.EQ(true),
+	).All(ctx, b.db)
+	if err != nil {
+		return err
+	}
+
+	updateRepeating(b.deps, repeats, true)
+
+	scheduleds, err := models.ScheduledCommands(
+		models.ScheduledCommandWhere.Enabled.EQ(true),
+	).All(ctx, b.db)
+	if err != nil {
+		return err
+	}
+
+	updateScheduleds(b.deps, scheduleds, true)
+
+	return nil
+}
+
 func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 	ctx, span := trace.StartSpan(ctx, "runRepeatedCommand")
 	defer span.End()

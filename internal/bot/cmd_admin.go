@@ -16,15 +16,16 @@ var adminCommands handlerMap
 func init() {
 	// To prevent initialization loop.
 	adminCommands = newHandlerMap(map[string]handlerFunc{
-		"roundtrip":  {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
-		"block":      {fn: cmdAdminBlock, minLevel: levelAdmin},
-		"unblock":    {fn: cmdAdminUnblock, minLevel: levelAdmin},
-		"channels":   {fn: cmdAdminChannels, minLevel: levelAdmin},
-		"color":      {fn: cmdAdminColor, minLevel: levelAdmin},
-		"spam":       {fn: cmdAdminSpam, minLevel: levelAdmin},
-		"imp":        {fn: cmdAdminImp, minLevel: levelAdmin},
-		"publicjoin": {fn: cmdAdminPublicJoin, minLevel: levelAdmin},
-		"version":    {fn: cmdAdminVersion, minLevel: levelAdmin},
+		"roundtrip":     {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
+		"block":         {fn: cmdAdminBlock, minLevel: levelAdmin},
+		"unblock":       {fn: cmdAdminUnblock, minLevel: levelAdmin},
+		"channels":      {fn: cmdAdminChannels, minLevel: levelAdmin},
+		"color":         {fn: cmdAdminColor, minLevel: levelAdmin},
+		"spam":          {fn: cmdAdminSpam, minLevel: levelAdmin},
+		"imp":           {fn: cmdAdminImp, minLevel: levelAdmin},
+		"publicjoin":    {fn: cmdAdminPublicJoin, minLevel: levelAdmin},
+		"version":       {fn: cmdAdminVersion, minLevel: levelAdmin},
+		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelAdmin},
 	})
 }
 
@@ -246,4 +247,15 @@ func cmdAdminPublicJoin(ctx context.Context, s *session, cmd string, args string
 
 func cmdAdminVersion(ctx context.Context, s *session, _ string, _ string) error {
 	return s.Replyf(ctx, "hortbot version %s", version.Version())
+}
+
+func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) error {
+	before := s.Deps.Clock.Now()
+
+	if err := s.Deps.ReloadRepeats(ctx); err != nil {
+		return s.Replyf(ctx, "Error reloading repeats: %s", err.Error())
+	}
+
+	repeats, schedules := s.Deps.CountRepeats()
+	return s.Replyf(ctx, "Reloaded %d repeats and %d schedules in %v.", repeats, schedules, s.Deps.Clock.Since(before))
 }

@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"context"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -35,8 +36,12 @@ type sharedDeps struct {
 
 	ReCache *recache.RegexpCache
 
+	// TODO: split these into an interface.
+
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
 	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
+	ReloadRepeats  func(ctx context.Context) error
+	CountRepeats   func() (repeats, schedules int)
 
 	BulletMap map[string]string
 
@@ -53,14 +58,5 @@ func (s *sharedDeps) IsAllowed(name string) bool {
 	if s.Whitelist == nil {
 		return true
 	}
-
-	if s.Admins[name] {
-		return true
-	}
-
-	if s.Whitelist[name] {
-		return true
-	}
-
-	return false
+	return s.Admins[name] || s.Whitelist[name]
 }

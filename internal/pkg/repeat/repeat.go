@@ -12,7 +12,9 @@ import (
 
 type Repeater struct {
 	clock clock.Clock
+	ctx   context.Context
 
+	mu    sync.RWMutex
 	reps  *taskRunner
 	crons *taskRunner
 }
@@ -26,6 +28,7 @@ func New(ctx context.Context, clock clock.Clock) *Repeater {
 
 	return &Repeater{
 		clock: clock,
+		ctx:   ctx,
 		reps:  newTaskRunner(ctx),
 		crons: newTaskRunner(ctx),
 	}
@@ -34,16 +37,38 @@ func New(ctx context.Context, clock clock.Clock) *Repeater {
 // Stop stops the repeater, cancelling all running tasks and waiting for all
 // to return.
 func (r *Repeater) Stop() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	r.reps.stop()
 	r.crons.stop()
 	r.reps.wait()
 	r.crons.wait()
 }
 
+func (r *Repeater) Reset() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	r.reps.stop()
+	r.crons.stop()
+	r.reps = newTaskRunner(r.ctx)
+	r.crons = newTaskRunner(r.ctx)
+}
+
+func (r *Repeater) Count() (repeats, schedules int) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	return r.reps.count(), r.crons.count()
+}
+
 // Add adds a repeated task occurring at an interval, given the specified ID.
 // If init is non-zero, then the task will first wait for that duration before
 // looping. If there is already a task with that ID, then it will be replaced.
 func (r *Repeater) Add(id int64, fn func(ctx context.Context, id int64), interval, init time.Duration) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
 	r.reps.run(id, func(ctx context.Context) {
 		if init != 0 {
 			select {
@@ -71,12 +96,18 @@ func (r *Repeater) Add(id int64, fn func(ctx context.Context, id int64), interva
 
 // Remove removes a repeated task.
 func (r *Repeater) Remove(id int64) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
 	r.reps.remove(id)
 }
 
 // AddCron adds a repeated task which repeats based on a cron expression.
 // Cron tasks may safely share IDs with regular repeated tasks.
 func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), expr cron.Schedule) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
 	r.crons.run(id, func(ctx context.Context) {
 		for {
 			now := r.clock.Now()
@@ -104,6 +135,9 @@ func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), exp
 
 // RemoveCron removes a repeated cron task.
 func (r *Repeater) RemoveCron(id int64) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
 	r.crons.remove(id)
 }
 
@@ -161,6 +195,12 @@ func (t *taskRunner) stop() {
 
 func (t *taskRunner) wait() {
 	_ = t.g.Wait()
+}
+
+func (t *taskRunner) count() int {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	return len(t.cancels)
 }
 
 var cronParser = cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)

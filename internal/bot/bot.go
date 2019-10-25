@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"sync"
 
-	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
@@ -134,6 +133,12 @@ func New(config *Config) *Bot {
 
 	deps.UpdateRepeat = b.updateRepeatedCommand
 	deps.UpdateSchedule = b.updateScheduledCommand
+	deps.ReloadRepeats = func(ctx context.Context) error {
+		return b.loadRepeats(ctx, true)
+	}
+	deps.CountRepeats = func() (int, int) {
+		return b.rep.Count()
+	}
 
 	if isTesting {
 		b.testingHelper = &testingHelper{}
@@ -147,27 +152,11 @@ func (b *Bot) Init(ctx context.Context) error {
 	defer span.End()
 
 	b.rep = repeat.New(ctx, b.deps.Clock)
-
-	repeats, err := models.RepeatedCommands(
-		models.RepeatedCommandWhere.Enabled.EQ(true),
-	).All(ctx, b.db)
-	if err != nil {
+	if err := b.loadRepeats(ctx, false); err != nil {
 		return err
 	}
-
-	updateRepeating(b.deps, repeats, true)
-
-	scheduleds, err := models.ScheduledCommands(
-		models.ScheduledCommandWhere.Enabled.EQ(true),
-	).All(ctx, b.db)
-	if err != nil {
-		return err
-	}
-
-	updateScheduleds(b.deps, scheduleds, true)
 
 	b.initialized = true
-
 	return nil
 }
 
