@@ -1,0 +1,154 @@
+package irc
+
+import (
+	"context"
+	"errors"
+	"time"
+
+	"github.com/hortbot/hortbot/internal/bnsq"
+	"github.com/hortbot/hortbot/internal/cli"
+	"github.com/hortbot/hortbot/internal/cli/flags/ircflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"go.opencensus.io/trace"
+	"go.uber.org/zap"
+)
+
+type cmd struct {
+	cli.Common
+	sqlflags.SQL
+	twitchflags.Twitch
+	ircflags.IRC
+	redisflags.Redis
+	nsqflags.NSQ
+	jaegerflags.Jaeger
+}
+
+func Run(args []string) {
+	cli.Run("irc", args, &cmd{
+		Common: cli.DefaultCommon,
+		SQL:    sqlflags.DefaultSQL,
+		Twitch: twitchflags.DefaultTwitch,
+		IRC:    ircflags.DefaultIRC,
+		Redis:  redisflags.DefaultRedis,
+		NSQ:    nsqflags.DefaultNSQ,
+		Jaeger: jaegerflags.DefaultJaeger,
+	})
+}
+
+//nolint:gocyclo
+func (cmd *cmd) Main(ctx context.Context, _ []string) {
+	logger := ctxlog.FromContext(ctx)
+
+	defer cmd.InitJaeger(ctx, "irc", cmd.Debug)()
+
+	connector := cmd.DBConnector(ctx)
+	connector = cmd.TraceDB(cmd.Debug, connector)
+	db := cmd.OpenDB(ctx, connector)
+
+	rdb := cmd.RedisClient()
+	twitchAPI := cmd.TwitchClient()
+	conn := cmd.IRCPool(ctx, db, twitchAPI)
+
+	incomingPub := bnsq.NewIncomingPublisher(cmd.NSQAddr)
+
+	sendSub := cmd.NewSendMessageSubscriber(cmd.Nick, 15*time.Second, func(m *bnsq.SendMessage, parent trace.SpanContext) error {
+		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", parent)
+		defer span.End()
+
+		allowed, err := cmd.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
+		if err != nil {
+			logger.Error("error checking rate limit", zap.Error(err))
+			return err
+		}
+
+		if !allowed {
+			logger.Error("rate limited, requeueing")
+			return errors.New("rate limited")
+		}
+
+		if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
+			logger.Error("error sending message", zap.Error(err))
+			return err
+		}
+
+		return nil
+	})
+
+	syncJoined := make(chan struct{}, 1)
+
+	notifySub := cmd.NewNotifySubscriber(cmd.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error {
+		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", parent)
+		defer span.End()
+
+		select {
+		case syncJoined <- struct{}{}:
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+
+		return nil
+	})
+
+	g := errgroupx.FromContext(ctx)
+
+	g.Go(conn.Run)
+	g.Go(incomingPub.Run)
+
+	g.Go(func(ctx context.Context) error {
+		inc := conn.Incoming()
+
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+
+			case m, ok := <-inc:
+				if !ok {
+					return nil
+				}
+
+				if err := incomingPub.Publish(ctx, cmd.Nick, m); err != nil {
+					logger.Error("error publishing incoming message", zap.Error(err))
+				}
+			}
+		}
+	})
+
+	g.Go(sendSub.Run)
+	g.Go(notifySub.Run)
+
+	g.Go(func(ctx context.Context) error {
+		for {
+			select {
+			case <-ctx.Done():
+				return ctx.Err()
+
+			case <-syncJoined:
+				time.Sleep(time.Second) // The notification comes in before the transaction is complete.
+
+			case <-time.After(time.Minute):
+			}
+
+			channels, err := modelsx.ListActiveChannels(ctx, db, cmd.Nick)
+			if err != nil {
+				return err
+			}
+
+			if err := conn.SyncJoined(ctx, channels...); err != nil {
+				return err
+			}
+		}
+	})
+
+	if err := g.WaitIgnoreStop(); err != nil {
+		logger.Info("exiting", zap.Error(err))
+	}
+}

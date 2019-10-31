@@ -51,11 +51,6 @@ after_success:
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
       export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
 
-      docker build -f ./docker/Dockerfile.bot -t hortbot/bot --build-arg version=$VERSION .;
-      docker build -f ./docker/Dockerfile.irc -t hortbot/irc --build-arg version=$VERSION .;
-      docker build -f ./docker/Dockerfile.web -t hortbot/web --build-arg version=$VERSION .;
-
-      docker push hortbot/bot;
-      docker push hortbot/irc;
-      docker push hortbot/web;
+      docker build -t hortbot/hortbot --build-arg version=$VERSION .;
+      docker push hortbot/hortbot;
     fi

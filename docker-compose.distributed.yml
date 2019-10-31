@@ -5,9 +5,10 @@ services:
     image: golang
     volumes:
       - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
+      - gopath:/go
+      - go-cache:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v ./cmd/irc -c config/irc.ini -c config/twitch.ini
+    command: go run -mod=readonly -v . irc -c config/irc.ini -c config/twitch.ini
     depends_on:
       - db
       - redis
@@ -25,9 +26,10 @@ services:
     image: golang
     volumes:
       - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
+      - gopath:/go
+      - go-cache:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v ./cmd/bot -c config/bot.ini -c config/twitch.ini
+    command: go run -mod=readonly -v . bot -c config/bot.ini -c config/twitch.ini
     depends_on:
       - db
       - redis
@@ -45,9 +47,10 @@ services:
     image: golang
     volumes:
       - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
+      - gopath:/go
+      - go-cache:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v ./cmd/web -c config/twitch.ini
+    command: go run -mod=readonly -v . web -c config/twitch.ini
     depends_on:
       - db
       - redis
@@ -87,3 +90,7 @@ services:
     image: jaegertracing/all-in-one:latest
     ports:
       - "16686:16686"
+
+volumes:
+  gopath:
+  go-cache:

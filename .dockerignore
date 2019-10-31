@@ -15,10 +15,6 @@
 
 # Project binaries
 hortbot
-cmd/bot/bot
-cmd/confconvert/confconvert
-cmd/irc/irc
-cmd/web/web
 
 # IDEs
 .vscode/*
@@ -30,6 +26,5 @@ cmd/web/web
 .env
 .gobincache/
 
-docker/
 .git/
 config/

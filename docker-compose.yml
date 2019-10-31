@@ -5,9 +5,10 @@ services:
     image: golang
     volumes:
       - .:/app:ro
-      - $GOPATH/pkg/mod:/go/pkg/mod:ro
+      - gopath:/go
+      - go-cache:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . -c config/bot.ini -c config/twitch.ini -c config/irc.ini
+    command: go run -mod=readonly -v . single-proc -c config/bot.ini -c config/twitch.ini -c config/irc.ini
     links:
       - db
       - redis
@@ -37,3 +38,7 @@ services:
 
   redis:
     image: redis
+
+volumes:
+  gopath:
+  go-cache:

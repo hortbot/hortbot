@@ -4,12 +4,10 @@ version: "3"
 
 services:
   irc:
-    build:
-      dockerfile: ./docker/Dockerfile.irc
-      context: .
+    build: .
     volumes:
       - ./config:/config:ro
-    command: -c /config/irc.ini -c /config/twitch.ini
+    command: irc -c /config/irc.ini -c /config/twitch.ini
     depends_on:
       - db
       - redis
@@ -23,9 +21,7 @@ services:
       - HB_JAEGER_AGENT=jaeger:6831
 
   bot:
-    build:
-      dockerfile: ./docker/Dockerfile.bot
-      context: .
+    build: .
     depends_on:
       - db
       - redis
@@ -33,7 +29,7 @@ services:
       - jaeger
     volumes:
       - ./config:/config:ro
-    command: -c /config/bot.ini -c /config/twitch.ini
+    command: bot -c /config/bot.ini -c /config/twitch.ini
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
@@ -42,9 +38,7 @@ services:
       - HB_JAEGER_AGENT=jaeger:6831
 
   web:
-    build:
-      dockerfile: ./docker/Dockerfile.web
-      context: .
+    build: .
     depends_on:
       - db
       - redis
@@ -52,7 +46,7 @@ services:
       - jaeger
     volumes:
       - ./config:/config:ro
-    command: -c /config/twitch.ini
+    command: web -c /config/twitch.ini
     ports:
       - "5000:5000"
     environment:
