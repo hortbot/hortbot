@@ -24,7 +24,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Command 'wow' added, restricted to subscribers and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar
-send hortbot #foobar [HB] wow foo bar, that's a cool
+send hortbot #foobar [HB] wow foo bar, that's a cool foo bar
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar ; somethingrather
 send hortbot #foobar [HB] wow foo bar, that's a cool somethingrather

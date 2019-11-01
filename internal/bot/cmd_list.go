@@ -295,7 +295,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 	ctx, span := trace.StartSpan(ctx, "handleList")
 	defer span.End()
 
-	args := s.OrigCommandParams
+	args := s.CommandParams
 	cmd, args := splitSpace(args)
 	cmd = strings.ToLower(cmd)
 
@@ -365,8 +365,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 
 	item := list.Items[num]
 
-	s.CommandParams = args
-	s.OrigCommandParams = args
+	s.SetCommandParams(args)
 
 	return true, runCommandAndCount(ctx, s, info, item, update)
 }

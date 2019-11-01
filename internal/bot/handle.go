@@ -390,8 +390,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		return false, nil
 	}
 
-	s.CommandParams = params
-	s.OrigCommandParams = params
+	s.SetCommandParams(params)
 	thisChannel := foreignChannel == ""
 
 	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params), zap.Bool("foreign", !thisChannel))

@@ -61,8 +61,9 @@ type session struct {
 
 	Channel *models.Channel
 
-	CommandParams     string
-	OrigCommandParams string
+	CommandParams  string
+	Parameters     *[]string
+	ParameterIndex int
 
 	Silent bool
 	Imp    bool
@@ -476,4 +477,10 @@ func (s *session) HelpMessage() string {
 
 func (s *session) TwitchNotAuthMessage() string {
 	return "The bot wasn't authorized to perform this action. Log in on the website to give permission: " + s.WebAddr() + "/login"
+}
+
+func (s *session) SetCommandParams(params string) {
+	s.CommandParams = params
+	s.Parameters = nil
+	s.ParameterIndex = 0
 }

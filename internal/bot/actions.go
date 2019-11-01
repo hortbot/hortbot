@@ -38,9 +38,18 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	// Exact matches
 	switch action {
 	case "PARAMETER":
-		return s.NextParameter(), nil
+		p := s.NextParameter()
+		if p != nil {
+			return *p, nil
+		}
+		// Emulate this odd CoeBot behavior.
+		return "(_" + action + "_)", nil
 	case "PARAMETER_CAPS":
-		return strings.ToUpper(s.NextParameter()), nil
+		p := s.NextParameter()
+		if p != nil {
+			return strings.ToUpper(*p), nil
+		}
+		return "(_" + action + "_)", nil
 	case "MESSAGE_COUNT":
 		return strconv.FormatInt(s.N, 10), nil
 	case "SONG":
@@ -360,9 +369,44 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 	return sb.String(), nil
 }
 
-func (s *session) FirstParameter() string {
-	param, _ := splitFirstSep(s.OrigCommandParams, ";")
-	return strings.TrimSpace(param)
+func (s *session) parameterAt(i int) *string {
+	var params []string
+	if s.Parameters == nil {
+		params = strings.Split(s.CommandParams, ";")
+		for i, p := range params {
+			params[i] = strings.TrimSpace(p)
+		}
+		s.Parameters = &params
+	} else {
+		params = *s.Parameters
+	}
+
+	if i < len(params) {
+		return &params[i]
+	}
+
+	return nil
+}
+
+func (s *session) FirstParameter() *string {
+	return s.parameterAt(0)
+}
+
+// NextParameter iterates over the parameters, returning nil when no more
+// have been found. If there's only one parameter, then instead of returning
+// nil when running out, it will continue to return the first.
+func (s *session) NextParameter() *string {
+	p := s.parameterAt(s.ParameterIndex)
+	if p != nil {
+		s.ParameterIndex++
+		return p
+	}
+
+	if len(*s.Parameters) == 1 {
+		return s.parameterAt(0)
+	}
+
+	return nil
 }
 
 func (s *session) UserForModAction() (string, bool) {
@@ -371,17 +415,14 @@ func (s *session) UserForModAction() (string, bool) {
 		return s.User, true
 	case s.UserLevel.CanAccess(levelModerator):
 		p := s.FirstParameter()
-		p, _ = splitSpace(p)
-		return p, true
+		if p == nil {
+			return "", false
+		}
+		u, _ := splitSpace(*p)
+		return u, true
 	default:
 		return s.User, false
 	}
-}
-
-func (s *session) NextParameter() string {
-	var param string
-	param, s.CommandParams = splitFirstSep(s.CommandParams, ";")
-	return strings.TrimSpace(param)
 }
 
 func (s *session) actionSong(ctx context.Context, i int, url bool) (string, error) {
