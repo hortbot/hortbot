@@ -1,10 +1,13 @@
 package extralife
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+
+	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -16,7 +19,7 @@ var (
 
 //counterfeiter:generate . API
 type API interface {
-	GetDonationAmount(participantID int) (float64, error)
+	GetDonationAmount(ctx context.Context, participantID int) (float64, error)
 }
 
 type ExtraLife struct {
@@ -43,15 +46,10 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
-func (e *ExtraLife) GetDonationAmount(participantID int) (float64, error) {
+func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (float64, error) {
 	url := fmt.Sprintf("https://www.extra-life.org/api/participants/%d", participantID)
 
-	cli := e.cli
-	if cli == nil {
-		cli = http.DefaultClient
-	}
-
-	resp, err := cli.Get(url)
+	resp, err := ctxhttp.Get(ctx, e.cli, url)
 	if err != nil {
 		return 0, err
 	}

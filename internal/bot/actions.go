@@ -127,7 +127,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 			return "?", nil
 		}
 
-		amount, err := s.Deps.ExtraLife.GetDonationAmount(s.Channel.ExtraLifeID)
+		amount, err := s.Deps.ExtraLife.GetDonationAmount(ctx, s.Channel.ExtraLifeID)
 		switch err {
 		case nil:
 			return fmt.Sprintf("$%.2f", amount), nil

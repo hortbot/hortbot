@@ -2,16 +2,18 @@
 package extralifefakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 )
 
 type FakeAPI struct {
-	GetDonationAmountStub        func(int) (float64, error)
+	GetDonationAmountStub        func(context.Context, int) (float64, error)
 	getDonationAmountMutex       sync.RWMutex
 	getDonationAmountArgsForCall []struct {
-		arg1 int
+		arg1 context.Context
+		arg2 int
 	}
 	getDonationAmountReturns struct {
 		result1 float64
@@ -25,16 +27,17 @@ type FakeAPI struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAPI) GetDonationAmount(arg1 int) (float64, error) {
+func (fake *FakeAPI) GetDonationAmount(arg1 context.Context, arg2 int) (float64, error) {
 	fake.getDonationAmountMutex.Lock()
 	ret, specificReturn := fake.getDonationAmountReturnsOnCall[len(fake.getDonationAmountArgsForCall)]
 	fake.getDonationAmountArgsForCall = append(fake.getDonationAmountArgsForCall, struct {
-		arg1 int
-	}{arg1})
-	fake.recordInvocation("GetDonationAmount", []interface{}{arg1})
+		arg1 context.Context
+		arg2 int
+	}{arg1, arg2})
+	fake.recordInvocation("GetDonationAmount", []interface{}{arg1, arg2})
 	fake.getDonationAmountMutex.Unlock()
 	if fake.GetDonationAmountStub != nil {
-		return fake.GetDonationAmountStub(arg1)
+		return fake.GetDonationAmountStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -49,17 +52,17 @@ func (fake *FakeAPI) GetDonationAmountCallCount() int {
 	return len(fake.getDonationAmountArgsForCall)
 }
 
-func (fake *FakeAPI) GetDonationAmountCalls(stub func(int) (float64, error)) {
+func (fake *FakeAPI) GetDonationAmountCalls(stub func(context.Context, int) (float64, error)) {
 	fake.getDonationAmountMutex.Lock()
 	defer fake.getDonationAmountMutex.Unlock()
 	fake.GetDonationAmountStub = stub
 }
 
-func (fake *FakeAPI) GetDonationAmountArgsForCall(i int) int {
+func (fake *FakeAPI) GetDonationAmountArgsForCall(i int) (context.Context, int) {
 	fake.getDonationAmountMutex.RLock()
 	defer fake.getDonationAmountMutex.RUnlock()
 	argsForCall := fake.getDonationAmountArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeAPI) GetDonationAmountReturns(result1 float64, result2 error) {

@@ -24,7 +24,7 @@ import (
 func newFakeRand(t testing.TB) *botfakes.FakeRand {
 	f := &botfakes.FakeRand{}
 
-	f.IntnCalls(func(_ int) int {
+	f.IntnCalls(func(int) int {
 		t.Fatal("Intn not implemented")
 		return 0
 	})
@@ -40,7 +40,7 @@ func newFakeRand(t testing.TB) *botfakes.FakeRand {
 func newFakeLastFM(t testing.TB) *lastfmfakes.FakeAPI {
 	f := &lastfmfakes.FakeAPI{}
 
-	f.RecentTracksCalls(func(_ string, _ int) ([]lastfm.Track, error) {
+	f.RecentTracksCalls(func(string, int) ([]lastfm.Track, error) {
 		t.Fatal("RecentTracks not implemented")
 		return nil, nil
 	})
@@ -51,7 +51,7 @@ func newFakeLastFM(t testing.TB) *lastfmfakes.FakeAPI {
 func newFakeYouTube(t testing.TB) *youtubefakes.FakeAPI {
 	f := &youtubefakes.FakeAPI{}
 
-	f.VideoTitleCalls(func(_ *url.URL) string {
+	f.VideoTitleCalls(func(*url.URL) string {
 		t.Fatal("VideoTitle not implemented")
 		return ""
 	})
@@ -73,7 +73,7 @@ func newFakeXKCD(t testing.TB) *xkcdfakes.FakeAPI {
 func newFakeExtraLife(t testing.TB) *extralifefakes.FakeAPI {
 	f := &extralifefakes.FakeAPI{}
 
-	f.GetDonationAmountCalls(func(_ int) (float64, error) {
+	f.GetDonationAmountCalls(func(context.Context, int) (float64, error) {
 		t.Fatal("GetDonationAmount not implemented")
 		return 0, nil
 	})

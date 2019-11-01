@@ -100,7 +100,7 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.extraLife.GetDonationAmountCalls(func(id int) (float64, error) {
+		st.extraLife.GetDonationAmountCalls(func(_ context.Context, id int) (float64, error) {
 			a, ok := v[strconv.Itoa(id)]
 			if !ok {
 				return 0, extralife.ErrNotFound

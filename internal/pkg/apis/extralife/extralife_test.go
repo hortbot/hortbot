@@ -1,6 +1,7 @@
 package extralife_test
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -10,37 +11,43 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+func newTransport(t *testing.T) *httpmock.MockTransport {
+	t.Helper()
+	mt := httpmock.NewMockTransport()
+	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(t.Fatal))
+	return mt
+}
+
 func TestGetDonationAmount(t *testing.T) {
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
+	mt := newTransport(t)
 
 	errTest := errors.New("test error")
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://www.extra-life.org/api/participants/200",
 		httpmock.NewStringResponder(200, `{"sumDonations": 123.45}`),
 	)
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://www.extra-life.org/api/participants/404",
 		httpmock.NewStringResponder(404, `""`),
 	)
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://www.extra-life.org/api/participants/500",
 		httpmock.NewStringResponder(500, `""`),
 	)
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://www.extra-life.org/api/participants/777",
 		httpmock.NewStringResponder(200, `asdasd`),
 	)
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://www.extra-life.org/api/participants/999",
 		func(_ *http.Request) (*http.Response, error) {
@@ -49,58 +56,38 @@ func TestGetDonationAmount(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
-		el := extralife.New()
+		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
-		amount, err := el.GetDonationAmount(200)
+		amount, err := el.GetDonationAmount(context.Background(), 200)
 		assert.NilError(t, err)
 		assert.Equal(t, amount, float64(123.45))
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		el := extralife.New()
+		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := el.GetDonationAmount(404)
+		_, err := el.GetDonationAmount(context.Background(), 404)
 		assert.Equal(t, err, extralife.ErrNotFound)
 	})
 
 	t.Run("Server error", func(t *testing.T) {
-		el := extralife.New()
+		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := el.GetDonationAmount(500)
+		_, err := el.GetDonationAmount(context.Background(), 500)
 		assert.Equal(t, err, extralife.ErrServerError)
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
-		el := extralife.New()
+		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := el.GetDonationAmount(777)
+		_, err := el.GetDonationAmount(context.Background(), 777)
 		assert.Equal(t, err, extralife.ErrServerError)
 	})
 
 	t.Run("Client error", func(t *testing.T) {
-		el := extralife.New()
+		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := el.GetDonationAmount(999)
+		_, err := el.GetDonationAmount(context.Background(), 999)
 		assert.ErrorContains(t, err, errTest.Error())
 	})
-}
-
-func TestGetDonationAmountWithClient(t *testing.T) {
-	mt := httpmock.NewMockTransport()
-
-	cli := &http.Client{
-		Transport: mt,
-	}
-
-	mt.RegisterResponder(
-		"GET",
-		"https://www.extra-life.org/api/participants/200",
-		httpmock.NewStringResponder(200, `{"sumDonations": 123.45}`),
-	)
-
-	el := extralife.New(extralife.HTTPClient(cli))
-
-	amount, err := el.GetDonationAmount(200)
-	assert.NilError(t, err)
-	assert.Equal(t, amount, float64(123.45))
 }
