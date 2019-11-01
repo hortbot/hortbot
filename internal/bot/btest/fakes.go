@@ -62,7 +62,7 @@ func newFakeYouTube(t testing.TB) *youtubefakes.FakeAPI {
 func newFakeXKCD(t testing.TB) *xkcdfakes.FakeAPI {
 	f := &xkcdfakes.FakeAPI{}
 
-	f.GetComicCalls(func(_ int) (*xkcd.Comic, error) {
+	f.GetComicCalls(func(context.Context, int) (*xkcd.Comic, error) {
 		t.Fatal("GetComic not implemented")
 		return nil, nil
 	})

@@ -1,4 +1,4 @@
-xkcd_comics {"1": {"Title": "Barrel - Part 1", "Img": "https://imgs.xkcd.com/comics/barrel_cropped_(1).jpg", "Alt": "Don't we all."}}
+xkcd_comics {"1": {"safe_title": "Barrel - Part 1", "img": "https://imgs.xkcd.com/comics/barrel_cropped_(1).jpg", "alt": "Don't we all."}}
 
 join hortbot 999 foobar 1
 

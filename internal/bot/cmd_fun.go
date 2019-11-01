@@ -58,7 +58,7 @@ func cmdXKCD(ctx context.Context, s *session, cmd string, args string) error {
 		return s.ReplyUsage(ctx, "<num>")
 	}
 
-	c, err := s.Deps.XKCD.GetComic(id)
+	c, err := s.Deps.XKCD.GetComic(ctx, id)
 
 	if err == xkcd.ErrNotFound {
 		return s.Replyf(ctx, "XKCD comic #%d not found.", id)

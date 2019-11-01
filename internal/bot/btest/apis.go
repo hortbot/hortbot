@@ -76,7 +76,7 @@ func (st *scriptTester) xkcdComics(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.xkcd.GetComicCalls(func(id int) (*xkcd.Comic, error) {
+		st.xkcd.GetComicCalls(func(_ context.Context, id int) (*xkcd.Comic, error) {
 			c, ok := v[strconv.Itoa(id)]
 			if !ok {
 				return nil, xkcd.ErrNotFound

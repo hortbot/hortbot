@@ -1,48 +1,72 @@
 package xkcd
 
 import (
+	"context"
+	"encoding/json"
 	"errors"
+	"net/http"
+	"strconv"
 
-	"github.com/rkoesters/xkcd"
+	"golang.org/x/net/context/ctxhttp"
 )
 
 var ErrNotFound = errors.New("xkcd: not found")
 
 type Comic struct {
-	Title string
-	Img   string
-	Alt   string
+	Title string `json:"safe_title"`
+	Img   string `json:"img"`
+	Alt   string `json:"alt"`
 }
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 //counterfeiter:generate . API
 type API interface {
-	GetComic(id int) (*Comic, error)
+	GetComic(ctx context.Context, id int) (*Comic, error)
 }
 
-// TODO: Fork the XKCD library to allow for a custom HTTP client.
-
-type XKCD struct{}
+type XKCD struct {
+	cli *http.Client
+}
 
 var _ API = &XKCD{}
 
-func New() *XKCD {
-	return &XKCD{}
+type Option func(*XKCD)
+
+func New(opts ...Option) *XKCD {
+	x := &XKCD{}
+	for _, opt := range opts {
+		opt(x)
+	}
+	return x
 }
 
-func (*XKCD) GetComic(id int) (*Comic, error) {
-	c, err := xkcd.Get(id)
+// HTTPClient sets the XKCD client's underlying http.Client.
+// If nil (or if this option wasn't used), http.DefaultClient will be used.
+func HTTPClient(cli *http.Client) Option {
+	return func(s *XKCD) {
+		s.cli = cli
+	}
+}
+
+func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
+	url := "https://xkcd.com/" + strconv.Itoa(id) + "/info.0.json"
+
+	resp, err := ctxhttp.Get(ctx, x.cli, url)
 	if err != nil {
-		if err == xkcd.ErrNotFound {
-			return nil, ErrNotFound
-		}
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 400 {
+		return nil, ErrNotFound
+	}
+
+	c := &Comic{}
+
+	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
 		return nil, err
 	}
 
-	return &Comic{
-		Title: c.SafeTitle,
-		Img:   c.Img,
-		Alt:   c.Alt,
-	}, nil
+	return c, nil
 }

@@ -1,6 +1,7 @@
 package xkcd_test
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -24,25 +25,37 @@ const comic1 = `{
     "day": "1"
 }`
 
+func newTransport(t *testing.T) *httpmock.MockTransport {
+	t.Helper()
+	mt := httpmock.NewMockTransport()
+	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(t.Fatal))
+	return mt
+}
+
 func TestGetComic(t *testing.T) {
-	httpmock.Activate()
-	defer httpmock.DeactivateAndReset()
+	mt := newTransport(t)
 
 	errTest := errors.New("test error")
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://xkcd.com/1/info.0.json",
 		httpmock.NewStringResponder(200, comic1),
 	)
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
 		"GET",
 		"https://xkcd.com/77777/info.0.json",
 		httpmock.NewStringResponder(404, ``),
 	)
 
-	httpmock.RegisterResponder(
+	mt.RegisterResponder(
+		"GET",
+		"https://xkcd.com/88888/info.0.json",
+		httpmock.NewStringResponder(200, `{`),
+	)
+
+	mt.RegisterResponder(
 		"GET",
 		"https://xkcd.com/99999/info.0.json",
 		func(_ *http.Request) (*http.Response, error) {
@@ -51,9 +64,9 @@ func TestGetComic(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
-		x := xkcd.New()
+		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
 
-		comic, err := x.GetComic(1)
+		comic, err := x.GetComic(context.Background(), 1)
 		assert.NilError(t, err)
 		assert.DeepEqual(t, comic, &xkcd.Comic{
 			Title: "Barrel - Part 1",
@@ -63,16 +76,23 @@ func TestGetComic(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		x := xkcd.New()
+		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := x.GetComic(77777)
+		_, err := x.GetComic(context.Background(), 77777)
 		assert.Equal(t, err, xkcd.ErrNotFound)
 	})
 
 	t.Run("Client error", func(t *testing.T) {
-		x := xkcd.New()
+		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := x.GetComic(99999)
+		_, err := x.GetComic(context.Background(), 99999)
 		assert.ErrorContains(t, err, errTest.Error())
+	})
+
+	t.Run("Decode error", func(t *testing.T) {
+		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
+
+		_, err := x.GetComic(context.Background(), 88888)
+		assert.ErrorContains(t, err, "unexpected EOF")
 	})
 }

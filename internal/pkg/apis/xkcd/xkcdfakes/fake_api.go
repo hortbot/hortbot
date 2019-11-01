@@ -2,16 +2,18 @@
 package xkcdfakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 )
 
 type FakeAPI struct {
-	GetComicStub        func(int) (*xkcd.Comic, error)
+	GetComicStub        func(context.Context, int) (*xkcd.Comic, error)
 	getComicMutex       sync.RWMutex
 	getComicArgsForCall []struct {
-		arg1 int
+		arg1 context.Context
+		arg2 int
 	}
 	getComicReturns struct {
 		result1 *xkcd.Comic
@@ -25,16 +27,17 @@ type FakeAPI struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAPI) GetComic(arg1 int) (*xkcd.Comic, error) {
+func (fake *FakeAPI) GetComic(arg1 context.Context, arg2 int) (*xkcd.Comic, error) {
 	fake.getComicMutex.Lock()
 	ret, specificReturn := fake.getComicReturnsOnCall[len(fake.getComicArgsForCall)]
 	fake.getComicArgsForCall = append(fake.getComicArgsForCall, struct {
-		arg1 int
-	}{arg1})
-	fake.recordInvocation("GetComic", []interface{}{arg1})
+		arg1 context.Context
+		arg2 int
+	}{arg1, arg2})
+	fake.recordInvocation("GetComic", []interface{}{arg1, arg2})
 	fake.getComicMutex.Unlock()
 	if fake.GetComicStub != nil {
-		return fake.GetComicStub(arg1)
+		return fake.GetComicStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -49,17 +52,17 @@ func (fake *FakeAPI) GetComicCallCount() int {
 	return len(fake.getComicArgsForCall)
 }
 
-func (fake *FakeAPI) GetComicCalls(stub func(int) (*xkcd.Comic, error)) {
+func (fake *FakeAPI) GetComicCalls(stub func(context.Context, int) (*xkcd.Comic, error)) {
 	fake.getComicMutex.Lock()
 	defer fake.getComicMutex.Unlock()
 	fake.GetComicStub = stub
 }
 
-func (fake *FakeAPI) GetComicArgsForCall(i int) int {
+func (fake *FakeAPI) GetComicArgsForCall(i int) (context.Context, int) {
 	fake.getComicMutex.RLock()
 	defer fake.getComicMutex.RUnlock()
 	argsForCall := fake.getComicArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeAPI) GetComicReturns(result1 *xkcd.Comic, result2 error) {
