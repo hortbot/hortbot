@@ -48,17 +48,17 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
 	github.com/spf13/cobra v0.0.5 // indirect
-	github.com/spf13/viper v1.4.0 // indirect
-	github.com/valyala/quicktemplate v1.3.1
+	github.com/spf13/viper v1.5.0 // indirect
+	github.com/valyala/quicktemplate v1.4.1
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.0+incompatible
 	go.opencensus.io v0.22.1
-	go.uber.org/zap v1.11.0
-	golang.org/x/net v0.0.0-20191021144547-ec77196f6094
+	go.uber.org/zap v1.12.0
+	golang.org/x/net v0.0.0-20191101175033-0deb6923b6d9
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191023202404-2b779830f9d3
+	golang.org/x/tools v0.0.0-20191101200257-8dbcdeb83d3f
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
