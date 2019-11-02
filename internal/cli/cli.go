@@ -4,7 +4,9 @@ package cli
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/version"
@@ -12,6 +14,13 @@ import (
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 )
+
+func init() {
+	// Set a sane default.
+	http.DefaultClient = &http.Client{
+		Timeout: 15 * time.Second,
+	}
+}
 
 type Common struct {
 	Debug  bool                  `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
