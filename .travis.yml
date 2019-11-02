@@ -53,4 +53,6 @@ after_success:
 
       docker build -t hortbot/hortbot --build-arg version=$VERSION .;
       docker push hortbot/hortbot;
+      docker tag hortbot/hortbot hortbot/hortbot:$VERSION;
+      docker push hortbot/hortbot:$VERSION;
     fi
