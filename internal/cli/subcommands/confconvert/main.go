@@ -29,7 +29,7 @@ import (
 
 type cmd struct {
 	cli.Common
-	twitchflags.Twitch
+	Twitch twitchflags.Twitch
 
 	JSONs     string `long:"jsons" description:"Directory of CoeBot JSON config files" required:"true"`
 	Out       string `long:"out" description:"Output directory for confimport configs" required:"true"`
@@ -53,7 +53,7 @@ func Run(args []string) {
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	logger := ctxlog.FromContext(ctx)
-	tw = cmd.TwitchClient()
+	tw = cmd.Twitch.Client()
 
 	logger = logger.WithOptions(zap.AddStacktrace(noTrace{}))
 	ctx = ctxlog.WithLogger(ctx, logger)

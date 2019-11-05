@@ -20,12 +20,12 @@ import (
 
 type cmd struct {
 	cli.Common
-	sqlflags.SQL
-	twitchflags.Twitch
-	ircflags.IRC
-	redisflags.Redis
-	webflags.Web
-	botflags.Bot
+	SQL    sqlflags.SQL
+	Twitch twitchflags.Twitch
+	IRC    ircflags.IRC
+	Redis  redisflags.Redis
+	Web    webflags.Web
+	Bot    botflags.Bot
 }
 
 func Run(args []string) {
@@ -44,14 +44,14 @@ func Run(args []string) {
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	logger := ctxlog.FromContext(ctx)
 
-	db := cmd.OpenDB(ctx, cmd.DBConnector(ctx))
-	rdb := cmd.RedisClient()
-	twitchAPI := cmd.TwitchClient()
-	conn := cmd.IRCPool(ctx, db, twitchAPI)
-	a := cmd.WebApp(cmd.Debug, rdb, db, twitchAPI)
+	db := cmd.SQL.Open(ctx, cmd.SQL.Connector(ctx))
+	rdb := cmd.Redis.Client()
+	twitchAPI := cmd.Twitch.Client()
+	conn := cmd.IRC.Pool(ctx, db, twitchAPI)
+	a := cmd.Web.New(cmd.Debug, rdb, db, twitchAPI)
 
 	var sender senderFunc = func(ctx context.Context, origin, target, message string) error {
-		allowed, err := cmd.SendMessageAllowed(ctx, rdb, origin, target)
+		allowed, err := cmd.IRC.SendMessageAllowed(ctx, rdb, origin, target)
 		if err != nil {
 			return err
 		}
@@ -76,14 +76,14 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		return nil
 	}
 
-	b := cmd.NewBot(ctx, db, rdb, sender, notifier, twitchAPI)
+	b := cmd.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
 
 	g.Go(a.Run)
 
-	for i := 0; i < cmd.Workers; i++ {
+	for i := 0; i < cmd.Bot.Workers; i++ {
 		g.Go(func(ctx context.Context) error {
 			inc := conn.Incoming()
 
@@ -96,7 +96,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 					if !ok {
 						return nil
 					}
-					b.Handle(ctx, cmd.Nick, m)
+					b.Handle(ctx, cmd.IRC.Nick, m)
 				}
 			}
 		})
@@ -114,7 +114,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 			case <-time.After(time.Minute):
 			}
 
-			channels, err := modelsx.ListActiveChannels(ctx, db, cmd.Nick)
+			channels, err := modelsx.ListActiveChannels(ctx, db, cmd.IRC.Nick)
 			if err != nil {
 				return err
 			}

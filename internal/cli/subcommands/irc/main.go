@@ -22,12 +22,12 @@ import (
 
 type cmd struct {
 	cli.Common
-	sqlflags.SQL
-	twitchflags.Twitch
-	ircflags.IRC
-	redisflags.Redis
-	nsqflags.NSQ
-	jaegerflags.Jaeger
+	SQL    sqlflags.SQL
+	Twitch twitchflags.Twitch
+	IRC    ircflags.IRC
+	Redis  redisflags.Redis
+	NSQ    nsqflags.NSQ
+	Jaeger jaegerflags.Jaeger
 }
 
 func Run(args []string) {
@@ -46,23 +46,23 @@ func Run(args []string) {
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	logger := ctxlog.FromContext(ctx)
 
-	defer cmd.InitJaeger(ctx, "irc", cmd.Debug)()
+	defer cmd.Jaeger.Init(ctx, "irc", cmd.Debug)()
 
-	connector := cmd.DBConnector(ctx)
-	connector = cmd.TraceDB(cmd.Debug, connector)
-	db := cmd.OpenDB(ctx, connector)
+	connector := cmd.SQL.Connector(ctx)
+	connector = cmd.Jaeger.TraceDB(cmd.Debug, connector)
+	db := cmd.SQL.Open(ctx, connector)
 
-	rdb := cmd.RedisClient()
-	twitchAPI := cmd.TwitchClient()
-	conn := cmd.IRCPool(ctx, db, twitchAPI)
+	rdb := cmd.Redis.Client()
+	twitchAPI := cmd.Twitch.Client()
+	conn := cmd.IRC.Pool(ctx, db, twitchAPI)
 
-	incomingPub := bnsq.NewIncomingPublisher(cmd.NSQAddr)
+	incomingPub := cmd.NSQ.NewIncomingPublisher()
 
-	sendSub := cmd.NewSendMessageSubscriber(cmd.Nick, 15*time.Second, func(m *bnsq.SendMessage, parent trace.SpanContext) error {
+	sendSub := cmd.NSQ.NewSendMessageSubscriber(cmd.IRC.Nick, 15*time.Second, func(m *bnsq.SendMessage, parent trace.SpanContext) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", parent)
 		defer span.End()
 
-		allowed, err := cmd.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
+		allowed, err := cmd.IRC.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
 		if err != nil {
 			logger.Error("error checking rate limit", zap.Error(err))
 			return err
@@ -83,7 +83,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 	syncJoined := make(chan struct{}, 1)
 
-	notifySub := cmd.NewNotifySubscriber(cmd.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error {
+	notifySub := cmd.NSQ.NewNotifySubscriber(cmd.IRC.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", parent)
 		defer span.End()
 
@@ -115,7 +115,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 					return nil
 				}
 
-				if err := incomingPub.Publish(ctx, cmd.Nick, m); err != nil {
+				if err := incomingPub.Publish(ctx, cmd.IRC.Nick, m); err != nil {
 					logger.Error("error publishing incoming message", zap.Error(err))
 				}
 			}
@@ -137,7 +137,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 			case <-time.After(time.Minute):
 			}
 
-			channels, err := modelsx.ListActiveChannels(ctx, db, cmd.Nick)
+			channels, err := modelsx.ListActiveChannels(ctx, db, cmd.IRC.Nick)
 			if err != nil {
 				return err
 			}

@@ -21,12 +21,12 @@ import (
 
 type config struct {
 	cli.Common
-	sqlflags.SQL
-	twitchflags.Twitch
-	redisflags.Redis
-	botflags.Bot
-	nsqflags.NSQ
-	jaegerflags.Jaeger
+	SQL    sqlflags.SQL
+	Twitch twitchflags.Twitch
+	Redis  redisflags.Redis
+	Bot    botflags.Bot
+	NSQ    nsqflags.NSQ
+	Jaeger jaegerflags.Jaeger
 }
 
 func Run(args []string) {
@@ -44,24 +44,24 @@ func Run(args []string) {
 func (config *config) Main(ctx context.Context, _ []string) {
 	logger := ctxlog.FromContext(ctx)
 
-	defer config.InitJaeger(ctx, "bot", config.Debug)()
+	defer config.Jaeger.Init(ctx, "bot", config.Debug)()
 
-	connector := config.DBConnector(ctx)
-	connector = config.TraceDB(config.Debug, connector)
-	db := config.OpenDB(ctx, connector)
-	rdb := config.RedisClient()
-	twitchAPI := config.TwitchClient()
-	sender := config.NewSendMessagePublisher()
-	notifier := config.NewNotifyPublisher()
+	connector := config.SQL.Connector(ctx)
+	connector = config.Jaeger.TraceDB(config.Debug, connector)
+	db := config.SQL.Open(ctx, connector)
+	rdb := config.Redis.Client()
+	twitchAPI := config.Twitch.Client()
+	sender := config.NSQ.NewSendMessagePublisher()
+	notifier := config.NSQ.NewNotifyPublisher()
 
-	b := config.NewBot(ctx, db, rdb, sender, notifier, twitchAPI)
+	b := config.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI)
 	defer b.Stop()
 
-	sem := semaphore.NewWeighted(int64(config.Workers))
+	sem := semaphore.NewWeighted(int64(config.Bot.Workers))
 
 	g := errgroupx.FromContext(ctx)
 
-	incomingSub := config.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, parent trace.SpanContext) error {
+	incomingSub := config.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, parent trace.SpanContext) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", parent)
 		defer span.End()
 

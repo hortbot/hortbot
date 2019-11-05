@@ -7,13 +7,13 @@ import (
 )
 
 type Redis struct {
-	RedisAddr string `long:"redis-addr" env:"HB_REDIS_ADDR" description:"Redis address" required:"true"`
+	Addr string `long:"redis-addr" env:"HB_REDIS_ADDR" description:"Redis address" required:"true"`
 }
 
 var DefaultRedis = Redis{}
 
-func (args *Redis) RedisClient() *redis.DB {
+func (args *Redis) Client() *redis.DB {
 	return redis.New(goredis.NewClient(&goredis.Options{
-		Addr: args.RedisAddr,
+		Addr: args.Addr,
 	}))
 }

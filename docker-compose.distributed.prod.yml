@@ -16,7 +16,7 @@ services:
       - config/twitch.env
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
-      - HB_MIGRATE_UP=true
+      - HB_DB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
@@ -34,7 +34,7 @@ services:
       - config/twitch.env
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
-      - HB_MIGRATE_UP=true
+      - HB_DB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
@@ -53,7 +53,7 @@ services:
       - config/twitch.env
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
-      - HB_MIGRATE_UP=true
+      - HB_DB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831

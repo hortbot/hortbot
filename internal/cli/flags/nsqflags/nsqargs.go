@@ -9,22 +9,22 @@ import (
 )
 
 type NSQ struct {
-	NSQAddr    string `long:"nsq-addr" env:"HB_NSQ_ADDR" description:"NSQD address" required:"true"`
-	NSQChannel string `long:"nsq-channel" env:"HB_NSQ_CHANNEL" description:"NSQ subscription channel"`
+	Addr    string `long:"nsq-addr" env:"HB_NSQ_ADDR" description:"NSQD address" required:"true"`
+	Channel string `long:"nsq-channel" env:"HB_NSQ_CHANNEL" description:"NSQ subscription channel"`
 }
 
 var DefaultNSQ = NSQ{
-	NSQChannel: "queue",
+	Channel: "queue",
 }
 
 func (args *NSQ) NewIncomingPublisher() *bnsq.IncomingPublisher {
-	return bnsq.NewIncomingPublisher(args.NSQAddr)
+	return bnsq.NewIncomingPublisher(args.Addr)
 }
 
 func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(i *bnsq.Incoming, parent trace.SpanContext) error) *bnsq.IncomingSubscriber {
 	return &bnsq.IncomingSubscriber{
-		Addr:    args.NSQAddr,
-		Channel: args.NSQChannel,
+		Addr:    args.Addr,
+		Channel: args.Channel,
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(maxAge),
 		},
@@ -33,14 +33,14 @@ func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(i *bnsq.Inc
 }
 
 func (args *NSQ) NewSendMessagePublisher() *bnsq.SendMessagePublisher {
-	return bnsq.NewSendMessagePublisher(args.NSQAddr)
+	return bnsq.NewSendMessagePublisher(args.Addr)
 }
 
 func (args *NSQ) NewSendMessageSubscriber(origin string, maxAge time.Duration, fn func(m *bnsq.SendMessage, parent trace.SpanContext) error) *bnsq.SendMessageSubscriber {
 	return &bnsq.SendMessageSubscriber{
-		Addr:    args.NSQAddr,
+		Addr:    args.Addr,
 		Origin:  origin,
-		Channel: args.NSQChannel,
+		Channel: args.Channel,
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(maxAge),
 		},
@@ -49,14 +49,14 @@ func (args *NSQ) NewSendMessageSubscriber(origin string, maxAge time.Duration, f
 }
 
 func (args *NSQ) NewNotifyPublisher() *bnsq.NotifyPublisher {
-	return bnsq.NewNotifyPublisher(args.NSQAddr)
+	return bnsq.NewNotifyPublisher(args.Addr)
 }
 
 func (args *NSQ) NewNotifySubscriber(botName string, maxAge time.Duration, fn func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error) *bnsq.NotifySubscriber {
 	return &bnsq.NotifySubscriber{
-		Addr:    args.NSQAddr,
+		Addr:    args.Addr,
 		BotName: botName,
-		Channel: args.NSQChannel,
+		Channel: args.Channel,
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberMaxAge(maxAge),
 		},

@@ -20,30 +20,30 @@ import (
 )
 
 type Bot struct {
-	Admins []string `long:"admin" env:"HB_ADMINS" env-delim:"," description:"Bot admins"`
+	Admins []string `long:"bot-admin" env:"HB_BOT_ADMINS" env-delim:"," description:"Bot admins"`
 
-	WhitelistEnabled bool     `long:"whitelist-enabled" env:"HB_WHITELIST_ENABLED" description:"Enable the user whitelist"`
-	Whitelist        []string `long:"whitelist" env:"HB_WHITELIST" env-delim:"," description:"User whitelist"`
+	WhitelistEnabled bool     `long:"bot-whitelist-enabled" env:"HB_BOT_WHITELIST_ENABLED" description:"Enable the user whitelist"`
+	Whitelist        []string `long:"bot-whitelist" env:"HB_BOT_WHITELIST" env-delim:"," description:"User whitelist"`
 
-	BulletMap       map[string]string `long:"bullet-map" env:"HB_BULLET_MAP" description:"Mapping from bot name to default bullet"`
-	DefaultCooldown int               `long:"default-cooldown" env:"HB_DEFAULT_COOLDOWN" description:"default command cooldown"`
+	BulletMap       map[string]string `long:"bot-bullet-map" env:"HB_BOT_BULLET_MAP" description:"Mapping from bot name to default bullet"`
+	DefaultCooldown int               `long:"bot-default-cooldown" env:"HB_BOT_DEFAULT_COOLDOWN" description:"default command cooldown"`
 
-	BotWebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
-	BotWebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" description:"Bot name to web address mapping"`
+	WebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
+	WebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" description:"Bot name to web address mapping"`
 
-	LastFMKey string `long:"lastfm-key" env:"HB_LASTFM_KEY" description:"LastFM API key"`
-	SteamKey  string `long:"steam-key" env:"HB_STEAM_KEY" description:"Steam API key"`
+	LastFMKey string `long:"bot-lastfm-key" env:"HB_BOT_LASTFM_KEY" description:"LastFM API key"`
+	SteamKey  string `long:"bot-steam-key" env:"HB_BOT_STEAM_KEY" description:"Steam API key"`
 
-	Workers int `long:"workers" env:"HB_WORKERS" description:"number of concurrent workers for handling"`
+	Workers int `long:"bot-workers" env:"HB_BOT_WORKERS" description:"number of concurrent workers for handling"`
 }
 
 var DefaultBot = Bot{
 	DefaultCooldown: 5,
-	BotWebAddr:      "http://localhost:5000",
+	WebAddr:         "http://localhost:5000",
 	Workers:         runtime.GOMAXPROCS(0),
 }
 
-func (args *Bot) NewBot(
+func (args *Bot) New(
 	ctx context.Context,
 	db *sql.DB,
 	rdb *redis.DB,
@@ -83,8 +83,8 @@ func (args *Bot) NewBot(
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,
 		Cooldown:         args.DefaultCooldown,
-		WebAddr:          args.BotWebAddr,
-		WebAddrMap:       args.BotWebAddrMap,
+		WebAddr:          args.WebAddr,
+		WebAddrMap:       args.WebAddrMap,
 		BulletMap:        args.BulletMap,
 	})
 

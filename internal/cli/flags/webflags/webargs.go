@@ -10,24 +10,24 @@ import (
 )
 
 type Web struct {
-	WebAddr       string            `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
-	WebSessionKey string            `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
-	WebBrand      string            `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server default branding"`
-	WebBrandMap   map[string]string `long:"web-brand-map" env:"HB_WEB_BRAND_MAP" env-delim:"," description:"Web server brand mapping from domains to branding (ex: 'example.com:SomeBot,other.net:WhoAmI')"`
+	Addr       string            `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
+	SessionKey string            `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
+	Brand      string            `long:"web-brand" env:"HB_WEB_BRAND" description:"Web server default branding"`
+	BrandMap   map[string]string `long:"web-brand-map" env:"HB_WEB_BRAND_MAP" env-delim:"," description:"Web server brand mapping from domains to branding (ex: 'example.com:SomeBot,other.net:WhoAmI')"`
 }
 
 var DefaultWeb = Web{
-	WebAddr:       ":5000",
-	WebSessionKey: "this-is-insecure-do-not-use-this",
-	WebBrand:      "HortBot",
+	Addr:       ":5000",
+	SessionKey: "this-is-insecure-do-not-use-this",
+	Brand:      "HortBot",
 }
 
-func (args *Web) WebApp(debug bool, rdb *redis.DB, db *sql.DB, tw *twitch.Twitch) *web.App {
+func (args *Web) New(debug bool, rdb *redis.DB, db *sql.DB, tw *twitch.Twitch) *web.App {
 	return &web.App{
-		Addr:       args.WebAddr,
-		SessionKey: []byte(args.WebSessionKey),
-		Brand:      args.WebBrand,
-		BrandMap:   args.WebBrandMap,
+		Addr:       args.Addr,
+		SessionKey: []byte(args.SessionKey),
+		Brand:      args.Brand,
+		BrandMap:   args.BrandMap,
 		Debug:      debug,
 		Redis:      rdb,
 		DB:         db,

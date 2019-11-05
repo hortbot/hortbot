@@ -15,11 +15,11 @@ import (
 
 type cmd struct {
 	cli.Common
-	sqlflags.SQL
-	twitchflags.Twitch
-	redisflags.Redis
-	webflags.Web
-	jaegerflags.Jaeger
+	SQL    sqlflags.SQL
+	Twitch twitchflags.Twitch
+	Redis  redisflags.Redis
+	Web    webflags.Web
+	Jaeger jaegerflags.Jaeger
 }
 
 func Run(args []string) {
@@ -36,15 +36,15 @@ func Run(args []string) {
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	logger := ctxlog.FromContext(ctx)
 
-	defer cmd.InitJaeger(ctx, "web", cmd.Debug)()
+	defer cmd.Jaeger.Init(ctx, "web", cmd.Debug)()
 
-	connector := cmd.DBConnector(ctx)
-	connector = cmd.TraceDB(cmd.Debug, connector)
-	db := cmd.OpenDB(ctx, connector)
+	connector := cmd.SQL.Connector(ctx)
+	connector = cmd.Jaeger.TraceDB(cmd.Debug, connector)
+	db := cmd.SQL.Open(ctx, connector)
 
-	rdb := cmd.RedisClient()
-	tw := cmd.TwitchClient()
-	a := cmd.WebApp(cmd.Debug, rdb, db, tw)
+	rdb := cmd.Redis.Client()
+	tw := cmd.Twitch.Client()
+	a := cmd.Web.New(cmd.Debug, rdb, db, tw)
 
 	err := a.Run(ctx)
 	logger.Info("exiting", zap.Error(err))

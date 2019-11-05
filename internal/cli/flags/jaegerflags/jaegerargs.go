@@ -13,18 +13,18 @@ import (
 )
 
 type Jaeger struct {
-	JaegerAgent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
+	Agent string `long:"jaeger-agent" env:"HB_JAEGER_AGENT" description:"jaeger agent address"`
 }
 
 var DefaultJaeger = Jaeger{}
 
-func (args *Jaeger) InitJaeger(ctx context.Context, name string, debug bool) func() {
-	if args.JaegerAgent == "" {
+func (args *Jaeger) Init(ctx context.Context, name string, debug bool) func() {
+	if args.Agent == "" {
 		return func() {}
 	}
 
 	exporter, err := jaeger.NewExporter(jaeger.Options{
-		AgentEndpoint: args.JaegerAgent,
+		AgentEndpoint: args.Agent,
 		Process: jaeger.Process{
 			ServiceName: name,
 		},
@@ -42,7 +42,7 @@ func (args *Jaeger) InitJaeger(ctx context.Context, name string, debug bool) fun
 }
 
 func (args *Jaeger) TraceDB(debug bool, d driver.Connector) driver.Connector {
-	if args.JaegerAgent == "" {
+	if args.Agent == "" {
 		return d
 	}
 	return ocsql.WrapConnector(d, ocsql.WithAllTraceOptions(), ocsql.WithQueryParams(debug))

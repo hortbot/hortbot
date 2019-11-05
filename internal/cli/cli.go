@@ -25,22 +25,16 @@ func init() {
 }
 
 type Common struct {
-	Debug  bool                  `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
-	Config func(filename string) `short:"c" long:"config" description:"A path to an INI config file - may be passed more than once"`
+	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 }
 
 func (c *Common) debug() bool {
 	return c.Debug
 }
 
-func (c *Common) configFunc(fn func(string)) {
-	c.Config = fn
-}
-
 type Command interface {
 	Main(ctx context.Context, args []string)
 	debug() bool
-	configFunc(func(string))
 }
 
 var DefaultCommon = Common{}
@@ -51,12 +45,7 @@ func Run(name string, args []string, cmd Command) {
 	ctx := ctxutil.Interrupt()
 
 	parser := flags.NewNamedParser(name, flags.HelpFlag|flags.PassDoubleDash)
-	_, _ = parser.AddGroup("Application Options", "", cmd)
-
-	cmd.configFunc(func(filename string) {
-		err := flags.NewIniParser(parser).ParseFile(filename)
-		checkParseError(err)
-	})
+	_, _ = parser.AddGroup("Options", "", cmd)
 
 	args, err := parser.Parse()
 	checkParseError(err)

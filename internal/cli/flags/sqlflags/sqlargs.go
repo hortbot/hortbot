@@ -15,12 +15,12 @@ import (
 
 type SQL struct {
 	DB        string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
-	MigrateUp bool   `long:"migrate-up" env:"HB_MIGRATE_UP" description:"Migrates the postgres database up"`
+	MigrateUp bool   `long:"db-migrate-up" env:"HB_DB_MIGRATE_UP" description:"Migrates the postgres database up"`
 }
 
 var DefaultSQL = SQL{}
 
-func (args *SQL) DBConnector(ctx context.Context) driver.Connector {
+func (args *SQL) Connector(ctx context.Context) driver.Connector {
 	connector, err := pq.NewConnector(args.DB)
 	if err != nil {
 		ctxlog.FromContext(ctx).Fatal("error creating postgres connector", zap.Error(err))
@@ -28,7 +28,7 @@ func (args *SQL) DBConnector(ctx context.Context) driver.Connector {
 	return connector
 }
 
-func (args *SQL) OpenDB(ctx context.Context, connector driver.Connector) *sql.DB {
+func (args *SQL) Open(ctx context.Context, connector driver.Connector) *sql.DB {
 	db := sql.OpenDB(connector)
 
 	if err := db.PingContext(ctx); err != nil {
