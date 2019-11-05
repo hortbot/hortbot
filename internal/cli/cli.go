@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
+	"github.com/joho/godotenv"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 )
@@ -44,6 +46,8 @@ type Command interface {
 var DefaultCommon = Common{}
 
 func Run(name string, args []string, cmd Command) {
+	_ = godotenv.Load(strings.Split(os.Getenv("ENV_FILE"), ",")...)
+
 	ctx := ctxutil.Interrupt()
 
 	parser := flags.NewNamedParser(name, flags.HelpFlag|flags.PassDoubleDash)

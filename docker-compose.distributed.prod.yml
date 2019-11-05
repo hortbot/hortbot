@@ -5,14 +5,15 @@ version: "3"
 services:
   irc:
     build: .
-    volumes:
-      - ./config:/config:ro
-    command: irc -c /config/irc.ini -c /config/twitch.ini
+    command: irc
     depends_on:
       - db
       - redis
       - nsq
       - jaeger
+    env_file:
+      - config/irc.env
+      - config/twitch.env
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
@@ -27,9 +28,10 @@ services:
       - redis
       - nsq
       - jaeger
-    volumes:
-      - ./config:/config:ro
-    command: bot -c /config/bot.ini -c /config/twitch.ini
+    command: bot
+    env_file:
+      - config/bot.env
+      - config/twitch.env
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true
@@ -44,11 +46,11 @@ services:
       - redis
       - nsq
       - jaeger
-    volumes:
-      - ./config:/config:ro
-    command: web -c /config/twitch.ini
+    command: web
     ports:
       - "5000:5000"
+    env_file:
+      - config/twitch.env
     environment:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_MIGRATE_UP=true

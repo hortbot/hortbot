@@ -6,9 +6,9 @@ services:
     volumes:
       - .:/app:ro
       - gopath:/go
-      - go-cache:/root/.cache/go-build
+      - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . single-proc -c config/bot.ini -c config/twitch.ini -c config/irc.ini
+    command: go run -mod=readonly -v . single-proc
     links:
       - db
       - redis
@@ -17,6 +17,10 @@ services:
       - redis
     ports:
       - "5000:5000"
+    env_file:
+      - config/bot.env
+      - config/twitch.env
+      - config/irc.env
     environment:
       - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
@@ -41,4 +45,4 @@ services:
 
 volumes:
   gopath:
-  go-cache:
+  go-build:

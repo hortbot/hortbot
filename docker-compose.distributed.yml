@@ -6,14 +6,17 @@ services:
     volumes:
       - .:/app:ro
       - gopath:/go
-      - go-cache:/root/.cache/go-build
+      - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . irc -c config/irc.ini -c config/twitch.ini
+    command: go run -mod=readonly -v . irc
     depends_on:
       - db
       - redis
       - nsq
       - jaeger
+    env_file:
+      - config/irc.env
+      - config/twitch.env
     environment:
       - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
@@ -27,14 +30,17 @@ services:
     volumes:
       - .:/app:ro
       - gopath:/go
-      - go-cache:/root/.cache/go-build
+      - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . bot -c config/bot.ini -c config/twitch.ini
+    command: go run -mod=readonly -v . bot
     depends_on:
       - db
       - redis
       - nsq
       - jaeger
+    env_file:
+      - config/bot.env
+      - config/twitch.env
     environment:
       - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
@@ -48,9 +54,9 @@ services:
     volumes:
       - .:/app:ro
       - gopath:/go
-      - go-cache:/root/.cache/go-build
+      - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . web -c config/twitch.ini
+    command: go run -mod=readonly -v . web
     depends_on:
       - db
       - redis
@@ -59,6 +65,8 @@ services:
     ports:
       - "5000:5000"
       - "5001:5000"
+    env_file:
+      - config/twitch.env
     environment:
       - HB_DEBUG=true
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
@@ -93,4 +101,4 @@ services:
 
 volumes:
   gopath:
-  go-cache:
+  go-build:
