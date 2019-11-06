@@ -316,10 +316,13 @@ func handleSession(ctx context.Context, s *session) error {
 		return nil
 	}
 
-	s.N, err = s.IncrementMessageCount(ctx)
-	if err != nil {
+	s.Channel.MessageCount++
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount)); err != nil {
 		return err
 	}
+
+	s.N = s.Channel.MessageCount
 
 	if ok, err := tryCommand(ctx, s); ok || err != nil {
 		switch err {

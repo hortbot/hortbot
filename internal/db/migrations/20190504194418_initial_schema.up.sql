@@ -27,6 +27,8 @@ CREATE TABLE channels (
     prefix text NOT NULL,
     bullet text,
 
+    message_count bigint NOT NULL,
+
     mode access_level NOT NULL,
 
     ignored text[] DEFAULT '{}' NOT NULL,

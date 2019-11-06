@@ -41,12 +41,6 @@ func TestBot(t *testing.T) {
 	_, err = db.ScheduledAllowed(ctx, "foo", 123, time.Minute)
 	assert.NilError(t, err)
 
-	_, err = db.MessageCount(ctx, "foo")
-	assert.NilError(t, err)
-
-	_, err = db.IncrementMessageCount(ctx, "foo")
-	assert.NilError(t, err)
-
 	_, err = db.AutoreplyAllowed(ctx, "foo", 123, time.Minute)
 	assert.NilError(t, err)
 

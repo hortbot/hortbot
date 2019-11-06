@@ -16,7 +16,6 @@ const (
 	keyConfirm          = keyStr("confirm")
 	keyRepeatedCommand  = keyStr("repeated_command")
 	keyScheduledCommand = keyStr("scheduled_command")
-	keyMessageCount     = keyStr("message_count")
 	keyAutoreply        = keyStr("autoreply")
 	keyFilterWarned     = keyStr("filter_warning")
 	keyRaffle           = keyStr("raffle")
@@ -89,35 +88,6 @@ func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, ex
 	)
 	seen, err := checkAndMark(client, key, expiry)
 	return !seen, err
-}
-
-func messageCountKey(channel string) string {
-	return buildKey(
-		keyChannel.is(channel),
-		keyMessageCount.is(""),
-	)
-}
-
-func (db *DB) MessageCount(ctx context.Context, channel string) (int64, error) {
-	ctx, span := trace.StartSpan(ctx, "MessageCount")
-	defer span.End()
-
-	client := db.client.WithContext(ctx)
-	key := messageCountKey(channel)
-	v, err := client.Get(key).Int64()
-	if err == redis.Nil {
-		err = nil
-	}
-	return v, err
-}
-
-func (db *DB) IncrementMessageCount(ctx context.Context, channel string) (int64, error) {
-	ctx, span := trace.StartSpan(ctx, "IncrementMessageCount")
-	defer span.End()
-
-	client := db.client.WithContext(ctx)
-	key := messageCountKey(channel)
-	return client.Incr(key).Result()
 }
 
 func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {

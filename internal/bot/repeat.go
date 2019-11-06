@@ -112,9 +112,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return nil
 	}
 
-	if err := repeatPopulateSession(ctx, s, repeat.R.Channel); err != nil {
-		return err
-	}
+	repeatPopulateSession(ctx, s, repeat.R.Channel)
 
 	if s.N < repeat.LastCount+repeat.MessageDiff {
 		return nil
@@ -214,9 +212,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		return nil
 	}
 
-	if err := repeatPopulateSession(ctx, s, scheduled.R.Channel); err != nil {
-		return err
-	}
+	repeatPopulateSession(ctx, s, scheduled.R.Channel)
 
 	if s.N < scheduled.LastCount+scheduled.MessageDiff {
 		return nil
@@ -265,16 +261,13 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	return runCommandAndCount(ctx, s, info, item, true)
 }
 
-func repeatPopulateSession(ctx context.Context, s *session, channel *models.Channel) error {
+func repeatPopulateSession(ctx context.Context, s *session, channel *models.Channel) {
 	s.Channel = channel
 	s.Origin = s.Channel.BotName
 	s.IRCChannel = s.Channel.Name
 	s.RoomID = s.Channel.UserID
 	s.RoomIDStr = strconv.FormatInt(s.RoomID, 10)
-
-	var err error
-	s.N, err = s.MessageCount(ctx)
-	return err
+	s.N = s.Channel.MessageCount
 }
 
 func updateRepeating(deps *sharedDeps, repeats []*models.RepeatedCommand, enable bool) {

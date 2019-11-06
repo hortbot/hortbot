@@ -35,6 +35,7 @@ type Channel struct {
 	Active                      bool              `boil:"active" json:"active" toml:"active" yaml:"active"`
 	Prefix                      string            `boil:"prefix" json:"prefix" toml:"prefix" yaml:"prefix"`
 	Bullet                      null.String       `boil:"bullet" json:"bullet,omitempty" toml:"bullet" yaml:"bullet,omitempty"`
+	MessageCount                int64             `boil:"message_count" json:"message_count" toml:"message_count" yaml:"message_count"`
 	Mode                        string            `boil:"mode" json:"mode" toml:"mode" yaml:"mode"`
 	Ignored                     types.StringArray `boil:"ignored" json:"ignored" toml:"ignored" yaml:"ignored"`
 	CustomOwners                types.StringArray `boil:"custom_owners" json:"custom_owners" toml:"custom_owners" yaml:"custom_owners"`
@@ -93,6 +94,7 @@ var ChannelColumns = struct {
 	Active                      string
 	Prefix                      string
 	Bullet                      string
+	MessageCount                string
 	Mode                        string
 	Ignored                     string
 	CustomOwners                string
@@ -146,6 +148,7 @@ var ChannelColumns = struct {
 	Active:                      "active",
 	Prefix:                      "prefix",
 	Bullet:                      "bullet",
+	MessageCount:                "message_count",
 	Mode:                        "mode",
 	Ignored:                     "ignored",
 	CustomOwners:                "custom_owners",
@@ -256,6 +259,7 @@ var ChannelWhere = struct {
 	Active                      whereHelperbool
 	Prefix                      whereHelperstring
 	Bullet                      whereHelpernull_String
+	MessageCount                whereHelperint64
 	Mode                        whereHelperstring
 	Ignored                     whereHelpertypes_StringArray
 	CustomOwners                whereHelpertypes_StringArray
@@ -309,6 +313,7 @@ var ChannelWhere = struct {
 	Active:                      whereHelperbool{field: "\"channels\".\"active\""},
 	Prefix:                      whereHelperstring{field: "\"channels\".\"prefix\""},
 	Bullet:                      whereHelpernull_String{field: "\"channels\".\"bullet\""},
+	MessageCount:                whereHelperint64{field: "\"channels\".\"message_count\""},
 	Mode:                        whereHelperstring{field: "\"channels\".\"mode\""},
 	Ignored:                     whereHelpertypes_StringArray{field: "\"channels\".\"ignored\""},
 	CustomOwners:                whereHelpertypes_StringArray{field: "\"channels\".\"custom_owners\""},
@@ -395,8 +400,8 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled"}
-	channelColumnsWithoutDefault = []string{"user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "mode", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "message_count", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled"}
+	channelColumnsWithoutDefault = []string{"user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "message_count", "mode", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled"}
 	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )

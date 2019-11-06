@@ -28,14 +28,6 @@ func (s *session) ScheduledAllowed(ctx context.Context, id int64, expiry time.Du
 	return s.Deps.Redis.ScheduledAllowed(ctx, s.RoomIDStr, id, expiry)
 }
 
-func (s *session) MessageCount(ctx context.Context) (int64, error) {
-	return s.Deps.Redis.MessageCount(ctx, s.RoomIDStr)
-}
-
-func (s *session) IncrementMessageCount(ctx context.Context) (int64, error) {
-	return s.Deps.Redis.IncrementMessageCount(ctx, s.RoomIDStr)
-}
-
 func (s *session) AutoreplyAllowed(ctx context.Context, id int64, expiry time.Duration) (bool, error) {
 	return s.Deps.Redis.AutoreplyAllowed(ctx, s.RoomIDStr, id, expiry)
 }
