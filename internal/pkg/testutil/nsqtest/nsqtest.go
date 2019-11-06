@@ -2,7 +2,7 @@ package nsqtest
 
 import (
 	"github.com/nsqio/go-nsq"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 )
 
 func New() (addr string, cleanup func(), retErr error) {

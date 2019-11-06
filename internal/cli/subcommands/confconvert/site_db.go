@@ -9,7 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jmoiron/sqlx"
 	"github.com/jmoiron/sqlx/types"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 )
 
 var (

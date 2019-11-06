@@ -11,8 +11,6 @@ require (
 	github.com/alicebob/miniredis/v2 v2.10.1
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.1.5
-	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
-	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191018222636-98d6b4cb4b5e // indirect
 	github.com/felixge/httpsnoop v1.0.1
@@ -26,7 +24,6 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.7.0
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/sessions v1.2.0
-	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
@@ -39,8 +36,7 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
 	github.com/nsqio/go-nsq v1.0.7
-	github.com/opencontainers/runc v1.0.0-rc8 // indirect
-	github.com/ory/dockertest v3.3.5+incompatible
+	github.com/ory/dockertest/v3 v3.5.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
@@ -56,10 +52,10 @@ require (
 	github.com/volatiletech/sqlboiler v3.6.0+incompatible
 	go.opencensus.io v0.22.1
 	go.uber.org/zap v1.12.0
-	golang.org/x/net v0.0.0-20191101175033-0deb6923b6d9
+	golang.org/x/net v0.0.0-20191105084925-a882066a44e0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191101200257-8dbcdeb83d3f
+	golang.org/x/tools v0.0.0-20191105231337-689d0f08e67a
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 
 	_ "github.com/lib/pq" // For postgres.
 )

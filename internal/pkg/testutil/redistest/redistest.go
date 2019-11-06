@@ -2,7 +2,7 @@ package redistest
 
 import (
 	"github.com/go-redis/redis/v7"
-	"github.com/ory/dockertest"
+	"github.com/ory/dockertest/v3"
 )
 
 func New() (client *redis.Client, cleanup func(), retErr error) {
