@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"github.com/go-sql-driver/mysql"
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func unixMilli(milli int64) time.Time {
@@ -26,10 +24,6 @@ func maybeString(s *string) string {
 	return *s
 }
 
-type noTrace struct{}
-
-func (noTrace) Enabled(zapcore.Level) bool { return false }
-
 func init() {
 	_ = mysql.SetLogger(noLog{})
 }
@@ -37,15 +31,3 @@ func init() {
 type noLog struct{}
 
 func (noLog) Print(v ...interface{}) {}
-
-type plainError struct {
-	e error
-}
-
-func (pe plainError) Error() string {
-	return pe.e.Error()
-}
-
-func PlainError(err error) zap.Field {
-	return zap.Error(plainError{e: err})
-}

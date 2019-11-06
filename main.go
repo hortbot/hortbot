@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cli/subcommands/bot"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confconvert"
+	"github.com/hortbot/hortbot/internal/cli/subcommands/confimport"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/irc"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/singleproc"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
@@ -17,6 +18,7 @@ import (
 var subcommands = map[string]func([]string){
 	"bot":          bot.Run,
 	"conf-convert": confconvert.Run,
+	"conf-import":  confimport.Run,
 	"irc":          irc.Run,
 	"single-proc":  singleproc.Run,
 	"web":          web.Run,
@@ -35,7 +37,11 @@ func main() {
 	if fn := subcommands[subcommand]; fn != nil {
 		fn(args)
 	} else {
-		fmt.Fprintln(os.Stderr, subcommand, "is not a valid subcommand.")
+		switch subcommand {
+		case "-h", "--help":
+		default:
+			fmt.Fprintln(os.Stderr, subcommand, "is not a valid subcommand.")
+		}
 		listAndExit()
 	}
 }

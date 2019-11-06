@@ -54,3 +54,23 @@ func FromContextWith(ctx context.Context, fields ...zap.Field) (context.Context,
 	logger := FromContext(ctx).With(fields...)
 	return WithLogger(ctx, logger), logger
 }
+
+type noTrace struct{}
+
+func (noTrace) Enabled(zapcore.Level) bool { return false }
+
+func NoTrace() zap.Option {
+	return zap.AddStacktrace(noTrace{})
+}
+
+type plainError struct {
+	e error
+}
+
+func (pe plainError) Error() string {
+	return pe.e.Error()
+}
+
+func PlainError(err error) zap.Field {
+	return zap.Error(plainError{e: err})
+}

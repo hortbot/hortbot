@@ -55,7 +55,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	logger := ctxlog.FromContext(ctx)
 	tw = cmd.Twitch.Client()
 
-	logger = logger.WithOptions(zap.AddStacktrace(noTrace{}))
+	logger = logger.WithOptions(ctxlog.NoTrace())
 	ctx = ctxlog.WithLogger(ctx, logger)
 
 	dir := filepath.Clean(cmd.JSONs)
@@ -65,14 +65,14 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		if os.IsNotExist(err) {
 			logger.Fatal("output directory does not exist")
 		}
-		logger.Fatal("error stat-ing output directory", PlainError(err))
+		logger.Fatal("error stat-ing output directory", ctxlog.PlainError(err))
 	} else if !d.IsDir() {
 		logger.Fatal("output is not a directory")
 	}
 
 	files, err := ioutil.ReadDir(cmd.JSONs)
 	if err != nil {
-		logger.Fatal("error reading dir", PlainError(err))
+		logger.Fatal("error reading dir", ctxlog.PlainError(err))
 	}
 
 	logger.Info("starting site database")
@@ -107,7 +107,7 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 
 	config, err := cmd.convert(ctx, name, filename)
 	if err != nil {
-		logger.Error("error importing config", PlainError(err))
+		logger.Error("error importing config", ctxlog.PlainError(err))
 		return
 	}
 
@@ -117,13 +117,13 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 
 	f, err := os.Create(out)
 	if err != nil {
-		logger.Error("error opening output file", PlainError(err))
+		logger.Error("error opening output file", ctxlog.PlainError(err))
 		return
 	}
 	defer f.Close()
 
 	if err := json.NewEncoder(f).Encode(config); err != nil {
-		logger.Error("error encoding config", PlainError(err))
+		logger.Error("error encoding config", ctxlog.PlainError(err))
 	}
 }
 
@@ -487,7 +487,7 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 		}
 
 		if _, err := repeat.ParseCron(sc.Pattern); err != nil {
-			logger.Warn("cron expression did not parse", PlainError(err))
+			logger.Warn("cron expression did not parse", ctxlog.PlainError(err))
 			continue
 		}
 
@@ -524,7 +524,7 @@ func (c *coeBotConfig) loadAutoreplies(ctx context.Context) []*models.Autoreply 
 		trigger := a.Trigger
 
 		if _, err := regexp.Compile(trigger); err != nil {
-			ctxlog.FromContext(ctx).Error("failed to compile trigger", PlainError(err), zap.String("trigger", trigger))
+			ctxlog.FromContext(ctx).Error("failed to compile trigger", ctxlog.PlainError(err), zap.String("trigger", trigger))
 			continue
 		}
 
@@ -590,7 +590,7 @@ func (c *coeBotConfig) bannedPhrases(ctx context.Context) []string {
 		}
 
 		if _, err := regexp.Compile(pattern); err != nil {
-			ctxlog.FromContext(ctx).Error("error compiling banned phrase", PlainError(err), zap.String("word", word))
+			ctxlog.FromContext(ctx).Error("error compiling banned phrase", ctxlog.PlainError(err), zap.String("word", word))
 			continue
 		}
 
