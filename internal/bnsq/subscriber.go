@@ -8,8 +8,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
-	"go.opencensus.io/trace"
-	"go.opencensus.io/trace/propagation"
 	"go.uber.org/zap"
 )
 
@@ -64,7 +62,7 @@ func SubscriberMaxAge(d time.Duration) SubscriberOption {
 	}
 }
 
-func (s *subscriber) run(ctx context.Context, fn func(m *message, parent trace.SpanContext) error) error {
+func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 	consumer, err := nsq.NewConsumer(s.topic, s.channel, s.config)
 	if err != nil {
 		return err
@@ -84,17 +82,15 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message, parent trace.S
 			return nil
 		}
 
-		parent, _ := propagation.FromBinary(m.TraceSpan)
-
 		if s.maxAge > 0 {
-			since := s.clk.Since(m.Timestamp)
+			since := s.clk.Since(m.Metadata.Timestamp)
 			if since > s.maxAge {
 				ctxlog.Warn(ctx, "message too old, dropping", zap.Duration("since", since))
 				return nil
 			}
 		}
 
-		return fn(m, parent)
+		return fn(m)
 	}))
 
 	if err := consumer.ConnectToNSQD(s.addr); err != nil {

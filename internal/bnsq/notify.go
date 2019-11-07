@@ -2,8 +2,6 @@ package bnsq
 
 import (
 	"context"
-
-	"go.opencensus.io/trace"
 )
 
 const (
@@ -39,17 +37,17 @@ type NotifySubscriber struct {
 	BotName                string
 	Channel                string
 	Opts                   []SubscriberOption
-	OnNotifyChannelUpdates func(n *ChannelUpdatesNotification, parent trace.SpanContext) error
+	OnNotifyChannelUpdates func(n *ChannelUpdatesNotification, metadata *Metadata) error
 }
 
 func (s *NotifySubscriber) Run(ctx context.Context) error {
 	subscriber := newSubscriber(s.Addr, notifyChannelUpdatesTopic+s.BotName, s.Channel, s.Opts...)
 
-	return subscriber.run(ctx, func(m *message, parent trace.SpanContext) error {
+	return subscriber.run(ctx, func(m *message) error {
 		n := &ChannelUpdatesNotification{}
 		if err := m.payload(n); err != nil {
 			return err
 		}
-		return s.OnNotifyChannelUpdates(n, parent)
+		return s.OnNotifyChannelUpdates(n, &m.Metadata)
 	})
 }

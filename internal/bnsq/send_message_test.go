@@ -13,7 +13,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil/nsqtest"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
-	"go.opencensus.io/trace"
 	"gotest.tools/v3/assert"
 )
 
@@ -48,7 +47,7 @@ func TestSendMessage(t *testing.T) {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberClock(clk),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, _ trace.SpanContext) error {
+		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m
 			return nil
 		},
@@ -103,7 +102,7 @@ func TestSendMessageBadAddr(t *testing.T) {
 		Opts: []bnsq.SubscriberOption{
 			bnsq.SubscriberConfig(config),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, _ trace.SpanContext) error {
+		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m
 			return nil
 		},
@@ -137,7 +136,7 @@ func TestSendMessageSubscriberBadChannel(t *testing.T) {
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
-		OnSendMessage: func(m *bnsq.SendMessage, _ trace.SpanContext) error {
+		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m
 			return nil
 		},
@@ -180,7 +179,7 @@ func TestMaxAge(t *testing.T) {
 			bnsq.SubscriberClock(clk),
 			bnsq.SubscriberMaxAge(30 * time.Second),
 		},
-		OnSendMessage: func(m *bnsq.SendMessage, _ trace.SpanContext) error {
+		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m
 			return nil
 		},

@@ -90,9 +90,11 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	}
 
 	m := &message{
-		Timestamp: p.clk.Now(),
-		TraceSpan: propagation.Binary(span.SpanContext()),
-		Payload:   pl,
+		Metadata: Metadata{
+			Timestamp: p.clk.Now(),
+			TraceSpan: propagation.Binary(span.SpanContext()),
+		},
+		Payload: pl,
 	}
 
 	body, err := json.Marshal(m)

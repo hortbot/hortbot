@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
-	"go.opencensus.io/trace"
 )
 
 type NSQ struct {
@@ -21,7 +20,7 @@ func (args *NSQ) NewIncomingPublisher() *bnsq.IncomingPublisher {
 	return bnsq.NewIncomingPublisher(args.Addr)
 }
 
-func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(i *bnsq.Incoming, parent trace.SpanContext) error) *bnsq.IncomingSubscriber {
+func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(*bnsq.Incoming, *bnsq.Metadata) error) *bnsq.IncomingSubscriber {
 	return &bnsq.IncomingSubscriber{
 		Addr:    args.Addr,
 		Channel: args.Channel,
@@ -36,7 +35,7 @@ func (args *NSQ) NewSendMessagePublisher() *bnsq.SendMessagePublisher {
 	return bnsq.NewSendMessagePublisher(args.Addr)
 }
 
-func (args *NSQ) NewSendMessageSubscriber(origin string, maxAge time.Duration, fn func(m *bnsq.SendMessage, parent trace.SpanContext) error) *bnsq.SendMessageSubscriber {
+func (args *NSQ) NewSendMessageSubscriber(origin string, maxAge time.Duration, fn func(*bnsq.SendMessage, *bnsq.Metadata) error) *bnsq.SendMessageSubscriber {
 	return &bnsq.SendMessageSubscriber{
 		Addr:    args.Addr,
 		Origin:  origin,
@@ -52,7 +51,7 @@ func (args *NSQ) NewNotifyPublisher() *bnsq.NotifyPublisher {
 	return bnsq.NewNotifyPublisher(args.Addr)
 }
 
-func (args *NSQ) NewNotifySubscriber(botName string, maxAge time.Duration, fn func(n *bnsq.ChannelUpdatesNotification, parent trace.SpanContext) error) *bnsq.NotifySubscriber {
+func (args *NSQ) NewNotifySubscriber(botName string, maxAge time.Duration, fn func(*bnsq.ChannelUpdatesNotification, *bnsq.Metadata) error) *bnsq.NotifySubscriber {
 	return &bnsq.NotifySubscriber{
 		Addr:    args.Addr,
 		BotName: botName,

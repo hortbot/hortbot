@@ -12,7 +12,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/nsqtest"
-	"go.opencensus.io/trace"
 	"gotest.tools/v3/assert"
 )
 
@@ -38,7 +37,7 @@ func TestIncoming(t *testing.T) {
 	subscriber := bnsq.IncomingSubscriber{
 		Addr:    addr,
 		Channel: channel,
-		OnIncoming: func(n *bnsq.Incoming, _ trace.SpanContext) error {
+		OnIncoming: func(n *bnsq.Incoming, _ *bnsq.Metadata) error {
 			received <- n
 			return nil
 		},
