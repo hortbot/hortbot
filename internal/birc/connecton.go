@@ -207,13 +207,11 @@ func (c *Connection) Incoming() <-chan *irc.Message {
 func (c *Connection) receiver(ctx context.Context) error {
 	defer close(c.recvChan)
 
-	logger := ctxlog.FromContext(ctx)
-
 	for {
 		m := &irc.Message{}
 		if err := c.conn.Decode(m); err != nil {
 			if pe, ok := err.(*irc.ParseError); ok {
-				logger.Warn("received bad message from IRC server, ignoring", zap.Error(pe))
+				ctxlog.Warn(ctx, "received bad message from IRC server, ignoring", zap.Error(pe))
 				continue
 			}
 			return err
@@ -225,7 +223,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 
 			go func() {
 				if err := c.send(ctx, &pong); err != nil {
-					logger.Error("error sending pong", zap.Error(err))
+					ctxlog.Error(ctx, "error sending pong", zap.Error(err))
 				}
 			}()
 		}
@@ -263,8 +261,6 @@ func (c *Connection) receiver(ctx context.Context) error {
 }
 
 func (c *Connection) sender(ctx context.Context) error {
-	logger := ctxlog.FromContext(ctx)
-
 	var sendFrom <-chan breq.Send
 
 	for {
@@ -293,7 +289,7 @@ func (c *Connection) sender(ctx context.Context) error {
 			return errors.Wrap(err, "sending to conn")
 		}
 
-		logger.Debug("sent", zap.Any("m", req.M))
+		ctxlog.Debug(ctx, "sent", zap.Any("m", req.M))
 	}
 }
 

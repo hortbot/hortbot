@@ -36,11 +36,9 @@ var DefaultIRC = IRC{
 }
 
 func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool {
-	logger := ctxlog.FromContext(ctx)
-
 	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 	if err != nil {
-		logger.Fatal("error listing initial channels", zap.Error(err))
+		ctxlog.Fatal(ctx, "error listing initial channels", zap.Error(err))
 	}
 
 	nick := args.Nick
@@ -49,10 +47,10 @@ func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool
 	if args.Token {
 		token, err := twitchx.FindBotToken(ctx, db, tw, nick)
 		if err != nil {
-			logger.Fatal("error querying for bot token", zap.Error(err))
+			ctxlog.Fatal(ctx, "error querying for bot token", zap.Error(err))
 		}
 		if token != nil {
-			logger.Debug("using token from database")
+			ctxlog.Debug(ctx, "using token from database")
 			pass = "oauth:" + token.AccessToken
 		}
 	}

@@ -52,32 +52,30 @@ func Run(args []string) {
 }
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	logger := ctxlog.FromContext(ctx)
 	tw = cmd.Twitch.Client()
 
-	logger = logger.WithOptions(ctxlog.NoTrace())
-	ctx = ctxlog.WithLogger(ctx, logger)
+	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
 	dir := filepath.Clean(cmd.JSONs)
 	outDir := filepath.Clean(cmd.Out)
 
 	if d, err := os.Stat(outDir); err != nil {
 		if os.IsNotExist(err) {
-			logger.Fatal("output directory does not exist")
+			ctxlog.Fatal(ctx, "output directory does not exist")
 		}
-		logger.Fatal("error stat-ing output directory", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error stat-ing output directory", ctxlog.PlainError(err))
 	} else if !d.IsDir() {
-		logger.Fatal("output is not a directory")
+		ctxlog.Fatal(ctx, "output is not a directory")
 	}
 
 	files, err := ioutil.ReadDir(cmd.JSONs)
 	if err != nil {
-		logger.Fatal("error reading dir", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error reading dir", ctxlog.PlainError(err))
 	}
 
-	logger.Info("starting site database")
+	ctxlog.Info(ctx, "starting site database")
 	defer cmd.prepareSiteDB(ctx)()
-	logger.Info("site database started")
+	ctxlog.Info(ctx, "site database started")
 
 	for _, file := range files {
 		if ctx.Err() != nil {
@@ -103,11 +101,11 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 }
 
 func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
-	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("filename", filename))
+	ctx = ctxlog.With(ctx, zap.String("filename", filename))
 
 	config, err := cmd.convert(ctx, name, filename)
 	if err != nil {
-		logger.Error("error importing config", ctxlog.PlainError(err))
+		ctxlog.Error(ctx, "error importing config", ctxlog.PlainError(err))
 		return
 	}
 
@@ -117,13 +115,13 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 
 	f, err := os.Create(out)
 	if err != nil {
-		logger.Error("error opening output file", ctxlog.PlainError(err))
+		ctxlog.Error(ctx, "error opening output file", ctxlog.PlainError(err))
 		return
 	}
 	defer f.Close()
 
 	if err := json.NewEncoder(f).Encode(config); err != nil {
-		logger.Error("error encoding config", ctxlog.PlainError(err))
+		ctxlog.Error(ctx, "error encoding config", ctxlog.PlainError(err))
 	}
 }
 
@@ -146,7 +144,7 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		twitchID, displayName, err = cmd.getChannelbyName(ctx, expectedName)
 		if err != nil {
 			if err == twitch.ErrNotFound {
-				ctxlog.FromContext(ctx).Warn("user does not exist on twitch, skipping")
+				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
 				return nil, nil
 			}
 			return nil, errors.Wrap(err, "getting channel by name from twitch")
@@ -160,14 +158,14 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		name, displayName, err = cmd.getChannelByID(ctx, twitchID)
 		if err != nil {
 			if err == twitch.ErrNotFound {
-				ctxlog.FromContext(ctx).Warn("user does not exist on twitch, skipping")
+				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
 				return nil, nil
 			}
 			return nil, errors.Wrap(err, "getting channel info from twitch")
 		}
 	}
 
-	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("channel_name", name))
+	ctx = ctxlog.With(ctx, zap.String("channel_name", name))
 
 	botName, active, err := getSiteInfo(ctx, expectedName)
 	if err != nil {
@@ -175,12 +173,12 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 	}
 
 	if botName == name {
-		logger.Warn("bot, skipping")
+		ctxlog.Warn(ctx, "bot, skipping")
 		return nil, nil
 	}
 
 	if name != expectedName {
-		logger.Warn("name does not match twitch's, converting as inactive with new name and ID", zap.String("expected", expectedName))
+		ctxlog.Warn(ctx, "name does not match twitch's, converting as inactive with new name and ID", zap.String("expected", expectedName))
 		active = false
 	}
 
@@ -447,22 +445,22 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 
 	for _, rc := range c.RepeatedCommands {
 		name := strings.ToLower(rc.Name)
-		_, logger := ctxlog.FromContextWith(ctx, zap.String("name", name))
+		ctx := ctxlog.With(ctx, zap.String("name", name))
 
 		command, ok := commands[name]
 		if !ok {
-			logger.Warn("missing command info for repeat")
+			ctxlog.Warn(ctx, "missing command info for repeat")
 			continue
 		}
 
 		if rc.Delay < 30 {
-			logger.Warn("delay is under 30 seconds", zap.Int("delay", rc.Delay))
+			ctxlog.Warn(ctx, "delay is under 30 seconds", zap.Int("delay", rc.Delay))
 			continue
 		}
 
 		diff := rc.MessageDifference
 		if diff < 1 {
-			logger.Warn("message diff is less than 1, converting to 1")
+			ctxlog.Warn(ctx, "message diff is less than 1, converting to 1")
 			diff = 1
 		}
 
@@ -478,22 +476,22 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 
 	for _, sc := range c.ScheduledCommands {
 		name := strings.ToLower(sc.Name)
-		_, logger := ctxlog.FromContextWith(ctx, zap.String("name", name))
+		ctx := ctxlog.With(ctx, zap.String("name", name))
 
 		command, ok := commands[name]
 		if !ok {
-			logger.Warn("missing command info for schedule")
+			ctxlog.Warn(ctx, "missing command info for schedule")
 			continue
 		}
 
 		if _, err := repeat.ParseCron(sc.Pattern); err != nil {
-			logger.Warn("cron expression did not parse", ctxlog.PlainError(err))
+			ctxlog.Warn(ctx, "cron expression did not parse", ctxlog.PlainError(err))
 			continue
 		}
 
 		diff := sc.MessageDifference
 		if diff < 1 {
-			logger.Warn("message diff is less than 1, converting to 1")
+			ctxlog.Warn(ctx, "message diff is less than 1, converting to 1")
 			diff = 1
 		}
 
@@ -524,7 +522,7 @@ func (c *coeBotConfig) loadAutoreplies(ctx context.Context) []*models.Autoreply 
 		trigger := a.Trigger
 
 		if _, err := regexp.Compile(trigger); err != nil {
-			ctxlog.FromContext(ctx).Error("failed to compile trigger", ctxlog.PlainError(err), zap.String("trigger", trigger))
+			ctxlog.Error(ctx, "failed to compile trigger", ctxlog.PlainError(err), zap.String("trigger", trigger))
 			continue
 		}
 
@@ -585,12 +583,12 @@ func (c *coeBotConfig) bannedPhrases(ctx context.Context) []string {
 		}
 
 		if pattern == "" {
-			ctxlog.FromContext(ctx).Error("empty pattern")
+			ctxlog.Error(ctx, "empty pattern")
 			continue
 		}
 
 		if _, err := regexp.Compile(pattern); err != nil {
-			ctxlog.FromContext(ctx).Error("error compiling banned phrase", ctxlog.PlainError(err), zap.String("word", word))
+			ctxlog.Error(ctx, "error compiling banned phrase", ctxlog.PlainError(err), zap.String("word", word))
 			continue
 		}
 
@@ -617,7 +615,7 @@ func commandLevelToLevel(l int) string {
 
 func checkCommand(ctx context.Context, m string) string {
 	if _, malformed := cbp.Parse(m); malformed {
-		ctxlog.FromContext(ctx).Warn("malformed command", zap.String("message", m))
+		ctxlog.Warn(ctx, "malformed command", zap.String("message", m))
 	}
 	return m
 }

@@ -18,11 +18,9 @@ var (
 )
 
 func (cmd *cmd) prepareSiteDB(ctx context.Context) func() {
-	logger := ctxlog.FromContext(ctx)
-
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		logger.Fatal("error creating dockertest pool", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error creating dockertest pool", ctxlog.PlainError(err))
 	}
 
 	const (
@@ -37,11 +35,11 @@ func (cmd *cmd) prepareSiteDB(ctx context.Context) func() {
 		Mounts:     []string{cmd.SiteDumps + ":/docker-entrypoint-initdb.d"},
 	})
 	if err != nil {
-		logger.Fatal("error creating MariaDB container", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error creating MariaDB container", ctxlog.PlainError(err))
 	}
 
 	if err := resource.Expire(daySecs); err != nil {
-		logger.Fatal("error setting container expiration", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error setting container expiration", ctxlog.PlainError(err))
 	}
 
 	connStr := "root:" + password + "@tcp(" + resource.GetHostPort("3306/tcp") + ")/" + dbName
@@ -55,7 +53,7 @@ func (cmd *cmd) prepareSiteDB(ctx context.Context) func() {
 		return siteDB.Ping()
 	})
 	if err != nil {
-		logger.Fatal("error waiting for database to be ready", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error waiting for database to be ready", ctxlog.PlainError(err))
 	}
 
 	return func() {

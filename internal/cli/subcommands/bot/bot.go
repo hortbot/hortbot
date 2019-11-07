@@ -42,8 +42,6 @@ func Run(args []string) {
 }
 
 func (config *config) Main(ctx context.Context, _ []string) {
-	logger := ctxlog.FromContext(ctx)
-
 	defer config.Jaeger.Init(ctx, "bot", config.Debug)()
 
 	connector := config.SQL.Connector(ctx)
@@ -86,6 +84,6 @@ func (config *config) Main(ctx context.Context, _ []string) {
 	g.Go(incomingSub.Run)
 
 	if err := g.WaitIgnoreStop(); err != nil {
-		logger.Info("exiting", zap.Error(err))
+		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
 }

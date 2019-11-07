@@ -31,7 +31,8 @@ type loggerKey struct{}
 var nopLogger = zap.NewNop()
 
 // FromContext gets a zap logger from a context. If none is set, then a nop
-// logger is returned.
+// logger is returned. The Debug, Error, With, WithOptions, etc, functions
+// should be preferred over using this function to access a logger.
 func FromContext(ctx context.Context) *zap.Logger {
 	if logger, ok := ctx.Value(loggerKey{}).(*zap.Logger); ok {
 		return logger
@@ -44,15 +45,32 @@ func WithLogger(ctx context.Context, logger *zap.Logger) context.Context {
 	return context.WithValue(ctx, loggerKey{}, logger)
 }
 
-// FromContextWith gets a logger from a context, adds the specified fields,
-// and returns context with the new logger.
-func FromContextWith(ctx context.Context, fields ...zap.Field) (context.Context, *zap.Logger) {
-	if len(fields) == 0 {
-		return ctx, FromContext(ctx)
-	}
+func Debug(ctx context.Context, msg string, fields ...zap.Field) {
+	FromContext(ctx).Debug(msg, fields...)
+}
 
-	logger := FromContext(ctx).With(fields...)
-	return WithLogger(ctx, logger), logger
+func Error(ctx context.Context, msg string, fields ...zap.Field) {
+	FromContext(ctx).Error(msg, fields...)
+}
+
+func Fatal(ctx context.Context, msg string, fields ...zap.Field) {
+	FromContext(ctx).Fatal(msg, fields...)
+}
+
+func Info(ctx context.Context, msg string, fields ...zap.Field) {
+	FromContext(ctx).Info(msg, fields...)
+}
+
+func Warn(ctx context.Context, msg string, fields ...zap.Field) {
+	FromContext(ctx).Warn(msg, fields...)
+}
+
+func With(ctx context.Context, fields ...zap.Field) context.Context {
+	return WithLogger(ctx, FromContext(ctx).With(fields...))
+}
+
+func WithOptions(ctx context.Context, opts ...zap.Option) context.Context {
+	return WithLogger(ctx, FromContext(ctx).WithOptions(opts...))
 }
 
 type noTrace struct{}

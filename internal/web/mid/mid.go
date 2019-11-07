@@ -29,7 +29,6 @@ func Logger(logger *zap.Logger) func(http.Handler) http.Handler {
 func RequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		logger := ctxlog.FromContext(ctx)
 
 		var id xid.ID
 		requestID := r.Header.Get(requestIDHeader)
@@ -42,7 +41,7 @@ func RequestID(next http.Handler) http.Handler {
 				id = xid.New()
 				requestID = id.String()
 
-				logger.Debug("replacing request ID", zap.String("old", oldRequestID), zap.String("new", requestID))
+				ctxlog.Debug(ctx, "replacing request ID", zap.String("old", oldRequestID), zap.String("new", requestID))
 			}
 		} else {
 			id = xid.New()
@@ -51,8 +50,7 @@ func RequestID(next http.Handler) http.Handler {
 
 		w.Header().Set(requestIDHeader, requestID)
 		ctx = context.WithValue(ctx, requestIDKey{}, id)
-
-		ctx, _ = ctxlog.FromContextWith(ctx, zap.String("requestID", requestID))
+		ctx = ctxlog.With(ctx, zap.String("requestID", requestID))
 
 		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
@@ -68,8 +66,7 @@ func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m := httpsnoop.CaptureMetrics(next, w, r)
 
-		logger := ctxlog.FromContext(r.Context())
-		logger.Debug("http request",
+		ctxlog.Debug(r.Context(), "http request",
 			zap.String("method", r.Method),
 			zap.String("url", r.RequestURI),
 			zap.String("proto", r.Proto),
@@ -84,14 +81,9 @@ func Recoverer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
 			if rvr := recover(); rvr != nil {
-				logger := ctxlog.FromContext(r.Context())
-
 				// Ensure logger is logging stack traces, at least here.
-				logger = logger.WithOptions(zap.AddStacktrace(zap.ErrorLevel))
-
-				logger.Error("PANIC",
-					zap.Any("panic_value", rvr),
-				)
+				ctx := ctxlog.WithOptions(r.Context(), zap.AddStacktrace(zap.ErrorLevel))
+				ctxlog.Error(ctx, "PANIC", zap.Any("panic_value", rvr))
 
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}

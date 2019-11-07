@@ -71,9 +71,7 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 		UserLevel: levelEveryone,
 	}
 
-	ctx, logger := ctxlog.FromContextWith(ctx,
-		zap.Int64("repeatedCommand", id),
-	)
+	ctx = ctxlog.With(ctx, zap.Int64("repeatedCommand", id))
 
 	err := transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
@@ -81,9 +79,7 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 	})
 
 	if err != nil {
-		logger.Warn("error running repeated command",
-			zap.Error(err),
-		)
+		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err))
 	}
 }
 
@@ -137,10 +133,7 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		return err
 	}
 
-	ctx, _ = ctxlog.FromContextWith(ctx,
-		zap.Int64("roomID", s.RoomID),
-		zap.String("channel", s.IRCChannel),
-	)
+	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
 	if command := info.R.CustomCommand; command != nil {
 		return runCommandAndCount(ctx, s, info, command.Message, true)
@@ -171,9 +164,7 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 		UserLevel: levelEveryone,
 	}
 
-	ctx, logger := ctxlog.FromContextWith(ctx,
-		zap.Int64("scheduledCommand", id),
-	)
+	ctx = ctxlog.With(ctx, zap.Int64("scheduledCommand", id))
 
 	err := transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
@@ -181,9 +172,7 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 	})
 
 	if err != nil {
-		logger.Warn("error running repeated command",
-			zap.Error(err),
-		)
+		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err))
 	}
 }
 
@@ -240,10 +229,7 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		return err
 	}
 
-	ctx, _ = ctxlog.FromContextWith(ctx,
-		zap.Int64("roomID", s.RoomID),
-		zap.String("channel", s.IRCChannel),
-	)
+	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
 	if command := info.R.CustomCommand; command != nil {
 		return runCommandAndCount(ctx, s, info, command.Message, true)

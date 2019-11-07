@@ -51,20 +51,18 @@ func (args *Bot) New(
 	notifier bot.Notifier,
 	twitchAPI twitch.API,
 ) *bot.Bot {
-	logger := ctxlog.FromContext(ctx)
-
 	var lastFM lastfm.API
 	if args.LastFMKey != "" {
 		lastFM = lastfm.New(args.LastFMKey)
 	} else {
-		logger.Warn("no LastFM API key provided, functionality will be disabled")
+		ctxlog.Warn(ctx, "no LastFM API key provided, functionality will be disabled")
 	}
 
 	var steamAPI steam.API
 	if args.SteamKey != "" {
 		steamAPI = steam.New(args.SteamKey)
 	} else {
-		logger.Warn("no Steam API key provided, functionality will be disabled")
+		ctxlog.Warn(ctx, "no Steam API key provided, functionality will be disabled")
 	}
 
 	b := bot.New(&bot.Config{
@@ -89,7 +87,7 @@ func (args *Bot) New(
 	})
 
 	if err := b.Init(ctx); err != nil {
-		logger.Fatal("error initializing bot", zap.Error(err))
+		ctxlog.Fatal(ctx, "error initializing bot", zap.Error(err))
 	}
 
 	return b

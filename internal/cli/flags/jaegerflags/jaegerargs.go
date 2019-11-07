@@ -30,7 +30,7 @@ func (args *Jaeger) Init(ctx context.Context, name string, debug bool) func() {
 		},
 	})
 	if err != nil {
-		ctxlog.FromContext(ctx).Fatal("error creating jaeger exporter", zap.Error(err))
+		ctxlog.Fatal(ctx, "error creating jaeger exporter", zap.Error(err))
 	}
 	trace.RegisterExporter(exporter)
 

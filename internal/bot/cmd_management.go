@@ -88,7 +88,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	}
 
 	if blocked {
-		ctxlog.FromContext(ctx).Warn("user is blocked", zap.String("name", name), zap.Int64("user_id", userID))
+		ctxlog.Warn(ctx, "user is blocked", zap.String("name", name), zap.Int64("user_id", userID))
 		return nil
 	}
 

@@ -105,7 +105,7 @@ func (a *App) Run(ctx context.Context) error {
 			r.Get("/request", func(w http.ResponseWriter, r *http.Request) {
 				b, err := httputil.DumpRequest(r, true)
 				if err != nil {
-					logger.Error("error dumping request", zap.Error(err))
+					ctxlog.Error(ctx, "error dumping request", zap.Error(err))
 					httpError(w, http.StatusInternalServerError)
 					return
 				}
@@ -122,11 +122,11 @@ func (a *App) Run(ctx context.Context) error {
 	go func() {
 		<-ctx.Done()
 		if err := srv.Shutdown(context.Background()); err != nil {
-			logger.Error("error shutting down server", zap.Error(err))
+			ctxlog.Error(ctx, "error shutting down server", zap.Error(err))
 		}
 	}()
 
-	logger.Info("web server listening", zap.String("addr", srv.Addr))
+	ctxlog.Info(ctx, "web server listening", zap.String("addr", srv.Addr))
 
 	return srv.ListenAndServe()
 }
@@ -154,7 +154,6 @@ type authState struct {
 
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 
 	state := uuid.Must(uuid.NewV4()).String()
 
@@ -168,7 +167,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	}
 
 	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
-		logger.Error("error setting auth state", zap.Error(err))
+		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -192,7 +191,6 @@ func (a *App) authTwitchBot(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 
 	state := r.FormValue("state")
 	if state == "" {
@@ -204,7 +202,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	ok, err := a.Redis.GetAuthState(ctx, state, &stateVal)
 	if err != nil {
-		logger.Error("error checking auth state", zap.Error(err))
+		ctxlog.Error(ctx, "error checking auth state", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -217,7 +215,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	if stateVal.Host != r.Host {
 		// This came to the wrong host. Put the state back and redirect.
 		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, time.Minute); err != nil {
-			logger.Error("error setting auth state", zap.Error(err))
+			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 			httpError(w, http.StatusInternalServerError)
 			return
 		}
@@ -230,14 +228,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	tok, err := a.Twitch.Exchange(ctx, r.FormValue("code"))
 	if err != nil {
-		logger.Error("error exchanging code", zap.Error(err))
+		ctxlog.Error(ctx, "error exchanging code", zap.Error(err))
 		httpError(w, http.StatusBadRequest)
 		return
 	}
 
 	user, newToken, err := a.Twitch.GetUserForToken(ctx, tok)
 	if err != nil {
-		logger.Error("error getting user for token", zap.Error(err))
+		ctxlog.Error(ctx, "error getting user for token", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -251,7 +249,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := modelsx.FullUpsertToken(ctx, a.DB, tt); err != nil {
-		logger.Error("error upserting token", zap.Error(err))
+		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -262,7 +260,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		session.setUsername(user.Name)
 
 		if err := session.save(w, r); err != nil {
-			logger.Error("error saving session", zap.Error(err))
+			ctxlog.Error(ctx, "error saving session", zap.Error(err))
 			httpError(w, http.StatusInternalServerError)
 			return
 		}
@@ -285,11 +283,10 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 
 	channels, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying channels", zap.Error(err))
+		ctxlog.Error(ctx, "error querying channels", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -299,7 +296,7 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := queries.Raw("SELECT COUNT(DISTINCT bot_name) AS bot_count FROM channels WHERE active").Bind(ctx, a.DB, &row); err != nil {
-		logger.Error("error querying bot names", zap.Error(err))
+		ctxlog.Error(ctx, "error querying bot names", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -327,14 +324,13 @@ func (a *App) docs(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 
 	channels, err := models.Channels(
 		models.ChannelWhere.Active.EQ(true),
 		qm.OrderBy(models.ChannelColumns.Name),
 	).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying channels", zap.Error(err))
+		ctxlog.Error(ctx, "error querying channels", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -360,12 +356,11 @@ func (a *App) channel(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 	channel := getChannel(ctx)
 
 	commands, err := channel.CustomCommands(qm.Load(models.CustomCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying custom commands", zap.Error(err))
+		ctxlog.Error(ctx, "error querying custom commands", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -385,12 +380,11 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 	channel := getChannel(ctx)
 
 	quotes, err := channel.Quotes(qm.OrderBy(models.QuoteColumns.Num)).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying quotes", zap.Error(err))
+		ctxlog.Error(ctx, "error querying quotes", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -406,12 +400,11 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 	channel := getChannel(ctx)
 
 	autoreplies, err := channel.Autoreplies(qm.OrderBy(models.AutoreplyColumns.Num)).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying autoreplies", zap.Error(err))
+		ctxlog.Error(ctx, "error querying autoreplies", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -427,12 +420,11 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 	channel := getChannel(ctx)
 
 	lists, err := channel.CommandLists(qm.Load(models.CommandListRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying command lists", zap.Error(err))
+		ctxlog.Error(ctx, "error querying command lists", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
@@ -474,19 +466,18 @@ func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	logger := ctxlog.FromContext(ctx)
 	channel := getChannel(ctx)
 
 	repeated, err := channel.RepeatedCommands(qm.Load(models.RepeatedCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying repeated commands", zap.Error(err))
+		ctxlog.Error(ctx, "error querying repeated commands", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
 
 	scheduled, err := channel.ScheduledCommands(qm.Load(models.ScheduledCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
-		logger.Error("error querying scheduled commands", zap.Error(err))
+		ctxlog.Error(ctx, "error querying scheduled commands", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}

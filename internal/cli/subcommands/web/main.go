@@ -34,8 +34,6 @@ func Run(args []string) {
 }
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	logger := ctxlog.FromContext(ctx)
-
 	defer cmd.Jaeger.Init(ctx, "web", cmd.Debug)()
 
 	connector := cmd.SQL.Connector(ctx)
@@ -47,5 +45,5 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	a := cmd.Web.New(cmd.Debug, rdb, db, tw)
 
 	err := a.Run(ctx)
-	logger.Info("exiting", zap.Error(err))
+	ctxlog.Info(ctx, "exiting", zap.Error(err))
 }

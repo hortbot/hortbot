@@ -23,7 +23,7 @@ var DefaultSQL = SQL{}
 func (args *SQL) Connector(ctx context.Context) driver.Connector {
 	connector, err := pq.NewConnector(args.DB)
 	if err != nil {
-		ctxlog.FromContext(ctx).Fatal("error creating postgres connector", zap.Error(err))
+		ctxlog.Fatal(ctx, "error creating postgres connector", zap.Error(err))
 	}
 	return connector
 }
@@ -41,13 +41,13 @@ func (args *SQL) Open(ctx context.Context, connector driver.Connector) *sql.DB {
 			}
 		}
 		if perr != nil {
-			ctxlog.FromContext(ctx).Fatal("error pinging database", zap.Error(err))
+			ctxlog.Fatal(ctx, "error pinging database", zap.Error(err))
 		}
 	}
 
 	if args.MigrateUp {
 		if err := migrations.Up(args.DB, nil); err != nil {
-			ctxlog.FromContext(ctx).Fatal("error migrating database", zap.Error(err))
+			ctxlog.Fatal(ctx, "error migrating database", zap.Error(err))
 		}
 	}
 

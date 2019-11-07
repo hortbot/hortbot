@@ -403,7 +403,7 @@ func (p *Pool) part(ctx context.Context, channel string) error {
 	conn := p.chanToConn[channel]
 
 	if conn == nil {
-		ctxlog.FromContext(ctx).Warn("couldn't find conn for channel", zap.String("channel", channel))
+		ctxlog.Warn(ctx, "couldn't find conn for channel", zap.String("channel", channel))
 		return nil
 	}
 
@@ -484,12 +484,11 @@ func (p *Pool) prune(ctx context.Context) {
 		return
 	}
 
-	logger := ctxlog.FromContext(ctx)
-	logger.Debug("pruning subconns", zap.Int("count", len(toPrune)))
+	ctxlog.Debug(ctx, "pruning subconns", zap.Int("count", len(toPrune)))
 
 	for _, conn := range toPrune {
 		if err := conn.Close(); err != nil {
-			logger.Error("error pruning subconn", zap.Error(err))
+			ctxlog.Error(ctx, "error pruning subconn", zap.Error(err))
 		}
 		delete(p.conns, conn)
 	}
@@ -513,14 +512,14 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		id := p.nextConnID()
 
-		ctx, logger := ctxlog.FromContextWith(ctx, zap.Uint64("subconnID", id))
+		ctx = ctxlog.With(ctx, zap.Uint64("subconnID", id))
 
-		logger.Info("spawning subconn")
+		ctxlog.Info(ctx, "spawning subconn")
 
 		config := *p.subConfig
 		conn := newConnection(&config)
 		defer func() {
-			logger.Info("closed subconn", zap.Error(conn.Close()))
+			ctxlog.Info(ctx, "closed subconn", zap.Error(conn.Close()))
 		}()
 
 		conn.sendFrom(p.sendChan)
@@ -559,7 +558,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		go func() {
 			if err := conn.WaitUntilReady(ctx); err != nil {
-				logger.Warn("waiting for connection to become ready", zap.Error(err))
+				ctxlog.Warn(ctx, "waiting for connection to become ready", zap.Error(err))
 				return
 			}
 

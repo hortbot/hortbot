@@ -44,8 +44,6 @@ func Run(args []string) {
 
 //nolint:gocyclo
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	logger := ctxlog.FromContext(ctx)
-
 	defer cmd.Jaeger.Init(ctx, "irc", cmd.Debug)()
 
 	connector := cmd.SQL.Connector(ctx)
@@ -64,17 +62,17 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 		allowed, err := cmd.IRC.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
 		if err != nil {
-			logger.Error("error checking rate limit", zap.Error(err))
+			ctxlog.Error(ctx, "error checking rate limit", zap.Error(err))
 			return err
 		}
 
 		if !allowed {
-			logger.Error("rate limited, requeueing")
+			ctxlog.Error(ctx, "rate limited, requeueing")
 			return errors.New("rate limited")
 		}
 
 		if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
-			logger.Error("error sending message", zap.Error(err))
+			ctxlog.Error(ctx, "error sending message", zap.Error(err))
 			return err
 		}
 
@@ -116,7 +114,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 				}
 
 				if err := incomingPub.Publish(ctx, cmd.IRC.Nick, m); err != nil {
-					logger.Error("error publishing incoming message", zap.Error(err))
+					ctxlog.Error(ctx, "error publishing incoming message", zap.Error(err))
 				}
 			}
 		}
@@ -149,6 +147,6 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	})
 
 	if err := g.WaitIgnoreStop(); err != nil {
-		logger.Info("exiting", zap.Error(err))
+		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
 }

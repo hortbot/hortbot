@@ -42,8 +42,6 @@ func Run(args []string) {
 
 //nolint:gocyclo
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	logger := ctxlog.FromContext(ctx)
-
 	db := cmd.SQL.Open(ctx, cmd.SQL.Connector(ctx))
 	rdb := cmd.Redis.Client()
 	twitchAPI := cmd.Twitch.Client()
@@ -66,7 +64,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	syncJoined := make(chan struct{}, 1)
 
 	var notifier notiferFunc = func(ctx context.Context, botName string) error {
-		logger.Debug("notified update to channels for bot", zap.String("botName", botName))
+		ctxlog.Debug(ctx, "notified update to channels for bot", zap.String("botName", botName))
 		select {
 		case syncJoined <- struct{}{}:
 		case <-ctx.Done():
@@ -128,7 +126,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	g.Go(conn.Run)
 
 	if err := g.WaitIgnoreStop(); err != nil {
-		logger.Info("exiting", zap.Error(err))
+		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
 }
 

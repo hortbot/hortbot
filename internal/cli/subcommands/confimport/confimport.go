@@ -31,14 +31,11 @@ func Run(args []string) {
 }
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	logger := ctxlog.FromContext(ctx)
-
 	connector := cmd.SQL.Connector(ctx)
 	db := cmd.SQL.Open(ctx, connector)
 	defer db.Close()
 
-	logger = logger.WithOptions(ctxlog.NoTrace())
-	ctx = ctxlog.WithLogger(ctx, logger)
+	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
 	todo := make([]string, 0, len(cmd.Files))
 
@@ -52,7 +49,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 		files, err := ioutil.ReadDir(dir)
 		if err != nil {
-			logger.Fatal("error reading dir", ctxlog.PlainError(err))
+			ctxlog.Fatal(ctx, "error reading dir", ctxlog.PlainError(err))
 		}
 
 		for _, file := range files {
@@ -78,7 +75,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	importOne := func(filename string) {
 		f, err := os.Open(filename)
 		if err != nil {
-			logger.Error("error opening file", ctxlog.PlainError(err))
+			ctxlog.Error(ctx, "error opening file", ctxlog.PlainError(err))
 			return
 		}
 		defer f.Close()
@@ -86,12 +83,12 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		config := &confimport.Config{}
 
 		if err := json.NewDecoder(f).Decode(config); err != nil {
-			logger.Error("error parsing file", ctxlog.PlainError(err))
+			ctxlog.Error(ctx, "error parsing file", ctxlog.PlainError(err))
 			return
 		}
 
 		if err := config.Insert(ctx, db); err != nil {
-			logger.Error("error inserting into database", ctxlog.PlainError(err))
+			ctxlog.Error(ctx, "error inserting into database", ctxlog.PlainError(err))
 		}
 	}
 

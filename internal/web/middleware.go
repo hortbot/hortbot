@@ -29,7 +29,7 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 				if err == sql.ErrNoRows {
 					httpError(w, http.StatusNotFound)
 				} else {
-					ctxlog.FromContext(ctx).Error("error querying channel", zap.Error(err))
+					ctxlog.Error(ctx, "error querying channel", zap.Error(err))
 					httpError(w, http.StatusInternalServerError)
 				}
 				return

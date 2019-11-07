@@ -38,15 +38,14 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	}
 
 	ctx = withCorrelation(ctx)
-	logger := ctxlog.FromContext(ctx)
 
 	if m == nil {
-		logger.Error("nil message")
+		ctxlog.Error(ctx, "nil message")
 		return
 	}
 
 	span.AddAttributes(trace.StringAttribute("irc_command", m.Command))
-	ctx, logger = ctxlog.FromContextWith(ctx, zap.String("irc_command", m.Command))
+	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command))
 
 	var start time.Time
 
@@ -57,11 +56,11 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	err := b.handle(ctx, origin, m)
 
 	if !isTesting {
-		logger.Debug("handled message", zap.Duration("took", time.Since(start)))
+		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
 	}
 
 	if err != nil {
-		logger.Error("error during handle", zap.Error(err), zap.Any("message", m))
+		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 	}
 }
 
@@ -70,14 +69,13 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	defer span.End()
 
 	start := b.deps.Clock.Now()
-	logger := ctxlog.FromContext(ctx)
 
 	defer func() {
 		if r := recover(); r != nil {
 			if _, ok := r.(testingPanic); ok {
 				panic(r)
 			}
-			logger.Error("panic during handle", zap.Any("value", r), zap.Stack("stack"))
+			ctxlog.Error(ctx, "panic during handle", zap.Any("value", r), zap.Stack("stack"))
 		}
 	}()
 
@@ -87,7 +85,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 	case "USERSTATE":
 		return b.handleUserState(ctx, origin, m)
 	default:
-		logger.Debug("unhandled command", zap.Any("message", m))
+		ctxlog.Debug(ctx, "unhandled command", zap.Any("message", m))
 		return nil
 	}
 
@@ -102,10 +100,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 		return nil
 	}
 
-	ctx, _ = ctxlog.FromContextWith(ctx,
-		zap.Int64("roomID", s.RoomID),
-		zap.String("channel", s.IRCChannel),
-	)
+	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
 	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
@@ -160,7 +155,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 
 	roomID := m.Tags["room-id"]
 	if roomID == "" {
-		ctxlog.FromContext(ctx).Debug("no room ID")
+		ctxlog.Debug(ctx, "no room ID")
 		return nil, errInvalidMessage
 	}
 	s.RoomIDStr = roomID
@@ -168,29 +163,29 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 	var err error
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
-		ctxlog.FromContext(ctx).Debug("error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
+		ctxlog.Debug(ctx, "error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
 		return nil, err
 	}
 
 	if s.RoomID == 0 {
-		ctxlog.FromContext(ctx).Debug("room ID cannot be zero")
+		ctxlog.Debug(ctx, "room ID cannot be zero")
 		return nil, errInvalidMessage
 	}
 
 	userID := m.Tags["user-id"]
 	if userID == "" {
-		ctxlog.FromContext(ctx).Debug("no user ID")
+		ctxlog.Debug(ctx, "no user ID")
 		return nil, errInvalidMessage
 	}
 
 	s.UserID, err = strconv.ParseInt(userID, 10, 64)
 	if err != nil {
-		ctxlog.FromContext(ctx).Debug("error parsing user ID", zap.String("parsed", userID), zap.Error(err))
+		ctxlog.Debug(ctx, "error parsing user ID", zap.String("parsed", userID), zap.Error(err))
 		return nil, err
 	}
 
 	if s.UserID == 0 {
-		ctxlog.FromContext(ctx).Debug("user ID cannot be zero")
+		ctxlog.Debug(ctx, "user ID cannot be zero")
 		return nil, errInvalidMessage
 	}
 
@@ -199,7 +194,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
-		ctxlog.FromContext(ctx).Debug("bad channel name", zap.Strings("params", m.Params))
+		ctxlog.Debug(ctx, "bad channel name", zap.Strings("params", m.Params))
 		return nil, errInvalidMessage
 	}
 
@@ -221,12 +216,12 @@ func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
 
 	seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
 	if err != nil {
-		ctxlog.FromContext(ctx).Error("error checking for duplicate", zap.Error(err), zap.String("id", id))
+		ctxlog.Error(ctx, "error checking for duplicate", zap.Error(err), zap.String("id", id))
 		return err
 	}
 
 	if seen {
-		ctxlog.FromContext(ctx).Debug("message already seen", zap.String("id", id))
+		ctxlog.Debug(ctx, "message already seen", zap.String("id", id))
 		return errDuplicateMessage
 	}
 
@@ -236,8 +231,6 @@ func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
 func handleSession(ctx context.Context, s *session) error {
 	ctx, span := trace.StartSpan(ctx, "handleSession")
 	defer span.End()
-
-	logger := ctxlog.FromContext(ctx)
 
 	s.SetUserLevel()
 
@@ -251,7 +244,7 @@ func handleSession(ctx context.Context, s *session) error {
 	err := queries.Raw(`SELECT * FROM channels WHERE user_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			logger.Debug("channel not found in database")
+			ctxlog.Debug(ctx, "channel not found in database")
 			return nil
 		}
 		return err
@@ -266,14 +259,14 @@ func handleSession(ctx context.Context, s *session) error {
 
 	if !s.Imp {
 		if !channel.Active {
-			logger.Warn("channel is not active")
+			ctxlog.Warn(ctx, "channel is not active")
 			return nil
 		}
 
 		// TODO: Handle name changes.
 
 		if channel.Name != s.IRCChannel {
-			logger.Warn("channel name mismatch",
+			ctxlog.Warn(ctx, "channel name mismatch",
 				zap.String("fromMessage", s.IRCChannel),
 				zap.String("fromDB", channel.Name),
 			)
@@ -281,7 +274,7 @@ func handleSession(ctx context.Context, s *session) error {
 		}
 
 		if channel.BotName != s.Origin {
-			logger.Warn("bot name mismatch",
+			ctxlog.Warn(ctx, "bot name mismatch",
 				zap.String("expected", channel.BotName),
 				zap.String("origin", s.Origin),
 			)
@@ -396,7 +389,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	s.SetCommandParams(params)
 	thisChannel := foreignChannel == ""
 
-	ctx, logger := ctxlog.FromContextWith(ctx, zap.String("name", name), zap.String("params", params), zap.Bool("foreign", !thisChannel))
+	ctx = ctxlog.With(ctx, zap.String("name", name), zap.String("params", params), zap.Bool("foreign", !thisChannel))
 
 	channelID := s.Channel.ID
 
@@ -414,7 +407,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, channelID, name, thisChannel)
 	if err != nil {
-		logger.Error("error looking up command name in database", zap.Error(err))
+		ctxlog.Error(ctx, "error looking up command name in database", zap.Error(err))
 		return true, err
 	}
 

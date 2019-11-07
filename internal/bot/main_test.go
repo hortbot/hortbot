@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"runtime"
 	"strings"
@@ -22,7 +21,7 @@ func init() {
 
 func must(err error) {
 	if err != nil {
-		log.Panic(err)
+		panic(err)
 	}
 }
 
