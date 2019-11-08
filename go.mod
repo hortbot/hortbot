@@ -3,7 +3,7 @@ module github.com/hortbot/hortbot
 go 1.12
 
 require (
-	contrib.go.opencensus.io/exporter/jaeger v0.1.0
+	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.4
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
@@ -55,7 +55,7 @@ require (
 	golang.org/x/net v0.0.0-20191105084925-a882066a44e0
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191105231337-689d0f08e67a
+	golang.org/x/tools v0.0.0-20191107222610-8ceaad4c15e6
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
