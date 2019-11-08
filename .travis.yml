@@ -43,7 +43,7 @@ script:
     fi
   - if [ "$BUILD_IMAGE" = true ] && [ "$TRAVIS_BRANCH" = "master" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
-      export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+      export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)";
 
       docker build -t hortbot/hortbot --build-arg version=$VERSION .;
       docker push hortbot/hortbot;
