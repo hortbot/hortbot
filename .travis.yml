@@ -5,20 +5,21 @@ git:
 
 language: go
 
+env:
+  global:
+    - GO111MODULE=on
+
 matrix:
   include:
     - go: "1.13.x"
-      env: GO111MODULE=on COVERAGE=true BUILD_IMAGE=true
+      env: COVERAGE=true BUILD_IMAGE=true
     - go: "1.12.x"
-      env: GO111MODULE=on
     - go: "tip"
-      env: GO111MODULE=on
+
+  fast_finish: true
   allow_failures:
     - go: "1.12.x"
-      env: GO111MODULE=on
     - go: "tip"
-      env: GO111MODULE=on
-  fast_finish: true
 
 services:
   - docker
@@ -27,11 +28,6 @@ addons:
   apt:
     packages:
       - docker-ce
-
-cache:
-  directories:
-    - $GOPATH/pkg
-    - $HOME/.cache/go-build
 
 before_install:
   - GO111MODULE=off go get -v -u github.com/mattn/goveralls
@@ -45,9 +41,7 @@ script:
   - if [ "$COVERAGE" = true ]; then
       $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out;
     fi
-
-after_success:
-  - if [[ "$BUILD_IMAGE" = true ]] && [[ "$TRAVIS_BRANCH" = "master" ]]; then
+  - if [ "$BUILD_IMAGE" = true ] && [ "$TRAVIS_BRANCH" = "master" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
       export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
 
