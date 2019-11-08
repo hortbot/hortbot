@@ -59,3 +59,6 @@ require (
 	gotest.tools/v3 v3.0.0
 	mvdan.cc/xurls/v2 v2.1.0
 )
+
+// Fix build in Go 1.14. Remove when gotest.tools is fixed.
+replace gotest.tools/v3 => github.com/zikaeroh/gotest.tools/v3 v3.0.1-0.20191107191801-6bc35c2eea35
