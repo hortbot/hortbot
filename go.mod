@@ -56,9 +56,6 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/tools v0.0.0-20191107222610-8ceaad4c15e6
-	gotest.tools/v3 v3.0.0
+	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
-
-// Fix build in Go 1.14. Remove when gotest.tools is fixed.
-replace gotest.tools/v3 => github.com/zikaeroh/gotest.tools/v3 v3.0.1-0.20191107191801-6bc35c2eea35
