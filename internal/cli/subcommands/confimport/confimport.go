@@ -73,6 +73,12 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	}
 
 	importOne := func(filename string) {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
 		f, err := os.Open(filename)
 		if err != nil {
 			ctxlog.Error(ctx, "error opening file", ctxlog.PlainError(err))

@@ -31,9 +31,10 @@ type cmd struct {
 	cli.Common
 	Twitch twitchflags.Twitch
 
-	JSONs     string `long:"jsons" description:"Directory of CoeBot JSON config files" required:"true"`
-	Out       string `long:"out" description:"Output directory for confimport configs" required:"true"`
-	SiteDumps string `long:"site-dumps" description:"Directory containing coebot.tv database dumps" required:"true"`
+	Dir       []string `long:"dir" description:"Directory containing CoeBot JSON config files"`
+	Files     []string `long:"files" positional-args:""`
+	Out       string   `long:"out" description:"Output directory for confimport configs" required:"true"`
+	SiteDumps string   `long:"site-dumps" description:"Directory containing coebot.tv database dumps" required:"true"`
 
 	DefaultBullet string `long:"default-bullet" description:"Bullet to convert to the default"`
 
@@ -56,7 +57,6 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
-	dir := filepath.Clean(cmd.JSONs)
 	outDir := filepath.Clean(cmd.Out)
 
 	if d, err := os.Stat(outDir); err != nil {
@@ -68,35 +68,58 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		ctxlog.Fatal(ctx, "output is not a directory")
 	}
 
-	files, err := ioutil.ReadDir(cmd.JSONs)
-	if err != nil {
-		ctxlog.Fatal(ctx, "error reading dir", ctxlog.PlainError(err))
+	todo := make([]string, 0, len(cmd.Files))
+
+	for _, file := range cmd.Files {
+		file = filepath.Clean(file)
+		todo = append(todo, file)
+	}
+
+	for _, dir := range cmd.Dir {
+		dir = filepath.Clean(dir)
+
+		files, err := ioutil.ReadDir(dir)
+		if err != nil {
+			ctxlog.Fatal(ctx, "error reading dir", ctxlog.PlainError(err))
+		}
+
+		for _, file := range files {
+			if ctx.Err() != nil {
+				break
+			}
+
+			if file.IsDir() {
+				continue
+			}
+
+			name := file.Name()
+
+			if filepath.Ext(name) != ".json" {
+				continue
+			}
+
+			filename := filepath.Join(dir, name)
+			todo = append(todo, filename)
+		}
 	}
 
 	ctxlog.Info(ctx, "starting site database")
 	defer cmd.prepareSiteDB(ctx)()
 	ctxlog.Info(ctx, "site database started")
 
-	for _, file := range files {
-		if ctx.Err() != nil {
-			break
+	for _, file := range todo {
+		select {
+		case <-ctx.Done():
+			return
+		default:
 		}
 
-		if file.IsDir() {
-			continue
-		}
-
-		name := file.Name()
-
-		if filepath.Ext(name) != ".json" {
-			continue
-		}
+		_, name := filepath.Split(file)
 
 		n := strings.TrimSuffix(name, ".json")
-		filename := filepath.Join(dir, name)
 		out := filepath.Join(outDir, name)
 
-		cmd.processFile(ctx, n, filename, out)
+		cmd.processFile(ctx, n, file, out)
 	}
 }
 
