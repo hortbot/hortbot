@@ -32,15 +32,20 @@ type cmd struct {
 	cli.Common
 	Twitch twitchflags.Twitch
 
-	Dir       []string `long:"dir" description:"Directory containing CoeBot JSON config files"`
-	Files     []string `long:"files" positional-args:""`
-	Out       string   `long:"out" description:"Output directory for confimport configs" required:"true"`
-	SiteDumps string   `long:"site-dumps" description:"Directory containing coebot.tv database dumps" required:"true"`
+	Dir        []string `long:"dir" description:"Directory containing CoeBot JSON config files"`
+	Positional struct {
+		Files []string `positional-arg-name:"FILE"`
+	} `positional-args:"true"`
+
+	Out       string `long:"out" description:"Output directory for confimport configs" required:"true"`
+	SiteDumps string `long:"site-dumps" description:"Directory containing coebot.tv database dumps" required:"true"`
 
 	DefaultBullet string            `long:"default-bullet" description:"Bullet to convert to the default"`
 	BotBullet     map[string]string `long:"bot-bullet" description:"Mapping from bots to their default bullets"`
 
 	TwitchSleep time.Duration `long:"twitch-sleep" description:"Time to require between twitch API calls"`
+
+	Pretty bool `long:"pretty" description:"Pretty print JSON output files"`
 }
 
 func Run(args []string) {
@@ -70,9 +75,9 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		ctxlog.Fatal(ctx, "output is not a directory")
 	}
 
-	todo := make([]string, 0, len(cmd.Files))
+	todo := make([]string, 0, len(cmd.Positional.Files))
 
-	for _, file := range cmd.Files {
+	for _, file := range cmd.Positional.Files {
 		file = filepath.Clean(file)
 		todo = append(todo, file)
 	}
@@ -103,6 +108,10 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 			filename := filepath.Join(dir, name)
 			todo = append(todo, filename)
 		}
+	}
+
+	if len(todo) == 0 {
+		ctxlog.Fatal(ctx, "no files to convert")
 	}
 
 	ctxlog.Info(ctx, "starting site database")
@@ -145,7 +154,13 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 	}
 	defer f.Close()
 
-	if err := json.NewEncoder(f).Encode(config); err != nil {
+	enc := json.NewEncoder(f)
+
+	if cmd.Pretty {
+		enc.SetIndent("", "    ")
+	}
+
+	if err := enc.Encode(config); err != nil {
 		ctxlog.Error(ctx, "error encoding config", ctxlog.PlainError(err))
 	}
 }

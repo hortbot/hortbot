@@ -47,7 +47,7 @@ func Run(name string, args []string, cmd Command) {
 	parser := flags.NewNamedParser(name, flags.HelpFlag|flags.PassDoubleDash)
 	_, _ = parser.AddGroup("Options", "", cmd)
 
-	args, err := parser.Parse()
+	args, err := parser.ParseArgs(args)
 	checkParseError(err)
 
 	logger := ctxlog.New(cmd.debug())

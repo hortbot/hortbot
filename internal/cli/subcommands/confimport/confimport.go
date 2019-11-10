@@ -17,8 +17,11 @@ type cmd struct {
 	cli.Common
 	SQL sqlflags.SQL
 
-	Dir   []string `long:"dir" description:"Directory of hortbot models"`
-	Files []string `positional-args:""`
+	Dir []string `long:"dir" description:"Directory of hortbot models"`
+
+	Positional struct {
+		Files []string `positional-arg-name:"FILE"`
+	} `positional-args:"true"`
 }
 
 func Run(args []string) {
@@ -37,9 +40,9 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
-	todo := make([]string, 0, len(cmd.Files))
+	todo := make([]string, 0, len(cmd.Positional.Files))
 
-	for _, file := range cmd.Files {
+	for _, file := range cmd.Positional.Files {
 		file = filepath.Clean(file)
 		todo = append(todo, file)
 	}
@@ -70,6 +73,10 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 			filename := filepath.Join(dir, name)
 			todo = append(todo, filename)
 		}
+	}
+
+	if len(todo) == 0 {
+		ctxlog.Fatal(ctx, "no files to import")
 	}
 
 	importOne := func(filename string) {
