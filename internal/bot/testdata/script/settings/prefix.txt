@@ -17,3 +17,6 @@ send hortbot #foobar [HB] Prefix cannot begin with /
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix .me
 send hortbot #foobar [HB] Prefix cannot begin with .
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix long
+send hortbot #foobar [HB] Prefix may only be a single character.

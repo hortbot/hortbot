@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/cbp"
@@ -101,6 +102,9 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 	if reset {
 		s.Channel.Prefix = modelsx.DefaultPrefix
 	} else {
+		if utf8.RuneCountInString(args) != 1 {
+			return s.Reply(ctx, "Prefix may only be a single character.")
+		}
 		s.Channel.Prefix = args
 	}
 

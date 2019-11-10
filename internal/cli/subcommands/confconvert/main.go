@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/cli"
@@ -346,7 +347,13 @@ func (c *coeBotConfig) loadChannel(ctx context.Context, defaultBullet string, us
 		channel.Bullet = null.StringFrom(c.Bullet)
 	}
 
-	channel.Prefix = c.CommandPrefix
+	prefix := c.CommandPrefix
+	if utf8.RuneCountInString(prefix) != 1 {
+		ctxlog.Warn(ctx, "prefix was not a single character, setting to !", zap.String("commandPrefix", prefix))
+		prefix = "!"
+	}
+
+	channel.Prefix = prefix
 	channel.Mode = c.newMode()
 	channel.Ignored = c.IgnoredUsers
 	channel.CustomOwners = c.Owners
