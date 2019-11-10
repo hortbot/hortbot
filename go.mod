@@ -50,12 +50,12 @@ require (
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
-	go.opencensus.io v0.22.1
+	go.opencensus.io v0.22.2
 	go.uber.org/zap v1.12.0
-	golang.org/x/net v0.0.0-20191108225301-c7154b74f18f
+	golang.org/x/net v0.0.0-20191109021931-daa7c04131f5
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191108193012-7d206e10da11
+	golang.org/x/tools v0.0.0-20191109212701-97ad0ed33101
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
