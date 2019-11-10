@@ -14,8 +14,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
+	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
-	"github.com/robfig/cron/v3"
 )
 
 type sharedDeps struct {
@@ -39,7 +39,7 @@ type sharedDeps struct {
 	// TODO: split these into an interface.
 
 	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
-	UpdateSchedule func(id int64, add bool, expr cron.Schedule)
+	UpdateSchedule func(id int64, add bool, expr *repeat.Cron)
 	ReloadRepeats  func(ctx context.Context) error
 	CountRepeats   func() (repeats, schedules int)
 

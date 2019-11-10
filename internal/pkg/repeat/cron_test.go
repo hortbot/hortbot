@@ -8,11 +8,15 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
-	"github.com/robfig/cron/v3"
 	"gotest.tools/v3/assert"
 )
 
 var startTime = mustParseTime("2000-10-01T03:11:00Z")
+
+func TestParseCron(t *testing.T) {
+	_, err := repeat.ParseCron("")
+	assert.Error(t, err, "empty spec string")
+}
 
 func TestCronAdd(t *testing.T) {
 	defer leaktest.Check(t)()
@@ -228,7 +232,7 @@ func TestBadCron(t *testing.T) {
 
 	r := repeat.New(context.Background(), clk)
 
-	r.AddCron(0, fn, &cron.SpecSchedule{})
+	r.AddCron(0, fn, nil)
 
 	clk.Forward(time.Hour)
 	clk.Forward(time.Hour)
@@ -251,7 +255,7 @@ func mustParseTime(s string) time.Time {
 	return t
 }
 
-func mustParseCron(s string) cron.Schedule {
+func mustParseCron(s string) *repeat.Cron {
 	e, err := repeat.ParseCron(s)
 	if err != nil {
 		panic(err)

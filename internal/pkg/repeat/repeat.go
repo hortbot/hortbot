@@ -104,23 +104,19 @@ func (r *Repeater) Remove(id int64) {
 
 // AddCron adds a repeated task which repeats based on a cron expression.
 // Cron tasks may safely share IDs with regular repeated tasks.
-func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), expr cron.Schedule) {
+func (r *Repeater) AddCron(id int64, fn func(ctx context.Context, id int64), expr *Cron) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
 	r.crons.run(id, func(ctx context.Context) {
 		for {
 			now := r.clock.Now()
-			next := expr.Next(now)
+			next := expr.expr.Next(now)
 			if next.IsZero() {
 				return
 			}
 
 			dur := next.Sub(now)
-			// fmt.Println(now, next, dur)
-			// if dur < time.Second {
-			// 	panic("wtf")
-			// }
 
 			select {
 			case <-ctx.Done():
@@ -205,6 +201,17 @@ func (t *taskRunner) count() int {
 
 var cronParser = cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
 
-func ParseCron(s string) (cron.Schedule, error) {
-	return cronParser.Parse(s)
+type Cron struct {
+	expr cron.Schedule
+}
+
+func ParseCron(s string) (*Cron, error) {
+	expr, err := cronParser.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Cron{
+		expr: expr,
+	}, nil
 }

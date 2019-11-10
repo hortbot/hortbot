@@ -9,7 +9,6 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
-	"github.com/robfig/cron/v3"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
@@ -24,7 +23,7 @@ func (b *Bot) updateRepeatedCommand(id int64, add bool, interval, wait time.Dura
 	}
 }
 
-func (b *Bot) updateScheduledCommand(id int64, add bool, expr cron.Schedule) {
+func (b *Bot) updateScheduledCommand(id int64, add bool, expr *repeat.Cron) {
 	if add {
 		b.rep.AddCron(id, b.runScheduledCommand, expr)
 	} else {
