@@ -36,7 +36,8 @@ type cmd struct {
 	Out       string   `long:"out" description:"Output directory for confimport configs" required:"true"`
 	SiteDumps string   `long:"site-dumps" description:"Directory containing coebot.tv database dumps" required:"true"`
 
-	DefaultBullet string `long:"default-bullet" description:"Bullet to convert to the default"`
+	DefaultBullet string            `long:"default-bullet" description:"Bullet to convert to the default"`
+	BotBullet     map[string]string `long:"bot-bullet" description:"Mapping from bots to their default bullets"`
 
 	TwitchSleep time.Duration `long:"twitch-sleep" description:"Time to require between twitch API calls"`
 }
@@ -205,8 +206,15 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		active = false
 	}
 
+	defaultBullet := cmd.DefaultBullet
+	if len(cmd.BotBullet) > 0 {
+		if b := cmd.BotBullet[botName]; b != "" {
+			defaultBullet = b
+		}
+	}
+
 	config := &confimport.Config{
-		Channel:     c.loadChannel(ctx, cmd.DefaultBullet, twitchID, name, displayName, botName),
+		Channel:     c.loadChannel(ctx, defaultBullet, twitchID, name, displayName, botName),
 		Quotes:      c.loadQuotes(),
 		Commands:    c.loadCommands(ctx),
 		Autoreplies: c.loadAutoreplies(ctx),
