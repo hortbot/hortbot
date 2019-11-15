@@ -51,11 +51,11 @@ require (
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
 	go.opencensus.io v0.22.2
-	go.uber.org/zap v1.12.0
-	golang.org/x/net v0.0.0-20191109021931-daa7c04131f5
+	go.uber.org/zap v1.13.0
+	golang.org/x/net v0.0.0-20191112182307-2180aed22343
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191109212701-97ad0ed33101
+	golang.org/x/tools v0.0.0-20191114222411-4191b8cbba09
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
