@@ -60,6 +60,7 @@ func (config *config) Main(ctx context.Context, _ []string) {
 	g := errgroupx.FromContext(ctx)
 
 	incomingSub := config.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, metadata *bnsq.Metadata) error {
+		ctx := metadata.Correlate(ctx)
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", metadata.ParentSpan())
 		defer span.End()
 

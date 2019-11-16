@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/birc/breq"
+	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
@@ -151,11 +152,13 @@ func (p *Pool) Incoming() <-chan *irc.Message {
 
 // Join instructs the pool to join a channel.
 func (p *Pool) Join(ctx context.Context, channels ...string) error {
+	ctx = correlation.With(ctx)
 	return p.doJoinPart(ctx, true, false, channels...)
 }
 
 // Part instructs the pool to part with a channel.
 func (p *Pool) Part(ctx context.Context, channels ...string) error {
+	ctx = correlation.With(ctx)
 	return p.doJoinPart(ctx, false, false, channels...)
 }
 
@@ -198,6 +201,7 @@ func (p *Pool) NumJoined() int {
 // SyncJoined synchronizes the pool's joined channels to match the provided
 // list.
 func (p *Pool) SyncJoined(ctx context.Context, channels ...string) error {
+	ctx = correlation.With(ctx)
 	return breq.NewSyncJoined(channels).Do(ctx, p.syncJoinedChan, p.stopChan, ErrPoolStopped)
 }
 
@@ -267,6 +271,7 @@ func (p *Pool) connManager(ctx context.Context) error {
 
 // Only return an error if the entire pool should stop.
 func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) error {
+	ctx = correlation.WithID(ctx, req.XID)
 	err := p.joinPart(ctx, req.Channel, req.Join, req.Force)
 	req.Finish(err)
 	return p.joinSleep(ctx)
@@ -274,6 +279,7 @@ func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) error {
 
 // Only return an error if the entire pool should stop.
 func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) error {
+	ctx = correlation.WithID(ctx, req.XID)
 	// TODO: Priorities for join orders.
 	toPart, toJoin := p.joinPartChanges(req.Channels)
 
@@ -619,6 +625,7 @@ func (p *Pool) send(ctx context.Context, m *irc.Message) error {
 // Note: this function does no rate limiting. Apply any rate limits before
 // calling this function.
 func (p *Pool) SendMessage(ctx context.Context, target, message string) error {
+	ctx = correlation.With(ctx)
 	return p.send(ctx, ircx.PrivMsg(target, message))
 }
 

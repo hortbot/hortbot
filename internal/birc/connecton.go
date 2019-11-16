@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/birc/breq"
+	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
@@ -190,6 +191,7 @@ func (c *Connection) WaitUntilReady(ctx context.Context) error {
 
 // SendMessage sends a PRIVMSG to the specified target.
 func (c *Connection) SendMessage(ctx context.Context, target, message string) error {
+	ctx = correlation.With(ctx)
 	if c.config.UserConfig.ReadOnly {
 		return ErrReadOnly
 	}
@@ -282,6 +284,8 @@ func (c *Connection) sender(ctx context.Context) error {
 			return ctx.Err()
 		}
 
+		ctx := correlation.WithID(ctx, req.XID)
+
 		err := c.conn.Encode(req.M)
 		req.Finish(err)
 
@@ -308,6 +312,7 @@ func (c *Connection) sendFrom(ch <-chan breq.Send) {
 // Note that even if an error occurs, the connection's state will be updated
 // such that it appears that the channels were parted.
 func (c *Connection) Join(ctx context.Context, channels ...string) error {
+	ctx = correlation.With(ctx)
 	return c.doJoinPart(ctx, true, channels...)
 }
 
@@ -354,6 +359,7 @@ func (c *Connection) NumJoined() int {
 // Note that even if an error occurs, the connection's state will be updated
 // such that it appears that the channels were parted.
 func (c *Connection) Part(ctx context.Context, channels ...string) error {
+	ctx = correlation.With(ctx)
 	return c.doJoinPart(ctx, false, channels...)
 }
 
@@ -404,6 +410,7 @@ func (c *Connection) doJoinPart(ctx context.Context, join bool, channels ...stri
 // Quit sends a QUIT to the IRC server, which may cause the client to
 // disconnect.
 func (c *Connection) Quit(ctx context.Context) error {
+	ctx = correlation.With(ctx)
 	return c.send(ctx, &irc.Message{Command: "QUIT"})
 }
 

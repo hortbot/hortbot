@@ -6,8 +6,10 @@ import (
 	"context"
 	"sync"
 
+	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
+	"github.com/rs/xid"
 )
 
 var errChanPool = sync.Pool{
@@ -23,6 +25,7 @@ func getErrChan() chan error {
 type Send struct {
 	errChan chan error
 	M       *irc.Message
+	XID     xid.ID
 }
 
 func NewSend(m *irc.Message) Send {
@@ -33,6 +36,8 @@ func NewSend(m *irc.Message) Send {
 }
 
 func (r Send) Do(ctx context.Context, reqChan chan<- Send, stopChan <-chan struct{}, stopErr error) error {
+	r.XID = correlation.FromContext(ctx)
+
 	select {
 	case reqChan <- r:
 		// Do nothing.
@@ -62,6 +67,7 @@ type JoinPart struct {
 	Channel string
 	Join    bool
 	Force   bool
+	XID     xid.ID
 }
 
 func NewJoinPart(channel string, join, force bool) JoinPart {
@@ -74,6 +80,8 @@ func NewJoinPart(channel string, join, force bool) JoinPart {
 }
 
 func (r JoinPart) Do(ctx context.Context, reqChan chan<- JoinPart, stopChan <-chan struct{}, stopErr error) error {
+	r.XID = correlation.FromContext(ctx)
+
 	select {
 	case reqChan <- r:
 		// Do nothing.
@@ -101,6 +109,7 @@ func (r JoinPart) Finish(err error) {
 type SyncJoined struct {
 	errChan  chan error
 	Channels []string
+	XID      xid.ID
 }
 
 func NewSyncJoined(channels []string) SyncJoined {
@@ -111,6 +120,8 @@ func NewSyncJoined(channels []string) SyncJoined {
 }
 
 func (r SyncJoined) Do(ctx context.Context, reqChan chan<- SyncJoined, stopChan <-chan struct{}, stopErr error) error {
+	r.XID = correlation.FromContext(ctx)
+
 	select {
 	case reqChan <- r:
 		// Do nothing.

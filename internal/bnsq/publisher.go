@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 	"go.opencensus.io/trace"
@@ -91,8 +92,9 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 
 	m := &message{
 		Metadata: Metadata{
-			Timestamp: p.clk.Now(),
-			TraceSpan: propagation.Binary(span.SpanContext()),
+			Timestamp:   p.clk.Now(),
+			TraceSpan:   propagation.Binary(span.SpanContext()),
+			Correlation: correlation.FromContext(ctx),
 		},
 		Payload: pl,
 	}

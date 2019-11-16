@@ -1,9 +1,12 @@
 package bnsq
 
 import (
+	"context"
 	"encoding/json"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/correlation"
+	"github.com/rs/xid"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
 )
@@ -18,11 +21,16 @@ func (m *message) payload(v interface{}) error {
 }
 
 type Metadata struct {
-	Timestamp time.Time `json:"timestamp"`
-	TraceSpan []byte    `json:"trace_span"`
+	Timestamp   time.Time `json:"timestamp"`
+	TraceSpan   []byte    `json:"trace_span"`
+	Correlation xid.ID    `json:"xid"`
 }
 
 func (m *Metadata) ParentSpan() trace.SpanContext {
 	parent, _ := propagation.FromBinary(m.TraceSpan)
 	return parent
+}
+
+func (m *Metadata) Correlate(ctx context.Context) context.Context {
+	return correlation.WithID(ctx, m.Correlation)
 }

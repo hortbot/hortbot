@@ -10,6 +10,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -27,6 +28,8 @@ var (
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
+	ctx = correlation.With(ctx)
+
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 
@@ -36,8 +39,6 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	if !b.initialized {
 		panic("bot is not initialized")
 	}
-
-	ctx = withCorrelation(ctx)
 
 	if m == nil {
 		ctxlog.Error(ctx, "nil message")
