@@ -25,11 +25,11 @@ type Bot struct {
 	WhitelistEnabled bool     `long:"bot-whitelist-enabled" env:"HB_BOT_WHITELIST_ENABLED" description:"Enable the user whitelist"`
 	Whitelist        []string `long:"bot-whitelist" env:"HB_BOT_WHITELIST" env-delim:"," description:"User whitelist"`
 
-	BulletMap       map[string]string `long:"bot-bullet-map" env:"HB_BOT_BULLET_MAP" description:"Mapping from bot name to default bullet"`
+	BulletMap       map[string]string `long:"bot-bullet-map" env:"HB_BOT_BULLET_MAP" env-delim:"," description:"Mapping from bot name to default bullet"`
 	DefaultCooldown int               `long:"bot-default-cooldown" env:"HB_BOT_DEFAULT_COOLDOWN" description:"default command cooldown"`
 
 	WebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
-	WebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" description:"Bot name to web address mapping"`
+	WebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" env-delim:"," description:"Bot name to web address mapping"`
 
 	LastFMKey string `long:"bot-lastfm-key" env:"HB_BOT_LASTFM_KEY" description:"LastFM API key"`
 	SteamKey  string `long:"bot-steam-key" env:"HB_BOT_STEAM_KEY" description:"Steam API key"`
