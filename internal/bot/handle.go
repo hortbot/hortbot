@@ -60,7 +60,10 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
 	}
 
-	if err != nil {
+	switch {
+	case err == nil:
+	case err == errNotAllowed:
+	default:
 		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 	}
 }
