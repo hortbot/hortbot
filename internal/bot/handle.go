@@ -269,8 +269,6 @@ func handleSession(ctx context.Context, s *session) error {
 			return nil
 		}
 
-		// TODO: Handle name changes.
-
 		if channel.Name != s.IRCChannel {
 			ctxlog.Warn(ctx, "channel name mismatch",
 				zap.String("fromMessage", s.IRCChannel),
@@ -327,6 +325,9 @@ func handleSession(ctx context.Context, s *session) error {
 		switch err {
 		case errNotAuthorized, errBuiltinDisabled, errInCooldown:
 		default:
+			if err == nil {
+				metricCommands.Inc()
+			}
 			return err
 		}
 	}

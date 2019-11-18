@@ -560,7 +560,10 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		p.connsMu.Lock()
 		p.conns[conn] = struct{}{}
+		connsLen := len(p.conns)
 		p.connsMu.Unlock()
+
+		metricSubconns.WithLabelValues(p.config.UserConfig.Nick).Set(float64(connsLen))
 
 		go func() {
 			if err := conn.WaitUntilReady(ctx); err != nil {
@@ -585,8 +588,11 @@ func (p *Pool) runSubConn() <-chan *Connection {
 			delete(p.chanToConn, channel)
 			delete(p.joined, channel)
 		}
+		connsLen = len(p.conns)
 		p.joinedMu.Unlock()
 		p.connsMu.Unlock()
+
+		metricSubconns.WithLabelValues(p.config.UserConfig.Nick).Set(float64(connsLen))
 
 		// Context expired, keep returning.
 		switch err {

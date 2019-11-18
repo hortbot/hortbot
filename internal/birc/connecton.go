@@ -90,6 +90,9 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 		return errors.Wrap(err, "dialing connection")
 	}
 
+	metricConnect.WithLabelValues(c.config.UserConfig.Nick).Inc()
+	defer metricDisconnect.WithLabelValues(c.config.UserConfig.Nick).Inc()
+
 	g := errgroupx.FromContext(ctx)
 
 	c.conn = irc.NewBaseConn(nconn)
@@ -213,7 +216,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 		m := &irc.Message{}
 
 		err := c.conn.Decode(m)
-		metricReceived.Inc()
+		metricReceived.WithLabelValues(c.config.UserConfig.Nick).Inc()
 		if err != nil {
 			if pe, ok := err.(*irc.ParseError); ok {
 				ctxlog.Warn(ctx, "received bad message from IRC server, ignoring", zap.Error(pe))
@@ -259,7 +262,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 		// but we can return early here to attempt to prevent any future uses
 		// of this connection that would just fail.
 		if m.Command == "RECONNECT" {
-			metricReconnects.Inc()
+			metricReconnects.WithLabelValues(c.config.UserConfig.Nick).Inc()
 			c.reconnnect = true
 			return ErrReconnect
 		}
@@ -292,7 +295,7 @@ func (c *Connection) sender(ctx context.Context) error {
 
 		err := c.conn.Encode(req.M)
 		req.Finish(err)
-		metricSent.Inc()
+		metricSent.WithLabelValues(c.config.UserConfig.Nick).Inc()
 
 		if err != nil {
 			return errors.Wrap(err, "sending to conn")

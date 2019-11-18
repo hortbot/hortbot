@@ -55,6 +55,11 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 			return true, nil
 		}
 
+		autoreply.Count++
+		if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.Count)); err != nil {
+			return true, err
+		}
+
 		oldType := s.Type
 		s.Type = sessionAutoreply
 		defer func() {
@@ -70,9 +75,9 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 			return true, err
 		}
 
-		autoreply.Count++
+		metricAutoreplies.Inc()
 
-		return true, autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.Count))
+		return true, nil
 	}
 
 	return false, nil

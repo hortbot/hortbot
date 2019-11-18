@@ -79,6 +79,8 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 
 	if err != nil {
 		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err))
+	} else {
+		metricRepeated.Inc()
 	}
 }
 
@@ -172,6 +174,8 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 
 	if err != nil {
 		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err))
+	} else {
+		metricScheduled.Inc()
 	}
 }
 
