@@ -7,6 +7,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
+	"go.opencensus.io/trace"
 )
 
 type Config struct {
@@ -26,6 +27,9 @@ type Command struct {
 }
 
 func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
+	ctx, span := trace.StartSpan(ctx, "confimport.Insert")
+	defer span.End()
+
 	if err := c.Channel.Insert(ctx, exec, boil.Infer()); err != nil {
 		return errors.Wrap(err, "inserting channel")
 	}

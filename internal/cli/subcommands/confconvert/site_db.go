@@ -44,6 +44,7 @@ func (cmd *cmd) prepareSiteDB(ctx context.Context) func() {
 
 	connStr := "root:" + password + "@tcp(" + resource.GetHostPort("3306/tcp") + ")/" + dbName
 
+	pool.MaxWait = 5 * time.Minute
 	err = pool.Retry(func() error {
 		var err error
 		siteDB, err = sqlx.Open("mysql", connStr)
