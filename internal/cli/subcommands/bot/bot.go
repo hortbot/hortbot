@@ -9,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
@@ -21,28 +22,31 @@ import (
 
 type config struct {
 	cli.Common
-	SQL    sqlflags.SQL
-	Twitch twitchflags.Twitch
-	Redis  redisflags.Redis
-	Bot    botflags.Bot
-	NSQ    nsqflags.NSQ
-	Jaeger jaegerflags.Jaeger
+	SQL        sqlflags.SQL
+	Twitch     twitchflags.Twitch
+	Redis      redisflags.Redis
+	Bot        botflags.Bot
+	NSQ        nsqflags.NSQ
+	Jaeger     jaegerflags.Jaeger
+	Prometheus promflags.Prometheus
 }
 
 func Run(args []string) {
 	cli.Run("bot", args, &config{
-		Common: cli.DefaultCommon,
-		SQL:    sqlflags.DefaultSQL,
-		Twitch: twitchflags.DefaultTwitch,
-		Redis:  redisflags.DefaultRedis,
-		Bot:    botflags.DefaultBot,
-		NSQ:    nsqflags.DefaultNSQ,
-		Jaeger: jaegerflags.DefaultJaeger,
+		Common:     cli.DefaultCommon,
+		SQL:        sqlflags.DefaultSQL,
+		Twitch:     twitchflags.DefaultTwitch,
+		Redis:      redisflags.DefaultRedis,
+		Bot:        botflags.DefaultBot,
+		NSQ:        nsqflags.DefaultNSQ,
+		Jaeger:     jaegerflags.DefaultJaeger,
+		Prometheus: promflags.Default,
 	})
 }
 
 func (config *config) Main(ctx context.Context, _ []string) {
 	defer config.Jaeger.Init(ctx, "bot", config.Debug)()
+	config.Prometheus.Run(ctx)
 
 	connector := config.SQL.Connector(ctx)
 	connector = config.Jaeger.TraceDB(config.Debug, connector)

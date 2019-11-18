@@ -45,6 +45,8 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		return
 	}
 
+	defer metricHandled.Inc()
+
 	span.AddAttributes(trace.StringAttribute("irc_command", m.Command))
 	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command))
 

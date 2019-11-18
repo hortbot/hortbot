@@ -21,6 +21,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -73,6 +74,10 @@ func (a *App) Run(ctx context.Context) error {
 		r.Use(middleware.RealIP)
 	}
 
+	r.Use(func(next http.Handler) http.Handler {
+		return promhttp.InstrumentHandlerCounter(metricRequest, next)
+	})
+
 	r.Use(mid.RequestLogger)
 	r.Use(mid.Tracer)
 	r.Use(mid.Recoverer)
@@ -82,8 +87,9 @@ func (a *App) Run(ctx context.Context) error {
 	r.Get("/docs", a.docs)
 	r.Get("/channels", a.channels)
 
-	r.Route("/c/{channel}", func(r chi.Router) {
-		r.Use(a.channelMiddleware("channel"))
+	const paramChannel = "channel"
+	r.Route("/c/{"+paramChannel+"}", func(r chi.Router) {
+		r.Use(a.channelMiddleware(paramChannel))
 		r.Get("/", a.channel)
 		r.Get("/commands", a.channelCommands)
 		r.Get("/quotes", a.channelQuotes)

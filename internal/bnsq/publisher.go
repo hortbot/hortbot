@@ -112,6 +112,9 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 
 	select {
 	case pt := <-doneChan:
+		if err == nil {
+			metricPublished.WithLabelValues(topic).Inc()
+		}
 		return pt.Error
 	case <-ctx.Done():
 		return ctx.Err()

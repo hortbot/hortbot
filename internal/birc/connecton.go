@@ -211,7 +211,10 @@ func (c *Connection) receiver(ctx context.Context) error {
 
 	for {
 		m := &irc.Message{}
-		if err := c.conn.Decode(m); err != nil {
+
+		err := c.conn.Decode(m)
+		metricReceived.Inc()
+		if err != nil {
 			if pe, ok := err.(*irc.ParseError); ok {
 				ctxlog.Warn(ctx, "received bad message from IRC server, ignoring", zap.Error(pe))
 				continue
@@ -256,6 +259,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 		// but we can return early here to attempt to prevent any future uses
 		// of this connection that would just fail.
 		if m.Command == "RECONNECT" {
+			metricReconnects.Inc()
 			c.reconnnect = true
 			return ErrReconnect
 		}
@@ -288,6 +292,7 @@ func (c *Connection) sender(ctx context.Context) error {
 
 		err := c.conn.Encode(req.M)
 		req.Finish(err)
+		metricSent.Inc()
 
 		if err != nil {
 			return errors.Wrap(err, "sending to conn")

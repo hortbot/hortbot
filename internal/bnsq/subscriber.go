@@ -90,6 +90,8 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 			}
 		}
 
+		defer metricHandled.WithLabelValues(s.topic).Inc()
+
 		return fn(m)
 	}))
 

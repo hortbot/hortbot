@@ -41,6 +41,7 @@ require (
 	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/posener/ctxutil v1.0.0
+	github.com/prometheus/client_golang v1.2.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/xid v1.2.1
 	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
