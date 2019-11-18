@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
@@ -20,10 +19,6 @@ func (args *Prometheus) Run(ctx context.Context) {
 	if !args.Enabled {
 		return
 	}
-
-	prometheus.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
-		Namespace: "hortbot",
-	}))
 
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.Handler())
