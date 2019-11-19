@@ -40,4 +40,12 @@ var (
 		Name:      "scheduled_total",
 		Help:      "Total number of executed scheduled commands.",
 	})
+
+	metricHandleDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_duration_seconds",
+		Help:      "Duration of message handling.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+	}, []string{"irc_command"})
 )

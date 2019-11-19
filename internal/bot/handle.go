@@ -50,11 +50,11 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	span.AddAttributes(trace.StringAttribute("irc_command", m.Command))
 	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command))
 
-	var start time.Time
-
-	if !isTesting {
-		start = time.Now()
-	}
+	start := b.deps.Clock.Now()
+	defer func() {
+		secs := b.deps.Clock.Since(start).Seconds()
+		metricHandleDuration.WithLabelValues(m.Command).Observe(secs)
+	}()
 
 	err := b.handle(ctx, origin, m)
 
