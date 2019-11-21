@@ -28,3 +28,7 @@ hortbot
 
 .git/
 config/
+
+# common benchstat filenames 
+old.txt
+new.txt

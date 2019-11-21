@@ -24,3 +24,7 @@ hortbot
 .env
 .gobincache/
 config/
+
+# common benchstat filenames 
+old.txt
+new.txt
