@@ -8,7 +8,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
-	github.com/alicebob/miniredis/v2 v2.10.1
+	github.com/alicebob/miniredis/v2 v2.11.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.1.5
 	github.com/dustin/go-humanize v1.0.0
@@ -53,10 +53,10 @@ require (
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
 	go.opencensus.io v0.22.2
 	go.uber.org/zap v1.13.0
-	golang.org/x/net v0.0.0-20191112182307-2180aed22343
+	golang.org/x/net v0.0.0-20191119073136-fc4aabc6c914
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191114222411-4191b8cbba09
+	golang.org/x/tools v0.0.0-20191121040551-947d4aa89328
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
