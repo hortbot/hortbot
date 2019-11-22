@@ -25,6 +25,7 @@ var (
 	errBuiltinDisabled  = errors.New("bot: builtin disabled")
 	errNotAllowed       = errors.New("bot: user not allowed")
 	errDuplicateMessage = errors.New("bot: duplicate message")
+	errPanicked         = errors.New("bot: handler panicked")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -62,15 +63,15 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
 	}
 
-	switch {
-	case err == nil:
-	case err == errNotAllowed:
+	switch err {
+	case nil, errNotAllowed:
+	case errPanicked: // Logged below with more info.
 	default:
 		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 	}
 }
 
-func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
+func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr error) {
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
 
@@ -82,6 +83,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) error {
 				panic(r)
 			}
 			ctxlog.Error(ctx, "panic during handle", zap.Any("value", r), zap.Stack("stack"))
+			retErr = errPanicked
 		}
 	}()
 
