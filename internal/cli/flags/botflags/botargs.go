@@ -35,12 +35,15 @@ type Bot struct {
 	SteamKey  string `long:"bot-steam-key" env:"HB_BOT_STEAM_KEY" description:"Steam API key"`
 
 	Workers int `long:"bot-workers" env:"HB_BOT_WORKERS" description:"number of concurrent workers for handling"`
+
+	PublicJoin bool `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"enabled public join"`
 }
 
 var DefaultBot = Bot{
 	DefaultCooldown: 5,
 	WebAddr:         "http://localhost:5000",
 	Workers:         runtime.GOMAXPROCS(0),
+	PublicJoin:      true,
 }
 
 func (args *Bot) New(

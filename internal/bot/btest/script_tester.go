@@ -136,20 +136,21 @@ func (st *scriptTester) test(t testing.TB) {
 	st.redis = rServer
 
 	st.bc = bot.Config{
-		DB:        st.db,
-		Redis:     redis.New(rClient),
-		Sender:    st.sender,
-		Notifier:  st.notifier,
-		Clock:     st.clock,
-		LastFM:    st.lastFM,
-		YouTube:   st.youtube,
-		XKCD:      st.xkcd,
-		ExtraLife: st.extraLife,
-		Twitch:    st.twitch,
-		Steam:     st.steam,
-		TinyURL:   st.tinyURL,
-		Urban:     st.urban,
-		NoDedupe:  true,
+		DB:         st.db,
+		Redis:      redis.New(rClient),
+		Sender:     st.sender,
+		Notifier:   st.notifier,
+		Clock:      st.clock,
+		LastFM:     st.lastFM,
+		YouTube:    st.youtube,
+		XKCD:       st.xkcd,
+		ExtraLife:  st.extraLife,
+		Twitch:     st.twitch,
+		Steam:      st.steam,
+		TinyURL:    st.tinyURL,
+		Urban:      st.urban,
+		NoDedupe:   true,
+		PublicJoin: true,
 	}
 
 	st.clock.Set(time.Now())

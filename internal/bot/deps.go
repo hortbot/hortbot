@@ -52,6 +52,8 @@ type sharedDeps struct {
 
 	WebAddr    string
 	WebAddrMap map[string]string
+
+	PublicJoin bool
 }
 
 func (s *sharedDeps) IsAllowed(name string) bool {

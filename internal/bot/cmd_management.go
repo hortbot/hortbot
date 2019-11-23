@@ -61,22 +61,8 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		userID = u.ID
 		displayName = u.DispName()
 	} else {
-		if !isAdmin {
-			enabled, err := s.Deps.Redis.PublicJoin(ctx, s.Origin)
-			if err != nil {
-				return err
-			}
-
-			if enabled == nil {
-				enabled, err = s.Deps.Redis.PublicJoin(ctx, "")
-				if err != nil {
-					return err
-				}
-			}
-
-			if enabled != nil && !*enabled {
-				return nil
-			}
+		if !isAdmin && !s.Deps.PublicJoin {
+			return nil
 		}
 
 		name = s.User

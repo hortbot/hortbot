@@ -139,10 +139,3 @@ func pluralInt64(n int64, singular, plural string) string {
 	}
 	return plural
 }
-
-func choose(b bool, tru, fals string) string {
-	if b {
-		return tru
-	}
-	return fals
-}

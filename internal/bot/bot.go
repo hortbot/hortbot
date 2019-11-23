@@ -53,6 +53,8 @@ type Config struct {
 	WebAddrMap map[string]string
 
 	NoDedupe bool
+
+	PublicJoin bool
 }
 
 type Bot struct {
@@ -100,6 +102,7 @@ func New(config *Config) *Bot {
 		Admins:          make(map[string]bool),
 		WebAddr:         config.WebAddr,
 		WebAddrMap:      config.WebAddrMap,
+		PublicJoin:      config.PublicJoin,
 	}
 
 	if config.Clock != nil {

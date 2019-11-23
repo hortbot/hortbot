@@ -1,0 +1,11 @@
+bot_config {"PublicJoin": false}
+
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
+no_send
+no_notify_channel_updates
+
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
+send hortbot #hortbot [HB] otheruser, hortbot will join your channel soon with prefix !
+notify_channel_updates hortbot
