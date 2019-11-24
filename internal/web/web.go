@@ -3,17 +3,20 @@ package web
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/http"
 	"net/http/httputil"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/sessions"
+	"github.com/hortbot/hortbot/internal/confimport"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -41,6 +44,7 @@ type App struct {
 	Addr       string
 	RealIP     bool
 	SessionKey []byte
+	AdminAuth  map[string]string
 
 	Brand    string
 	BrandMap map[string]string
@@ -105,20 +109,25 @@ func (a *App) Run(ctx context.Context) error {
 	r.Get("/auth/twitch/bot", a.authTwitchBot)
 	r.Get("/auth/twitch/callback", a.authTwitchCallback)
 
-	if a.Debug {
-		r.Route("/debug", func(r chi.Router) {
-			r.Use(middleware.NoCache)
-			r.Get("/request", func(w http.ResponseWriter, r *http.Request) {
-				b, err := httputil.DumpRequest(r, true)
-				if err != nil {
-					ctxlog.Error(ctx, "error dumping request", zap.Error(err))
-					httpError(w, http.StatusInternalServerError)
-					return
-				}
-				fmt.Fprintf(w, "%s", b)
-			})
-		})
+	routeDebug := func(r chi.Router) {
+		r.Use(middleware.NoCache)
+		r.Get("/request", dumpRequest)
 	}
+
+	if a.Debug {
+		r.Route("/debug", routeDebug)
+	}
+
+	r.Route("/admin", func(r chi.Router) {
+		r.Use(middleware.NoCache)
+		r.Use(a.adminAuth)
+
+		r.Route("/debug", routeDebug)
+
+		r.Get("/import", a.adminImport)
+		r.Post("/import", a.adminImportPost)
+		r.Get("/export/{channel}", a.adminExport)
+	})
 
 	srv := http.Server{
 		Addr:    a.Addr,
@@ -521,6 +530,120 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 	templates.WritePageTemplate(w, page)
 }
 
+func (a *App) adminAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if len(a.AdminAuth) == 0 {
+			notAuthorized(w, false)
+			return
+		}
+
+		user, pass, ok := r.BasicAuth()
+		if !ok {
+			notAuthorized(w, true)
+			return
+		}
+
+		expected := a.AdminAuth[user]
+		if expected == "" || pass != expected {
+			notAuthorized(w, true)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	channelName := chi.URLParam(r, "channel")
+
+	config, err := confimport.ExportByName(ctx, a.DB, strings.ToLower(channelName))
+	if err != nil {
+		if err == sql.ErrNoRows {
+			http.NotFound(w, r)
+		} else {
+			ctxlog.Error(ctx, "error exporting channel", zap.Error(err))
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	enc := json.NewEncoder(w)
+
+	switch r.URL.Query().Get("pretty") {
+	case "1", "true", "yes":
+		enc.SetIndent("", "    ")
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+
+	if err := enc.Encode(config); err != nil {
+		ctxlog.Error(ctx, "error encoding exported config", zap.Error(err))
+	}
+}
+
+func (a *App) adminImport(w http.ResponseWriter, r *http.Request) {
+	page := &templates.AdminImportPage{}
+	page.Brand = a.getBrand(r)
+	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
+	config := &confimport.Config{}
+
+	if err := json.NewDecoder(r.Body).Decode(config); err != nil {
+		http.Error(w, "decoding body: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ctx := r.Context()
+	tx, err := a.DB.BeginTx(ctx, nil)
+	if err != nil {
+		http.Error(w, "beginning transaction: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	rolledBack := false
+
+	defer func() {
+		if rolledBack {
+			return
+		}
+
+		if err := tx.Commit(); err != nil {
+			fmt.Fprintln(w, "committing transaction:", err)
+		}
+	}()
+
+	if err := config.Insert(ctx, tx); err != nil {
+		http.Error(w, "inserting config: "+err.Error(), http.StatusBadRequest)
+		if err := tx.Rollback(); err != nil {
+			fmt.Fprintln(w, "rolling back transaction:", err)
+		}
+		rolledBack = true
+		return
+	}
+
+	fmt.Fprintln(w, "Successfully inserted channel", config.Channel.ID)
+}
+
+func notAuthorized(w http.ResponseWriter, header bool) {
+	if header {
+		w.Header().Add("WWW-Authenticate", `Basic realm="hortbot"`)
+	}
+	httpError(w, http.StatusUnauthorized)
+}
+
 func httpError(w http.ResponseWriter, code int) {
 	http.Error(w, http.StatusText(code), code)
+}
+
+func dumpRequest(w http.ResponseWriter, r *http.Request) {
+	b, err := httputil.DumpRequest(r, true)
+	if err != nil {
+		ctxlog.Error(r.Context(), "error dumping request", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
+	fmt.Fprintf(w, "%s", b)
 }

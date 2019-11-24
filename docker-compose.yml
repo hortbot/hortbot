@@ -26,6 +26,7 @@ services:
       - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
       - HB_DB_MIGRATE_UP=true
       - HB_REDIS_ADDR=redis:6379
+      - HB_WEB_ADMIN_AUTH=admin:admin
 
   pgweb:
     image: sosedoff/pgweb

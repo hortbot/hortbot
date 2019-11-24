@@ -10,12 +10,20 @@ import (
 	"go.opencensus.io/trace"
 )
 
-func Export(ctx context.Context, exec boil.ContextExecutor, id int64) (*Config, error) {
-	ctx, span := trace.StartSpan(ctx, "confimport.Export")
+func ExportByID(ctx context.Context, exec boil.ContextExecutor, id int64) (*Config, error) {
+	return export(ctx, exec, models.ChannelWhere.ID.EQ(id))
+}
+
+func ExportByName(ctx context.Context, exec boil.ContextExecutor, name string) (*Config, error) {
+	return export(ctx, exec, models.ChannelWhere.Name.EQ(name))
+}
+
+func export(ctx context.Context, exec boil.ContextExecutor, mod qm.QueryMod) (*Config, error) {
+	ctx, span := trace.StartSpan(ctx, "confimport.export")
 	defer span.End()
 
 	channel, err := models.Channels(
-		models.ChannelWhere.ID.EQ(id),
+		mod,
 		qm.Load(models.ChannelRels.Autoreplies),
 		qm.Load(models.ChannelRels.CommandInfos),
 		qm.Load(qm.Rels(models.ChannelRels.CommandInfos, models.CommandInfoRels.CommandList)),

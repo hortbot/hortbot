@@ -1,0 +1,70 @@
+{% code
+type AdminImportPage struct {
+    BasePage
+}
+%}
+
+{% func (p *AdminImportPage) PageTitle() %}
+{%= p.PageBrand() %} - Import config
+{% endfunc %}
+
+
+{% func (p *AdminImportPage) PageMeta() %}
+<style>
+pre {
+    white-space: pre-wrap !important;
+}
+</style>
+{% endfunc %}
+
+{% func (p *AdminImportPage) PageBody() %}
+<section class="section">
+    <div class="container content">
+        <h1 class="title has-text-centered">
+            Import config
+        </h1>
+
+        <div class="columns">
+            <div class="column is-8 is-offset-2 has-text-centered">
+                <form id="import-form" method="POST" action="/admin/import" autocomplete="off">
+                    <div class="field">
+                        <div class="control">
+                            <textarea id="import-data" class="textarea" placeholder="{}"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-link">Import</button>
+                        </div>
+                    </div>
+                </form>
+                <br>
+                <div id="output" class="has-text-left"></div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfunc %}
+
+{% func (p *AdminImportPage) PageScripts() %}
+{%= p.BasePage.PageScripts() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+<script>
+$(function() {
+    $("#import-form").submit(function(event) {
+        event.preventDefault();
+
+        $.ajax({
+            type: "POST",
+            url: "/admin/import",
+            data: $("#import-data").val(),
+            contentType: "application/json"
+        }).done(function(result) {
+            $("#output").prepend($("<pre>").text(result));
+        }).fail(function(jqXHR) {
+            $("#output").prepend($("<pre>").text(jqXHR.responseText));
+        })
+    });
+});
+</script>
+{% endfunc %}

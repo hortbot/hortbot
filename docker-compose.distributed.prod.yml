@@ -57,6 +57,7 @@ services:
       - HB_REDIS_ADDR=redis:6379
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
+      - HB_WEB_ADMIN_AUTH=admin:admin
 
   db:
     image: zikaeroh/postgres-initialized

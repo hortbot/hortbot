@@ -31,7 +31,7 @@ type ChannelPage struct {
 
 {% func (p *ChannelPage) PageScripts() %}
 {%= p.BasePage.PageScripts() %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
 <script>
