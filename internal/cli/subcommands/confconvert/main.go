@@ -28,6 +28,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const Name = "conf-convert"
+
 type cmd struct {
 	cli.Common
 	Twitch twitchflags.Twitch
@@ -49,7 +51,7 @@ type cmd struct {
 }
 
 func Run(args []string) {
-	cli.Run("conf-convert", args, &cmd{
+	cli.Run(Name, args, &cmd{
 		Common: cli.Common{
 			Debug: true,
 		},

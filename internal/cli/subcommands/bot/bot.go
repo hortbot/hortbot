@@ -20,6 +20,8 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
+const Name = "bot"
+
 type config struct {
 	cli.Common
 	SQL        sqlflags.SQL
@@ -32,7 +34,7 @@ type config struct {
 }
 
 func Run(args []string) {
-	cli.Run("bot", args, &config{
+	cli.Run(Name, args, &config{
 		Common:     cli.DefaultCommon,
 		SQL:        sqlflags.DefaultSQL,
 		Twitch:     twitchflags.DefaultTwitch,
@@ -45,7 +47,7 @@ func Run(args []string) {
 }
 
 func (config *config) Main(ctx context.Context, _ []string) {
-	defer config.Jaeger.Init(ctx, "bot", config.Debug)()
+	defer config.Jaeger.Init(ctx, Name, config.Debug)()
 	config.Prometheus.Run(ctx)
 
 	connector := config.SQL.Connector(ctx)

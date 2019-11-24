@@ -13,6 +13,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 )
 
+const Name = "conf-import"
+
 type cmd struct {
 	cli.Common
 	SQL sqlflags.SQL
@@ -25,7 +27,7 @@ type cmd struct {
 }
 
 func Run(args []string) {
-	cli.Run("conf-convert", args, &cmd{
+	cli.Run(Name, args, &cmd{
 		Common: cli.Common{
 			Debug: true,
 		},

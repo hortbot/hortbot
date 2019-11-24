@@ -14,6 +14,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const Name = "web"
+
 type cmd struct {
 	cli.Common
 	SQL        sqlflags.SQL
@@ -25,7 +27,7 @@ type cmd struct {
 }
 
 func Run(args []string) {
-	cli.Run("web", args, &cmd{
+	cli.Run(Name, args, &cmd{
 		Common:     cli.DefaultCommon,
 		SQL:        sqlflags.DefaultSQL,
 		Twitch:     twitchflags.DefaultTwitch,
@@ -37,7 +39,7 @@ func Run(args []string) {
 }
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	defer cmd.Jaeger.Init(ctx, "web", cmd.Debug)()
+	defer cmd.Jaeger.Init(ctx, Name, cmd.Debug)()
 	cmd.Prometheus.Run(ctx)
 
 	connector := cmd.SQL.Connector(ctx)

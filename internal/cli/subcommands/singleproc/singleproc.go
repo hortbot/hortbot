@@ -18,6 +18,8 @@ import (
 	"go.uber.org/zap"
 )
 
+const Name = "single-proc"
+
 type cmd struct {
 	cli.Common
 	SQL    sqlflags.SQL
@@ -29,7 +31,7 @@ type cmd struct {
 }
 
 func Run(args []string) {
-	cli.Run("single-proc", args, &cmd{
+	cli.Run(Name, args, &cmd{
 		Common: cli.DefaultCommon,
 		SQL:    sqlflags.DefaultSQL,
 		Twitch: twitchflags.DefaultTwitch,

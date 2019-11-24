@@ -17,13 +17,13 @@ import (
 )
 
 var subcommands = map[string]func([]string){
-	"bot":              bot.Run,
-	"conf-convert":     confconvert.Run,
-	"conf-import":      confimport.Run,
-	"irc":              irc.Run,
-	"single-proc":      singleproc.Run,
+	singleproc.Name:    singleproc.Run,
+	bot.Name:           bot.Run,
+	irc.Name:           irc.Run,
+	web.Name:           web.Run,
 	sitedbconvert.Name: sitedbconvert.Run,
-	"web":              web.Run,
+	confconvert.Name:   confconvert.Run,
+	confimport.Name:    confimport.Run,
 	"version":          func([]string) { fmt.Println("hortbot", version.Version()) },
 }
 
