@@ -24,7 +24,7 @@ var subcommands = map[string]func([]string){
 	sitedbconvert.Name: sitedbconvert.Run,
 	confconvert.Name:   confconvert.Run,
 	confimport.Name:    confimport.Run,
-	"version":          func([]string) { fmt.Println("hortbot", version.Version()) },
+	"version":          func([]string) { fmt.Println(version.Version()) },
 }
 
 func main() {
