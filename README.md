@@ -30,10 +30,6 @@ An IRC bot for Twitch.
 - oxguy3, for the original CoeBot website.
 
 
-## TODO
-
-You can find a todo list in [TODO.md](TODO.md).
-
 ## Requirements
 
 To build:

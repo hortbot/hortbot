@@ -1,9 +1,10 @@
 #!/bin/sh -e
 
-cd "${0%/*}/.."
+SCRIPT_DIR=$(cd "${0%/*}"; pwd)
+cd $SCRIPT_DIR/../internal/db
 
 echo "Generating migration data"
-go generate ./internal/db/migrations
+go generate ./migrations
 
 echo "Starting database"
 DOCKER_ID=$(docker run --rm -p 5432:5432 -d zikaeroh/postgres-initialized)
@@ -19,7 +20,7 @@ echo "Waiting for container to be ready"
 while ! curl http://localhost:5432 2>&1 | grep -q '52'; do sleep 1; done
 
 echo "Migrating database up"
-./scripts/migrate -database 'postgres://postgres:mysecretpassword@localhost:5432/postgres?sslmode=disable' -path internal/db/migrations up
+$SCRIPT_DIR/migrate -database 'postgres://postgres:mysecretpassword@localhost:5432/postgres?sslmode=disable' -path ./migrations up
 
 echo "Generating models"
-gobin -m -run github.com/volatiletech/sqlboiler ./scripts/sqlboiler-psql --wipe --no-hooks --no-rows-affected --no-tests
+gobin -m -run github.com/volatiletech/sqlboiler $SCRIPT_DIR/sqlboiler-psql --wipe --no-hooks --no-rows-affected --no-tests

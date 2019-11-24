@@ -1,5 +1,3 @@
-output = "internal/db/models"
-
 [psql]
 
 # postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
