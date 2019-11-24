@@ -11,8 +11,8 @@ import (
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/confimport/sitedb"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/docker"
 	"github.com/jmoiron/sqlx"
-	"github.com/ory/dockertest/v3"
 )
 
 const Name = "site-db-convert"
@@ -46,50 +46,33 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		ctxlog.Fatal(ctx, "output is not a directory")
 	}
 
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		ctxlog.Fatal(ctx, "error creating dockertest pool", ctxlog.PlainError(err))
-	}
-
 	const (
 		password = "password"
 		dbName   = "db"
 	)
 
-	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
+	var db *sqlx.DB
+	container := &docker.Container{
 		Repository: "mariadb",
 		Tag:        "10.1",
 		Env:        []string{"MYSQL_ROOT_PASSWORD=" + password, "MYSQL_DATABASE=" + dbName},
 		Mounts:     []string{cmd.SiteDumps + ":/docker-entrypoint-initdb.d"},
-	})
-	if err != nil {
-		ctxlog.Fatal(ctx, "error creating MariaDB container", ctxlog.PlainError(err))
+		Ready: func(container *docker.Container) error {
+			connStr := "root:" + password + "@tcp(" + container.GetHostPort("3306/tcp") + ")/" + dbName
+
+			var err error
+			db, err = sqlx.Open("mysql", connStr)
+			if err != nil {
+				return err
+			}
+			return db.Ping()
+		},
+		ReadyMaxWait: 5 * time.Minute,
+		ExpirySecs:   uint((24 * time.Hour).Seconds()),
 	}
-	defer func() {
-		if err := pool.Purge(resource); err != nil {
-			ctxlog.Fatal(ctx, "error purging resource", ctxlog.PlainError(err))
-		}
-	}()
 
-	if err := resource.Expire(uint((24 * time.Hour).Seconds())); err != nil {
-		ctxlog.Fatal(ctx, "error setting container expiration", ctxlog.PlainError(err))
-	}
-
-	connStr := "root:" + password + "@tcp(" + resource.GetHostPort("3306/tcp") + ")/" + dbName
-
-	var db *sqlx.DB
-
-	pool.MaxWait = 5 * time.Minute
-	err = pool.Retry(func() error {
-		var err error
-		db, err = sqlx.Open("mysql", connStr)
-		if err != nil {
-			return err
-		}
-		return db.Ping()
-	})
-	if err != nil {
-		ctxlog.Fatal(ctx, "error waiting for database to be ready", ctxlog.PlainError(err))
+	if err := container.Start(); err != nil {
+		ctxlog.Fatal(ctx, "error creating database", ctxlog.PlainError(err))
 	}
 	defer db.Close()
 

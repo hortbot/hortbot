@@ -1,54 +1,31 @@
 package nsqtest
 
 import (
+	"github.com/hortbot/hortbot/internal/pkg/docker"
 	"github.com/nsqio/go-nsq"
-	"github.com/ory/dockertest/v3"
 )
 
 func New() (addr string, cleanup func(), retErr error) {
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		return "", nil, err
-	}
-
-	opts := &dockertest.RunOptions{
+	container := &docker.Container{
 		Repository: "nsqio/nsq",
 		Tag:        "latest",
 		Cmd:        []string{"/nsqd"},
+		Ready: func(container *docker.Container) error {
+			addr = container.GetHostPort("4150/tcp")
+			conn := nsq.NewConn(addr, nsq.NewConfig(), &nopDelegate{})
+			if _, err := conn.Connect(); err != nil {
+				return err
+			}
+			return conn.Close()
+		},
+		ExpirySecs: 300,
 	}
 
-	resource, err := pool.RunWithOptions(opts)
-	if err != nil {
+	if err := container.Start(); err != nil {
 		return "", nil, err
 	}
 
-	defer func() {
-		if retErr != nil {
-			_ = pool.Purge(resource)
-		}
-	}()
-
-	// Ensure the container is cleaned up, even if the process exits.
-	if err := resource.Expire(300); err != nil {
-		return "", nil, err
-	}
-
-	addr = resource.GetHostPort("4150/tcp")
-
-	err = pool.Retry(func() error {
-		conn := nsq.NewConn(addr, nsq.NewConfig(), &nopDelegate{})
-		if _, err := conn.Connect(); err != nil {
-			return err
-		}
-		return conn.Close()
-	})
-	if err != nil {
-		return "", nil, err
-	}
-
-	return addr, func() {
-		_ = pool.Purge(resource)
-	}, nil
+	return addr, container.Cleanup, nil
 }
 
 type nopDelegate struct{}

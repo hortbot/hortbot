@@ -2,10 +2,9 @@ package pgtest
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/ory/dockertest/v3"
+	"github.com/hortbot/hortbot/internal/pkg/docker"
 
 	_ "github.com/lib/pq" // For postgres.
 )
@@ -19,51 +18,27 @@ func NewNoMigrate() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 }
 
 func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr error) {
-	pool, err := dockertest.NewPool("")
-	if err != nil {
-		return nil, "", nil, err
-	}
-
-	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
+	container := &docker.Container{
 		Repository: "zikaeroh/postgres-initialized",
 		Tag:        "latest",
 		Cmd:        []string{"-F"},
-	})
-	if err != nil {
-		return nil, "", nil, err
+		Ready: func(container *docker.Container) error {
+			connStr = "postgres://postgres:mysecretpassword@" + container.GetHostPort("5432/tcp") + "/postgres?sslmode=disable"
+
+			var err error
+			db, err = sql.Open("postgres", connStr)
+			if err != nil {
+				return err
+			}
+
+			return db.Ping()
+		},
+		ExpirySecs: 300,
 	}
 
-	defer func() {
-		if retErr != nil {
-			_ = pool.Purge(resource)
-		}
-	}()
-
-	// Ensure the container is cleaned up, even if the process exits.
-	if err := resource.Expire(300); err != nil {
+	if err := container.Start(); err != nil {
 		return nil, "", nil, err
 	}
-
-	connStr = pgConnStr(resource.GetHostPort("5432/tcp"))
-
-	err = pool.Retry(func() error {
-		var err error
-		db, err = sql.Open("postgres", connStr)
-		if err != nil {
-			return err
-		}
-
-		return db.Ping()
-	})
-	if err != nil {
-		return nil, "", nil, err
-	}
-
-	defer func() {
-		if retErr != nil {
-			db.Close()
-		}
-	}()
 
 	if doMigrate {
 		if err := migrations.Up(connStr, nil); err != nil {
@@ -72,11 +47,7 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 	}
 
 	return db, connStr, func() {
-		db.Close()
-		_ = pool.Purge(resource)
+		_ = db.Close()
+		container.Cleanup()
 	}, nil
-}
-
-func pgConnStr(addr string) string {
-	return fmt.Sprintf(`postgres://postgres:mysecretpassword@%s/postgres?sslmode=disable`, addr)
 }
