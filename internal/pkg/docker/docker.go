@@ -29,10 +29,7 @@ func (c *Container) Start() (retErr error) {
 		return err
 	}
 	c.pool = pool
-
-	if c.ReadyMaxWait != 0 {
-		c.pool.MaxWait = c.ReadyMaxWait
-	}
+	c.pool.MaxWait = c.ReadyMaxWait
 
 	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
 		Repository: c.Repository,
