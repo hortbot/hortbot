@@ -7,13 +7,13 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 

@@ -38,7 +38,6 @@ require (
 	github.com/nsqio/go-nsq v1.0.7
 	github.com/ory/dockertest/v3 v3.5.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pkg/errors v0.8.1
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.2.1

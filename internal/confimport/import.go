@@ -3,8 +3,8 @@ package confimport
 import (
 	"context"
 
+	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/pkg/errors"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/boil"
 	"go.opencensus.io/trace"

@@ -6,12 +6,12 @@ import (
 	"time"
 
 	"github.com/fortytw2/leaktest"
+	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/jakebailey/irc"
-	"github.com/pkg/errors"
 )
 
 func testContext() (context.Context, context.CancelFunc) {

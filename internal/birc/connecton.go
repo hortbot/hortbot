@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/friendsofgo/errors"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
@@ -14,7 +15,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
-	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
