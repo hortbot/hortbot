@@ -2,101 +2,61 @@ package confconvert
 
 import (
 	"context"
+	"encoding/json"
+	"os"
+	"path/filepath"
 	"sort"
-	"time"
 
+	"github.com/hortbot/hortbot/internal/confimport/sitedb"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/jmoiron/sqlx"
-	"github.com/jmoiron/sqlx/types"
-	"github.com/ory/dockertest/v3"
 )
 
 var (
-	siteDB  *sqlx.DB
-	daySecs = uint((24 * time.Hour).Seconds())
+	siteChannels map[string]*sitedb.Channel
+	siteVars     map[string][]*sitedb.Var
 )
 
-func (cmd *cmd) prepareSiteDB(ctx context.Context) func() {
-	pool, err := dockertest.NewPool("")
+func loadSiteDB(ctx context.Context, dir string) {
+	decodeInto(ctx, filepath.Join(dir, "site_channels.json"), &siteChannels)
+	decodeInto(ctx, filepath.Join(dir, "site_vars.json"), &siteVars)
+}
+
+func decodeInto(ctx context.Context, file string, v interface{}) {
+	f, err := os.Open(file)
 	if err != nil {
-		ctxlog.Fatal(ctx, "error creating dockertest pool", ctxlog.PlainError(err))
+		ctxlog.Fatal(ctx, "error opening file", ctxlog.PlainError(err))
 	}
+	defer f.Close()
 
-	const (
-		password = "password"
-		dbName   = "db"
-	)
-
-	resource, err := pool.RunWithOptions(&dockertest.RunOptions{
-		Repository: "mariadb",
-		Tag:        "10.1",
-		Env:        []string{"MYSQL_ROOT_PASSWORD=" + password, "MYSQL_DATABASE=" + dbName},
-		Mounts:     []string{cmd.SiteDumps + ":/docker-entrypoint-initdb.d"},
-	})
-	if err != nil {
-		ctxlog.Fatal(ctx, "error creating MariaDB container", ctxlog.PlainError(err))
-	}
-
-	if err := resource.Expire(daySecs); err != nil {
-		ctxlog.Fatal(ctx, "error setting container expiration", ctxlog.PlainError(err))
-	}
-
-	connStr := "root:" + password + "@tcp(" + resource.GetHostPort("3306/tcp") + ")/" + dbName
-
-	pool.MaxWait = 5 * time.Minute
-	err = pool.Retry(func() error {
-		var err error
-		siteDB, err = sqlx.Open("mysql", connStr)
-		if err != nil {
-			return err
-		}
-		return siteDB.Ping()
-	})
-	if err != nil {
-		ctxlog.Fatal(ctx, "error waiting for database to be ready", ctxlog.PlainError(err))
-	}
-
-	return func() {
-		_ = siteDB.Close()
-		_ = pool.Purge(resource)
+	if err := json.NewDecoder(f).Decode(v); err != nil {
+		ctxlog.Fatal(ctx, "error decoding file", ctxlog.PlainError(err))
 	}
 }
 
-func getSiteInfo(ctx context.Context, name string) (string, bool, error) {
-	row := &struct {
-		BotName string        `db:"botChannel"`
-		Active  types.BitBool `db:"isActive"`
-	}{}
-
-	if err := siteDB.Get(row, "SELECT botChannel, isActive FROM site_channels WHERE channel=?", name); err != nil {
-		return "", false, err
+func getSiteInfo(name string) (botName string, active bool, found bool) {
+	ch, found := siteChannels[name]
+	if !found {
+		return "", false, false
 	}
 
-	return row.BotName, bool(row.Active), nil
+	return ch.BotName, ch.Active, true
 }
 
-func getVariables(ctx context.Context, channelName string) ([]*models.Variable, error) {
-	var rows []struct {
-		Name         string `db:"var"`
-		Value        string `db:"value"`
-		LastModified int64  `db:"lastModified"`
+func getVariables(channelName string) []*models.Variable {
+	vars := siteVars[channelName]
+	if len(vars) == 0 {
+		return []*models.Variable{}
 	}
 
-	if err := siteDB.Select(&rows, "SELECT var, value, lastModified FROM site_vars WHERE channel=?", channelName); err != nil {
-		return nil, err
-	}
+	variables := make([]*models.Variable, len(vars))
 
-	variables := make([]*models.Variable, len(rows))
-
-	for i, row := range rows {
-		t := time.Unix(row.LastModified, 0)
-
+	for i, v := range vars {
 		variables[i] = &models.Variable{
-			Name:      row.Name,
-			Value:     row.Value,
-			CreatedAt: t,
-			UpdatedAt: t,
+			Name:      v.Name,
+			Value:     v.Value,
+			CreatedAt: v.LastModified,
+			UpdatedAt: v.LastModified,
 		}
 	}
 
@@ -104,5 +64,5 @@ func getVariables(ctx context.Context, channelName string) ([]*models.Variable, 
 		return variables[i].Name < variables[j].Name
 	})
 
-	return variables, nil
+	return variables
 }

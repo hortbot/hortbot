@@ -1,10 +1,6 @@
 package confconvert
 
-import (
-	"time"
-
-	"github.com/go-sql-driver/mysql"
-)
+import "time"
 
 func unixMilli(milli int64) time.Time {
 	return time.Unix(milli/1000, 1000000*(milli%1000))
@@ -23,11 +19,3 @@ func maybeString(s *string) string {
 	}
 	return *s
 }
-
-func init() {
-	_ = mysql.SetLogger(noLog{})
-}
-
-type noLog struct{}
-
-func (noLog) Print(v ...interface{}) {}

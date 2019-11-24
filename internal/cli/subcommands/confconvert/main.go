@@ -60,6 +60,8 @@ func Run(args []string) {
 }
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
+	loadSiteDB(ctx, cmd.SiteDumps)
+
 	tw = cmd.Twitch.Client()
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
@@ -113,10 +115,6 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	if len(todo) == 0 {
 		ctxlog.Fatal(ctx, "no files to convert")
 	}
-
-	ctxlog.Info(ctx, "starting site database")
-	defer cmd.prepareSiteDB(ctx)()
-	ctxlog.Info(ctx, "site database started")
 
 	for _, file := range todo {
 		select {
@@ -207,9 +205,10 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 
 	ctx = ctxlog.With(ctx, zap.String("channel_name", name))
 
-	botName, active, err := getSiteInfo(ctx, expectedName)
-	if err != nil {
-		return nil, errors.Wrapf(err, "querying site channel info for %s", expectedName)
+	botName, active, found := getSiteInfo(expectedName)
+	if !found {
+		ctxlog.Warn(ctx, "user not found in site database")
+		return nil, nil
 	}
 
 	if botName == name {
@@ -234,14 +233,10 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		Quotes:      c.loadQuotes(),
 		Commands:    c.loadCommands(ctx),
 		Autoreplies: c.loadAutoreplies(ctx),
+		Variables:   getVariables(name),
 	}
 
 	config.Channel.Active = active
-
-	config.Variables, err = getVariables(ctx, name)
-	if err != nil {
-		return nil, errors.Wrap(err, "loading variables")
-	}
 
 	return config, nil
 }
