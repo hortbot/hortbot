@@ -76,6 +76,8 @@ func (r *Repeater) Add(id int64, fn func(ctx context.Context, id int64), interva
 				return
 			case <-r.clock.After(init):
 			}
+			// The ticker below won't immediately tick, so run this now.
+			fn(ctx, id)
 		}
 
 		ticker := r.clock.NewTicker(interval)

@@ -86,7 +86,7 @@ func TestAddWithInit(t *testing.T) {
 
 	r.Stop()
 
-	assert.Equal(t, count, 4)
+	assert.Equal(t, count, 5)
 }
 
 func TestAddWithInitCancel(t *testing.T) {
