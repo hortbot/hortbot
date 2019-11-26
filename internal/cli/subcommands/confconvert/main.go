@@ -230,10 +230,13 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		}
 	}
 
+	channel := c.loadChannel(ctx, defaultBullet, twitchID, name, displayName, botName)
+	repInit := time.Unix(channel.UserID%60, 0).UTC() // Pick a "random" user-specific initial time.
+
 	config := &confimport.Config{
-		Channel:     c.loadChannel(ctx, defaultBullet, twitchID, name, displayName, botName),
+		Channel:     channel,
 		Quotes:      c.loadQuotes(),
-		Commands:    c.loadCommands(ctx),
+		Commands:    c.loadCommands(ctx, repInit),
 		Autoreplies: c.loadAutoreplies(ctx),
 		Variables:   getVariables(name),
 	}
@@ -443,7 +446,7 @@ func (c *coeBotConfig) loadQuotes() []*models.Quote {
 	return quotes
 }
 
-func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
+func (c *coeBotConfig) loadCommands(ctx context.Context, repInit time.Time) []*confimport.Command {
 	commands := make(map[string]*confimport.Command, len(c.Commands)+len(c.Lists))
 
 	for _, cmd := range c.Commands {
@@ -490,7 +493,6 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 	}
 
 	// Try and start repeated commands off with some space between them.
-	init := time.Unix(0, 0).UTC()
 	const offset = 37 * time.Second
 
 	for _, rc := range c.RepeatedCommands {
@@ -518,10 +520,10 @@ func (c *coeBotConfig) loadCommands(ctx context.Context) []*confimport.Command {
 			Enabled:       rc.Active,
 			Delay:         rc.Delay,
 			MessageDiff:   diff,
-			InitTimestamp: null.TimeFrom(init),
+			InitTimestamp: null.TimeFrom(repInit),
 		}
 
-		init = init.Add(offset)
+		repInit = repInit.Add(offset)
 	}
 
 	for _, sc := range c.ScheduledCommands {
