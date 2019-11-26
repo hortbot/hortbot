@@ -8,22 +8,16 @@ import (
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
-	"gotest.tools/v3/assert"
 )
 
 func TestBotNewPanics(t *testing.T) {
 	db, undb := freshDB(t)
 	defer undb()
 
-	_, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(t, err)
-	defer rCleanup()
-
 	config := &bot.Config{
 		DB:       db,
-		Redis:    redis.New(rClient),
+		Redis:    &redis.DB{},
 		Sender:   &struct{ bot.Sender }{},
 		Notifier: &struct{ bot.Notifier }{},
 		Twitch:   &struct{ twitch.API }{},
@@ -59,7 +53,6 @@ func TestBotNewPanics(t *testing.T) {
 	assertx.Panic(t, checkPanic, "twitch is nil")
 	config.Twitch = oldTwitch
 
-	rCleanup()
 	assertx.Panic(t, checkPanic, nil)
 }
 
