@@ -1,6 +1,6 @@
 join hortbot 999 foobar 1
 
-clock_set 2000-10-01T03:11:00Z
+clock_set 2000-10-01T03:11:22Z
 
 twitch_get_current_stream {"ID": 1}
 
