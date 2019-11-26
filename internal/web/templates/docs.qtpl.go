@@ -263,7 +263,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016,
-		"!command rename <name>",
+		"!command get <name>",
 		`Gets the response for a command.`,
 		"mods",
 		`Example: <code>!command get pan</code> &mdash; Gets the response for the "pan" command.`,

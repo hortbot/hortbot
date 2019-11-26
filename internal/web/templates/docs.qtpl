@@ -187,7 +187,7 @@ dd {
                     `Example: <code>!command rename pan oldpan</code> &mdash; Renames the command "pan" to "oldpan".`,
                 ) %}
                 {%= command(
-                    "!command rename <name>",
+                    "!command get <name>",
                     `Gets the response for a command.`,
                     "mods",
                     `Example: <code>!command get pan</code> &mdash; Gets the response for the "pan" command.`,
