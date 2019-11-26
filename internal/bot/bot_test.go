@@ -1,12 +1,15 @@
 package bot_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
+	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
 )
 
@@ -26,46 +29,43 @@ func TestBotNewPanics(t *testing.T) {
 		Twitch:   &struct{ twitch.API }{},
 	}
 
-	checkPanic := func() interface{} {
-		var recovered interface{}
-
-		func() {
-			defer func() {
-				recovered = recover()
-			}()
-
-			bot.New(config)
-		}()
-
-		return recovered
+	checkPanic := func() {
+		bot.New(config)
 	}
 
-	assert.Equal(t, checkPanic(), nil)
+	assertx.Panic(t, checkPanic, nil)
 
 	config.DB = nil
-	assert.Equal(t, checkPanic(), "db is nil")
+	assertx.Panic(t, checkPanic, "db is nil")
 	config.DB = db
 
 	oldRedis := config.Redis
 	config.Redis = nil
-	assert.Equal(t, checkPanic(), "redis is nil")
+	assertx.Panic(t, checkPanic, "redis is nil")
 	config.Redis = oldRedis
 
 	oldSender := config.Sender
 	config.Sender = nil
-	assert.Equal(t, checkPanic(), "sender is nil")
+	assertx.Panic(t, checkPanic, "sender is nil")
 	config.Sender = oldSender
 
 	oldNotifier := config.Notifier
 	config.Notifier = nil
-	assert.Equal(t, checkPanic(), "notifier is nil")
+	assertx.Panic(t, checkPanic, "notifier is nil")
 	config.Notifier = oldNotifier
 
 	oldTwitch := config.Twitch
 	config.Twitch = nil
-	assert.Equal(t, checkPanic(), "twitch is nil")
+	assertx.Panic(t, checkPanic, "twitch is nil")
 	config.Twitch = oldTwitch
 
 	rCleanup()
-	assert.Equal(t, checkPanic(), nil)
+	assertx.Panic(t, checkPanic, nil)
+}
+
+func TestBotNotInit(t *testing.T) {
+	assertx.Panic(t, func() {
+		b := &bot.Bot{}
+		b.Handle(context.Background(), "asdasd", &irc.Message{})
+	}, "bot is not initialized")
 }

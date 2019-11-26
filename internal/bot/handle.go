@@ -48,6 +48,10 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 	defer metricHandled.Inc()
 
+	if m.Command == "PING" {
+		return
+	}
+
 	span.AddAttributes(trace.StringAttribute("irc_command", m.Command))
 	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command))
 
