@@ -2,13 +2,13 @@ twitch_get_user_for_username {"someone": {"user_id": 1234, "user_name": "someone
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block
-send hortbot #hortbot [HB] Usage: block <username>
+send hortbot #hortbot [HB] Usage: !admin block <username>
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block nobody
 send hortbot #hortbot [HB] Error getting ID from Twitch: twitch: not found
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock
-send hortbot #hortbot [HB] Usage: unblock <username>
+send hortbot #hortbot [HB] Usage: !admin unblock <username>
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock nobody
 send hortbot #hortbot [HB] Error getting ID from Twitch: twitch: not found

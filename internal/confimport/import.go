@@ -26,9 +26,13 @@ type Command struct {
 	Schedule      *models.ScheduledCommand `json:"schedule"`
 }
 
+// Insert inserts a config into the database. All IDs will be zero'd before
+// inserting, to ensure all inserted rows have new IDs.
 func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 	ctx, span := trace.StartSpan(ctx, "confimport.Insert")
 	defer span.End()
+
+	c.Channel.ID = 0
 
 	if err := c.Channel.Insert(ctx, exec, boil.Infer()); err != nil {
 		return errors.Wrap(err, "inserting channel")
@@ -43,9 +47,11 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 	}
 
 	for _, command := range c.Commands {
+		command.Info.ID = 0
 		command.Info.ChannelID = c.Channel.ID
 
 		if cc := command.CustomCommand; cc != nil {
+			cc.ID = 0
 			cc.ChannelID = c.Channel.ID
 
 			if err := cc.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -56,6 +62,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 		}
 
 		if cl := command.CommandList; cl != nil {
+			cl.ID = 0
 			cl.ChannelID = c.Channel.ID
 
 			if err := cl.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -70,6 +77,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 		}
 
 		if r := command.Repeat; r != nil {
+			r.ID = 0
 			r.ChannelID = c.Channel.ID
 			r.CommandInfoID = command.Info.ID
 
@@ -79,6 +87,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 		}
 
 		if s := command.Schedule; s != nil {
+			s.ID = 0
 			s.ChannelID = c.Channel.ID
 			s.CommandInfoID = command.Info.ID
 
@@ -89,6 +98,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 	}
 
 	for _, autoreply := range c.Autoreplies {
+		autoreply.ID = 0
 		autoreply.ChannelID = c.Channel.ID
 
 		if err := autoreply.Insert(ctx, exec, boil.Infer()); err != nil {
@@ -97,6 +107,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 	}
 
 	for _, variable := range c.Variables {
+		variable.ID = 0
 		variable.ChannelID = c.Channel.ID
 
 		if err := variable.Insert(ctx, exec, boil.Infer()); err != nil {

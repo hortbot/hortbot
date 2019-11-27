@@ -5,10 +5,14 @@ import (
 	"database/sql"
 	"strconv"
 	"strings"
+	"time"
 
+	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
 var adminCommands handlerMap
@@ -25,6 +29,7 @@ func init() {
 		"imp":           {fn: cmdAdminImp, minLevel: levelAdmin},
 		"version":       {fn: cmdAdminVersion, minLevel: levelAdmin},
 		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelAdmin},
+		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelAdmin},
 	})
 }
 
@@ -195,4 +200,51 @@ func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) 
 	scheduleStr := pluralInt(schedules, "schedule", "schedules")
 
 	return s.Replyf(ctx, "Reloaded %d %s and %d %s in %v.", repeats, repeatStr, schedules, scheduleStr, s.Deps.Clock.Since(before))
+}
+
+const deleteChannelConfirmDur = 10 * time.Second
+
+var deleteChannelConfirmDurReadable = durafmt.Parse(deleteChannelConfirmDur).String()
+
+func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args string) error {
+	user, _ := splitSpace(args)
+	user = cleanUsername(user)
+
+	if user == "" {
+		return s.ReplyUsage(ctx, "<user>")
+	}
+
+	if s.IRCChannel == user {
+		return s.Replyf(ctx, "'%s' may not be deleted from their own channel. Run this command in another channel.", user)
+	}
+
+	channel, err := models.Channels(
+		qm.Select(models.ChannelColumns.ID, models.ChannelColumns.BotName),
+		models.ChannelWhere.Name.EQ(user),
+	).One(ctx, s.Tx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return s.Replyf(ctx, "User '%s' does not exist.", user)
+		}
+		return err
+	}
+
+	confirmed, err := s.Confirm(ctx, s.User, "delete/"+user, deleteChannelConfirmDur)
+	if err != nil {
+		return err
+	}
+
+	if !confirmed {
+		return s.Replyf(ctx, "If you are sure you want to delete channel '%s', run %s%s again in the next %s.", user, s.usageContext, user, deleteChannelConfirmDurReadable)
+	}
+
+	if err := modelsx.DeleteChannel(ctx, s.Tx, channel.ID); err != nil {
+		return err
+	}
+
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		return err
+	}
+
+	return s.Replyf(ctx, "User '%s' has been deleted.", user)
 }

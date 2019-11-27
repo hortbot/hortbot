@@ -1,0 +1,28 @@
+join hortbot 2 foobar 1
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel
+send hortbot #hortbot [HB] Usage: !admin deletechannel <user>
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel nobody
+send hortbot #hortbot [HB] User 'nobody' does not exist.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin deletechannel foobar
+send hortbot #foobar [HB] 'foobar' may not be deleted from their own channel. Run this command in another channel.
+
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel foobar
+send hortbot #hortbot [HB] If you are sure you want to delete channel 'foobar', run !admin deletechannel foobar again in the next 10 seconds.
+
+clock_forward 11s
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel foobar
+send hortbot #hortbot [HB] If you are sure you want to delete channel 'foobar', run !admin deletechannel foobar again in the next 10 seconds.
+
+clock_forward 1s
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel foobar
+send hortbot #hortbot [HB] User 'foobar' has been deleted.
+notify_channel_updates hortbot
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel foobar
+send hortbot #hortbot [HB] User 'foobar' does not exist.

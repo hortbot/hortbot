@@ -165,3 +165,36 @@ func ListActiveChannels(ctx context.Context, exec boil.Executor, botName string)
 
 	return out, nil
 }
+
+// DeleteChannel deletes a channel and every row in every table which
+// references it. Must be done in a transaction, as the steps it takes are
+// extremely likely to voilate constraints.
+//
+// Ensure other state (like repeats) are refreshed after using this function
+// (or otherwise do not take effect if their data is not found).
+//
+// Must be kept in sync with migrations to keep this effective.
+func DeleteChannel(ctx context.Context, exec boil.ContextExecutor, id int64) error {
+	// Reverse table order; shouldn't really matter when run in a transaction.
+	queries := []interface {
+		DeleteAll(context.Context, boil.ContextExecutor) error
+	}{
+		models.ScheduledCommands(models.ScheduledCommandWhere.ChannelID.EQ(id)),
+		models.RepeatedCommands(models.RepeatedCommandWhere.ChannelID.EQ(id)),
+		models.CommandInfos(models.CommandInfoWhere.ChannelID.EQ(id)),
+		models.CommandLists(models.CommandListWhere.ChannelID.EQ(id)),
+		models.Variables(models.VariableWhere.ChannelID.EQ(id)),
+		models.Autoreplies(models.AutoreplyWhere.ChannelID.EQ(id)),
+		models.Quotes(models.QuoteWhere.ChannelID.EQ(id)),
+		models.CustomCommands(models.CustomCommandWhere.ChannelID.EQ(id)),
+		models.Channels(models.ChannelWhere.ID.EQ(id)),
+	}
+
+	for _, q := range queries {
+		if err := q.DeleteAll(ctx, exec); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
