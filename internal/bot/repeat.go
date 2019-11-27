@@ -21,6 +21,7 @@ func (b *Bot) updateRepeatedCommand(id int64, add bool, interval, wait time.Dura
 	} else {
 		b.rep.Remove(id)
 	}
+	setMetricRepeatGauges(b.rep)
 }
 
 func (b *Bot) updateScheduledCommand(id int64, add bool, expr *repeat.Cron) {
@@ -29,6 +30,7 @@ func (b *Bot) updateScheduledCommand(id int64, add bool, expr *repeat.Cron) {
 	} else {
 		b.rep.RemoveCron(id)
 	}
+	setMetricRepeatGauges(b.rep)
 }
 
 func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {

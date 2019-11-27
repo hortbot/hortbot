@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -48,4 +49,24 @@ var (
 		Help:      "Duration of message handling.",
 		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
 	}, []string{"irc_command"})
+
+	metricRepeatGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "active_repeated",
+		Help:      "Total number of active repeated commands.",
+	})
+
+	metricScheduleGauge = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "active_scheduled",
+		Help:      "Total number of active scheduled commands.",
+	})
 )
+
+func setMetricRepeatGauges(rep *repeat.Repeater) {
+	r, s := rep.Count()
+	metricRepeatGauge.Set(float64(r))
+	metricScheduleGauge.Set(float64(s))
+}
