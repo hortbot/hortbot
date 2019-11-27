@@ -12,7 +12,7 @@ env:
 matrix:
   include:
     - go: "1.13.x"
-      env: COVERAGE=true BUILD_IMAGE=true
+      env: PRIMARY=true
     - go: "1.12.x"
     - go: "tip"
 
@@ -35,13 +35,15 @@ before_install:
   - docker pull nsqio/nsq
 
 script:
-  - go mod tidy
-  - test -z "$(git status --porcelain go.mod go.sum)"
+  - if [ "$PRIMARY" = true ]; then
+      go mod tidy;
+      test -z "$(git status --porcelain go.mod go.sum)";
+    fi
   - go test -race -covermode=atomic -coverprofile=cover.out ./...
-  - if [ "$COVERAGE" = true ]; then
+  - if [ "$PRIMARY" = true ]; then
       $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out;
     fi
-  - if [ "$BUILD_IMAGE" = true ] && [ "$TRAVIS_BRANCH" = "master" ]; then
+  - if [ "$PRIMARY" = true ] && [ "$TRAVIS_BRANCH" = "master" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
       export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)";
 
