@@ -11,7 +11,7 @@ send hortbot #foobar [HB] Bad command asdasd
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin roundtrip
-send_match hortbot #foobar ^\[HB\] total=.*, handle=.*
+send_match hortbot #foobar ^\[HB\] twitch=.*, handle=.*
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin color

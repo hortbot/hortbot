@@ -51,7 +51,9 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 
 func cmdAdminRoundtrip(ctx context.Context, s *session, cmd string, args string) error {
 	now := s.Deps.Clock.Now()
-	return s.Replyf(ctx, "total=%v, handle=%v", now.Sub(s.TMISent), now.Sub(s.Start))
+	twitch := s.Start.Sub(s.TMISent)
+	handle := now.Sub(s.Start)
+	return s.Replyf(ctx, "twitch=%v, handle=%v", twitch, handle)
 }
 
 func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) error {
