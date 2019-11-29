@@ -64,10 +64,14 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 
 	nextNum := row.MaxNum.Int + 1
 
+	return insertQuote(ctx, s, nextNum, args)
+}
+
+func insertQuote(ctx context.Context, s *session, num int, newQuote string) error {
 	quote := &models.Quote{
 		ChannelID: s.Channel.ID,
-		Num:       nextNum,
-		Quote:     args,
+		Num:       num,
+		Quote:     newQuote,
 		Creator:   s.User,
 		Editor:    s.User,
 	}
@@ -76,7 +80,7 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 		return err
 	}
 
-	return s.Replyf(ctx, "%s added as quote #%d.", args, nextNum)
+	return s.Replyf(ctx, "%s added as quote #%d.", newQuote, num)
 }
 
 func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) error {
@@ -129,13 +133,28 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 		return usage()
 	}
 
+	if num <= 0 {
+		return s.Reply(ctx, "Quote number cannot be less than one.")
+	}
+
 	quote, err := s.Channel.Quotes(
 		models.QuoteWhere.Num.EQ(num),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {
-		return s.Replyf(ctx, "Quote #%d does not exist.", num)
+		exists, err := s.Channel.Quotes(models.QuoteWhere.Num.GT(num)).Exists(ctx, s.Tx)
+		if err != nil {
+			return err
+		}
+
+		// No quotes after the index; don't allow arbitrary edits.
+		if !exists {
+			return s.Replyf(ctx, "Quote #%d does not exist.", num)
+		}
+
+		// Editing a missing quote, insert one.
+		return insertQuote(ctx, s, num, newQuote)
 	}
 
 	if err != nil {
