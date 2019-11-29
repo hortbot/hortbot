@@ -39,10 +39,7 @@ script:
       go mod tidy;
       test -z "$(git status --porcelain go.mod go.sum)";
     fi
-  - go test -race -covermode=atomic -coverprofile=cover.out ./...
-  - if [ "$PRIMARY" = true ]; then
-      $GOPATH/bin/goveralls -service=travis-ci -coverprofile=cover.out;
-    fi
+  - go test -race -covermode=atomic -coverprofile=coverage.txt ./...
   - if [ "$PRIMARY" = true ] && [ "$TRAVIS_BRANCH" = "master" ]; then
       echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin;
       export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)";
@@ -51,4 +48,10 @@ script:
       docker push hortbot/hortbot;
       docker tag hortbot/hortbot hortbot/hortbot:$VERSION;
       docker push hortbot/hortbot:$VERSION;
+    fi
+
+after_success:
+  - if [ "$PRIMARY" = true ]; then
+      bash <(curl -s https://codecov.io/bash);
+      $GOPATH/bin/goveralls -service=travis-ci -coverprofile=coverage.txt;
     fi
