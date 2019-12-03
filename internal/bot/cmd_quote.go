@@ -57,7 +57,6 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 	err := s.Channel.Quotes(
 		qm.Select("max("+models.QuoteColumns.Num+") as max_num"),
 	).Bind(ctx, s.Tx, &row)
-
 	if err != nil {
 		return err
 	}
@@ -259,7 +258,6 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 		qm.Select(models.QuoteColumns.Num),
 		qm.Where("quote ILIKE ?", pattern),
 	).Bind(ctx, s.Tx, &quotes)
-
 	if err != nil {
 		return err
 	}

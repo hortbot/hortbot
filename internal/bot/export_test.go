@@ -6,8 +6,10 @@ import "context"
 
 var ErrBuiltinDisabled = errBuiltinDisabled
 
-type Session = session
-type AccessLevel = accessLevel
+type (
+	Session     = session
+	AccessLevel = accessLevel
+)
 
 const (
 	LevelUnknown     = levelUnknown

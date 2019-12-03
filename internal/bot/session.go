@@ -401,9 +401,7 @@ func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) 
 	return chatters, nil
 }
 
-var (
-	errSteamDisabled = errors.New("bot: steam disabled")
-)
+var errSteamDisabled = errors.New("bot: steam disabled")
 
 func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
 	ctx, span := trace.StartSpan(ctx, "SteamSummary")

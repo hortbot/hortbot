@@ -150,7 +150,6 @@ func ListActiveChannels(ctx context.Context, exec boil.Executor, botName string)
 		models.ChannelWhere.Active.EQ(true),
 		models.ChannelWhere.BotName.EQ(botName),
 	).Bind(ctx, exec, &channels)
-
 	if err != nil {
 		return nil, err
 	}

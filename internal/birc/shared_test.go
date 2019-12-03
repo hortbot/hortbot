@@ -33,8 +33,10 @@ type connCommon interface {
 	Part(ctx context.Context, channels ...string) error
 }
 
-var _ connCommon = (*birc.Connection)(nil)
-var _ connCommon = (*birc.Pool)(nil)
+var (
+	_ connCommon = (*birc.Connection)(nil)
+	_ connCommon = (*birc.Pool)(nil)
+)
 
 func doTestSecureInsecure(
 	t *testing.T,
