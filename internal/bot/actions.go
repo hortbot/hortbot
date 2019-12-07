@@ -450,7 +450,7 @@ func (s *session) actionSong(ctx context.Context, i int, url bool) (string, erro
 func (s *session) actionRandom(action string) (string, error) {
 	if strings.HasPrefix(action, "INT_") {
 		action = strings.TrimPrefix(action, "INT_")
-		minStr, maxStr := splitFirstSep(action, "_")
+		minStr, maxStr := splitFirstSep(action, '_')
 		if minStr == "" || maxStr == "" {
 			return "0", nil
 		}
@@ -476,7 +476,7 @@ func (s *session) actionRandom(action string) (string, error) {
 		return strconv.Itoa(x), nil
 	}
 
-	minStr, maxStr := splitFirstSep(action, "_")
+	minStr, maxStr := splitFirstSep(action, '_')
 	if minStr == "" || maxStr == "" {
 		return "0.0", nil
 	}
@@ -507,7 +507,7 @@ func (s *session) actionRandom(action string) (string, error) {
 }
 
 func (s *session) actionVars(ctx context.Context, action string) (string, error) {
-	name, action := splitFirstSep(action, "_")
+	name, action := splitFirstSep(action, '_')
 	if name == "" || action == "" {
 		return "(error)", nil
 	}

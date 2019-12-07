@@ -390,7 +390,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	var foreignChannel string
 	if strings.HasPrefix(name, "#") && s.UserLevel.CanAccess(levelBroadcaster) {
-		foreignChannel, name = splitFirstSep(name[1:], "/")
+		foreignChannel, name = splitFirstSep(name[1:], '/')
 	}
 
 	name = cleanCommandName(name)

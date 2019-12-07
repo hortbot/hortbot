@@ -10,21 +10,16 @@ import (
 	"go.opencensus.io/trace"
 )
 
-func splitFirstSep(s string, sep string) (string, string) {
-	parts := strings.SplitN(s, sep, 2)
-
-	switch len(parts) {
-	case 0:
-		return "", ""
-	case 1:
-		return parts[0], ""
-	default:
-		return parts[0], parts[1]
+func splitFirstSep(s string, sep byte) (string, string) {
+	i := strings.IndexByte(s, sep)
+	if i < 0 {
+		return s, ""
 	}
+	return s[:i], s[i+1:]
 }
 
 func splitSpace(s string) (string, string) {
-	a, b := splitFirstSep(s, " ")
+	a, b := splitFirstSep(s, ' ')
 	return a, strings.TrimSpace(b)
 }
 
@@ -34,7 +29,7 @@ func parseBadges(badgeTag string) map[string]string {
 	d := make(map[string]string, len(badges))
 
 	for _, badge := range badges {
-		k, v := splitFirstSep(badge, "/")
+		k, v := splitFirstSep(badge, '/')
 		d[k] = v
 	}
 
