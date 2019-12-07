@@ -30,6 +30,7 @@ func init() {
 		"version":       {fn: cmdAdminVersion, minLevel: levelAdmin},
 		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelAdmin},
 		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelAdmin},
+		"sleep":         {fn: cmdAdminSleep, minLevel: levelAdmin},
 	})
 }
 
@@ -249,4 +250,29 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 	}
 
 	return s.Replyf(ctx, "User '%s' has been deleted.", user)
+}
+
+func cmdAdminSleep(ctx context.Context, s *session, _ string, args string) error {
+	usage := func() error {
+		return s.ReplyUsage(ctx, "<dur>")
+	}
+
+	if args == "" {
+		return usage()
+	}
+
+	dur, err := time.ParseDuration(args)
+	if err != nil {
+		return usage()
+	}
+
+	// Not using s.Deps.Clock here, since the testing framework is blocking and
+	// cannot actually advance the clock while this is being handled.
+	select {
+	case <-time.After(dur):
+	case <-ctx.Done():
+		return ctx.Err()
+	}
+
+	return s.Replyf(ctx, "Slept for %s.", dur.String())
 }
