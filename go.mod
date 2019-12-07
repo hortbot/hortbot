@@ -60,3 +60,6 @@ require (
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
+
+// Work around bad unsafe code.
+replace github.com/yuin/gopher-lua => github.com/zikaeroh/gopher-lua v0.0.0-20191207064230-1d698bad9f46
