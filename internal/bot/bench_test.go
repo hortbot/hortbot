@@ -17,7 +17,7 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func BenchmarkNop(b *testing.B) {
+func BenchmarkHandleNop(b *testing.B) {
 	const botName = "hortbot"
 
 	db, undb := freshDB(b)
@@ -55,7 +55,7 @@ func BenchmarkNop(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkCustomCommand(b *testing.B) {
+func BenchmarkHandleCustomCommand(b *testing.B) {
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
@@ -94,7 +94,7 @@ func BenchmarkCustomCommand(b *testing.B) {
 	b.StopTimer()
 }
 
-func BenchmarkMixed(b *testing.B) {
+func BenchmarkHandleMixed(b *testing.B) {
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()

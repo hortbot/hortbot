@@ -21,7 +21,7 @@ var splitFirstSepTests = []struct {
 	{"foo/bar baz", '/', "foo", "bar baz"},
 }
 
-func TestSplitFirstSep(t *testing.T) {
+func TestHelperSplitFirstSep(t *testing.T) {
 	for _, test := range splitFirstSepTests {
 		test := test
 		t.Run(test.input, func(t *testing.T) {
@@ -34,7 +34,7 @@ func TestSplitFirstSep(t *testing.T) {
 
 var strSink1, strSink2 string
 
-func BenchmarkSplitFirstSep(b *testing.B) {
+func BenchmarkHelperSplitFirstSep(b *testing.B) {
 	for _, test := range splitFirstSepTests {
 		test := test
 		b.Run(test.input, func(b *testing.B) {

@@ -240,9 +240,14 @@ func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
 	return nil
 }
 
+//nolint:gocyclo
 func handleSession(ctx context.Context, s *session) error {
 	ctx, span := trace.StartSpan(ctx, "handleSession")
 	defer span.End()
+
+	if err := pgLock(ctx, s.Tx, s.RoomID); err != nil {
+		return err
+	}
 
 	s.SetUserLevel()
 
