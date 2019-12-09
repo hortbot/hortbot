@@ -63,6 +63,13 @@ var (
 		Name:      "active_scheduled",
 		Help:      "Total number of active scheduled commands.",
 	})
+
+	metricDuplicateMessage = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "duplicate_total",
+		Help:      "Total number of duplicate messages ignored.",
+	})
 )
 
 func setMetricRepeatGauges(rep *repeat.Repeater) {

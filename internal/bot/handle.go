@@ -69,7 +69,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 	switch err {
 	case nil, errNotAllowed:
-	case errPanicked: // Logged below with more info.
+	case errPanicked, errDuplicateMessage: // Logged below with more info.
 	default:
 		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 	}
@@ -234,6 +234,7 @@ func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
 
 	if seen {
 		ctxlog.Debug(ctx, "message already seen", zap.String("id", id))
+		metricDuplicateMessage.Inc()
 		return errDuplicateMessage
 	}
 
