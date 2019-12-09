@@ -37,6 +37,8 @@ type Bot struct {
 	Workers int `long:"bot-workers" env:"HB_BOT_WORKERS" description:"number of concurrent workers for handling"`
 
 	PublicJoin bool `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"enabled public join"`
+
+	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"log messages instead of sending them"`
 }
 
 var DefaultBot = Bot{
@@ -68,6 +70,10 @@ func (args *Bot) New(
 		ctxlog.Warn(ctx, "no Steam API key provided, functionality will be disabled")
 	}
 
+	if args.NoSend {
+		sender = logSender{}
+	}
+
 	b := bot.New(&bot.Config{
 		DB:               db,
 		Redis:            rdb,
@@ -94,4 +100,11 @@ func (args *Bot) New(
 	}
 
 	return b
+}
+
+type logSender struct{}
+
+func (logSender) SendMessage(ctx context.Context, origin, target, message string) error {
+	ctxlog.Info(ctx, "not sending", zap.String("origin", origin), zap.String("target", target), zap.String("message", message))
+	return nil
 }
