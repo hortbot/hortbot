@@ -7,7 +7,6 @@ require (
 	contrib.go.opencensus.io/integrations/ocsql v0.1.4
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
 	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
-	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.0
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.1
@@ -43,7 +42,7 @@ require (
 	github.com/prometheus/client_golang v1.2.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/xid v1.2.1
-	github.com/rylio/ytdl v0.5.2-0.20190315183053-1f14ef2e151a
+	github.com/rylio/ytdl v0.6.0
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/viper v1.6.1 // indirect
 	github.com/valyala/quicktemplate v1.4.1
@@ -53,10 +52,10 @@ require (
 	go.opencensus.io v0.22.2
 	go.uber.org/zap v1.13.0
 	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
-	golang.org/x/net v0.0.0-20191207000613-e7e4b65ae663
+	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191206204035-259af5ff87bd
+	golang.org/x/tools v0.0.0-20191210221141-98df12377212
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
