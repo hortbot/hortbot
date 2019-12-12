@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
+	"go.uber.org/zap"
 )
 
 type publisher struct {
@@ -112,10 +114,12 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 
 	select {
 	case pt := <-doneChan:
-		if err == nil {
-			metricPublished.WithLabelValues(topic).Inc()
+		if err := pt.Error; err != nil {
+			ctxlog.Error(ctx, "producer transaction error", zap.Error(err))
+			return err
 		}
-		return pt.Error
+		metricPublished.WithLabelValues(topic).Inc()
+		return nil
 	case <-ctx.Done():
 		return ctx.Err()
 	}
