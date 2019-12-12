@@ -31,7 +31,7 @@ jobs:
         if: matrix.go == 'tip'
         run: |
           export PATH=$(go env GOPATH)/bin:$PATH
-          GO111MODULE=off go install golang.org/dl/gotip
+          GO111MODULE=off go get -u -v golang.org/dl/gotip
           gotip download
           echo "::add-path::$(gotip env GOROOT)/bin"
 
