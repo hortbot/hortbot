@@ -44,7 +44,7 @@ func Run(args []string) {
 
 //nolint:gocyclo
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	db := cmd.SQL.Open(ctx, cmd.SQL.Connector(ctx))
+	db := cmd.SQL.Open(ctx, cmd.SQL.DriverName())
 	rdb := cmd.Redis.Client()
 	twitchAPI := cmd.Twitch.Client()
 	conn := cmd.IRC.Pool(ctx, db, twitchAPI)

@@ -3,7 +3,6 @@ package jaegerflags
 
 import (
 	"context"
-	"database/sql/driver"
 
 	"contrib.go.opencensus.io/exporter/jaeger"
 	"contrib.go.opencensus.io/integrations/ocsql"
@@ -41,9 +40,14 @@ func (args *Jaeger) Init(ctx context.Context, name string, debug bool) func() {
 	return exporter.Flush
 }
 
-func (args *Jaeger) TraceDB(debug bool, d driver.Connector) driver.Connector {
+func (args *Jaeger) DriverName(ctx context.Context, driverName string, debug bool) string {
 	if args.Agent == "" {
-		return d
+		return driverName
 	}
-	return ocsql.WrapConnector(d, ocsql.WithAllTraceOptions(), ocsql.WithQueryParams(debug))
+
+	driverName, err := ocsql.Register(driverName, ocsql.WithAllTraceOptions(), ocsql.WithQueryParams(debug))
+	if err != nil {
+		ctxlog.Fatal(ctx, "error registering osql driver", zap.Error(err))
+	}
+	return driverName
 }

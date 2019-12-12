@@ -25,13 +25,13 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
+	github.com/jackc/pgx/v4 v4.1.2
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
-	github.com/lib/pq v1.2.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
 	github.com/nsqio/go-nsq v1.0.7

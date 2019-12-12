@@ -86,7 +86,7 @@ func freshDB(t testing.TB) *sql.DB {
 
 	connStr := strings.Replace(mainConnStr, "postgres?", dbName+"?", 1)
 
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("pgx", connStr)
 	assert.NilError(t, err)
 
 	return db

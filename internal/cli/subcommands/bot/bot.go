@@ -50,9 +50,9 @@ func (config *config) Main(ctx context.Context, _ []string) {
 	defer config.Jaeger.Init(ctx, Name, config.Debug)()
 	config.Prometheus.Run(ctx)
 
-	connector := config.SQL.Connector(ctx)
-	connector = config.Jaeger.TraceDB(config.Debug, connector)
-	db := config.SQL.Open(ctx, connector)
+	driverName := config.SQL.DriverName()
+	driverName = config.Jaeger.DriverName(ctx, driverName, config.Debug)
+	db := config.SQL.Open(ctx, driverName)
 	rdb := config.Redis.Client()
 	twitchAPI := config.Twitch.Client()
 	sender := config.NSQ.NewSendMessagePublisher()

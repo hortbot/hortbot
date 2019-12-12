@@ -4,13 +4,13 @@ package sqlflags
 import (
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/lib/pq"
 	"go.uber.org/zap"
+
+	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 type SQL struct {
@@ -20,16 +20,15 @@ type SQL struct {
 
 var DefaultSQL = SQL{}
 
-func (args *SQL) Connector(ctx context.Context) driver.Connector {
-	connector, err := pq.NewConnector(args.DB)
-	if err != nil {
-		ctxlog.Fatal(ctx, "error creating postgres connector", zap.Error(err))
-	}
-	return connector
+func (args *SQL) DriverName() string {
+	return "pgx"
 }
 
-func (args *SQL) Open(ctx context.Context, connector driver.Connector) *sql.DB {
-	db := sql.OpenDB(connector)
+func (args *SQL) Open(ctx context.Context, driverName string) *sql.DB {
+	db, err := sql.Open(driverName, args.DB)
+	if err != nil {
+		ctxlog.Fatal(ctx, "error opening connection to database", zap.Error(err))
+	}
 
 	if err := db.PingContext(ctx); err != nil {
 		var perr error

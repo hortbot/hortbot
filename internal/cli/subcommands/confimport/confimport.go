@@ -36,8 +36,7 @@ func Run(args []string) {
 }
 
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	connector := cmd.SQL.Connector(ctx)
-	db := cmd.SQL.Open(ctx, connector)
+	db := cmd.SQL.Open(ctx, cmd.SQL.DriverName())
 	defer db.Close()
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())

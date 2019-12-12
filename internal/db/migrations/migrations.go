@@ -49,7 +49,7 @@ func Reset(connStr string, logger func(format string, v ...interface{})) error {
 }
 
 func newMigrate(connStr string, logger func(format string, v ...interface{})) (*migrate.Migrate, error) {
-	db, err := sql.Open("postgres", connStr)
+	db, err := sql.Open("pgx", connStr)
 	if err != nil {
 		return nil, err
 	}

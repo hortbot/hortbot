@@ -6,7 +6,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker"
 
-	_ "github.com/lib/pq" // For postgres.
+	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 func New() (db *sql.DB, connStr string, cleanup func(), retErr error) {
@@ -26,7 +26,7 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 			connStr = "postgres://postgres:mysecretpassword@" + container.GetHostPort("5432/tcp") + "/postgres?sslmode=disable"
 
 			var err error
-			db, err = sql.Open("postgres", connStr)
+			db, err = sql.Open("pgx", connStr)
 			if err != nil {
 				return err
 			}

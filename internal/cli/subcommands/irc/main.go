@@ -52,9 +52,9 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	defer cmd.Jaeger.Init(ctx, Name, cmd.Debug)()
 	cmd.Prometheus.Run(ctx)
 
-	connector := cmd.SQL.Connector(ctx)
-	connector = cmd.Jaeger.TraceDB(cmd.Debug, connector)
-	db := cmd.SQL.Open(ctx, connector)
+	driverName := cmd.SQL.DriverName()
+	driverName = cmd.Jaeger.DriverName(ctx, driverName, cmd.Debug)
+	db := cmd.SQL.Open(ctx, driverName)
 
 	rdb := cmd.Redis.Client()
 	twitchAPI := cmd.Twitch.Client()

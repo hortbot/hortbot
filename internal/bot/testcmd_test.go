@@ -109,6 +109,9 @@ func init() {
 				return err
 			}
 
+			// pgx converts times back to the client timezone; convert to UTC for testing.
+			tok.Expiry = tok.Expiry.UTC()
+
 			j, err := json.Marshal(tok)
 			if err != nil {
 				return err
