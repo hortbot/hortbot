@@ -1,0 +1,52 @@
+on: push
+name: Test
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go: [1.12.x, 1.13.x, tip]
+    name: Go ${{ matrix.go }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2-beta
+        with:
+          fetch-depth: 0
+
+      - name: Install Go
+        if: matrix.go != 'tip'
+        uses: actions/setup-go@v1
+        with:
+          go: ${{ matrix.go }}
+
+      - name: Install Go (bootstrap)
+        if: matrix.go == 'tip'
+        uses: actions/setup-go@v1
+        with:
+          go: 1.13.x
+
+      - name: Install gotip
+        if: matrix.go == 'tip'
+        run: |
+          export PATH=$(go env GOPATH)/bin:$PATH
+          GO111MODULE=off go install golang.org/dl/gotip
+          gotip download
+          echo "::add-path::$(gotip env GOROOT)/bin"
+
+      - name: Check go.mod tidyness
+        run:
+          go mod tidy
+          test -z "$(git status --porcelain go.mod go.sum)"
+
+      - name: Pull docker images
+        run: |
+          docker pull zikaeroh/postgres-initialized
+          docker pull nsqio/nsq
+
+      - name: Test
+        run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+
+      - name: Version
+        run: echo "r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
