@@ -19,13 +19,13 @@ jobs:
         if: matrix.go != 'tip'
         uses: actions/setup-go@v1
         with:
-          go: ${{ matrix.go }}
+          go-version: ${{ matrix.go }}
 
       - name: Install Go (bootstrap)
         if: matrix.go == 'tip'
         uses: actions/setup-go@v1
         with:
-          go: 1.13.x
+          go-version: 1.13.x
 
       - name: Install gotip
         if: matrix.go == 'tip'
