@@ -84,6 +84,7 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	select {
 	case <-p.ready:
 	case <-ctx.Done():
+		ctxlog.Warn(ctx, "timeout waiting for connection to be ready")
 		return ctx.Err()
 	}
 
@@ -115,12 +116,13 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	select {
 	case pt := <-doneChan:
 		if err := pt.Error; err != nil {
-			ctxlog.Error(ctx, "producer transaction error", zap.Error(err))
+			ctxlog.Warn(ctx, "producer transaction error", zap.Error(err))
 			return err
 		}
 		metricPublished.WithLabelValues(topic).Inc()
 		return nil
 	case <-ctx.Done():
+		ctxlog.Warn(ctx, "timeout waiting for async publish completion")
 		return ctx.Err()
 	}
 }
