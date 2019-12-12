@@ -36,6 +36,7 @@ jobs:
           echo "::add-path::$(gotip env GOROOT)/bin"
 
       - name: Check go.mod tidyness
+        if: matrix.go == '1.13.x'
         run: |
           go mod tidy
           test -z "$(git status --porcelain go.mod go.sum)"
