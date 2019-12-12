@@ -54,8 +54,22 @@ func TestIncoming(t *testing.T) {
 	assert.NilError(t, publisher.Publish(ctx, "hortbot", m1))
 	assert.NilError(t, publisher.Publish(ctx, "otherbot", m2))
 
-	got1 := <-received
-	got2 := <-received
+	var (
+		got1 *bnsq.Incoming
+		got2 *bnsq.Incoming
+	)
+
+	select {
+	case got1 = <-received:
+	case <-ctx.Done():
+		assert.NilError(t, ctx.Err())
+	}
+
+	select {
+	case got2 = <-received:
+	case <-ctx.Done():
+		assert.NilError(t, ctx.Err())
+	}
 
 	got1.Message.Raw = ""
 	got2.Message.Raw = ""

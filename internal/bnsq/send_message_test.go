@@ -186,12 +186,14 @@ func TestMaxAge(t *testing.T) {
 	}
 
 	bnsq.TestingSleep(time.Minute)
+	defer bnsq.TestingSleep(0)
 
 	g := errgroupx.FromContext(ctx)
 
 	g.Go(publisher.Run)
 	g.Go(subscriber.Run)
 
+	time.Sleep(10 * time.Millisecond)
 	assert.NilError(t, publisher.SendMessage(ctx, origin, "#foobar", "this is my message"))
 
 	time.Sleep(10 * time.Millisecond)
