@@ -36,7 +36,7 @@ jobs:
           echo "::add-path::$(gotip env GOROOT)/bin"
 
       - name: Check go.mod tidyness
-        run:
+        run: |
           go mod tidy
           test -z "$(git status --porcelain go.mod go.sum)"
 
