@@ -12,8 +12,8 @@ import (
 )
 
 func TestBotNewPanics(t *testing.T) {
-	db, undb := freshDB(t)
-	defer undb()
+	db := freshDB(t)
+	defer db.Close()
 
 	config := &bot.Config{
 		DB:       db,

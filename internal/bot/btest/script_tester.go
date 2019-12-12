@@ -33,9 +33,9 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func RunScript(t testing.TB, filename string, freshDB func(t testing.TB) (*sql.DB, func())) {
-	db, undb := freshDB(t)
-	defer undb()
+func RunScript(t testing.TB, filename string, freshDB func(t testing.TB) *sql.DB) {
+	db := freshDB(t)
+	defer db.Close()
 
 	st := scriptTester{
 		filename: filename,

@@ -2,11 +2,12 @@ package bot_test
 
 import (
 	"database/sql"
-	"flag"
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 
@@ -19,109 +20,74 @@ func init() {
 	bot.Testing()
 }
 
-func must(err error) {
-	if err != nil {
-		panic(err)
-	}
-}
-
-type fdb struct {
-	err     error
-	db      *sql.DB
-	cleanup func()
-}
-
-var (
-	mainDB        *sql.DB
-	mainConnStr   string
-	conns         chan fdb
-	concurrentDBs = false
-)
-
 func TestMain(m *testing.M) {
-	var status int
+	status := 1
 	defer func() {
+		if r := recover(); r != nil {
+			panic(r)
+		}
 		os.Exit(status)
 	}()
 
-	flag.Parse()
-
-	switch {
-	case flag.Lookup("test.bench").Value.String() != "":
-	case flag.Lookup("test.run").Value.String() != "":
-	default:
-		concurrentDBs = true
-	}
-
-	var cleanup func()
-	var err error
-
-	mainDB, mainConnStr, cleanup, err = pgtest.New()
-	must(err)
-	defer cleanup()
-
-	// Create another database as a template because keeping the main connection
-	// to the original database open prevents its use as a template.
-	_, err = mainDB.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)
-	must(err)
-
-	if concurrentDBs {
-		procs := runtime.GOMAXPROCS(0)
-
-		n := procs * 4
-		if n > 16 {
-			n = 16
+	defer func() {
+		if cleanupDB != nil {
+			cleanupDB()
 		}
-
-		conns = make(chan fdb, n)
-
-		for i := 0; i < n; i++ {
-			go dbMaker()
-		}
-	}
+	}()
 
 	status = m.Run()
 }
 
-var tempDBNum int64
+var (
+	mainDB      *sql.DB
+	mainConnStr string
+	cleanupDB   func()
+	initDBOnce  sync.Once
+	tempDBNum   int64
+	tempDBSema  = make(chan bool, maxConcurrentCreates())
+)
 
-func freshDB(t testing.TB) (*sql.DB, func()) {
+func maxConcurrentCreates() int64 {
+	n := runtime.GOMAXPROCS(0) * 4
+	if n > 16 {
+		return 16
+	}
+	return int64(n)
+}
+
+func initDB() {
+	var err error
+	mainDB, mainConnStr, cleanupDB, err = pgtest.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create another database as a template because keeping the main connection
+	// to the original database open prevents its use as a template.
+	_, err = mainDB.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func freshDB(t testing.TB) *sql.DB {
 	t.Helper()
+	initDBOnce.Do(initDB)
 
-	var f fdb
-	if concurrentDBs {
-		f = <-conns
-	} else {
-		f = makeDB()
-	}
+	tempDBSema <- true
+	defer func() {
+		<-tempDBSema
+	}()
 
-	assert.NilError(t, f.err)
-	return f.db, f.cleanup
-}
-
-func dbMaker() {
-	for {
-		conns <- makeDB()
-	}
-}
-
-func makeDB() fdb {
 	dbName := fmt.Sprintf("temp%d", atomic.AddInt64(&tempDBNum, 1))
 
 	_, err := mainDB.Exec(fmt.Sprintf(`CREATE DATABASE %s WITH TEMPLATE temp_template`, dbName))
-	if err != nil {
-		return fdb{err: err}
-	}
+	assert.NilError(t, err)
 
 	connStr := strings.Replace(mainConnStr, "postgres?", dbName+"?", 1)
 
 	db, err := sql.Open("postgres", connStr)
-	if err != nil {
-		return fdb{err: err}
-	}
+	assert.NilError(t, err)
 
-	return fdb{
-		db:      db,
-		cleanup: func() { db.Close() },
-	}
+	return db
 }

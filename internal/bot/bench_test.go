@@ -20,8 +20,8 @@ import (
 func BenchmarkHandleNop(b *testing.B) {
 	const botName = "hortbot"
 
-	db, undb := freshDB(b)
-	defer undb()
+	db := freshDB(b)
+	defer db.Close()
 
 	ctx := context.Background()
 
@@ -62,8 +62,8 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
-	db, undb := freshDB(b)
-	defer undb()
+	db := freshDB(b)
+	defer db.Close()
 
 	ctx := context.Background()
 
@@ -101,8 +101,8 @@ func BenchmarkHandleMixed(b *testing.B) {
 	assert.NilError(b, err)
 	defer rCleanup()
 
-	db, undb := freshDB(b)
-	defer undb()
+	db := freshDB(b)
+	defer db.Close()
 
 	ctx := context.Background()
 
