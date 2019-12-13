@@ -3,8 +3,6 @@ package bnsq
 import (
 	"context"
 	"encoding/json"
-	"os"
-	"runtime"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
@@ -66,23 +64,19 @@ func (p *publisher) run(ctx context.Context) error {
 	}
 	defer producer.Stop()
 
-	producer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelDebug) // TODO: Revert level change after Github Actions deadlock is found.
+	producer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
 
 	p.producer = producer
 
-	ctxlog.Info(ctx, "pinging producer") // TODO: Remove me after Github Actions deadlock is found.
 	if err := producer.Ping(); err != nil {
 		ctxlog.Error(ctx, "error pinging server", zap.Error(err))
 		return err
 	}
 
-	ctxlog.Info(ctx, "producer ready") // TODO: Remove me after Github Actions deadlock is found.
 	close(p.ready)
 
 	<-ctx.Done()
-	err = ctx.Err()
-	ctxlog.Info(ctx, "producer exiting", zap.Error(err)) // TODO: Remove me after Github Actions deadlock is found.
-	return err
+	return ctx.Err()
 }
 
 func (p *publisher) publish(ctx context.Context, topic string, payload interface{}) error {
@@ -93,21 +87,6 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	case <-p.ready:
 	case <-ctx.Done():
 		ctxlog.Error(ctx, "timeout waiting for connection to be ready")
-
-		// TODO: Remove me after Github Actions deadlock is found.
-		stack := func() []byte {
-			buf := make([]byte, 1024)
-			for {
-				n := runtime.Stack(buf, true)
-				if n < len(buf) {
-					return buf[:n]
-				}
-				buf = make([]byte, 2*len(buf))
-			}
-		}
-
-		os.Stderr.Write(stack())
-
 		return ctx.Err()
 	}
 
