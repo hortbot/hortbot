@@ -20,6 +20,11 @@ func New() (addr string, cleanup func(), retErr error) {
 			if _, err := conn.Connect(); err != nil {
 				return err
 			}
+
+			if err := conn.WriteCommand(nsq.Nop()); err != nil {
+				return err
+			}
+
 			return conn.Close()
 		},
 		ExpirySecs: 300,
