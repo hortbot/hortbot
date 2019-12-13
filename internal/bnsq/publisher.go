@@ -59,6 +59,7 @@ func PublisherConfig(config *nsq.Config) PublisherOption {
 func (p *publisher) run(ctx context.Context) error {
 	producer, err := nsq.NewProducer(p.addr, p.config)
 	if err != nil {
+		ctxlog.Error(ctx, "error creating producer", zap.Error(err))
 		return err
 	}
 	defer producer.Stop()
@@ -68,6 +69,7 @@ func (p *publisher) run(ctx context.Context) error {
 	p.producer = producer
 
 	if err := producer.Ping(); err != nil {
+		ctxlog.Error(ctx, "error pinging server", zap.Error(err))
 		return err
 	}
 
@@ -84,7 +86,7 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	select {
 	case <-p.ready:
 	case <-ctx.Done():
-		ctxlog.Warn(ctx, "timeout waiting for connection to be ready")
+		ctxlog.Error(ctx, "timeout waiting for connection to be ready")
 		return ctx.Err()
 	}
 
@@ -116,13 +118,13 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	select {
 	case pt := <-doneChan:
 		if err := pt.Error; err != nil {
-			ctxlog.Warn(ctx, "producer transaction error", zap.Error(err))
+			ctxlog.Error(ctx, "producer transaction error", zap.Error(err))
 			return err
 		}
 		metricPublished.WithLabelValues(topic).Inc()
 		return nil
 	case <-ctx.Done():
-		ctxlog.Warn(ctx, "timeout waiting for async publish completion")
+		ctxlog.Error(ctx, "timeout waiting for async publish completion")
 		return ctx.Err()
 	}
 }

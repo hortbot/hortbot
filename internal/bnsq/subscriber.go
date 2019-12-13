@@ -65,6 +65,7 @@ func SubscriberMaxAge(d time.Duration) SubscriberOption {
 func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 	consumer, err := nsq.NewConsumer(s.topic, s.channel, s.config)
 	if err != nil {
+		ctxlog.Error(ctx, "error creating consumer", zap.Error(err))
 		return err
 	}
 	defer consumer.Stop()
@@ -96,6 +97,7 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 	}))
 
 	if err := consumer.ConnectToNSQD(s.addr); err != nil {
+		ctxlog.Error(ctx, "error connecting to server", zap.Error(err))
 		return err
 	}
 
