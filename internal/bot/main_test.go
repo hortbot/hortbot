@@ -14,6 +14,8 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/pgtest"
 	"gotest.tools/v3/assert"
+
+	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 func init() {

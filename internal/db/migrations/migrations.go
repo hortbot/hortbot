@@ -7,6 +7,8 @@ import (
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
 	"github.com/hortbot/hortbot/internal/db/migrations/esc"
+
+	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 //go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -private -modtime=0 .
