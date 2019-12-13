@@ -3,6 +3,8 @@ package bnsq
 import (
 	"context"
 	"encoding/json"
+	"os"
+	"runtime"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
@@ -87,6 +89,21 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	case <-p.ready:
 	case <-ctx.Done():
 		ctxlog.Error(ctx, "timeout waiting for connection to be ready")
+
+		// Temporary: for debugging GitHub Actions failures
+		stack := func() []byte {
+			buf := make([]byte, 1024)
+			for {
+				n := runtime.Stack(buf, true)
+				if n < len(buf) {
+					return buf[:n]
+				}
+				buf = make([]byte, 2*len(buf))
+			}
+		}
+
+		os.Stderr.Write(stack())
+
 		return ctx.Err()
 	}
 
