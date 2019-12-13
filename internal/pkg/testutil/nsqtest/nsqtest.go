@@ -1,6 +1,7 @@
 package nsqtest
 
 import (
+	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/docker"
 	"github.com/nsqio/go-nsq"
 )
@@ -12,7 +13,10 @@ func New() (addr string, cleanup func(), retErr error) {
 		Cmd:        []string{"/nsqd"},
 		Ready: func(container *docker.Container) error {
 			addr = container.GetHostPort("4150/tcp")
-			conn := nsq.NewConn(addr, nsq.NewConfig(), &nopDelegate{})
+			config := nsq.NewConfig()
+			config.ClientID = uuid.Must(uuid.NewV4()).String()
+
+			conn := nsq.NewConn(addr, config, &nopDelegate{})
 			if _, err := conn.Connect(); err != nil {
 				return err
 			}
