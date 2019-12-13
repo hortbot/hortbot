@@ -16,16 +16,13 @@ func New() (addr string, cleanup func(), retErr error) {
 			config := nsq.NewConfig()
 			config.ClientID = uuid.Must(uuid.NewV4()).String()
 
-			conn := nsq.NewConn(addr, config, &nopDelegate{})
+			conn := nsq.NewConn(addr, config, (*nopDelegate)(nil))
 			if _, err := conn.Connect(); err != nil {
 				return err
 			}
+			defer conn.Close()
 
-			if err := conn.WriteCommand(nsq.Nop()); err != nil {
-				return err
-			}
-
-			return conn.Close()
+			return conn.WriteCommand(nsq.Nop())
 		},
 		ExpirySecs: 300,
 	}

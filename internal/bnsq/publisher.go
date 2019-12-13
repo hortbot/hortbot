@@ -66,19 +66,23 @@ func (p *publisher) run(ctx context.Context) error {
 	}
 	defer producer.Stop()
 
-	producer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
+	producer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelDebug) // TODO: Revert level change after Github Actions deadlock is found.
 
 	p.producer = producer
 
+	ctxlog.Info(ctx, "pinging producer") // TODO: Remove me after Github Actions deadlock is found.
 	if err := producer.Ping(); err != nil {
 		ctxlog.Error(ctx, "error pinging server", zap.Error(err))
 		return err
 	}
 
+	ctxlog.Info(ctx, "producer ready") // TODO: Remove me after Github Actions deadlock is found.
 	close(p.ready)
 
 	<-ctx.Done()
-	return ctx.Err()
+	err = ctx.Err()
+	ctxlog.Info(ctx, "producer exiting", zap.Error(err)) // TODO: Remove me after Github Actions deadlock is found.
+	return err
 }
 
 func (p *publisher) publish(ctx context.Context, topic string, payload interface{}) error {
@@ -90,7 +94,7 @@ func (p *publisher) publish(ctx context.Context, topic string, payload interface
 	case <-ctx.Done():
 		ctxlog.Error(ctx, "timeout waiting for connection to be ready")
 
-		// Temporary: for debugging GitHub Actions failures
+		// TODO: Remove me after Github Actions deadlock is found.
 		stack := func() []byte {
 			buf := make([]byte, 1024)
 			for {
