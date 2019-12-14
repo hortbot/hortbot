@@ -41,10 +41,11 @@ jobs:
       - name: Install gotip
         if: matrix.go == 'tip'
         run: |
-          GO111MODULE=off go get -u -v golang.org/dl/gotip
-          $(go env GOPATH)/bin/gotip download
-          echo "::set-env name=GOROOT::$HOME/sdk/gotip"
-          echo "::add-path::$HOME/sdk/gotip/bin"
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          echo "::set-env name=GOROOT::$HOME/gotip"
+          echo "::add-path::$HOME/gotip/bin"
 
       - name: Environment info
         run: |
