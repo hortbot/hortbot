@@ -45,6 +45,7 @@ require (
 	github.com/rylio/ytdl v0.6.0
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/viper v1.6.1 // indirect
+	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.4.1
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible

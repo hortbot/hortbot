@@ -25,6 +25,7 @@ import (
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/tomwright/queryparam/v4"
 	"github.com/volatiletech/null"
 	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
@@ -177,9 +178,16 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 		Bot:  bot,
 	}
 
-	if redirect := r.URL.Query()["redirect"]; len(redirect) > 0 {
-		stateVal.Redirect = redirect[0]
+	query := struct {
+		Redirect string `queryparam:"redirect"`
+	}{}
+
+	if err := queryparam.Parse(r.URL.Query(), &query); err != nil {
+		httpError(w, http.StatusBadRequest)
+		return
 	}
+
+	stateVal.Redirect = query.Redirect
 
 	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
 		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
@@ -570,8 +578,16 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 
 	enc := json.NewEncoder(w)
 
-	switch r.URL.Query().Get("pretty") {
-	case "1", "true", "yes":
+	query := struct {
+		Pretty bool `queryparam:"pretty"`
+	}{}
+
+	if err := queryparam.Parse(r.URL.Query(), &query); err != nil {
+		httpError(w, http.StatusBadRequest)
+		return
+	}
+
+	if query.Pretty {
 		enc.SetIndent("", "    ")
 	}
 
