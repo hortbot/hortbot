@@ -63,6 +63,7 @@ jobs:
       - name: Environment info
         run: |
           go version
+          go env
           docker info
 
       - name: Test
