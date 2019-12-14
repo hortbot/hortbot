@@ -28,9 +28,9 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ matrix.go }}-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
           restore-keys: |
-            ${{ runner.os }}-go-${{ matrix.go }}-
+            ${{ runner.os }}-go-
 
       - name: Install Go
         if: matrix.go != 'tip'
@@ -44,7 +44,7 @@ jobs:
           export PATH=$(go env GOPATH)/bin:$PATH
           GO111MODULE=off go get -u -v golang.org/dl/gotip
           gotip download
-          echo "::add-path::$(gotip env GOROOT)/bin"
+          echo "::add-path::$HOME/sdk/gotip/bin"
 
       - name: Download Go modules
         run: go mod download
