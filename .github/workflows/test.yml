@@ -44,7 +44,14 @@ jobs:
           export PATH=$(go env GOPATH)/bin:$PATH
           GO111MODULE=off go get -u -v golang.org/dl/gotip
           gotip download
+          echo "::set-env name=GOPATH::$HOME/sdk/gotip"
           echo "::add-path::$HOME/sdk/gotip/bin"
+
+      - name: Environment info
+        run: |
+          go version
+          go env
+          docker info
 
       - name: Download Go modules
         run: go mod download
@@ -59,12 +66,6 @@ jobs:
         run: |
           docker pull zikaeroh/postgres-initialized
           docker pull nsqio/nsq
-
-      - name: Environment info
-        run: |
-          go version
-          go env
-          docker info
 
       - name: Test
         run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
