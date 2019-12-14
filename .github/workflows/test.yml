@@ -1,5 +1,10 @@
-on: push
 name: Test
+# on: push
+
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   test:
@@ -15,6 +20,9 @@ jobs:
         uses: actions/checkout@v2-beta
         with:
           fetch-depth: 0
+
+      - name: Version
+        run: echo "r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
 
       - name: Go module cache
         uses: actions/cache@v1
@@ -58,8 +66,10 @@ jobs:
           docker pull zikaeroh/postgres-initialized
           docker pull nsqio/nsq
 
+      - name: Environment info
+        run: |
+          go version
+          docker info
+
       - name: Test
         run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
-
-      - name: Version
-        run: echo "r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
