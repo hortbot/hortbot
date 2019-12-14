@@ -44,7 +44,7 @@ jobs:
           export PATH=$(go env GOPATH)/bin:$PATH
           GO111MODULE=off go get -u -v golang.org/dl/gotip
           gotip download
-          echo "::set-env name=GOPATH::$HOME/sdk/gotip"
+          echo "::set-env name=GOROOT::$HOME/sdk/gotip"
           echo "::add-path::$HOME/sdk/gotip/bin"
 
       - name: Environment info
