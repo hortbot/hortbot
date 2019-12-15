@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        go: [1.12.x, 1.13.x, tip]
+    name: Go ${{ matrix.go }}
+
+    steps:
+      - uses: actions/checkout@v2-beta
+
+      - name: Cache Go modules
+        uses: actions/cache@v1
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Install Go
+        if: matrix.go != 'tip'
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Install Go tip
+        if: matrix.go == 'tip'
+        run: |
+          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+          cd $HOME/gotip/src
+          ./make.bash
+          ./bin/go version
+          echo "::set-env name=GOROOT::$HOME/gotip"
+          echo "::add-path::$HOME/gotip/bin"
+
+      - name: Download Go modules
+        run: go mod download
+
+      - name: Pull docker images
+        run: |
+          docker pull zikaeroh/postgres-initialized
+          docker pull nsqio/nsq
+
+      - name: Run tests
+        run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+
+  style:
+    name: Style
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2-beta
+
+      - name: Cache Go modules
+        uses: actions/cache@v1
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+
+      - name: Install Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.13.x
+
+      - name: Check go.mod tidyness
+        run: |
+          go mod tidy
+          git diff --exit-code go.mod go.sum
+
+      - name: golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.21.0
+          $(go env GOPATH)/bin/golangci-lint
+
+  docker:
+    name: Docker
+    runs-on: ubuntu-latest
+    needs: [test, style]
+
+    steps:
+      - uses: actions/checkout@v2-beta
+        with:
+          fetch-depth: 0
+
+      - name: Build image
+        run: |
+          export VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+          docker build -t hortbot/hortbot --build-arg version=$VERSION .
+          # TODO: push image
