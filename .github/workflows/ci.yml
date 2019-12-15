@@ -38,7 +38,7 @@ jobs:
           git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
           cd $HOME/gotip/src
           ./make.bash
-          ./bin/go version
+          ../bin/go version
           echo "::set-env name=GOROOT::$HOME/gotip"
           echo "::add-path::$HOME/gotip/bin"
 
