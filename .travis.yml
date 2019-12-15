@@ -5,6 +5,10 @@ git:
 
 language: go
 
+cache:
+  directories:
+   - $GOPATH/pkg
+
 env:
   global:
     - GO111MODULE=on
