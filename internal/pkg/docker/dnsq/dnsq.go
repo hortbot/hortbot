@@ -1,4 +1,4 @@
-package nsqtest
+package dnsq
 
 import (
 	"github.com/gofrs/uuid"

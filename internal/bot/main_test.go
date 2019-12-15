@@ -12,7 +12,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/pgtest"
+	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"gotest.tools/v3/assert"
 
 	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
@@ -59,7 +59,7 @@ func maxConcurrentCreates() int64 {
 
 func initDB() {
 	var err error
-	mainDB, mainConnStr, cleanupDB, err = pgtest.New()
+	mainDB, mainConnStr, cleanupDB, err = dpostgres.New()
 	if err != nil {
 		log.Fatal(err)
 	}

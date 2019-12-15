@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/pgtest"
+	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
@@ -64,7 +64,7 @@ func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string
 		t.Skip("requires starting a docker container")
 	}
 
-	db, connStr, cleanup, err := pgtest.NewNoMigrate()
+	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
 	assert.NilError(t, err)
 	defer cleanup()
 

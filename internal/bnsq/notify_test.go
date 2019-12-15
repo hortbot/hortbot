@@ -8,16 +8,16 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/nsqtest"
 	"gotest.tools/v3/assert"
 )
 
 func TestNotify(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	addr, cleanup, err := nsqtest.New()
+	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()
 

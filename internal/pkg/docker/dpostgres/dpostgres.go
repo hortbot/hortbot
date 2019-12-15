@@ -1,4 +1,4 @@
-package pgtest
+package dpostgres
 
 import (
 	"database/sql"
