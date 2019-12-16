@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"net/http/httputil"
 	"sort"
 	"strings"
 	"time"
@@ -106,6 +105,7 @@ func (a *App) Run(ctx context.Context) error {
 	})
 
 	r.Get("/login", a.login)
+	r.Get("/logout", a.logout)
 	r.Get("/auth/twitch", a.authTwitchNormal)
 	r.Get("/auth/twitch/bot", a.authTwitchBot)
 	r.Get("/auth/twitch/callback", a.authTwitchCallback)
@@ -277,16 +277,20 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if stateVal.Bot {
-		session := a.getSession(r)
-		session.setTwitchID(user.ID)
-		session.setUsername(user.Name)
+	if err := a.clearSession(w, r); err != nil {
+		ctxlog.Error(ctx, "error saving session", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
+	}
 
-		if err := session.save(w, r); err != nil {
-			ctxlog.Error(ctx, "error saving session", zap.Error(err))
-			httpError(w, http.StatusInternalServerError)
-			return
-		}
+	session := a.getSession(r)
+	session.setTwitchID(user.ID)
+	session.setUsername(user.Name)
+
+	if err := session.save(w, r); err != nil {
+		ctxlog.Error(ctx, "error saving session", zap.Error(err))
+		httpError(w, http.StatusInternalServerError)
+		return
 	}
 
 	if stateVal.Redirect != "" {
@@ -300,6 +304,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		Bot:  stateVal.Bot,
 	}
 	page.Brand = a.getBrand(r)
+	page.User = user.Name
 
 	templates.WritePageTemplate(w, page)
 }
@@ -329,6 +334,7 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 		BotCount:     row.BotCount,
 	}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -336,12 +342,14 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 func (a *App) about(w http.ResponseWriter, r *http.Request) {
 	page := &templates.AboutPage{}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) docs(w http.ResponseWriter, r *http.Request) {
 	page := &templates.DocsPage{}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 	templates.WritePageTemplate(w, page)
 }
 
@@ -362,6 +370,7 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 		Channels: channels,
 	}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -374,6 +383,7 @@ func (a *App) channel(w http.ResponseWriter, r *http.Request) {
 		Channel: channel,
 	}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 	templates.WritePageTemplate(w, page)
 }
 
@@ -397,6 +407,7 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -417,6 +428,7 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -437,6 +449,7 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -461,6 +474,7 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -472,6 +486,7 @@ func (a *App) channelRegulars(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelRegularsPage{}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -483,6 +498,7 @@ func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelRulesPage{}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -527,6 +543,7 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	}
 	page.Brand = a.getBrand(r)
 	page.Channel = channel
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -534,6 +551,7 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
 	page := &templates.LoginPage{}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -601,6 +619,7 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 func (a *App) adminImport(w http.ResponseWriter, r *http.Request) {
 	page := &templates.AdminImportPage{}
 	page.Brand = a.getBrand(r)
+	page.User = a.getSession(r).getUsername()
 	templates.WritePageTemplate(w, page)
 }
 
@@ -643,23 +662,14 @@ func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Successfully inserted channel", config.Channel.ID)
 }
 
-func notAuthorized(w http.ResponseWriter, header bool) {
-	if header {
-		w.Header().Add("WWW-Authenticate", `Basic realm="hortbot"`)
-	}
-	httpError(w, http.StatusUnauthorized)
-}
+func (a *App) logout(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 
-func httpError(w http.ResponseWriter, code int) {
-	http.Error(w, http.StatusText(code), code)
-}
-
-func dumpRequest(w http.ResponseWriter, r *http.Request) {
-	b, err := httputil.DumpRequest(r, true)
-	if err != nil {
-		ctxlog.Error(r.Context(), "error dumping request", zap.Error(err))
+	if err := a.clearSession(w, r); err != nil {
+		ctxlog.Error(ctx, "error clearing session", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
-	fmt.Fprintf(w, "%s", b)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

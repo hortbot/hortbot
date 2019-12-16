@@ -6,6 +6,7 @@
     PageBody()
     PageMeta()
     PageScripts()
+    PageLogin()
 } %}
 
 {% func PageTemplate(p Page) %}
@@ -37,12 +38,7 @@
                 <a class="navbar-item" href="/about">About</a>
             </div>
 
-            <div class="navbar-end">
-                <a class="navbar-item" href="/login">
-                    <span>Log in</span>
-                    <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
-                </a>
-            </div>
+            {%= p.PageLogin() %}
         </nav>
 
         {%= p.PageBody() %}
@@ -56,11 +52,31 @@
 
 {% code type BasePage struct {
     Brand string
+    User string
 } %}
 {% func (p *BasePage) PageBrand() %}{%s nonempty(p.Brand) %}{% endfunc %}
 {% func (p *BasePage) PageBody() %}{% endfunc %}
 {% func (p *BasePage) PageMeta() %}{% endfunc %}
 {% func (p *BasePage) PageScripts() %}{% endfunc %}
+
+{% func (p *BasePage) PageLogin() %}
+<div class="navbar-end">
+    {% if p.User == "" %}
+    <a class="navbar-item" href="/login">
+        <span>Log in</span>
+        <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+    </a>
+    {% else %}
+    <span class="navbar-item">
+        Welcome, {%s p.User %}.
+    </span>
+    <a class="navbar-item" href="/logout">
+        <span>Log out</span>
+        <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+    </a>
+    {% endif %}
+</div>
+{% endfunc %}
 
 {% code func nonempty(s string) string {
     if s == "" {

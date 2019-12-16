@@ -21,6 +21,12 @@ func (a *App) getSession(r *http.Request) *session {
 	return &session{s: s}
 }
 
+func (a *App) clearSession(w http.ResponseWriter, r *http.Request) error {
+	s, _ := a.store.Get(r, sessionName)
+	s.Options.MaxAge = -1
+	return s.Save(r, w)
+}
+
 func (s *session) save(w http.ResponseWriter, r *http.Request) error {
 	return s.s.Save(r, w)
 }

@@ -30,6 +30,9 @@ type Page interface {
 	PageScripts() string
 	StreamPageScripts(qw422016 *qt422016.Writer)
 	WritePageScripts(qq422016 qtio422016.Writer)
+	PageLogin() string
+	StreamPageLogin(qw422016 *qt422016.Writer)
+	WritePageLogin(qq422016 qtio422016.Writer)
 }
 
 func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
@@ -68,12 +71,9 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
                 <a class="navbar-item" href="/about">About</a>
             </div>
 
-            <div class="navbar-end">
-                <a class="navbar-item" href="/login">
-                    <span>Log in</span>
-                    <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
-                </a>
-            </div>
+            `)
+	p.StreamPageLogin(qw422016)
+	qw422016.N().S(`
         </nav>
 
         `)
@@ -106,6 +106,7 @@ func PageTemplate(p Page) string {
 
 type BasePage struct {
 	Brand string
+	User  string
 }
 
 func (p *BasePage) StreamPageBrand(qw422016 *qt422016.Writer) {
@@ -172,6 +173,49 @@ func (p *BasePage) WritePageScripts(qq422016 qtio422016.Writer) {
 func (p *BasePage) PageScripts() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageScripts(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+func (p *BasePage) StreamPageLogin(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+<div class="navbar-end">
+    `)
+	if p.User == "" {
+		qw422016.N().S(`
+    <a class="navbar-item" href="/login">
+        <span>Log in</span>
+        <span class="icon"><i class="fas fa-sign-in-alt"></i></span>
+    </a>
+    `)
+	} else {
+		qw422016.N().S(`
+    <span class="navbar-item">
+        Welcome, `)
+		qw422016.E().S(p.User)
+		qw422016.N().S(`.
+    </span>
+    <a class="navbar-item" href="/logout">
+        <span>Log out</span>
+        <span class="icon"><i class="fas fa-sign-out-alt"></i></span>
+    </a>
+    `)
+	}
+	qw422016.N().S(`
+</div>
+`)
+}
+
+func (p *BasePage) WritePageLogin(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageLogin(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *BasePage) PageLogin() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageLogin(qb422016)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
