@@ -71,6 +71,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	case nil, errNotAllowed:
 	case errPanicked, errDuplicateMessage: // Logged below with more info.
 	default:
+		metricHandleError.Inc()
 		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 	}
 }

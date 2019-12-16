@@ -70,6 +70,13 @@ var (
 		Name:      "duplicate_total",
 		Help:      "Total number of duplicate messages ignored.",
 	})
+
+	metricHandleError = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_error_total",
+		Help:      "Total number of handler errors.",
+	})
 )
 
 func setMetricRepeatGauges(rep *repeat.Repeater) {
