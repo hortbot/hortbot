@@ -7,11 +7,12 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/nsqio/go-nsq"
+	"go.uber.org/atomic"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
-var testingSleep time.Duration
+var testingSleep = atomic.NewDuration(0)
 
 func defaultConfig() *nsq.Config {
 	config := nsq.NewConfig()

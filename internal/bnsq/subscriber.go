@@ -73,8 +73,8 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 	consumer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
 
 	consumer.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
-		if testingSleep != 0 {
-			s.clk.Sleep(testingSleep)
+		if dur := testingSleep.Load(); dur != 0 {
+			s.clk.Sleep(dur)
 		}
 
 		m := &message{}

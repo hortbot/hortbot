@@ -52,6 +52,7 @@ require (
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
 	github.com/yuin/gopher-lua v0.0.0-20191213034115-f46add6fdb5c // indirect
 	go.opencensus.io v0.22.2
+	go.uber.org/atomic v1.5.1
 	go.uber.org/zap v1.13.0
 	golang.org/x/crypto v0.0.0-20191206172530-e9b2fee46413 // indirect
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
