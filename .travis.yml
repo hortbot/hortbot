@@ -39,6 +39,7 @@ before_install:
   - docker pull nsqio/nsq
 
 script:
+  - go mod download
   - if [ "$PRIMARY" = true ]; then
       go mod tidy;
       test -z "$(git status --porcelain go.mod go.sum)";
