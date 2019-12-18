@@ -4,7 +4,6 @@
 package templates
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/hako/durafmt"
@@ -719,9 +718,7 @@ func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 		for _, l := range p.Lists {
 			qw422016.N().S(`
-                <tr data-has-detail-view="true" data-items="`)
-			qw422016.E().Z(marshalJSON(l.Items))
-			qw422016.N().S(`">
+                <tr data-has-detail-view="true">
                     <td><code>`)
 			qw422016.E().S(p.Channel.Prefix)
 			qw422016.E().S(l.R.CommandInfo.Name)
@@ -772,10 +769,28 @@ func (p *ChannelListsPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 	p.ChannelPage.StreamPageScripts(qw422016)
 	qw422016.N().S(`
 <script>
+`)
+	qw422016.N().S(`var all = [`)
+	for i, l := range p.Lists {
+		if i != 0 {
+			qw422016.N().S(`,`)
+		}
+		qw422016.N().S(`[`)
+		for j, item := range l.Items {
+			if j != 0 {
+				qw422016.N().S(`,`)
+			}
+			qw422016.N().Q(item)
+		}
+		qw422016.N().S(`]`)
+	}
+	qw422016.N().S(`];`)
+	qw422016.N().S(`
+
 function detailFormatter(index, row) {
     var html = ["<p><ol>"];
 
-    var items = row._data.items || [];
+    var items = all[index];
 
     if (items.length == 0) {
         return "<p>No items.</p>"
@@ -809,14 +824,6 @@ func (p *ChannelListsPage) PageScripts() string {
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
-}
-
-func marshalJSON(v interface{}) []byte {
-	b, err := json.Marshal(v)
-	if err != nil {
-		panic(err) // Shouldn't happen with known inputs.
-	}
-	return b
 }
 
 type ChannelRegularsPage struct {

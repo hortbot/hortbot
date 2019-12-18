@@ -1,5 +1,4 @@
 {% import (
-    "encoding/json"
     "time"
 
     "github.com/hako/durafmt"
@@ -372,7 +371,7 @@ type ChannelListsPage struct {
             </thead>
             <tbody>
                 {% for _, l := range p.Lists %}
-                <tr data-has-detail-view="true" data-items="{%z marshalJSON(l.Items) %}">
+                <tr data-has-detail-view="true">
                     <td><code>{%s p.Channel.Prefix %}{%s l.R.CommandInfo.Name %}</code></td>
                     <td>{%= accessLevel(l.R.CommandInfo.AccessLevel) %}</td>
                     <td>{%v l.R.CommandInfo.Count %}</td>
@@ -391,10 +390,24 @@ type ChannelListsPage struct {
 {% func (p *ChannelListsPage) PageScripts() %}
 {%= p.ChannelPage.PageScripts() %}
 <script>
+{% stripspace %}
+var all = [
+{% for i, l := range p.Lists %}
+    {% if i != 0 %},{% endif %}
+    [
+        {% for j, item := range l.Items %}
+            {% if j != 0 %},{% endif %}
+            {%q= item %}
+        {% endfor %}
+    ]
+{% endfor %}
+];
+{% endstripspace %}
+
 function detailFormatter(index, row) {
     var html = ["<p><ol>"];
 
-    var items = row._data.items || [];
+    var items = all[index];
 
     if (items.length == 0) {
         return "<p>No items.</p>"
@@ -414,15 +427,6 @@ function detailFormatter(index, row) {
 }
 </script>
 {% endfunc %}
-
-
-{% code func marshalJSON(v interface{}) []byte {
-    b, err := json.Marshal(v)
-    if err != nil {
-        panic(err) // Shouldn't happen with known inputs.
-    }
-    return b
-} %}
 
 
 {% code
