@@ -80,8 +80,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
 
-	start := b.deps.Clock.Now()
-
 	defer func() {
 		if r := recover(); r != nil {
 			if _, ok := r.(testingPanic); ok {
@@ -94,13 +92,17 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 
 	switch m.Command {
 	case "PRIVMSG":
-		// Continue
+		return b.handlePrivMsg(ctx, origin, m)
 	case "USERSTATE":
 		return b.handleUserState(ctx, origin, m)
 	default:
 		ctxlog.Debug(ctx, "unhandled command", zap.Any("message", m))
 		return nil
 	}
+}
+
+func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) error {
+	start := b.deps.Clock.Now()
 
 	s, err := b.buildSession(ctx, origin, m)
 	if err != nil {
