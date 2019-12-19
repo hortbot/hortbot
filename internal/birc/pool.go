@@ -466,7 +466,7 @@ func (p *Pool) prune(ctx context.Context) {
 	defer p.connsMu.Unlock()
 
 	toPrune := make([]*Connection, 0, 1)
-	pruneAll := false
+	keepOne := true
 
 	for conn := range p.conns {
 		if conn.NumJoined() == 0 {
@@ -474,20 +474,18 @@ func (p *Pool) prune(ctx context.Context) {
 		} else {
 			// Found one connection with channels, so prune any unused
 			// connections that don't have any.
-			pruneAll = true
+			keepOne = false
 		}
 	}
 
-	if len(toPrune) == 0 {
+	pruneLen := len(toPrune)
+
+	if pruneLen == 0 || keepOne && pruneLen == 1 {
 		return
 	}
 
-	if !pruneAll {
+	if keepOne {
 		toPrune = toPrune[1:]
-	}
-
-	if len(toPrune) == 0 {
-		return
 	}
 
 	ctxlog.Debug(ctx, "pruning subconns", zap.Int("count", len(toPrune)))
@@ -595,20 +593,19 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		metricSubconns.WithLabelValues(p.config.UserConfig.Nick).Set(float64(connsLen))
 
 		// Context expired, keep returning.
-		switch err {
-		case context.Canceled, context.DeadlineExceeded:
+		if err := ctx.Err(); err != nil {
 			return err
+		}
+
+		if len(joined) == 0 {
+			return nil
 		}
 
 		// Ask the pool to join the lost channels, which will redistribute to
 		// other open connections or spawn new ones. This is done on a
 		// best-effort basis; the error below should only be returned if the
 		// context was cancelled (since this context is the pool's context).
-		err = p.doJoinPart(ctx, true, true, joined...)
-
-		// Context expired, keep returning.
-		switch err {
-		case context.Canceled, context.DeadlineExceeded:
+		if err := p.doJoinPart(ctx, true, true, joined...); err != nil {
 			return err
 		}
 

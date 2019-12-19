@@ -15,6 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
+	"go.uber.org/atomic"
 	"go.uber.org/zap"
 )
 
@@ -52,7 +53,7 @@ type Connection struct {
 	joined   map[string]bool
 
 	ready      chan struct{}
-	reconnnect bool
+	reconnnect atomic.Bool
 
 	pongMu    sync.RWMutex
 	pongChans map[string]chan *irc.Message
@@ -163,7 +164,7 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 	err = g.Wait()
 
 	// Ensure ErrReconnect is returned if the exit was caused by a RECONNECT.
-	if c.reconnnect {
+	if c.reconnnect.Load() {
 		return ErrReconnect
 	}
 
@@ -263,7 +264,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 		// of this connection that would just fail.
 		if m.Command == "RECONNECT" {
 			metricReconnects.WithLabelValues(c.config.UserConfig.Nick).Inc()
-			c.reconnnect = true
+			c.reconnnect.Store(true)
 			return ErrReconnect
 		}
 	}
