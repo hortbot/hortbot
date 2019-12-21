@@ -2,9 +2,10 @@ package twitch
 
 import (
 	"context"
-	"encoding/json"
 	"strconv"
 	"time"
+
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 // Stream represents a Twitch stream as described by the Kraken
@@ -40,7 +41,7 @@ func (t *Twitch) GetCurrentStream(ctx context.Context, id int64) (s *Stream, err
 		Stream *Stream `json:"stream"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
 		return nil, ErrServerError
 	}
 

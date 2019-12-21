@@ -2,11 +2,11 @@ package xkcd
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -64,7 +64,7 @@ func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
 
 	c := &Comic{}
 
-	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return nil, err
 	}
 

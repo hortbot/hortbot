@@ -2,12 +2,12 @@ package urban
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"net/url"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -69,7 +69,7 @@ func (u *Urban) Define(ctx context.Context, s string) (string, error) {
 		} `json:"list"`
 	}{}
 
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
 		return "", ErrServerError
 	}
 

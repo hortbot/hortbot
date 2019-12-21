@@ -2,7 +2,6 @@ package confconvert
 
 import (
 	"context"
-	"encoding/json"
 	"os"
 	"path/filepath"
 	"sort"
@@ -10,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/confimport/sitedb"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 var (
@@ -29,7 +29,7 @@ func decodeInto(ctx context.Context, file string, v interface{}) {
 	}
 	defer f.Close()
 
-	if err := json.NewDecoder(f).Decode(v); err != nil {
+	if err := jsonx.DecodeSingle(f, v); err != nil {
 		ctxlog.Fatal(ctx, "error decoding file", ctxlog.PlainError(err))
 	}
 }

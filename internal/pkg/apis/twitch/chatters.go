@@ -2,9 +2,9 @@ package twitch
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -39,7 +39,7 @@ func (t *Twitch) GetChatters(ctx context.Context, channel string) (*Chatters, er
 
 	c := &Chatters{}
 
-	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return nil, ErrServerError
 	}
 

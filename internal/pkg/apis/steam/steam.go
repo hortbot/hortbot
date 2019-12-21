@@ -2,11 +2,11 @@ package steam
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"net/http"
 	"net/url"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -95,7 +95,7 @@ func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, erro
 		} `json:"response"`
 	}{}
 
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
 		return nil, ErrServerError
 	}
 
@@ -135,7 +135,7 @@ func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
 		} `json:"response"`
 	}{}
 
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
 		return nil, ErrServerError
 	}
 

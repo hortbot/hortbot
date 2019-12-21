@@ -2,11 +2,11 @@ package extralife
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -67,7 +67,7 @@ func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (f
 		SumDonations float64 `json:"sumDonations"`
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&v); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
 		return 0, ErrServerError
 	}
 

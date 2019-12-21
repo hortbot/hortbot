@@ -2,10 +2,10 @@ package twitch
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/oauth2"
 )
 
@@ -45,7 +45,7 @@ func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (
 		} `json:"token"`
 	}{}
 
-	if err := json.NewDecoder(resp.Body).Decode(body); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
 		return nil, newToken, ErrServerError
 	}
 
@@ -79,7 +79,7 @@ func (t *Twitch) GetUserForUsername(ctx context.Context, username string) (*User
 		}
 	}{}
 
-	if err := json.NewDecoder(resp.Body).Decode(body); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
 		return nil, ErrServerError
 	}
 

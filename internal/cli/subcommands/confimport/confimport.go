@@ -2,7 +2,6 @@ package confimport
 
 import (
 	"context"
-	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/confimport"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 const Name = "conf-import"
@@ -96,7 +96,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 		config := &confimport.Config{}
 
-		if err := json.NewDecoder(f).Decode(config); err != nil {
+		if err := jsonx.DecodeSingle(f, config); err != nil {
 			ctxlog.Error(ctx, "error parsing file", ctxlog.PlainError(err))
 			return
 		}

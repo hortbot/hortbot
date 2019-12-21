@@ -23,6 +23,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/volatiletech/null"
 	"go.uber.org/zap"
@@ -350,7 +351,7 @@ func (c *coeBotConfig) load(filename string) error {
 	}
 	defer f.Close()
 
-	return errors.Wrap(json.NewDecoder(f).Decode(c), "decoding JSON")
+	return errors.Wrap(jsonx.DecodeSingle(f, c), "decoding JSON")
 }
 
 func (c *coeBotConfig) loadChannel(ctx context.Context, defaultBullet string, userID int64, name, displayName string, botName string) *models.Channel {

@@ -21,6 +21,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -626,7 +627,7 @@ func (a *App) adminImport(w http.ResponseWriter, r *http.Request) {
 func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 	config := &confimport.Config{}
 
-	if err := json.NewDecoder(r.Body).Decode(config); err != nil {
+	if err := jsonx.DecodeSingle(r.Body, config); err != nil {
 		http.Error(w, "decoding body: "+err.Error(), http.StatusBadRequest)
 		return
 	}

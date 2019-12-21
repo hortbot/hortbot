@@ -1,7 +1,6 @@
 package twitch_test
 
 import (
-	"encoding/json"
 	"net/http"
 	"net/http/httputil"
 	"strconv"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/jarcoal/httpmock"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -241,7 +241,7 @@ func (f *fakeTwitch) krakenChannelByIDPut(req *http.Request) (*http.Response, er
 		}
 	}{}
 
-	assert.NilError(f.t, json.NewDecoder(req.Body).Decode(&body))
+	assert.NilError(f.t, jsonx.DecodeSingle(req.Body, &body))
 
 	switch {
 	case body.Channel.Status != nil:

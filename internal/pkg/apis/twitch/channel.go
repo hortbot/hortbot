@@ -2,9 +2,9 @@ package twitch
 
 import (
 	"context"
-	"encoding/json"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/oauth2"
 )
 
@@ -39,7 +39,7 @@ func (t *Twitch) GetChannelByID(ctx context.Context, id int64) (c *Channel, err 
 
 	c = &Channel{}
 
-	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return nil, ErrServerError
 	}
 
@@ -75,7 +75,7 @@ func (t *Twitch) SetChannelStatus(ctx context.Context, id int64, userToken *oaut
 
 	c := &Channel{}
 
-	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return "", newToken, ErrServerError
 	}
 
@@ -112,7 +112,7 @@ func (t *Twitch) SetChannelGame(ctx context.Context, id int64, userToken *oauth2
 
 	c := &Channel{}
 
-	if err := json.NewDecoder(resp.Body).Decode(c); err != nil {
+	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return "", newToken, ErrServerError
 	}
 
