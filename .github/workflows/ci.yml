@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        go: [1.12.x, 1.13.x, tip]
+        go: [1.13.x, tip]
     name: Go ${{ matrix.go }}
 
     steps:

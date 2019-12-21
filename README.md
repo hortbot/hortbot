@@ -34,7 +34,7 @@ An IRC bot for Twitch.
 
 To build:
 
-- Go 1.12+
+- Go 1.13+
 
 For development:
 
@@ -45,7 +45,3 @@ For development:
 
 All tools used for `go generate` and model generation run through `gobin`, and
 are versioned in `go.mod` like other dependencies.
-
-This project expects to be used in module mode, which means (as of Go 1.12)
-cloning this repo outside of `GOPATH`, or in `GOPATH` with `GO111MODULE=on`.
-The former is easier.

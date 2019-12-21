@@ -17,12 +17,10 @@ matrix:
   include:
     - go: "1.13.x"
       env: PRIMARY=true
-    - go: "1.12.x"
     - go: "tip"
 
   fast_finish: true
   allow_failures:
-    - go: "1.12.x"
     - go: "tip"
 
 services:
