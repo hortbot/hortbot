@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/queries"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
@@ -86,14 +87,52 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 	}
 }
 
+type repeatStatus struct {
+	Enabled bool `boil:"enabled"`
+	Active  bool `boil:"active"`
+	Ready   bool `boil:"ready"`
+}
+
 func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 	ctx, span := trace.StartSpan(ctx, "handleRepeatedCommand")
 	defer span.End()
 
+	var status repeatStatus
+
+	// Pre-check the status of the repeat and channel.
+	err := queries.Raw(`
+SELECT
+	r.enabled AS enabled,
+	c.active AS active,
+	c.message_count >= (r.last_count + r.message_diff) AS ready
+FROM
+	repeated_commands r
+JOIN
+	channels c ON c.id = r.channel_id
+WHERE
+	r.id = $1
+`, id).Bind(ctx, s.Tx, &status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			status = repeatStatus{}
+		} else {
+			return err
+		}
+	}
+
+	if !status.Enabled || !status.Active {
+		s.Deps.UpdateRepeat(id, false, 0, 0)
+		return nil
+	}
+
+	if !status.Ready {
+		return nil
+	}
+
 	repeat, err := models.RepeatedCommands(
 		models.RepeatedCommandWhere.ID.EQ(id),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
-		qm.Load(models.RepeatedCommandRels.Channel, qm.For("UPDATE")), // FOR UPDATE to get channel lock
+		qm.Load(models.RepeatedCommandRels.Channel),
 		qm.Load(models.RepeatedCommandRels.CommandInfo, qm.For("UPDATE")),
 		qm.Load(qm.Rels(models.RepeatedCommandRels.CommandInfo, models.CommandInfoRels.CustomCommand)),
 		qm.Load(qm.Rels(models.RepeatedCommandRels.CommandInfo, models.CommandInfoRels.CommandList)),
@@ -103,6 +142,10 @@ func handleRepeatedCommand(ctx context.Context, s *session, id int64) error {
 		if err == sql.ErrNoRows {
 			return nil
 		}
+		return err
+	}
+
+	if err := pgLock(ctx, s.Tx, repeat.R.Channel.UserID); err != nil {
 		return err
 	}
 
@@ -185,10 +228,42 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 	ctx, span := trace.StartSpan(ctx, "handleScheduledCommand")
 	defer span.End()
 
+	var status repeatStatus
+
+	// Pre-check the status of the schedule and channel.
+	err := queries.Raw(`
+SELECT
+	s.enabled AS enabled,
+	c.active AS active,
+	c.message_count >= (s.last_count + s.message_diff) AS ready
+FROM
+	scheduled_commands s
+JOIN
+	channels c ON c.id = s.channel_id
+WHERE
+	s.id = $1
+`, id).Bind(ctx, s.Tx, &status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			status = repeatStatus{}
+		} else {
+			return err
+		}
+	}
+
+	if !status.Enabled || !status.Active {
+		s.Deps.UpdateSchedule(id, false, nil)
+		return nil
+	}
+
+	if !status.Ready {
+		return nil
+	}
+
 	scheduled, err := models.ScheduledCommands(
 		models.ScheduledCommandWhere.ID.EQ(id),
 		models.ScheduledCommandWhere.Enabled.EQ(true),
-		qm.Load(models.ScheduledCommandRels.Channel, qm.For("UPDATE")), // FOR UPDATE to get channel lock
+		qm.Load(models.ScheduledCommandRels.Channel),
 		qm.Load(models.ScheduledCommandRels.CommandInfo, qm.For("UPDATE")),
 		qm.Load(qm.Rels(models.ScheduledCommandRels.CommandInfo, models.CommandInfoRels.CustomCommand)),
 		qm.Load(qm.Rels(models.ScheduledCommandRels.CommandInfo, models.CommandInfoRels.CommandList)),
@@ -198,6 +273,10 @@ func handleScheduledCommand(ctx context.Context, s *session, id int64) error {
 		if err == sql.ErrNoRows {
 			return nil
 		}
+		return err
+	}
+
+	if err := pgLock(ctx, s.Tx, scheduled.R.Channel.UserID); err != nil {
 		return err
 	}
 

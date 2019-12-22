@@ -135,7 +135,7 @@ func pluralInt64(n int64, singular, plural string) string {
 	return plural
 }
 
-func pgLock(ctx context.Context, tx *sql.Tx, id int64) error {
-	_, err := tx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", id)
+func pgLock(ctx context.Context, tx *sql.Tx, twitchID int64) error {
+	_, err := tx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", twitchID)
 	return err
 }
