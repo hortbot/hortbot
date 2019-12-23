@@ -20,14 +20,6 @@ func (s *session) Confirm(ctx context.Context, user string, key string, expiry t
 	return s.Deps.Redis.Confirm(ctx, s.RoomIDStr, user, key, expiry)
 }
 
-func (s *session) RepeatAllowed(ctx context.Context, id int64, expiry time.Duration) (bool, error) {
-	return s.Deps.Redis.RepeatAllowed(ctx, s.RoomIDStr, id, expiry)
-}
-
-func (s *session) ScheduledAllowed(ctx context.Context, id int64, expiry time.Duration) (bool, error) {
-	return s.Deps.Redis.ScheduledAllowed(ctx, s.RoomIDStr, id, expiry)
-}
-
 func (s *session) AutoreplyAllowed(ctx context.Context, id int64, expiry time.Duration) (bool, error) {
 	return s.Deps.Redis.AutoreplyAllowed(ctx, s.RoomIDStr, id, expiry)
 }
