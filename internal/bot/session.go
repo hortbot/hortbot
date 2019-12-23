@@ -483,7 +483,6 @@ func (s *session) SetCommandParams(params string) {
 	s.ParameterIndex = 0
 }
 
-
 func (s *session) RoomIDStr() string {
 	return strconv.FormatInt(s.RoomID, 10)
 }

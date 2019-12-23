@@ -1,7 +1,3 @@
--- This file is subject to change until the first real deployment of the bot.
--- Do not rely on these schema migrations remaining consistent until this
--- message has been removed.
-
 BEGIN;
 
 
