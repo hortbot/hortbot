@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -48,7 +49,6 @@ type session struct {
 	N          int64
 	ID         string
 	RoomID     int64
-	RoomIDStr  string
 	IRCChannel string
 	Message    string
 	Me         bool
@@ -481,4 +481,9 @@ func (s *session) SetCommandParams(params string) {
 	s.CommandParams = params
 	s.Parameters = nil
 	s.ParameterIndex = 0
+}
+
+
+func (s *session) RoomIDStr() string {
+	return strconv.FormatInt(s.RoomID, 10)
 }

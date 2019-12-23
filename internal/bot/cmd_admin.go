@@ -180,7 +180,6 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 	}
 
 	s.RoomID = otherChannel.UserID
-	s.RoomIDStr = strconv.FormatInt(s.RoomID, 10)
 	s.Message = msg
 	s.Imp = true
 

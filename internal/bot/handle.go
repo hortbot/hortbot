@@ -173,7 +173,6 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 		ctxlog.Debug(ctx, "no room ID")
 		return nil, errInvalidMessage
 	}
-	s.RoomIDStr = roomID
 
 	var err error
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
