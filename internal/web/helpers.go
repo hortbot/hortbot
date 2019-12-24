@@ -7,6 +7,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"go.uber.org/zap"
+	"golang.org/x/net/publicsuffix"
 )
 
 func notAuthorized(w http.ResponseWriter, header bool) {
@@ -28,4 +29,16 @@ func dumpRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "%s", b)
+}
+
+func normalizeHost(host string) string {
+	if host == "" {
+		return host
+	}
+
+	if tld, err := publicsuffix.EffectiveTLDPlusOne(host); err == nil {
+		return tld
+	}
+
+	return host
 }

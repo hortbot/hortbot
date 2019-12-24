@@ -154,6 +154,8 @@ func (a *App) getBrand(r *http.Request) string {
 	}
 
 	host, _, _ := net.SplitHostPort(r.Host)
+	host = normalizeHost(host)
+
 	if host != "" {
 		if brand := a.BrandMap[host]; brand != "" {
 			return brand
@@ -175,7 +177,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	state := uuid.Must(uuid.NewV4()).String()
 
 	stateVal := &authState{
-		Host: r.Host,
+		Host: r.Host, // Not normalized; needed for redirects.
 		Bot:  bot,
 	}
 
@@ -236,7 +238,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if stateVal.Host != r.Host {
+	if normalizeHost(stateVal.Host) != normalizeHost(r.Host) {
 		// This came to the wrong host. Put the state back and redirect.
 		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, time.Minute); err != nil {
 			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
