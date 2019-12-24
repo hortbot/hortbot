@@ -60,7 +60,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 
 	name = cleanUsername(name)
 
-	isAdmin := s.IsAdmin()
+	isAdmin := s.UserLevel.CanAccess(levelAdmin)
 
 	if name != "" && isAdmin {
 		u, err := s.Deps.Twitch.GetUserForUsername(ctx, name)
@@ -158,7 +158,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 
 	displayName := name
 
-	if name != "" && s.IsAdmin() {
+	if name != "" && s.UserLevel.CanAccess(levelAdmin) {
 		channel, err = models.Channels(
 			models.ChannelWhere.Name.EQ(name),
 			qm.Load(models.ChannelRels.RepeatedCommands),

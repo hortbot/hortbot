@@ -20,12 +20,11 @@ import (
 )
 
 var (
-	errInvalidMessage   = errors.New("bot: invalid message")
-	errNotAuthorized    = errors.New("bot: user is not authorized to use this command")
-	errBuiltinDisabled  = errors.New("bot: builtin disabled")
-	errNotAllowed       = errors.New("bot: user not allowed")
-	errDuplicateMessage = errors.New("bot: duplicate message")
-	errPanicked         = errors.New("bot: handler panicked")
+	errInvalidMessage  = errors.New("bot: invalid message")
+	errNotAuthorized   = errors.New("bot: user is not authorized to use this command")
+	errBuiltinDisabled = errors.New("bot: builtin disabled")
+	errNotAllowed      = errors.New("bot: user not allowed")
+	errPanicked        = errors.New("bot: handler panicked")
 )
 
 func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
@@ -69,7 +68,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 	switch err {
 	case nil, errNotAllowed:
-	case errPanicked, errDuplicateMessage: // Logged below with more info.
+	case errPanicked: // Logged below with more info.
 	default:
 		metricHandleError.Inc()
 		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
@@ -109,12 +108,11 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 		return err
 	}
 
-	s.Start = start
-
 	if s.User == s.Origin {
 		return nil
 	}
 
+	s.Start = start
 	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
 	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
@@ -136,7 +134,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 		return nil, errInvalidMessage
 	}
 
-	if err := b.maybeDedupe(ctx, id); err != nil {
+	if seen, err := b.maybeDedupe(ctx, id); seen || err != nil {
 		return nil, err
 	}
 
@@ -220,27 +218,26 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 	return s, nil
 }
 
-func (b *Bot) maybeDedupe(ctx context.Context, id string) error {
+func (b *Bot) maybeDedupe(ctx context.Context, id string) (seen bool, err error) {
 	ctx, span := trace.StartSpan(ctx, "maybeDedupe")
 	defer span.End()
 
 	if b.noDedupe {
-		return nil
+		return false, nil
 	}
 
-	seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
+	seen, err = b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
 	if err != nil {
 		ctxlog.Error(ctx, "error checking for duplicate", zap.Error(err), zap.String("id", id))
-		return err
+		return false, err
 	}
 
 	if seen {
 		ctxlog.Debug(ctx, "message already seen", zap.String("id", id))
 		metricDuplicateMessage.Inc()
-		return errDuplicateMessage
 	}
 
-	return nil
+	return seen, nil
 }
 
 //nolint:gocyclo
@@ -259,7 +256,6 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	// This is the most frequent query; speed it up by executing a hand written query.
-	// FOR UPDATE to get a lock on the channel.
 	channel := &models.Channel{}
 	err := queries.Raw(`SELECT * FROM channels WHERE user_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
@@ -306,7 +302,7 @@ func handleSession(ctx context.Context, s *session) error {
 	_, ignored := stringSliceIndex(channel.Ignored, s.User)
 
 	if ignored {
-		if s.IsAdmin() || s.IRCChannel == s.User {
+		if s.UserLevel.CanAccess(levelBroadcaster) {
 			ignored = false
 		} else {
 			s.UserLevel = levelEveryone
@@ -319,11 +315,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	// Ignoring does not exempt messages from filters.
 
-	if ignored {
-		return nil
-	}
-
-	if !s.UserLevel.CanAccessPG(s.Channel.Mode) {
+	if ignored || !s.UserLevel.CanAccessPG(s.Channel.Mode) {
 		return nil
 	}
 
@@ -379,6 +371,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		ok, err := moderationCommands.Run(ctx, s, strings.ToLower(name), params)
 		switch {
 		case err == errNotAuthorized:
+			// Continue.
 		case err != nil:
 			return true, err
 		case ok:
@@ -455,5 +448,6 @@ func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string)
 		cmd, args = splitSpace(args)
 		cmd = cleanCommandName(cmd)
 	}
+
 	return builtinCommands.RunWithCooldown(ctx, s, cmd, args)
 }

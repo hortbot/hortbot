@@ -22,16 +22,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//go:generate gobin -run -m golang.org/x/tools/cmd/stringer -type=sessionType -trimprefix=session
-
 type sessionType int
 
 const (
-	sessionUnknown sessionType = 0
-	sessionNormal  sessionType = 1 << (iota - 1)
+	sessionUnknown sessionType = iota //nolint:varcheck,deadcode
+	sessionNormal
 	sessionRepeat
 	sessionAutoreply
-	sessionSubNotification
 )
 
 type session struct {
@@ -57,7 +54,6 @@ type session struct {
 	UserDisplay string
 	UserID      int64
 	UserLevel   accessLevel
-	Ignored     bool
 
 	Channel *models.Channel
 
@@ -67,18 +63,20 @@ type session struct {
 
 	Silent bool
 	Imp    bool
-	NoLock bool
 
-	usageContext   string
-	links          *[]*url.URL
-	tracks         *[]lastfm.Track
-	tok            **oauth2.Token
-	isLive         *bool
-	twitchChannel  **twitch.Channel
-	twitchStream   **twitch.Stream
-	twitchChatters **twitch.Chatters
-	steamSummary   **steam.Summary
-	steamGames     *[]*steam.Game
+	usageContext string
+
+	cache struct {
+		links          *[]*url.URL
+		tracks         *[]lastfm.Track
+		tok            **oauth2.Token
+		isLive         *bool
+		twitchChannel  **twitch.Channel
+		twitchStream   **twitch.Stream
+		twitchChatters **twitch.Chatters
+		steamSummary   **steam.Summary
+		steamGames     *[]*steam.Game
+	}
 }
 
 func (s *session) formatResponse(response string) string {
@@ -222,10 +220,6 @@ func (s *session) parseUserLevel() accessLevel {
 	return levelEveryone
 }
 
-func (s *session) IsAdmin() bool {
-	return s.UserLevel.CanAccess(levelAdmin)
-}
-
 func (s *session) SendCommand(ctx context.Context, command string, args ...string) error {
 	switch command {
 	case "slow":
@@ -268,12 +262,12 @@ func (s *session) Links(ctx context.Context) []*url.URL {
 	_, span := trace.StartSpan(ctx, "Links")
 	defer span.End()
 
-	if s.links != nil {
-		return *s.links
+	if s.cache.links != nil {
+		return *s.cache.links
 	}
 
 	links := findlinks.Find(s.Message, "http", "https", "ftp")
-	s.links = &links
+	s.cache.links = &links
 	return links
 }
 
@@ -283,8 +277,8 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 	_, span := trace.StartSpan(ctx, "Tracks")
 	defer span.End()
 
-	if s.tracks != nil {
-		return *s.tracks, nil
+	if s.cache.tracks != nil {
+		return *s.cache.tracks, nil
 	}
 
 	if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
@@ -295,7 +289,7 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 	if err != nil {
 		return nil, err
 	}
-	s.tracks = &tracks
+	s.cache.tracks = &tracks
 	return tracks, nil
 }
 
@@ -303,22 +297,22 @@ func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchToken")
 	defer span.End()
 
-	if s.tok != nil {
-		return *s.tok, nil
+	if s.cache.tok != nil {
+		return *s.cache.tok, nil
 	}
 
 	tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.UserID)).One(ctx, s.Tx)
 	switch {
 	case err == sql.ErrNoRows:
 		var tok *oauth2.Token
-		s.tok = &tok
+		s.cache.tok = &tok
 		return nil, nil
 	case err != nil:
 		return nil, err
 	}
 
 	tok := modelsx.ModelToToken(tt)
-	s.tok = &tok
+	s.cache.tok = &tok
 	return tok, nil
 }
 
@@ -326,7 +320,7 @@ func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) er
 	ctx, span := trace.StartSpan(ctx, "SetTwitchToken")
 	defer span.End()
 
-	s.tok = &newToken
+	s.cache.tok = &newToken
 
 	tt := modelsx.TokenToModel(s.Channel.UserID, newToken)
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
@@ -336,8 +330,8 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "IsLive")
 	defer span.End()
 
-	if s.isLive != nil {
-		return *s.isLive, nil
+	if s.cache.isLive != nil {
+		return *s.cache.isLive, nil
 	}
 
 	stream, err := s.TwitchStream(ctx)
@@ -346,7 +340,7 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	}
 
 	isLive := stream != nil
-	s.isLive = &isLive
+	s.cache.isLive = &isLive
 	return isLive, nil
 }
 
@@ -354,8 +348,8 @@ func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchChannel")
 	defer span.End()
 
-	if s.twitchChannel != nil {
-		return *s.twitchChannel, nil
+	if s.cache.twitchChannel != nil {
+		return *s.cache.twitchChannel, nil
 	}
 
 	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.UserID)
@@ -363,7 +357,7 @@ func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 		return nil, err
 	}
 
-	s.twitchChannel = &ch
+	s.cache.twitchChannel = &ch
 	return ch, nil
 }
 
@@ -371,8 +365,8 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchStream")
 	defer span.End()
 
-	if s.twitchStream != nil {
-		return *s.twitchStream, nil
+	if s.cache.twitchStream != nil {
+		return *s.cache.twitchStream, nil
 	}
 
 	st, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
@@ -380,7 +374,7 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 		return nil, err
 	}
 
-	s.twitchStream = &st
+	s.cache.twitchStream = &st
 	return st, nil
 }
 
@@ -388,8 +382,8 @@ func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) 
 	ctx, span := trace.StartSpan(ctx, "TwitchChatters")
 	defer span.End()
 
-	if s.twitchChatters != nil {
-		return *s.twitchChatters, nil
+	if s.cache.twitchChatters != nil {
+		return *s.cache.twitchChatters, nil
 	}
 
 	chatters, err := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
@@ -397,7 +391,7 @@ func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) 
 		return nil, err
 	}
 
-	s.twitchChatters = &chatters
+	s.cache.twitchChatters = &chatters
 	return chatters, nil
 }
 
@@ -407,8 +401,8 @@ func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
 	ctx, span := trace.StartSpan(ctx, "SteamSummary")
 	defer span.End()
 
-	if s.steamSummary != nil {
-		return *s.steamSummary, nil
+	if s.cache.steamSummary != nil {
+		return *s.cache.steamSummary, nil
 	}
 
 	if s.Deps.Steam == nil || s.Channel.SteamID == "" {
@@ -420,7 +414,7 @@ func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
 		return nil, err
 	}
 
-	s.steamSummary = &summary
+	s.cache.steamSummary = &summary
 	return summary, nil
 }
 
@@ -428,8 +422,8 @@ func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 	ctx, span := trace.StartSpan(ctx, "SteamGames")
 	defer span.End()
 
-	if s.steamGames != nil {
-		return *s.steamGames, nil
+	if s.cache.steamGames != nil {
+		return *s.cache.steamGames, nil
 	}
 
 	if s.Deps.Steam == nil || s.Channel.SteamID == "" {
@@ -441,7 +435,7 @@ func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 		return nil, err
 	}
 
-	s.steamGames = &games
+	s.cache.steamGames = &games
 	return games, nil
 }
 
