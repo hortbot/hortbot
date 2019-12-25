@@ -34,7 +34,7 @@ require (
 	github.com/leononame/clock v0.1.6
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
-	github.com/nsqio/go-nsq v1.0.8-0.20191030124659-b1a08a55dd89
+	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.5.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
@@ -58,7 +58,7 @@ require (
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191220234730-f13409bbebaf
+	golang.org/x/tools v0.0.0-20191224055732-dd894d0a8a40
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
