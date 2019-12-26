@@ -42,7 +42,7 @@ require (
 	github.com/prometheus/client_golang v1.3.0
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/rs/xid v1.2.1
-	github.com/rylio/ytdl v0.6.0
+	github.com/rylio/ytdl v0.6.1
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/viper v1.6.1 // indirect
 	github.com/tomwright/queryparam/v4 v4.1.0
@@ -58,7 +58,7 @@ require (
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20191224055732-dd894d0a8a40
+	golang.org/x/tools v0.0.0-20191226212025-6b505debf4bc
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
