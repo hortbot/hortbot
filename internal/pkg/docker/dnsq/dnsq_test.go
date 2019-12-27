@@ -8,10 +8,6 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires starting a docker container")
-	}
-
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)

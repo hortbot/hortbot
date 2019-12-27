@@ -78,11 +78,6 @@ func doTestHelper(
 ) {
 	t.Helper()
 
-	if testing.Short() {
-		t.Skip("skipping test in short mode")
-		return
-	}
-
 	defer leaktest.Check(t)()
 
 	if !insecure {

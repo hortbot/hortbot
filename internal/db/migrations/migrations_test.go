@@ -60,10 +60,6 @@ func TestReset(t *testing.T) {
 func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string)) {
 	t.Helper()
 
-	if testing.Short() {
-		t.Skip("requires starting a docker container")
-	}
-
 	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
 	assert.NilError(t, err)
 	defer cleanup()

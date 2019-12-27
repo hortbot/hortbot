@@ -9,10 +9,6 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires starting a docker container")
-	}
-
 	db, connStr, cleanup, err := dpostgres.New()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)
@@ -29,10 +25,6 @@ func TestNew(t *testing.T) {
 }
 
 func TestNoMigrate(t *testing.T) {
-	if testing.Short() {
-		t.Skip("requires starting a docker container")
-	}
-
 	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)
