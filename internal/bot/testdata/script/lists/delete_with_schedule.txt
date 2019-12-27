@@ -21,12 +21,12 @@ no_send
 
 checkpoint
 clock_forward 5m
-sleep 50ms
+sleep 100ms
 send hortbot #foobar [HB] Something
 
 checkpoint
 clock_forward 62m
-sleep 50ms
+sleep 100ms
 no_send
 
 
@@ -38,7 +38,7 @@ no_send
 
 checkpoint
 clock_forward 62m
-sleep 50ms
+sleep 100ms
 no_send
 
 

@@ -14,12 +14,12 @@ no_send
 
 checkpoint
 clock_forward 22s
-sleep 50ms
+sleep 100ms
 no_send
 
 checkpoint
 clock_forward 20s
-sleep 50ms
+sleep 100ms
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
@@ -30,7 +30,7 @@ no_send
 
 checkpoint
 clock_forward 10s
-sleep 50ms
+sleep 100ms
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
@@ -38,10 +38,10 @@ no_send
 
 checkpoint
 clock_forward 30s
-sleep 50ms
+sleep 100ms
 send hortbot #foobar [HB] Hello there! 5
 
 checkpoint
 clock_forward 30s
-sleep 50ms
+sleep 100ms
 no_send
