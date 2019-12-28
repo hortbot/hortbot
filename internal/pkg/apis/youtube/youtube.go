@@ -2,7 +2,6 @@ package youtube
 
 import (
 	"net/url"
-	"strings"
 
 	"github.com/rylio/ytdl"
 )
@@ -23,28 +22,8 @@ func New() *YouTube {
 }
 
 func (*YouTube) VideoTitle(u *url.URL) string {
-	short := false
-	switch {
-	case u.Host == "youtu.be":
-		short = true
-	case u.Host == "youtube.com":
-	case strings.HasSuffix(u.Host, ".youtu.be"):
-		short = true
-	case strings.HasSuffix(u.Host, ".youtube.com"):
-	default:
-		return ""
+	if info, _ := ytdl.GetVideoInfoFromURL(u); info != nil {
+		return info.Title
 	}
-
-	var info *ytdl.VideoInfo
-	if short {
-		info, _ = ytdl.GetVideoInfoFromShortURL(u)
-	} else {
-		info, _ = ytdl.GetVideoInfoFromURL(u)
-	}
-
-	if info == nil {
-		return ""
-	}
-
-	return info.Title
+	return ""
 }
