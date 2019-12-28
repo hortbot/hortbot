@@ -144,6 +144,12 @@ func (h *Helper) SendToServer(ctx context.Context, m *irc.Message) {
 	h.Sleep()
 }
 
+func (h *Helper) SendToServerErr(ctx context.Context, m *irc.Message) error {
+	h.t.Helper()
+	defer h.Sleep()
+	return h.s.Send(ctx, m)
+}
+
 func (h *Helper) Addr() string {
 	h.t.Helper()
 	return h.s.Addr()

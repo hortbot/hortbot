@@ -119,10 +119,7 @@ func (s *Server) Dial() (irc.Conn, error) {
 	}
 
 	conn, err := tls.Dial("tcp", s.Addr(), s.tlsConfig)
-	if err != nil {
-		return nil, err
-	}
-	return irc.NewBaseConn(conn), nil
+	return irc.NewBaseConn(conn), err
 }
 
 func (s *Server) accepter(ctx context.Context) error {
@@ -153,9 +150,6 @@ func (s *Server) sender(ctx context.Context) error {
 			if err := s.send(m, nil); err != nil {
 				return err
 			}
-
-		case <-s.stopChan:
-			return nil
 
 		case <-ctx.Done():
 			return ctx.Err()
@@ -208,7 +202,6 @@ func (s *Server) handle(ctx context.Context, conn irc.Conn) error {
 
 	s.g.Go(func(ctx context.Context) error {
 		select {
-		case <-s.stopChan:
 		case <-stop:
 		case <-ctx.Done():
 		}
@@ -229,16 +222,13 @@ func (s *Server) handle(ctx context.Context, conn irc.Conn) error {
 				return err
 			}
 		case "PING":
-			if !s.pong {
-				continue
+			if s.pong {
+				pong := *m
+				pong.Command = "PONG"
+				if err := conn.Encode(&pong); err != nil {
+					return err
+				}
 			}
-
-			pong := *m
-			pong.Command = "PONG"
-			if err := conn.Encode(&pong); err != nil {
-				return err
-			}
-			continue
 		}
 
 		select {

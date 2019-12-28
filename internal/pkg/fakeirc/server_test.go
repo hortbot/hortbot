@@ -28,6 +28,11 @@ func TestServerUnused(t *testing.T) {
 
 	h.Wait()
 	h.AssertMessages(serverMessages)
+
+	err := h.SendToServerErr(ctx, &irc.Message{
+		Command: "WOW",
+	})
+	assert.Equal(t, err, fakeirc.ErrStopped)
 }
 
 func TestServerNoMessages(t *testing.T) {
@@ -336,6 +341,64 @@ func TestServerSinglePrivMsgTLS(t *testing.T) {
 	h.Wait()
 	h.AssertMessages(serverMessages, join)
 	h.AssertMessages(clientMessages, m)
+}
+
+func TestServerPong(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	ctx, cancel := testContext()
+	defer cancel()
+	h := fakeirc.NewHelper(ctx, t)
+
+	defer h.StopServer()
+	serverMessages := h.CollectFromServer()
+
+	conn := h.Dial()
+	defer h.CloseConn(conn)
+	clientMessages := h.CollectFromConn(conn)
+
+	m := &irc.Message{
+		Command:  "PING",
+		Trailing: "some message",
+	}
+
+	h.SendWithConn(conn, m)
+
+	h.CloseConn(conn)
+	h.StopServer()
+
+	h.Wait()
+	h.AssertMessages(serverMessages, m)
+	h.AssertMessages(clientMessages, &irc.Message{Command: "PONG", Trailing: m.Trailing})
+}
+
+func TestServerNoPong(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	ctx, cancel := testContext()
+	defer cancel()
+	h := fakeirc.NewHelper(ctx, t, fakeirc.Pong(false))
+
+	defer h.StopServer()
+	serverMessages := h.CollectFromServer()
+
+	conn := h.Dial()
+	defer h.CloseConn(conn)
+	clientMessages := h.CollectFromConn(conn)
+
+	m := &irc.Message{
+		Command:  "PING",
+		Trailing: "some message",
+	}
+
+	h.SendWithConn(conn, m)
+
+	h.CloseConn(conn)
+	h.StopServer()
+
+	h.Wait()
+	h.AssertMessages(serverMessages, m)
+	h.AssertMessages(clientMessages)
 }
 
 func testContext() (context.Context, context.CancelFunc) {
