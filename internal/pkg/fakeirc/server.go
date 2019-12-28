@@ -40,7 +40,8 @@ type Server struct {
 	conns   map[irc.Conn]map[string]bool
 	connsMu sync.RWMutex
 
-	pong bool
+	pong        bool
+	recordPings bool
 }
 
 func Start(opts ...Option) (*Server, error) {
@@ -229,6 +230,10 @@ func (s *Server) handle(ctx context.Context, conn irc.Conn) error {
 					return err
 				}
 			}
+
+			if !s.recordPings {
+				continue
+			}
 		}
 
 		select {
@@ -282,6 +287,12 @@ func TLS(config *tls.Config) Option {
 func Pong(enable bool) Option {
 	return func(s *Server) {
 		s.pong = enable
+	}
+}
+
+func RecordPings(enable bool) Option {
+	return func(s *Server) {
+		s.recordPings = enable
 	}
 }
 

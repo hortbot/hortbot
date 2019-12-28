@@ -348,7 +348,7 @@ func TestServerPong(t *testing.T) {
 
 	ctx, cancel := testContext()
 	defer cancel()
-	h := fakeirc.NewHelper(ctx, t)
+	h := fakeirc.NewHelper(ctx, t, fakeirc.RecordPings(true))
 
 	defer h.StopServer()
 	serverMessages := h.CollectFromServer()
@@ -377,7 +377,7 @@ func TestServerNoPong(t *testing.T) {
 
 	ctx, cancel := testContext()
 	defer cancel()
-	h := fakeirc.NewHelper(ctx, t, fakeirc.Pong(false))
+	h := fakeirc.NewHelper(ctx, t, fakeirc.Pong(false), fakeirc.RecordPings(true))
 
 	defer h.StopServer()
 	serverMessages := h.CollectFromServer()
