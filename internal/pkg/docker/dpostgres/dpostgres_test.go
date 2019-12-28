@@ -42,7 +42,7 @@ func TestNoMigrate(t *testing.T) {
 }
 
 func TestNewBadDocker(t *testing.T) {
-	env.Patch(t, "DOCKER_URL", "tcp://[[[[[")
+	defer env.Patch(t, "DOCKER_URL", "tcp://[[[[[")()
 
 	_, _, _, err := dpostgres.New()
 	assert.ErrorContains(t, err, "invalid endpoint")
