@@ -287,12 +287,7 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) error 
 	for _, ch := range toPart {
 		if err := p.joinPart(ctx, ch, false, true); err != nil {
 			req.Finish(err)
-
-			if cErr := ctx.Err(); cErr != nil {
-				return cErr
-			}
-
-			return nil
+			return ctx.Err()
 		}
 	}
 
@@ -300,15 +295,15 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) error 
 		err := p.joinPart(ctx, ch, true, true)
 		if err != nil {
 			req.Finish(err)
+			// No return here; we want to do the sleep below.
 		}
 
-		if err := p.joinSleep(ctx); err != nil {
-			return err
+		if sErr := p.joinSleep(ctx); sErr != nil {
+			return sErr
 		}
 
-		// req is already finished, return.
 		if err != nil {
-			return nil
+			return ctx.Err()
 		}
 	}
 
