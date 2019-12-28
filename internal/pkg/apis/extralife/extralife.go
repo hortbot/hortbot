@@ -1,3 +1,4 @@
+// Package extralife provides an Extra-Life API client.
 package extralife
 
 import (
@@ -12,22 +13,27 @@ import (
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
+// API HTTP status errors.
 var (
 	ErrNotFound    = errors.New("extralife: not found")
 	ErrServerError = errors.New("extralife: server error")
 )
 
 //counterfeiter:generate . API
+
+// API represents the supported API functions. It's defined for fake generation.
 type API interface {
 	GetDonationAmount(ctx context.Context, participantID int) (float64, error)
 }
 
+// ExtraLife is an Extra-Life API client.
 type ExtraLife struct {
 	cli *http.Client
 }
 
 var _ API = &ExtraLife{}
 
+// New creates a new Extra-Life API client.
 func New(opts ...Option) *ExtraLife {
 	e := &ExtraLife{}
 
@@ -38,14 +44,20 @@ func New(opts ...Option) *ExtraLife {
 	return e
 }
 
+// Option controls client functionality.
 type Option func(*ExtraLife)
 
+// HTTPClient sets the HTTP client used when making requests to the Extra-Life
+// API. If given a nil client (or not set), the client will use the default
+// HTTP client in net/http.
 func HTTPClient(cli *http.Client) Option {
 	return func(e *ExtraLife) {
 		e.cli = cli
 	}
 }
 
+// GetDonationAmount gets the current donation total for the given Extra-Life
+// participant.
 func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (float64, error) {
 	url := fmt.Sprintf("https://www.extra-life.org/api/participants/%d", participantID)
 

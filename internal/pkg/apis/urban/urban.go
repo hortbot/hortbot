@@ -1,3 +1,4 @@
+// Package urban provides an Urban Dictionary API client.
 package urban
 
 import (
@@ -13,6 +14,7 @@ import (
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
+// Urban Dictionary API errors.
 var (
 	ErrNotFound    = errors.New("urban: not found")
 	ErrServerError = errors.New("urban: server error")
@@ -20,16 +22,20 @@ var (
 )
 
 //counterfeiter:generate . API
+
+// API represents the supported API functions. It's defined for fake generation.
 type API interface {
 	Define(ctx context.Context, s string) (string, error)
 }
 
+// Urban is an Urban Dictionary API client.
 type Urban struct {
 	cli *http.Client
 }
 
 var _ API = (*Urban)(nil)
 
+// New creates a new Urban Dictionary client.
 func New(opts ...Option) *Urban {
 	t := &Urban{}
 
@@ -40,6 +46,7 @@ func New(opts ...Option) *Urban {
 	return t
 }
 
+// Option controls client functionality.
 type Option func(*Urban)
 
 // HTTPClient sets the Urban client's underlying http.Client.
@@ -50,8 +57,10 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
-func (u *Urban) Define(ctx context.Context, s string) (string, error) {
-	ur := "https://api.urbandictionary.com/v0/define?term=" + url.QueryEscape(s)
+// Define queries Urban Dictionary for the top definition for a term. The
+// returned definition will be stripped of cross-linking square brackets.
+func (u *Urban) Define(ctx context.Context, term string) (string, error) {
+	ur := "https://api.urbandictionary.com/v0/define?term=" + url.QueryEscape(term)
 
 	resp, err := ctxhttp.Get(ctx, u.cli, ur)
 	if err != nil {

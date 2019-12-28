@@ -58,10 +58,12 @@ func setToken(newToken **oauth2.Token) func(tok *oauth2.Token, err error) {
 // https://stackoverflow.com/a/31625512
 type IDStr int64
 
+// MarshalJSON implements json.Marshaler for IDStr.
 func (v IDStr) MarshalJSON() ([]byte, error) {
 	return json.Marshal(strconv.FormatInt(int64(v), 10))
 }
 
+// UnmarshalJSON implements json.Unmarshaler for IDStr.
 func (v *IDStr) UnmarshalJSON(data []byte) error {
 	if len(data) >= 2 && data[0] == '"' && data[len(data)-1] == '"' {
 		data = data[1 : len(data)-1]
@@ -77,6 +79,7 @@ func (v *IDStr) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// AsInt64 returns the ID as an int64.
 func (v IDStr) AsInt64() int64 {
 	return int64(v)
 }

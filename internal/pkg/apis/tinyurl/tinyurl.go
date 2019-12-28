@@ -1,3 +1,4 @@
+// Package tinyurl provides a TinyURL client.
 package tinyurl
 
 import (
@@ -13,19 +14,24 @@ import (
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
+// ErrServerError is returned when a shortening request is unsuccessful.
 var ErrServerError = errors.New("tinyurl: server error")
 
 //counterfeiter:generate . API
+
+// API represents the supported API functions. It's defined for fake generation.
 type API interface {
 	Shorten(ctx context.Context, url string) (shortened string, err error)
 }
 
+// TinyURL is a TinyURL API client.
 type TinyURL struct {
 	cli *http.Client
 }
 
 var _ API = (*TinyURL)(nil)
 
+// New creates a new TinyURL API client.
 func New(opts ...Option) *TinyURL {
 	t := &TinyURL{}
 
@@ -36,6 +42,7 @@ func New(opts ...Option) *TinyURL {
 	return t
 }
 
+// Option controls client functionality.
 type Option func(*TinyURL)
 
 // HTTPClient sets the TinyURL client's underlying http.Client.
@@ -46,6 +53,7 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
+// Shorten shortens the given URL using TinyURL.
 func (t *TinyURL) Shorten(ctx context.Context, u string) (shortened string, err error) {
 	u = "https://tinyurl.com/api-create.php?url=" + url.QueryEscape(u)
 

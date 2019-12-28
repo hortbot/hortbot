@@ -8,6 +8,8 @@ import (
 	"golang.org/x/net/context/ctxhttp"
 )
 
+// Chatters is a summary of the current chat room state returned by Twitch's
+// TMI API.
 type Chatters struct {
 	Count    int64 `json:"chatter_count"`
 	Chatters struct {

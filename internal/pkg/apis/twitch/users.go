@@ -9,12 +9,14 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// User is a Twitch user, returned by the Kraken v5 API.
 type User struct {
 	ID          int64  `json:"user_id"`
 	Name        string `json:"user_name"`
 	DisplayName string `json:"display_name,omitempty"`
 }
 
+// DispName returns the display name for the user if provided, otherwise the username.
 func (u User) DispName() string {
 	if u.DisplayName != "" {
 		return u.DisplayName

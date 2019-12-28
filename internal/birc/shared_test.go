@@ -8,8 +8,8 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/birc"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/birc/fakeirc"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/jakebailey/irc"
 )

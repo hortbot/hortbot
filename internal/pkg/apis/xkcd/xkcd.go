@@ -1,3 +1,4 @@
+// Package xkcd provides an XKCD API client.
 package xkcd
 
 import (
@@ -10,8 +11,10 @@ import (
 	"golang.org/x/net/context/ctxhttp"
 )
 
+// ErrNotFound is returned when the requested comic cannot be found.
 var ErrNotFound = errors.New("xkcd: not found")
 
+// Comic is an XKCD comic.
 type Comic struct {
 	Title string `json:"safe_title"`
 	Img   string `json:"img"`
@@ -21,18 +24,23 @@ type Comic struct {
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 //counterfeiter:generate . API
+
+// API represents the supported API functions. It's defined for fake generation.
 type API interface {
 	GetComic(ctx context.Context, id int) (*Comic, error)
 }
 
+// XKCD is an XKCD API client.
 type XKCD struct {
 	cli *http.Client
 }
 
 var _ API = &XKCD{}
 
+// Option controls client functionality.
 type Option func(*XKCD)
 
+// New creates a new XKCD API client.
 func New(opts ...Option) *XKCD {
 	x := &XKCD{}
 	for _, opt := range opts {
@@ -49,6 +57,7 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
+// GetComic fetches the specified XKCD comic.
 func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
 	url := "https://xkcd.com/" + strconv.Itoa(id) + "/info.0.json"
 

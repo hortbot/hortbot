@@ -64,6 +64,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey)
 
 		_, err := lp.RecentTracks("thisuserdoesnotexistreally", 2)
+
 		assert.ErrorContains(t, err, "User not found")
 	})
 

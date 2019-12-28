@@ -1,3 +1,4 @@
+// Package steam provides a Steam API client.
 package steam
 
 import (
@@ -14,11 +15,11 @@ import (
 
 // Steam API errors.
 //
-// - 200 -> nil
-// - 404 -> ErrNotFound
-// - 401 or 403 -> ErrNotAuthorized
-// - 5xx -> ErrServerError
-// - Otherwise -> ErrUnknown
+//     - 200 -> nil
+//     - 404 -> ErrNotFound
+//     - 401 or 403 -> ErrNotAuthorized
+//     - 5xx -> ErrServerError
+//     - Otherwise -> ErrUnknown
 var (
 	ErrNotFound      = errors.New("steam: not found")
 	ErrNotAuthorized = errors.New("steam: not authorized")
@@ -27,11 +28,14 @@ var (
 )
 
 //counterfeiter:generate . API
+
+// API represents the supported API functions. It's defined for fake generation.
 type API interface {
 	GetPlayerSummary(ctx context.Context, id string) (*Summary, error)
 	GetOwnedGames(ctx context.Context, id string) ([]*Game, error)
 }
 
+// Steam is a Steam API client.
 type Steam struct {
 	apiKey string
 	cli    *http.Client
@@ -39,8 +43,10 @@ type Steam struct {
 
 var _ API = (*Steam)(nil)
 
+// Option controls client functionality.
 type Option func(*Steam)
 
+// New creates a new Steam API client.
 func New(apiKey string, opts ...Option) *Steam {
 	if apiKey == "" {
 		panic("empty apiKey")
@@ -65,6 +71,7 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
+// Summary is a Steam player summary.
 type Summary struct {
 	Name       string `json:"personaname"`
 	ProfileURL string `json:"profileurl"`
@@ -108,6 +115,7 @@ func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, erro
 	return p[0], nil
 }
 
+// Game is a Steam owned game.
 type Game struct {
 	ID   int64  `json:"appid"`
 	Name string `json:"name"`
