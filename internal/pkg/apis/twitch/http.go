@@ -23,12 +23,17 @@ func (h *httpClient) newRequest(method string, url string, body io.Reader) (*htt
 		return nil, err
 	}
 
-	req.Header = cloneHeader(h.headers)
-
 	tok, err := h.ts.Token()
 	if err != nil {
 		return nil, err
 	}
+
+	if h.headers == nil {
+		req.Header = make(http.Header)
+	} else {
+		req.Header = h.headers.Clone()
+	}
+
 	tok.SetAuthHeader(req)
 
 	return req, nil
