@@ -34,18 +34,8 @@ func New() (addr string, cleanup func(), retErr error) {
 	return addr, container.Cleanup, nil
 }
 
-type nopDelegate struct{}
+type nopDelegate struct {
+	nsq.ConnDelegate // Embed and manually implement functions that the above code actually uses.
+}
 
-var _ nsq.ConnDelegate = (*nopDelegate)(nil)
-
-func (*nopDelegate) OnResponse(c *nsq.Conn, data []byte)           {}
-func (*nopDelegate) OnError(c *nsq.Conn, data []byte)              {}
-func (*nopDelegate) OnMessage(c *nsq.Conn, m *nsq.Message)         {}
-func (*nopDelegate) OnMessageFinished(c *nsq.Conn, m *nsq.Message) {}
-func (*nopDelegate) OnMessageRequeued(c *nsq.Conn, m *nsq.Message) {}
-func (*nopDelegate) OnBackoff(c *nsq.Conn)                         {}
-func (*nopDelegate) OnContinue(c *nsq.Conn)                        {}
-func (*nopDelegate) OnResume(c *nsq.Conn)                          {}
-func (*nopDelegate) OnIOError(c *nsq.Conn, err error)              {}
-func (*nopDelegate) OnHeartbeat(c *nsq.Conn)                       {}
-func (*nopDelegate) OnClose(c *nsq.Conn)                           {}
+func (*nopDelegate) OnClose(c *nsq.Conn) {}

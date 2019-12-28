@@ -25,6 +25,7 @@ linters:
     - godox
     - wsl
     - gocognit
+    - dogsled
 
   # fast: true
   # enable:

@@ -6,6 +6,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jmoiron/sqlx"
 	"gotest.tools/v3/assert"
+	"gotest.tools/v3/env"
 )
 
 func TestNew(t *testing.T) {
@@ -38,4 +39,11 @@ func TestNoMigrate(t *testing.T) {
 	err = dbx.Get(&count, "SELECT count(*) FROM schema_migrations")
 	assert.ErrorContains(t, err, "does not exist")
 	assert.Equal(t, count, 0)
+}
+
+func TestNewBadDocker(t *testing.T) {
+	env.Patch(t, "DOCKER_URL", "tcp://[[[[[")
+
+	_, _, _, err := dpostgres.New()
+	assert.ErrorContains(t, err, "invalid endpoint")
 }
