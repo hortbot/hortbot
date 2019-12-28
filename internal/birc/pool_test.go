@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/birc"
-	"github.com/hortbot/hortbot/internal/pkg/fakeirc"
+	"github.com/hortbot/hortbot/internal/birc/fakeirc"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
