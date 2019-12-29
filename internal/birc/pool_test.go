@@ -372,8 +372,11 @@ func TestPoolPrune(t *testing.T) {
 		assert.Equal(t, pool.NumConns(), 1)
 
 		assert.NilError(t, pool.ForceSubconn(ctx))
+		h.Sleep()
 		assert.NilError(t, pool.ForceSubconn(ctx))
+		h.Sleep()
 		assert.NilError(t, pool.ForceSubconn(ctx))
+		h.Sleep()
 		assert.NilError(t, pool.Part(ctx, "#barfoo"))
 
 		h.Sleep()
