@@ -23,6 +23,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/web/mid"
+	"github.com/hortbot/hortbot/internal/web/static"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tomwright/queryparam/v4"
@@ -130,6 +131,9 @@ func (a *App) Run(ctx context.Context) error {
 		r.Post("/import", a.adminImportPost)
 		r.Get("/export/{channel}", a.adminExport)
 	})
+
+	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(static.FS(false))))
+	r.Handle("/favicon.ico", http.RedirectHandler("/static/icons/favicon.ico", http.StatusFound))
 
 	srv := http.Server{
 		Addr:    a.Addr,
