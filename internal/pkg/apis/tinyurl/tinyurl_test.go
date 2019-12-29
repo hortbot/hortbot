@@ -61,7 +61,7 @@ func TestShorten(t *testing.T) {
 	})
 
 	t.Run("ReadAll error", func(t *testing.T) {
-		response := httpmock.NewStringResponse(200, "")
+		response := httpmock.NewStringResponse(200, "") //nolint:bodyclose
 		response.Body = (*badBody)(nil)
 
 		mt := newTransport(t)

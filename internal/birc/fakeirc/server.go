@@ -103,7 +103,7 @@ func (s *Server) Incoming() <-chan *irc.Message {
 	return s.recvChan
 }
 
-// Send sends a message as the server to all relevent clients.
+// Send sends a message as the server to all relevant clients.
 func (s *Server) Send(ctx context.Context, m *irc.Message) error {
 	select {
 	case s.sendChan <- m:

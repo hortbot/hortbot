@@ -37,10 +37,10 @@ func TestHTTPClient(t *testing.T) {
 
 		c := &httpClient{}
 
-		_, err := c.Get(context.Background(), "\n") //nolint:bodycliose
+		_, err := c.Get(context.Background(), "\n") //nolint:bodyclose
 		assert.ErrorContains(t, err, errMsg)
 
-		_, err = c.Put(context.Background(), "\n", 123) //nolint:bodycliose
+		_, err = c.Put(context.Background(), "\n", 123) //nolint:bodyclose
 		assert.ErrorContains(t, err, errMsg)
 	})
 
@@ -53,7 +53,7 @@ func TestHTTPClient(t *testing.T) {
 			},
 		}
 
-		_, err := c.Put(context.Background(), "http://localhost", unmarshallable{}) //nolint:bodycliose
+		_, err := c.Put(context.Background(), "http://localhost", unmarshallable{}) //nolint:bodyclose
 		assert.ErrorContains(t, err, "unmarshallable")
 	})
 
@@ -66,7 +66,7 @@ func TestHTTPClient(t *testing.T) {
 			},
 		}
 
-		_, err := c.Get(context.Background(), "http://localhost:24353") //nolint:bodycliose
+		_, err := c.Get(context.Background(), "http://localhost:24353") //nolint:bodyclose
 		assert.ErrorContains(t, err, "connection refused")
 	})
 }
