@@ -1,3 +1,4 @@
+// Package correlation provides correlation semantics for use across service boundaries.
 package correlation
 
 import (

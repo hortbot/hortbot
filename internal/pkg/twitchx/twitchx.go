@@ -1,9 +1,9 @@
+// Package twitchx provides extensions to the Twitch client.
 package twitchx
 
 import (
 	"context"
 	"database/sql"
-	"errors"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -13,8 +13,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
-var ErrBotTokenChanged = errors.New("twitchx: bot access token changed")
-
+// FindBotToken looks for the bot's token in the database, and fetches a token
+// if one has not yet been found.
 func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, botName string) (*oauth2.Token, error) {
 	_, tok, err := findBotToken(ctx, db, tw, botName)
 	return tok, err

@@ -1,3 +1,4 @@
+// Package repeat provides a system to run functions repeated on a schedule.
 package repeat
 
 import (
@@ -10,6 +11,7 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
+// Repeater manages repeated functions.
 type Repeater struct {
 	clock clock.Clock
 	ctx   context.Context
@@ -46,6 +48,7 @@ func (r *Repeater) Stop() {
 	r.crons.wait()
 }
 
+// Reset resets a repeater, cancelling and removing all of its repeated functions.
 func (r *Repeater) Reset() {
 	r.mu.Lock()
 	defer r.mu.Unlock()
@@ -56,6 +59,7 @@ func (r *Repeater) Reset() {
 	r.crons = newTaskRunner(r.ctx)
 }
 
+// Count returns the number of repeated and scheduled functions.
 func (r *Repeater) Count() (repeats, schedules int) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
@@ -203,10 +207,12 @@ func (t *taskRunner) count() int {
 
 var cronParser = cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.Dow | cron.Descriptor)
 
+// Cron is a cron schedule.
 type Cron struct {
 	expr cron.Schedule
 }
 
+// ParseCron parses a crontab line into a Cron.
 func ParseCron(s string) (*Cron, error) {
 	expr, err := cronParser.Parse(s)
 	if err != nil {

@@ -1,3 +1,4 @@
+// Package linkmatch implements an algorithm for matching URLs against patterns.
 package linkmatch
 
 import (
@@ -8,6 +9,11 @@ import (
 	"github.com/goware/urlx"
 )
 
+// HostAndPath checks that the given URL matches the given pattern.
+//
+// Patterns are similar to shell globs, but looser in that they will include
+// suffix/prefix matches (permissive of extra elements). Globs will not
+// cross the host-path boundary.
 func HostAndPath(pattern string, u *url.URL) bool {
 	p, err := urlx.ParseWithDefaultScheme(pattern, "https")
 	if err != nil {

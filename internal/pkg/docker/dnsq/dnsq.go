@@ -1,3 +1,4 @@
+// Package dnsq creates temporary NSQ server containers.
 package dnsq
 
 import (
@@ -6,6 +7,7 @@ import (
 	"github.com/nsqio/go-nsq"
 )
 
+// New creates and starts a new NSQ server.
 func New() (addr string, cleanup func(), retErr error) {
 	container := &docker.Container{
 		Repository: "nsqio/nsq",

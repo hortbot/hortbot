@@ -1,3 +1,4 @@
+// Package miniredistest provides a test redis server.
 package miniredistest
 
 import (
@@ -5,6 +6,7 @@ import (
 	"github.com/go-redis/redis/v7"
 )
 
+// New creates a new miniredis server and returns a pre-prepared client.
 func New() (s *miniredis.Miniredis, c *redis.Client, cleanup func(), retErr error) {
 	s, err := miniredis.Run()
 	if err != nil {

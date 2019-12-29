@@ -1,3 +1,4 @@
+// Package recache provides a regex compilation cache.
 package recache
 
 import (
@@ -7,6 +8,7 @@ import (
 	"github.com/patrickmn/go-cache"
 )
 
+// Expiration intervals.
 const (
 	DefaultExpiration      = 5 * time.Minute
 	DefaultCleanupInterval = 10 * time.Minute

@@ -1,3 +1,4 @@
+// Package findlinks provides functions to find links in text.
 package findlinks
 
 import (
@@ -9,6 +10,9 @@ import (
 
 var linkRegex = xurls.Relaxed()
 
+// Find searches for links in a given message. If schemeWhitelist items are
+// included, then the results will only include links with the provided
+// schemes.
 func Find(message string, schemeWhitelist ...string) []*url.URL {
 	matches := linkRegex.FindAllString(message, -1)
 

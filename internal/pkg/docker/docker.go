@@ -7,6 +7,7 @@ import (
 	"github.com/ory/dockertest/v3"
 )
 
+// Container defines a docker container.
 type Container struct {
 	Repository string
 	Tag        string
@@ -23,6 +24,7 @@ type Container struct {
 	resource *dockertest.Resource
 }
 
+// Start starts the container.
 func (c *Container) Start() (retErr error) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
@@ -61,12 +63,16 @@ func (c *Container) Start() (retErr error) {
 	})
 }
 
+// Cleanup cleans up the docker container, stopping and removing it.
 func (c *Container) Cleanup() {
 	if c.resource != nil {
 		_ = c.pool.Purge(c.resource)
 	}
 }
 
+// GetHostPort gets the correct host and port pair for the specified port after
+// being forwarded. For example, GetHostPort("5432/tcp") could return
+// "localhost:13263".
 func (c *Container) GetHostPort(portID string) string {
 	return c.resource.GetHostPort(portID)
 }

@@ -1,3 +1,4 @@
+// Package dpostgres creates PostgreSQL database containers.
 package dpostgres
 
 import (
@@ -9,10 +10,12 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
+// New creates and starts a fresh PostgreSQL server, migrated up.
 func New() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 	return newDB(true)
 }
 
+// NewNoMigrate creates and starts a fresh PostgreSQL server, without migrations.
 func NewNoMigrate() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 	return newDB(false)
 }
