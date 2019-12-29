@@ -59,4 +59,27 @@ func TestShorten(t *testing.T) {
 		_, err := tu.Shorten(ctx, longURL)
 		assert.Equal(t, err, tinyurl.ErrServerError)
 	})
+
+	t.Run("ReadAll error", func(t *testing.T) {
+		response := httpmock.NewStringResponse(200, "")
+		response.Body = (*badBody)(nil)
+
+		mt := newTransport(t)
+		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.ResponderFromResponse(response))
+
+		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
+
+		_, err := tu.Shorten(ctx, longURL)
+		assert.Equal(t, err, tinyurl.ErrServerError)
+	})
+}
+
+type badBody struct{}
+
+func (*badBody) Read(p []byte) (n int, err error) {
+	return 0, errors.New("bad body")
+}
+
+func (*badBody) Close() error {
+	return nil
 }

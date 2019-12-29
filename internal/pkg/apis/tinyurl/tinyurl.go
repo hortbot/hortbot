@@ -69,7 +69,7 @@ func (t *TinyURL) Shorten(ctx context.Context, u string) (shortened string, err 
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return "", err
+		return "", ErrServerError
 	}
 
 	return strings.TrimSpace(string(body)), nil
