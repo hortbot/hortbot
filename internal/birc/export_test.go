@@ -21,3 +21,11 @@ func (c *Connection) Quit(ctx context.Context) error {
 func (p *Pool) Quit(ctx context.Context) error {
 	return p.send(ctx, &irc.Message{Command: "QUIT"})
 }
+
+// ForceSubconn forces the creation of a subconn.
+//
+// Exported for testing only.
+func (p *Pool) ForceSubconn(ctx context.Context) error {
+	_, err := p.joinableConn(ctx, true)
+	return err
+}

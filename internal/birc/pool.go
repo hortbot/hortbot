@@ -232,7 +232,7 @@ func (p *Pool) connManager(ctx context.Context) error {
 	}
 
 	// Spawn at least one connection.
-	if _, err := p.joinableConn(ctx); err != nil {
+	if _, err := p.joinableConn(ctx, true); err != nil {
 		return err
 	}
 
@@ -372,7 +372,7 @@ func (p *Pool) joinPart(ctx context.Context, channel string, join bool, force bo
 	}
 
 	if join {
-		conn, err := p.joinableConn(ctx)
+		conn, err := p.joinableConn(ctx, false)
 		if err != nil {
 			return err
 		}
@@ -422,10 +422,12 @@ func (p *Pool) part(ctx context.Context, channel string) error {
 	return nil
 }
 
-func (p *Pool) joinableConn(ctx context.Context) (*Connection, error) {
-	conn := p.findJoinable()
-	if conn != nil {
-		return conn, nil
+func (p *Pool) joinableConn(ctx context.Context, forceNew bool) (*Connection, error) {
+	if !forceNew {
+		conn := p.findJoinable()
+		if conn != nil {
+			return conn, nil
+		}
 	}
 
 	select {

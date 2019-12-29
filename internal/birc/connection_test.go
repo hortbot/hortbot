@@ -668,3 +668,10 @@ func TestConnectionPingNoPong(t *testing.T) {
 		)
 	}, fakeirc.Pong(false))
 }
+
+func TestConnectionWaitCancel(t *testing.T) {
+	c := birc.NewConnection(birc.Config{})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	assert.Equal(t, c.WaitUntilReady(ctx), context.Canceled)
+}

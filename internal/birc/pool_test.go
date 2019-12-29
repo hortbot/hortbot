@@ -371,6 +371,19 @@ func TestPoolPrune(t *testing.T) {
 
 		assert.Equal(t, pool.NumConns(), 1)
 
+		assert.NilError(t, pool.ForceSubconn(ctx))
+		assert.NilError(t, pool.ForceSubconn(ctx))
+		assert.NilError(t, pool.ForceSubconn(ctx))
+		assert.NilError(t, pool.Part(ctx, "#barfoo"))
+
+		h.Sleep()
+		assert.Equal(t, pool.NumConns(), 4)
+
+		pool.Prune()
+		h.Sleep()
+
+		assert.Equal(t, pool.NumConns(), 1)
+
 		pool.Stop()
 
 		assert.Equal(t, birc.ErrPoolStopped, errFromErrChan(ctx, errChan))
@@ -386,6 +399,13 @@ func TestPoolPrune(t *testing.T) {
 			ircx.Nick("nick"),
 			ircx.Join("#barfoo"),
 			ircx.Part("#foobar"),
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+			ircx.Part("#barfoo"),
 		)
 
 		h.AssertMessages(clientMessages)
@@ -585,6 +605,61 @@ func TestPoolNotJoinedSend(t *testing.T) {
 			ircx.Pass("pass"),
 			ircx.Nick("nick"),
 			ircx.PrivMsg("#foobar", "test"),
+		)
+
+		h.AssertMessages(clientMessages)
+	})
+}
+
+func TestPoolWaitCancel(t *testing.T) {
+	c := birc.NewPool(birc.PoolConfig{})
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	assert.Equal(t, c.WaitUntilReady(ctx), context.Canceled)
+}
+
+func TestPoolPartUnjoined(t *testing.T) {
+	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
+		serverMessages := h.CollectSentToServer()
+
+		c := birc.PoolConfig{
+			Config: birc.Config{
+				UserConfig: birc.UserConfig{
+					Nick: "nick",
+					Pass: "pass",
+				},
+				Dialer: &d,
+			},
+			JoinRate: -1,
+		}
+
+		errChan := make(chan error, 1)
+		pool := birc.NewPool(c)
+		defer pool.Stop()
+
+		go func() {
+			errChan <- pool.Run(ctx)
+		}()
+
+		clientMessages := h.CollectFromChannel(pool.Incoming())
+
+		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
+
+		assert.NilError(t, pool.Part(ctx, "#foobar"))
+
+		h.Sleep()
+
+		pool.Stop()
+
+		assert.Equal(t, birc.ErrPoolStopped, errFromErrChan(ctx, errChan))
+
+		h.StopServer()
+		h.Wait()
+
+		h.AssertMessages(serverMessages,
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
 		)
 
 		h.AssertMessages(clientMessages)
