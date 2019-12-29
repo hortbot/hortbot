@@ -21,7 +21,7 @@ func TestPoolUnused(t *testing.T) {
 
 func TestPoolRunStop(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -72,7 +72,7 @@ func TestPoolRunStop(t *testing.T) {
 
 func TestPoolJoinOne(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -129,7 +129,7 @@ func TestPoolJoinOne(t *testing.T) {
 
 func TestPoolChannelMessage(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -162,14 +162,14 @@ func TestPoolChannelMessage(t *testing.T) {
 		h.Sleep()
 
 		m := ircx.PrivMsg("#foobar", "test1")
-		h.SendToServer(ctx, m)
+		h.SendAsServer(ctx, m)
 		h.Sleep()
 
 		assert.NilError(t, pool.Part(ctx, "#foobar"))
 		h.Sleep()
 		h.Sleep()
 
-		h.SendToServer(ctx, m)
+		h.SendAsServer(ctx, m)
 		h.Sleep()
 
 		pool.Stop()
@@ -193,7 +193,7 @@ func TestPoolChannelMessage(t *testing.T) {
 
 func TestPoolSyncJoined(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -226,7 +226,7 @@ func TestPoolSyncJoined(t *testing.T) {
 		assert.DeepEqual(t, []string{"#barfoo", "#foobar"}, pool.Joined())
 
 		m := ircx.PrivMsg("#foobar", "test1")
-		h.SendToServer(ctx, m)
+		h.SendAsServer(ctx, m)
 		h.Sleep()
 		h.Sleep()
 
@@ -238,7 +238,7 @@ func TestPoolSyncJoined(t *testing.T) {
 
 		h.Sleep()
 		h.Sleep()
-		h.SendToServer(ctx, m)
+		h.SendAsServer(ctx, m)
 
 		pool.Prune()
 		h.Sleep()
@@ -266,7 +266,7 @@ func TestPoolSyncJoined(t *testing.T) {
 
 func TestPoolSendMessage(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -317,7 +317,7 @@ func TestPoolSendMessage(t *testing.T) {
 
 func TestPoolPrune(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -394,7 +394,7 @@ func TestPoolPrune(t *testing.T) {
 
 func TestPoolPruneAuto(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		pruneInterval := h.SleepDur * 5
 
@@ -485,7 +485,7 @@ func TestPoolPruneAuto(t *testing.T) {
 
 func TestPoolQuitRejoin(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{
@@ -515,7 +515,7 @@ func TestPoolQuitRejoin(t *testing.T) {
 
 		m := ircx.PrivMsg("#foobar", "test1")
 		h.Sleep()
-		h.SendToServer(ctx, m)
+		h.SendAsServer(ctx, m)
 
 		assert.NilError(t, pool.Quit(ctx))
 
@@ -545,7 +545,7 @@ func TestPoolQuitRejoin(t *testing.T) {
 
 func TestPoolNotJoinedSend(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.PoolConfig{
 			Config: birc.Config{

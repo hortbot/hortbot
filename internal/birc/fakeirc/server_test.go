@@ -22,14 +22,14 @@ func TestServerUnused(t *testing.T) {
 
 	defer h.StopServer()
 
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	h.StopServer()
 
 	h.Wait()
 	h.AssertMessages(serverMessages)
 
-	err := h.SendToServerErr(ctx, &irc.Message{
+	err := h.SendAsServerErr(ctx, &irc.Message{
 		Command: "WOW",
 	})
 	assert.Equal(t, err, fakeirc.ErrStopped)
@@ -43,7 +43,7 @@ func TestServerNoMessages(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -67,7 +67,7 @@ func TestServerBroadcast(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -77,7 +77,7 @@ func TestServerBroadcast(t *testing.T) {
 		Command: "WOW",
 	}
 
-	h.SendToServer(ctx, m)
+	h.SendAsServer(ctx, m)
 
 	// This is flaky; not sure why.
 	h.Sleep()
@@ -102,7 +102,7 @@ func TestServerFilterNoJoin(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -110,7 +110,7 @@ func TestServerFilterNoJoin(t *testing.T) {
 
 	m := fakeirc.TagChannel(&irc.Message{Command: "WOW"}, "#foobar")
 
-	h.SendToServer(ctx, m)
+	h.SendAsServer(ctx, m)
 
 	h.CloseConn(conn)
 	h.StopServer()
@@ -128,7 +128,7 @@ func TestServerPrivMsgNoJoin(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -136,7 +136,7 @@ func TestServerPrivMsgNoJoin(t *testing.T) {
 
 	m := ircx.PrivMsg("#foobar", "test")
 
-	h.SendToServer(ctx, m)
+	h.SendAsServer(ctx, m)
 
 	h.CloseConn(conn)
 	h.StopServer()
@@ -154,7 +154,7 @@ func TestServerSinglePrivMsg(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -166,7 +166,7 @@ func TestServerSinglePrivMsg(t *testing.T) {
 
 	m := ircx.PrivMsg("#foobar", "test")
 
-	h.SendToServer(ctx, m)
+	h.SendAsServer(ctx, m)
 
 	h.CloseConn(conn)
 	h.StopServer()
@@ -184,7 +184,7 @@ func TestServerSingleFiltered(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -196,7 +196,7 @@ func TestServerSingleFiltered(t *testing.T) {
 
 	m := fakeirc.TagChannel(&irc.Message{Command: "WOW"}, "#foobar")
 
-	h.SendToServer(ctx, m)
+	h.SendAsServer(ctx, m)
 
 	h.CloseConn(conn)
 	h.StopServer()
@@ -214,7 +214,7 @@ func TestServerTwo(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	first := h.Dial()
 	defer h.CloseConn(first)
@@ -250,7 +250,7 @@ func TestServerTwoJoinPart(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	first := h.Dial()
 	defer h.CloseConn(first)
@@ -289,7 +289,7 @@ func TestServerQuit(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t)
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -321,7 +321,7 @@ func TestServerSinglePrivMsgTLS(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t, fakeirc.TLS(fakeirc.TLSConfig))
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -333,7 +333,7 @@ func TestServerSinglePrivMsgTLS(t *testing.T) {
 
 	m := ircx.PrivMsg("#foobar", "test")
 
-	h.SendToServer(ctx, m)
+	h.SendAsServer(ctx, m)
 
 	h.CloseConn(conn)
 	h.StopServer()
@@ -351,7 +351,7 @@ func TestServerPong(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t, fakeirc.RecordPings(true))
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)
@@ -380,7 +380,7 @@ func TestServerNoPong(t *testing.T) {
 	h := fakeirc.NewHelper(ctx, t, fakeirc.Pong(false), fakeirc.RecordPings(true))
 
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	conn := h.Dial()
 	defer h.CloseConn(conn)

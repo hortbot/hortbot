@@ -63,7 +63,7 @@ type Pool struct {
 
 // NewPool creates a new Pool.
 func NewPool(config PoolConfig) *Pool {
-	config.Setup()
+	config.setup()
 
 	subConfig := config.Config
 	subConfig.InitialChannels = nil
@@ -133,6 +133,7 @@ func (p *Pool) Stop() {
 	})
 }
 
+// WaitUntilReady waits until the pool is ready, or the context is canceled.
 func (p *Pool) WaitUntilReady(ctx context.Context) error {
 	select {
 	case <-p.ready:
@@ -493,6 +494,7 @@ func (p *Pool) prune(ctx context.Context) {
 	}
 }
 
+// NumConns returns the currently connected subconns.
 func (p *Pool) NumConns() int {
 	p.connsMu.Lock()
 	defer p.connsMu.Unlock()
@@ -625,8 +627,4 @@ func (p *Pool) send(ctx context.Context, m *irc.Message) error {
 func (p *Pool) SendMessage(ctx context.Context, target, message string) error {
 	ctx = correlation.With(ctx)
 	return p.send(ctx, ircx.PrivMsg(target, message))
-}
-
-func (p *Pool) Quit(ctx context.Context) error {
-	return p.send(ctx, &irc.Message{Command: "QUIT"})
 }

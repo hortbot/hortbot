@@ -11,7 +11,7 @@ import (
 func TestHelperSleepDur(t *testing.T) {
 	dur, err := getSleepDur()
 	assert.NilError(t, err)
-	assert.Equal(t, dur, DefaultSleepDur)
+	assert.Equal(t, dur, defaultSleepDur)
 }
 
 func TestHelperSleepDurEnv(t *testing.T) {

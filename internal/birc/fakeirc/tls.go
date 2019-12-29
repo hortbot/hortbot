@@ -97,6 +97,9 @@ pJK982Q15hS/Js/3YKVH564yjXAGOA==
 
 var testCert, certPool = setupCerts()
 
+// TLSConfig is a TLS configuration that can be used for testing.
+// The fake IRC server will use this config to authenticate incoming connections
+// when using TLS.
 var TLSConfig = &tls.Config{
 	InsecureSkipVerify:       true,
 	ClientAuth:               tls.RequireAndVerifyClientCert,

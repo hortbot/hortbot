@@ -61,7 +61,7 @@ type Connection struct {
 
 // NewConnection creates a new Connection.
 func NewConnection(config Config) *Connection {
-	config.Setup()
+	config.setup()
 	return newConnection(&config)
 }
 
@@ -184,6 +184,7 @@ func (c *Connection) Close() error {
 	return c.closeErr
 }
 
+// WaitUntilReady waits until the connection is ready, or the context is canceled.
 func (c *Connection) WaitUntilReady(ctx context.Context) error {
 	select {
 	case <-c.ready:
@@ -414,13 +415,6 @@ func (c *Connection) doJoinPart(ctx context.Context, join bool, channels ...stri
 	}
 
 	return c.send(ctx, m)
-}
-
-// Quit sends a QUIT to the IRC server, which may cause the client to
-// disconnect.
-func (c *Connection) Quit(ctx context.Context) error {
-	ctx = correlation.With(ctx)
-	return c.send(ctx, &irc.Message{Command: "QUIT"})
 }
 
 func (c *Connection) pinger(ctx context.Context, g *errgroupx.Group) error {

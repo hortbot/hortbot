@@ -35,7 +35,7 @@ func TestConnectionDialError(t *testing.T) {
 
 func TestConnectionBasic(t *testing.T) {
 	doTestSecureInsecure(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -58,7 +58,7 @@ func TestConnectionBasic(t *testing.T) {
 		h.Sleep()
 
 		assert.NilError(t, conn.SendMessage(ctx, "#foobar", "test"))
-		h.SendToServer(ctx, &irc.Message{Command: "PING"})
+		h.SendAsServer(ctx, &irc.Message{Command: "PING"})
 
 		h.Sleep()
 		h.Sleep()
@@ -93,7 +93,7 @@ func TestConnectionBasic(t *testing.T) {
 
 func TestConnectionJoinQuit(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -150,7 +150,7 @@ func TestConnectionJoinQuit(t *testing.T) {
 
 func TestConnectionJoinPart(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -220,7 +220,7 @@ func TestConnectionJoinPart(t *testing.T) {
 
 func TestConnectionEmptyJoinPart(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -267,7 +267,7 @@ func TestConnectionEmptyJoinPart(t *testing.T) {
 
 func TestConnectionJoinTwice(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -340,7 +340,7 @@ func TestConnectionUnjoined(t *testing.T) {
 
 func TestConnectionInitialChannels(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -389,7 +389,7 @@ func TestConnectionInitialChannels(t *testing.T) {
 
 func TestConnectionCapabilities(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -489,7 +489,7 @@ func TestConnectionCloseAfterFirst(t *testing.T) {
 
 func TestConnectionReconnect(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -513,7 +513,7 @@ func TestConnectionReconnect(t *testing.T) {
 
 		reconn := &irc.Message{Command: "RECONNECT"}
 
-		h.SendToServer(ctx, reconn)
+		h.SendAsServer(ctx, reconn)
 
 		assert.Equal(t, birc.ErrReconnect, errFromErrChan(ctx, connErr))
 
@@ -531,7 +531,7 @@ func TestConnectionReconnect(t *testing.T) {
 
 func TestConnectionReadOnly(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		c := birc.Config{
 			UserConfig: birc.UserConfig{
@@ -577,7 +577,7 @@ func TestConnectionReadOnly(t *testing.T) {
 
 func TestConnectionPing(t *testing.T) {
 	doTestSecureInsecure(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		const dur = time.Second / 2
 
@@ -627,7 +627,7 @@ func TestConnectionPing(t *testing.T) {
 
 func TestConnectionPingNoPong(t *testing.T) {
 	doTestSecureInsecure(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
-		serverMessages := h.CollectFromServer()
+		serverMessages := h.CollectSentToServer()
 
 		const dur = time.Second / 2
 

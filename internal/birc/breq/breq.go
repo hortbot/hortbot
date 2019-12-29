@@ -12,6 +12,8 @@ import (
 	"github.com/rs/xid"
 )
 
+// TODO: In the far future where Go has generics, drop all of this in favor of a single generic implementation.
+
 var errChanPool = sync.Pool{
 	New: func() interface{} {
 		return make(chan error, 1)
@@ -22,12 +24,14 @@ func getErrChan() chan error {
 	return errChanPool.Get().(chan error)
 }
 
+// Send is a single send request.
 type Send struct {
 	errChan chan error
 	M       *irc.Message
 	XID     xid.ID
 }
 
+// NewSend creates a send request for the given message.
 func NewSend(m *irc.Message) Send {
 	return Send{
 		errChan: getErrChan(),
@@ -35,6 +39,9 @@ func NewSend(m *irc.Message) Send {
 	}
 }
 
+// Do sends the request over the request channel and waits for the request to be completed.
+// If the request is canceled, then the context error will be returned and the request ignored.
+// If stopChan closes, then stopErr will be returned and the request ignored.
 func (r Send) Do(ctx context.Context, reqChan chan<- Send, stopChan <-chan struct{}, stopErr error) error {
 	r.XID = correlation.FromContext(ctx)
 
@@ -58,10 +65,12 @@ func (r Send) Do(ctx context.Context, reqChan chan<- Send, stopChan <-chan struc
 	}
 }
 
+// Finish completes the request with the given error, which may be nil.
 func (r Send) Finish(err error) {
 	r.errChan <- err
 }
 
+// JoinPart is a request for a JOIN or PART.
 type JoinPart struct {
 	errChan chan error
 	Channel string
@@ -70,6 +79,7 @@ type JoinPart struct {
 	XID     xid.ID
 }
 
+// NewJoinPart creates a new JOIN/PART request.
 func NewJoinPart(channel string, join, force bool) JoinPart {
 	return JoinPart{
 		errChan: getErrChan(),
@@ -79,6 +89,9 @@ func NewJoinPart(channel string, join, force bool) JoinPart {
 	}
 }
 
+// Do sends the request over the request channel and waits for the request to be completed.
+// If the request is canceled, then the context error will be returned and the request ignored.
+// If stopChan closes, then stopErr will be returned and the request ignored.
 func (r JoinPart) Do(ctx context.Context, reqChan chan<- JoinPart, stopChan <-chan struct{}, stopErr error) error {
 	r.XID = correlation.FromContext(ctx)
 
@@ -102,16 +115,19 @@ func (r JoinPart) Do(ctx context.Context, reqChan chan<- JoinPart, stopChan <-ch
 	}
 }
 
+// Finish completes the request with the given error, which may be nil.
 func (r JoinPart) Finish(err error) {
 	r.errChan <- err
 }
 
+// SyncJoined is a request to sync the joined channels with a given list.
 type SyncJoined struct {
 	errChan  chan error
 	Channels []string
 	XID      xid.ID
 }
 
+// NewSyncJoined creates a new sync-join request.
 func NewSyncJoined(channels []string) SyncJoined {
 	return SyncJoined{
 		errChan:  getErrChan(),
@@ -119,6 +135,9 @@ func NewSyncJoined(channels []string) SyncJoined {
 	}
 }
 
+// Do sends the request over the request channel and waits for the request to be completed.
+// If the request is canceled, then the context error will be returned and the request ignored.
+// If stopChan closes, then stopErr will be returned and the request ignored.
 func (r SyncJoined) Do(ctx context.Context, reqChan chan<- SyncJoined, stopChan <-chan struct{}, stopErr error) error {
 	r.XID = correlation.FromContext(ctx)
 
@@ -142,6 +161,7 @@ func (r SyncJoined) Do(ctx context.Context, reqChan chan<- SyncJoined, stopChan 
 	}
 }
 
+// Finish completes the request with the given error, which may be nil.
 func (r SyncJoined) Finish(err error) {
 	r.errChan <- err
 }

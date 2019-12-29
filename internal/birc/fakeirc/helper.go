@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	DefaultSleepDur = 50 * time.Millisecond
+	defaultSleepDur = 50 * time.Millisecond
 	sleepEnvVarName = "TEST_HELPER_SLEEP_DUR"
 )
 
@@ -25,9 +25,10 @@ func getSleepDur() (time.Duration, error) {
 		return time.ParseDuration(s)
 	}
 
-	return DefaultSleepDur, nil
+	return defaultSleepDur, nil
 }
 
+// Helper wraps the fake IRC server, providing convenience methods for managing messages.
 type Helper struct {
 	SleepDur time.Duration
 
@@ -38,6 +39,7 @@ type Helper struct {
 	s *Server
 }
 
+// NewHelper creates a new Helper.
 func NewHelper(ctx context.Context, t *testing.T, opts ...Option) *Helper {
 	t.Helper()
 
@@ -56,6 +58,8 @@ func NewHelper(ctx context.Context, t *testing.T, opts ...Option) *Helper {
 	}
 }
 
+// CollectFromChannel collects all messages sent to the provided channel, asynchronously,
+// returning a pointer to a slice which will contain the messages.
 func (h *Helper) CollectFromChannel(ch <-chan *irc.Message) *[]*irc.Message {
 	h.t.Helper()
 	messages := []*irc.Message{}
@@ -80,11 +84,15 @@ func (h *Helper) CollectFromChannel(ch <-chan *irc.Message) *[]*irc.Message {
 	return &messages
 }
 
-func (h *Helper) CollectFromServer() *[]*irc.Message {
+// CollectSentToServer collects all messages sent to the server, asynchronously,
+// returning a pointer to a slice which will contain the messages.
+func (h *Helper) CollectSentToServer() *[]*irc.Message {
 	h.t.Helper()
 	return h.CollectFromChannel(h.ServerMessages())
 }
 
+// CollectFromConn collects all messages sent to a conn, asynchronously,
+// returning a pointer to a slice which will contain the messages.
 func (h *Helper) CollectFromConn(conn irc.Decoder) *[]*irc.Message {
 	h.t.Helper()
 	messages := []*irc.Message{}
@@ -108,15 +116,18 @@ func (h *Helper) CollectFromConn(conn irc.Decoder) *[]*irc.Message {
 	return &messages
 }
 
+// ServerMessages returns the channel of messages sent to the server.
 func (h *Helper) ServerMessages() <-chan *irc.Message {
 	return h.s.Incoming()
 }
 
+// StopServer stops the fake IRC server.
 func (h *Helper) StopServer() {
 	h.t.Helper()
 	_ = h.StopServerErr()
 }
 
+// StopServerErr stops the fake IRC server, returning the stop error.
 func (h *Helper) StopServerErr() (err error) {
 	h.t.Helper()
 
@@ -128,33 +139,39 @@ func (h *Helper) StopServerErr() (err error) {
 	return err
 }
 
+// Wait waits for the server to stop.
 func (h *Helper) Wait() {
 	h.t.Helper()
 	assert.NilError(h.t, h.g.Wait())
 }
 
+// Sleep sleeps for a small period of time.
 func (h *Helper) Sleep() {
 	h.t.Helper()
 	time.Sleep(h.SleepDur)
 }
 
-func (h *Helper) SendToServer(ctx context.Context, m *irc.Message) {
+// SendAsServer sends a message as the server, asserting that the send was successful.
+func (h *Helper) SendAsServer(ctx context.Context, m *irc.Message) {
 	h.t.Helper()
 	assert.NilError(h.t, h.s.Send(ctx, m))
 	h.Sleep()
 }
 
-func (h *Helper) SendToServerErr(ctx context.Context, m *irc.Message) error {
+// SendAsServerErr sends a message to the server, and returns the send error.
+func (h *Helper) SendAsServerErr(ctx context.Context, m *irc.Message) error {
 	h.t.Helper()
 	defer h.Sleep()
 	return h.s.Send(ctx, m)
 }
 
+// Addr returns the address of the server.
 func (h *Helper) Addr() string {
 	h.t.Helper()
 	return h.s.Addr()
 }
 
+// Dial dials an IRC connection to the server.
 func (h *Helper) Dial() irc.Conn {
 	h.t.Helper()
 	conn, err := h.s.Dial()
@@ -162,17 +179,20 @@ func (h *Helper) Dial() irc.Conn {
 	return conn
 }
 
+// CloseConn closes an IRC conn, asserting that it was successfully closed.
 func (h *Helper) CloseConn(conn irc.Conn) {
 	h.t.Helper()
 	assert.NilError(h.t, ignoreClose(conn.Close()))
 }
 
+// SendWithConn sends a message via an IRC conn, asserts its success, and sleeps.
 func (h *Helper) SendWithConn(conn irc.Encoder, m *irc.Message) {
 	h.t.Helper()
 	assert.NilError(h.t, conn.Encode(m))
 	h.Sleep()
 }
 
+// AssertMessages asserts that the given messages match the expected messages.
 func (h *Helper) AssertMessages(gotP *[]*irc.Message, want ...*irc.Message) {
 	h.t.Helper()
 

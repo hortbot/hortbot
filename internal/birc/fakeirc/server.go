@@ -23,6 +23,7 @@ const ChannelTag = "test-channel"
 // ErrStopped is returned by Server.Send if the server has been stopped.
 var ErrStopped = errors.New("fakeirc: server is stopped")
 
+// Server is a fake IRC server for use in testing.
 type Server struct {
 	stopChan chan struct{}
 	stopped  uint32
@@ -44,6 +45,7 @@ type Server struct {
 	recordPings bool
 }
 
+// Start starts a new fake IRC server.
 func Start(opts ...Option) (*Server, error) {
 	s := &Server{
 		stopChan: make(chan struct{}),
@@ -79,6 +81,7 @@ func Start(opts ...Option) (*Server, error) {
 	return s, nil
 }
 
+// Stop stops the server and waits for all worker goroutines to exit.
 func (s *Server) Stop() error {
 	if atomic.SwapUint32(&s.stopped, 1) == 0 {
 		defer close(s.recvChan)
@@ -95,10 +98,12 @@ func (s *Server) Stop() error {
 	return s.g.WaitIgnoreStop()
 }
 
+// Incoming returns the channel of messages being sent to the server from clients.
 func (s *Server) Incoming() <-chan *irc.Message {
 	return s.recvChan
 }
 
+// Send sends a message as the server to all relevent clients.
 func (s *Server) Send(ctx context.Context, m *irc.Message) error {
 	select {
 	case s.sendChan <- m:
@@ -110,10 +115,12 @@ func (s *Server) Send(ctx context.Context, m *irc.Message) error {
 	}
 }
 
+// Addr gets the address the server is listening on.
 func (s *Server) Addr() string {
 	return s.listener.Addr().String()
 }
 
+// Dial dials a new IRC connnection to the server, handling TLS if needed.
 func (s *Server) Dial() (irc.Conn, error) {
 	if s.tlsConfig == nil {
 		return irc.BaseDial(s.Addr())
@@ -276,20 +283,24 @@ func TagChannel(m *irc.Message, channel string) *irc.Message {
 	return m
 }
 
+// Option configures the server.
 type Option func(s *Server)
 
+// TLS enables TLS for the server given a TLS config.
 func TLS(config *tls.Config) Option {
 	return func(s *Server) {
 		s.tlsConfig = config
 	}
 }
 
+// Pong controls whether or not the server responds to PINGS with PONGS.
 func Pong(enable bool) Option {
 	return func(s *Server) {
 		s.pong = enable
 	}
 }
 
+// RecordPings enables recording of incoming pings the incoming channel.
 func RecordPings(enable bool) Option {
 	return func(s *Server) {
 		s.recordPings = enable

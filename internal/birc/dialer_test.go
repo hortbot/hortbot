@@ -18,7 +18,7 @@ func TestDialerCanceled(t *testing.T) {
 
 	h := fakeirc.NewHelper(ctx, t)
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	d := birc.Dialer{
 		Addr:     h.Addr(),
@@ -50,7 +50,7 @@ func TestDialerBadUpgrade(t *testing.T) {
 
 	h := fakeirc.NewHelper(ctx, t, fakeirc.TLS(tlsConfig))
 	defer h.StopServer()
-	serverMessages := h.CollectFromServer()
+	serverMessages := h.CollectSentToServer()
 
 	d := birc.Dialer{
 		Addr:      h.Addr(),

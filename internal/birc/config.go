@@ -43,8 +43,8 @@ type Config struct {
 	PingDeadline time.Duration
 }
 
-func (c *Config) Setup() {
-	c.UserConfig.Setup()
+func (c *Config) setup() {
+	c.UserConfig.setup()
 
 	if c.Dialer == nil {
 		c.Dialer = &DefaultDialer
@@ -77,7 +77,7 @@ type UserConfig struct {
 	ReadOnly bool
 }
 
-func (u *UserConfig) Setup() {
+func (u *UserConfig) setup() {
 	u.Nick = strings.ToLower(u.Nick)
 
 	if u.Nick == "" {
@@ -87,6 +87,7 @@ func (u *UserConfig) Setup() {
 	}
 }
 
+// PoolConfig configures a connection pool.
 type PoolConfig struct {
 	// Config is the main IRC connection configuration.
 	Config
@@ -104,8 +105,8 @@ type PoolConfig struct {
 	PruneInterval time.Duration
 }
 
-func (p *PoolConfig) Setup() {
-	p.Config.Setup()
+func (p *PoolConfig) setup() {
+	p.Config.setup()
 
 	if p.MaxChannelsPerSubConn <= 0 {
 		p.MaxChannelsPerSubConn = DefaultMaxChannelsPerSubConn
