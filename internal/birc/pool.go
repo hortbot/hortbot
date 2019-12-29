@@ -605,7 +605,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		// best-effort basis; the error below should only be returned if the
 		// context was cancelled (since this context is the pool's context).
 		if err := p.doJoinPart(ctx, true, true, joined...); err != nil {
-			return err
+			ctxlog.Error(ctx, "error rejoining lost channels", zap.Error(err))
 		}
 
 		return nil
