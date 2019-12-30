@@ -1,3 +1,5 @@
+{% import "github.com/hortbot/hortbot/internal/version" %}
+
 {% code
 type AboutPage struct {
     BasePage
@@ -18,9 +20,14 @@ type AboutPage struct {
 
         <div class="columns">
             <div class="column is-8 is-offset-2 has-text-centered">
-                {%= p.PageBrand() %} is a Twitch IRC bot, written in Go.
-                You can find its source code on
-                <a href="https://github.com/hortbot/hortbot">GitHub here</a>.
+                <p>
+                    {%= p.PageBrand() %} is a Twitch IRC bot, written in Go.
+                    You can find its source code on
+                    <a href="https://github.com/hortbot/hortbot">GitHub here</a>.
+                </p>
+                <p>
+                    This site is currently running version <code>{%s version.Version() %}</code>.
+                </p>
             </div>
         </div>
     </div>

@@ -4,6 +4,8 @@
 package templates
 
 import (
+	"github.com/hortbot/hortbot/internal/version"
+
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"
@@ -50,11 +52,18 @@ func (p *AboutPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
         <div class="columns">
             <div class="column is-8 is-offset-2 has-text-centered">
-                `)
+                <p>
+                    `)
 	p.StreamPageBrand(qw422016)
 	qw422016.N().S(` is a Twitch IRC bot, written in Go.
-                You can find its source code on
-                <a href="https://github.com/hortbot/hortbot">GitHub here</a>.
+                    You can find its source code on
+                    <a href="https://github.com/hortbot/hortbot">GitHub here</a>.
+                </p>
+                <p>
+                    This site is currently running version <code>`)
+	qw422016.E().S(version.Version())
+	qw422016.N().S(`</code>.
+                </p>
             </div>
         </div>
     </div>
