@@ -325,8 +325,6 @@ func handleSession(ctx context.Context, s *session) error {
 		return err
 	}
 
-	s.N = s.Channel.MessageCount
-
 	if ok, err := tryCommand(ctx, s); ok || err != nil {
 		switch err {
 		case errNotAuthorized, errBuiltinDisabled, errInCooldown:

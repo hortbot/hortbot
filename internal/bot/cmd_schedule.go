@@ -90,7 +90,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		scheduled.CronExpression = pattern
 		scheduled.MessageDiff = messageDiff
 		scheduled.Enabled = true
-		scheduled.LastCount = s.N
+		scheduled.LastCount = s.Channel.MessageCount
 		scheduled.Editor = s.User
 
 		columns := boil.Whitelist(
@@ -112,7 +112,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 			Enabled:        true,
 			CronExpression: pattern,
 			MessageDiff:    messageDiff,
-			LastCount:      s.N,
+			LastCount:      s.Channel.MessageCount,
 			Creator:        s.User,
 			Editor:         s.User,
 		}
@@ -203,7 +203,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	scheduled.Enabled = enable
-	scheduled.LastCount = s.N
+	scheduled.LastCount = s.Channel.MessageCount
 	scheduled.Editor = s.User
 
 	columns := boil.Whitelist(

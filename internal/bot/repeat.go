@@ -138,7 +138,6 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
 			Origin:     channel.BotName,
 			IRCChannel: channel.Name,
 			RoomID:     channel.UserID,
-			N:          channel.MessageCount,
 		}
 
 		info := runner.info()

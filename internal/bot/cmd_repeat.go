@@ -93,7 +93,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		repeat.Delay = delay
 		repeat.MessageDiff = messageDiff
 		repeat.Enabled = true
-		repeat.LastCount = s.N
+		repeat.LastCount = s.Channel.MessageCount
 		repeat.Editor = s.User
 		repeat.InitTimestamp = null.Time{}
 
@@ -117,7 +117,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 			Enabled:       true,
 			Delay:         delay,
 			MessageDiff:   messageDiff,
-			LastCount:     s.N,
+			LastCount:     s.Channel.MessageCount,
 			Creator:       s.User,
 			Editor:        s.User,
 		}
@@ -208,7 +208,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	repeat.Enabled = enable
-	repeat.LastCount = s.N
+	repeat.LastCount = s.Channel.MessageCount
 	repeat.Editor = s.User
 	repeat.InitTimestamp = null.Time{}
 

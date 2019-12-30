@@ -43,7 +43,6 @@ type session struct {
 	Start   time.Time
 	TMISent time.Time
 
-	N          int64
 	ID         string
 	RoomID     int64
 	IRCChannel string

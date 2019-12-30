@@ -51,7 +51,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 		return "(_" + action + "_)", nil
 	case "MESSAGE_COUNT":
-		return strconv.FormatInt(s.N, 10), nil
+		return strconv.FormatInt(s.Channel.MessageCount, 10), nil
 	case "SONG":
 		return s.actionSong(ctx, 0, false)
 	case "SONG_URL":

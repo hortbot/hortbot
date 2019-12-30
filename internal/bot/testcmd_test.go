@@ -97,7 +97,7 @@ func init() {
 
 	bot.TestingBuiltin("testing_message_count",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
-			return s.Replyf(ctx, "%v", s.N)
+			return s.Replyf(ctx, "%v", s.Channel.MessageCount)
 		},
 		bot.LevelEveryone,
 	)
