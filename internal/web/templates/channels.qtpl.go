@@ -60,7 +60,7 @@ func (p *ChannelsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                         <a class="list-item" href="/c/`)
 		qw422016.N().U(channel.Name)
 		qw422016.N().S(`">`)
-		qw422016.E().S(channel.Name)
+		qw422016.E().S(displayNameFor(channel))
 		qw422016.N().S(`</a>
                     `)
 	}
@@ -85,4 +85,11 @@ func (p *ChannelsPage) PageBody() string {
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016
+}
+
+func displayNameFor(channel *models.Channel) string {
+	if channel.DisplayName != "" {
+		return channel.DisplayName
+	}
+	return channel.Name
 }

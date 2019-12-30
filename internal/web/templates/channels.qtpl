@@ -25,7 +25,7 @@ type ChannelsPage struct {
             <div class="column is-8 is-offset-2">
                 <div class="list">
                     {% for _, channel := range p.Channels %}
-                        <a class="list-item" href="/c/{%u channel.Name %}">{%s channel.Name %}</a>
+                        <a class="list-item" href="/c/{%u channel.Name %}">{%s displayNameFor(channel) %}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -33,3 +33,10 @@ type ChannelsPage struct {
     </div>
 </section>
 {% endfunc %}
+
+{% code func displayNameFor(channel *models.Channel) string {
+    if channel.DisplayName != "" {
+        return channel.DisplayName
+    }
+    return channel.Name
+} %}

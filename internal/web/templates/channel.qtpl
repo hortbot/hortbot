@@ -14,7 +14,7 @@ type ChannelPage struct {
 %}
 
 {% func (p *ChannelPage) PageTitle() %}
-{%= p.PageBrand() %} - {%s p.Channel.Name %}
+{%= p.PageBrand() %} - {%s displayNameFor(p.Channel) %}
 {% endfunc %}
 
 
@@ -79,7 +79,7 @@ function timeSorter(a, b) {
     {%= p.Sidebar("overview") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span>
         <hr>
 
         <a class="button is-outlined" href="https://www.twitch.tv/{%u p.Channel.Name %}" target="_blank">
@@ -181,7 +181,7 @@ Unknown
     {%= p.Sidebar("commands") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Commands</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Commands</span>
         <hr>
 
         {% if len(p.Commands) == 0 %}
@@ -235,7 +235,7 @@ type ChannelQuotesPage struct {
     {%= p.Sidebar("quotes") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Quotes</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Quotes</span>
         <hr>
 
         {% if len(p.Quotes) == 0 %}
@@ -286,7 +286,7 @@ type ChannelAutorepliesPage struct {
     {%= p.Sidebar("autoreplies") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Autoreplies</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Autoreplies</span>
         <hr>
 
         {% if len(p.Autoreplies) == 0 %}
@@ -344,7 +344,7 @@ type ChannelListsPage struct {
     {%= p.Sidebar("lists") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Lists</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Lists</span>
         <hr>
 
         {% if len(p.Lists) == 0 %}
@@ -440,7 +440,7 @@ type ChannelRegularsPage struct {
     {%= p.Sidebar("regulars") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Regulars</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Regulars</span>
         <hr>
 
         {% if len(p.Channel.CustomRegulars) == 0 %}
@@ -469,7 +469,7 @@ type ChannelRulesPage struct {
     {%= p.Sidebar("chatrules") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Chat rules</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Chat rules</span>
         <hr>
 
         <h2>Allowed URLs</h2>
@@ -522,7 +522,7 @@ type ChannelScheduledPage struct {
     {%= p.Sidebar("scheduled") %}
 
     <div class="column is-main-content content">
-        <span class="title is-1">{%s p.Channel.Name %}</span><span class="subtitle is-3">Repeated / scheduled commands</span>
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Repeated / scheduled commands</span>
         <hr>
 
         <h2>Repeated commands</h2>

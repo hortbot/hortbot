@@ -30,7 +30,7 @@ func (p *ChannelPage) StreamPageTitle(qw422016 *qt422016.Writer) {
 `)
 	p.StreamPageBrand(qw422016)
 	qw422016.N().S(` - `)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`
 `)
 }
@@ -217,7 +217,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span>
         <hr>
 
@@ -404,7 +404,7 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Commands</span>
         <hr>
 
@@ -499,7 +499,7 @@ func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Quotes</span>
         <hr>
 
@@ -585,7 +585,7 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Autoreplies</span>
         <hr>
 
@@ -684,7 +684,7 @@ func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Lists</span>
         <hr>
 
@@ -839,7 +839,7 @@ func (p *ChannelRegularsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Regulars</span>
         <hr>
 
@@ -897,7 +897,7 @@ func (p *ChannelRulesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Chat rules</span>
         <hr>
 
@@ -1013,7 +1013,7 @@ func (p *ChannelScheduledPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
     <div class="column is-main-content content">
         <span class="title is-1">`)
-	qw422016.E().S(p.Channel.Name)
+	qw422016.E().S(displayNameFor(p.Channel))
 	qw422016.N().S(`</span><span class="subtitle is-3">Repeated / scheduled commands</span>
         <hr>
 
