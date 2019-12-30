@@ -101,5 +101,8 @@ func (pe plainError) Error() string {
 // PlainError is like zap.Error, but won't also include extra debugging info
 // (which is duplicated in some logging levels).
 func PlainError(err error) zap.Field {
+	if err == nil {
+		return zap.Error(nil)
+	}
 	return zap.Error(plainError{e: err})
 }
