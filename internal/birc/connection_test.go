@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/birc"
+	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/birc/fakeirc"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
@@ -674,4 +675,66 @@ func TestConnectionWaitCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	assert.Equal(t, c.WaitUntilReady(ctx), context.Canceled)
+}
+
+func TestConnectionSendFrom(t *testing.T) {
+	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
+		serverMessages := h.CollectSentToServer()
+
+		c := birc.Config{
+			UserConfig: birc.UserConfig{
+				Nick: "nick",
+				Pass: "pass",
+			},
+			Dialer: &d,
+		}
+
+		connErr := make(chan error, 1)
+		conn := birc.NewConnection(c)
+
+		go func() {
+			connErr <- conn.Run(ctx)
+		}()
+
+		clientMessages := h.CollectFromChannel(conn.Incoming())
+
+		sendFrom := make(chan breq.Send)
+		conn.SendFrom(sendFrom)
+
+		assert.NilError(t, conn.WaitUntilReady(ctx))
+		h.Sleep()
+
+		m := &irc.Message{Command: "TEST"}
+
+		sendFrom <- breq.NewSend(m)
+		h.Sleep()
+
+		close(sendFrom)
+		h.Sleep()
+
+		sendFrom = make(chan breq.Send)
+		conn.SendFrom(sendFrom)
+		sendFrom <- breq.NewSend(m)
+		h.Sleep()
+
+		quitErr := conn.Quit(ctx)
+		if quitErr != birc.ErrConnectionClosed {
+			assert.NilError(t, quitErr)
+		}
+
+		assert.Equal(t, io.EOF, errFromErrChan(ctx, connErr))
+
+		h.StopServer()
+		h.Wait()
+
+		h.AssertMessages(serverMessages,
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+			m,
+			m,
+			ircx.Quit(),
+		)
+
+		h.AssertMessages(clientMessages)
+	})
 }

@@ -3,6 +3,7 @@ package birc
 import (
 	"context"
 
+	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/jakebailey/irc"
 )
 
@@ -28,4 +29,11 @@ func (p *Pool) Quit(ctx context.Context) error {
 func (p *Pool) ForceSubconn(ctx context.Context) error {
 	_, err := p.joinableConn(ctx, true)
 	return err
+}
+
+// SendFrom sets a new sendFrom chan.
+//
+// Exported for testing only.
+func (c *Connection) SendFrom(ch <-chan breq.Send) {
+	c.sendFrom(ch)
 }
