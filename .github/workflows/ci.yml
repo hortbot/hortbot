@@ -102,6 +102,7 @@ jobs:
       - name: Build image
         run: |
           export HB_VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+          echo Building version $HB_VERSION
           docker build -t hortbot/hortbot --build-arg version=$HB_VERSION .
           echo "::set-env name=HB_VERSION::$HB_VERSION"
 
