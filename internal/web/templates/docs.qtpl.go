@@ -320,7 +320,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
             <h3 class="title">Schedule</h3>
 
             <p>
-                The schedule command sets up a command repetition via a <a href="https://en.wikipedia.org/wiki/Cron" target="_blank">cron expression</a>.
+                The schedule command sets up a command repetition via a <a href="https://crontab.guru/" target="_blank">cron expression</a>.
                 Like repeated commands, a message difference can be specified.
             </p>
 
