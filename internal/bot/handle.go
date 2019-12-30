@@ -320,8 +320,9 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	s.Channel.MessageCount++
+	s.Channel.LastSeen = s.Deps.Clock.Now()
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount)); err != nil {
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount, models.ChannelColumns.LastSeen)); err != nil {
 		return err
 	}
 

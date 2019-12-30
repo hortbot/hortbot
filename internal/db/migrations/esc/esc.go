@@ -253,6 +253,28 @@ bwPeLhwC6A1hph++IZVh/Ab1hgB8d3s7j9+M/gkAAP//lLnLihcdAAA=
 `,
 	},
 
+	"/20191230093743_add_last_seen.down.sql": {
+		name:    "20191230093743_add_last_seen.down.sql",
+		local:   "20191230093743_add_last_seen.down.sql",
+		size:    61,
+		modtime: 0,
+		compressed: `
+H4sIAAAAAAAC/3Jydff0s+bicvQJcQ1SCHF08nFVSM5IzMtLzSlWcAnyD1Bw9vcJ9fVTyEksLokvTk3N
+s+bicvb39fUMseYCBAAA//+h4UtuPQAAAA==
+`,
+	},
+
+	"/20191230093743_add_last_seen.up.sql": {
+		name:    "20191230093743_add_last_seen.up.sql",
+		local:   "20191230093743_add_last_seen.up.sql",
+		size:    95,
+		modtime: 0,
+		compressed: `
+H4sIAAAAAAAC/wTAwQrCMAwG4Hue4j/qM/TUrVUGaQqS4lGKFBS2IiQnn37fku+bBKLImh/QuHDG+9Pn
+HLshpoS1ciuCvZu/bIwJ/x7DvB8//yPlW2yskPq8XCFVIY05EK21lE0DnQEAAP//+j39Sl8AAAA=
+`,
+	},
+
 	"/": {
 		name:  "/",
 		local: `.`,
@@ -265,5 +287,7 @@ var _escDirs = map[string][]os.FileInfo{
 	".": {
 		_escData["/20190504194418_initial_schema.down.sql"],
 		_escData["/20190504194418_initial_schema.up.sql"],
+		_escData["/20191230093743_add_last_seen.down.sql"],
+		_escData["/20191230093743_add_last_seen.up.sql"],
 	},
 }

@@ -78,6 +78,7 @@ type Channel struct {
 	SubMessageEnabled           bool              `boil:"sub_message_enabled" json:"sub_message_enabled" toml:"sub_message_enabled" yaml:"sub_message_enabled"`
 	ResubMessage                string            `boil:"resub_message" json:"resub_message" toml:"resub_message" yaml:"resub_message"`
 	ResubMessageEnabled         bool              `boil:"resub_message_enabled" json:"resub_message_enabled" toml:"resub_message_enabled" yaml:"resub_message_enabled"`
+	LastSeen                    time.Time         `boil:"last_seen" json:"last_seen" toml:"last_seen" yaml:"last_seen"`
 
 	R *channelR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L channelL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -137,6 +138,7 @@ var ChannelColumns = struct {
 	SubMessageEnabled           string
 	ResubMessage                string
 	ResubMessageEnabled         string
+	LastSeen                    string
 }{
 	ID:                          "id",
 	CreatedAt:                   "created_at",
@@ -191,6 +193,7 @@ var ChannelColumns = struct {
 	SubMessageEnabled:           "sub_message_enabled",
 	ResubMessage:                "resub_message",
 	ResubMessageEnabled:         "resub_message_enabled",
+	LastSeen:                    "last_seen",
 }
 
 // Generated where
@@ -302,6 +305,7 @@ var ChannelWhere = struct {
 	SubMessageEnabled           whereHelperbool
 	ResubMessage                whereHelperstring
 	ResubMessageEnabled         whereHelperbool
+	LastSeen                    whereHelpertime_Time
 }{
 	ID:                          whereHelperint64{field: "\"channels\".\"id\""},
 	CreatedAt:                   whereHelpertime_Time{field: "\"channels\".\"created_at\""},
@@ -356,6 +360,7 @@ var ChannelWhere = struct {
 	SubMessageEnabled:           whereHelperbool{field: "\"channels\".\"sub_message_enabled\""},
 	ResubMessage:                whereHelperstring{field: "\"channels\".\"resub_message\""},
 	ResubMessageEnabled:         whereHelperbool{field: "\"channels\".\"resub_message_enabled\""},
+	LastSeen:                    whereHelpertime_Time{field: "\"channels\".\"last_seen\""},
 }
 
 // ChannelRels is where relationship names are stored.
@@ -400,9 +405,9 @@ func (*channelR) NewStruct() *channelR {
 type channelL struct{}
 
 var (
-	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "message_count", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled"}
+	channelAllColumns            = []string{"id", "created_at", "updated_at", "user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "message_count", "mode", "ignored", "custom_owners", "custom_mods", "custom_regulars", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "permitted_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "filter_banned_phrases_patterns", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled", "last_seen"}
 	channelColumnsWithoutDefault = []string{"user_id", "name", "display_name", "bot_name", "active", "prefix", "bullet", "message_count", "mode", "cooldown", "last_fm", "parse_youtube", "extra_life_id", "raffle_enabled", "steam_id", "urban_enabled", "tweet", "roll_level", "roll_cooldown", "roll_default", "should_moderate", "display_warnings", "enable_warnings", "timeout_duration", "enable_filters", "filter_links", "subs_may_link", "filter_caps", "filter_caps_min_chars", "filter_caps_percentage", "filter_caps_min_caps", "filter_emotes", "filter_emotes_max", "filter_emotes_single", "filter_symbols", "filter_symbols_percentage", "filter_symbols_min_symbols", "filter_me", "filter_max_length", "filter_banned_phrases", "sub_message", "sub_message_enabled", "resub_message", "resub_message_enabled"}
-	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns"}
+	channelColumnsWithDefault    = []string{"id", "created_at", "updated_at", "ignored", "custom_owners", "custom_mods", "custom_regulars", "permitted_links", "filter_banned_phrases_patterns", "last_seen"}
 	channelPrimaryKeyColumns     = []string{"id"}
 )
 

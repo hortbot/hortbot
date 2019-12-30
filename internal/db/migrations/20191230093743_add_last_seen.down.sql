@@ -1,0 +1,5 @@
+BEGIN;
+
+ALTER TABLE channels DROP COLUMN last_seen;
+
+COMMIT;
