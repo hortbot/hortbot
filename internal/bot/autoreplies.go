@@ -6,9 +6,11 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
 	"go.opencensus.io/trace"
+	"go.uber.org/zap"
 )
 
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
@@ -30,6 +32,7 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 	for _, autoreply := range autoreplies {
 		re, err := s.Deps.ReCache.Compile(autoreply.Trigger)
 		if err != nil {
+			ctxlog.Warn(ctx, "failed to compile regex", zap.Error(err))
 			continue
 		}
 
@@ -52,7 +55,8 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 		}
 
 		if !allowed {
-			return true, nil
+			// Allow further autoreplies to match.
+			continue
 		}
 
 		autoreply.Count++
