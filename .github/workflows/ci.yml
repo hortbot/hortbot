@@ -108,7 +108,7 @@ jobs:
       - name: Push image
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
           docker tag hortbot/hortbot hortbot/hortbot:$VERSION
           # docker push hortbot/hortbot
           # docker push hortbot/hortbot:$VERSION
