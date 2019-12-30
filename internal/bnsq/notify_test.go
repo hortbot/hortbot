@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
@@ -18,8 +17,6 @@ import (
 )
 
 func TestNotify(t *testing.T) {
-	defer leaktest.Check(t)()
-
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()

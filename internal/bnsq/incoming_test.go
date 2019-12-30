@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
@@ -16,8 +15,6 @@ import (
 )
 
 func TestIncoming(t *testing.T) {
-	defer leaktest.Check(t)()
-
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()

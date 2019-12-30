@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
@@ -17,8 +16,6 @@ import (
 )
 
 func TestSendMessage(t *testing.T) {
-	defer leaktest.Check(t)()
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -75,8 +72,6 @@ func TestSendMessage(t *testing.T) {
 }
 
 func TestSendMessageBadAddr(t *testing.T) {
-	defer leaktest.Check(t)()
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -115,8 +110,6 @@ func TestSendMessageBadAddr(t *testing.T) {
 }
 
 func TestSendMessageSubscriberBadChannel(t *testing.T) {
-	defer leaktest.Check(t)()
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -148,8 +141,6 @@ func TestSendMessageSubscriberBadChannel(t *testing.T) {
 }
 
 func TestMaxAge(t *testing.T) {
-	defer leaktest.Check(t)()
-
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()
