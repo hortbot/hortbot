@@ -35,16 +35,12 @@ func (t *testingHelper) checkUserNameID(name string, id int64) {
 		t.names = make(map[int64]string)
 	}
 
-	if expectedID, ok := t.userIDs[name]; ok {
-		if id != expectedID {
-			panic(testingPanic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id)))
-		}
+	if expectedID, ok := t.userIDs[name]; ok && id != expectedID {
+		panic(testingPanic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id)))
 	}
 
-	if expectedName, ok := t.names[id]; ok {
-		if name != expectedName {
-			panic(testingPanic(fmt.Sprintf("%v previously had name %v, now %v", id, expectedName, name)))
-		}
+	if expectedName, ok := t.names[id]; ok && name != expectedName {
+		panic(testingPanic(fmt.Sprintf("%v previously had name %v, now %v", id, expectedName, name)))
 	}
 
 	t.userIDs[name] = id
