@@ -47,7 +47,7 @@ func (args *Jaeger) DriverName(ctx context.Context, driverName string, debug boo
 
 	driverName, err := ocsql.Register(driverName, ocsql.WithAllTraceOptions(), ocsql.WithQueryParams(debug))
 	if err != nil {
-		ctxlog.Fatal(ctx, "error registering osql driver", zap.Error(err))
+		ctxlog.Fatal(ctx, "error registering ocsql driver", zap.Error(err))
 	}
 	return driverName
 }
