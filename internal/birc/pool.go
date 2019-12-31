@@ -239,14 +239,10 @@ func (p *Pool) connManager(ctx context.Context) error {
 	for {
 		select {
 		case req := <-p.joinPartChan:
-			if err := p.handleJoinPart(ctx, req); err != nil {
-				return err
-			}
+			p.handleJoinPart(ctx, req)
 
 		case req := <-p.syncJoinedChan:
-			if err := p.handleSyncJoined(ctx, req); err != nil {
-				return err
-			}
+			p.handleSyncJoined(ctx, req)
 
 		case <-prune:
 			p.prune(ctx)
@@ -271,15 +267,15 @@ func (p *Pool) connManager(ctx context.Context) error {
 }
 
 // Only return an error if the entire pool should stop.
-func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) error {
+func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) {
 	ctx = correlation.WithID(ctx, req.XID)
 	err := p.joinPart(ctx, req.Channel, req.Join, req.Force)
 	req.Finish(err)
-	return p.joinSleep(ctx)
+	p.joinSleep(ctx)
 }
 
 // Only return an error if the entire pool should stop.
-func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) error {
+func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) {
 	ctx = correlation.WithID(ctx, req.XID)
 	// TODO: Priorities for join orders.
 	toPart, toJoin := p.joinPartChanges(req.Channels)
@@ -288,7 +284,7 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) error 
 	for _, ch := range toPart {
 		if err := p.joinPart(ctx, ch, false, true); err != nil {
 			req.Finish(err)
-			return ctx.Err()
+			return
 		}
 	}
 
@@ -299,28 +295,23 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) error 
 			// No return here; we want to do the sleep below.
 		}
 
-		if sErr := p.joinSleep(ctx); sErr != nil {
-			return sErr
-		}
+		p.joinSleep(ctx)
 
-		if err != nil {
-			return ctx.Err()
+		if err != nil || ctx.Err() != nil {
+			return
 		}
 	}
 
 	req.Finish(nil)
-	return nil
 }
 
-func (p *Pool) joinSleep(ctx context.Context) error {
+func (p *Pool) joinSleep(ctx context.Context) {
 	if p.joinRate > 0 {
 		select {
 		case <-time.After(p.joinRate):
 		case <-ctx.Done():
-			return ctx.Err()
 		}
 	}
-	return nil
 }
 
 func (p *Pool) joinPartChanges(want []string) ([]string, []string) {
