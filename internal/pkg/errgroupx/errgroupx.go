@@ -10,6 +10,7 @@ import (
 	"context"
 	"errors"
 
+	"go.opencensus.io/trace"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -19,8 +20,9 @@ var ErrStop = errors.New("errgroupx: stop")
 // Group wraps errgroup's Group, keeping the derived context to pass to
 // functions called via Go.
 type Group struct {
-	ctx context.Context
-	g   *errgroup.Group
+	ctx   context.Context
+	g     *errgroup.Group
+	trace bool
 }
 
 // FromContext returns a new Group derived from ctx.
@@ -28,11 +30,29 @@ type Group struct {
 // The derived Context is canceled the first time a function passed to Go
 // returns a non-nil error or the first time Wait returns, whichever occurs
 // first.
-func FromContext(ctx context.Context) *Group {
-	g, gctx := errgroup.WithContext(ctx)
-	return &Group{
+func FromContext(ctx context.Context, opts ...Option) *Group {
+	grp, gctx := errgroup.WithContext(ctx)
+
+	g := &Group{
 		ctx: gctx,
-		g:   g,
+		g:   grp,
+	}
+
+	for _, o := range opts {
+		o(g)
+	}
+
+	return g
+}
+
+// Option configures a Group.
+type Option func(*Group)
+
+// WithTrace enables OpenCensus tracing propagation from the main context to
+// function with with Go.
+func WithTrace() Option {
+	return func(g *Group) {
+		g.trace = true
 	}
 }
 
@@ -41,8 +61,13 @@ func FromContext(ctx context.Context) *Group {
 // The first call to return a non-nil error cancels the group; its error will be
 // returned by Wait.
 func (g *Group) Go(f func(context.Context) error) {
+	ctx := g.ctx
+	if !g.trace {
+		ctx = trace.NewContext(g.ctx, nil)
+	}
+
 	g.g.Go(func() error {
-		return f(g.ctx)
+		return f(ctx)
 	})
 }
 
