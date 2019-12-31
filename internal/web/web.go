@@ -529,19 +529,19 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Slice(repeated, func(i, j int) bool {
+		if repeated[i].Enabled != repeated[j].Enabled {
+			return repeated[i].Enabled
+		}
+
 		return repeated[i].R.CommandInfo.Name < repeated[j].R.CommandInfo.Name
 	})
 
-	sort.SliceStable(repeated, func(i, j int) bool {
-		return repeated[i].Enabled && !repeated[j].Enabled
-	})
-
 	sort.Slice(scheduled, func(i, j int) bool {
-		return scheduled[i].R.CommandInfo.Name < scheduled[j].R.CommandInfo.Name
-	})
+		if scheduled[i].Enabled != scheduled[j].Enabled {
+			return scheduled[i].Enabled
+		}
 
-	sort.SliceStable(scheduled, func(i, j int) bool {
-		return scheduled[i].Enabled && !scheduled[j].Enabled
+		return scheduled[i].R.CommandInfo.Name < scheduled[j].R.CommandInfo.Name
 	})
 
 	page := &templates.ChannelScheduledPage{
