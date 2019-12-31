@@ -150,20 +150,22 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
 
 		ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
+		var message string
+
 		if command := info.R.CustomCommand; command != nil {
-			return runCommandAndCount(ctx, s, info, command.Message, true)
+			message = command.Message
+		} else {
+			items := info.R.CommandList.Items
+
+			if len(items) == 0 {
+				return nil
+			}
+
+			i := s.Deps.Rand.Intn(len(items))
+			message = items[i]
 		}
 
-		items := info.R.CommandList.Items
-
-		if len(items) == 0 {
-			return nil
-		}
-
-		i := s.Deps.Rand.Intn(len(items))
-		item := items[i]
-
-		return runCommandAndCount(ctx, s, info, item, true)
+		return runCommandAndCount(ctx, s, info, message, true)
 	})
 }
 
