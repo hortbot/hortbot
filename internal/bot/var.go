@@ -9,9 +9,13 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries/qm"
+	"go.opencensus.io/trace"
 )
 
 func (s *session) VarGet(ctx context.Context, name string) (string, bool, error) {
+	ctx, span := trace.StartSpan(ctx, "VarGet")
+	defer span.End()
+
 	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err == sql.ErrNoRows {
 		return "", false, nil
@@ -25,6 +29,11 @@ func (s *session) VarGet(ctx context.Context, name string) (string, bool, error)
 }
 
 func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string, bool, error) {
+	ctx, span := trace.StartSpan(ctx, "VarGetByChannel")
+	defer span.End()
+
+	// TODO: Do this in a psql query, not in Go.
+
 	c, err := models.Channels(
 		models.ChannelWhere.Name.EQ(strings.ToLower(ch)),
 		qm.Select(models.ChannelColumns.ID),
@@ -55,6 +64,9 @@ var varConflictCols = []string{
 }
 
 func (s *session) VarSet(ctx context.Context, name, value string) error {
+	ctx, span := trace.StartSpan(ctx, "VarSet")
+	defer span.End()
+
 	v := &models.Variable{
 		ChannelID: s.Channel.ID,
 		Name:      name,
@@ -65,10 +77,18 @@ func (s *session) VarSet(ctx context.Context, name, value string) error {
 }
 
 func (s *session) VarDelete(ctx context.Context, name string) error {
+	ctx, span := trace.StartSpan(ctx, "VarDelete")
+	defer span.End()
+
 	return s.Channel.Variables(models.VariableWhere.Name.EQ(name)).DeleteAll(ctx, s.Tx)
 }
 
 func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n int64, badVar bool, err error) {
+	ctx, span := trace.StartSpan(ctx, "VarIncrement")
+	defer span.End()
+
+	// TODO: Do this in a psql query, not in Go.
+
 	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
 
 	if err == sql.ErrNoRows {

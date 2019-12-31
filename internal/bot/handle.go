@@ -101,6 +101,9 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 }
 
 func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) error {
+	ctx, span := trace.StartSpan(ctx, "handlePrivMsg")
+	defer span.End()
+
 	start := b.deps.Clock.Now()
 
 	s, err := b.buildSession(ctx, origin, m)
@@ -113,6 +116,11 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 	}
 
 	s.Start = start
+
+	span.AddAttributes(
+		trace.Int64Attribute("roomID", s.RoomID),
+		trace.StringAttribute("channel", s.IRCChannel),
+	)
 	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
 	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {

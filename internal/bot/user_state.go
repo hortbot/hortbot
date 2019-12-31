@@ -5,9 +5,13 @@ import (
 	"time"
 
 	"github.com/jakebailey/irc"
+	"go.opencensus.io/trace"
 )
 
 func (b *Bot) handleUserState(ctx context.Context, origin string, m *irc.Message) error {
+	ctx, span := trace.StartSpan(ctx, "handleUserState")
+	defer span.End()
+
 	if len(m.Tags) == 0 {
 		return errInvalidMessage
 	}
