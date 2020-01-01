@@ -80,6 +80,7 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 		m := &message{}
 
 		if err := json.Unmarshal(msg.Body, m); err != nil {
+			ctxlog.Warn(ctx, "error decoding message", zap.Error(err))
 			return nil
 		}
 

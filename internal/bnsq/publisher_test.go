@@ -15,6 +15,8 @@ import (
 )
 
 func TestPublishNoRun(t *testing.T) {
+	t.Parallel()
+
 	p := newPublisher("localhost:invalid")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 	defer cancel()
@@ -24,6 +26,8 @@ func TestPublishNoRun(t *testing.T) {
 }
 
 func TestPublishBadConfig(t *testing.T) {
+	t.Parallel()
+
 	badConfig := nsq.NewConfig()
 	badConfig.SampleRate = -1
 	p := newPublisher("localhost:invalid", PublisherConfig(badConfig))
@@ -36,6 +40,8 @@ func TestPublishBadConfig(t *testing.T) {
 }
 
 func TestPublishUnmarshalable(t *testing.T) {
+	t.Parallel()
+
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()

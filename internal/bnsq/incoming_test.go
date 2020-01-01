@@ -15,6 +15,8 @@ import (
 )
 
 func TestIncoming(t *testing.T) {
+	t.Parallel()
+
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()
