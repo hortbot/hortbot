@@ -228,11 +228,11 @@ func (c *Connection) receiver(ctx context.Context) error {
 		}
 
 		if m.Command == "PING" {
-			pong := *m
+			pong := ircx.Clone(m)
 			pong.Command = "PONG"
 
 			go func() {
-				if err := c.send(ctx, &pong); err != nil {
+				if err := c.send(ctx, pong); err != nil {
 					ctxlog.Error(ctx, "error sending pong", zap.Error(err))
 				}
 			}()
@@ -245,9 +245,9 @@ func (c *Connection) receiver(ctx context.Context) error {
 			c.pongMu.RUnlock()
 
 			if pongChan != nil {
-				m2 := *m
+				m2 := ircx.Clone(m)
 				go func() {
-					pongChan <- &m2
+					pongChan <- m2
 				}()
 			}
 		}

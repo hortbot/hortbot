@@ -1,6 +1,7 @@
 package ircx
 
 import (
+	"reflect"
 	"testing"
 
 	"github.com/jakebailey/irc"
@@ -101,5 +102,55 @@ func TestMessages(t *testing.T) {
 
 	for _, test := range tests {
 		assert.DeepEqual(t, test.want, test.got)
+	}
+}
+
+func TestClone(t *testing.T) {
+	tests := []*irc.Message{
+		nil,
+		{},
+		{Command: "what"},
+		{
+			Tags: map[string]string{},
+		},
+		{
+			Tags: map[string]string{
+				"a": "b",
+				"c": "d",
+			},
+		},
+		Join("foo", "bar"),
+	}
+
+	for _, m := range tests {
+		m := m
+
+		name := "nil"
+		if m != nil {
+			name = m.String()
+		}
+
+		t.Run(name, func(t *testing.T) {
+			clone := Clone(m)
+
+			if m == nil {
+				assert.Assert(t, clone == nil)
+				return
+			}
+
+			assert.Assert(t, m != clone)
+
+			if m.Tags == nil {
+				assert.Assert(t, clone.Tags == nil)
+			} else {
+				assert.Assert(t, reflect.ValueOf(m.Tags).Pointer() != reflect.ValueOf(clone.Tags).Pointer())
+			}
+
+			if m.Params == nil {
+				assert.Assert(t, clone.Params == nil)
+			} else {
+				assert.Assert(t, reflect.ValueOf(m.Params).Pointer() != reflect.ValueOf(clone.Params).Pointer())
+			}
+		})
 	}
 }

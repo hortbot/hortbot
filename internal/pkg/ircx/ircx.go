@@ -97,3 +97,31 @@ func NormalizeChannels(names ...string) []string {
 
 	return out
 }
+
+// Clone clones an IRC message. The new message will not have any references
+// to the old message.
+func Clone(m *irc.Message) *irc.Message {
+	if m == nil {
+		return nil
+	}
+
+	m2 := *m
+
+	if m.Tags != nil {
+		tags := make(map[string]string, len(m.Tags))
+		for k, v := range m.Tags {
+			tags[k] = v
+		}
+		m2.Tags = tags
+	}
+
+	if m.Params != nil {
+		params := make([]string, len(m.Params))
+		for i, p := range m.Params {
+			params[i] = p
+		}
+		m2.Params = params
+	}
+
+	return &m2
+}

@@ -231,9 +231,9 @@ func (s *Server) handle(ctx context.Context, conn irc.Conn) error {
 			}
 		case "PING":
 			if s.pong {
-				pong := *m
+				pong := ircx.Clone(m)
 				pong.Command = "PONG"
-				if err := conn.Encode(&pong); err != nil {
+				if err := conn.Encode(pong); err != nil {
 					return err
 				}
 			}
