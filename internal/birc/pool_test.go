@@ -70,6 +70,55 @@ func TestPoolRunStop(t *testing.T) {
 	})
 }
 
+func TestPoolRunCancel(t *testing.T) {
+	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
+		ctx, cancel := context.WithCancel(ctx)
+
+		serverMessages := h.CollectSentToServer()
+
+		c := birc.PoolConfig{
+			Config: birc.Config{
+				UserConfig: birc.UserConfig{
+					Nick: "nick",
+					Pass: "pass",
+				},
+				Dialer: &d,
+			},
+			JoinRate: 100,
+		}
+
+		errChan := make(chan error, 1)
+		pool := birc.NewPool(c)
+		defer pool.Stop()
+
+		go func() {
+			errChan <- pool.Run(ctx)
+		}()
+
+		clientMessages := h.CollectFromChannel(pool.Incoming())
+
+		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
+
+		h.Sleep()
+		h.Sleep()
+		assert.Assert(t, pool.NumConns() == 1)
+
+		cancel()
+
+		assert.Equal(t, context.Canceled, <-errChan)
+
+		h.StopServer()
+		h.Wait()
+
+		h.AssertMessages(serverMessages,
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+		)
+		h.AssertMessages(clientMessages)
+	})
+}
+
 func TestPoolJoinOne(t *testing.T) {
 	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
 		serverMessages := h.CollectSentToServer()
