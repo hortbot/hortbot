@@ -882,6 +882,38 @@ func TestConnectionPongError(t *testing.T) {
 	assert.NilError(t, ctx.Err())
 }
 
+func TestConnectionPingError(t *testing.T) {
+	t.Parallel()
+	server, client := net.Pipe()
+
+	go readUntilAndClose(server, "PING")
+
+	iconn := birc.NewConnection(birc.Config{
+		UserConfig: birc.UserConfig{
+			Nick: "nick",
+			Pass: "pass",
+		},
+		Dialer:       birc.ConnDialer(client),
+		PingDeadline: time.Minute,
+		PingInterval: time.Millisecond,
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	runErr := make(chan error)
+
+	go func() {
+		runErr <- iconn.Run(ctx)
+	}()
+
+	time.Sleep(100 * time.Millisecond)
+
+	assert.Assert(t, iconn.SendMessage(ctx, "target", "message") != nil)
+	assert.Assert(t, <-runErr != nil)
+	assert.NilError(t, ctx.Err())
+}
+
 func readUntilAndClose(r io.ReadCloser, s string) {
 	buf := &bytes.Buffer{}
 
