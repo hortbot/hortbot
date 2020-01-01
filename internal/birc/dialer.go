@@ -35,10 +35,16 @@ type Dialer struct {
 	// Dialer is the dialer used to connect to the IRC server. If unset, the
 	// default will be used.
 	Dialer *net.Dialer
+
+	conn net.Conn
 }
 
 // Dial dials a connection to a server.
 func (d Dialer) Dial(ctx context.Context) (conn net.Conn, err error) {
+	if d.conn != nil {
+		return d.conn, nil
+	}
+
 	dialer := d.Dialer
 	if dialer == nil {
 		dialer = &net.Dialer{}

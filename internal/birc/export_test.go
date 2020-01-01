@@ -2,6 +2,7 @@ package birc
 
 import (
 	"context"
+	"net"
 
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/jakebailey/irc"
@@ -36,4 +37,12 @@ func (p *Pool) ForceSubconn(ctx context.Context) error {
 // Exported for testing only.
 func (c *Connection) SendFrom(ch <-chan breq.Send) {
 	c.sendFrom(ch)
+}
+
+// ConnDialer returns a dialer which always uses the given conn,
+// rather than actually dialing an address.
+func ConnDialer(conn net.Conn) *Dialer {
+	return &Dialer{
+		conn: conn,
+	}
 }

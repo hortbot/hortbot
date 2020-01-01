@@ -1,9 +1,12 @@
 package birc_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
+	"net"
+	"strings"
 	"testing"
 	"time"
 
@@ -737,4 +740,158 @@ func TestConnectionSendFrom(t *testing.T) {
 
 		h.AssertMessages(clientMessages)
 	})
+}
+
+func TestConnectionBadMessage(t *testing.T) {
+	t.Parallel()
+
+	server, client := net.Pipe()
+
+	buf := &bytes.Buffer{}
+
+	go func() {
+		go buf.ReadFrom(server) //nolint:errcheck
+
+		_, err := server.Write([]byte(":\r\n"))
+		must(err)
+
+		time.Sleep(100 * time.Millisecond)
+		server.Close()
+	}()
+
+	iconn := birc.NewConnection(birc.Config{
+		UserConfig: birc.UserConfig{
+			Nick: "nick",
+			Pass: "pass",
+		},
+		Dialer: birc.ConnDialer(client),
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	go iconn.SendMessage(ctx, "target", "message") //nolint:errcheck
+
+	assert.Equal(t, iconn.Run(ctx), io.EOF)
+	assert.Equal(t, buf.String(), "PASS pass\r\nNICK nick\r\nPRIVMSG target :message\r\n")
+	assert.NilError(t, ctx.Err())
+}
+
+func TestConnectionSendError(t *testing.T) {
+	t.Parallel()
+	server, client := net.Pipe()
+
+	go readUntilAndClose(server, "PRIVMSG")
+
+	iconn := birc.NewConnection(birc.Config{
+		UserConfig: birc.UserConfig{
+			Nick: "nick",
+			Pass: "pass",
+		},
+		Dialer: birc.ConnDialer(client),
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	runErr := make(chan error)
+
+	go func() {
+		runErr <- iconn.Run(ctx)
+	}()
+
+	assert.ErrorContains(t, iconn.SendMessage(ctx, "target", "message"), "connection closed")
+	assert.Assert(t, <-runErr != nil)
+	assert.NilError(t, ctx.Err())
+}
+
+func TestConnectionRunError(t *testing.T) {
+	t.Parallel()
+
+	runTest := func(t *testing.T, cmd string, errMsg string) {
+		t.Helper()
+		t.Run(cmd, func(t *testing.T) {
+			t.Parallel()
+			server, client := net.Pipe()
+
+			go readUntilAndClose(server, cmd)
+
+			iconn := birc.NewConnection(birc.Config{
+				UserConfig: birc.UserConfig{
+					Nick: "nick",
+					Pass: "pass",
+				},
+				Caps:            []string{"something"},
+				InitialChannels: []string{"foobar"},
+				Dialer:          birc.ConnDialer(client),
+			})
+
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+			defer cancel()
+
+			assert.ErrorContains(t, iconn.Run(ctx), errMsg)
+			assert.NilError(t, ctx.Err())
+		})
+	}
+
+	runTest(t, "PASS", "sending pass")
+	runTest(t, "NICK", "sending nick")
+	runTest(t, "CAP", "sending capabilities")
+	runTest(t, "JOIN", "joining initial channels")
+}
+
+func TestConnectionPongError(t *testing.T) {
+	t.Parallel()
+	server, client := net.Pipe()
+
+	go readUntilAndClose(server, "PONG")
+
+	iconn := birc.NewConnection(birc.Config{
+		UserConfig: birc.UserConfig{
+			Nick: "nick",
+			Pass: "pass",
+		},
+		Dialer: birc.ConnDialer(client),
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+
+	runErr := make(chan error)
+
+	go func() {
+		runErr <- iconn.Run(ctx)
+	}()
+
+	server.Write([]byte("PING :hello\r\n")) //nolint:errcheck
+
+	time.Sleep(100 * time.Millisecond)
+
+	assert.ErrorContains(t, iconn.SendMessage(ctx, "target", "message"), "connection closed")
+	assert.Assert(t, <-runErr != nil)
+	assert.NilError(t, ctx.Err())
+}
+
+func readUntilAndClose(r io.ReadCloser, s string) {
+	buf := &bytes.Buffer{}
+
+	for {
+		var b [1]byte
+		_, err := r.Read(b[:])
+		if err == io.EOF {
+			return
+		}
+		buf.WriteByte(b[0])
+
+		if strings.Contains(buf.String(), s) {
+			r.Close()
+			return
+		}
+	}
+}
+
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
 }
