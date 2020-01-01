@@ -84,7 +84,7 @@ func NewPool(config PoolConfig) *Pool {
 
 		joinPartChan:   make(chan breq.JoinPart),
 		syncJoinedChan: make(chan breq.SyncJoined),
-		pruneChan:      make(chan struct{}, 1),
+		pruneChan:      make(chan struct{}),
 		joined:         make(map[string]bool),
 	}
 
@@ -246,19 +246,9 @@ func (p *Pool) connManager(ctx context.Context) error {
 
 		case <-prune:
 			p.prune(ctx)
-			select {
-			// Throw away any unneeded manual prune requests.
-			case <-p.pruneChan:
-			default:
-			}
 
 		case <-p.pruneChan:
 			p.prune(ctx)
-			select {
-			// Throw away any unneeded automatic prune requests.
-			case <-prune:
-			default:
-			}
 
 		case <-ctx.Done():
 			return ctx.Err()
@@ -290,14 +280,14 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) {
 
 	for _, ch := range toJoin {
 		err := p.joinPart(ctx, ch, true, true)
-		if err != nil {
-			req.Finish(err)
-			// No return here; we want to do the sleep below.
-		}
-
 		p.joinSleep(ctx)
 
-		if err != nil || ctx.Err() != nil {
+		if cErr := ctx.Err(); cErr != nil {
+			err = cErr
+		}
+
+		if err != nil {
+			req.Finish(err)
 			return
 		}
 	}
