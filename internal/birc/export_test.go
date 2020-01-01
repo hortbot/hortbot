@@ -43,6 +43,8 @@ func (c *Connection) SendFrom(ch <-chan breq.Send) {
 // rather than actually dialing an address.
 func ConnDialer(conn net.Conn) *Dialer {
 	return &Dialer{
-		conn: conn,
+		dial: func() (net.Conn, error) {
+			return conn, nil
+		},
 	}
 }

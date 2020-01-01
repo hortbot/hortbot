@@ -36,13 +36,13 @@ type Dialer struct {
 	// default will be used.
 	Dialer *net.Dialer
 
-	conn net.Conn
+	dial func() (net.Conn, error)
 }
 
 // Dial dials a connection to a server.
 func (d Dialer) Dial(ctx context.Context) (conn net.Conn, err error) {
-	if d.conn != nil {
-		return d.conn, nil
+	if d.dial != nil {
+		return d.dial()
 	}
 
 	dialer := d.Dialer
