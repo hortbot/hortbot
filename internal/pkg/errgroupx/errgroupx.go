@@ -77,11 +77,6 @@ func (g *Group) Wait() error {
 	return g.g.Wait()
 }
 
-// Ctx returns the group's context.
-func (g *Group) Ctx() context.Context {
-	return g.ctx
-}
-
 // Stop stops the group by running a function on it that returns ErrStop.
 func (g *Group) Stop() {
 	g.g.Go(func() error {
