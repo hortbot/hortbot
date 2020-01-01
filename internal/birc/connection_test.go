@@ -748,9 +748,13 @@ func TestConnectionBadMessage(t *testing.T) {
 	server, client := net.Pipe()
 
 	buf := &bytes.Buffer{}
+	done := make(chan struct{})
 
 	go func() {
-		go buf.ReadFrom(server) //nolint:errcheck
+		go func() {
+			defer close(done)
+			buf.ReadFrom(server) //nolint:errcheck
+		}()
 
 		_, err := server.Write([]byte(":\r\n"))
 		must(err)
@@ -773,8 +777,14 @@ func TestConnectionBadMessage(t *testing.T) {
 	go iconn.SendMessage(ctx, "target", "message") //nolint:errcheck
 
 	assert.Equal(t, iconn.Run(ctx), io.EOF)
-	assert.Equal(t, buf.String(), "PASS pass\r\nNICK nick\r\nPRIVMSG target :message\r\n")
+
+	select {
+	case <-done:
+	case <-ctx.Done():
+	}
+
 	assert.NilError(t, ctx.Err())
+	assert.Equal(t, buf.String(), "PASS pass\r\nNICK nick\r\nPRIVMSG target :message\r\n")
 }
 
 func TestConnectionSendError(t *testing.T) {
@@ -800,7 +810,7 @@ func TestConnectionSendError(t *testing.T) {
 		runErr <- iconn.Run(ctx)
 	}()
 
-	assert.ErrorContains(t, iconn.SendMessage(ctx, "target", "message"), "connection closed")
+	assert.Assert(t, iconn.SendMessage(ctx, "target", "message") != nil)
 	assert.Assert(t, <-runErr != nil)
 	assert.NilError(t, ctx.Err())
 }
@@ -867,7 +877,7 @@ func TestConnectionPongError(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	assert.ErrorContains(t, iconn.SendMessage(ctx, "target", "message"), "connection closed")
+	assert.Assert(t, iconn.SendMessage(ctx, "target", "message") != nil)
 	assert.Assert(t, <-runErr != nil)
 	assert.NilError(t, ctx.Err())
 }
