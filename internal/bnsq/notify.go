@@ -2,6 +2,9 @@ package bnsq
 
 import (
 	"context"
+
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"go.uber.org/zap"
 )
 
 const (
@@ -46,7 +49,8 @@ func (s *NotifySubscriber) Run(ctx context.Context) error {
 	return subscriber.run(ctx, func(m *message) error {
 		n := &ChannelUpdatesNotification{}
 		if err := m.payload(n); err != nil {
-			return err
+			ctxlog.Warn(ctx, "error decoding ChannelUpdatesNotification", zap.Error(err))
+			return nil
 		}
 		return s.OnNotifyChannelUpdates(n, &m.Metadata)
 	})

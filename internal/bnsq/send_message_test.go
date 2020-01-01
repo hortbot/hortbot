@@ -2,6 +2,8 @@ package bnsq_test
 
 import (
 	"context"
+	json "encoding/json"
+	atomic "sync/atomic"
 	"testing"
 	"time"
 
@@ -202,4 +204,50 @@ func TestMaxAge(t *testing.T) {
 	g.Stop()
 
 	assert.Equal(t, len(received), 0)
+}
+
+func TestSendMessageBadDecode(t *testing.T) {
+	t.Parallel()
+
+	addr, cleanup, err := dnsq.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	const (
+		origin  = "hortbot"
+		channel = "blue"
+	)
+
+	producer, err := nsq.NewProducer(addr, bnsq.DefaultConfig())
+	assert.NilError(t, err)
+	defer producer.Stop()
+
+	var count int64
+	inc := func(*bnsq.SendMessage, *bnsq.Metadata) error {
+		atomic.AddInt64(&count, 1)
+		return nil
+	}
+
+	subscriber := bnsq.SendMessageSubscriber{
+		Addr:          addr,
+		Origin:        origin,
+		Channel:       channel,
+		OnSendMessage: inc,
+	}
+
+	go subscriber.Run(ctx) //nolint:errcheck
+
+	b, err := json.Marshal(&bnsq.Message{
+		Payload: []byte("true"),
+	})
+	assert.NilError(t, err)
+
+	assert.NilError(t, producer.Publish(bnsq.SendMessageTopic+origin, b))
+
+	time.Sleep(100 * time.Millisecond)
+
+	assert.Equal(t, count, int64(0))
 }

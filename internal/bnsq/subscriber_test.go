@@ -6,9 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
-	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/nsqio/go-nsq"
 	"gotest.tools/v3/assert"
 )
@@ -18,9 +16,6 @@ func TestSubscriberBadMessage(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)

@@ -2,6 +2,9 @@ package bnsq
 
 import (
 	"context"
+
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"go.uber.org/zap"
 )
 
 const (
@@ -50,7 +53,8 @@ func (s *SendMessageSubscriber) Run(ctx context.Context) error {
 	return subscriber.run(ctx, func(m *message) error {
 		sm := &SendMessage{}
 		if err := m.payload(sm); err != nil {
-			return err
+			ctxlog.Warn(ctx, "error decoding SendMessage", zap.Error(err))
+			return nil
 		}
 		return s.OnSendMessage(sm, &m.Metadata)
 	})
