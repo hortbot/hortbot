@@ -2,7 +2,6 @@ package birc
 
 import (
 	"context"
-	"net"
 	"sort"
 	"sync"
 	"time"
@@ -81,12 +80,11 @@ func newConnection(config *Config) *Connection {
 // Run starts the connection and returns when the connection is closed.
 //
 // Once this function has returned, the connection cannot be reused.
-func (c *Connection) Run(ctx context.Context) (err error) {
+func (c *Connection) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	var nconn net.Conn
-	nconn, err = c.config.Dialer.Dial(ctx)
+	nconn, err := c.config.Dialer.Dial(ctx)
 	if err != nil {
 		return errors.Wrap(err, "dialing connection")
 	}
@@ -97,20 +95,7 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 	g := errgroupx.FromContext(ctx)
 
 	c.conn = irc.NewBaseConn(nconn)
-	defer func() {
-		cerr := c.Close()
-		if err == nil && cerr != nil {
-			err = cerr
-		}
-	}()
-
-	g.Go(func(ctx context.Context) error {
-		select {
-		case <-ctx.Done():
-		case <-c.closed:
-		}
-		return c.Close()
-	})
+	defer c.Close()
 
 	if c.config.UserConfig.Pass != "" {
 		if err := c.conn.Encode(ircx.Pass(c.config.UserConfig.Pass)); err != nil {
@@ -148,9 +133,16 @@ func (c *Connection) Run(ctx context.Context) (err error) {
 
 	g.Go(c.receiver)
 	g.Go(c.sender)
+
 	g.Go(func(ctx context.Context) error {
-		<-ctx.Done()
-		return c.Close()
+		defer c.Close()
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-c.closed:
+			return ErrConnectionClosed
+		}
 	})
 
 	if c.config.PingInterval > 0 {
