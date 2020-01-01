@@ -15,11 +15,7 @@ func setPop(client redis.Cmdable, key string) (string, bool, error) {
 		return v, true, nil
 	}
 
-	if err == redis.Nil {
-		err = nil
-	}
-
-	return "", false, err
+	return "", false, ignoreRedisNil(err)
 }
 
 // setLen gets the length of a set. Sets which do not exist are treated as empty.

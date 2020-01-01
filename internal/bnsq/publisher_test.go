@@ -2,13 +2,13 @@ package bnsq
 
 import (
 	"context"
-	"errors"
 	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	jsonx "github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/nsqio/go-nsq"
 	"gotest.tools/v3/assert"
@@ -35,7 +35,7 @@ func TestPublishBadConfig(t *testing.T) {
 	assert.ErrorContains(t, err, "invalid SampleRate")
 }
 
-func TestPublishUnmarshallable(t *testing.T) {
+func TestPublishUnmarshalable(t *testing.T) {
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	defer cleanup()
@@ -57,14 +57,8 @@ func TestPublishUnmarshallable(t *testing.T) {
 
 	g.Go(publisher.run)
 
-	err = publisher.publish(ctx, "topic", unmarshallable{})
-	assert.ErrorContains(t, err, "unmarshallable")
+	err = publisher.publish(ctx, "topic", jsonx.Unmarshallable())
+	assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
 
 	g.Stop()
-}
-
-type unmarshallable struct{}
-
-func (unmarshallable) MarshalJSON() ([]byte, error) {
-	return nil, errors.New("unmarshallable")
 }

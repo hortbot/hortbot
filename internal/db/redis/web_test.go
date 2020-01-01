@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/redis"
+	jsonx "github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"gotest.tools/v3/assert"
 )
@@ -66,4 +67,20 @@ func TestAuthState(t *testing.T) {
 	ok, err = db.GetAuthState(ctx, key, &got)
 	assert.NilError(t, err)
 	assert.Equal(t, ok, false)
+}
+
+func TestAuthStateUnmarshallable(t *testing.T) {
+	t.Parallel()
+
+	_, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	db := redis.New(c)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	err = db.SetAuthState(ctx, "what", jsonx.Unmarshallable(), time.Minute)
+	assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
 }

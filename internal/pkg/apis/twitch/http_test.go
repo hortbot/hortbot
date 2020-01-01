@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xfakes"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -53,8 +54,8 @@ func TestHTTPClient(t *testing.T) {
 			},
 		}
 
-		_, err := c.Put(context.Background(), "http://localhost", unmarshallable{}) //nolint:bodyclose
-		assert.ErrorContains(t, err, "unmarshallable")
+		_, err := c.Put(context.Background(), "http://localhost", jsonx.Unmarshallable()) //nolint:bodyclose
+		assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
 	})
 
 	t.Run("DoError", func(t *testing.T) {
@@ -69,10 +70,4 @@ func TestHTTPClient(t *testing.T) {
 		_, err := c.Get(context.Background(), "http://localhost:24353") //nolint:bodyclose
 		assert.ErrorContains(t, err, "connection refused")
 	})
-}
-
-type unmarshallable struct{}
-
-func (unmarshallable) MarshalJSON() ([]byte, error) {
-	return nil, errors.New("unmarshallable")
 }

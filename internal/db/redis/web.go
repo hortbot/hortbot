@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/go-redis/redis/v7"
 	"go.opencensus.io/trace"
 )
 
@@ -35,16 +34,11 @@ func (db *DB) GetAuthState(ctx context.Context, key string, v interface{}) (bool
 	pipeline := client.TxPipeline()
 	get := pipeline.Get(rkey)
 	pipeline.Del(rkey)
-	if _, err := pipeline.Exec(); err != nil {
-		if err == redis.Nil {
-			return false, nil
-		}
-		return false, err
-	}
+	_, _ = pipeline.Exec() // Error is propogated below.
 
 	b, err := get.Bytes()
 	if err != nil {
-		return false, err
+		return false, ignoreRedisNil(err)
 	}
 
 	return true, json.Unmarshal(b, v)

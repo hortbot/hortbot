@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-redis/redis/v7"
 	"go.opencensus.io/trace"
 )
 
@@ -212,8 +211,5 @@ func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (boo
 	client := db.client.WithContext(ctx)
 	key := userStateKey(botName, ircChannel)
 	r, err := client.Get(key).Result()
-	if err == redis.Nil {
-		err = nil
-	}
-	return r == "1", err
+	return r == "1", ignoreRedisNil(err)
 }

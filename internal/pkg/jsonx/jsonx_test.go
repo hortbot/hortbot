@@ -42,3 +42,13 @@ func TestDecodeSingleIncomplete(t *testing.T) {
 	err := jsonx.DecodeSingle(strings.NewReader("{"), &got)
 	assert.ErrorContains(t, err, "unexpected EOF")
 }
+
+func TestUnmarshallable(t *testing.T) {
+	v := jsonx.Unmarshallable()
+
+	_, err := v.MarshalJSON()
+	assert.Equal(t, err, jsonx.ErrUnmarshallable)
+
+	_, err = json.Marshal(v)
+	assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
+}

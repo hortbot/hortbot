@@ -24,3 +24,17 @@ func DecodeSingle(r io.Reader, v interface{}) error {
 
 	return nil
 }
+
+// ErrUnmarshallable is returned by the unmarshalable type's MarshalJSON function.
+var ErrUnmarshallable = errors.New("unmarshallable")
+
+// Unmarshallable returns a json.Marshaler which always returns an error.
+func Unmarshallable() json.Marshaler {
+	return &unmarshallable{}
+}
+
+type unmarshallable struct{}
+
+func (*unmarshallable) MarshalJSON() ([]byte, error) {
+	return nil, ErrUnmarshallable
+}
