@@ -240,16 +240,15 @@ func (c *Connection) receiver(ctx context.Context) error {
 
 		if m.Command == "PONG" {
 			c.pongMu.RLock()
-			ch := c.pongChans[m.Trailing]
+			pongChan := c.pongChans[m.Trailing]
+			delete(c.pongChans, m.Trailing)
 			c.pongMu.RUnlock()
 
-			if ch != nil {
-				select {
-				case ch <- m:
-					continue
-				case <-ctx.Done():
-					return ctx.Err()
-				}
+			if pongChan != nil {
+				m2 := *m
+				go func() {
+					pongChan <- &m2
+				}()
 			}
 		}
 
