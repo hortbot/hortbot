@@ -75,4 +75,7 @@ func TestGetCurrentStreamErrors(t *testing.T) {
 
 	_, err := tw.GetCurrentStream(ctx, 777)
 	assert.Equal(t, err, twitch.ErrServerError)
+
+	_, err = tw.GetCurrentStream(ctx, 900)
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
 }

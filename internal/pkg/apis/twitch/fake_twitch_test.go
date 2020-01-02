@@ -1,6 +1,7 @@
 package twitch_test
 
 import (
+	"errors"
 	"net/http"
 	"net/http/httputil"
 	"strconv"
@@ -15,6 +16,8 @@ import (
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
+
+var errTestBadRequest = errors.New("twitch_test: bad request")
 
 type fakeTwitch struct {
 	t        testing.TB
@@ -108,12 +111,16 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/404$`, httpmock.NewStringResponder(404, "{}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/418$`, httpmock.NewStringResponder(418, "{}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/500$`, httpmock.NewStringResponder(500, "{}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/900$`, httpmock.NewErrorResponder(errTestBadRequest))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/901$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/\d+$`, f.krakenChannelByIDGet)
 
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/401$`, httpmock.NewStringResponder(401, "{}"))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/404$`, httpmock.NewStringResponder(404, "{}"))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/418$`, httpmock.NewStringResponder(418, "{}"))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/500$`, httpmock.NewStringResponder(500, "{}"))
+	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/900$`, httpmock.NewErrorResponder(errTestBadRequest))
+	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/901$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/\d+$`, f.krakenChannelByIDPut)
 
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/401$`, httpmock.NewStringResponder(401, "{}"))
@@ -121,6 +128,8 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/418$`, httpmock.NewStringResponder(418, "{}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/500$`, httpmock.NewStringResponder(500, "{}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/777$`, httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/900$`, httpmock.NewErrorResponder(errTestBadRequest))
+	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/901$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/\d+$`, f.krakenStreamByID)
 
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken", f.kraken)
@@ -129,18 +138,21 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/notfound/chatters", httpmock.NewStringResponder(404, ""))
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/servererror/chatters", httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/badbody/chatters", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/geterr/chatters", httpmock.NewErrorResponder(errTestBadRequest))
 
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=foobar", httpmock.NewStringResponder(200, `{"users": [{"_id": 1234, "name": "foobar", "display_name": "Foobar"}]}`))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound", httpmock.NewStringResponder(404, ""))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound2", httpmock.NewStringResponder(200, `{"users": []}`))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=servererror", httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=decodeerror", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
 
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/200", httpmock.NewStringResponder(200, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/401", httpmock.NewStringResponder(401, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/404", httpmock.NewStringResponder(404, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/422", httpmock.NewStringResponder(422, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/500", httpmock.NewStringResponder(500, "{}"))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/901", httpmock.NewErrorResponder(errTestBadRequest))
 }
 
 func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
@@ -191,7 +203,12 @@ func (f *fakeTwitch) krakenChannel(req *http.Request) (*http.Response, error) {
 	auth := req.Header.Get("Authorization")
 	assert.Assert(f.t, strings.HasPrefix(auth, "OAuth "))
 
-	id, ok := f.tokenToID[strings.TrimPrefix(auth, "OAuth ")]
+	tok := strings.TrimPrefix(auth, "OAuth ")
+	if tok == "requesterror" {
+		return nil, errTestBadRequest
+	}
+
+	id, ok := f.tokenToID[tok]
 	assert.Assert(f.t, ok)
 
 	c := f.channels[id]
@@ -293,7 +310,12 @@ func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
 	auth := req.Header.Get("Authorization")
 	assert.Assert(f.t, strings.HasPrefix(auth, "OAuth "))
 
-	id, ok := f.tokenToID[strings.TrimPrefix(auth, "OAuth ")]
+	tok := strings.TrimPrefix(auth, "OAuth ")
+	if tok == "requesterror" {
+		return nil, errTestBadRequest
+	}
+
+	id, ok := f.tokenToID[tok]
 	assert.Assert(f.t, ok)
 
 	c := f.channels[id]

@@ -134,11 +134,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(t *Twitch) {
-		if cli == nil {
-			t.cli = http.DefaultClient
-		} else {
-			t.cli = cli
-		}
+		t.cli = cli
 	}
 }
 

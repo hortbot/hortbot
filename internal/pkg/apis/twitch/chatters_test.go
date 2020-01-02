@@ -56,3 +56,15 @@ func TestGetChatters(t *testing.T) {
 		})
 	}
 }
+
+func TestGetChattersError(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	_, err := tw.GetChatters(ctx, "geterr")
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
+}

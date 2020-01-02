@@ -93,6 +93,18 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
+func TestGetUserForTokenRequestError(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	_, _, err := tw.GetUserForToken(ctx, &oauth2.Token{AccessToken: "requesterror"})
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
+}
+
 func TestGetUserForUsername(t *testing.T) {
 	ctx := context.Background()
 
@@ -194,6 +206,26 @@ func TestGetUserForUsernameDecodeError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
+	_, err := tw.GetUserForUsername(ctx, "requesterror")
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
+}
+
+func TestGetUserForUsernameRequestError(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tok := &oauth2.Token{
+		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
+		TokenType:   "bearer",
+	}
+
+	ft.setClientTokens(tok)
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
 	_, err := tw.GetUserForUsername(ctx, "decodeerror")
 	assert.Equal(t, err, twitch.ErrServerError)
 }
@@ -240,6 +272,10 @@ func TestFollowChannel(t *testing.T) {
 
 	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), nil, 500)
 	assert.Equal(t, err, twitch.ErrNotAuthorized)
+	assert.Assert(t, newToken == nil)
+
+	newToken, err = tw.FollowChannel(ctx, c.ID.AsInt64(), tok, 901)
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
 	assert.Assert(t, newToken == nil)
 }
 

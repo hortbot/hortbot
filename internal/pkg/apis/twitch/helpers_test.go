@@ -1,6 +1,7 @@
 package twitch
 
 import (
+	json "encoding/json"
 	"fmt"
 	"testing"
 
@@ -38,4 +39,10 @@ func TestSetToken(t *testing.T) {
 
 	setToken(&newToken)(nil, nil)
 	assert.Assert(t, newToken == nil)
+}
+
+func TestIDStrUnmarshalError(t *testing.T) {
+	var id IDStr
+	err := json.Unmarshal([]byte("true"), &id)
+	assert.ErrorContains(t, err, "cannot unmarshal")
 }
