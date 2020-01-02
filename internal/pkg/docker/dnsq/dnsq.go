@@ -19,12 +19,11 @@ func New() (addr string, cleanup func(), retErr error) {
 			config.ClientID = uuid.Must(uuid.NewV4()).String()
 
 			conn := nsq.NewConn(addr, config, (*nopDelegate)(nil))
-			if _, err := conn.Connect(); err != nil {
-				return err
-			}
 			defer conn.Close()
 
-			return conn.WriteCommand(nsq.Nop())
+			// Connect sends IDENTIFY, so works as a ping.
+			_, err := conn.Connect()
+			return err
 		},
 		ExpirySecs: 300,
 	}
