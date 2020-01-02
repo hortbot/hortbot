@@ -8,6 +8,7 @@ import (
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
+	"github.com/robfig/cron/v3"
 	"gotest.tools/v3/assert"
 )
 
@@ -217,9 +218,7 @@ func TestCorrectIDCron(t *testing.T) {
 	r.Stop()
 }
 
-func TestBadCron(t *testing.T) {
-	t.Skip("This cron library doesn't have a constructable bad pattern.")
-
+func TestImpossibleCron(t *testing.T) {
 	defer leaktest.Check(t)()
 
 	clk := clock.NewMock()
@@ -232,7 +231,7 @@ func TestBadCron(t *testing.T) {
 
 	r := repeat.New(context.Background(), clk)
 
-	r.AddCron(0, fn, nil)
+	r.AddCron(0, fn, repeat.ToCron(&cron.SpecSchedule{Month: 13, Location: time.UTC}))
 
 	clk.Forward(time.Hour)
 	clk.Forward(time.Hour)
