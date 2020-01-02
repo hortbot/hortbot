@@ -111,5 +111,5 @@ jobs:
         run: |
           echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
           docker tag hortbot/hortbot hortbot/hortbot:$HB_VERSION
-          # docker push hortbot/hortbot
-          # docker push hortbot/hortbot:$HB_VERSION
+          docker push hortbot/hortbot
+          docker push hortbot/hortbot:$HB_VERSION
