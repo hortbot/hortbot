@@ -25,12 +25,7 @@ import (
 // the pattern "/foo*", the patch must match one of the patterns "/foo*",
 // "/foo**", or "/foo*/**".
 func HostAndPath(pattern string, u *url.URL) bool {
-	scheme, rest := stringsx.Split(pattern, "://")
-	if rest == "" && scheme != "" {
-		rest = scheme
-	}
-
-	hostPattern, pathPattern := stringsx.SplitByte(rest, '/')
+	hostPattern, pathPattern := splitPattern(pattern)
 
 	if !hostMatches(hostPattern, u.Host) {
 		return false
@@ -99,4 +94,21 @@ func normalizePath(p string) string {
 
 	p = strings.ToLower(p)
 	return strings.TrimRight(p, "/")
+}
+
+func splitPattern(pattern string) (host, path string) {
+	scheme, rest := stringsx.Split(pattern, "://")
+	if rest == "" && scheme != "" {
+		rest = scheme
+	}
+
+	return stringsx.SplitByte(rest, '/')
+}
+
+// IsBadPattern returns true if the pattern is too permissive.
+func IsBadPattern(pattern string) bool {
+	host, path := splitPattern(pattern)
+	host = strings.Trim(host, "*")
+	path = strings.Trim(path, "*")
+	return host == "" && path == ""
 }

@@ -136,3 +136,25 @@ func BenchmarkHostAndPath(b *testing.B) {
 		}
 	})
 }
+
+func TestIsBadPattern(t *testing.T) {
+	tests := []struct {
+		pattern string
+		want    bool
+	}{
+		{"twitch.tv", false},
+		{"", true},
+		{"*", true},
+		{"twitch.tv/*", false},
+		{"**", true},
+		{"*/*", true},
+		{"https://*/*", true},
+	}
+
+	for _, test := range tests {
+		test := test
+		t.Run(test.pattern, func(t *testing.T) {
+			assert.Equal(t, linkmatch.IsBadPattern(test.pattern), test.want)
+		})
+	}
+}

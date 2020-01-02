@@ -65,4 +65,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Usage: !filter pd add <link pattern>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add *
-send hortbot #foobar [HB] Could not parse link pattern.
+send hortbot #foobar [HB] Pattern '*' is too permissive.

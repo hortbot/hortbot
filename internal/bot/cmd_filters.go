@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/goware/urlx"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 	"github.com/volatiletech/sqlboiler/boil"
 )
 
@@ -179,9 +179,8 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 			return s.ReplyUsage(ctx, subcommand+" <link pattern>")
 		}
 
-		_, err := urlx.ParseWithDefaultScheme(pd, "https")
-		if err != nil {
-			return s.Reply(ctx, "Could not parse link pattern.")
+		if linkmatch.IsBadPattern(pd) {
+			return s.Replyf(ctx, "Pattern '%s' is too permissive.", pd)
 		}
 
 		s.Channel.PermittedLinks = append(s.Channel.PermittedLinks, pd)
