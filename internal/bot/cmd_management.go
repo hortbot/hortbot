@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"strings"
 	"time"
-	"unicode/utf8"
 
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -21,21 +20,14 @@ func handleManagement(ctx context.Context, s *session) error {
 	ctx, span := trace.StartSpan(ctx, "handleManagement")
 	defer span.End()
 
-	prefix, l := utf8.DecodeRuneInString(s.Message)
-	cmd := s.Message[l:]
-
-	switch s.Message[0] {
-	case '!', '+':
-		cmd = s.Message[1:]
-	}
-
+	prefix := s.Message[0]
 	switch prefix {
 	case '!', '+':
 	default:
 		return nil
 	}
 
-	cmd = strings.ToLower(cmd)
+	cmd := strings.ToLower(s.Message[1:])
 	cmd, args := splitSpace(cmd)
 
 	defer s.UsageContext(string(prefix) + cmd)()
