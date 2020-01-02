@@ -6,20 +6,13 @@ import (
 	"strings"
 	"unicode"
 
+	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
 	"go.opencensus.io/trace"
 )
 
-func splitFirstSep(s string, sep byte) (string, string) {
-	i := strings.IndexByte(s, sep)
-	if i < 0 {
-		return s, ""
-	}
-	return s[:i], s[i+1:]
-}
-
 func splitSpace(s string) (string, string) {
-	a, b := splitFirstSep(s, ' ')
+	a, b := stringsx.SplitByte(s, ' ')
 	return a, strings.TrimSpace(b)
 }
 
@@ -29,7 +22,7 @@ func parseBadges(badgeTag string) map[string]string {
 	d := make(map[string]string, len(badges))
 
 	for _, badge := range badges {
-		k, v := splitFirstSep(badge, '/')
+		k, v := stringsx.SplitByte(badge, '/')
 		d[k] = v
 	}
 

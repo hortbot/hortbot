@@ -6,57 +6,97 @@ import (
 	"strings"
 
 	"github.com/bmatcuk/doublestar"
-	"github.com/goware/urlx"
+	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 )
 
 // HostAndPath checks that the given URL matches the given pattern.
 //
-// Patterns are similar to shell globs, but looser in that they will include
-// suffix/prefix matches (permissive of extra elements). Globs will not
-// cross the host-path boundary.
+// The host and path are treated differently. For hosts, following rules
+// are applied:
+//
+//     - If the host is the same as the pattern, then it's a match.
+//     - If the host has the suffix ".<pattern>", then it's a match.
+//
+// For example, "twitch.tv" would match "twitch.tv", "www.twitch.tv", and
+// "clips.twitch.tv". In the future, globs may be accepted here.
+//
+// Paths are matched "permissibly" by doublestar globs. Given the pattern
+// "/foo", the path must match one of the patterns "/foo" or "/foo/**". Given
+// the pattern "/foo*", the patch must match one of the patterns "/foo*",
+// "/foo**", or "/foo*/**".
 func HostAndPath(pattern string, u *url.URL) bool {
-	p, err := urlx.ParseWithDefaultScheme(pattern, "https")
-	if err != nil {
+	scheme, rest := stringsx.Split(pattern, "://")
+	if rest == "" && scheme != "" {
+		rest = scheme
+	}
+
+	hostPattern, pathPattern := stringsx.SplitByte(rest, '/')
+
+	if !hostMatches(hostPattern, u.Host) {
 		return false
 	}
 
-	switch {
-	case u.Host == p.Host:
-	case strings.HasSuffix(u.Host, "."+p.Host):
-		// Host matches, continue.
-	default:
+	pathPattern = normalizePath(pathPattern)
+
+	if pathPattern == "/" {
+		return true
+	}
+
+	path := normalizePath(u.Path)
+
+	return isMatchPermissive(pathPattern, path)
+}
+
+func hostMatches(pattern, host string) bool {
+	host = strings.ToLower(host)
+	pattern = strings.ToLower(pattern)
+
+	if host == pattern {
+		return true
+	}
+
+	if len(host) <= len(pattern) {
 		return false
 	}
 
-	pPath := strings.ToLower(strings.Trim(p.Path, "/"))
-	uPath := strings.ToLower(strings.Trim(u.Path, "/"))
+	if !strings.HasSuffix(host, pattern) {
+		return false
+	}
 
-	if pPath == "" {
+	idx := len(host) - len(pattern) - 1
+	return host[idx] == '.'
+}
+
+func isMatchPermissive(pattern, s string) bool {
+	if isMatch(pattern, s) {
 		return true
 	}
 
-	if !strings.ContainsRune(pPath, '*') && strings.HasPrefix(uPath, pPath) {
+	if strings.HasSuffix(pattern, "*") && isMatch(pattern+"*", s) {
 		return true
 	}
 
-	ppPath := pPath
-
-	switch {
-	case strings.HasSuffix(ppPath, "/**"):
-		// Do nothing.
-	case strings.HasSuffix(ppPath, "/*"):
-		ppPath += "*"
-	case strings.HasSuffix(ppPath, "**"):
-		// Do nothing.
-	case strings.HasSuffix(ppPath, "*"):
-		ppPath += "*/**"
-	default:
-		ppPath += "/**"
-	}
-
-	if matched, err := doublestar.Match(ppPath, uPath); matched || err != nil {
-		return matched
+	if isMatch(pattern+"/**", s) {
+		return true
 	}
 
 	return false
+}
+
+func isMatch(pattern, s string) bool {
+	match, _ := doublestar.Match(pattern, s)
+	return match
+}
+
+func normalizePath(p string) string {
+	if p == "" || p == "/" {
+		return "/"
+	}
+
+	if p[0] != '/' {
+		p = "/" + p
+	}
+
+	p = strings.ToLower(p)
+	return strings.TrimRight(p, "/")
 }

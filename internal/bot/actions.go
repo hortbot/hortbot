@@ -15,6 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
 )
@@ -456,7 +457,7 @@ func (s *session) actionSong(ctx context.Context, i int, url bool) (string, erro
 func (s *session) actionRandom(action string) (string, error) {
 	if strings.HasPrefix(action, "INT_") {
 		action = strings.TrimPrefix(action, "INT_")
-		minStr, maxStr := splitFirstSep(action, '_')
+		minStr, maxStr := stringsx.SplitByte(action, '_')
 		if minStr == "" || maxStr == "" {
 			return "0", nil
 		}
@@ -482,7 +483,7 @@ func (s *session) actionRandom(action string) (string, error) {
 		return strconv.Itoa(x), nil
 	}
 
-	minStr, maxStr := splitFirstSep(action, '_')
+	minStr, maxStr := stringsx.SplitByte(action, '_')
 	if minStr == "" || maxStr == "" {
 		return "0.0", nil
 	}
@@ -513,7 +514,7 @@ func (s *session) actionRandom(action string) (string, error) {
 }
 
 func (s *session) actionVars(ctx context.Context, action string) (string, error) {
-	name, action := splitFirstSep(action, '_')
+	name, action := stringsx.SplitByte(action, '_')
 	if name == "" || action == "" {
 		return "(error)", nil
 	}

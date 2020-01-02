@@ -84,6 +84,16 @@ func TestHostAndPath(t *testing.T) {
 			link:    "https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time",
 			match:   false,
 		},
+		{
+			pattern: "twitch.tv/foo*",
+			link:    "twitch.tv/foobar/",
+			match:   true,
+		},
+		{
+			pattern: "twitch.tv/foo*",
+			link:    "almost1.tv/foobar/",
+			match:   false,
+		},
 	}
 
 	for _, test := range tests {

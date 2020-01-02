@@ -54,5 +54,3 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *session, cmd st
 func TestingAction(fn func(ctx context.Context, action string) (string, error, bool)) {
 	testingAction = fn
 }
-
-var SplitFirstSep = splitFirstSep

@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
@@ -398,7 +399,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	var foreignChannel string
 	if strings.HasPrefix(name, "#") && s.UserLevel.CanAccess(levelBroadcaster) {
-		foreignChannel, name = splitFirstSep(name[1:], '/')
+		foreignChannel, name = stringsx.SplitByte(name[1:], '/')
 	}
 
 	name = cleanCommandName(name)
