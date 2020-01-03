@@ -8,11 +8,11 @@ import (
 	"runtime"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
+	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 
 	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
@@ -45,7 +45,7 @@ var (
 	mainConnStr string
 	cleanupDB   func()
 	initDBOnce  sync.Once
-	tempDBNum   int64
+	tempDBNum   atomic.Int64
 	tempDBSema  = make(chan bool, maxConcurrentCreates())
 )
 
@@ -81,7 +81,7 @@ func freshDB(t testing.TB) *sql.DB {
 		<-tempDBSema
 	}()
 
-	dbName := fmt.Sprintf("temp%d", atomic.AddInt64(&tempDBNum, 1))
+	dbName := fmt.Sprintf("temp%d", tempDBNum.Inc())
 
 	_, err := mainDB.Exec(fmt.Sprintf(`CREATE DATABASE %s WITH TEMPLATE temp_template`, dbName))
 	assert.NilError(t, err)

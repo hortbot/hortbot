@@ -2,8 +2,7 @@ package bnsq_test
 
 import (
 	"context"
-	json "encoding/json"
-	atomic "sync/atomic"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/nsqio/go-nsq"
 	"github.com/rs/xid"
 	"go.opencensus.io/trace"
+	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -101,9 +101,9 @@ func TestNotifyBadDecode(t *testing.T) {
 	assert.NilError(t, err)
 	defer producer.Stop()
 
-	var count int64
+	var count atomic.Int64
 	inc := func(*bnsq.ChannelUpdatesNotification, *bnsq.Metadata) error {
-		atomic.AddInt64(&count, 1)
+		count.Inc()
 		return nil
 	}
 
@@ -125,5 +125,5 @@ func TestNotifyBadDecode(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	assert.Equal(t, count, int64(0))
+	assert.Equal(t, count.Load(), int64(0))
 }

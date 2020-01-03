@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strconv"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
+	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -150,10 +150,10 @@ func BenchmarkHandleMixed(b *testing.B) {
 	b.StopTimer()
 }
 
-var nextUserID int64 = 1
+var nextUserID = atomic.NewInt64(1)
 
 func getNextUserID() (int64, string) {
-	id := atomic.AddInt64(&nextUserID, 1)
+	id := nextUserID.Inc()
 	return id, fmt.Sprintf("user%d", id)
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"sort"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/friendsofgo/errors"
@@ -14,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
+	"go.uber.org/atomic"
 	"go.uber.org/zap"
 )
 
@@ -48,7 +48,7 @@ type Pool struct {
 	stopOnce sync.Once
 	stopChan chan struct{}
 
-	connID     uint64
+	connID     atomic.Uint64
 	connsMu    sync.RWMutex
 	conns      map[*Connection]struct{}
 	chanToConn map[string]*Connection
@@ -490,7 +490,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
-		id := p.nextConnID()
+		id := p.connID.Inc()
 
 		ctx = ctxlog.With(ctx, zap.Uint64("subconnID", id))
 
@@ -589,10 +589,6 @@ func (p *Pool) runSubConn() <-chan *Connection {
 	})
 
 	return newConn
-}
-
-func (p *Pool) nextConnID() uint64 {
-	return atomic.AddUint64(&p.connID, 1)
 }
 
 func (p *Pool) send(ctx context.Context, m *irc.Message) error {

@@ -2,8 +2,7 @@ package bnsq_test
 
 import (
 	"context"
-	json "encoding/json"
-	atomic "sync/atomic"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -14,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/nsqio/go-nsq"
+	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -107,9 +107,9 @@ func TestIncomingBadDecode(t *testing.T) {
 	assert.NilError(t, err)
 	defer producer.Stop()
 
-	var count int64
+	var count atomic.Int64
 	inc := func(*bnsq.Incoming, *bnsq.Metadata) error {
-		atomic.AddInt64(&count, 1)
+		count.Inc()
 		return nil
 	}
 
@@ -130,5 +130,5 @@ func TestIncomingBadDecode(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	assert.Equal(t, count, int64(0))
+	assert.Equal(t, count.Load(), int64(0))
 }

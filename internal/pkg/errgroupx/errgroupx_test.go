@@ -3,12 +3,12 @@ package errgroupx_test
 import (
 	"context"
 	"errors"
-	"sync/atomic"
 	"testing"
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"go.opencensus.io/trace"
+	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
@@ -21,7 +21,7 @@ func TestNormal(t *testing.T) {
 	ctx := context.Background()
 	ctx = context.WithValue(ctx, contextKey("key"), 1234)
 
-	var done uint32
+	var done atomic.Bool
 
 	g := errgroupx.FromContext(ctx)
 
@@ -29,12 +29,12 @@ func TestNormal(t *testing.T) {
 		v := ctx.Value(contextKey("key"))
 		assert.Check(t, cmp.Equal(v, 1234))
 
-		atomic.StoreUint32(&done, 1)
+		done.Store(true)
 		return nil
 	})
 
 	assert.Check(t, g.Wait())
-	assert.Check(t, cmp.Equal(done, uint32(1)))
+	assert.Check(t, done.Load())
 }
 
 func TestStop(t *testing.T) {

@@ -2,12 +2,12 @@ package bnsq
 
 import (
 	"context"
-	atomic "sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/nsqio/go-nsq"
+	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -27,9 +27,9 @@ func TestSubscriberBadMessage(t *testing.T) {
 
 	const topic = "topic"
 
-	var count int64
+	var count atomic.Int64
 	inc := func(_ *message) error {
-		atomic.AddInt64(&count, 1)
+		count.Inc()
 		return nil
 	}
 
@@ -40,5 +40,5 @@ func TestSubscriberBadMessage(t *testing.T) {
 
 	time.Sleep(100 * time.Millisecond)
 
-	assert.Equal(t, count, int64(0))
+	assert.Equal(t, count.Load(), int64(0))
 }

@@ -8,12 +8,12 @@ import (
 	"net"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
+	"go.uber.org/atomic"
 )
 
 // ChannelTag is a tag key which can be used to direct messages at specific
@@ -26,7 +26,7 @@ var ErrStopped = errors.New("fakeirc: server is stopped")
 // Server is a fake IRC server for use in testing.
 type Server struct {
 	stopChan chan struct{}
-	stopped  uint32
+	stopped  atomic.Bool
 
 	tlsConfig *tls.Config
 
@@ -83,7 +83,8 @@ func Start(opts ...Option) (*Server, error) {
 
 // Stop stops the server and waits for all worker goroutines to exit.
 func (s *Server) Stop() error {
-	if atomic.SwapUint32(&s.stopped, 1) == 0 {
+	// Not a sync.Once so that the defer below can work.
+	if !s.stopped.Swap(true) {
 		defer close(s.recvChan)
 
 		// No sync.Once; This package is for testing so a panic is more useful.
