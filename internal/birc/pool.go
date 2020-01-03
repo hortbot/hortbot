@@ -282,10 +282,6 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) {
 		err := p.joinPart(ctx, ch, true, true)
 		p.joinSleep(ctx)
 
-		if cErr := ctx.Err(); cErr != nil {
-			err = cErr
-		}
-
 		if err != nil {
 			req.Finish(err)
 			return
