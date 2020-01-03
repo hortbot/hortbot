@@ -372,6 +372,35 @@ func TestServerPong(t *testing.T) {
 	h.AssertMessages(clientMessages, &irc.Message{Command: "PONG", Trailing: m.Trailing})
 }
 
+func TestServerPongNoRecord(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	ctx, cancel := testContext()
+	defer cancel()
+	h := fakeirc.NewHelper(ctx, t)
+
+	defer h.StopServer()
+	serverMessages := h.CollectSentToServer()
+
+	conn := h.Dial()
+	defer h.CloseConn(conn)
+	clientMessages := h.CollectFromConn(conn)
+
+	m := &irc.Message{
+		Command:  "PING",
+		Trailing: "some message",
+	}
+
+	h.SendWithConn(conn, m)
+
+	h.CloseConn(conn)
+	h.StopServer()
+
+	h.Wait()
+	h.AssertMessages(serverMessages)
+	h.AssertMessages(clientMessages, &irc.Message{Command: "PONG", Trailing: m.Trailing})
+}
+
 func TestServerNoPong(t *testing.T) {
 	defer leaktest.Check(t)()
 
@@ -399,6 +428,16 @@ func TestServerNoPong(t *testing.T) {
 	h.Wait()
 	h.AssertMessages(serverMessages, m)
 	h.AssertMessages(clientMessages)
+}
+
+func TestServerSendCancel(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	ctx, cancel := testContext()
+	cancel()
+
+	server := &fakeirc.Server{}
+	assert.Equal(t, server.Send(ctx, nil), context.Canceled)
 }
 
 func testContext() (context.Context, context.CancelFunc) {

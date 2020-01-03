@@ -275,11 +275,10 @@ func TagChannel(m *irc.Message, channel string) *irc.Message {
 	channel = ircx.NormalizeChannel(channel)
 
 	if m.Tags == nil {
-		m.Tags = map[string]string{ChannelTag: channel}
-	} else {
-		m.Tags[ChannelTag] = channel
+		m.Tags = make(map[string]string)
 	}
 
+	m.Tags[ChannelTag] = channel
 	return m
 }
 
