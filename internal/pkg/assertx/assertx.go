@@ -7,6 +7,13 @@ type helperT interface {
 	Helper()
 }
 
+type testingT interface { //nolint:deadcode
+	assert.TestingT
+	helperT
+}
+
+//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 . testingT
+
 // Panic checks that a function panics with the given value. An untyped nil
 // panic value represents no panic.
 func Panic(t assert.TestingT, fn func(), want interface{}, msgAndArgs ...interface{}) {
