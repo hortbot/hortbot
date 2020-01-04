@@ -40,7 +40,7 @@ require (
 	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.3.0
-	github.com/robfig/cron/v3 v3.0.0
+	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/rs/zerolog v1.17.2
 	github.com/rylio/ytdl v0.6.2
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/oauth2 v0.0.0-20191202225959-858c2ad4c8b6
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200102200121-6de373a2766c
+	golang.org/x/tools v0.0.0-20200103221440-774c71fcf114
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
