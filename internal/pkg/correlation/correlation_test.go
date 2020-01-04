@@ -1,12 +1,12 @@
 package correlation_test
 
 import (
+	"context"
 	"testing"
 
-	"github.com/docker/distribution/context"
-	"github.com/gotestyourself/gotestyourself/assert"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/rs/xid"
+	"gotest.tools/v3/assert"
 )
 
 func TestFromWith(t *testing.T) {

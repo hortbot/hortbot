@@ -10,7 +10,6 @@ require (
 	github.com/alicebob/miniredis/v2 v2.11.1
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
-	github.com/docker/distribution v2.7.0+incompatible
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
 	github.com/felixge/httpsnoop v1.0.1
@@ -24,7 +23,6 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.7.1
 	github.com/google/go-cmp v0.3.1
 	github.com/gorilla/sessions v1.2.0
-	github.com/gotestyourself/gotestyourself v1.3.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
 	github.com/jackc/pgx/v4 v4.1.2
