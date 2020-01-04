@@ -46,3 +46,12 @@ func TestFromWithID(t *testing.T) {
 	id = correlation.FromContext(ctx)
 	assert.Equal(t, id, id2)
 }
+
+func TestFromWithIDNil(t *testing.T) {
+	ctx := context.Background()
+
+	ctx = correlation.WithID(ctx, xid.NilID())
+
+	id := correlation.FromContext(ctx)
+	assert.Assert(t, !id.IsNil())
+}
