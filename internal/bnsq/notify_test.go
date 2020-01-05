@@ -8,10 +8,8 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/nsqio/go-nsq"
 	"github.com/rs/xid"
 	"go.opencensus.io/trace"
@@ -26,11 +24,8 @@ func TestNotify(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	const (
 		botName = "hortbot"
@@ -71,6 +66,7 @@ func TestNotify(t *testing.T) {
 	gotSpan := <-spans
 
 	g.Stop()
+	_ = g.Wait()
 
 	assert.Equal(t, len(received), 0)
 
@@ -89,7 +85,7 @@ func TestNotifyBadDecode(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
 	const (
@@ -99,6 +95,7 @@ func TestNotifyBadDecode(t *testing.T) {
 
 	producer, err := nsq.NewProducer(addr, bnsq.DefaultConfig())
 	assert.NilError(t, err)
+	producer.SetLogger(bnsq.NsqLoggerFrom(ctx), nsq.LogLevelInfo)
 	defer producer.Stop()
 
 	var count atomic.Int64

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/nsqio/go-nsq"
 	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
@@ -14,7 +15,7 @@ import (
 func TestSubscriberBadMessage(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
 	addr, cleanup, err := dnsq.New()
@@ -23,6 +24,7 @@ func TestSubscriberBadMessage(t *testing.T) {
 
 	producer, err := nsq.NewProducer(addr, defaultConfig())
 	assert.NilError(t, err)
+	producer.SetLogger(NsqLoggerFrom(ctx), nsq.LogLevelInfo)
 	defer producer.Stop()
 
 	const topic = "topic"
@@ -34,11 +36,18 @@ func TestSubscriberBadMessage(t *testing.T) {
 	}
 
 	subscriber := newSubscriber(addr, topic, "channel")
-	go subscriber.run(ctx, inc) //nolint:errcheck
+
+	g := errgroupx.FromContext(ctx)
+	g.Go(func(ctx context.Context) error {
+		return subscriber.run(ctx, inc)
+	})
 
 	assert.NilError(t, producer.Publish(topic, []byte("{")))
 
 	time.Sleep(100 * time.Millisecond)
 
 	assert.Equal(t, count.Load(), int64(0))
+
+	g.Stop()
+	_ = g.Wait()
 }

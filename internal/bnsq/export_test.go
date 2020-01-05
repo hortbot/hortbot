@@ -21,3 +21,5 @@ func TestingSleep(d time.Duration) {
 func DefaultConfig() *nsq.Config {
 	return defaultConfig()
 }
+
+var NsqLoggerFrom = nsqLoggerFrom

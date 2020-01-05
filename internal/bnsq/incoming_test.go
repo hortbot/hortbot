@@ -24,11 +24,8 @@ func TestIncoming(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	const channel = "blue"
 
@@ -77,6 +74,7 @@ func TestIncoming(t *testing.T) {
 	got2.Message.Raw = ""
 
 	g.Stop()
+	_ = g.Wait()
 
 	assert.DeepEqual(t, got1, &bnsq.Incoming{
 		Origin:  "hortbot",
@@ -98,13 +96,14 @@ func TestIncomingBadDecode(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
 	const channel = "blue"
 
 	producer, err := nsq.NewProducer(addr, bnsq.DefaultConfig())
 	assert.NilError(t, err)
+	producer.SetLogger(bnsq.NsqLoggerFrom(ctx), nsq.LogLevelInfo)
 	defer producer.Stop()
 
 	var count atomic.Int64
@@ -131,4 +130,13 @@ func TestIncomingBadDecode(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	assert.Equal(t, count.Load(), int64(0))
+}
+
+func testContext(t testing.TB) (context.Context, context.CancelFunc) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+	logger := testutil.Logger(t)
+	ctx = ctxlog.WithLogger(ctx, logger)
+
+	return ctx, cancel
 }

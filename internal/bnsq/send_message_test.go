@@ -1,16 +1,13 @@
 package bnsq_test
 
 import (
-	"context"
 	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 	"go.uber.org/atomic"
@@ -20,11 +17,8 @@ import (
 func TestSendMessage(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
@@ -65,6 +59,7 @@ func TestSendMessage(t *testing.T) {
 	got := <-received
 
 	g.Stop()
+	_ = g.Wait()
 
 	assert.DeepEqual(t, got, &bnsq.SendMessage{
 		Origin:  origin,
@@ -78,11 +73,8 @@ func TestSendMessage(t *testing.T) {
 func TestSendMessageBadAddr(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	addr := "localhost:9999"
 	config := nsq.NewConfig()
@@ -118,11 +110,8 @@ func TestSendMessageBadAddr(t *testing.T) {
 func TestSendMessageSubscriberBadChannel(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	addr := "localhost:9999"
 
@@ -155,11 +144,8 @@ func TestMaxAge(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
-
-	logger := testutil.Logger(t)
-	ctx = ctxlog.WithLogger(ctx, logger)
 
 	clk := clock.NewMock()
 
@@ -202,6 +188,7 @@ func TestMaxAge(t *testing.T) {
 	time.Sleep(10 * time.Millisecond)
 
 	g.Stop()
+	_ = g.Wait()
 
 	assert.Equal(t, len(received), 0)
 }
@@ -213,7 +200,7 @@ func TestSendMessageBadDecode(t *testing.T) {
 	assert.NilError(t, err)
 	defer cleanup()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
 	const (
@@ -223,6 +210,7 @@ func TestSendMessageBadDecode(t *testing.T) {
 
 	producer, err := nsq.NewProducer(addr, bnsq.DefaultConfig())
 	assert.NilError(t, err)
+	producer.SetLogger(bnsq.NsqLoggerFrom(ctx), nsq.LogLevelInfo)
 	defer producer.Stop()
 
 	var count atomic.Int64

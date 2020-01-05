@@ -19,6 +19,7 @@ func New() (addr string, cleanup func(), retErr error) {
 			config.ClientID = uuid.Must(uuid.NewV4()).String()
 
 			conn := nsq.NewConn(addr, config, (*nopDelegate)(nil))
+			conn.SetLogger(nil, nsq.LogLevelInfo, "")
 			defer conn.Close()
 
 			// Connect sends IDENTIFY, so works as a ping.
