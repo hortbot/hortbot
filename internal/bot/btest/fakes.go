@@ -51,7 +51,7 @@ func newFakeLastFM(t testing.TB) *lastfmfakes.FakeAPI {
 func newFakeYouTube(t testing.TB) *youtubefakes.FakeAPI {
 	f := &youtubefakes.FakeAPI{}
 
-	f.VideoTitleCalls(func(*url.URL) string {
+	f.VideoTitleCalls(func(context.Context, *url.URL) string {
 		t.Fatal("VideoTitle not implemented")
 		return ""
 	})

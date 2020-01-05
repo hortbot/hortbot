@@ -42,8 +42,6 @@ require (
 	github.com/prometheus/client_golang v1.3.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
-	github.com/rs/zerolog v1.17.2
-	github.com/rylio/ytdl v0.6.2
 	github.com/spf13/cobra v0.0.5 // indirect
 	github.com/spf13/viper v1.6.1 // indirect
 	github.com/tomwright/queryparam/v4 v4.1.0

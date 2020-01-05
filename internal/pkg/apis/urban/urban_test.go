@@ -8,16 +8,10 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
+	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
-
-func newTransport(t *testing.T) *httpmock.MockTransport {
-	t.Helper()
-	mt := httpmock.NewMockTransport()
-	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(t.Fatal))
-	return mt
-}
 
 func TestDefine(t *testing.T) {
 	const (
@@ -30,7 +24,7 @@ func TestDefine(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Good", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, `{"list": [{"definition": "This is [some] definition. [Wow]."}, {"definition": "This is a [second] definition. [Wow]."}]}`))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
@@ -43,7 +37,7 @@ func TestDefine(t *testing.T) {
 	t.Run("Request error", func(t *testing.T) {
 		testErr := errors.New("testing error")
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewErrorResponder(testErr))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
@@ -53,7 +47,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(404, ""))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
@@ -63,7 +57,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, "{}"))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
@@ -73,7 +67,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(500, ""))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
@@ -83,7 +77,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Unknown error", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(418, ""))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
@@ -93,7 +87,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Bad JSON", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, "}"))
 
 		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))

@@ -2,6 +2,7 @@
 package youtubefakes
 
 import (
+	"context"
 	"net/url"
 	"sync"
 
@@ -9,10 +10,11 @@ import (
 )
 
 type FakeAPI struct {
-	VideoTitleStub        func(*url.URL) string
+	VideoTitleStub        func(context.Context, *url.URL) string
 	videoTitleMutex       sync.RWMutex
 	videoTitleArgsForCall []struct {
-		arg1 *url.URL
+		arg1 context.Context
+		arg2 *url.URL
 	}
 	videoTitleReturns struct {
 		result1 string
@@ -24,16 +26,17 @@ type FakeAPI struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAPI) VideoTitle(arg1 *url.URL) string {
+func (fake *FakeAPI) VideoTitle(arg1 context.Context, arg2 *url.URL) string {
 	fake.videoTitleMutex.Lock()
 	ret, specificReturn := fake.videoTitleReturnsOnCall[len(fake.videoTitleArgsForCall)]
 	fake.videoTitleArgsForCall = append(fake.videoTitleArgsForCall, struct {
-		arg1 *url.URL
-	}{arg1})
-	fake.recordInvocation("VideoTitle", []interface{}{arg1})
+		arg1 context.Context
+		arg2 *url.URL
+	}{arg1, arg2})
+	fake.recordInvocation("VideoTitle", []interface{}{arg1, arg2})
 	fake.videoTitleMutex.Unlock()
 	if fake.VideoTitleStub != nil {
-		return fake.VideoTitleStub(arg1)
+		return fake.VideoTitleStub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
@@ -48,17 +51,17 @@ func (fake *FakeAPI) VideoTitleCallCount() int {
 	return len(fake.videoTitleArgsForCall)
 }
 
-func (fake *FakeAPI) VideoTitleCalls(stub func(*url.URL) string) {
+func (fake *FakeAPI) VideoTitleCalls(stub func(context.Context, *url.URL) string) {
 	fake.videoTitleMutex.Lock()
 	defer fake.videoTitleMutex.Unlock()
 	fake.VideoTitleStub = stub
 }
 
-func (fake *FakeAPI) VideoTitleArgsForCall(i int) *url.URL {
+func (fake *FakeAPI) VideoTitleArgsForCall(i int) (context.Context, *url.URL) {
 	fake.videoTitleMutex.RLock()
 	defer fake.videoTitleMutex.RUnlock()
 	argsForCall := fake.videoTitleArgsForCall[i]
-	return argsForCall.arg1
+	return argsForCall.arg1, argsForCall.arg2
 }
 
 func (fake *FakeAPI) VideoTitleReturns(result1 string) {

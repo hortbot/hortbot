@@ -348,7 +348,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	if s.Channel.ParseYoutube && s.Deps.YouTube != nil {
 		for _, u := range s.Links(ctx) {
-			title := s.Deps.YouTube.VideoTitle(u)
+			title := s.Deps.YouTube.VideoTitle(ctx, u)
 			if title != "" {
 				return s.Replyf(ctx, "Linked YouTube video: \"%s\"", title)
 			}

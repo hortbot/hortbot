@@ -56,7 +56,7 @@ func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.youtube.VideoTitleCalls(func(u *url.URL) string {
+		st.youtube.VideoTitleCalls(func(_ context.Context, u *url.URL) string {
 			return v[u.String()]
 		})
 	})

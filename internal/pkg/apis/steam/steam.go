@@ -84,7 +84,7 @@ type Summary struct {
 //
 // GET http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/
 func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, error) {
-	url := "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + s.apiKey + "&format=json&steamids=" + url.QueryEscape(id)
+	url := "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + url.QueryEscape(s.apiKey) + "&format=json&steamids=" + url.QueryEscape(id)
 
 	resp, err := ctxhttp.Get(ctx, s.cli, url)
 	if err != nil {

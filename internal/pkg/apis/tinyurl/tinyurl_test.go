@@ -8,16 +8,10 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
+	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
-
-func newTransport(t *testing.T) *httpmock.MockTransport {
-	t.Helper()
-	mt := httpmock.NewMockTransport()
-	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(t.Fatal))
-	return mt
-}
 
 func TestShorten(t *testing.T) {
 	const longURL = "https://github.com/hortbot/hortbot"
@@ -28,7 +22,7 @@ func TestShorten(t *testing.T) {
 	t.Run("Good", func(t *testing.T) {
 		const shortURL = "https://tinyurl.com/2tx"
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewStringResponder(200, shortURL))
 
 		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
@@ -41,7 +35,7 @@ func TestShorten(t *testing.T) {
 	t.Run("Request error", func(t *testing.T) {
 		testErr := errors.New("testing error")
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewErrorResponder(testErr))
 
 		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
@@ -51,7 +45,7 @@ func TestShorten(t *testing.T) {
 	})
 
 	t.Run("Good", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewStringResponder(400, ""))
 
 		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
@@ -64,7 +58,7 @@ func TestShorten(t *testing.T) {
 		response := httpmock.NewStringResponse(200, "") //nolint:bodyclose
 		response.Body = (*badBody)(nil)
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.ResponderFromResponse(response))
 
 		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))

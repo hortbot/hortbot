@@ -7,19 +7,13 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
 
-func newTransport(t *testing.T) *httpmock.MockTransport {
-	t.Helper()
-	mt := httpmock.NewMockTransport()
-	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(t.Fatal))
-	return mt
-}
-
 func TestGetDonationAmount(t *testing.T) {
-	mt := newTransport(t)
+	mt := httpmockx.NewMockTransport(t)
 
 	errTest := errors.New("test error")
 

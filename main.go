@@ -14,8 +14,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/subcommands/sitedbconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
 	"github.com/hortbot/hortbot/internal/version"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 var subcommands = map[string]func([]string){
@@ -30,8 +28,6 @@ var subcommands = map[string]func([]string){
 }
 
 func main() {
-	log.Logger = zerolog.Nop() // Hack to stop ytdl from printing directly to stderr.
-
 	args := os.Args[1:]
 
 	if len(args) == 0 {

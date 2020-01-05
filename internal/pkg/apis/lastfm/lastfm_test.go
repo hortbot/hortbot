@@ -7,9 +7,16 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
+
+func TestNew(t *testing.T) {
+	assertx.Panic(t, func() {
+		lastfm.New("")
+	}, "empty apiKey")
+}
 
 func TestRecentTracks(t *testing.T) {
 	httpmock.Activate()

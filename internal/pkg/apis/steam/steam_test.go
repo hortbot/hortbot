@@ -7,28 +7,16 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/assertx"
+	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
 
-func newTransport(t *testing.T) *httpmock.MockTransport {
-	t.Helper()
-	mt := httpmock.NewMockTransport()
-	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(t.Fatal))
-	return mt
-}
-
 func TestNew(t *testing.T) {
-	var recovered interface{}
-
-	func() {
-		defer func() {
-			recovered = recover()
-		}()
+	assertx.Panic(t, func() {
 		steam.New("")
-	}()
-
-	assert.Equal(t, recovered, "empty apiKey")
+	}, "empty apiKey")
 }
 
 func TestGetPlayerSummary(t *testing.T) {
@@ -56,7 +44,7 @@ func TestGetPlayerSummary(t *testing.T) {
 			}
 		}`
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, response))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -80,7 +68,7 @@ func TestGetPlayerSummary(t *testing.T) {
 			}
 		}`
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, response))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -90,7 +78,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "{"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -100,7 +88,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -110,7 +98,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -120,7 +108,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -130,7 +118,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -141,7 +129,7 @@ func TestGetPlayerSummary(t *testing.T) {
 
 	t.Run("Request error", func(t *testing.T) {
 		testErr := errors.New("testing error")
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -177,7 +165,7 @@ func TestGetOwnedGames(t *testing.T) {
 			}
 		}`
 
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, response))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -198,7 +186,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "{"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -208,7 +196,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -218,7 +206,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -228,7 +216,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -238,7 +226,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
@@ -249,7 +237,7 @@ func TestGetOwnedGames(t *testing.T) {
 
 	t.Run("Request error", func(t *testing.T) {
 		testErr := errors.New("testing error")
-		mt := newTransport(t)
+		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))
 
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))

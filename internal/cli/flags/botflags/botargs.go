@@ -31,8 +31,9 @@ type Bot struct {
 	WebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
 	WebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" env-delim:"," description:"Bot name to web address mapping"`
 
-	LastFMKey string `long:"bot-lastfm-key" env:"HB_BOT_LASTFM_KEY" description:"LastFM API key"`
-	SteamKey  string `long:"bot-steam-key" env:"HB_BOT_STEAM_KEY" description:"Steam API key"`
+	LastFMKey  string `long:"bot-lastfm-key" env:"HB_BOT_LASTFM_KEY" description:"LastFM API key"`
+	SteamKey   string `long:"bot-steam-key" env:"HB_BOT_STEAM_KEY" description:"Steam API key"`
+	YouTubeKey string `long:"bot-youtube-key" env:"HB_BOT_YOUTUBE_KEY" description:"YouTube API key"`
 
 	Workers int `long:"bot-workers" env:"HB_BOT_WORKERS" description:"number of concurrent workers for handling"`
 
@@ -70,6 +71,17 @@ func (args *Bot) New(
 		ctxlog.Warn(ctx, "no Steam API key provided, functionality will be disabled")
 	}
 
+	var youtubeAPI youtube.API
+	if args.YouTubeKey != "" {
+		var err error
+		youtubeAPI, err = youtube.New(args.YouTubeKey)
+		if err != nil {
+			ctxlog.Fatal(ctx, "error creating YouTube API client", zap.Error(err))
+		}
+	} else {
+		ctxlog.Warn(ctx, "no YouTube API key provided, functionality will be disabled")
+	}
+
 	if args.NoSend {
 		sender = logSender{}
 	}
@@ -80,7 +92,7 @@ func (args *Bot) New(
 		Sender:           sender,
 		Notifier:         notifier,
 		LastFM:           lastFM,
-		YouTube:          youtube.New(),
+		YouTube:          youtubeAPI,
 		XKCD:             xkcd.New(),
 		ExtraLife:        extralife.New(),
 		Twitch:           twitchAPI,

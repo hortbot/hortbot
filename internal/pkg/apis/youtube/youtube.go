@@ -2,9 +2,13 @@
 package youtube
 
 import (
+	"context"
+	"net/http"
 	"net/url"
+	"strings"
 
-	"github.com/rylio/ytdl"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -13,24 +17,94 @@ import (
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
-	VideoTitle(u *url.URL) string
+	VideoTitle(ctx context.Context, u *url.URL) string
 }
 
 // YouTube is a YouTube API client.
-type YouTube struct{}
+type YouTube struct {
+	apiKey string
+	cli    *http.Client
+}
 
 var _ API = &YouTube{}
 
 // New creates a new YouTube client.
-func New() *YouTube {
-	return &YouTube{}
+func New(apiKey string, opts ...Option) (*YouTube, error) {
+	if apiKey == "" {
+		panic("empty apiKey")
+	}
+
+	yt := &YouTube{
+		apiKey: apiKey,
+	}
+
+	for _, o := range opts {
+		o(yt)
+	}
+
+	return yt, nil
+}
+
+// Option controls client functionality.
+type Option func(*YouTube)
+
+// HTTPClient sets the YouTube client's underlying http.Client.
+// If nil (or if this option wasn't used), http.DefaultClient will be used.
+func HTTPClient(cli *http.Client) Option {
+	return func(y *YouTube) {
+		y.cli = cli
+	}
 }
 
 // VideoTitle returns the title for the specified YouTUbe video, or an empty
 // string if a failure occurs.
-func (*YouTube) VideoTitle(u *url.URL) string {
-	if info, _ := ytdl.GetVideoInfoFromURL(u); info != nil {
-		return info.Title
+func (y *YouTube) VideoTitle(ctx context.Context, u *url.URL) string {
+	id := extractVideoID(u)
+	if id == "" {
+		return ""
+	}
+
+	url := "https://www.googleapis.com/youtube/v3/videos?part=snippet&key=" + url.QueryEscape(y.apiKey) + "&id=" + url.QueryEscape(id)
+
+	resp, err := ctxhttp.Get(ctx, y.cli, url)
+	if err != nil {
+		return ""
+	}
+	defer resp.Body.Close()
+
+	var body struct {
+		Items []struct {
+			Snippet struct {
+				Title string `json:"title"`
+			} `json:"snippet"`
+		} `json:"items"`
+	}
+
+	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
+		return ""
+	}
+
+	if len(body.Items) == 0 {
+		return ""
+	}
+
+	return body.Items[0].Snippet.Title
+}
+
+// From https://github.com/rylio/ytdl, MIT licensed.
+func extractVideoID(u *url.URL) string {
+	switch u.Host {
+	case "www.youtube.com", "youtube.com":
+		if u.Path == "/watch" {
+			return u.Query().Get("v")
+		}
+		if strings.HasPrefix(u.Path, "/embed/") {
+			return u.Path[7:]
+		}
+	case "youtu.be":
+		if len(u.Path) > 1 {
+			return u.Path[1:]
+		}
 	}
 	return ""
 }

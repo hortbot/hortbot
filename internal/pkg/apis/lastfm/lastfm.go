@@ -36,6 +36,10 @@ var _ API = (*LastFM)(nil)
 
 // New creates a new LastFM client.
 func New(apiKey string) *LastFM {
+	if apiKey == "" {
+		panic("empty apiKey")
+	}
+
 	return &LastFM{
 		api: lastfm.New(apiKey),
 	}
