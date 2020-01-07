@@ -15,8 +15,8 @@ env:
 
 matrix:
   include:
-    - go: "1.13.x"
-      env: PRIMARY=true
+    # - go: "1.13.x"
+    #   env: PRIMARY=true
     - go: "tip"
 
   fast_finish: true
