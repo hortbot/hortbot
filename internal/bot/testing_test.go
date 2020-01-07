@@ -7,7 +7,9 @@ import (
 )
 
 func TestTestingHelper(t *testing.T) {
+	t.Parallel()
 	t.Run("InTest", func(t *testing.T) {
+		t.Parallel()
 		helper := &testingHelper{}
 
 		// Normally fails, but if nil should be ignored.
@@ -24,6 +26,7 @@ func TestTestingHelper(t *testing.T) {
 	})
 
 	t.Run("Nil", func(t *testing.T) {
+		t.Parallel()
 		var helper *testingHelper
 
 		helper.checkUserNameID("foo", 1)

@@ -1,11 +1,5 @@
 package bnsq
 
-import (
-	"time"
-
-	"github.com/nsqio/go-nsq"
-)
-
 const (
 	IncomingTopic             = incomingTopic
 	NotifyChannelUpdatesTopic = notifyChannelUpdatesTopic
@@ -14,12 +8,8 @@ const (
 
 type Message = message
 
-func TestingSleep(d time.Duration) {
-	testingSleep.Store(d)
-}
-
-func DefaultConfig() *nsq.Config {
-	return defaultConfig()
-}
-
-var NsqLoggerFrom = nsqLoggerFrom
+var (
+	TestingSleep  = testingSleep.Store
+	DefaultConfig = defaultConfig
+	NsqLoggerFrom = nsqLoggerFrom
+)

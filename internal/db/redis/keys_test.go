@@ -3,6 +3,7 @@ package redis
 import (
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"gotest.tools/v3/assert"
 )
 
@@ -26,31 +27,20 @@ func TestBuildKey(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got := buildKey(test.input...)
-		assert.Equal(t, test.want, got)
+		test := test
+		t.Run(test.want, func(t *testing.T) {
+			got := buildKey(test.input...)
+			assert.Equal(t, test.want, got)
+		})
 	}
 }
 
 func TestBuildKeyPanic(t *testing.T) {
-	var recovered interface{}
-
-	func() {
-		defer func() {
-			recovered = recover()
-		}()
+	assertx.Panic(t, func() {
 		buildKey()
-	}()
+	}, "no key specified")
 
-	assert.Assert(t, recovered != nil)
-
-	recovered = nil
-
-	func() {
-		defer func() {
-			recovered = recover()
-		}()
+	assertx.Panic(t, func() {
 		buildKey(keyStr("this").is("bad:value"))
-	}()
-
-	assert.Assert(t, recovered != nil)
+	}, "key contains colon: bad:value")
 }

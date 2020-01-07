@@ -11,7 +11,10 @@ import (
 var justinfanRegex = regexp.MustCompile(`^justinfan\d+$`)
 
 func TestUserConfig(t *testing.T) {
+	t.Parallel()
+
 	t.Run("Default", func(t *testing.T) {
+		t.Parallel()
 		u := UserConfig{}
 		u.setup()
 
@@ -21,6 +24,7 @@ func TestUserConfig(t *testing.T) {
 	})
 
 	t.Run("With nick", func(t *testing.T) {
+		t.Parallel()
 		u := UserConfig{
 			Nick:     "FooBar",
 			Pass:     "oauth:qwertyuiop1234567890",
@@ -35,7 +39,10 @@ func TestUserConfig(t *testing.T) {
 }
 
 func TestConfig(t *testing.T) {
+	t.Parallel()
+
 	t.Run("Default", func(t *testing.T) {
+		t.Parallel()
 		c := Config{}
 		c.setup()
 
@@ -46,6 +53,7 @@ func TestConfig(t *testing.T) {
 	})
 
 	t.Run("Custom Dialer", func(t *testing.T) {
+		t.Parallel()
 		d := &Dialer{}
 
 		c := Config{
@@ -57,6 +65,7 @@ func TestConfig(t *testing.T) {
 	})
 
 	t.Run("Negative RecvBuffer", func(t *testing.T) {
+		t.Parallel()
 		c := Config{
 			RecvBuffer: -1,
 		}
@@ -66,8 +75,10 @@ func TestConfig(t *testing.T) {
 	})
 
 	t.Run("Ping", func(t *testing.T) {
+		t.Parallel()
 		test := func(interval, intervalWant time.Duration, deadline, deadlineWant time.Duration) func(t *testing.T) {
 			return func(t *testing.T) {
+				t.Parallel()
 				c := Config{
 					PingInterval: interval,
 					PingDeadline: deadline,

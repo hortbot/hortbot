@@ -11,6 +11,8 @@ import (
 )
 
 func TestScripts(t *testing.T) {
+	t.Parallel()
+
 	files, err := doublestar.Glob(filepath.Join("testdata", "script", "**", "*.txt"))
 	assert.NilError(t, err)
 	assert.Assert(t, len(files) != 0)

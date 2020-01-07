@@ -78,7 +78,7 @@ func doTestHelper(
 ) {
 	t.Helper()
 
-	defer leaktest.Check(t)()
+	defer leaktest.Check(t)() // Must not be parallel.
 
 	if !insecure {
 		opts = append(opts, fakeirc.TLS(fakeirc.TLSConfig))

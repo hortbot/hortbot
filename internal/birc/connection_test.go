@@ -19,12 +19,14 @@ import (
 )
 
 func TestConnectionUnused(t *testing.T) {
+	t.Parallel()
 	c := birc.NewConnection(birc.Config{})
 	assert.Assert(t, c != nil)
 	assert.NilError(t, c.Close())
 }
 
 func TestConnectionDialError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext()
 	defer cancel()
 

@@ -12,6 +12,7 @@ import (
 )
 
 func TestBotNewPanics(t *testing.T) {
+	t.Parallel()
 	db := pool.FreshDB(t)
 	defer db.Close()
 
@@ -57,6 +58,7 @@ func TestBotNewPanics(t *testing.T) {
 }
 
 func TestBotNotInit(t *testing.T) {
+	t.Parallel()
 	assertx.Panic(t, func() {
 		b := &bot.Bot{}
 		b.Handle(context.Background(), "asdasd", &irc.Message{})

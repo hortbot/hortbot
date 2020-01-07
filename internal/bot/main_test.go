@@ -4,13 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres/pgpool"
 )
-
-func init() {
-	bot.Testing()
-}
 
 var pool pgpool.Pool
 
