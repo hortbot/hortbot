@@ -22,7 +22,7 @@ func TestScripts(t *testing.T) {
 		name := strings.TrimSuffix(strings.TrimPrefix(file, prefix)[1:], ".txt")
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
-			btest.RunScript(t, file, freshDB)
+			btest.RunScript(t, file, pool.FreshDB)
 		})
 	}
 }

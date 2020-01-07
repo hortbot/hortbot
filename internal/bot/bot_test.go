@@ -12,7 +12,7 @@ import (
 )
 
 func TestBotNewPanics(t *testing.T) {
-	db := freshDB(t)
+	db := pool.FreshDB(t)
 	defer db.Close()
 
 	config := &bot.Config{
