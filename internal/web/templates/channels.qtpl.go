@@ -5,7 +5,9 @@ package templates
 
 import (
 	"github.com/hortbot/hortbot/internal/db/models"
+)
 
+import (
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"

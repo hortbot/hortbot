@@ -1,5 +1,3 @@
-{% import "context" %}
-
 {% interface Page {
     PageBrand()
     PageTitle()
