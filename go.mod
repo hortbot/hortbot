@@ -64,3 +64,6 @@ require (
 )
 
 replace github.com/valyala/quicktemplate => github.com/zikaeroh/quicktemplate v1.4.2-0.20200112012954-ea3e20a98c97
+
+// https://github.com/jackc/pgconn/issues/25
+replace github.com/jackc/pgconn v1.2.0 => github.com/jackc/pgconn v1.1.0
