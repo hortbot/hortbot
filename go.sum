@@ -439,8 +439,8 @@ github.com/yuin/gopher-lua v0.0.0-20190206043414-8bfc7677f583/go.mod h1:gqRgreBU
 github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb h1:ZkM6LRnq40pR1Ox0hTHlnpkcOTuFIDQpZ1IN8rKKhX0=
 github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb/go.mod h1:gqRgreBUhTSL0GeU64rtZ3Uq3wtjOa/TB2YfrtkCbVQ=
 github.com/zenazn/goji v0.9.0/go.mod h1:7S9M489iMyHBNxwZnk9/EHS098H4/F6TATF2mIxtB1Q=
-github.com/zikaeroh/pgconn v1.2.1-0.20200112084203-424355183e30 h1:SHSBDLAjYUdJd8lsvzfjpEpIYqiDyywSOCAd14XPlLM=
-github.com/zikaeroh/pgconn v1.2.1-0.20200112084203-424355183e30/go.mod h1:GgY/Lbj1VonNaVdNUHs9AwWom3yP2eymFQ1C8z9r/Lk=
+github.com/zikaeroh/pgconn v1.2.1-0.20200112090342-32f9642f8eb8 h1:giHBNHZHia+fIcEkSnKYmEBfu2Uwth4Gnh79a5AqDBs=
+github.com/zikaeroh/pgconn v1.2.1-0.20200112090342-32f9642f8eb8/go.mod h1:GgY/Lbj1VonNaVdNUHs9AwWom3yP2eymFQ1C8z9r/Lk=
 github.com/zikaeroh/quicktemplate v1.4.2-0.20200112012954-ea3e20a98c97 h1:qrODYUHyUvP663JBF5E+XWtR0bi2NBLGcn27NsVMFQw=
 github.com/zikaeroh/quicktemplate v1.4.2-0.20200112012954-ea3e20a98c97/go.mod h1:EH+4AkTd43SvgIbQHYu59/cJyxDoOVRUAfrukLPuGJ4=
 gitlab.com/nyarla/go-crypt v0.0.0-20160106005555-d9a5dc2b789b h1:7gd+rd8P3bqcn/96gOZa3F5dpJr/vEiDQYlNb/y2uNs=
