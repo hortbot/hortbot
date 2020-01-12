@@ -62,3 +62,5 @@ require (
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
+
+replace github.com/valyala/quicktemplate => github.com/zikaeroh/quicktemplate v1.4.2-0.20200112012954-ea3e20a98c97

@@ -42,7 +42,6 @@ For development:
 
 - [gobin](https://github.com/myitcv/gobin) (for `go generate` and model generation)
 - Docker (for tests and model generation)
-- `sh` (for model generation)
 - [golangci-lint](https://github.com/golangci/golangci-lint) (for linting)
 
 All tools used for `go generate` and model generation run through `gobin`, and
