@@ -45,7 +45,7 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/tomwright/queryparam/v4 v4.1.0
-	github.com/valyala/quicktemplate v1.4.1
+	github.com/valyala/quicktemplate v1.4.2-0.20200112192417-6e4d18193077
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
@@ -62,9 +62,6 @@ require (
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
-
-// https://github.com/valyala/quicktemplate/issues/67
-replace github.com/valyala/quicktemplate => github.com/zikaeroh/quicktemplate v1.4.2-0.20200112012954-ea3e20a98c97
 
 // https://github.com/jackc/pgconn/issues/25
 replace github.com/jackc/pgconn => github.com/jackc/pgconn v1.1.0
