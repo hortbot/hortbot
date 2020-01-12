@@ -20,8 +20,8 @@ matrix:
     - go: "tip"
 
   fast_finish: true
-  allow_failures:
-    - go: "tip"
+  # allow_failures:
+  #   - go: "tip"
 
 services:
   - docker
@@ -43,6 +43,7 @@ script:
       test -z "$(git status --porcelain go.mod go.sum)";
     fi
   - go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+  - go test -run=- -bench . -benchtime=1x ./...
   - if [ "$PRIMARY" = true ] && [ "$TRAVIS_BRANCH" = "master" ]; then
       bash <(curl -s https://codecov.io/bash);
       $GOPATH/bin/goveralls -service=travis-ci -coverprofile=coverage.txt;
