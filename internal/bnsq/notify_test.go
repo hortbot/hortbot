@@ -111,7 +111,8 @@ func TestNotifyBadDecode(t *testing.T) {
 		OnNotifyChannelUpdates: inc,
 	}
 
-	go subscriber.Run(ctx) //nolint:errcheck
+	g := errgroupx.FromContext(ctx)
+	g.Go(subscriber.Run)
 
 	b, err := json.Marshal(&bnsq.Message{
 		Payload: []byte("true"),
@@ -121,6 +122,9 @@ func TestNotifyBadDecode(t *testing.T) {
 	assert.NilError(t, producer.Publish(bnsq.NotifyChannelUpdatesTopic+botName, b))
 
 	time.Sleep(100 * time.Millisecond)
+
+	g.Stop()
+	_ = g.Wait()
 
 	assert.Equal(t, count.Load(), int64(0))
 }

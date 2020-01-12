@@ -118,7 +118,8 @@ func TestIncomingBadDecode(t *testing.T) {
 		OnIncoming: inc,
 	}
 
-	go subscriber.Run(ctx) //nolint:errcheck
+	g := errgroupx.FromContext(ctx)
+	g.Go(subscriber.Run)
 
 	b, err := json.Marshal(&bnsq.Message{
 		Payload: []byte("true"),
@@ -128,6 +129,9 @@ func TestIncomingBadDecode(t *testing.T) {
 	assert.NilError(t, producer.Publish(bnsq.IncomingTopic, b))
 
 	time.Sleep(100 * time.Millisecond)
+
+	g.Stop()
+	_ = g.Wait()
 
 	assert.Equal(t, count.Load(), int64(0))
 }
