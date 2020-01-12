@@ -25,7 +25,7 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
-	github.com/jackc/pgconn v1.2.0
+	github.com/jackc/pgconn v1.2.1-0.20200112222856-2582879459d0
 	github.com/jackc/pgx/v4 v4.2.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
@@ -62,6 +62,3 @@ require (
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
-
-// https://github.com/jackc/pgconn/issues/25
-replace github.com/jackc/pgconn => github.com/jackc/pgconn v1.1.0
