@@ -63,7 +63,8 @@ require (
 	mvdan.cc/xurls/v2 v2.1.0
 )
 
+// https://github.com/valyala/quicktemplate/issues/67
 replace github.com/valyala/quicktemplate => github.com/zikaeroh/quicktemplate v1.4.2-0.20200112012954-ea3e20a98c97
 
 // https://github.com/jackc/pgconn/issues/25
-replace github.com/jackc/pgconn v1.2.0 => github.com/jackc/pgconn v1.1.0
+replace github.com/jackc/pgconn => github.com/zikaeroh/pgconn v1.2.1-0.20200112084203-424355183e30
