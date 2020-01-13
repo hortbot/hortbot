@@ -20,7 +20,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.0
 	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.7.1
+	github.com/golang-migrate/migrate/v4 v4.8.0
 	github.com/google/go-cmp v0.4.0
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
@@ -57,7 +57,7 @@ require (
 	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200110213125-a7a6caa82ab2
+	golang.org/x/tools v0.0.0-20200113040837-eac381796e91
 	google.golang.org/grpc v1.26.0 // indirect
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
