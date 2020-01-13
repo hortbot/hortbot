@@ -5,13 +5,13 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
-	bindata "github.com/golang-migrate/migrate/v4/source/go_bindata"
+	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/hortbot/hortbot/internal/db/migrations/esc"
 
 	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
-//go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -private -modtime=0 .
+//go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -modtime=0 .
 
 // Up brings the database up to date to the latest migration.
 func Up(connStr string, logger func(format string, v ...interface{})) error {
@@ -56,8 +56,7 @@ func newMigrate(connStr string, logger func(format string, v ...interface{})) (*
 		return nil, err
 	}
 
-	resource := bindata.Resource(esc.AssetNames(), esc.Asset)
-	source, err := bindata.WithInstance(resource)
+	source, err := httpfs.New(esc.FS(false), "/")
 	if err != nil {
 		return nil, err
 	}
