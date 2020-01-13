@@ -116,7 +116,7 @@ func TestBadConnStr(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
-			assert.ErrorContains(t, test.fn(":", t.Logf), "failed to parse as DSN")
+			assert.Error(t, test.fn(":", t.Logf), "no scheme")
 		})
 	}
 }

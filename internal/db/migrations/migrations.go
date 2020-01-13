@@ -1,14 +1,11 @@
 package migrations
 
 import (
-	"database/sql"
-
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/hortbot/hortbot/internal/db/migrations/esc"
 
-	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 )
 
 //go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -modtime=0 .
@@ -51,22 +48,12 @@ func Reset(connStr string, logger func(format string, v ...interface{})) error {
 }
 
 func newMigrate(connStr string, logger func(format string, v ...interface{})) (*migrate.Migrate, error) {
-	db, err := sql.Open("pgx", connStr)
-	if err != nil {
-		return nil, err
-	}
-
 	source, err := httpfs.New(esc.FS(false), "/")
 	if err != nil {
 		return nil, err
 	}
 
-	driver, err := postgres.WithInstance(db, &postgres.Config{})
-	if err != nil {
-		return nil, err
-	}
-
-	m, err := migrate.NewWithInstance("go-bindata", source, "postgres", driver)
+	m, err := migrate.NewWithSourceInstance("esc", source, connStr)
 	if err != nil {
 		return nil, err
 	}
