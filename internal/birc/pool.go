@@ -48,17 +48,15 @@ type Pool struct {
 	stopOnce sync.Once
 	stopChan chan struct{}
 
-	connID     atomic.Uint64
 	connsMu    sync.RWMutex
 	conns      map[*Connection]struct{}
 	chanToConn map[string]*Connection
+	connID     atomic.Uint64
 
 	joinRate       time.Duration
 	joinPartChan   chan breq.JoinPart
 	syncJoinedChan chan breq.SyncJoined
 	pruneChan      chan struct{}
-	joinedMu       sync.RWMutex
-	joined         map[string]bool
 }
 
 // NewPool creates a new Pool.
@@ -85,7 +83,6 @@ func NewPool(config PoolConfig) *Pool {
 		joinPartChan:   make(chan breq.JoinPart),
 		syncJoinedChan: make(chan breq.SyncJoined),
 		pruneChan:      make(chan struct{}),
-		joined:         make(map[string]bool),
 	}
 
 	if config.JoinRate > 0 {
@@ -165,12 +162,12 @@ func (p *Pool) Part(ctx context.Context, channels ...string) error {
 
 // Joined returns a sorted list of the joined channels.
 func (p *Pool) Joined() []string {
-	p.joinedMu.RLock()
-	defer p.joinedMu.RUnlock()
+	p.connsMu.RLock()
+	defer p.connsMu.RUnlock()
 
-	joined := make([]string, 0, len(p.joined))
+	joined := make([]string, 0, len(p.chanToConn))
 
-	for ch := range p.joined {
+	for ch := range p.chanToConn {
 		joined = append(joined, ch)
 	}
 
@@ -187,16 +184,21 @@ func (p *Pool) IsJoined(channel string) bool {
 		return false
 	}
 
-	p.joinedMu.RLock()
-	defer p.joinedMu.RUnlock()
-	return p.joined[channel]
+	p.connsMu.RLock()
+	defer p.connsMu.RUnlock()
+	return p.isJoined(channel)
+}
+
+// p.connsMu must be locked.
+func (p *Pool) isJoined(channel string) bool {
+	return p.chanToConn[channel] != nil
 }
 
 // NumJoined returns the number of joined channels.
 func (p *Pool) NumJoined() int {
-	p.joinedMu.RLock()
-	defer p.joinedMu.RUnlock()
-	return len(p.joined)
+	p.connsMu.RLock()
+	defer p.connsMu.RUnlock()
+	return len(p.chanToConn)
 }
 
 // SyncJoined synchronizes the pool's joined channels to match the provided
@@ -303,29 +305,33 @@ func (p *Pool) joinSleep(ctx context.Context) {
 func (p *Pool) joinPartChanges(want []string) ([]string, []string) {
 	wantMap := make(map[string]bool, len(want))
 
-	var toPart []string
-	var toJoin []string
+	var toPart []string //nolint:prealloc (almost always zero)
+	var toJoin []string //nolint:prealloc (almost always zero)
 
 	toPartSeen := make(map[string]bool)
 	toJoinSeen := make(map[string]bool)
 
-	p.joinedMu.RLock()
-	defer p.joinedMu.RUnlock()
+	p.connsMu.RLock()
+	defer p.connsMu.RUnlock()
 
 	for _, ch := range want {
 		wantMap[ch] = true
 
-		if !p.joined[ch] && !toJoinSeen[ch] {
-			toJoinSeen[ch] = true
-			toJoin = append(toJoin, ch)
+		if toJoinSeen[ch] || p.isJoined(ch) {
+			continue
 		}
+
+		toJoinSeen[ch] = true
+		toJoin = append(toJoin, ch)
 	}
 
-	for ch := range p.joined {
-		if !wantMap[ch] && !toPartSeen[ch] {
-			toPartSeen[ch] = true
-			toPart = append(toPart, ch)
+	for ch := range p.chanToConn {
+		if toPartSeen[ch] || wantMap[ch] {
+			continue
 		}
+
+		toPartSeen[ch] = true
+		toPart = append(toPart, ch)
 	}
 
 	sort.Strings(toPart)
@@ -336,28 +342,27 @@ func (p *Pool) joinPartChanges(want []string) ([]string, []string) {
 
 // joinPart joins or parts a channel if necessary, sleeping after joins.
 func (p *Pool) joinPart(ctx context.Context, channel string, join bool, force bool) error {
-	noChange := false
-
-	if !force {
-		p.joinedMu.RLock()
-		noChange = p.joined[channel] == join
-		p.joinedMu.RUnlock()
-	}
-
-	if noChange {
-		return nil
-	}
+	// TODO: Make this process atomic, findJoinable without a lock?
+	p.connsMu.RLock()
+	conn := p.chanToConn[channel]
+	p.connsMu.RUnlock()
 
 	if join {
-		conn, err := p.joinableConn(ctx, false)
-		if err != nil {
-			return err
+		// TODO: Remove force, it doesn't appear to be needed anymore.
+		if force || conn == nil {
+			conn, err := p.joinableConn(ctx, false)
+			if err != nil {
+				return err
+			}
+			return p.join(ctx, conn, channel)
 		}
-
-		return p.join(ctx, conn, channel)
+	} else {
+		if conn != nil {
+			return p.part(ctx, conn, channel)
+		}
 	}
 
-	return p.part(ctx, channel)
+	return nil
 }
 
 func (p *Pool) join(ctx context.Context, conn *Connection, channel string) error {
@@ -365,36 +370,21 @@ func (p *Pool) join(ctx context.Context, conn *Connection, channel string) error
 		return err
 	}
 
-	p.joinedMu.Lock()
-	defer p.joinedMu.Unlock()
 	p.connsMu.Lock()
-	defer p.connsMu.Unlock()
-
-	p.joined[channel] = true
 	p.chanToConn[channel] = conn
+	p.connsMu.Unlock()
 
 	return nil
 }
 
-func (p *Pool) part(ctx context.Context, channel string) error {
-	p.connsMu.Lock()
-	defer p.connsMu.Unlock()
-	conn := p.chanToConn[channel]
-
-	if conn == nil {
-		ctxlog.Warn(ctx, "couldn't find conn for channel", zap.String("channel", channel))
-		return nil
-	}
-
+func (p *Pool) part(ctx context.Context, conn *Connection, channel string) error {
 	if err := conn.Part(ctx, channel); err != nil {
 		return err
 	}
 
+	p.connsMu.Lock()
 	delete(p.chanToConn, channel)
-
-	p.joinedMu.Lock()
-	defer p.joinedMu.Unlock()
-	delete(p.joined, channel)
+	p.connsMu.Unlock()
 
 	return nil
 }
@@ -475,8 +465,8 @@ func (p *Pool) prune(ctx context.Context) {
 
 // NumConns returns the currently connected subconns.
 func (p *Pool) NumConns() int {
-	p.connsMu.Lock()
-	defer p.connsMu.Unlock()
+	p.connsMu.RLock()
+	defer p.connsMu.RUnlock()
 	return len(p.conns)
 }
 
@@ -556,14 +546,11 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		joined := conn.Joined()
 
 		p.connsMu.Lock()
-		p.joinedMu.Lock()
 		delete(p.conns, conn)
 		for _, channel := range joined {
 			delete(p.chanToConn, channel)
-			delete(p.joined, channel)
 		}
 		connsLen = len(p.conns)
-		p.joinedMu.Unlock()
 		p.connsMu.Unlock()
 
 		metricSubconns.WithLabelValues(p.config.UserConfig.Nick).Set(float64(connsLen))
