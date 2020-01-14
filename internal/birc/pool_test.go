@@ -717,3 +717,54 @@ func TestPoolPartUnjoined(t *testing.T) {
 		h.AssertMessages(clientMessages)
 	})
 }
+
+func TestPoolPriority(t *testing.T) {
+	doTest(t, func(ctx context.Context, t *testing.T, h *fakeirc.Helper, d birc.Dialer, sm <-chan *irc.Message) {
+		serverMessages := h.CollectSentToServer()
+
+		c := birc.PoolConfig{
+			Config: birc.Config{
+				UserConfig: birc.UserConfig{
+					Nick: "nick",
+					Pass: "pass",
+				},
+				Dialer:          &d,
+				InitialChannels: []string{"#nick", "bar"},
+			},
+			JoinRate:         100,
+			PriorityChannels: []string{"foo", "#bar"},
+		}
+
+		errChan := make(chan error, 1)
+		pool := birc.NewPool(c)
+		defer pool.Stop()
+
+		go func() {
+			errChan <- pool.Run(ctx)
+		}()
+
+		clientMessages := h.CollectFromChannel(pool.Incoming())
+
+		assert.NilError(t, pool.WaitUntilReady(ctx))
+		h.Sleep()
+
+		assert.NilError(t, pool.SyncJoined(ctx, "baz", "nick", "bar", "foo"))
+
+		pool.Stop()
+
+		assert.Equal(t, birc.ErrPoolStopped, errFromErrChan(ctx, errChan))
+
+		h.StopServer()
+		h.Wait()
+
+		h.AssertMessages(serverMessages,
+			ircx.Pass("pass"),
+			ircx.Nick("nick"),
+			ircx.Join("#nick"),
+			ircx.Join("#bar"),
+			ircx.Join("#foo"),
+			ircx.Join("#baz"),
+		)
+		h.AssertMessages(clientMessages)
+	})
+}

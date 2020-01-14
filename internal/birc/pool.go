@@ -37,6 +37,7 @@ var ErrPoolStopped = errors.New("birc: pool stopped")
 type Pool struct {
 	config    *PoolConfig
 	subConfig *Config
+	priority  map[string]int
 
 	ready chan struct{}
 
@@ -67,9 +68,20 @@ func NewPool(config PoolConfig) *Pool {
 	subConfig.InitialChannels = nil
 	subConfig.RecvBuffer = 0
 
+	pLen := len(config.PriorityChannels)
+	priority := make(map[string]int, pLen+1)
+
+	nickChan := ircx.NormalizeChannel(config.UserConfig.Nick)
+	priority[nickChan] = -pLen - 1
+	for i, ch := range config.PriorityChannels {
+		ch = ircx.NormalizeChannel(ch)
+		priority[ch] = -pLen + i
+	}
+
 	p := &Pool{
 		config:    &config,
 		subConfig: &subConfig,
+		priority:  priority,
 
 		ready: make(chan struct{}),
 
@@ -213,16 +225,16 @@ func (p *Pool) doJoinPart(ctx context.Context, join bool, channels ...string) er
 		return nil
 	}
 
-	g := errgroupx.FromContext(ctx)
+	p.prioritize(channels)
 
 	for _, channel := range channels {
-		channel := channel
-		g.Go(func(ctx context.Context) error {
-			return breq.NewJoinPart(channel, join).Do(ctx, p.joinPartChan, p.stopChan, ErrPoolStopped)
-		})
+		err := breq.NewJoinPart(channel, join).Do(ctx, p.joinPartChan, p.stopChan, ErrPoolStopped)
+		if err != nil {
+			return err
+		}
 	}
 
-	return g.Wait()
+	return nil
 }
 
 func (p *Pool) connManager(ctx context.Context) error {
@@ -269,7 +281,6 @@ func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) {
 // Only return an error if the entire pool should stop.
 func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) {
 	ctx = correlation.WithID(ctx, req.XID)
-	// TODO: Priorities for join orders.
 	toPart, toJoin := p.joinPartChanges(req.Channels)
 
 	// Part first so the existing connections are freed.
@@ -335,7 +346,7 @@ func (p *Pool) joinPartChanges(want []string) ([]string, []string) {
 	}
 
 	sort.Strings(toPart)
-	sort.Strings(toJoin)
+	p.prioritize(toJoin)
 
 	return toPart, toJoin
 }
@@ -589,4 +600,22 @@ func (p *Pool) send(ctx context.Context, m *irc.Message) error {
 func (p *Pool) SendMessage(ctx context.Context, target, message string) error {
 	ctx = correlation.With(ctx)
 	return p.send(ctx, ircx.PrivMsg(target, message))
+}
+
+func (p *Pool) prioritize(values []string) {
+	priority := p.priority
+
+	sort.Slice(values, func(i, j int) bool {
+		a := ircx.NormalizeChannel(values[i])
+		ap := priority[a]
+
+		b := ircx.NormalizeChannel(values[j])
+		bp := priority[b]
+
+		if ap == bp {
+			return a < b
+		}
+
+		return ap < bp
+	})
 }

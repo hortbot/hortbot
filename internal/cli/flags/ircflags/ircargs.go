@@ -25,6 +25,8 @@ type IRC struct {
 	RateLimitSlow   int           `long:"irc-rate-limit-slow" env:"HB_IRC_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
 	RateLimitFast   int           `long:"irc-rate-limit-fast" env:"HB_IRC_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
 	RateLimitPeriod time.Duration `long:"irc-rate-limit-period" env:"HB_IRC_RATE_LIMIT_PERIOD" description:"Rate limit period"`
+
+	PriorityChannels []string `long:"irc-priority-channels" env:"HB_IRC_PRIORITY_CHANNELS" description:"An ordered list of channels to prioritize joining"`
 }
 
 var DefaultIRC = IRC{
@@ -66,6 +68,7 @@ func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool
 			PingInterval:    args.PingInterval,
 			PingDeadline:    args.PingDeadline,
 		},
+		PriorityChannels: args.PriorityChannels,
 	}
 
 	return birc.NewPool(pc)

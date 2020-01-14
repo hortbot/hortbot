@@ -103,6 +103,10 @@ type PoolConfig struct {
 	// PruneInterval controls how often the pool prunes connections that are
 	// not joined to any channels. Set negative to disable.
 	PruneInterval time.Duration
+
+	// PriorityChannels is a list of "priority channels" which will be
+	// prioritized ahead of other channels during a join sync.
+	PriorityChannels []string
 }
 
 func (p *PoolConfig) setup() {
