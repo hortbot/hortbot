@@ -8,7 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/sqlboiler/queries"
 	"go.opencensus.io/trace"
 )
 
@@ -32,21 +32,15 @@ func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string,
 	ctx, span := trace.StartSpan(ctx, "VarGetByChannel")
 	defer span.End()
 
-	// TODO: Do this in a psql query, not in Go.
+	var v models.Variable
 
-	c, err := models.Channels(
-		models.ChannelWhere.Name.EQ(strings.ToLower(ch)),
-		qm.Select(models.ChannelColumns.ID),
-	).One(ctx, s.Tx)
-	if err == sql.ErrNoRows {
-		return "", false, nil
-	}
+	err := queries.Raw(`
+		SELECT variables.*
+		FROM variables
+		JOIN channels ON channels.id = variables.channel_id
+		WHERE channels.name = $1 AND variables.name = $2`,
+		strings.ToLower(ch), name).Bind(ctx, s.Tx, &v)
 
-	if err != nil {
-		return "", false, err
-	}
-
-	v, err := c.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err == sql.ErrNoRows {
 		return "", false, nil
 	}
