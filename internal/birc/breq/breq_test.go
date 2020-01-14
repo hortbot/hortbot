@@ -163,23 +163,22 @@ func BenchmarkSendStop(b *testing.B) {
 func TestJoinPart(t *testing.T) {
 	t.Run("New", func(t *testing.T) {
 		tests := []struct {
-			channel     string
-			join, force bool
+			channel string
+			join    bool
 		}{
-			{"foo", false, false},
-			{"#bar", false, true},
-			{"", true, false},
-			{"hello", true, true},
+			{"foo", false},
+			{"#bar", false},
+			{"", true},
+			{"hello", true},
 		}
 
 		for _, test := range tests {
-			req := NewJoinPart(test.channel, test.join, test.force)
+			req := NewJoinPart(test.channel, test.join)
 			assert.Assert(t, req.errChan != nil)
 			assert.Assert(t, cap(req.errChan) == 1)
 			assert.Assert(t, len(req.errChan) == 0)
 			assert.Equal(t, ircx.NormalizeChannel(test.channel), req.Channel)
 			assert.Equal(t, test.join, req.Join)
-			assert.Equal(t, test.force, req.Force)
 		}
 	})
 
@@ -201,7 +200,7 @@ func TestJoinPart(t *testing.T) {
 
 				ctx := context.Background()
 
-				req := NewJoinPart("#foobar", true, false)
+				req := NewJoinPart("#foobar", true)
 				reqChan := make(chan JoinPart)
 
 				go func() {
@@ -236,7 +235,7 @@ func TestJoinPart(t *testing.T) {
 
 			ctx, cancel := context.WithCancel(context.Background())
 
-			req := NewJoinPart("#foobar", true, false)
+			req := NewJoinPart("#foobar", true)
 			reqChan := make(chan JoinPart)
 			stopChan := make(chan struct{})
 

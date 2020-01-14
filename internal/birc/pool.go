@@ -151,13 +151,13 @@ func (p *Pool) Incoming() <-chan *irc.Message {
 // Join instructs the pool to join a channel.
 func (p *Pool) Join(ctx context.Context, channels ...string) error {
 	ctx = correlation.With(ctx)
-	return p.doJoinPart(ctx, true, false, channels...)
+	return p.doJoinPart(ctx, true, channels...)
 }
 
 // Part instructs the pool to part with a channel.
 func (p *Pool) Part(ctx context.Context, channels ...string) error {
 	ctx = correlation.With(ctx)
-	return p.doJoinPart(ctx, false, false, channels...)
+	return p.doJoinPart(ctx, false, channels...)
 }
 
 // Joined returns a sorted list of the joined channels.
@@ -208,7 +208,7 @@ func (p *Pool) SyncJoined(ctx context.Context, channels ...string) error {
 	return breq.NewSyncJoined(channels).Do(ctx, p.syncJoinedChan, p.stopChan, ErrPoolStopped)
 }
 
-func (p *Pool) doJoinPart(ctx context.Context, join, force bool, channels ...string) error {
+func (p *Pool) doJoinPart(ctx context.Context, join bool, channels ...string) error {
 	if len(channels) == 0 {
 		return nil
 	}
@@ -218,7 +218,7 @@ func (p *Pool) doJoinPart(ctx context.Context, join, force bool, channels ...str
 	for _, channel := range channels {
 		channel := channel
 		g.Go(func(ctx context.Context) error {
-			return breq.NewJoinPart(channel, join, force).Do(ctx, p.joinPartChan, p.stopChan, ErrPoolStopped)
+			return breq.NewJoinPart(channel, join).Do(ctx, p.joinPartChan, p.stopChan, ErrPoolStopped)
 		})
 	}
 
@@ -261,7 +261,7 @@ func (p *Pool) connManager(ctx context.Context) error {
 // Only return an error if the entire pool should stop.
 func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) {
 	ctx = correlation.WithID(ctx, req.XID)
-	err := p.joinPart(ctx, req.Channel, req.Join, req.Force)
+	err := p.joinPart(ctx, req.Channel, req.Join)
 	req.Finish(err)
 	p.joinSleep(ctx)
 }
@@ -274,14 +274,14 @@ func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) {
 
 	// Part first so the existing connections are freed.
 	for _, ch := range toPart {
-		if err := p.joinPart(ctx, ch, false, true); err != nil {
+		if err := p.joinPart(ctx, ch, false); err != nil {
 			req.Finish(err)
 			return
 		}
 	}
 
 	for _, ch := range toJoin {
-		err := p.joinPart(ctx, ch, true, true)
+		err := p.joinPart(ctx, ch, true)
 		p.joinSleep(ctx)
 
 		if err != nil {
@@ -341,15 +341,14 @@ func (p *Pool) joinPartChanges(want []string) ([]string, []string) {
 }
 
 // joinPart joins or parts a channel if necessary, sleeping after joins.
-func (p *Pool) joinPart(ctx context.Context, channel string, join bool, force bool) error {
+func (p *Pool) joinPart(ctx context.Context, channel string, join bool) error {
 	// TODO: Make this process atomic, findJoinable without a lock?
 	p.connsMu.RLock()
 	conn := p.chanToConn[channel]
 	p.connsMu.RUnlock()
 
 	if join {
-		// TODO: Remove force, it doesn't appear to be needed anymore.
-		if force || conn == nil {
+		if conn == nil {
 			conn, err := p.joinableConn(ctx, false)
 			if err != nil {
 				return err
@@ -568,7 +567,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		// other open connections or spawn new ones. This is done on a
 		// best-effort basis; the error below should only be returned if the
 		// context was cancelled (since this context is the pool's context).
-		if err := p.doJoinPart(ctx, true, true, joined...); err != nil {
+		if err := p.doJoinPart(ctx, true, joined...); err != nil {
 			ctxlog.Error(ctx, "error rejoining lost channels", zap.Error(err))
 		}
 

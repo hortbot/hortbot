@@ -75,17 +75,15 @@ type JoinPart struct {
 	errChan chan error
 	Channel string
 	Join    bool
-	Force   bool
 	XID     xid.ID
 }
 
 // NewJoinPart creates a new JOIN/PART request.
-func NewJoinPart(channel string, join, force bool) JoinPart {
+func NewJoinPart(channel string, join bool) JoinPart {
 	return JoinPart{
 		errChan: getErrChan(),
 		Channel: ircx.NormalizeChannel(channel),
 		Join:    join,
-		Force:   force,
 	}
 }
 
