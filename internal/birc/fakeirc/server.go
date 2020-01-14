@@ -91,7 +91,6 @@ func (s *Server) Stop() error {
 		close(s.stopChan)
 		s.listener.Close()
 
-		// TODO: Fragile, replace
 		time.Sleep(10 * time.Millisecond)
 		s.g.Stop()
 	}

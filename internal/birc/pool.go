@@ -541,6 +541,7 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		}()
 
 		err = conn.Run(ctx)
+		ctxlog.Debug(ctx, "subconn exited", zap.Error(err))
 
 		joined := conn.Joined()
 

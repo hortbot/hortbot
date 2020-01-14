@@ -322,7 +322,7 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 
 	switch prop {
 	case "editor", "author":
-		return s.Replyf(ctx, "Command '%s' was last modified by %s.", name, info.Editor) // TODO: include the date/time?
+		return s.Replyf(ctx, "Command '%s' was last modified by %s.", name, info.Editor)
 	case "count":
 		u := "times"
 

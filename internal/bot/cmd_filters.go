@@ -576,8 +576,6 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		response = "Banned phrase removed."
 
 	case "list":
-		// TODO: Replace with link to site (or other).
-
 		count := len(s.Channel.FilterBannedPhrasesPatterns)
 		if count == 1 {
 			return s.Reply(ctx, "There is 1 banned phrase.")

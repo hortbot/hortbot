@@ -158,8 +158,6 @@ func BenchmarkSendStop(b *testing.B) {
 	<-done
 }
 
-// TODO: the rest of these tests.
-
 func TestJoinPart(t *testing.T) {
 	t.Run("New", func(t *testing.T) {
 		tests := []struct {
