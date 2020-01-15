@@ -10,14 +10,12 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confimport"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/irc"
-	"github.com/hortbot/hortbot/internal/cli/subcommands/singleproc"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/sitedbconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
 	"github.com/hortbot/hortbot/internal/version"
 )
 
 var subcommands = map[string]func([]string){
-	singleproc.Name:    singleproc.Run,
 	bot.Name:           bot.Run,
 	irc.Name:           irc.Run,
 	web.Name:           web.Run,

@@ -316,8 +316,9 @@ func (p *Pool) joinSleep(ctx context.Context) {
 func (p *Pool) joinPartChanges(want []string) ([]string, []string) {
 	wantMap := make(map[string]bool, len(want))
 
-	var toPart []string //nolint:prealloc (almost always zero)
-	var toJoin []string //nolint:prealloc (almost always zero)
+	// These are both almost always empty; don't preallocate.
+	var toPart []string //nolint:prealloc
+	var toJoin []string //nolint:prealloc
 
 	toPartSeen := make(map[string]bool)
 	toJoinSeen := make(map[string]bool)
