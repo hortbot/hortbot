@@ -68,7 +68,10 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 		ctxlog.Error(ctx, "error creating consumer", zap.Error(err))
 		return err
 	}
-	defer consumer.Stop()
+	defer func() {
+		consumer.Stop()
+		<-consumer.StopChan
+	}()
 
 	consumer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
 
