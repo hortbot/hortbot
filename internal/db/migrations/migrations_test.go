@@ -105,7 +105,7 @@ func TestBadConnStr(t *testing.T) {
 
 	tests := []struct {
 		name string
-		fn   func(connStr string, logger func(format string, v ...interface{})) error
+		fn   func(string, migrations.LoggerFunc) error
 	}{
 		{name: "Up", fn: migrations.Up},
 		{name: "Down", fn: migrations.Down},
