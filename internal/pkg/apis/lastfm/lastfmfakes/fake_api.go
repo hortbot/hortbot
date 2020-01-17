@@ -2,17 +2,19 @@
 package lastfmfakes
 
 import (
+	"context"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
 )
 
 type FakeAPI struct {
-	RecentTracksStub        func(string, int) ([]lastfm.Track, error)
+	RecentTracksStub        func(context.Context, string, int) ([]lastfm.Track, error)
 	recentTracksMutex       sync.RWMutex
 	recentTracksArgsForCall []struct {
-		arg1 string
-		arg2 int
+		arg1 context.Context
+		arg2 string
+		arg3 int
 	}
 	recentTracksReturns struct {
 		result1 []lastfm.Track
@@ -26,17 +28,18 @@ type FakeAPI struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAPI) RecentTracks(arg1 string, arg2 int) ([]lastfm.Track, error) {
+func (fake *FakeAPI) RecentTracks(arg1 context.Context, arg2 string, arg3 int) ([]lastfm.Track, error) {
 	fake.recentTracksMutex.Lock()
 	ret, specificReturn := fake.recentTracksReturnsOnCall[len(fake.recentTracksArgsForCall)]
 	fake.recentTracksArgsForCall = append(fake.recentTracksArgsForCall, struct {
-		arg1 string
-		arg2 int
-	}{arg1, arg2})
-	fake.recordInvocation("RecentTracks", []interface{}{arg1, arg2})
+		arg1 context.Context
+		arg2 string
+		arg3 int
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("RecentTracks", []interface{}{arg1, arg2, arg3})
 	fake.recentTracksMutex.Unlock()
 	if fake.RecentTracksStub != nil {
-		return fake.RecentTracksStub(arg1, arg2)
+		return fake.RecentTracksStub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -51,17 +54,17 @@ func (fake *FakeAPI) RecentTracksCallCount() int {
 	return len(fake.recentTracksArgsForCall)
 }
 
-func (fake *FakeAPI) RecentTracksCalls(stub func(string, int) ([]lastfm.Track, error)) {
+func (fake *FakeAPI) RecentTracksCalls(stub func(context.Context, string, int) ([]lastfm.Track, error)) {
 	fake.recentTracksMutex.Lock()
 	defer fake.recentTracksMutex.Unlock()
 	fake.RecentTracksStub = stub
 }
 
-func (fake *FakeAPI) RecentTracksArgsForCall(i int) (string, int) {
+func (fake *FakeAPI) RecentTracksArgsForCall(i int) (context.Context, string, int) {
 	fake.recentTracksMutex.RLock()
 	defer fake.recentTracksMutex.RUnlock()
 	argsForCall := fake.recentTracksArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
 }
 
 func (fake *FakeAPI) RecentTracksReturns(result1 []lastfm.Track, result2 error) {

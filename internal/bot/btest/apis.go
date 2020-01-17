@@ -30,7 +30,7 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.lastFM.RecentTracksCalls(func(user string, n int) ([]lastfm.Track, error) {
+		st.lastFM.RecentTracksCalls(func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
 			x := v[user]
 
 			if len(x) > n {

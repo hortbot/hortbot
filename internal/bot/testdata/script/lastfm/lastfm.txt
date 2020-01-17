@@ -1,4 +1,4 @@
-lastfm_recent_tracks {"foobar": [{"NowPlaying": true, "Name": "Too Long", "Artist": "Daft Punk", "URL": "example.com"}, {"NowPlaying": false, "Name": "No", "Artist": "Wax Tailor"}]}
+lastfm_recent_tracks {"foobar": [{"now_playing": true, "name": "Too Long", "artist": "Daft Punk", "url": "example.com"}, {"now_playing": false, "name": "No", "artist": "Wax Tailor"}]}
 
 join hortbot 999 foobar 1
 
@@ -55,7 +55,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] No songs scrobbled on LastFM.
 
 
-lastfm_recent_tracks {"foobar": [{"NowPlaying": false, "Name": "Too Long", "Artist": "Daft Punk", "URL": "example.com"}, {"NowPlaying": false, "Name": "No", "Artist": "Wax Tailor"}]}
+lastfm_recent_tracks {"foobar": [{"now_playing": false, "name": "Too Long", "artist": "Daft Punk", "url": "example.com"}, {"now_playing": false, "name": "No", "artist": "Wax Tailor"}]}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
 send hortbot #foobar [HB] Last played: Too Long by Daft Punk - example.com

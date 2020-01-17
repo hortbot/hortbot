@@ -2,58 +2,122 @@
 package lastfm
 
 import (
+	"context"
+	"encoding/xml"
+	"errors"
+	"net/http"
+	"net/url"
+	"strconv"
 	"time"
 
-	"github.com/Kovensky/go-lastfm"
+	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
+// LastFM API errors.
+//
+//     - 200 -> nil
+//     - 404 -> ErrNotFound
+//     - 401 or 403 -> ErrNotAuthorized
+//     - 5xx -> ErrServerError
+//     - Otherwise -> ErrUnknown
+var (
+	ErrNotFound      = errors.New("lastfm: not found")
+	ErrNotAuthorized = errors.New("lastfm: not authorized")
+	ErrServerError   = errors.New("lastfm: server error")
+	ErrUnknown       = errors.New("lastfm: unknown error")
+)
+
 // Track represents a specific LastFM track.
 type Track struct {
-	NowPlaying bool
-	Name       string
-	Artist     string
-	URL        string
-	Time       time.Time
+	NowPlaying bool      `json:"now_playing"`
+	Name       string    `json:"name"`
+	Artist     string    `json:"artist"`
+	URL        string    `json:"url"`
+	Time       time.Time `json:"time"`
 }
 
 //counterfeiter:generate . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
-	RecentTracks(user string, n int) ([]Track, error)
+	RecentTracks(ctx context.Context, user string, n int) ([]Track, error)
 }
 
 // TODO: Fork LastFM package to expose internal client.
 
 // LastFM is a LastFM API client.
 type LastFM struct {
-	api lastfm.LastFM
+	apiKey string
+	cli    *http.Client
 }
 
 var _ API = (*LastFM)(nil)
 
 // New creates a new LastFM client.
-func New(apiKey string) *LastFM {
+func New(apiKey string, opts ...Option) *LastFM {
 	if apiKey == "" {
 		panic("empty apiKey")
 	}
 
-	return &LastFM{
-		api: lastfm.New(apiKey),
+	l := &LastFM{
+		apiKey: apiKey,
+	}
+
+	for _, o := range opts {
+		o(l)
+	}
+
+	return l
+}
+
+// Option controls client functionality.
+type Option func(*LastFM)
+
+// HTTPClient sets the LastFM client's underlying http.Client.
+// If nil (or if this option wasn't used), http.DefaultClient will be used.
+func HTTPClient(cli *http.Client) Option {
+	return func(l *LastFM) {
+		l.cli = cli
 	}
 }
 
 // RecentTracks gets the most recently played tracks for the user, limited to
 // the n most recent tracks.
-func (l *LastFM) RecentTracks(user string, n int) ([]Track, error) {
-	resp, err := l.api.GetRecentTracks(user, n)
+func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track, error) {
+	url := "https://ws.audioscrobbler.com/2.0/?api_key=" + url.QueryEscape(l.apiKey) + "&limit=" + strconv.Itoa(n) + "&method=user.getRecentTracks&user=" + url.QueryEscape(user)
+
+	resp, err := ctxhttp.Get(ctx, l.cli, url)
 	if err != nil {
 		return nil, err
 	}
+	defer resp.Body.Close()
 
-	tracks := resp.Tracks
+	if err := statusToError(resp.StatusCode); err != nil {
+		return nil, err
+	}
+
+	var body struct {
+		XMLName      xml.Name `xml:"lfm"`
+		RecentTracks struct {
+			Tracks []struct {
+				NowPlaying bool   `xml:"nowplaying,attr"`
+				Artist     string `xml:"artist"`
+				Name       string `xml:"name"`
+				URL        string `xml:"url"`
+				Date       struct {
+					UTS int64 `xml:"uts,attr"`
+				} `xml:"date"`
+			} `xml:"track"`
+		} `xml:"recenttracks"`
+	}
+
+	if err := xml.NewDecoder(resp.Body).Decode(&body); err != nil {
+		return nil, ErrServerError
+	}
+
+	tracks := body.RecentTracks.Tracks
 
 	ts := make([]Track, len(tracks))
 
@@ -61,10 +125,29 @@ func (l *LastFM) RecentTracks(user string, n int) ([]Track, error) {
 		ts[i] = Track{
 			NowPlaying: t.NowPlaying,
 			Name:       t.Name,
-			Artist:     t.Artist.Name,
-			Time:       t.Date,
+			Artist:     t.Artist,
+			Time:       time.Unix(t.Date.UTS, 0),
 		}
 	}
 
 	return ts, nil
+}
+
+func statusToError(code int) error {
+	if code >= 200 && code < 300 {
+		return nil
+	}
+
+	switch code {
+	case http.StatusNotFound:
+		return ErrNotFound
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return ErrNotAuthorized
+	}
+
+	if code >= 500 {
+		return ErrServerError
+	}
+
+	return ErrUnknown
 }

@@ -14,8 +14,6 @@ github.com/ClickHouse/clickhouse-go v1.3.12 h1:HvD2NhKPLSeO3Ots6YV0ePgs4l3wO0bLq
 github.com/ClickHouse/clickhouse-go v1.3.12/go.mod h1:EaI/sW7Azgz9UATzd5ZdZHRUhHgv5+JMS9NSr2smCJI=
 github.com/DATA-DOG/go-sqlmock v1.4.0 h1:yxQ63CFIA8Sxkh0vqIofuNrsXl/LZ42TpeTLV4Nb5HM=
 github.com/DATA-DOG/go-sqlmock v1.4.0/go.mod h1:3TucWNLPFOLcHhha1CPp7Kis1UG2h/AqGROPyOeZzsM=
-github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a h1:ypsTKxS89rYzOGhjjnpMwmq++bEY0LwQPv+ocz2iNOc=
-github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a/go.mod h1:DBMpcANiHOKS+CFsoV/nrlHYtLM0gVkf5f/v4PJMJS8=
 github.com/Microsoft/go-winio v0.4.11 h1:zoIOcVf0xPN1tnMVbTtEdI+P8OofVk3NObnwOQ6nK2Q=
 github.com/Microsoft/go-winio v0.4.11/go.mod h1:VhR8bwka0BXejwEJY73c50VrPtXAaKcyvVC4A4RozmA=
 github.com/Microsoft/go-winio v0.4.14 h1:+hMXMk01us9KgxGb7ftKQt2Xpf5hH/yky+TDA+qxleU=
@@ -345,8 +343,6 @@ github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/pmylund/go-cache v2.1.0+incompatible h1:n+7K51jLz6a3sCvff3BppuCAkixuDHuJ/C57Vw/XjTE=
-github.com/pmylund/go-cache v2.1.0+incompatible/go.mod h1:hmz95dGvINpbRZGsqPcd7B5xXY5+EKb5PpGhQY3NTHk=
 github.com/posener/ctxutil v1.0.0 h1:APsSe4cGwZuER2veF2cv7vhauQgifRIAYxuGAjtvxoY=
 github.com/posener/ctxutil v1.0.0/go.mod h1:3tPqqDAPFdtyAfY1WrxcIPFNhp/CuDXxeqyADkFVSLo=
 github.com/prometheus/client_golang v0.9.1/go.mod h1:7SWBe2y4D6OKWSNQJUaRYU/AaXPKyh/dDVn+NZz0KFw=

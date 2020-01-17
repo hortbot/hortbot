@@ -6,7 +6,6 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.5
 	github.com/DATA-DOG/go-sqlmock v1.4.0 // indirect
-	github.com/Kovensky/go-lastfm v0.0.0-20160622014344-f0f9315dd59a
 	github.com/alicebob/miniredis/v2 v2.11.1
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
@@ -38,7 +37,6 @@ require (
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.5.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/pmylund/go-cache v2.1.0+incompatible // indirect
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.3.0
 	github.com/robfig/cron/v3 v3.0.1

@@ -284,7 +284,7 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 		return nil, errLastFMDisabled
 	}
 
-	tracks, err := s.Deps.LastFM.RecentTracks(s.Channel.LastFM, 2)
+	tracks, err := s.Deps.LastFM.RecentTracks(ctx, s.Channel.LastFM, 2)
 	if err != nil {
 		return nil, err
 	}
