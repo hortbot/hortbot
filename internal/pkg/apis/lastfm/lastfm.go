@@ -45,8 +45,6 @@ type API interface {
 	RecentTracks(ctx context.Context, user string, n int) ([]Track, error)
 }
 
-// TODO: Fork LastFM package to expose internal client.
-
 // LastFM is a LastFM API client.
 type LastFM struct {
 	apiKey string
