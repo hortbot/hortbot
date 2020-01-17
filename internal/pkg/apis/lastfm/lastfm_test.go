@@ -43,15 +43,17 @@ func TestRecentTracks(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, tracks, []lastfm.Track{
 			{
-				NowPlaying: false,
+				NowPlaying: true,
 				Name:       "Scarlet M∞N",
 				Artist:     "MEIKO・巡音ルカ",
+				URL:        "https://www.last.fm/music/MEIKO%E3%83%BB%E5%B7%A1%E9%9F%B3%E3%83%AB%E3%82%AB/_/Scarlet+M%E2%88%9EN",
 				Time:       time.Unix(1404235898, 0),
 			},
 			{
 				NowPlaying: false,
 				Name:       "Daydream Flight",
 				Artist:     "蒼姫ラピス",
+				URL:        "https://www.last.fm/music/%E8%92%BC%E5%A7%AB%E3%83%A9%E3%83%94%E3%82%B9/_/Daydream+Flight",
 				Time:       time.Unix(1404235556, 0),
 			},
 		})
@@ -124,7 +126,7 @@ const (
 	apiResponse = `<?xml version="1.0" encoding="UTF-8"?>
 	<lfm status="ok">
 		<recenttracks user="zikaeroh" page="1" perPage="2" totalPages="533" total="1066">
-			<track>
+			<track nowplaying="true">
 				<artist mbid="">MEIKO・巡音ルカ</artist>
 				<name>Scarlet M∞N</name>
 				<streamable>0</streamable>

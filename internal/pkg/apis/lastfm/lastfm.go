@@ -124,6 +124,7 @@ func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track,
 			NowPlaying: t.NowPlaying,
 			Name:       t.Name,
 			Artist:     t.Artist,
+			URL:        t.URL,
 			Time:       time.Unix(t.Date.UTS, 0),
 		}
 	}
