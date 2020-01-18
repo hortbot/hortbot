@@ -51,11 +51,11 @@ require (
 	go.opencensus.io v0.22.2
 	go.uber.org/atomic v1.5.1
 	go.uber.org/zap v1.13.0
-	golang.org/x/crypto v0.0.0-20200109152110-61a87790db17 // indirect
-	golang.org/x/net v0.0.0-20191209160850-c0dbc17a3553
+	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
+	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200113154838-30cae5f2fb06
+	golang.org/x/tools v0.0.0-20200117220505-0cba7a3a9ee9
 	google.golang.org/grpc v1.26.0 // indirect
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
