@@ -63,7 +63,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	incomingPub := cmd.NSQ.NewIncomingPublisher()
 
 	sendSub := cmd.NSQ.NewSendMessageSubscriber(cmd.IRC.Nick, 15*time.Second, func(m *bnsq.SendMessage, metadata *bnsq.Metadata) error {
-		ctx := metadata.Correlate(ctx)
+		ctx := metadata.With(ctx)
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", metadata.ParentSpan())
 		defer span.End()
 
@@ -89,7 +89,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	syncJoined := make(chan struct{}, 1)
 
 	notifySub := cmd.NSQ.NewNotifySubscriber(cmd.IRC.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, metadata *bnsq.Metadata) error {
-		ctx := metadata.Correlate(ctx)
+		ctx := metadata.With(ctx)
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", metadata.ParentSpan())
 		defer span.End()
 

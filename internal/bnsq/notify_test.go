@@ -44,7 +44,7 @@ func TestNotify(t *testing.T) {
 		Channel: channel,
 		OnNotifyChannelUpdates: func(n *bnsq.ChannelUpdatesNotification, m *bnsq.Metadata) error {
 			received <- n
-			cids <- correlation.FromContext(m.Correlate(context.Background()))
+			cids <- correlation.FromContext(m.With(context.Background()))
 			spans <- m.ParentSpan()
 			return nil
 		},

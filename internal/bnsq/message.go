@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/rs/xid"
 	"go.opencensus.io/trace"
@@ -31,6 +32,8 @@ func (m *Metadata) ParentSpan() trace.SpanContext {
 	return parent
 }
 
-func (m *Metadata) Correlate(ctx context.Context) context.Context {
-	return correlation.WithID(ctx, m.Correlation)
+func (m *Metadata) With(ctx context.Context) context.Context {
+	ctx = correlation.WithID(ctx, m.Correlation)
+	ctx = bnsqmeta.WithTimestamp(ctx, m.Timestamp)
+	return ctx
 }
