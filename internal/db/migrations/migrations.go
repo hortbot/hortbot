@@ -2,6 +2,7 @@ package migrations
 
 import (
 	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/hortbot/hortbot/internal/db/migrations/esc"
 
@@ -9,6 +10,16 @@ import (
 )
 
 //go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -modtime=0 .
+
+var escSource source.Driver
+
+func init() {
+	var err error
+	escSource, err = httpfs.New(esc.FS(false), "/")
+	if err != nil {
+		panic(err)
+	}
+}
 
 // Up brings the database up to date to the latest migration.
 func Up(connStr string, logger LoggerFunc) error {
@@ -48,12 +59,7 @@ func Reset(connStr string, logger LoggerFunc) error {
 }
 
 func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
-	source, err := httpfs.New(esc.FS(false), "/")
-	if err != nil {
-		return nil, err
-	}
-
-	m, err := migrate.NewWithSourceInstance("esc", source, connStr)
+	m, err := migrate.NewWithSourceInstance("esc", escSource, connStr)
 	if err != nil {
 		return nil, err
 	}
