@@ -124,10 +124,21 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 	)
 	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
-	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+	err = transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		s.Tx = tx
-		return handleSession(ctx, s)
+		err := handleSession(ctx, s)
+		s.Tx = nil
+		return err
 	})
+	if err != nil {
+		return err
+	}
+
+	if s.onFinish != nil {
+		return s.onFinish(ctx)
+	}
+
+	return nil
 }
 
 func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (*session, error) {

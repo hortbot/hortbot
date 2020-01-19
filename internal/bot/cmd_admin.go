@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
+	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/version"
@@ -51,10 +52,24 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func cmdAdminRoundtrip(ctx context.Context, s *session, cmd string, args string) error {
-	now := s.Deps.Clock.Now()
-	twitch := s.Start.Sub(s.TMISent)
-	handle := now.Sub(s.Start)
-	return s.Replyf(ctx, "twitch=%v, handle=%v", twitch, handle)
+	beforeCommit := s.Deps.Clock.Now()
+
+	// Do this after the transaction finishes to be able to note the commit time.
+	s.OnFinish(func(ctx context.Context) error {
+		enqueued := bnsqmeta.Timestamp(ctx)
+		if enqueued.IsZero() {
+			enqueued = s.Start
+		}
+
+		twitch := enqueued.Sub(s.TMISent)
+		inQueue := s.Start.Sub(enqueued)
+		handle := beforeCommit.Sub(s.Start)
+		commit := s.Deps.Clock.Since(beforeCommit)
+
+		return s.Replyf(ctx, "twitch=%v, inQueue=%v, handle=%v, commit=%v", twitch, inQueue, handle, commit)
+	})
+
+	return nil
 }
 
 func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) error {

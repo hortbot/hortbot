@@ -65,6 +65,8 @@ type session struct {
 
 	usageContext string
 
+	onFinish func(ctx context.Context) error
+
 	cache struct {
 		links          *[]*url.URL
 		tracks         *[]lastfm.Track
@@ -478,4 +480,8 @@ func (s *session) SetCommandParams(params string) {
 
 func (s *session) RoomIDStr() string {
 	return strconv.FormatInt(s.RoomID, 10)
+}
+
+func (s *session) OnFinish(fn func(context.Context) error) {
+	s.onFinish = fn
 }
