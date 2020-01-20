@@ -41,7 +41,7 @@ func mainErr() error {
 	}
 
 	fmt.Println("Migrating database up")
-	if err := migrations.Up(connStr, migrateLog); err != nil {
+	if err := migrations.Up(connStr, migrateLogf); err != nil {
 		return errors.Wrap(err, "migrating database")
 	}
 
@@ -103,6 +103,6 @@ func mainErr() error {
 	return nil
 }
 
-func migrateLog(format string, v ...interface{}) {
+func migrateLogf(format string, v ...interface{}) {
 	fmt.Printf("\t"+format, v...)
 }
