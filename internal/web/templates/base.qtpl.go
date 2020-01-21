@@ -75,16 +75,25 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
                 <a class="navbar-item is-active" href="/">`)
 	p.StreamPageBrand(qw422016)
 	qw422016.N().S(`</a>
-            </div>
-            <div class="navbar-start">
-                <a class="navbar-item" href="/channels">Channels</a>
-                <a class="navbar-item" href="/docs">Documentation</a>
-                <a class="navbar-item" href="/about">About</a>
+
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navMenu" onclick="toggleBurger()">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
             </div>
 
-            `)
+            <div class="navbar-menu" id="navMenu">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="/channels">Channels</a>
+                    <a class="navbar-item" href="/docs">Documentation</a>
+                    <a class="navbar-item" href="/about">About</a>
+                </div>
+
+                `)
 	p.StreamPageLogin(qw422016)
 	qw422016.N().S(`
+            </div>
         </nav>
 
         `)
@@ -96,6 +105,13 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
         `)
 	p.StreamPageScripts(qw422016)
 	qw422016.N().S(`
+
+        <script>
+            function toggleBurger() {
+                document.querySelector(".burger").classList.toggle("is-active");
+                document.querySelector(".navbar-menu").classList.toggle("is-active");
+            }
+        </script>
     </body>
 </html>
 `)

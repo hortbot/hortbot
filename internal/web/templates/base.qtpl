@@ -40,14 +40,23 @@
         <nav class="navbar" id="header">
             <div class="navbar-brand">
                 <a class="navbar-item is-active" href="/">{%= p.PageBrand() %}</a>
-            </div>
-            <div class="navbar-start">
-                <a class="navbar-item" href="/channels">Channels</a>
-                <a class="navbar-item" href="/docs">Documentation</a>
-                <a class="navbar-item" href="/about">About</a>
+
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navMenu" onclick="toggleBurger()">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
             </div>
 
-            {%= p.PageLogin() %}
+            <div class="navbar-menu" id="navMenu">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="/channels">Channels</a>
+                    <a class="navbar-item" href="/docs">Documentation</a>
+                    <a class="navbar-item" href="/about">About</a>
+                </div>
+
+                {%= p.PageLogin() %}
+            </div>
         </nav>
 
         {%= p.PageBody() %}
@@ -55,6 +64,13 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/js/all.min.js" integrity="sha256-iZGp5HAiwRmkbOKVYv5FUER4iXp5QbiEudkZOdwLrjw=" crossorigin="anonymous"></script>
 
         {%= p.PageScripts() %}
+
+        <script>
+            function toggleBurger() {
+                document.querySelector(".burger").classList.toggle("is-active");
+                document.querySelector(".navbar-menu").classList.toggle("is-active");
+            }
+        </script>
     </body>
 </html>
 {% endfunc %}
