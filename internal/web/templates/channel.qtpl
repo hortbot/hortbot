@@ -50,7 +50,7 @@ function timeSorter(a, b) {
 {% func isActive(a, b string) %}{% if a == b %}is-active{% endif %}{% endfunc %}
 
 {% func (p *ChannelPage) Sidebar(item string) %}
-<div class="is-sidebar-menu">
+<div class="is-sidebar-menu is-hidden-mobile">
     <aside class="menu">
         <p class="menu-label">
             General

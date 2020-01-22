@@ -139,7 +139,7 @@ func isActive(a, b string) string {
 
 func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
 	qw422016.N().S(`
-<div class="is-sidebar-menu">
+<div class="is-sidebar-menu is-hidden-mobile">
     <aside class="menu">
         <p class="menu-label">
             General
