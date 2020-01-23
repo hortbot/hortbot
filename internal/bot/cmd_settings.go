@@ -350,7 +350,7 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 }
 
 func updateBoolean(
-	ctx context.Context, s *session, cmd string, args string,
+	ctx context.Context, s *session, _ string, args string,
 	get func() bool, set func(v bool), column string,
 	name, alreadyTrue, alreadyFalse, setTrue, setFalse string,
 ) error {

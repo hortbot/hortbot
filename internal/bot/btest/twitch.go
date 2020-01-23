@@ -141,7 +141,7 @@ func (st *scriptTester) twitchGetUserForUsername(t testing.TB, _, args string, l
 	})
 }
 
-func (st *scriptTester) twitchFollowChannel(t testing.TB, directive, args string, lineNum int) {
+func (st *scriptTester) twitchFollowChannel(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		ID       int64
 		Tok      *oauth2.Token

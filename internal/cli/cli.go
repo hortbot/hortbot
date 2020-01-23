@@ -28,13 +28,13 @@ type Common struct {
 	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 }
 
-func (c *Common) debug() bool {
+func (c *Common) IsDebug() bool {
 	return c.Debug
 }
 
 type Command interface {
 	Main(ctx context.Context, args []string)
-	debug() bool
+	IsDebug() bool
 }
 
 var DefaultCommon = Common{}
@@ -50,7 +50,7 @@ func Run(name string, args []string, cmd Command) {
 	args, err := parser.ParseArgs(args)
 	checkParseError(err)
 
-	logger := ctxlog.New(cmd.debug())
+	logger := ctxlog.New(cmd.IsDebug())
 	defer zap.RedirectStdLog(logger)()
 	ctx = ctxlog.WithLogger(ctx, logger)
 

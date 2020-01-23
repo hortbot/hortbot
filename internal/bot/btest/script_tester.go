@@ -73,9 +73,8 @@ type scriptTester struct {
 
 	counts map[string]int
 
-	ctx      context.Context
-	actions  []func(context.Context)
-	cleanups []func()
+	ctx     context.Context
+	actions []func(context.Context)
 
 	sentBefore int
 	needNoSend bool
@@ -86,10 +85,6 @@ type scriptTester struct {
 
 func (st *scriptTester) addAction(fn func(context.Context)) {
 	st.actions = append(st.actions, fn)
-}
-
-func (st *scriptTester) addCleanup(fn func()) {
-	st.cleanups = append(st.cleanups, fn)
 }
 
 func (st *scriptTester) ensureBot(ctx context.Context, t testing.TB) {
@@ -120,12 +115,6 @@ func (st *scriptTester) test(t testing.TB) {
 	st.steam = newFakeSteam(t)
 	st.tinyURL = newTinyURL(t)
 	st.urban = newUrban(t)
-
-	defer func() {
-		for _, cleanup := range st.cleanups {
-			defer cleanup()
-		}
-	}()
 
 	st.ctx = ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
@@ -321,6 +310,7 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"twitch_get_chatters":          (*scriptTester).twitchGetChatters,
 	"twitch_get_user_for_username": (*scriptTester).twitchGetUserForUsername,
 	"twitch_follow_channel":        (*scriptTester).twitchFollowChannel,
+	"no_steam":                     (*scriptTester).noSteam,
 	"steam_get_player_summary":     (*scriptTester).steamGetPlayerSummary,
 	"steam_get_owned_games":        (*scriptTester).steamGetOwnedGames,
 	"no_tiny_url":                  (*scriptTester).noTinyURL,

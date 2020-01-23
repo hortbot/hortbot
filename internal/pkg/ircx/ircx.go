@@ -117,9 +117,7 @@ func Clone(m *irc.Message) *irc.Message {
 
 	if m.Params != nil {
 		params := make([]string, len(m.Params))
-		for i, p := range m.Params {
-			params[i] = p
-		}
+		copy(params, m.Params)
 		m2.Params = params
 	}
 

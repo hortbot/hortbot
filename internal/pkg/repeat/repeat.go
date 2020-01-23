@@ -22,12 +22,7 @@ type Repeater struct {
 }
 
 // New creates a new Repeater with the specified root context and clock.
-// If ctx is nil, then context.Background() will be used instead.
 func New(ctx context.Context, clock clock.Clock) *Repeater {
-	if ctx == nil {
-		ctx = context.Background()
-	}
-
 	return &Repeater{
 		clock: clock,
 		ctx:   ctx,

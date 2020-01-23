@@ -5,32 +5,27 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-    # slow
-    - gosimple
-    - staticcheck
-    - stylecheck
-    - unparam
-    - unused
-    # bad
-    - maligned
-    - lll
-    - gochecknoglobals
-    - gochecknoinits
-    - goconst
-    - interfacer
-    - dupl
     # https://github.com/golangci/golangci-lint/issues/484
     - govet
-    - funlen
-    - godox
+    - maligned
     - wsl
-    - gocognit
-    - dogsled
     - gomnd
+    - lll
+    - godox
+    - gochecknoglobals
+    - gochecknoinits
+    - funlen
+    - gocognit
+    - goconst
+    - interfacer
+    - dogsled
+    - dupl
+    - unparam
 
-  # fast: true
-  # enable:
-  #   - golint
+    - stylecheck
+    - unused
+
+    # - staticcheck
 
 issues:
   # exclude-use-default: false

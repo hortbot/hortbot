@@ -20,15 +20,6 @@ func TestDoNothing(t *testing.T) {
 	r.Stop()
 }
 
-func TestNilContext(t *testing.T) {
-	defer leaktest.Check(t)()
-
-	clk := clock.NewMock()
-
-	r := repeat.New(nil, clk)
-	r.Stop()
-}
-
 func TestAdd(t *testing.T) {
 	defer leaktest.Check(t)()
 

@@ -22,6 +22,11 @@ import (
 
 var testingAction func(ctx context.Context, action string) (string, error, bool)
 
+const (
+	actionMsgError  = "(error)"
+	actionMsgNotSet = "(Not set)"
+)
+
 //nolint:gocyclo
 func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	select {
@@ -161,13 +166,13 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 		ch, err := s.TwitchChannel(ctx)
 		if err != nil {
-			game = "(error)"
+			game = actionMsgError
 		} else {
 			game = ch.Game
 		}
 
 		if game == "" {
-			game = "(Not set)"
+			game = actionMsgNotSet
 		}
 
 		if action == "GAME_CLEAN" {
@@ -185,13 +190,13 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "STATUS":
 		ch, err := s.TwitchChannel(ctx)
 		if err != nil {
-			return "(error)", nil
+			return actionMsgError, nil
 		}
 
 		status := ch.Status
 
 		if status == "" {
-			return "(Not set)", nil
+			return actionMsgNotSet, nil
 		}
 
 		return status, nil
@@ -222,7 +227,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "STEAM_PROFILE":
 		summary, err := s.SteamSummary(ctx)
 		if err != nil {
-			return "(error)", nil
+			return actionMsgError, nil
 		}
 
 		url := summary.ProfileURL
@@ -240,7 +245,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		if game == "" || err != nil {
 			ch, err := s.TwitchChannel(ctx)
 			if err != nil {
-				game = "(error)"
+				game = actionMsgError
 			} else {
 				game = ch.Game
 			}
@@ -254,7 +259,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "STEAM_SERVER":
 		summary, err := s.SteamSummary(ctx)
 		if err != nil {
-			return "(error)", nil
+			return actionMsgError, nil
 		}
 
 		server := summary.GameServer
@@ -265,7 +270,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	case "STEAM_STORE":
 		summary, err := s.SteamSummary(ctx)
 		if err != nil {
-			return "(error)", nil
+			return actionMsgError, nil
 		}
 
 		gameID := summary.GameID
@@ -438,7 +443,7 @@ func (s *session) actionSong(ctx context.Context, i int, url bool) (string, erro
 		if err == errLastFMDisabled {
 			return "(Unknown)", nil
 		}
-		return "(error)", err
+		return actionMsgError, err
 	}
 
 	if len(tracks) < i+1 {
@@ -516,14 +521,14 @@ func (s *session) actionRandom(action string) (string, error) {
 func (s *session) actionVars(ctx context.Context, action string) (string, error) {
 	name, action := stringsx.SplitByte(action, '_')
 	if name == "" || action == "" {
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 
 	switch {
 	case strings.HasPrefix(action, "GET_"):
 		ch := strings.TrimPrefix(action, "GET_")
 		if ch == "" {
-			return "(error)", nil
+			return actionMsgError, nil
 		}
 
 		v, _, err := s.VarGetByChannel(ctx, ch, name)
@@ -551,18 +556,18 @@ func (s *session) actionVars(ctx context.Context, action string) (string, error)
 		return s.actionVarInc(ctx, name, decStr, true)
 
 	default:
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 }
 
 func (s *session) actionVarInc(ctx context.Context, name, incStr string, dec bool) (string, error) {
 	if incStr == "" {
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 
 	inc, err := strconv.ParseInt(incStr, 10, 64)
 	if err != nil {
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 
 	if dec {
@@ -575,13 +580,13 @@ func (s *session) actionVarInc(ctx context.Context, name, incStr string, dec boo
 	}
 
 	if badVar {
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 
 	return strconv.FormatInt(v, 10), nil
 }
 
-func (s *session) actionTime(ctx context.Context, tz string, layout string) (string, error) {
+func (s *session) actionTime(_ context.Context, tz string, layout string) (string, error) {
 	loc, err := time.LoadLocation(tz)
 	if err != nil {
 		loc = time.UTC
@@ -594,10 +599,10 @@ func (s *session) actionTime(ctx context.Context, tz string, layout string) (str
 
 const dayDur = 24 * time.Hour
 
-func (s *session) actionUntil(ctx context.Context, timestamp string, short bool) (string, error) {
+func (s *session) actionUntil(_ context.Context, timestamp string, short bool) (string, error) {
 	t, err := parseUntilTimestamp(timestamp)
 	if err != nil {
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 
 	dur := s.Deps.Clock.Until(t).Round(time.Minute)
@@ -686,7 +691,7 @@ func (s *session) actionCommand(ctx context.Context, name string) (string, error
 		return processCommand(ctx, s, commandMsg.String)
 	}
 
-	return "(error)", nil
+	return actionMsgError, nil
 }
 
 func (s *session) actionList(ctx context.Context, name string) (string, error) {
@@ -698,11 +703,11 @@ func (s *session) actionList(ctx context.Context, name string) (string, error) {
 	).One(ctx, s.Tx)
 	switch {
 	case err == sql.ErrNoRows:
-		return "(error)", nil
+		return actionMsgError, nil
 	case err != nil:
 		return "", err
 	case info.R.CommandList == nil:
-		return "(error)", nil
+		return actionMsgError, nil
 	}
 
 	items := info.R.CommandList.Items

@@ -53,11 +53,6 @@ func TestPublishUnmarshalable(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
 
-	const (
-		botName = "hortbot"
-		channel = "blue"
-	)
-
 	publisher := newPublisher(addr)
 
 	g := errgroupx.FromContext(ctx)
@@ -79,11 +74,6 @@ func TestPublishNotConnected(t *testing.T) {
 
 	ctx, cancel := testContext(t)
 	defer cancel()
-
-	const (
-		botName = "hortbot"
-		channel = "blue"
-	)
 
 	publisher := newPublisher(addr)
 

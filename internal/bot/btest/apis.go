@@ -17,7 +17,7 @@ import (
 )
 
 func (st *scriptTester) noLastFM(t testing.TB, _, _ string, _ int) {
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable LastFM")
 		st.bc.LastFM = nil
 	})
@@ -29,7 +29,7 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 	err := json.Unmarshal([]byte(args), &v)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.lastFM.RecentTracksCalls(func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
 			x := v[user]
 
@@ -43,7 +43,7 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 }
 
 func (st *scriptTester) noYouTube(t testing.TB, _, _ string, _ int) {
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable YouTube")
 		st.bc.YouTube = nil
 	})
@@ -55,7 +55,7 @@ func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string, lineNum
 	err := json.Unmarshal([]byte(args), &v)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.youtube.VideoTitleCalls(func(_ context.Context, u *url.URL) string {
 			return v[u.String()]
 		})
@@ -63,7 +63,7 @@ func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string, lineNum
 }
 
 func (st *scriptTester) noXKCD(t testing.TB, _, _ string, _ int) {
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable XKCD")
 		st.bc.XKCD = nil
 	})
@@ -75,7 +75,7 @@ func (st *scriptTester) xkcdComics(t testing.TB, _, args string, lineNum int) {
 	err := json.Unmarshal([]byte(args), &v)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.xkcd.GetComicCalls(func(_ context.Context, id int) (*xkcd.Comic, error) {
 			c, ok := v[strconv.Itoa(id)]
 			if !ok {
@@ -87,7 +87,7 @@ func (st *scriptTester) xkcdComics(t testing.TB, _, args string, lineNum int) {
 }
 
 func (st *scriptTester) noExtraLife(t testing.TB, _, _ string, _ int) {
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Extra Life")
 		st.bc.ExtraLife = nil
 	})
@@ -99,7 +99,7 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 	err := json.Unmarshal([]byte(args), &v)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.extraLife.GetDonationAmountCalls(func(_ context.Context, id int) (float64, error) {
 			a, ok := v[strconv.Itoa(id)]
 			if !ok {
@@ -111,7 +111,7 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 }
 
 func (st *scriptTester) noSteam(t testing.TB, _, _ string, _ int) {
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Steam")
 		st.bc.Steam = nil
 	})
@@ -135,7 +135,7 @@ func steamErr(t testing.TB, lineNum int, e string) error {
 	}
 }
 
-func (st *scriptTester) steamGetPlayerSummary(t testing.TB, directive, args string, lineNum int) {
+func (st *scriptTester) steamGetPlayerSummary(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		ID string
 
@@ -146,7 +146,7 @@ func (st *scriptTester) steamGetPlayerSummary(t testing.TB, directive, args stri
 	err := json.Unmarshal([]byte(args), &call)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.steam.GetPlayerSummaryCalls(func(_ context.Context, id string) (*steam.Summary, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
@@ -155,7 +155,7 @@ func (st *scriptTester) steamGetPlayerSummary(t testing.TB, directive, args stri
 	})
 }
 
-func (st *scriptTester) steamGetOwnedGames(t testing.TB, directive, args string, lineNum int) {
+func (st *scriptTester) steamGetOwnedGames(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		ID string
 
@@ -166,7 +166,7 @@ func (st *scriptTester) steamGetOwnedGames(t testing.TB, directive, args string,
 	err := json.Unmarshal([]byte(args), &call)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.steam.GetOwnedGamesCalls(func(_ context.Context, id string) ([]*steam.Game, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
@@ -175,14 +175,14 @@ func (st *scriptTester) steamGetOwnedGames(t testing.TB, directive, args string,
 	})
 }
 
-func (st *scriptTester) noTinyURL(t testing.TB, directive, args string, lineNum int) {
-	st.addAction(func(ctx context.Context) {
+func (st *scriptTester) noTinyURL(t testing.TB, _, args string, lineNum int) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable TinyURL")
 		st.bc.TinyURL = nil
 	})
 }
 
-func (st *scriptTester) tinyURLShorten(t testing.TB, directive, args string, lineNum int) {
+func (st *scriptTester) tinyURLShorten(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		Link string
 
@@ -193,7 +193,7 @@ func (st *scriptTester) tinyURLShorten(t testing.TB, directive, args string, lin
 	err := json.Unmarshal([]byte(args), &call)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.tinyURL.ShortenCalls(func(_ context.Context, link string) (string, error) {
 			assert.Equal(t, link, call.Link, "line %d", lineNum)
 
@@ -211,14 +211,14 @@ func (st *scriptTester) tinyURLShorten(t testing.TB, directive, args string, lin
 	})
 }
 
-func (st *scriptTester) noUrban(t testing.TB, directive, args string, lineNum int) {
-	st.addAction(func(ctx context.Context) {
+func (st *scriptTester) noUrban(t testing.TB, _, args string, lineNum int) {
+	st.addAction(func(_ context.Context) {
 		assert.Assert(t, st.b == nil, "bot has already been created, cannot disable Urban")
 		st.bc.Urban = nil
 	})
 }
 
-func (st *scriptTester) urbanDefine(t testing.TB, directive, args string, lineNum int) {
+func (st *scriptTester) urbanDefine(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		Phrase string
 
@@ -229,7 +229,7 @@ func (st *scriptTester) urbanDefine(t testing.TB, directive, args string, lineNu
 	err := json.Unmarshal([]byte(args), &call)
 	assert.NilError(t, err, "line %d", lineNum)
 
-	st.addAction(func(ctx context.Context) {
+	st.addAction(func(_ context.Context) {
 		st.urban.DefineCalls(func(_ context.Context, s string) (string, error) {
 			assert.Equal(t, s, call.Phrase, "line %d", lineNum)
 
