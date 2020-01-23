@@ -210,7 +210,97 @@ func (p *ChannelPage) Sidebar(item string) string {
 	return qs422016
 }
 
+func (p *ChannelPage) StreamSidebarMobile(qw422016 *qt422016.Writer, item string) {
+	qw422016.N().S(`
+<nav class="navbar is-hidden-tablet is-info" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <p class="navbar-item">Menu</p>
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="sidebarNav">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="sidebarNav" class="navbar-menu">
+        <div class="navbar-start">
+            <div class="navbar-item has-dropdown is-hoverable">
+                <p class="navbar-link">General</p>
+
+                <div class="navbar-dropdown">
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`" class='navbar-item `)
+	streamisActive(qw422016, item, "overview")
+	qw422016.N().S(`'>Overview</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/commands" class='navbar-item `)
+	streamisActive(qw422016, item, "commands")
+	qw422016.N().S(`'>Commands</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/quotes" class='navbar-item `)
+	streamisActive(qw422016, item, "quotes")
+	qw422016.N().S(`'>Quotes</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/lists" class='navbar-item `)
+	streamisActive(qw422016, item, "lists")
+	qw422016.N().S(`'>Lists</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/autoreplies" class='navbar-item `)
+	streamisActive(qw422016, item, "autoreplies")
+	qw422016.N().S(`'>Autoreplies</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/scheduled" class='navbar-item `)
+	streamisActive(qw422016, item, "scheduled")
+	qw422016.N().S(`'>Repeated / scheduled</a>
+                </div>
+            </div>
+
+            <div class="navbar-item has-dropdown is-hoverable">
+                <p class="navbar-link">Settings</a>
+
+                <div class="navbar-dropdown">
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/regulars" class='navbar-item `)
+	streamisActive(qw422016, item, "regulars")
+	qw422016.N().S(`'>Regulars</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/chatrules" class='navbar-item `)
+	streamisActive(qw422016, item, "chatrules")
+	qw422016.N().S(`'>Chat rules</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+`)
+}
+
+func (p *ChannelPage) WriteSidebarMobile(qq422016 qtio422016.Writer, item string) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamSidebarMobile(qw422016, item)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelPage) SidebarMobile(item string) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WriteSidebarMobile(qb422016, item)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
 func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "overview")
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
@@ -399,6 +489,9 @@ func convertCommand(s string) string {
 
 func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "commands")
+	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "commands")
@@ -494,6 +587,9 @@ type ChannelQuotesPage struct {
 
 func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "quotes")
+	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "quotes")
@@ -579,6 +675,9 @@ type ChannelAutorepliesPage struct {
 }
 
 func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "autoreplies")
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
@@ -678,6 +777,9 @@ type ChannelListsPage struct {
 }
 
 func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "lists")
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
@@ -834,6 +936,9 @@ type ChannelRegularsPage struct {
 
 func (p *ChannelRegularsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "regulars")
+	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
 	p.StreamSidebar(qw422016, "regulars")
@@ -891,6 +996,9 @@ type ChannelRulesPage struct {
 }
 
 func (p *ChannelRulesPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "chatrules")
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)
@@ -1007,6 +1115,9 @@ func yesNo(b bool) string {
 }
 
 func (p *ChannelScheduledPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "scheduled")
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
     `)

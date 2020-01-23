@@ -89,7 +89,7 @@ func (p *DocsPage) PageMeta() string {
 func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <div class="columns is-fullheight is-clipped">
-    <div class="is-sidebar-menu" id="sidebar">
+    <div class="is-sidebar-menu is-hidden-mobile" id="sidebar">
         <aside class="menu">
             <p class="menu-label">
                 General

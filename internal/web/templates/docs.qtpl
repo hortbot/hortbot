@@ -36,7 +36,7 @@ dd {
 
 {% func (p *DocsPage) PageBody() %}
 <div class="columns is-fullheight is-clipped">
-    <div class="is-sidebar-menu" id="sidebar">
+    <div class="is-sidebar-menu is-hidden-mobile" id="sidebar">
         <aside class="menu">
             <p class="menu-label">
                 General

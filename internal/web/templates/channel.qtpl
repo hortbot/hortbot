@@ -74,7 +74,48 @@ function timeSorter(a, b) {
 </div>
 {% endfunc %}
 
+{% func (p *ChannelPage) SidebarMobile(item string) %}
+<nav class="navbar is-hidden-tablet is-info" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <p class="navbar-item">Menu</p>
+        <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="sidebarNav">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="sidebarNav" class="navbar-menu">
+        <div class="navbar-start">
+            <div class="navbar-item has-dropdown is-hoverable">
+                <p class="navbar-link">General</p>
+
+                <div class="navbar-dropdown">
+                    <a href="/c/{%u p.Channel.Name %}" class='navbar-item {%= isActive(item, "overview") %}'>Overview</a>
+                    <a href="/c/{%u p.Channel.Name %}/commands" class='navbar-item {%= isActive(item, "commands") %}'>Commands</a>
+                    <a href="/c/{%u p.Channel.Name %}/quotes" class='navbar-item {%= isActive(item, "quotes") %}'>Quotes</a>
+                    <a href="/c/{%u p.Channel.Name %}/lists" class='navbar-item {%= isActive(item, "lists") %}'>Lists</a>
+                    <a href="/c/{%u p.Channel.Name %}/autoreplies" class='navbar-item {%= isActive(item, "autoreplies") %}'>Autoreplies</a>
+                    <a href="/c/{%u p.Channel.Name %}/scheduled" class='navbar-item {%= isActive(item, "scheduled") %}'>Repeated / scheduled</a>
+                </div>
+            </div>
+
+            <div class="navbar-item has-dropdown is-hoverable">
+                <p class="navbar-link">Settings</a>
+
+                <div class="navbar-dropdown">
+                    <a href="/c/{%u p.Channel.Name %}/regulars" class='navbar-item {%= isActive(item, "regulars") %}'>Regulars</a>
+                    <a href="/c/{%u p.Channel.Name %}/chatrules" class='navbar-item {%= isActive(item, "chatrules") %}'>Chat rules</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+{% endfunc %}
+
+
 {% func (p *ChannelPage) PageBody() %}
+{%= p.SidebarMobile("overview") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("overview") %}
 
@@ -177,6 +218,7 @@ Unknown
 {% endstripspace %}{% endfunc %}
 
 {% func (p *ChannelCommandsPage) PageBody() %}
+{%= p.SidebarMobile("commands") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("commands") %}
 
@@ -231,6 +273,7 @@ type ChannelQuotesPage struct {
 %}
 
 {% func (p *ChannelQuotesPage) PageBody() %}
+{%= p.SidebarMobile("quotes") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("quotes") %}
 
@@ -282,6 +325,7 @@ type ChannelAutorepliesPage struct {
 %}
 
 {% func (p *ChannelAutorepliesPage) PageBody() %}
+{%= p.SidebarMobile("autoreplies") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("autoreplies") %}
 
@@ -340,6 +384,7 @@ type ChannelListsPage struct {
 %}
 
 {% func (p *ChannelListsPage) PageBody() %}
+{%= p.SidebarMobile("lists") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("lists") %}
 
@@ -436,6 +481,7 @@ type ChannelRegularsPage struct {
 %}
 
 {% func (p *ChannelRegularsPage) PageBody() %}
+{%= p.SidebarMobile("regulars") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("regulars") %}
 
@@ -465,6 +511,7 @@ type ChannelRulesPage struct {
 %}
 
 {% func (p *ChannelRulesPage) PageBody() %}
+{%= p.SidebarMobile("chatrules") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("chatrules") %}
 
@@ -518,6 +565,7 @@ type ChannelScheduledPage struct {
 {% endfunc %}
 
 {% func (p *ChannelScheduledPage) PageBody() %}
+{%= p.SidebarMobile("scheduled") %}
 <div class="columns is-fullheight is-clipped">
     {%= p.Sidebar("scheduled") %}
 
