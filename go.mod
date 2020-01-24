@@ -6,7 +6,7 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.5
 	github.com/DATA-DOG/go-sqlmock v1.4.0 // indirect
-	github.com/alicebob/miniredis/v2 v2.11.1
+	github.com/alicebob/miniredis/v2 v2.11.2-0.20200120015420-bf9179bbe036
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
 	github.com/dustin/go-humanize v1.0.0
@@ -47,7 +47,6 @@ require (
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
-	github.com/yuin/gopher-lua v0.0.0-20191220021717-ab39c6098bdb // indirect
 	go.opencensus.io v0.22.2
 	go.uber.org/atomic v1.5.1
 	go.uber.org/zap v1.13.0
