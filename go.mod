@@ -35,7 +35,7 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2
 	github.com/mjibson/esc v0.2.0
 	github.com/nsqio/go-nsq v1.0.8
-	github.com/ory/dockertest/v3 v3.5.3
+	github.com/ory/dockertest/v3 v3.5.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.3.0
@@ -50,11 +50,10 @@ require (
 	go.opencensus.io v0.22.2
 	go.uber.org/atomic v1.5.1
 	go.uber.org/zap v1.13.0
-	golang.org/x/crypto v0.0.0-20200117160349-530e935923ad // indirect
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200124021010-5c352bb417e0
+	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825
 	google.golang.org/grpc v1.26.0 // indirect
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
