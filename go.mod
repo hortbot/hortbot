@@ -38,7 +38,7 @@ require (
 	github.com/ory/dockertest/v3 v3.5.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
-	github.com/prometheus/client_golang v1.3.0
+	github.com/prometheus/client_golang v1.4.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1 // indirect
@@ -53,8 +53,8 @@ require (
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200125223703-d33eef8e6825
-	google.golang.org/grpc v1.26.0 // indirect
+	golang.org/x/tools v0.0.0-20200129045341-207d3de1faaf
+	google.golang.org/grpc v1.27.0 // indirect
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
 )
