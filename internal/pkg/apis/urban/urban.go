@@ -12,7 +12,7 @@ import (
 	"golang.org/x/net/context/ctxhttp"
 )
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 // Urban Dictionary API errors.
 var (

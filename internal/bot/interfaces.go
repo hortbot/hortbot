@@ -5,7 +5,7 @@ import (
 	"math/rand"
 )
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 //counterfeiter:generate . Sender
 type Sender interface {

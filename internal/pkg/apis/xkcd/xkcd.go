@@ -21,7 +21,7 @@ type Comic struct {
 	Alt   string `json:"alt"`
 }
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
 //counterfeiter:generate . API
 

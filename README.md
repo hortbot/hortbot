@@ -40,9 +40,8 @@ To build:
 
 For development:
 
-- [gobin](https://github.com/myitcv/gobin) (for `go generate` and model generation)
 - Docker (for tests and model generation)
-- [golangci-lint](https://github.com/golangci/golangci-lint) (for linting)
+- [golangci-lint](https://github.com/golangci/golangci-lint) (for linting; also run in CI)
 
 All tools used for `go generate` and model generation run through `gobin`, and
 are versioned in `go.mod` like other dependencies.

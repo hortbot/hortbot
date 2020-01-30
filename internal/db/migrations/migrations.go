@@ -9,7 +9,7 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 )
 
-//go:generate gobin -m -run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -modtime=0 .
+//go:generate go run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -modtime=0 .
 
 var escSource source.Driver
 

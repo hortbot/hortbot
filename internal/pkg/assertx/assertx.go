@@ -7,7 +7,7 @@ type helperT interface {
 	Helper()
 }
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 . testingT
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . testingT
 
 type testingT interface { //nolint
 	assert.TestingT

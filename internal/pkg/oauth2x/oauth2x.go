@@ -8,7 +8,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//go:generate gobin -m -run github.com/maxbrunsfeld/counterfeiter/v6 golang.org/x/oauth2.TokenSource
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 golang.org/x/oauth2.TokenSource
 
 type overrideSource struct {
 	ts  oauth2.TokenSource
