@@ -42,6 +42,3 @@ For development:
 
 - Docker (for tests and model generation)
 - [golangci-lint](https://github.com/golangci/golangci-lint) (for linting; also run in CI)
-
-All tools used for `go generate` and model generation run through `gobin`, and
-are versioned in `go.mod` like other dependencies.
