@@ -7,6 +7,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/cli"
+	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/ircflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
@@ -32,6 +33,7 @@ type cmd struct {
 	NSQ        nsqflags.NSQ
 	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
+	HTTP       httpflags.HTTP
 }
 
 func Run(args []string) {
@@ -44,6 +46,7 @@ func Run(args []string) {
 		NSQ:        nsqflags.DefaultNSQ,
 		Jaeger:     jaegerflags.DefaultJaeger,
 		Prometheus: promflags.Default,
+		HTTP:       httpflags.DefaultHTTP,
 	})
 }
 
@@ -57,7 +60,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	db := cmd.SQL.Open(ctx, driverName)
 
 	rdb := cmd.Redis.Client()
-	twitchAPI := cmd.Twitch.Client()
+	twitchAPI := cmd.Twitch.Client(cmd.HTTP.Client())
 	conn := cmd.IRC.Pool(ctx, db, twitchAPI)
 
 	incomingPub := cmd.NSQ.NewIncomingPublisher()

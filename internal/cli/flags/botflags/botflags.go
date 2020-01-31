@@ -4,6 +4,7 @@ package botflags
 import (
 	"context"
 	"database/sql"
+	"net/http"
 	"runtime"
 
 	"github.com/hortbot/hortbot/internal/bot"
@@ -56,28 +57,25 @@ func (args *Bot) New(
 	sender bot.Sender,
 	notifier bot.Notifier,
 	twitchAPI twitch.API,
+	httpClient *http.Client,
 ) *bot.Bot {
 	var lastFM lastfm.API
 	if args.LastFMKey != "" {
-		lastFM = lastfm.New(args.LastFMKey)
+		lastFM = lastfm.New(args.LastFMKey, lastfm.HTTPClient(httpClient))
 	} else {
 		ctxlog.Warn(ctx, "no LastFM API key provided, functionality will be disabled")
 	}
 
 	var steamAPI steam.API
 	if args.SteamKey != "" {
-		steamAPI = steam.New(args.SteamKey)
+		steamAPI = steam.New(args.SteamKey, steam.HTTPClient(httpClient))
 	} else {
 		ctxlog.Warn(ctx, "no Steam API key provided, functionality will be disabled")
 	}
 
 	var youtubeAPI youtube.API
 	if args.YouTubeKey != "" {
-		var err error
-		youtubeAPI, err = youtube.New(args.YouTubeKey)
-		if err != nil {
-			ctxlog.Fatal(ctx, "error creating YouTube API client", zap.Error(err))
-		}
+		youtubeAPI = youtube.New(args.YouTubeKey, youtube.HTTPClient(httpClient))
 	} else {
 		ctxlog.Warn(ctx, "no YouTube API key provided, functionality will be disabled")
 	}
@@ -93,11 +91,11 @@ func (args *Bot) New(
 		Notifier:         notifier,
 		LastFM:           lastFM,
 		YouTube:          youtubeAPI,
-		XKCD:             xkcd.New(),
-		ExtraLife:        extralife.New(),
+		XKCD:             xkcd.New(xkcd.HTTPClient(httpClient)),
+		ExtraLife:        extralife.New(extralife.HTTPClient(httpClient)),
 		Twitch:           twitchAPI,
 		Steam:            steamAPI,
-		TinyURL:          tinyurl.New(),
+		TinyURL:          tinyurl.New(tinyurl.HTTPClient(httpClient)),
 		Admins:           args.Admins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,

@@ -1,7 +1,11 @@
 // Package twitchflags processes Twitch client related flags.
 package twitchflags
 
-import "github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+import (
+	"net/http"
+
+	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+)
 
 type Twitch struct {
 	ClientID     string `long:"twitch-client-id" env:"HB_TWITCH_CLIENT_ID" description:"Twitch OAuth client ID" required:"true"`
@@ -11,6 +15,6 @@ type Twitch struct {
 
 var DefaultTwitch = Twitch{}
 
-func (args *Twitch) Client() *twitch.Twitch {
-	return twitch.New(args.ClientID, args.ClientSecret, args.RedirectURL)
+func (args *Twitch) Client(httpClient *http.Client) *twitch.Twitch {
+	return twitch.New(args.ClientID, args.ClientSecret, args.RedirectURL, twitch.HTTPClient(httpClient))
 }

@@ -16,7 +16,7 @@ import (
 
 func TestNew(t *testing.T) {
 	assertx.Panic(t, func() {
-		_, _ = youtube.New("")
+		_ = youtube.New("")
 	}, "empty apiKey")
 }
 
@@ -45,8 +45,7 @@ func TestVideoTitle(t *testing.T) {
 			mt := httpmockx.NewMockTransport(t)
 			mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, response))
 
-			y, err := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
-			assert.NilError(t, err)
+			y := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
 
 			title := y.VideoTitle(ctx, parseURL(t, u))
 			assert.Equal(t, title, wantTitle)
@@ -65,8 +64,8 @@ func TestVideoTitle(t *testing.T) {
 		u := u
 		t.Run(u, func(t *testing.T) {
 			mt := httpmockx.NewMockTransport(t)
-			y, err := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
-			assert.NilError(t, err)
+			y := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
+
 			title := y.VideoTitle(ctx, parseURL(t, u))
 			assert.Equal(t, title, "")
 		})
@@ -76,8 +75,7 @@ func TestVideoTitle(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, emptyResponse))
 
-		y, err := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
-		assert.NilError(t, err)
+		y := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
 
 		title := y.VideoTitle(ctx, parseURL(t, "https://youtube.com/watch?v="+id))
 		assert.Equal(t, title, "")
@@ -87,8 +85,7 @@ func TestVideoTitle(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewErrorResponder(errors.New("testing error")))
 
-		y, err := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
-		assert.NilError(t, err)
+		y := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
 
 		title := y.VideoTitle(ctx, parseURL(t, "https://youtube.com/watch?v="+id))
 		assert.Equal(t, title, "")
@@ -98,8 +95,7 @@ func TestVideoTitle(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, "{"))
 
-		y, err := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
-		assert.NilError(t, err)
+		y := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))
 
 		title := y.VideoTitle(ctx, parseURL(t, "https://youtube.com/watch?v="+id))
 		assert.Equal(t, title, "")

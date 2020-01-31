@@ -7,6 +7,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
+	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
@@ -31,6 +32,7 @@ type config struct {
 	NSQ        nsqflags.NSQ
 	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
+	HTTP       httpflags.HTTP
 }
 
 func Run(args []string) {
@@ -43,6 +45,7 @@ func Run(args []string) {
 		NSQ:        nsqflags.DefaultNSQ,
 		Jaeger:     jaegerflags.DefaultJaeger,
 		Prometheus: promflags.Default,
+		HTTP:       httpflags.DefaultHTTP,
 	})
 }
 
@@ -50,15 +53,16 @@ func (config *config) Main(ctx context.Context, _ []string) {
 	defer config.Jaeger.Init(ctx, Name, config.Debug)()
 	config.Prometheus.Run(ctx)
 
+	httpClient := config.HTTP.Client()
 	driverName := config.SQL.DriverName()
 	driverName = config.Jaeger.DriverName(ctx, driverName, config.Debug)
 	db := config.SQL.Open(ctx, driverName)
 	rdb := config.Redis.Client()
-	twitchAPI := config.Twitch.Client()
+	twitchAPI := config.Twitch.Client(httpClient)
 	sender := config.NSQ.NewSendMessagePublisher()
 	notifier := config.NSQ.NewNotifyPublisher()
 
-	b := config.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI)
+	b := config.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient)
 	defer b.Stop()
 
 	sem := semaphore.NewWeighted(int64(config.Bot.Workers))

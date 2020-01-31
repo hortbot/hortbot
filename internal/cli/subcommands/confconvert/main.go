@@ -17,6 +17,7 @@ import (
 	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/cli"
+	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/confimport"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -34,6 +35,7 @@ const Name = "conf-convert"
 type cmd struct {
 	cli.Common
 	Twitch twitchflags.Twitch
+	HTTP   httpflags.HTTP
 
 	Dir        []string `long:"dir" description:"Directory containing CoeBot JSON config files"`
 	Positional struct {
@@ -57,6 +59,7 @@ func Run(args []string) {
 			Debug: true,
 		},
 		Twitch:        twitchflags.DefaultTwitch,
+		HTTP:          httpflags.DefaultHTTP,
 		DefaultBullet: "coebotBot",
 		TwitchSleep:   time.Second / 4,
 	})
@@ -65,7 +68,7 @@ func Run(args []string) {
 func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	loadSiteDB(ctx, cmd.SiteDumps)
 
-	tw = cmd.Twitch.Client()
+	tw = cmd.Twitch.Client(cmd.HTTP.Client())
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 

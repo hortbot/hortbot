@@ -29,7 +29,7 @@ type YouTube struct {
 var _ API = &YouTube{}
 
 // New creates a new YouTube client.
-func New(apiKey string, opts ...Option) (*YouTube, error) {
+func New(apiKey string, opts ...Option) *YouTube {
 	if apiKey == "" {
 		panic("empty apiKey")
 	}
@@ -42,7 +42,7 @@ func New(apiKey string, opts ...Option) (*YouTube, error) {
 		o(yt)
 	}
 
-	return yt, nil
+	return yt
 }
 
 // Option controls client functionality.

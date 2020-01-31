@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hortbot/hortbot/internal/cli"
+	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
@@ -24,6 +25,7 @@ type cmd struct {
 	Web        webflags.Web
 	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
+	HTTP       httpflags.HTTP
 }
 
 func Run(args []string) {
@@ -35,6 +37,7 @@ func Run(args []string) {
 		Web:        webflags.DefaultWeb,
 		Jaeger:     jaegerflags.DefaultJaeger,
 		Prometheus: promflags.Default,
+		HTTP:       httpflags.DefaultHTTP,
 	})
 }
 
@@ -47,7 +50,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	db := cmd.SQL.Open(ctx, driverName)
 
 	rdb := cmd.Redis.Client()
-	tw := cmd.Twitch.Client()
+	tw := cmd.Twitch.Client(cmd.HTTP.Client())
 	a := cmd.Web.New(cmd.Debug, rdb, db, tw)
 
 	err := a.Run(ctx)
