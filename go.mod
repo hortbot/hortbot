@@ -5,7 +5,7 @@ go 1.13
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.5
-	github.com/DATA-DOG/go-sqlmock v1.4.0 // indirect
+	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.2-0.20200120015420-bf9179bbe036
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
@@ -53,7 +53,7 @@ require (
 	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200129045341-207d3de1faaf
+	golang.org/x/tools v0.0.0-20200131211209-ecb101ed6550
 	google.golang.org/grpc v1.27.0 // indirect
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
