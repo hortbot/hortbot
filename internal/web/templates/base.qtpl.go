@@ -63,6 +63,13 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
             color: white !important;
             background-color: #333333 !important;
         }
+
+        .list-item {
+            border-top-left-radius: 0px !important;
+            border-top-right-radius: 0px !important;
+            border-bottom-left-radius: 0px !important;
+            border-bottom-right-radius: 0px !important;
+        }
         </style>
 
         `)
