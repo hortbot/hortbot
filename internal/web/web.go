@@ -341,25 +341,19 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	channels, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, a.DB)
-	if err != nil {
-		ctxlog.Error(ctx, "error querying channels", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
-		return
-	}
-
 	var row struct {
-		BotCount int64
+		ChannelCount int64 `boil:"channel_count"`
+		BotCount     int64 `boil:"bot_count"`
 	}
 
-	if err := queries.Raw("SELECT COUNT(DISTINCT bot_name) AS bot_count FROM channels WHERE active").Bind(ctx, a.DB, &row); err != nil {
+	if err := queries.Raw("SELECT COUNT(*) AS channel_count, COUNT(DISTINCT bot_name) AS bot_count FROM channels WHERE active").Bind(ctx, a.DB, &row); err != nil {
 		ctxlog.Error(ctx, "error querying bot names", zap.Error(err))
 		httpError(w, http.StatusInternalServerError)
 		return
 	}
 
 	page := &templates.IndexPage{
-		ChannelCount: channels,
+		ChannelCount: row.ChannelCount,
 		BotCount:     row.BotCount,
 	}
 	page.Brand = a.getBrand(r)
