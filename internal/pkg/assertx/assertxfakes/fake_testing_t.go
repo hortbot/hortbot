@@ -3,6 +3,8 @@ package assertxfakes
 
 import (
 	"sync"
+
+	"github.com/hortbot/hortbot/internal/pkg/assertx"
 )
 
 type FakeTestingT struct {
@@ -156,3 +158,5 @@ func (fake *FakeTestingT) recordInvocation(key string, args []interface{}) {
 	}
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
+
+var _ assertx.TestingT = new(FakeTestingT)

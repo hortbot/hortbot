@@ -319,7 +319,10 @@ func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
 	assert.Assert(f.t, ok)
 
 	c := f.channels[id]
-	assert.Assert(f.t, c != nil)
+	if c == nil {
+		f.t.Fatalf("nil channel for %d", id)
+		panic("unreachable")
+	}
 
 	switch c.ID {
 	case 777:

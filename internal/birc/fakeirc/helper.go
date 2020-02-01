@@ -196,7 +196,10 @@ func (h *Helper) SendWithConn(conn irc.Encoder, m *irc.Message) {
 func (h *Helper) AssertMessages(gotP *[]*irc.Message, want ...*irc.Message) {
 	h.t.Helper()
 
-	assert.Assert(h.t, gotP != nil)
+	if gotP == nil {
+		h.t.Fatal("nil gotP")
+		panic("unreachable")
+	}
 
 	got := *gotP
 

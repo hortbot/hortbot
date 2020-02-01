@@ -221,8 +221,8 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 		return nil, errInvalidMessage
 	}
 
-	tmiSentTs, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
-	s.TMISent = time.Unix(tmiSentTs/1000, 0)
+	tmiSent, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
+	s.TMISent = time.Unix(tmiSent/1000, 0)
 
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {

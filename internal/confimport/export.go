@@ -10,10 +10,6 @@ import (
 	"go.opencensus.io/trace"
 )
 
-func ExportByID(ctx context.Context, exec boil.ContextExecutor, id int64) (*Config, error) {
-	return export(ctx, exec, models.ChannelWhere.ID.EQ(id))
-}
-
 func ExportByName(ctx context.Context, exec boil.ContextExecutor, name string) (*Config, error) {
 	return export(ctx, exec, models.ChannelWhere.Name.EQ(name))
 }

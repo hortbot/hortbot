@@ -10,6 +10,7 @@ import (
 )
 
 func init() {
+	//lint:ignore ST1008 To match the map lookup signature.
 	bot.TestingAction(func(ctx context.Context, action string) (string, error, bool) {
 		if action == "TESTING_ERROR" {
 			return "(error)", fmt.Errorf("%s", action), true
