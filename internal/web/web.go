@@ -88,48 +88,70 @@ func (a *App) Run(ctx context.Context) error {
 	r.Use(mid.Tracer)
 	r.Use(mid.Recoverer)
 
-	r.Get("/", a.index)
-	r.Get("/about", a.about)
-	r.Get("/docs", a.docs)
-	r.Get("/channels", a.channels)
+	r.Group(func(r chi.Router) {
+		r.Use(middleware.RedirectSlashes)
 
-	const paramChannel = "channel"
-	r.Route("/c/{"+paramChannel+"}", func(r chi.Router) {
-		r.Use(a.channelMiddleware(paramChannel))
-		r.Get("/", a.channel)
-		r.Get("/commands", a.channelCommands)
-		r.Get("/quotes", a.channelQuotes)
-		r.Get("/autoreplies", a.channelAutoreplies)
-		r.Get("/lists", a.channelLists)
-		r.Get("/regulars", a.channelRegulars)
-		r.Get("/chatrules", a.channelChatRules)
-		r.Get("/scheduled", a.channelScheduled)
-	})
+		r.Get("/", a.index)
+		r.Get("/about", a.about)
+		r.Get("/docs", a.docs)
+		r.Get("/channels", a.channels)
 
-	r.Get("/login", a.login)
-	r.Get("/logout", a.logout)
-	r.Get("/auth/twitch", a.authTwitchNormal)
-	r.Get("/auth/twitch/bot", a.authTwitchBot)
-	r.Get("/auth/twitch/callback", a.authTwitchCallback)
+		const paramChannel = "channel"
+		r.Route("/c/{"+paramChannel+"}", func(r chi.Router) {
+			r.Use(func(next http.Handler) http.Handler {
+				return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					p := r.URL.Path
+					lp := strings.ToLower(p)
 
-	routeDebug := func(r chi.Router) {
-		r.Use(middleware.NoCache)
-		r.Get("/request", dumpRequest)
-	}
+					if p == lp {
+						next.ServeHTTP(w, r)
+						return
+					}
 
-	if a.Debug {
-		r.Route("/debug", routeDebug)
-	}
+					if r.URL.RawQuery != "" {
+						lp += "?" + r.URL.RawQuery
+					}
 
-	r.Route("/admin", func(r chi.Router) {
-		r.Use(middleware.NoCache)
-		r.Use(a.adminAuth)
+					http.Redirect(w, r, lp, http.StatusMovedPermanently)
+				})
+			})
 
-		r.Route("/debug", routeDebug)
+			r.Use(a.channelMiddleware(paramChannel))
+			r.Get("/", a.channel)
+			r.Get("/commands", a.channelCommands)
+			r.Get("/quotes", a.channelQuotes)
+			r.Get("/autoreplies", a.channelAutoreplies)
+			r.Get("/lists", a.channelLists)
+			r.Get("/regulars", a.channelRegulars)
+			r.Get("/chatrules", a.channelChatRules)
+			r.Get("/scheduled", a.channelScheduled)
+		})
 
-		r.Get("/import", a.adminImport)
-		r.Post("/import", a.adminImportPost)
-		r.Get("/export/{channel}", a.adminExport)
+		r.Get("/login", a.login)
+		r.Get("/logout", a.logout)
+		r.Get("/auth/twitch", a.authTwitchNormal)
+		r.Get("/auth/twitch/bot", a.authTwitchBot)
+		r.Get("/auth/twitch/callback", a.authTwitchCallback)
+
+		routeDebug := func(r chi.Router) {
+			r.Use(middleware.NoCache)
+			r.Get("/request", dumpRequest)
+		}
+
+		if a.Debug {
+			r.Route("/debug", routeDebug)
+		}
+
+		r.Route("/admin", func(r chi.Router) {
+			r.Use(middleware.NoCache)
+			r.Use(a.adminAuth)
+
+			r.Route("/debug", routeDebug)
+
+			r.Get("/import", a.adminImport)
+			r.Post("/import", a.adminImportPost)
+			r.Get("/export/{channel}", a.adminExport)
+		})
 	})
 
 	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(static.FS(false))))
