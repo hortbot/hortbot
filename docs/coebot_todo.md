@@ -251,7 +251,7 @@ autocomplete usernames in the chat input box.
     - [x] Steam game
     - [x] Extra Life stuff
     - [x] ~~`strawpoll`~~
-    - [x] ~~`channelID`~~
+    - [x] `channelID`
     - [x] ~~`whisper`~~
     - [x] ~~"wp"~~ (Sorry, go make another bot to do this...)
     - [x] ~~`properties`~~ (This endpoint has been removed.)

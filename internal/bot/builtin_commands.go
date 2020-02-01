@@ -63,6 +63,7 @@ func init() {
 		"quotes":          {fn: cmdQuotes, minLevel: levelSubscriber},
 		"bothelp":         {fn: cmdHelp, minLevel: levelEveryone},
 		"help":            {fn: cmdHelp, minLevel: levelEveryone},
+		"channelid":       {fn: cmdChannelID, minLevel: levelEveryone},
 	})
 }
 
