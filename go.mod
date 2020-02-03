@@ -15,7 +15,7 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.0.3+incompatible
-	github.com/go-redis/redis/v7 v7.0.0-beta.5
+	github.com/go-redis/redis/v7 v7.0.0-beta.6
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.0
 	github.com/gofrs/uuid v3.2.0+incompatible
@@ -47,13 +47,14 @@ require (
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
-	go.opencensus.io v0.22.2
+	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.5.1
 	go.uber.org/zap v1.13.0
-	golang.org/x/net v0.0.0-20200114155413-6afb5195e5aa
+	golang.org/x/crypto v0.0.0-20200128174031-69ecbb4d6d5d // indirect
+	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200131211209-ecb101ed6550
+	golang.org/x/tools v0.0.0-20200202232050-bc0b458b103e
 	google.golang.org/grpc v1.27.0 // indirect
 	gotest.tools/v3 v3.0.1-0.20191108185010-2a4992ec05b5
 	mvdan.cc/xurls/v2 v2.1.0
