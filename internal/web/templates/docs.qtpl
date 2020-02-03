@@ -515,6 +515,7 @@ dd {
                 {%= command("!music", `Gets the currently playing song.`, "everyone") %}
                 {%= command("!songlink", `Gets a link to the currently playing song.`, "everyone") %}
                 {%= command("!whatshouldiplay", `Picks a random game from the channel's Steam library.`, "broadcaster") %}
+                {%= command("!channelid", `Gets the channel's Twitch ID.`, "everyone") %}
             </dl>
         </section>
 

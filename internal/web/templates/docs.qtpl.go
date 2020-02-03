@@ -726,6 +726,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!whatshouldiplay", `Picks a random game from the channel's Steam library.`, "broadcaster")
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!channelid", `Gets the channel's Twitch ID.`, "everyone")
+	qw422016.N().S(`
             </dl>
         </section>
 
