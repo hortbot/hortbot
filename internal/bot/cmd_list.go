@@ -177,12 +177,16 @@ func cmdListDelete(ctx context.Context, s *session, cmd string, args string) err
 
 	if repeated != nil {
 		deletedRepeat = true
-		s.Deps.UpdateRepeat(repeated.ID, false, 0, 0)
+		if err := s.Deps.RemoveRepeat(ctx, repeated.ID); err != nil {
+			return err
+		}
 	}
 
 	if scheduled != nil {
 		deletedRepeat = true
-		s.Deps.UpdateSchedule(scheduled.ID, false, nil)
+		if err := s.Deps.RemoveScheduled(ctx, scheduled.ID); err != nil {
+			return err
+		}
 	}
 
 	if deletedRepeat {

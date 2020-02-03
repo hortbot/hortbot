@@ -7,7 +7,6 @@ import (
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
-	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
 	"gotest.tools/v3/assert"
 )
@@ -22,23 +21,24 @@ func TestParseCron(t *testing.T) {
 func TestCronAdd(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	clk := newMock(t)
+	clk.Set(startTime)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
-	clk := clock.NewMock()
-	clk.Set(startTime)
+	r := repeat.New(clk)
+	errCh := runRepeat(ctx, r)
 
 	ch := make(chan struct{})
 
 	count := 0
-	fn := func(ctx context.Context, id int64) {
+	fn := func(ctx context.Context, id int64) bool {
 		count++
 		ch <- struct{}{}
+		return true
 	}
 
-	r := repeat.New(ctx, clk)
-
-	r.AddCron(0, fn, mustParseCron("0 * * * *"))
+	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
 	time.Sleep(10 * time.Millisecond)
 
 	for i := 0; i < 5; i++ {
@@ -47,31 +47,33 @@ func TestCronAdd(t *testing.T) {
 		time.Sleep(10 * time.Millisecond)
 	}
 
-	r.Stop()
+	cancel()
 
+	assert.Equal(t, <-errCh, context.Canceled)
 	assert.Equal(t, count, 5)
 }
 
 func TestCronAddTwice(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	clk := newMock(t)
+	clk.Set(startTime)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
-	clk := clock.NewMock()
-	clk.Set(startTime)
+	r := repeat.New(clk)
+	errCh := runRepeat(ctx, r)
 
 	ch := make(chan struct{})
 
 	count := 0
-	fn := func(ctx context.Context, id int64) {
+	fn := func(ctx context.Context, id int64) bool {
 		count++
 		ch <- struct{}{}
+		return true
 	}
 
-	r := repeat.New(ctx, clk)
-
-	r.AddCron(0, fn, mustParseCron("0 * * * *"))
+	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
 	time.Sleep(10 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -84,7 +86,7 @@ func TestCronAddTwice(t *testing.T) {
 
 	runEveryDay := mustParseCron("@daily")
 
-	r.AddCron(0, fn, runEveryDay)
+	assert.NilError(t, r.AddCron(ctx, 0, fn, runEveryDay))
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -93,31 +95,33 @@ func TestCronAddTwice(t *testing.T) {
 
 	time.Sleep(50 * time.Millisecond)
 
-	r.Stop()
+	cancel()
 
+	assert.Equal(t, <-errCh, context.Canceled)
 	assert.Equal(t, count, 2)
 }
 
 func TestCronAddRemove(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	clk := newMock(t)
+	clk.Set(startTime)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
-	clk := clock.NewMock()
-	clk.Set(startTime)
+	r := repeat.New(clk)
+	errCh := runRepeat(ctx, r)
 
 	ch := make(chan struct{})
 
 	count := 0
-	fn := func(ctx context.Context, id int64) {
+	fn := func(ctx context.Context, id int64) bool {
 		count++
 		ch <- struct{}{}
+		return true
 	}
 
-	r := repeat.New(ctx, clk)
-
-	r.AddCron(0, fn, mustParseCron("0 * * * *"))
+	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
 	time.Sleep(10 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -128,7 +132,7 @@ func TestCronAddRemove(t *testing.T) {
 	recv(t, ctx, ch)
 	time.Sleep(10 * time.Millisecond)
 
-	r.RemoveCron(0)
+	assert.NilError(t, r.RemoveCron(ctx, 0))
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -137,31 +141,33 @@ func TestCronAddRemove(t *testing.T) {
 
 	time.Sleep(50 * time.Millisecond)
 
-	r.Stop()
+	cancel()
 
+	assert.Equal(t, <-errCh, context.Canceled)
 	assert.Equal(t, count, 2)
 }
 
 func TestAddCronStop(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	clk := newMock(t)
+	clk.Set(startTime)
+	ctx, cancel := testContext(t)
 	defer cancel()
 
-	clk := clock.NewMock()
-	clk.Set(startTime)
+	r := repeat.New(clk)
+	errCh := runRepeat(ctx, r)
 
 	ch := make(chan struct{})
 
 	count := 0
-	fn := func(ctx context.Context, id int64) {
+	fn := func(ctx context.Context, id int64) bool {
 		count++
 		ch <- struct{}{}
+		return true
 	}
 
-	r := repeat.New(ctx, clk)
-
-	r.AddCron(0, fn, mustParseCron("0 * * * *"))
+	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
 	time.Sleep(10 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -172,7 +178,7 @@ func TestAddCronStop(t *testing.T) {
 	recv(t, ctx, ch)
 	time.Sleep(10 * time.Millisecond)
 
-	r.Stop()
+	cancel()
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -181,30 +187,36 @@ func TestAddCronStop(t *testing.T) {
 
 	time.Sleep(50 * time.Millisecond)
 
+	assert.Equal(t, <-errCh, context.Canceled)
 	assert.Equal(t, count, 2)
 }
 
 func TestCorrectIDCron(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := clock.NewMock()
+	clk := newMock(t)
 	clk.Set(startTime)
+	ctx, cancel := testContext(t)
+	defer cancel()
 
-	r := repeat.New(context.Background(), clk)
+	r := repeat.New(clk)
+	errCh := runRepeat(ctx, r)
 
 	ch42 := make(chan int64, 1)
 	ch311 := make(chan int64, 1)
 
-	fn42 := func(ctx context.Context, id int64) {
+	fn42 := func(ctx context.Context, id int64) bool {
 		ch42 <- id
+		return true
 	}
 
-	fn311 := func(ctx context.Context, id int64) {
+	fn311 := func(ctx context.Context, id int64) bool {
 		ch311 <- id
+		return true
 	}
 
-	r.AddCron(42, fn42, mustParseCron("0 * * * *"))
-	r.AddCron(311, fn311, mustParseCron("0 * * * *"))
+	assert.NilError(t, r.AddCron(ctx, 42, fn42, mustParseCron("0 * * * *")))
+	assert.NilError(t, r.AddCron(ctx, 311, fn311, mustParseCron("0 * * * *")))
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
@@ -215,23 +227,28 @@ func TestCorrectIDCron(t *testing.T) {
 	assert.Equal(t, <-ch42, int64(42))
 	assert.Equal(t, <-ch311, int64(311))
 
-	r.Stop()
+	cancel()
+
+	assert.Equal(t, <-errCh, context.Canceled)
 }
 
 func TestImpossibleCron(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	clk := clock.NewMock()
+	clk := newMock(t)
 	clk.Set(startTime)
+	ctx, cancel := testContext(t)
+	defer cancel()
 
+	r := repeat.New(clk)
+	errCh := runRepeat(ctx, r)
 	count := 0
-	fn := func(ctx context.Context, id int64) {
+	fn := func(ctx context.Context, id int64) bool {
 		count++
+		return true
 	}
 
-	r := repeat.New(context.Background(), clk)
-
-	r.AddCron(0, fn, repeat.ToCron(&cron.SpecSchedule{Month: 13, Location: time.UTC}))
+	assert.NilError(t, r.AddCron(ctx, 0, fn, repeat.ToCron(&cron.SpecSchedule{Month: 13, Location: time.UTC})))
 
 	clk.Forward(time.Hour)
 	clk.Forward(time.Hour)
@@ -241,8 +258,9 @@ func TestImpossibleCron(t *testing.T) {
 
 	time.Sleep(50 * time.Millisecond)
 
-	r.Stop()
+	cancel()
 
+	assert.Equal(t, <-errCh, context.Canceled)
 	assert.Equal(t, count, 0)
 }
 

@@ -122,7 +122,9 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		}
 	}
 
-	s.Deps.UpdateSchedule(scheduled.ID, true, expr)
+	if err := s.Deps.AddScheduled(ctx, scheduled.ID, expr); err != nil {
+		return err
+	}
 
 	dUnit := "message has passed."
 	if messageDiff != 1 {
@@ -162,7 +164,9 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 		return err
 	}
 
-	s.Deps.UpdateSchedule(scheduled.ID, false, nil)
+	if err := s.Deps.RemoveScheduled(ctx, scheduled.ID); err != nil {
+		return err
+	}
 
 	return s.Replyf(ctx, "Command '%s' is no longer scheduled.", name)
 }
@@ -222,7 +226,15 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 		panic(err)
 	}
 
-	s.Deps.UpdateSchedule(scheduled.ID, enable, expr)
+	if enable {
+		err = s.Deps.AddScheduled(ctx, scheduled.ID, expr)
+	} else {
+		err = s.Deps.RemoveScheduled(ctx, scheduled.ID)
+	}
+
+	if err != nil {
+		return err
+	}
 
 	if enable {
 		return s.Replyf(ctx, "Scheduled command '%s' is now enabled.", name)

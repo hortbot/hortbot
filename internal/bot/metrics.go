@@ -1,6 +1,8 @@
 package bot
 
 import (
+	"context"
+
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -79,8 +81,11 @@ var (
 	})
 )
 
-func setMetricRepeatGauges(rep *repeat.Repeater) {
-	r, s := rep.Count()
+func setMetricRepeatGauges(ctx context.Context, rep *repeat.Repeater) {
+	r, s, err := rep.Count(ctx)
+	if err != nil {
+		return
+	}
 	metricRepeatGauge.Set(float64(r))
 	metricScheduleGauge.Set(float64(s))
 }

@@ -38,10 +38,12 @@ type sharedDeps struct {
 
 	// TODO: split these into an interface.
 
-	UpdateRepeat   func(id int64, add bool, interval, wait time.Duration)
-	UpdateSchedule func(id int64, add bool, expr *repeat.Cron)
-	ReloadRepeats  func(ctx context.Context) error
-	CountRepeats   func() (repeats, schedules int)
+	AddRepeat       func(ctx context.Context, id int64, start time.Time, interval time.Duration) error
+	RemoveRepeat    func(ctx context.Context, id int64) error
+	AddScheduled    func(ctx context.Context, id int64, expr *repeat.Cron) error
+	RemoveScheduled func(ctx context.Context, id int64) error
+	ReloadRepeats   func(ctx context.Context) error
+	CountRepeats    func(ctx context.Context) (repeats, schedules int, err error)
 
 	BulletMap map[string]string
 

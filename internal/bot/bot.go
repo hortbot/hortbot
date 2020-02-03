@@ -14,6 +14,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apis/youtube"
+	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
@@ -60,6 +61,7 @@ type Config struct {
 type Bot struct {
 	initialized bool
 	stopOnce    sync.Once
+	g           *errgroupx.Group
 
 	db   *sql.DB
 	deps *sharedDeps
@@ -132,16 +134,17 @@ func New(config *Config) *Bot {
 		db:       config.DB,
 		deps:     deps,
 		noDedupe: config.NoDedupe,
+		rep:      repeat.New(deps.Clock),
 	}
 
-	deps.UpdateRepeat = b.updateRepeatedCommand
-	deps.UpdateSchedule = b.updateScheduledCommand
+	deps.AddRepeat = b.addRepeat
+	deps.RemoveRepeat = b.removeRepeat
+	deps.AddScheduled = b.addScheduled
+	deps.RemoveScheduled = b.removeScheduled
 	deps.ReloadRepeats = func(ctx context.Context) error {
 		return b.loadRepeats(ctx, true)
 	}
-	deps.CountRepeats = func() (int, int) {
-		return b.rep.Count()
-	}
+	deps.CountRepeats = b.rep.Count
 
 	if isTesting {
 		b.testingHelper = &testingHelper{}
@@ -154,7 +157,9 @@ func (b *Bot) Init(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "Init")
 	defer span.End()
 
-	b.rep = repeat.New(ctx, b.deps.Clock)
+	b.g = errgroupx.FromContext(ctx)
+	b.g.Go(b.rep.Run)
+
 	if err := b.loadRepeats(ctx, false); err != nil {
 		return err
 	}
@@ -165,6 +170,8 @@ func (b *Bot) Init(ctx context.Context) error {
 
 func (b *Bot) Stop() {
 	b.stopOnce.Do(func() {
-		b.rep.Stop()
+		if g := b.g; g != nil {
+			g.Stop()
+		}
 	})
 }

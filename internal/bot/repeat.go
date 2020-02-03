@@ -16,16 +16,17 @@ import (
 	"go.uber.org/zap"
 )
 
-func (b *Bot) updateRepeatedCommand(id int64, add bool, interval, wait time.Duration) {
-	if add {
-		b.rep.Add(id, b.runRepeatedCommand, interval, wait)
-	} else {
-		b.rep.Remove(id)
-	}
-	setMetricRepeatGauges(b.rep)
+func (b *Bot) addRepeat(ctx context.Context, id int64, start time.Time, interval time.Duration) error {
+	defer setMetricRepeatGauges(ctx, b.rep)
+	return b.rep.Add(ctx, id, b.runRepeatedCommand, start, interval)
 }
 
-func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
+func (b *Bot) removeRepeat(ctx context.Context, id int64) error {
+	defer setMetricRepeatGauges(ctx, b.rep)
+	return b.rep.Remove(ctx, id)
+}
+
+func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) (readd bool) {
 	ctx, span := trace.StartSpan(ctx, "runRepeatedCommand")
 	defer span.End()
 
@@ -33,23 +34,27 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) {
 		id:   id,
 		deps: b.deps,
 	}
-	if err := b.runRepeat(ctx, runner); err != nil {
+
+	readd, err := b.runRepeat(ctx, runner)
+	if err != nil {
 		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err))
 	} else {
 		metricRepeated.Inc()
 	}
+	return readd
 }
 
-func (b *Bot) updateScheduledCommand(id int64, add bool, expr *repeat.Cron) {
-	if add {
-		b.rep.AddCron(id, b.runScheduledCommand, expr)
-	} else {
-		b.rep.RemoveCron(id)
-	}
-	setMetricRepeatGauges(b.rep)
+func (b *Bot) addScheduled(ctx context.Context, id int64, expr *repeat.Cron) error {
+	defer setMetricRepeatGauges(ctx, b.rep)
+	return b.rep.AddCron(ctx, id, b.runScheduledCommand, expr)
 }
 
-func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
+func (b *Bot) removeScheduled(ctx context.Context, id int64) error {
+	defer setMetricRepeatGauges(ctx, b.rep)
+	return b.rep.RemoveCron(ctx, id)
+}
+
+func (b *Bot) runScheduledCommand(ctx context.Context, id int64) (readd bool) {
 	ctx, span := trace.StartSpan(ctx, "runScheduledCommand")
 	defer span.End()
 
@@ -57,20 +62,22 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) {
 		id:   id,
 		deps: b.deps,
 	}
-	if err := b.runRepeat(ctx, runner); err != nil {
+
+	readd, err := b.runRepeat(ctx, runner)
+	if err != nil {
 		ctxlog.Warn(ctx, "error running scheduled command", zap.Error(err))
 	} else {
 		metricScheduled.Inc()
 	}
+	return readd
 }
 
 type repeatRunner interface {
 	withLog(ctx context.Context) context.Context
 	status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error)
-	remove()
 	load(ctx context.Context, exec boil.ContextExecutor) error
 	channel() *models.Channel
-	allowed(ctx context.Context) (bool, error)
+	allowed(ctx context.Context) (found bool, allowed bool, err error)
 	updateCount(ctx context.Context, exec boil.ContextExecutor) error
 	info() *models.CommandInfo
 }
@@ -81,14 +88,16 @@ type repeatStatus struct {
 	Ready   bool `boil:"ready"`
 }
 
-func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
+func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, err error) {
+	readd = true
+
 	ctx, span := trace.StartSpan(ctx, "runRepeat")
 	defer span.End()
 
 	ctx = runner.withLog(ctx)
 	start := b.deps.Clock.Now()
 
-	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+	err = transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
 		status, err := runner.status(ctx, tx)
 		if err != nil {
 			if err == sql.ErrNoRows {
@@ -99,7 +108,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
 		}
 
 		if !status.Enabled || !status.Active {
-			runner.remove()
+			readd = false
 			return nil
 		}
 
@@ -109,7 +118,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
 
 		if err := runner.load(ctx, tx); err != nil {
 			if err == sql.ErrNoRows {
-				runner.remove()
+				readd = false
 				return nil
 			}
 			return err
@@ -120,7 +129,9 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
 			return err
 		}
 
-		if allowed, err := runner.allowed(ctx); !allowed || err != nil {
+		found, allowed, err := runner.allowed(ctx)
+		readd = readd && found
+		if !allowed || err != nil {
 			return err
 		}
 
@@ -167,6 +178,8 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) error {
 
 		return runCommandAndCount(ctx, s, info, message, true)
 	})
+
+	return readd, err
 }
 
 type repeatedCommandRunner struct {
@@ -203,7 +216,7 @@ WHERE
 	return status, err
 }
 
-func (runner *repeatedCommandRunner) allowed(ctx context.Context) (bool, error) {
+func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
 	ctx, span := trace.StartSpan(ctx, "repeatedCommandRunner.allowed")
 	defer span.End()
 
@@ -211,21 +224,18 @@ func (runner *repeatedCommandRunner) allowed(ctx context.Context) (bool, error) 
 	repeat := runner.repeat
 
 	if !channel.Active || !repeat.Enabled {
-		runner.remove()
-		return false, nil
+		return false, false, nil
 	}
 
 	if channel.MessageCount < repeat.LastCount+repeat.MessageDiff {
-		return false, nil
+		return true, false, nil
 	}
 
 	roomIDStr := strconv.FormatInt(channel.UserID, 10)
 	expiry := time.Duration(repeat.Delay-1) * time.Second
-	return runner.deps.Redis.RepeatAllowed(ctx, roomIDStr, runner.id, expiry)
-}
 
-func (runner *repeatedCommandRunner) remove() {
-	runner.deps.UpdateRepeat(runner.id, false, 0, 0)
+	allowed, err = runner.deps.Redis.RepeatAllowed(ctx, roomIDStr, runner.id, expiry)
+	return true, allowed, err
 }
 
 func (runner *repeatedCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
@@ -297,7 +307,7 @@ WHERE
 	return status, err
 }
 
-func (runner *scheduledCommandRunner) allowed(ctx context.Context) (bool, error) {
+func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
 	ctx, span := trace.StartSpan(ctx, "scheduledCommandRunner.allowed")
 	defer span.End()
 
@@ -305,12 +315,11 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context) (bool, error)
 	scheduled := runner.scheduled
 
 	if !channel.Active || !scheduled.Enabled {
-		runner.remove()
-		return false, nil
+		return false, false, nil
 	}
 
 	if channel.MessageCount < scheduled.LastCount+scheduled.MessageDiff {
-		return false, nil
+		return true, false, nil
 	}
 
 	// Hardcoded to 29 seconds, since cron jobs run at a fixed schedule
@@ -318,11 +327,8 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context) (bool, error)
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
 	roomIDStr := strconv.FormatInt(channel.UserID, 10)
-	return runner.deps.Redis.ScheduledAllowed(ctx, roomIDStr, runner.id, 29*time.Second)
-}
-
-func (runner *scheduledCommandRunner) remove() {
-	runner.deps.UpdateSchedule(runner.id, false, nil)
+	allowed, err = runner.deps.Redis.ScheduledAllowed(ctx, roomIDStr, runner.id, 29*time.Second)
+	return true, allowed, err
 }
 
 func (runner *scheduledCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
@@ -365,7 +371,9 @@ func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {
 	defer span.End()
 
 	if reset {
-		b.rep.Reset()
+		if err := b.rep.Reset(ctx); err != nil {
+			return err
+		}
 	}
 
 	repeats, err := models.RepeatedCommands(
@@ -375,7 +383,9 @@ func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {
 		return err
 	}
 
-	updateRepeating(b.deps, repeats, true)
+	if err := updateRepeating(ctx, b.deps, repeats, true); err != nil {
+		return err
+	}
 
 	scheduleds, err := models.ScheduledCommands(
 		models.ScheduledCommandWhere.Enabled.EQ(true),
@@ -384,39 +394,39 @@ func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {
 		return err
 	}
 
-	updateScheduleds(b.deps, scheduleds, true)
-
-	return nil
+	return updateScheduleds(ctx, b.deps, scheduleds, true)
 }
 
-func updateRepeating(deps *sharedDeps, repeats []*models.RepeatedCommand, enable bool) {
+func updateRepeating(ctx context.Context, deps *sharedDeps, repeats []*models.RepeatedCommand, enable bool) error {
 	for _, repeat := range repeats {
 		if !enable || !repeat.Enabled {
-			deps.UpdateRepeat(repeat.ID, false, 0, 0)
+			if err := deps.RemoveRepeat(ctx, repeat.ID); err != nil {
+				return err
+			}
 			continue
 		}
 
-		delay := time.Duration(repeat.Delay) * time.Second
-		delayNano := delay.Nanoseconds()
+		interval := time.Duration(repeat.Delay) * time.Second
 
 		start := repeat.UpdatedAt
 		if repeat.InitTimestamp.Valid {
 			start = repeat.InitTimestamp.Time
 		}
 
-		sinceUpdateNano := deps.Clock.Since(start).Nanoseconds()
-
-		offsetNano := delayNano - sinceUpdateNano%delayNano
-		offset := time.Duration(offsetNano) * time.Nanosecond
-
-		deps.UpdateRepeat(repeat.ID, true, delay, offset)
+		if err := deps.AddRepeat(ctx, repeat.ID, start, interval); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
-func updateScheduleds(deps *sharedDeps, scheduleds []*models.ScheduledCommand, enable bool) {
+func updateScheduleds(ctx context.Context, deps *sharedDeps, scheduleds []*models.ScheduledCommand, enable bool) error {
 	for _, scheduled := range scheduleds {
 		if !enable || !scheduled.Enabled {
-			deps.UpdateSchedule(scheduled.ID, false, nil)
+			if err := deps.RemoveScheduled(ctx, scheduled.ID); err != nil {
+				return err
+			}
 			continue
 		}
 
@@ -424,6 +434,11 @@ func updateScheduleds(deps *sharedDeps, scheduleds []*models.ScheduledCommand, e
 		if err != nil {
 			panic(err)
 		}
-		deps.UpdateSchedule(scheduled.ID, true, expr)
+
+		if err := deps.AddScheduled(ctx, scheduled.ID, expr); err != nil {
+			return err
+		}
 	}
+
+	return nil
 }

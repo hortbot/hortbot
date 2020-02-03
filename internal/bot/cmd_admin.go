@@ -212,7 +212,11 @@ func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) 
 		return s.Replyf(ctx, "Error reloading repeats: %s", err.Error())
 	}
 
-	repeats, schedules := s.Deps.CountRepeats()
+	repeats, schedules, err := s.Deps.CountRepeats(ctx)
+	if err != nil {
+		return err
+	}
+
 	repeatStr := pluralInt(repeats, "repeat", "repeats")
 	scheduleStr := pluralInt(schedules, "schedule", "schedules")
 

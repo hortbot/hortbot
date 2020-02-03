@@ -136,8 +136,13 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	updateRepeating(s.Deps, channel.R.RepeatedCommands, true)
-	updateScheduleds(s.Deps, channel.R.ScheduledCommands, true)
+	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, true); err != nil {
+		return err
+	}
+
+	if err := updateScheduleds(ctx, s.Deps, channel.R.ScheduledCommands, true); err != nil {
+		return err
+	}
 
 	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", displayName, channel.BotName, channel.Prefix)
 }
@@ -193,8 +198,13 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	updateRepeating(s.Deps, channel.R.RepeatedCommands, false)
-	updateScheduleds(s.Deps, channel.R.ScheduledCommands, false)
+	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, false); err != nil {
+		return err
+	}
+
+	if err := updateScheduleds(ctx, s.Deps, channel.R.ScheduledCommands, false); err != nil {
+		return err
+	}
 
 	return s.Replyf(ctx, "%s, %s will now leave your channel.", displayName, channel.BotName)
 }
@@ -227,13 +237,19 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	if err != nil {
 		return err
 	}
-	updateRepeating(s.Deps, repeated, false)
+
+	if err := updateRepeating(ctx, s.Deps, repeated, false); err != nil {
+		return err
+	}
 
 	scheduleds, err := s.Channel.ScheduledCommands().All(ctx, s.Tx)
 	if err != nil {
 		return err
 	}
-	updateScheduleds(s.Deps, scheduleds, false)
+
+	if err := updateScheduleds(ctx, s.Deps, scheduleds, false); err != nil {
+		return err
+	}
 
 	return s.Replyf(ctx, "%s, %s will now leave your channel.", s.UserDisplay, s.Channel.BotName)
 }

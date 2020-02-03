@@ -127,7 +127,9 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		}
 	}
 
-	s.Deps.UpdateRepeat(repeat.ID, true, time.Duration(delay)*time.Second, 0)
+	if err := s.Deps.AddRepeat(ctx, repeat.ID, repeat.UpdatedAt, time.Duration(delay)*time.Second); err != nil {
+		return err
+	}
 
 	dUnit := "message has passed."
 	if messageDiff != 1 {
@@ -167,7 +169,9 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 		return err
 	}
 
-	s.Deps.UpdateRepeat(repeat.ID, false, 0, 0)
+	if err := s.Deps.RemoveRepeat(ctx, repeat.ID); err != nil {
+		return err
+	}
 
 	return s.Replyf(ctx, "Command '%s' will no longer repeat.", name)
 }
@@ -224,7 +228,15 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 		return err
 	}
 
-	s.Deps.UpdateRepeat(repeat.ID, enable, time.Duration(repeat.Delay)*time.Second, 0)
+	if enable {
+		err = s.Deps.AddRepeat(ctx, repeat.ID, repeat.UpdatedAt, time.Duration(repeat.Delay)*time.Second)
+	} else {
+		err = s.Deps.RemoveRepeat(ctx, repeat.ID)
+	}
+
+	if err != nil {
+		return err
+	}
 
 	if enable {
 		return s.Replyf(ctx, "Repeated command '%s' is now enabled.", name)
