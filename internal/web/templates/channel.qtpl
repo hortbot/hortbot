@@ -255,7 +255,7 @@ Unknown
                     <td>{%s= convertCommand(c.Message) %}</td>
                     <td>{%v c.R.CommandInfo.Count %}</td>
                     <td>{%s c.R.CommandInfo.Editor %}</td>
-                    <td>{%v c.UpdatedAt %}</td>
+                    <td>{%s c.UpdatedAt.Format(time.RFC3339) %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -306,7 +306,7 @@ type ChannelQuotesPage struct {
                     <td>{%d q.Num %}</td>
                     <td>{%s q.Quote %}</td>
                     <td>{%s q.Editor %}</td>
-                    <td>{%v q.UpdatedAt %}</td>
+                    <td>{%s q.UpdatedAt.Format(time.RFC3339) %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -364,7 +364,7 @@ type ChannelAutorepliesPage struct {
                     <td>{%s= convertCommand(a.Response) %}</td>
                     <td>{%d a.Count %}</td>
                     <td>{%s a.Editor %}</td>
-                    <td>{%v a.UpdatedAt %}</td>
+                    <td>{%s a.UpdatedAt.Format(time.RFC3339) %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -421,7 +421,7 @@ type ChannelListsPage struct {
                     <td>{%= accessLevel(l.R.CommandInfo.AccessLevel) %}</td>
                     <td>{%v l.R.CommandInfo.Count %}</td>
                     <td>{%s l.R.CommandInfo.Editor %}</td>
-                    <td>{%v l.UpdatedAt %}</td>
+                    <td>{%s l.UpdatedAt.Format(time.RFC3339) %}</td>
                 </tr>
                 {% endfor %}
             </tbody>

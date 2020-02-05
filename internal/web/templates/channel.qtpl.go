@@ -550,7 +550,7 @@ func (p *ChannelCommandsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 			qw422016.E().S(c.R.CommandInfo.Editor)
 			qw422016.N().S(`</td>
                     <td>`)
-			qw422016.E().V(c.UpdatedAt)
+			qw422016.E().S(c.UpdatedAt.Format(time.RFC3339))
 			qw422016.N().S(`</td>
                 </tr>
                 `)
@@ -639,7 +639,7 @@ func (p *ChannelQuotesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 			qw422016.E().S(q.Editor)
 			qw422016.N().S(`</td>
                     <td>`)
-			qw422016.E().V(q.UpdatedAt)
+			qw422016.E().S(q.UpdatedAt.Format(time.RFC3339))
 			qw422016.N().S(`</td>
                 </tr>
                 `)
@@ -740,7 +740,7 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 			qw422016.E().S(a.Editor)
 			qw422016.N().S(`</td>
                     <td>`)
-			qw422016.E().V(a.UpdatedAt)
+			qw422016.E().S(a.UpdatedAt.Format(time.RFC3339))
 			qw422016.N().S(`</td>
                 </tr>
                 `)
@@ -837,7 +837,7 @@ func (p *ChannelListsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 			qw422016.E().S(l.R.CommandInfo.Editor)
 			qw422016.N().S(`</td>
                     <td>`)
-			qw422016.E().V(l.UpdatedAt)
+			qw422016.E().S(l.UpdatedAt.Format(time.RFC3339))
 			qw422016.N().S(`</td>
                 </tr>
                 `)
