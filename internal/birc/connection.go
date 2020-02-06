@@ -318,8 +318,7 @@ func (c *Connection) Join(ctx context.Context, channels ...string) error {
 }
 
 // Joined returns a list of the joined channels. It is safe for concurrent use,
-// and is available even after the connection has closed. This list may not be
-//
+// and is available even after the connection has closed.
 func (c *Connection) Joined() []string {
 	c.joinedMu.RLock()
 	defer c.joinedMu.RUnlock()
