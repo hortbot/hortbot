@@ -33,14 +33,14 @@ func TestSendMessage(t *testing.T) {
 
 	received := make(chan *bnsq.SendMessage, 10)
 
-	publisher := bnsq.NewSendMessagePublisher(addr, bnsq.PublisherClock(clk))
+	publisher := bnsq.NewSendMessagePublisher(addr, bnsq.WithClock(clk))
 
 	subscriber := bnsq.SendMessageSubscriber{
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
 		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberClock(clk),
+			bnsq.WithClock(clk),
 		},
 		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m
@@ -86,14 +86,14 @@ func TestSendMessageBadAddr(t *testing.T) {
 
 	received := make(chan *bnsq.SendMessage, 10)
 
-	publisher := bnsq.NewSendMessagePublisher(addr, bnsq.PublisherConfig(config))
+	publisher := bnsq.NewSendMessagePublisher(addr, bnsq.WithConfig(config))
 
 	subscriber := bnsq.SendMessageSubscriber{
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
 		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberConfig(config),
+			bnsq.WithConfig(config),
 		},
 		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m
@@ -156,15 +156,15 @@ func TestMaxAge(t *testing.T) {
 
 	received := make(chan *bnsq.SendMessage, 10)
 
-	publisher := bnsq.NewSendMessagePublisher(addr, bnsq.PublisherClock(clk))
+	publisher := bnsq.NewSendMessagePublisher(addr, bnsq.WithClock(clk))
 
 	subscriber := bnsq.SendMessageSubscriber{
 		Addr:    addr,
 		Origin:  origin,
 		Channel: channel,
 		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberClock(clk),
-			bnsq.SubscriberMaxAge(30 * time.Second),
+			bnsq.WithClock(clk),
+			bnsq.WithMaxAge(30 * time.Second),
 		},
 		OnSendMessage: func(m *bnsq.SendMessage, _ *bnsq.Metadata) error {
 			received <- m

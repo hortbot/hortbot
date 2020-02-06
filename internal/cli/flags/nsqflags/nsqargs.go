@@ -25,7 +25,7 @@ func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(*bnsq.Incom
 		Addr:    args.Addr,
 		Channel: args.Channel,
 		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberMaxAge(maxAge),
+			bnsq.WithMaxAge(maxAge),
 		},
 		OnIncoming: fn,
 	}
@@ -41,7 +41,7 @@ func (args *NSQ) NewSendMessageSubscriber(origin string, maxAge time.Duration, f
 		Origin:  origin,
 		Channel: args.Channel,
 		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberMaxAge(maxAge),
+			bnsq.WithMaxAge(maxAge),
 		},
 		OnSendMessage: fn,
 	}
@@ -57,7 +57,7 @@ func (args *NSQ) NewNotifySubscriber(botName string, maxAge time.Duration, fn fu
 		BotName: botName,
 		Channel: args.Channel,
 		Opts: []bnsq.SubscriberOption{
-			bnsq.SubscriberMaxAge(maxAge),
+			bnsq.WithMaxAge(maxAge),
 		},
 		OnNotifyChannelUpdates: fn,
 	}

@@ -20,8 +20,6 @@ type subscriber struct {
 	maxAge  time.Duration
 }
 
-type SubscriberOption func(*subscriber)
-
 func newSubscriber(addr string, topic string, channel string, opts ...SubscriberOption) *subscriber {
 	s := &subscriber{
 		addr:    addr,
@@ -30,7 +28,7 @@ func newSubscriber(addr string, topic string, channel string, opts ...Subscriber
 	}
 
 	for _, opt := range opts {
-		opt(s)
+		opt.applyToSubscriber(s)
 	}
 
 	if s.clk == nil {
@@ -42,24 +40,6 @@ func newSubscriber(addr string, topic string, channel string, opts ...Subscriber
 	}
 
 	return s
-}
-
-func SubscriberClock(clk clock.Clock) SubscriberOption {
-	return func(s *subscriber) {
-		s.clk = clk
-	}
-}
-
-func SubscriberConfig(config *nsq.Config) SubscriberOption {
-	return func(s *subscriber) {
-		s.config = config
-	}
-}
-
-func SubscriberMaxAge(d time.Duration) SubscriberOption {
-	return func(s *subscriber) {
-		s.maxAge = d
-	}
 }
 
 func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {

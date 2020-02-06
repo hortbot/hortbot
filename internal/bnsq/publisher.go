@@ -21,8 +21,6 @@ type publisher struct {
 	producer *nsq.Producer
 }
 
-type PublisherOption func(*publisher)
-
 func newPublisher(addr string, opts ...PublisherOption) *publisher {
 	p := &publisher{
 		ready: make(chan struct{}),
@@ -30,7 +28,7 @@ func newPublisher(addr string, opts ...PublisherOption) *publisher {
 	}
 
 	for _, opt := range opts {
-		opt(p)
+		opt.applyToPublisher(p)
 	}
 
 	if p.clk == nil {
@@ -42,18 +40,6 @@ func newPublisher(addr string, opts ...PublisherOption) *publisher {
 	}
 
 	return p
-}
-
-func PublisherClock(clk clock.Clock) PublisherOption {
-	return func(p *publisher) {
-		p.clk = clk
-	}
-}
-
-func PublisherConfig(config *nsq.Config) PublisherOption {
-	return func(p *publisher) {
-		p.config = config
-	}
 }
 
 func (p *publisher) run(ctx context.Context) error {

@@ -21,17 +21,20 @@ func (m *message) payload(v interface{}) error {
 	return json.Unmarshal(m.Payload, v)
 }
 
+// Metadata contains metadata that will be sent with every NSQ message.
 type Metadata struct {
 	Timestamp   time.Time `json:"timestamp"`
 	TraceSpan   []byte    `json:"trace_span"`
 	Correlation xid.ID    `json:"xid"`
 }
 
+// ParentSpan returns the span that sent the message.
 func (m *Metadata) ParentSpan() trace.SpanContext {
 	parent, _ := propagation.FromBinary(m.TraceSpan)
 	return parent
 }
 
+// With adds metadata to the context.
 func (m *Metadata) With(ctx context.Context) context.Context {
 	ctx = correlation.WithID(ctx, m.Correlation)
 	ctx = bnsqmeta.WithTimestamp(ctx, m.Timestamp)

@@ -34,7 +34,7 @@ func TestPublishBadConfig(t *testing.T) {
 
 	badConfig := nsq.NewConfig()
 	badConfig.SampleRate = -1
-	p := newPublisher("localhost:invalid", PublisherConfig(badConfig))
+	p := newPublisher("localhost:invalid", WithConfig(badConfig))
 
 	ctx, cancel := testContext(t)
 	defer cancel()
