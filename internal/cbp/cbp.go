@@ -92,12 +92,14 @@ type Node struct {
 	Children []Node
 }
 
+// TextNode creates a new text-only Node.
 func TextNode(s string) Node {
 	return Node{
 		Text: s,
 	}
 }
 
+// ActionNode creates a new action node, with the given child nodes.
 func ActionNode(nodes ...Node) Node {
 	return Node{
 		Children: nodes,
@@ -127,6 +129,8 @@ func nodesString(b *strings.Builder, nodes []Node) {
 	}
 }
 
+// NodesString returns the nodes as a single string, as they'd
+// appear before parsing. The string returned is never malformed.
 func NodesString(nodes []Node) string {
 	var b strings.Builder
 	nodesString(&b, nodes)

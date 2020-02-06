@@ -15,6 +15,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// IRC contains IRC client flags.
 type IRC struct {
 	Nick         string        `long:"irc-nick" env:"HB_IRC_NICK" description:"IRC nick" required:"true"`
 	Pass         string        `long:"irc-pass" env:"HB_IRC_PASS" description:"IRC pass" required:"true"`
@@ -29,7 +30,8 @@ type IRC struct {
 	PriorityChannels []string `long:"irc-priority-channels" env:"HB_IRC_PRIORITY_CHANNELS" description:"An ordered list of channels to prioritize joining"`
 }
 
-var DefaultIRC = IRC{
+// Default contains the default flags. Make a copy of this, do not reuse.
+var Default = IRC{
 	PingInterval:    5 * time.Minute,
 	PingDeadline:    5 * time.Second,
 	RateLimitSlow:   15,
@@ -37,6 +39,7 @@ var DefaultIRC = IRC{
 	RateLimitPeriod: 30 * time.Second,
 }
 
+// Pool creates a new IRC pool from the configured flags and dependency.
 func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool {
 	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
 	if err != nil {
@@ -74,6 +77,8 @@ func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool
 	return birc.NewPool(pc)
 }
 
+// SendMessageAllowed checks if sending a message is allowed under the current
+// rate limit
 func (args *IRC) SendMessageAllowed(ctx context.Context, rdb *redis.DB, origin, target string) (bool, error) {
 	return rdb.SendMessageAllowed(ctx, origin, target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
 }

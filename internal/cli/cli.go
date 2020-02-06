@@ -24,21 +24,28 @@ func init() {
 	}
 }
 
+// Common contains flags common to all commands.
 type Common struct {
 	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
 }
 
+// IsDebug returns true if the command should be run in debug mode.
 func (c *Common) IsDebug() bool {
 	return c.Debug
 }
 
+// Command is a single command that can be parsed and run.
 type Command interface {
 	Main(ctx context.Context, args []string)
 	IsDebug() bool
 }
 
-var DefaultCommon = Common{}
+// Default contains the default flags. Make a copy of this, do not reuse.
+var Default = Common{}
 
+// Run parses the argument and runs the given command. If the ENV_FILE
+// environment variable is set, the files listed in it will be loaded
+// before parsing, to allow for a simple layered configuration setup.
 func Run(name string, args []string, cmd Command) {
 	_ = godotenv.Load(strings.Split(os.Getenv("ENV_FILE"), ",")...)
 

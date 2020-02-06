@@ -59,8 +59,8 @@ func Run(args []string) {
 		Common: cli.Common{
 			Debug: true,
 		},
-		Twitch:        twitchflags.DefaultTwitch,
-		HTTP:          httpflags.DefaultHTTP,
+		Twitch:        twitchflags.Default,
+		HTTP:          httpflags.Default,
 		DefaultBullet: "coebotBot",
 		TwitchSleep:   time.Second / 4,
 	})

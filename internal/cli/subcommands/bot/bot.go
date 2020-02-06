@@ -38,15 +38,15 @@ type config struct {
 
 func Run(args []string) {
 	cli.Run(Name, args, &config{
-		Common:     cli.DefaultCommon,
-		SQL:        sqlflags.DefaultSQL,
-		Twitch:     twitchflags.DefaultTwitch,
-		Redis:      redisflags.DefaultRedis,
-		Bot:        botflags.DefaultBot,
-		NSQ:        nsqflags.DefaultNSQ,
-		Jaeger:     jaegerflags.DefaultJaeger,
+		Common:     cli.Default,
+		SQL:        sqlflags.Default,
+		Twitch:     twitchflags.Default,
+		Redis:      redisflags.Default,
+		Bot:        botflags.Default,
+		NSQ:        nsqflags.Default,
+		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
-		HTTP:       httpflags.DefaultHTTP,
+		HTTP:       httpflags.Default,
 	})
 }
 

@@ -13,17 +13,21 @@ import (
 	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
+// SQL contains SQL database flags.
 type SQL struct {
 	DB        string `long:"db" env:"HB_DB" description:"PostgresSQL connection string" required:"true"`
 	MigrateUp bool   `long:"db-migrate-up" env:"HB_DB_MIGRATE_UP" description:"Migrates the postgres database up"`
 }
 
-var DefaultSQL = SQL{}
+// Default contains the default flags. Make a copy of this, do not reuse.
+var Default = SQL{}
 
+// DriverName returns the default driver name to connect to the database.
 func (args *SQL) DriverName() string {
 	return "pgx"
 }
 
+// Open opens a database connection given the specified driver name.
 func (args *SQL) Open(ctx context.Context, driverName string) *sql.DB {
 	db, err := sql.Open(driverName, args.DB)
 	if err != nil {

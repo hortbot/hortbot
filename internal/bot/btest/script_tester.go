@@ -34,6 +34,7 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+// RunScript runs the a single script test.
 func RunScript(t testing.TB, filename string, freshDB func(t testing.TB) *sql.DB) {
 	db := freshDB(t)
 	defer db.Close()

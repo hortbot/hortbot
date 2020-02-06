@@ -31,14 +31,14 @@ type cmd struct {
 
 func Run(args []string) {
 	cli.Run(Name, args, &cmd{
-		Common:     cli.DefaultCommon,
-		SQL:        sqlflags.DefaultSQL,
-		Twitch:     twitchflags.DefaultTwitch,
-		Redis:      redisflags.DefaultRedis,
-		Web:        webflags.DefaultWeb,
-		Jaeger:     jaegerflags.DefaultJaeger,
+		Common:     cli.Default,
+		SQL:        sqlflags.Default,
+		Twitch:     twitchflags.Default,
+		Redis:      redisflags.Default,
+		Web:        webflags.Default,
+		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
-		HTTP:       httpflags.DefaultHTTP,
+		HTTP:       httpflags.Default,
 	})
 }
 

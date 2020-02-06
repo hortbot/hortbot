@@ -32,7 +32,7 @@ func Run(args []string) {
 		Common: cli.Common{
 			Debug: true,
 		},
-		SQL: sqlflags.DefaultSQL,
+		SQL: sqlflags.Default,
 	})
 }
 

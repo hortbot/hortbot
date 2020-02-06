@@ -20,6 +20,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// Bot contains bot-specific flags.
 type Bot struct {
 	Admins []string `long:"bot-admin" env:"HB_BOT_ADMINS" env-delim:"," description:"Bot admins"`
 
@@ -43,13 +44,15 @@ type Bot struct {
 	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"log messages instead of sending them"`
 }
 
-var DefaultBot = Bot{
+// Default contains the default flags. Make a copy of this, do not reuse.
+var Default = Bot{
 	DefaultCooldown: 5,
 	WebAddr:         "http://localhost:5000",
 	Workers:         runtime.GOMAXPROCS(0),
 	PublicJoin:      true,
 }
 
+// New creates a new Bot from the set flags and dependencies.
 func (args *Bot) New(
 	ctx context.Context,
 	db *sql.DB,

@@ -39,15 +39,15 @@ type cmd struct {
 
 func Run(args []string) {
 	cli.Run(Name, args, &cmd{
-		Common:     cli.DefaultCommon,
-		SQL:        sqlflags.DefaultSQL,
-		Twitch:     twitchflags.DefaultTwitch,
-		IRC:        ircflags.DefaultIRC,
-		Redis:      redisflags.DefaultRedis,
-		NSQ:        nsqflags.DefaultNSQ,
-		Jaeger:     jaegerflags.DefaultJaeger,
+		Common:     cli.Default,
+		SQL:        sqlflags.Default,
+		Twitch:     twitchflags.Default,
+		IRC:        ircflags.Default,
+		Redis:      redisflags.Default,
+		NSQ:        nsqflags.Default,
+		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
-		HTTP:       httpflags.DefaultHTTP,
+		HTTP:       httpflags.Default,
 	})
 }
 

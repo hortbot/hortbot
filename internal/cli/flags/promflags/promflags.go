@@ -10,12 +10,16 @@ import (
 	"go.uber.org/zap"
 )
 
+// Prometheus contains Prometheus flags.
 type Prometheus struct {
 	Enabled bool `long:"prometheus-enabled" env:"HB_PROMETHEUS_ENABLED" description:"Enable Prometheus exporting"`
 }
 
+// Default contains the default flags. Make a copy of this, do not reuse.
 var Default = Prometheus{}
 
+// Run runs the Prometheus trace endpoint in a background goroutine which exits
+// when the context is canceled.
 func (args *Prometheus) Run(ctx context.Context) {
 	if !args.Enabled {
 		return

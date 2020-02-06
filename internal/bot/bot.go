@@ -23,9 +23,11 @@ import (
 )
 
 const (
+	// DefaultBullet is the default bullet used when the channel's bullet is unset.
 	DefaultBullet = "[HB]"
 )
 
+// Config configures the bot.
 type Config struct {
 	DB       *sql.DB
 	Redis    *redis.DB
@@ -59,6 +61,7 @@ type Config struct {
 	PublicJoin bool
 }
 
+// Bot is an IRC bot. It should only be used once.
 type Bot struct {
 	initialized bool
 	stopOnce    sync.Once
@@ -73,6 +76,7 @@ type Bot struct {
 	noDedupe bool
 }
 
+// New creates a new Bot with the given config.
 func New(config *Config) *Bot {
 	switch {
 	case config.DB == nil:
@@ -154,6 +158,8 @@ func New(config *Config) *Bot {
 	return b
 }
 
+// Init initializes the bot, starting any underlying tasks. It should only be
+// called once.
 func (b *Bot) Init(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "Init")
 	defer span.End()
@@ -169,6 +175,7 @@ func (b *Bot) Init(ctx context.Context) error {
 	return nil
 }
 
+// Stop instructs the bot to stop.
 func (b *Bot) Stop() {
 	b.stopOnce.Do(func() {
 		if g := b.g; g != nil {

@@ -9,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/web"
 )
 
+// Web contains flags for the web server.
 type Web struct {
 	Addr       string            `long:"web-addr" env:"HB_WEB_ADDR" description:"Server address for the web server"`
 	SessionKey string            `long:"web-session-key" env:"HB_WEB_SESSION_KEY" description:"Session cookie auth key"`
@@ -17,12 +18,14 @@ type Web struct {
 	AdminAuth  map[string]string `long:"web-admin-auth" env:"HB_WEB_ADMIN_AUTH" env-delim:"," description:"Username/password pairs for the admin route"`
 }
 
-var DefaultWeb = Web{
+// Default contains the default flags. Make a copy of this, do not reuse.
+var Default = Web{
 	Addr:       ":5000",
 	SessionKey: "this-is-insecure-do-not-use-this",
 	Brand:      "HortBot",
 }
 
+// New creates a new Web app.
 func (args *Web) New(debug bool, rdb *redis.DB, db *sql.DB, tw *twitch.Twitch) *web.App {
 	return &web.App{
 		Addr:       args.Addr,
