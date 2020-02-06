@@ -1,3 +1,4 @@
+// Package modelsx provides extensions for the models package.
 package modelsx
 
 import (

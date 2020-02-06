@@ -1,3 +1,4 @@
+// Package web implements the main command for the web service.
 package web
 
 import (

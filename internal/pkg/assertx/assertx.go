@@ -1,4 +1,4 @@
-// Package assertx contains extensions to the gotest.tools/assert package.
+// Package assertx contains extensions to the assert package.
 package assertx
 
 import "gotest.tools/v3/assert"

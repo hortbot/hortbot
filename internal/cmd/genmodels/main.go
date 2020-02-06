@@ -100,6 +100,19 @@ func mainErr() error {
 		return errors.Wrap(err, "cleaning up sqlboiler")
 	}
 
+	// Create is fine, since the above code wipes the models directory.
+	docFile, err := os.Create(filepath.Join(modelsPath, "doc.go"))
+	if err != nil {
+		return errors.Wrap(err, "creating doc.go")
+	}
+
+	fmt.Fprintln(docFile, "// Package models implements an ORM generated from the HortBot Postgres database.")
+	fmt.Fprintln(docFile, "package", bConf.PkgName)
+
+	if err := docFile.Close(); err != nil {
+		return errors.Wrap(err, "closing doc.go")
+	}
+
 	return nil
 }
 

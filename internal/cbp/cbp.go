@@ -1,9 +1,13 @@
+// Package cbp implements a CoeBot-style command parser.
 package cbp
 
 import "strings"
 
 const sliceCap = 3
 
+// Parse parses a string as a CoeBot command. Parsing always succeeds, but if
+// the input was malformed and needed to be fixed (via recovery), malformed
+// will be true.
 func Parse(s string) (nodes []Node, malformed bool) {
 	if s == "" {
 		return nil, false

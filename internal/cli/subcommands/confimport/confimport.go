@@ -1,3 +1,4 @@
+// Package confimport implements the main command for the config dump importer.
 package confimport
 
 import (

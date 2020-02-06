@@ -1,3 +1,4 @@
+// Package stringsx contains extensions to the strings package.
 package stringsx
 
 import "strings"

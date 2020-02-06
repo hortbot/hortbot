@@ -1,3 +1,4 @@
+// Package confconvert implements the main command for the CoeBot config converter.
 package confconvert
 
 import (

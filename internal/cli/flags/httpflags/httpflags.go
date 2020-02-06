@@ -1,3 +1,4 @@
+// Package httpflags provides HTTP client flags.
 package httpflags
 
 import (

@@ -1,3 +1,7 @@
+// Package bnsqmeta propagates NSQ metadata via contexts.
+//
+// This package is separated from bnsq to prevent other packages from depending
+// on the NSQ client libraries.
 package bnsqmeta
 
 import (

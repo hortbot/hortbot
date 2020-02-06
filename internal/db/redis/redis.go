@@ -1,3 +1,4 @@
+// Package redis implements a type-safe redis database client.
 package redis
 
 import "github.com/go-redis/redis/v7"

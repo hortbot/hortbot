@@ -1,3 +1,4 @@
+// Package sitedbconvert implements the main command for the site-db dump converter.
 package sitedbconvert
 
 import (

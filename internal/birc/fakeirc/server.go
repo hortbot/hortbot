@@ -1,3 +1,4 @@
+// Package fakeirc implements a fake IRC server for testing.
 package fakeirc
 
 import (

@@ -1,3 +1,4 @@
+// Package btest implements a script test system for the bot package.
 package btest
 
 import (

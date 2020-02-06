@@ -1,3 +1,4 @@
+// Package web implements the HortBot web server.
 package web
 
 import (

@@ -1,3 +1,4 @@
+// Package migrations performs database migrations embedded in the binary.
 package migrations
 
 import (

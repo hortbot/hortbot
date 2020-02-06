@@ -1,3 +1,4 @@
+// Package version provides a global version string.
 package version
 
 var version string

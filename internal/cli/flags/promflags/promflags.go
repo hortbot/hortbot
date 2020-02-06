@@ -1,3 +1,4 @@
+// Package promflags provides prometheus metric flags.
 package promflags
 
 import (

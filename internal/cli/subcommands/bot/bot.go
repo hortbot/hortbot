@@ -1,3 +1,4 @@
+// Package bot implements the main command for the bot service.
 package bot
 
 import (

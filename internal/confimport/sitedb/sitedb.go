@@ -1,3 +1,5 @@
+// Package sitedb reads out channel and variable information from CoeBot site
+// DB dumps.
 package sitedb
 
 import (

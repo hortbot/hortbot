@@ -1,3 +1,4 @@
+// Package irc implements the main command for the IRC service.
 package irc
 
 import (

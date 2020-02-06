@@ -1,3 +1,4 @@
+// Package bot implements the core HortBot IRC message handling logic.
 package bot
 
 import (

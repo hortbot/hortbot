@@ -1,3 +1,4 @@
+// Package confimport implements importing and exporting of full channel configurations.
 package confimport
 
 import (
