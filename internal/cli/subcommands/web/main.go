@@ -16,8 +16,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const Name = "web"
-
 type cmd struct {
 	cli.Common
 	SQL        sqlflags.SQL
@@ -29,8 +27,9 @@ type cmd struct {
 	HTTP       httpflags.HTTP
 }
 
-func Run(args []string) {
-	cli.Run(Name, args, &cmd{
+// Command returns a fresh web command.
+func Command() cli.Command {
+	return &cmd{
 		Common:     cli.Default,
 		SQL:        sqlflags.Default,
 		Twitch:     twitchflags.Default,
@@ -39,20 +38,24 @@ func Run(args []string) {
 		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
 		HTTP:       httpflags.Default,
-	})
+	}
 }
 
-func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	defer cmd.Jaeger.Init(ctx, Name, cmd.Debug)()
-	cmd.Prometheus.Run(ctx)
+func (*cmd) Name() string {
+	return "web"
+}
 
-	driverName := cmd.SQL.DriverName()
-	driverName = cmd.Jaeger.DriverName(ctx, driverName, cmd.Debug)
-	db := cmd.SQL.Open(ctx, driverName)
+func (c *cmd) Main(ctx context.Context, _ []string) {
+	defer c.Jaeger.Init(ctx, c.Name(), c.Debug)()
+	c.Prometheus.Run(ctx)
 
-	rdb := cmd.Redis.Client()
-	tw := cmd.Twitch.Client(cmd.HTTP.Client())
-	a := cmd.Web.New(cmd.Debug, rdb, db, tw)
+	driverName := c.SQL.DriverName()
+	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
+	db := c.SQL.Open(ctx, driverName)
+
+	rdb := c.Redis.Client()
+	tw := c.Twitch.Client(c.HTTP.Client())
+	a := c.Web.New(c.Debug, rdb, db, tw)
 
 	err := a.Run(ctx)
 	ctxlog.Info(ctx, "exiting", zap.Error(err))

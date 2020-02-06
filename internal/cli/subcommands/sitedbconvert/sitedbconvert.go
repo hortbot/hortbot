@@ -16,8 +16,6 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-const Name = "site-db-convert"
-
 const (
 	filenameChannels = "site_channels.json"
 	filenameVars     = "site_vars.json"
@@ -28,16 +26,21 @@ type cmd struct {
 	SiteDumps string `long:"site-dumps" description:"Directory containing coebot.tv database dumps, also where converted files will be placed" required:"true"`
 }
 
-func Run(args []string) {
-	cli.Run(Name, args, &cmd{
+// Command returns a fresh site-db-convert command.
+func Command() cli.Command {
+	return &cmd{
 		Common: cli.Common{
 			Debug: true,
 		},
-	})
+	}
 }
 
-func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	outDir := filepath.Clean(cmd.SiteDumps)
+func (*cmd) Name() string {
+	return "site-db-convert"
+}
+
+func (c *cmd) Main(ctx context.Context, _ []string) {
+	outDir := filepath.Clean(c.SiteDumps)
 	if d, err := os.Stat(outDir); err != nil {
 		if os.IsNotExist(err) {
 			ctxlog.Fatal(ctx, "output directory does not exist")
@@ -57,7 +60,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		Repository: "mariadb",
 		Tag:        "10.1",
 		Env:        []string{"MYSQL_ROOT_PASSWORD=" + password, "MYSQL_DATABASE=" + dbName},
-		Mounts:     []string{cmd.SiteDumps + ":/docker-entrypoint-initdb.d"},
+		Mounts:     []string{c.SiteDumps + ":/docker-entrypoint-initdb.d"},
 		Ready: func(container *docker.Container) error {
 			connStr := "root:" + password + "@tcp(" + container.GetHostPort("3306/tcp") + ")/" + dbName
 

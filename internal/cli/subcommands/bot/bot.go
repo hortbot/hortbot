@@ -22,9 +22,7 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-const Name = "bot"
-
-type config struct {
+type cmd struct {
 	cli.Common
 	SQL        sqlflags.SQL
 	Twitch     twitchflags.Twitch
@@ -36,8 +34,9 @@ type config struct {
 	HTTP       httpflags.HTTP
 }
 
-func Run(args []string) {
-	cli.Run(Name, args, &config{
+// Command returns a fresh bot command.
+func Command() cli.Command {
+	return &cmd{
 		Common:     cli.Default,
 		SQL:        sqlflags.Default,
 		Twitch:     twitchflags.Default,
@@ -47,30 +46,34 @@ func Run(args []string) {
 		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
 		HTTP:       httpflags.Default,
-	})
+	}
 }
 
-func (config *config) Main(ctx context.Context, _ []string) {
-	defer config.Jaeger.Init(ctx, Name, config.Debug)()
-	config.Prometheus.Run(ctx)
+func (*cmd) Name() string {
+	return "bot"
+}
 
-	httpClient := config.HTTP.Client()
-	driverName := config.SQL.DriverName()
-	driverName = config.Jaeger.DriverName(ctx, driverName, config.Debug)
-	db := config.SQL.Open(ctx, driverName)
-	rdb := config.Redis.Client()
-	twitchAPI := config.Twitch.Client(httpClient)
-	sender := config.NSQ.NewSendMessagePublisher()
-	notifier := config.NSQ.NewNotifyPublisher()
+func (c *cmd) Main(ctx context.Context, _ []string) {
+	defer c.Jaeger.Init(ctx, c.Name(), c.Debug)()
+	c.Prometheus.Run(ctx)
 
-	b := config.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient)
+	httpClient := c.HTTP.Client()
+	driverName := c.SQL.DriverName()
+	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
+	db := c.SQL.Open(ctx, driverName)
+	rdb := c.Redis.Client()
+	twitchAPI := c.Twitch.Client(httpClient)
+	sender := c.NSQ.NewSendMessagePublisher()
+	notifier := c.NSQ.NewNotifyPublisher()
+
+	b := c.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient)
 	defer b.Stop()
 
-	sem := semaphore.NewWeighted(int64(config.Bot.Workers))
+	sem := semaphore.NewWeighted(int64(c.Bot.Workers))
 
 	g := errgroupx.FromContext(ctx)
 
-	incomingSub := config.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, metadata *bnsq.Metadata) error {
+	incomingSub := c.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, metadata *bnsq.Metadata) error {
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", metadata.ParentSpan())
 		defer span.End()
 

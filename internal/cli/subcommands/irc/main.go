@@ -23,8 +23,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const Name = "irc"
-
 type cmd struct {
 	cli.Common
 	SQL        sqlflags.SQL
@@ -37,8 +35,9 @@ type cmd struct {
 	HTTP       httpflags.HTTP
 }
 
-func Run(args []string) {
-	cli.Run(Name, args, &cmd{
+// Command returns a fresh irc command.
+func Command() cli.Command {
+	return &cmd{
 		Common:     cli.Default,
 		SQL:        sqlflags.Default,
 		Twitch:     twitchflags.Default,
@@ -48,30 +47,34 @@ func Run(args []string) {
 		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
 		HTTP:       httpflags.Default,
-	})
+	}
+}
+
+func (*cmd) Name() string {
+	return "irc"
 }
 
 //nolint:gocyclo
-func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	defer cmd.Jaeger.Init(ctx, Name, cmd.Debug)()
-	cmd.Prometheus.Run(ctx)
+func (c *cmd) Main(ctx context.Context, _ []string) {
+	defer c.Jaeger.Init(ctx, c.Name(), c.Debug)()
+	c.Prometheus.Run(ctx)
 
-	driverName := cmd.SQL.DriverName()
-	driverName = cmd.Jaeger.DriverName(ctx, driverName, cmd.Debug)
-	db := cmd.SQL.Open(ctx, driverName)
+	driverName := c.SQL.DriverName()
+	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
+	db := c.SQL.Open(ctx, driverName)
 
-	rdb := cmd.Redis.Client()
-	twitchAPI := cmd.Twitch.Client(cmd.HTTP.Client())
-	conn := cmd.IRC.Pool(ctx, db, twitchAPI)
+	rdb := c.Redis.Client()
+	twitchAPI := c.Twitch.Client(c.HTTP.Client())
+	conn := c.IRC.Pool(ctx, db, twitchAPI)
 
-	incomingPub := cmd.NSQ.NewIncomingPublisher()
+	incomingPub := c.NSQ.NewIncomingPublisher()
 
-	sendSub := cmd.NSQ.NewSendMessageSubscriber(cmd.IRC.Nick, 15*time.Second, func(m *bnsq.SendMessage, metadata *bnsq.Metadata) error {
+	sendSub := c.NSQ.NewSendMessageSubscriber(c.IRC.Nick, 15*time.Second, func(m *bnsq.SendMessage, metadata *bnsq.Metadata) error {
 		ctx := metadata.With(ctx)
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", metadata.ParentSpan())
 		defer span.End()
 
-		allowed, err := cmd.IRC.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
+		allowed, err := c.IRC.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
 		if err != nil {
 			ctxlog.Error(ctx, "error checking rate limit", zap.Error(err))
 			return err
@@ -92,7 +95,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 
 	syncJoined := make(chan struct{}, 1)
 
-	notifySub := cmd.NSQ.NewNotifySubscriber(cmd.IRC.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, metadata *bnsq.Metadata) error {
+	notifySub := c.NSQ.NewNotifySubscriber(c.IRC.Nick, time.Minute, func(n *bnsq.ChannelUpdatesNotification, metadata *bnsq.Metadata) error {
 		ctx := metadata.With(ctx)
 		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", metadata.ParentSpan())
 		defer span.End()
@@ -125,7 +128,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 					return nil
 				}
 
-				if err := incomingPub.Publish(ctx, cmd.IRC.Nick, m); err != nil {
+				if err := incomingPub.Publish(ctx, c.IRC.Nick, m); err != nil {
 					ctxlog.Error(ctx, "error publishing incoming message", zap.Error(err))
 				}
 			}
@@ -147,7 +150,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 			case <-time.After(time.Minute):
 			}
 
-			channels, err := modelsx.ListActiveChannels(ctx, db, cmd.IRC.Nick)
+			channels, err := modelsx.ListActiveChannels(ctx, db, c.IRC.Nick)
 			if err != nil {
 				return err
 			}

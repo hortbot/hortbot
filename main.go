@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"sort"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/bot"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confimport"
@@ -15,18 +17,42 @@ import (
 	"github.com/hortbot/hortbot/internal/version"
 )
 
-var subcommands = map[string]func([]string){
-	bot.Name:           bot.Run,
-	irc.Name:           irc.Run,
-	web.Name:           web.Run,
-	sitedbconvert.Name: sitedbconvert.Run,
-	confconvert.Name:   confconvert.Run,
-	confimport.Name:    confimport.Run,
-	"version":          func([]string) { fmt.Println(version.Version()) },
-}
-
 func main() {
 	args := os.Args[1:]
+
+	subcommands := make(map[string]cli.Command)
+
+	addCommand := func(cmd cli.Command) {
+		name := cmd.Name()
+		if subcommands[name] != nil {
+			panic("duplicate command " + name)
+		}
+		subcommands[name] = cmd
+	}
+
+	listAndExit := func() {
+		names := make([]string, 0, len(subcommands))
+
+		for name := range subcommands {
+			names = append(names, name)
+		}
+
+		sort.Strings(names)
+
+		fmt.Fprintln(os.Stderr, "Available subcommands:", strings.Join(names, ", "))
+		os.Exit(2)
+	}
+
+	addCommand(bot.Command())
+	addCommand(irc.Command())
+	addCommand(web.Command())
+	addCommand(sitedbconvert.Command())
+	addCommand(confconvert.Command())
+	addCommand(confimport.Command())
+
+	addCommand(cli.CommandFunc("version", func(_ context.Context, _ []string) {
+		fmt.Println(version.Version())
+	}))
 
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Please specify a subcommand.")
@@ -34,8 +60,8 @@ func main() {
 	}
 
 	subcommand, args := args[0], args[1:]
-	if fn := subcommands[subcommand]; fn != nil {
-		fn(args)
+	if cmd := subcommands[subcommand]; cmd != nil {
+		cli.Run(cmd, args)
 	} else {
 		switch subcommand {
 		case "-h", "--help":
@@ -44,17 +70,4 @@ func main() {
 		}
 		listAndExit()
 	}
-}
-
-func listAndExit() {
-	names := make([]string, 0, len(subcommands))
-
-	for name := range subcommands {
-		names = append(names, name)
-	}
-
-	sort.Strings(names)
-
-	fmt.Fprintln(os.Stderr, "Available subcommands:", strings.Join(names, ", "))
-	os.Exit(2)
 }

@@ -31,8 +31,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const Name = "conf-convert"
-
 type cmd struct {
 	cli.Common
 	Twitch twitchflags.Twitch
@@ -54,8 +52,9 @@ type cmd struct {
 	Pretty bool `long:"pretty" description:"Pretty print JSON output files"`
 }
 
-func Run(args []string) {
-	cli.Run(Name, args, &cmd{
+// Command returns a fresh conf-convert command.
+func Command() cli.Command {
+	return &cmd{
 		Common: cli.Common{
 			Debug: true,
 		},
@@ -63,17 +62,21 @@ func Run(args []string) {
 		HTTP:          httpflags.Default,
 		DefaultBullet: "coebotBot",
 		TwitchSleep:   time.Second / 4,
-	})
+	}
 }
 
-func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	loadSiteDB(ctx, cmd.SiteDumps)
+func (*cmd) Name() string {
+	return "conf-convert"
+}
 
-	tw = cmd.Twitch.Client(cmd.HTTP.Client())
+func (c *cmd) Main(ctx context.Context, _ []string) {
+	loadSiteDB(ctx, c.SiteDumps)
+
+	tw = c.Twitch.Client(c.HTTP.Client())
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
-	outDir := filepath.Clean(cmd.Out)
+	outDir := filepath.Clean(c.Out)
 
 	if d, err := os.Stat(outDir); err != nil {
 		if os.IsNotExist(err) {
@@ -84,14 +87,14 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		ctxlog.Fatal(ctx, "output is not a directory")
 	}
 
-	todo := make([]string, 0, len(cmd.Positional.Files))
+	todo := make([]string, 0, len(c.Positional.Files))
 
-	for _, file := range cmd.Positional.Files {
+	for _, file := range c.Positional.Files {
 		file = filepath.Clean(file)
 		todo = append(todo, file)
 	}
 
-	for _, dir := range cmd.Dir {
+	for _, dir := range c.Dir {
 		dir = filepath.Clean(dir)
 
 		files, err := ioutil.ReadDir(dir)
@@ -135,14 +138,14 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		n := strings.TrimSuffix(name, ".json")
 		out := filepath.Join(outDir, name)
 
-		cmd.processFile(ctx, n, file, out)
+		c.processFile(ctx, n, file, out)
 	}
 }
 
-func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
+func (c *cmd) processFile(ctx context.Context, name, filename, out string) {
 	ctx = ctxlog.With(ctx, zap.String("filename", filename))
 
-	config, err := cmd.convert(ctx, name, filename)
+	config, err := c.convert(ctx, name, filename)
 	if err != nil {
 		ctxlog.Error(ctx, "error importing config", ctxlog.PlainError(err))
 		return
@@ -161,7 +164,7 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 
 	enc := json.NewEncoder(f)
 
-	if cmd.Pretty {
+	if c.Pretty {
 		enc.SetIndent("", "    ")
 	}
 
@@ -170,10 +173,10 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 	}
 }
 
-func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*confimport.Config, error) {
-	c := &coeBotConfig{}
+func (c *cmd) convert(ctx context.Context, expectedName, filename string) (*confimport.Config, error) {
+	cbConfig := &coeBotConfig{}
 
-	if err := c.load(filename); err != nil {
+	if err := cbConfig.load(filename); err != nil {
 		return nil, errors.Wrap(err, "loading file")
 	}
 
@@ -184,9 +187,9 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		twitchID    int64
 	)
 
-	if c.ChannelID == "" {
+	if cbConfig.ChannelID == "" {
 		name = expectedName
-		twitchID, displayName, err = cmd.getChannelbyName(ctx, expectedName)
+		twitchID, displayName, err = c.getChannelbyName(ctx, expectedName)
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
@@ -195,12 +198,12 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 			return nil, errors.Wrap(err, "getting channel by name from twitch")
 		}
 	} else {
-		twitchID, err = strconv.ParseInt(c.ChannelID, 10, 64)
+		twitchID, err = strconv.ParseInt(cbConfig.ChannelID, 10, 64)
 		if err != nil {
 			return nil, errors.Wrap(err, "parsing channel ID")
 		}
 
-		name, displayName, err = cmd.getChannelByID(ctx, twitchID)
+		name, displayName, err = c.getChannelByID(ctx, twitchID)
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
@@ -228,21 +231,21 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		active = false
 	}
 
-	defaultBullet := cmd.DefaultBullet
-	if len(cmd.BotBullet) > 0 {
-		if b := cmd.BotBullet[botName]; b != "" {
+	defaultBullet := c.DefaultBullet
+	if len(c.BotBullet) > 0 {
+		if b := c.BotBullet[botName]; b != "" {
 			defaultBullet = b
 		}
 	}
 
-	channel := c.loadChannel(ctx, defaultBullet, twitchID, name, displayName, botName)
+	channel := cbConfig.loadChannel(ctx, defaultBullet, twitchID, name, displayName, botName)
 	repInit := time.Unix(channel.UserID%60, 0).UTC() // Pick a "random" user-specific initial time.
 
 	config := &confimport.Config{
 		Channel:     channel,
-		Quotes:      c.loadQuotes(),
-		Commands:    c.loadCommands(ctx, repInit),
-		Autoreplies: c.loadAutoreplies(ctx),
+		Quotes:      cbConfig.loadQuotes(),
+		Commands:    cbConfig.loadCommands(ctx, repInit),
+		Autoreplies: cbConfig.loadAutoreplies(ctx),
 		Variables:   getVariables(name),
 	}
 

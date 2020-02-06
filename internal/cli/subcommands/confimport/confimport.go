@@ -14,8 +14,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
-const Name = "conf-import"
-
 type cmd struct {
 	cli.Common
 	SQL sqlflags.SQL
@@ -27,29 +25,34 @@ type cmd struct {
 	} `positional-args:"true"`
 }
 
-func Run(args []string) {
-	cli.Run(Name, args, &cmd{
+// Command returns a fresh conf-import command.
+func Command() cli.Command {
+	return &cmd{
 		Common: cli.Common{
 			Debug: true,
 		},
 		SQL: sqlflags.Default,
-	})
+	}
 }
 
-func (cmd *cmd) Main(ctx context.Context, _ []string) {
-	db := cmd.SQL.Open(ctx, cmd.SQL.DriverName())
+func (*cmd) Name() string {
+	return "conf-import"
+}
+
+func (c *cmd) Main(ctx context.Context, _ []string) {
+	db := c.SQL.Open(ctx, c.SQL.DriverName())
 	defer db.Close()
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
-	todo := make([]string, 0, len(cmd.Positional.Files))
+	todo := make([]string, 0, len(c.Positional.Files))
 
-	for _, file := range cmd.Positional.Files {
+	for _, file := range c.Positional.Files {
 		file = filepath.Clean(file)
 		todo = append(todo, file)
 	}
 
-	for _, dir := range cmd.Dir {
+	for _, dir := range c.Dir {
 		dir = filepath.Clean(dir)
 
 		files, err := ioutil.ReadDir(dir)

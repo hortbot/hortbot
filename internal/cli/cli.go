@@ -36,6 +36,7 @@ func (c *Common) IsDebug() bool {
 
 // Command is a single command that can be parsed and run.
 type Command interface {
+	Name() string
 	Main(ctx context.Context, args []string)
 	IsDebug() bool
 }
@@ -46,12 +47,12 @@ var Default = Common{}
 // Run parses the argument and runs the given command. If the ENV_FILE
 // environment variable is set, the files listed in it will be loaded
 // before parsing, to allow for a simple layered configuration setup.
-func Run(name string, args []string, cmd Command) {
+func Run(cmd Command, args []string) {
 	_ = godotenv.Load(strings.Split(os.Getenv("ENV_FILE"), ",")...)
 
 	ctx := ctxutil.Interrupt()
 
-	parser := flags.NewNamedParser(name, flags.HelpFlag|flags.PassDoubleDash)
+	parser := flags.NewNamedParser(cmd.Name(), flags.HelpFlag|flags.PassDoubleDash)
 	_, _ = parser.AddGroup("Options", "", cmd)
 
 	args, err := parser.ParseArgs(args)
@@ -79,3 +80,21 @@ func checkParseError(err error) {
 		os.Exit(1)
 	}
 }
+
+type simple struct {
+	Common
+	name string
+	fn   func(context.Context, []string)
+}
+
+// CommandFunc returns a Command with the given name and main function.
+func CommandFunc(name string, fn func(ctx context.Context, args []string)) Command {
+	return &simple{
+		Common: Default,
+		name:   name,
+		fn:     fn,
+	}
+}
+
+func (s *simple) Name() string                            { return s.name }
+func (s *simple) Main(ctx context.Context, args []string) { s.fn(ctx, args) }
