@@ -10,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
+// Channel is a site_channels row.
 type Channel struct {
 	DisplayName              string `json:"display_name"`
 	BotName                  string `json:"bot_name"`
@@ -20,6 +21,7 @@ type Channel struct {
 	ShouldShowBoir           bool   `json:"should_show_boir"`
 }
 
+// Channels returns all of the channel rows in the database.
 func Channels(ctx context.Context, db *sqlx.DB) (map[string]*Channel, error) {
 	rows, err := db.Unsafe().QueryxContext(ctx, "SELECT * FROM site_channels")
 	if err != nil {
@@ -58,6 +60,7 @@ func Channels(ctx context.Context, db *sqlx.DB) (map[string]*Channel, error) {
 	return channels, nil
 }
 
+// Var is a site_vars row.
 type Var struct {
 	Name         string    `json:"name"`
 	Value        string    `json:"value"`
@@ -65,6 +68,7 @@ type Var struct {
 	LastModified time.Time `json:"last_modified"`
 }
 
+// Vars returns all of the var rows in the database.
 func Vars(ctx context.Context, db *sqlx.DB) (map[string][]*Var, error) {
 	rows, err := db.Unsafe().QueryxContext(ctx, "SELECT * FROM site_vars")
 	if err != nil {

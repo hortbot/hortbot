@@ -11,6 +11,7 @@ import (
 	"go.opencensus.io/trace"
 )
 
+// Config is a channel's full configuration, serialized.
 type Config struct {
 	Channel     *models.Channel     `json:"channel"`
 	Quotes      []*models.Quote     `json:"quotes"`
@@ -19,6 +20,7 @@ type Config struct {
 	Variables   []*models.Variable  `json:"variables"`
 }
 
+// Command is a single command, including all variants and repeats/schedules.
 type Command struct {
 	Info          *models.CommandInfo      `json:"info"`
 	CustomCommand *models.CustomCommand    `json:"custom_command"`

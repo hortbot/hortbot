@@ -5,6 +5,7 @@ import "gotest.tools/v3/assert"
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . TestingT
 
+// TestingT is the assert package's TestingT, but includes Helper.
 type TestingT interface {
 	assert.TestingT
 	Helper()

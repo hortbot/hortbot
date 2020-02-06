@@ -10,6 +10,7 @@ import (
 	"go.opencensus.io/trace"
 )
 
+// ExportByName exports a channel's full configuration, keyed on channel name.
 func ExportByName(ctx context.Context, exec boil.ContextExecutor, name string) (*Config, error) {
 	return export(ctx, exec, models.ChannelWhere.Name.EQ(name))
 }

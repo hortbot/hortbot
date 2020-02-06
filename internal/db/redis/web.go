@@ -10,6 +10,7 @@ import (
 
 const keyAuthState = keyStr("auth_state")
 
+// SetAuthState sets an arbitrary authentication state for the login workflow.
 func (db *DB) SetAuthState(ctx context.Context, key string, value interface{}, expiry time.Duration) error {
 	ctx, span := trace.StartSpan(ctx, "SetAuthState")
 	defer span.End()
@@ -24,6 +25,7 @@ func (db *DB) SetAuthState(ctx context.Context, key string, value interface{}, e
 	return client.Set(rkey, b, expiry).Err()
 }
 
+// GetAuthState gets the arbitrary authentication state for the login workflow.
 func (db *DB) GetAuthState(ctx context.Context, key string, v interface{}) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "GetAuthState")
 	defer span.End()

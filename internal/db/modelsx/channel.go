@@ -2,6 +2,9 @@ package modelsx
 
 import "github.com/hortbot/hortbot/internal/db/models"
 
+// DefaultPrefix is the default prefix inserted for new channels. The default
+// prefix is not NULL, as changing it based on some config would break users
+// who had previously been using the original prefix.
 const DefaultPrefix = "!"
 
 // NewChannel creates a new Channel with the defaults set.

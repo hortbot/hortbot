@@ -43,6 +43,7 @@ var botScopes = []string{
 	"whispers:edit",
 }
 
+// App is the HortBot webapp.
 type App struct {
 	Addr       string
 	RealIP     bool
@@ -61,6 +62,7 @@ type App struct {
 	store *sessions.CookieStore
 }
 
+// Run runs the webapp until the context is canceled.
 func (a *App) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()

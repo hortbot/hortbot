@@ -31,6 +31,7 @@ func linkPermitKey(channel string, user string) string {
 	)
 }
 
+// LinkPermit checks marks a user as having a single link permit.
 func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.Duration) error {
 	ctx, span := trace.StartSpan(ctx, "LinkPermit")
 	defer span.End()
@@ -40,6 +41,7 @@ func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.
 	return mark(client, key, expiry)
 }
 
+// HasLinkPermit returns true if a user has a link permit, invalidating the permit.
 func (db *DB) HasLinkPermit(ctx context.Context, channel, user string) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "HasLinkPermit")
 	defer span.End()
@@ -49,6 +51,7 @@ func (db *DB) HasLinkPermit(ctx context.Context, channel, user string) (bool, er
 	return checkAndDelete(client, key)
 }
 
+// Confirm checks that a user has confirmed something (keyed on "key").
 func (db *DB) Confirm(ctx context.Context, channel, user, key string, expiry time.Duration) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "Confirm")
 	defer span.End()
@@ -63,6 +66,8 @@ func (db *DB) Confirm(ctx context.Context, channel, user, key string, expiry tim
 	return markOrDelete(client, rkey, expiry)
 }
 
+// RepeatAllowed returns true if a certain repeat is allowed to run,
+// preventing future repeats of this ID from running until expiring.
 func (db *DB) RepeatAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "RepeatAllowed")
 	defer span.End()
@@ -76,6 +81,8 @@ func (db *DB) RepeatAllowed(ctx context.Context, channel string, id int64, expir
 	return !seen, err
 }
 
+// ScheduledAllowed returns true if a certain schedule is allowed to run,
+// preventing future schedules of this ID from running until expiring.
 func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "ScheduledAllowed")
 	defer span.End()
@@ -89,6 +96,8 @@ func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, ex
 	return !seen, err
 }
 
+// AutoreplyAllowed returns true if a certain autoreply is allowed to run,
+// preventing future runs of this ID from running until expiring.
 func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, expiry time.Duration) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "AutoreplyAllowed")
 	defer span.End()
@@ -102,6 +111,7 @@ func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, ex
 	return !seen, err
 }
 
+// FilterWarned chceks if a user has already been warned for a given filter.
 func (db *DB) FilterWarned(ctx context.Context, channel, user, filter string, expiry time.Duration) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "FilterWarned")
 	defer span.End()
@@ -122,6 +132,7 @@ func raffleKey(channel string) string {
 	)
 }
 
+// RaffleAdd adds a user to the current raffle. Duplicate entries are not allowed.
 func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
 	ctx, span := trace.StartSpan(ctx, "RaffleAdd")
 	defer span.End()
@@ -131,6 +142,7 @@ func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
 	return setAdd(client, key, user)
 }
 
+// RaffleReset removes all entires from the current raffle.
 func (db *DB) RaffleReset(ctx context.Context, channel string) error {
 	ctx, span := trace.StartSpan(ctx, "RaffleReset")
 	defer span.End()
@@ -140,6 +152,7 @@ func (db *DB) RaffleReset(ctx context.Context, channel string) error {
 	return setClear(client, key)
 }
 
+// RaffleWinner removes a user from the raffle entries and returns them.
 func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, error) {
 	ctx, span := trace.StartSpan(ctx, "RaffleWinner")
 	defer span.End()
@@ -149,6 +162,7 @@ func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, e
 	return setPop(client, key)
 }
 
+// RaffleCount returns the number of entries in the current raffle.
 func (db *DB) RaffleCount(ctx context.Context, channel string) (int64, error) {
 	ctx, span := trace.StartSpan(ctx, "RaffleCount")
 	defer span.End()
@@ -165,6 +179,7 @@ func cooldownKey(channel string, key string) string {
 	)
 }
 
+// MarkCooldown marks that a command is on cooldown.
 func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time.Duration) error {
 	ctx, span := trace.StartSpan(ctx, "MarkCooldown")
 	defer span.End()
@@ -174,6 +189,7 @@ func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time
 	return mark(client, rkey, expiry)
 }
 
+// CheckAndMarkCooldown checks that a command is on cooldown, and marks it.
 func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, expiry time.Duration) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "CheckAndMarkCooldown")
 	defer span.End()
@@ -190,6 +206,8 @@ func userStateKey(botName, target string) string {
 	)
 }
 
+// SetUserState sets the current bot user state as either fast or slow for a
+// given IRC channel.
 func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast bool, expiry time.Duration) error {
 	ctx, span := trace.StartSpan(ctx, "SetUserState")
 	defer span.End()
@@ -204,6 +222,7 @@ func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast
 	return client.Set(key, v, expiry).Err()
 }
 
+// GetUserState returns the current user state of the bot in the given IRC channel.
 func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "GetUserState")
 	defer span.End()

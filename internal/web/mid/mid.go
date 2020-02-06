@@ -27,6 +27,8 @@ func Logger(logger *zap.Logger) func(http.Handler) http.Handler {
 	}
 }
 
+// RequestID ensures that a request ID exists on the request and is propogated
+// to logging and the outgoing response.
 func RequestID(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
@@ -58,11 +60,14 @@ func RequestID(next http.Handler) http.Handler {
 	})
 }
 
+// GetRequestID gets the request ID for a given request.
 func GetRequestID(r *http.Request) xid.ID {
 	requestID, _ := r.Context().Value(requestIDKey{}).(xid.ID)
 	return requestID
 }
 
+// RequestLogger logs information about the request, including the method,
+// URL, status, size, and handle duration.
 func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		m := httpsnoop.CaptureMetrics(next, w, r)
@@ -78,6 +83,7 @@ func RequestLogger(next http.Handler) http.Handler {
 	})
 }
 
+// Recoverer recovers from panics, writing out an HTTP error message when needed.
 func Recoverer(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		defer func() {
@@ -94,6 +100,7 @@ func Recoverer(next http.Handler) http.Handler {
 	})
 }
 
+// Tracer traces the handler with an OpenCensus HTTP tracer.
 func Tracer(next http.Handler) http.Handler {
 	return &ochttp.Handler{
 		Handler: next,

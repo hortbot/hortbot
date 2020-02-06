@@ -13,6 +13,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// TokenToModel converts a Twitch user's oauth2 token to a model for insertion.
 func TokenToModel(id int64, tok *oauth2.Token) *models.TwitchToken {
 	return &models.TwitchToken{
 		TwitchID:     id,
@@ -23,6 +24,7 @@ func TokenToModel(id int64, tok *oauth2.Token) *models.TwitchToken {
 	}
 }
 
+// ModelToToken converts a token model to an oauth2 token for use in an HTTP client.
 func ModelToToken(tt *models.TwitchToken) *oauth2.Token {
 	return &oauth2.Token{
 		AccessToken:  tt.AccessToken,
@@ -40,6 +42,7 @@ var tokenUpdate = boil.Whitelist(
 	models.TwitchTokenColumns.Expiry,
 )
 
+// UpsertToken inserts a token into the database, or updates it if the token has been changed.
 func UpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
 	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, tokenUpdate, boil.Infer())
 }
@@ -53,10 +56,12 @@ var fullTokenUpdate = boil.Whitelist(
 	models.TwitchTokenColumns.Expiry,
 )
 
+// FullUpsertToken inserts the token into the database, or inserts all columns as written in the model.
 func FullUpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
 	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, fullTokenUpdate, boil.Infer())
 }
 
+// DeleteCommandInfo deletes all references to a specific command from the database.
 func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *models.CommandInfo) (repeated *models.RepeatedCommand, scheduled *models.ScheduledCommand, err error) {
 	repeated, err = info.RepeatedCommand().One(ctx, exec)
 	if err != nil {
@@ -114,6 +119,7 @@ LEFT OUTER JOIN custom_commands on custom_commands.id = command_infos.custom_com
 WHERE ("command_infos"."channel_id" = $1) AND ("command_infos"."name" = $2)
 `
 
+// FindCommand finds a command for a given channel.
 func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string, forUpdate bool) (info *models.CommandInfo, commandMsg null.String, found bool, err error) {
 	infoAndCommand := struct {
 		CommandInfo models.CommandInfo `boil:"command_infos,bind"`
