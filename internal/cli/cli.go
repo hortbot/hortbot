@@ -80,21 +80,3 @@ func checkParseError(err error) {
 		os.Exit(1)
 	}
 }
-
-type simple struct {
-	Common
-	name string
-	fn   func(context.Context, []string)
-}
-
-// CommandFunc returns a Command with the given name and main function.
-func CommandFunc(name string, fn func(ctx context.Context, args []string)) Command {
-	return &simple{
-		Common: Default,
-		name:   name,
-		fn:     fn,
-	}
-}
-
-func (s *simple) Name() string                            { return s.name }
-func (s *simple) Main(ctx context.Context, args []string) { s.fn(ctx, args) }

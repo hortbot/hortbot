@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"sort"
@@ -50,24 +49,27 @@ func main() {
 	addCommand(confconvert.Command())
 	addCommand(confimport.Command())
 
-	addCommand(cli.CommandFunc("version", func(_ context.Context, _ []string) {
-		fmt.Println(version.Version())
-	}))
-
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Please specify a subcommand.")
 		listAndExit()
 	}
 
 	subcommand, args := args[0], args[1:]
+
+	if subcommand == "version" {
+		fmt.Println(version.Version())
+		return
+	}
+
 	if cmd := subcommands[subcommand]; cmd != nil {
 		cli.Run(cmd, args)
-	} else {
-		switch subcommand {
-		case "-h", "--help":
-		default:
-			fmt.Fprintln(os.Stderr, subcommand, "is not a valid subcommand.")
-		}
-		listAndExit()
+		return
 	}
+
+	switch subcommand {
+	case "-h", "--help":
+	default:
+		fmt.Fprintln(os.Stderr, subcommand, "is not a valid subcommand.")
+	}
+	listAndExit()
 }
