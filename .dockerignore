@@ -1,4 +1,6 @@
-# Keep in sync with .gitignore
+docker-compose.yml
+
+# Keep the below in sync with .gitignore
 
 # Binaries for programs and plugins
 *.exe
