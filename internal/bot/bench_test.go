@@ -55,6 +55,45 @@ func BenchmarkHandleNop(b *testing.B) {
 	b.StopTimer()
 }
 
+func BenchmarkHandleNopParallel(b *testing.B) {
+	const botName = "hortbot"
+
+	db := pool.FreshDB(b)
+	defer db.Close()
+
+	ctx := context.Background()
+
+	_, rClient, rCleanup, err := miniredistest.New()
+	assert.NilError(b, err)
+	defer rCleanup()
+
+	userID, name := getNextUserID()
+
+	config := &bot.Config{
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Sender:   nopSender{},
+		Notifier: nopNotifier{},
+		Twitch:   &twitchfakes.FakeAPI{},
+		NoDedupe: true,
+	}
+
+	bb := bot.New(config)
+	assert.NilError(b, bb.Init(ctx))
+
+	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
+
+	m := privMSG(name, userID, name, userID, "test")
+
+	b.ResetTimer()
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			bb.Handle(ctx, botName, m)
+		}
+	})
+	b.StopTimer()
+}
+
 func BenchmarkHandleCustomCommand(b *testing.B) {
 	const botName = "hortbot"
 
