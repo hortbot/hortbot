@@ -69,14 +69,14 @@ func (*cmd) Name() string {
 	return "conf-convert"
 }
 
-func (c *cmd) Main(ctx context.Context, _ []string) {
-	loadSiteDB(ctx, c.SiteDumps)
+func (cmd *cmd) Main(ctx context.Context, _ []string) {
+	loadSiteDB(ctx, cmd.SiteDumps)
 
-	tw = c.Twitch.Client(c.HTTP.Client())
+	tw = cmd.Twitch.Client(cmd.HTTP.Client())
 
 	ctx = ctxlog.WithOptions(ctx, ctxlog.NoTrace())
 
-	outDir := filepath.Clean(c.Out)
+	outDir := filepath.Clean(cmd.Out)
 
 	if d, err := os.Stat(outDir); err != nil {
 		if os.IsNotExist(err) {
@@ -87,14 +87,14 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		ctxlog.Fatal(ctx, "output is not a directory")
 	}
 
-	todo := make([]string, 0, len(c.Positional.Files))
+	todo := make([]string, 0, len(cmd.Positional.Files))
 
-	for _, file := range c.Positional.Files {
+	for _, file := range cmd.Positional.Files {
 		file = filepath.Clean(file)
 		todo = append(todo, file)
 	}
 
-	for _, dir := range c.Dir {
+	for _, dir := range cmd.Dir {
 		dir = filepath.Clean(dir)
 
 		files, err := ioutil.ReadDir(dir)
@@ -138,14 +138,14 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		n := strings.TrimSuffix(name, ".json")
 		out := filepath.Join(outDir, name)
 
-		c.processFile(ctx, n, file, out)
+		cmd.processFile(ctx, n, file, out)
 	}
 }
 
-func (c *cmd) processFile(ctx context.Context, name, filename, out string) {
+func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 	ctx = ctxlog.With(ctx, zap.String("filename", filename))
 
-	config, err := c.convert(ctx, name, filename)
+	config, err := cmd.convert(ctx, name, filename)
 	if err != nil {
 		ctxlog.Error(ctx, "error importing config", ctxlog.PlainError(err))
 		return
@@ -164,7 +164,7 @@ func (c *cmd) processFile(ctx context.Context, name, filename, out string) {
 
 	enc := json.NewEncoder(f)
 
-	if c.Pretty {
+	if cmd.Pretty {
 		enc.SetIndent("", "    ")
 	}
 
@@ -173,7 +173,7 @@ func (c *cmd) processFile(ctx context.Context, name, filename, out string) {
 	}
 }
 
-func (c *cmd) convert(ctx context.Context, expectedName, filename string) (*confimport.Config, error) {
+func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*confimport.Config, error) {
 	cbConfig := &coeBotConfig{}
 
 	if err := cbConfig.load(filename); err != nil {
@@ -189,7 +189,7 @@ func (c *cmd) convert(ctx context.Context, expectedName, filename string) (*conf
 
 	if cbConfig.ChannelID == "" {
 		name = expectedName
-		twitchID, displayName, err = c.getChannelbyName(ctx, expectedName)
+		twitchID, displayName, err = cmd.getChannelbyName(ctx, expectedName)
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
@@ -203,7 +203,7 @@ func (c *cmd) convert(ctx context.Context, expectedName, filename string) (*conf
 			return nil, errors.Wrap(err, "parsing channel ID")
 		}
 
-		name, displayName, err = c.getChannelByID(ctx, twitchID)
+		name, displayName, err = cmd.getChannelByID(ctx, twitchID)
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
@@ -231,9 +231,9 @@ func (c *cmd) convert(ctx context.Context, expectedName, filename string) (*conf
 		active = false
 	}
 
-	defaultBullet := c.DefaultBullet
-	if len(c.BotBullet) > 0 {
-		if b := c.BotBullet[botName]; b != "" {
+	defaultBullet := cmd.DefaultBullet
+	if len(cmd.BotBullet) > 0 {
+		if b := cmd.BotBullet[botName]; b != "" {
 			defaultBullet = b
 		}
 	}
