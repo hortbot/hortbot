@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
 )
@@ -47,27 +48,19 @@ func TestMessages(t *testing.T) {
 		got  *irc.Message
 	}{
 		{
-			&irc.Message{Command: "JOIN"},
-			Join(),
-		},
-		{
 			&irc.Message{Command: "JOIN", Params: []string{"#foobar"}},
 			Join("#foobar"),
 		},
 		{
-			&irc.Message{Command: "JOIN", Params: []string{"#foobar", "#barfoo"}},
+			&irc.Message{Command: "JOIN", Params: []string{"#foobar,#barfoo"}},
 			Join("#foobar", "#barfoo"),
-		},
-		{
-			&irc.Message{Command: "PART"},
-			Part(),
 		},
 		{
 			&irc.Message{Command: "PART", Params: []string{"#foobar"}},
 			Part("#foobar"),
 		},
 		{
-			&irc.Message{Command: "PART", Params: []string{"#foobar", "#barfoo"}},
+			&irc.Message{Command: "PART", Params: []string{"#foobar,#barfoo"}},
 			Part("#foobar", "#barfoo"),
 		},
 		{
@@ -103,6 +96,16 @@ func TestMessages(t *testing.T) {
 	for _, test := range tests {
 		assert.DeepEqual(t, test.want, test.got)
 	}
+}
+
+func TestBadJoinPart(t *testing.T) {
+	assertx.Panic(t, func() {
+		Join()
+	}, "must provide at least one channel")
+
+	assertx.Panic(t, func() {
+		Part()
+	}, "must provide at least one channel")
 }
 
 func TestClone(t *testing.T) {

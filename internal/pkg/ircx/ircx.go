@@ -10,18 +10,26 @@ import (
 // Join creates a JOIN message using the specified channels. The channel names
 // will not be normalized.
 func Join(channels ...string) *irc.Message {
+	if len(channels) == 0 {
+		panic("must provide at least one channel")
+	}
+
 	return &irc.Message{
 		Command: "JOIN",
-		Params:  channels,
+		Params:  []string{strings.Join(channels, ",")},
 	}
 }
 
 // Part creates a PART message using the specified channels. The channel names
 // will not be normalized.
 func Part(channels ...string) *irc.Message {
+	if len(channels) == 0 {
+		panic("must provide at least one channel")
+	}
+
 	return &irc.Message{
 		Command: "PART",
-		Params:  channels,
+		Params:  []string{strings.Join(channels, ",")},
 	}
 }
 
