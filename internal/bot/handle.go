@@ -267,6 +267,7 @@ func handleSession(ctx context.Context, s *session) error {
 	ctx, span := trace.StartSpan(ctx, "handleSession")
 	defer span.End()
 
+	// TODO: Remove if possible thanks to top-level wqueue.
 	if err := pgLock(ctx, s.Tx, s.RoomID); err != nil {
 		return err
 	}

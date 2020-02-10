@@ -3,6 +3,7 @@ package bot
 
 import (
 	"context"
+	"runtime"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
@@ -17,9 +18,9 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/wqueue"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
-	"golang.org/x/sync/semaphore"
 )
 
 type cmd struct {
@@ -69,30 +70,39 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	b := c.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient)
 	defer b.Stop()
 
-	sem := semaphore.NewWeighted(int64(c.Bot.Workers))
-
 	g := errgroupx.FromContext(ctx)
 
+	workers := c.Bot.Workers
+	if workers < 1 {
+		workers = runtime.GOMAXPROCS(0)
+	}
+
+	// TODO: pass the queue down to the bot to use internally
+	queue := wqueue.NewQueue(10 * workers)
+	for i := 0; i < workers; i++ {
+		g.Go(queue.Worker)
+	}
+
 	incomingSub := c.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, metadata *bnsq.Metadata) error {
-		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", metadata.ParentSpan())
+		subCtx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", metadata.ParentSpan())
 		defer span.End()
 
-		if err := sem.Acquire(ctx, 1); err != nil {
-			return err
+		origin := i.Origin
+		m := i.Message
+
+		key := m.Command
+		if key == "PRIVMSG" && len(m.Params) != 0 {
+			key += "/" + m.Params[0]
 		}
 
-		g.Go(func(ctx context.Context) error {
-			// This context is not the context above.
+		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
+			ctx := attach(ctx)
 			ctx = metadata.With(ctx)
 			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
 			defer span.End()
 
-			defer sem.Release(1)
-			b.Handle(ctx, i.Origin, i.Message)
-			return ctx.Err()
+			b.Handle(ctx, origin, m)
 		})
-
-		return nil
 	})
 
 	g.Go(sender.Run)

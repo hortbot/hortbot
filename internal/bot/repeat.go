@@ -125,6 +125,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 		}
 
 		channel := runner.channel()
+		// TODO: Remove if possible by passing the top level wqueue down here.
 		if err := pgLock(ctx, tx, channel.UserID); err != nil {
 			return err
 		}
