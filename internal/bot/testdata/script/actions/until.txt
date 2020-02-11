@@ -120,3 +120,41 @@ send hortbot #foobar [HB] (error)
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untillong
 send hortbot #foobar [HB] (error)
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add until (_UNTIL_1313772289_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add untilshort (_UNTILSHORT_1313772289_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add untillong (_UNTILLONG_1313772289_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!until
+send hortbot #foobar [HB] 1 year 9 weeks 4 days 4 hours 25 minutes
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untilshort
+send hortbot #foobar [HB] 432d4h25m
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untillong
+send hortbot #foobar [HB] 1 year 9 weeks 4 days 4 hours 25 minutes
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add until (_UNTIL_253370764800_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add untilshort (_UNTILSHORT_253370764800_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add untillong (_UNTILLONG_253370764800_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!until
+send hortbot #foobar [HB] (error)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untilshort
+send hortbot #foobar [HB] (error)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untillong
+send hortbot #foobar [HB] (error)

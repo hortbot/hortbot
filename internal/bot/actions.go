@@ -597,15 +597,27 @@ func (s *session) actionTime(_ context.Context, tz string, layout string) (strin
 	return now.Format(layout), nil
 }
 
-const dayDur = 24 * time.Hour
+const (
+	dayDur                    = 24 * time.Hour
+	minDuration time.Duration = -1 << 63
+	maxDuration time.Duration = 1<<63 - 1
+)
 
-func (s *session) actionUntil(_ context.Context, timestamp string, short bool) (string, error) {
+func (s *session) actionUntil(ctx context.Context, timestamp string, short bool) (string, error) {
 	t, err := parseUntilTimestamp(timestamp)
 	if err != nil {
 		return actionMsgError, nil
 	}
 
-	dur := s.Deps.Clock.Until(t).Round(time.Minute)
+	now := s.Deps.Clock.Now()
+
+	dur := t.Sub(now)
+	switch dur {
+	case maxDuration, minDuration:
+		return actionMsgError, nil // TODO: Attempt to handle dates which are further 290+ years apart, for fun.
+	}
+
+	dur = dur.Round(time.Minute)
 
 	if short {
 		if dur/dayDur == 0 {
@@ -618,14 +630,15 @@ func (s *session) actionUntil(_ context.Context, timestamp string, short bool) (
 			dur = 0 - dur
 		}
 
-		days := dur / dayDur
-		dur -= days * dayDur
+		tmp := dur / dayDur
+		dur -= tmp * dayDur
+		days := int64(tmp)
 
 		var builder strings.Builder
 		if negative {
 			builder.WriteByte('-')
 		}
-		builder.WriteString(strconv.FormatInt(int64(days), 10))
+		builder.WriteString(strconv.FormatInt(days, 10))
 		builder.WriteByte('d')
 		builder.WriteString(dur.String())
 
@@ -655,6 +668,10 @@ func mustLoadLocation(name string) *time.Location {
 func parseUntilTimestamp(timestamp string) (time.Time, error) {
 	if timestamp == "" {
 		return time.Time{}, fmt.Errorf("empty timestamp")
+	}
+
+	if x, err := strconv.ParseInt(timestamp, 10, 64); err == nil {
+		return time.Unix(x, 0), nil
 	}
 
 	t, err := time.Parse(time.RFC3339, timestamp)
