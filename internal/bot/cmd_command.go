@@ -16,6 +16,7 @@ import (
 
 var ccCommands = newHandlerMap(map[string]handlerFunc{
 	"add":             {fn: cmdCommandAddNormal, minLevel: levelModerator},
+	"edit":            {fn: cmdCommandAddNormal, minLevel: levelModerator},
 	"addb":            {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
 	"addbroadcaster":  {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
 	"addbroadcasters": {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
