@@ -54,7 +54,7 @@ type Connection struct {
 	ready      chan struct{}
 	reconnnect atomic.Bool
 
-	pongMu    sync.RWMutex
+	pongMu    sync.Mutex
 	pongChans map[string]chan *irc.Message
 }
 
@@ -231,16 +231,16 @@ func (c *Connection) receiver(ctx context.Context) error {
 		}
 
 		if m.Command == "PONG" {
-			c.pongMu.RLock()
+			c.pongMu.Lock()
 			pongChan := c.pongChans[m.Trailing]
 			delete(c.pongChans, m.Trailing)
-			c.pongMu.RUnlock()
+			c.pongMu.Unlock()
 
 			if pongChan != nil {
-				m2 := ircx.Clone(m)
-				go func() {
-					pongChan <- m2
-				}()
+				// This is guaranteed to succeed immediately, as the pongChan
+				// is created with a capacity of 1 and the above block guarantees
+				// a given channel will only be sent to once.
+				pongChan <- ircx.Clone(m)
 			}
 		}
 
