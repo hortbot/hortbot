@@ -14,9 +14,9 @@ type ErrorPage struct {
 {% func (p *ErrorPage) PageBody() %}
 <section class="section">
     <div class="container content">
-        <div class="columns is-vcentered">
+        <div class="columns">
             <div class="column is-8 is-offset-2 has-text-centered">
-                <img src="{%s= p.Image %}" />
+                <img src="{%s= p.Image %}" style="max-width: 400px;" />
                 <h3>
                     {%s p.Message %}
                 </h3>

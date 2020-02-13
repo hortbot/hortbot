@@ -46,11 +46,11 @@ func (p *ErrorPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 <section class="section">
     <div class="container content">
-        <div class="columns is-vcentered">
+        <div class="columns">
             <div class="column is-8 is-offset-2 has-text-centered">
                 <img src="`)
 	qw422016.N().S(p.Image)
-	qw422016.N().S(`" />
+	qw422016.N().S(`" style="max-width: 400px;" />
                 <h3>
                     `)
 	qw422016.E().S(p.Message)
