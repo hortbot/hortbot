@@ -131,7 +131,7 @@ dd {
 
             <dl>
                 {%= command("!join", `Tells ` + p.Brand + ` to join your channel. Must be executed in the bot's channel.`, "everyone") %}
-                {%= command("!part", `Tells ` + p.Brand + ` to leave your channel.`, "everyone") %}
+                {%= command("!part", `Tells ` + p.Brand + ` to leave your channel. In a non-bot channel, only the broadcaster may use this command.`, "everyone") %}
                 {%= command("!bothelp", `Returns a helpful message.`, "everyone") %}
             </dl>
         </section>
@@ -318,7 +318,7 @@ dd {
 
             <p>
                 Lists are collections of command-like responses, which can be accessed directly, or via the <code>(_LIST_&lt;name&gt;_RANDOM_)</code> action.
-                They may contain command actions themselves, and share the same namespace as custom commands.
+                They share the same namespace as custom commands, and may contain command actions themselves.
             </p>
 
             <dl>

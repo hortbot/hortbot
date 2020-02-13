@@ -189,7 +189,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!join", `Tells `+p.Brand+` to join your channel. Must be executed in the bot's channel.`, "everyone")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!part", `Tells `+p.Brand+` to leave your channel.`, "everyone")
+	streamcommand(qw422016, "!part", `Tells `+p.Brand+` to leave your channel. In a non-bot channel, only the broadcaster may use this command.`, "everyone")
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!bothelp", `Returns a helpful message.`, "everyone")
@@ -423,7 +423,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <p>
                 Lists are collections of command-like responses, which can be accessed directly, or via the <code>(_LIST_&lt;name&gt;_RANDOM_)</code> action.
-                They may contain command actions themselves, and share the same namespace as custom commands.
+                They share the same namespace as custom commands, and may contain command actions themselves.
             </p>
 
             <dl>
