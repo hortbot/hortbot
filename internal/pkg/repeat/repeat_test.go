@@ -13,6 +13,8 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+const smallDur = 15 * time.Millisecond
+
 func newMock(t testing.TB) *clock.Mock {
 	t.Helper()
 	clk := clock.NewMock()
@@ -70,11 +72,17 @@ func TestAdd(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now(), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)
@@ -104,12 +112,16 @@ func TestAddWithInit(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now().Add(-time.Second/2), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	clk.Forward(100 * time.Millisecond)
 
@@ -144,13 +156,18 @@ func TestAddWithInitCancel(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)
@@ -178,7 +195,9 @@ func TestAddTwice(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now(), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -186,8 +205,11 @@ func TestAddTwice(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)
@@ -217,7 +239,9 @@ func TestAddRemove(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now(), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -225,8 +249,11 @@ func TestAddRemove(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)
@@ -256,7 +283,9 @@ func TestAddStop(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now(), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -264,8 +293,11 @@ func TestAddStop(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)
@@ -301,6 +333,7 @@ func TestCorrectID(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 311, fn311, clk.Now(), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 
 	time.Sleep(50 * time.Millisecond)
@@ -456,7 +489,9 @@ func TestAddTwiceFix(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now(), time.Minute))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 	time.Sleep(50 * time.Millisecond)
 
@@ -464,8 +499,11 @@ func TestAddTwiceFix(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)
@@ -495,11 +533,17 @@ func TestAddRunOnce(t *testing.T) {
 	assert.NilError(t, r.Add(ctx, 0, fn, clk.Now(), time.Second))
 
 	clk.Forward(100 * time.Millisecond)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
+	time.Sleep(smallDur)
 	clk.Forward(100 * time.Millisecond)
 
 	time.Sleep(50 * time.Millisecond)

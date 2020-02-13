@@ -39,12 +39,12 @@ func TestCronAdd(t *testing.T) {
 	}
 
 	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	for i := 0; i < 5; i++ {
 		clk.Forward(time.Hour)
 		recv(t, ctx, ch)
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(smallDur)
 	}
 
 	cancel()
@@ -74,15 +74,15 @@ func TestCronAddTwice(t *testing.T) {
 	}
 
 	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	clk.Forward(time.Hour)
 	recv(t, ctx, ch)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	clk.Forward(time.Hour)
 	recv(t, ctx, ch)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	runEveryDay := mustParseCron("@daily")
 
@@ -122,21 +122,23 @@ func TestCronAddRemove(t *testing.T) {
 	}
 
 	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	clk.Forward(time.Hour)
 	recv(t, ctx, ch)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	clk.Forward(time.Hour)
 	recv(t, ctx, ch)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	assert.NilError(t, r.RemoveCron(ctx, 0))
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
@@ -168,21 +170,23 @@ func TestAddCronStop(t *testing.T) {
 	}
 
 	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	clk.Forward(time.Hour)
 	recv(t, ctx, ch)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	clk.Forward(time.Hour)
 	recv(t, ctx, ch)
-	time.Sleep(10 * time.Millisecond)
+	time.Sleep(smallDur)
 
 	cancel()
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
@@ -220,6 +224,7 @@ func TestCorrectIDCron(t *testing.T) {
 	time.Sleep(50 * time.Millisecond)
 
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Second)
 
 	time.Sleep(50 * time.Millisecond)
@@ -251,9 +256,13 @@ func TestImpossibleCron(t *testing.T) {
 	assert.NilError(t, r.AddCron(ctx, 0, fn, repeat.ToCron(&cron.SpecSchedule{Month: 13, Location: time.UTC})))
 
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
+	time.Sleep(smallDur)
 	clk.Forward(time.Hour)
 
 	time.Sleep(50 * time.Millisecond)
