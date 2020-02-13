@@ -90,6 +90,9 @@ func (a *App) Run(ctx context.Context) error {
 	r.Use(mid.RequestLogger)
 	r.Use(mid.Tracer)
 	r.Use(mid.Recoverer)
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		a.httpError(w, r, http.StatusNotFound)
+	})
 
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RedirectSlashes)
@@ -194,6 +197,13 @@ func (a *App) getBrand(r *http.Request) string {
 	return a.Brand
 }
 
+func (a *App) basePage(r *http.Request) templates.BasePage {
+	return templates.BasePage{
+		Brand: a.getBrand(r),
+		User:  a.getSession(r).getUsername(),
+	}
+}
+
 type authState struct {
 	Host     string
 	Bot      bool
@@ -215,7 +225,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	}{}
 
 	if err := queryparam.Parse(r.URL.Query(), &query); err != nil {
-		httpError(w, http.StatusBadRequest)
+		a.httpError(w, r, http.StatusBadRequest)
 		return
 	}
 
@@ -223,7 +233,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 
 	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
 		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -249,7 +259,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	state := r.FormValue("state")
 	if state == "" {
-		httpError(w, http.StatusBadRequest)
+		a.httpError(w, r, http.StatusBadRequest)
 		return
 	}
 
@@ -258,12 +268,12 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	ok, err := a.Redis.GetAuthState(ctx, state, &stateVal)
 	if err != nil {
 		ctxlog.Error(ctx, "error checking auth state", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	if !ok {
-		httpError(w, http.StatusBadRequest)
+		a.httpError(w, r, http.StatusBadRequest)
 		return
 	}
 
@@ -271,7 +281,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		// This came to the wrong host. Put the state back and redirect.
 		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, time.Minute); err != nil {
 			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
-			httpError(w, http.StatusInternalServerError)
+			a.httpError(w, r, http.StatusInternalServerError)
 			return
 		}
 
@@ -284,14 +294,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	tok, err := a.Twitch.Exchange(ctx, r.FormValue("code"))
 	if err != nil {
 		ctxlog.Error(ctx, "error exchanging code", zap.Error(err))
-		httpError(w, http.StatusBadRequest)
+		a.httpError(w, r, http.StatusBadRequest)
 		return
 	}
 
 	user, newToken, err := a.Twitch.GetUserForToken(ctx, tok)
 	if err != nil {
 		ctxlog.Error(ctx, "error getting user for token", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 	if newToken != nil {
@@ -305,13 +315,13 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	if err := modelsx.FullUpsertToken(ctx, a.DB, tt); err != nil {
 		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	if err := a.clearSession(w, r); err != nil {
 		ctxlog.Error(ctx, "error saving session", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -321,7 +331,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	if err := session.save(w, r); err != nil {
 		ctxlog.Error(ctx, "error saving session", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -331,12 +341,11 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	}
 
 	page := &templates.LoginSuccessPage{
-		Name: user.Name,
-		ID:   user.ID,
-		Bot:  stateVal.Bot,
+		BasePage: a.basePage(r),
+		Name:     user.Name,
+		ID:       user.ID,
+		Bot:      stateVal.Bot,
 	}
-	page.Brand = a.getBrand(r)
-	page.User = user.Name
 
 	templates.WritePageTemplate(w, page)
 }
@@ -351,31 +360,30 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 
 	if err := queries.Raw("SELECT COUNT(*) AS channel_count, COUNT(DISTINCT bot_name) AS bot_count FROM channels WHERE active").Bind(ctx, a.DB, &row); err != nil {
 		ctxlog.Error(ctx, "error querying bot names", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	page := &templates.IndexPage{
+		BasePage:     a.basePage(r),
 		ChannelCount: row.ChannelCount,
 		BotCount:     row.BotCount,
 	}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) about(w http.ResponseWriter, r *http.Request) {
-	page := &templates.AboutPage{}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
+	page := &templates.AboutPage{
+		BasePage: a.basePage(r),
+	}
 	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) docs(w http.ResponseWriter, r *http.Request) {
-	page := &templates.DocsPage{}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
+	page := &templates.DocsPage{
+		BasePage: a.basePage(r),
+	}
 	templates.WritePageTemplate(w, page)
 }
 
@@ -388,17 +396,23 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 	).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying channels", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	page := &templates.ChannelsPage{
+		BasePage: a.basePage(r),
 		Channels: channels,
 	}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) channelPage(r *http.Request, channel *models.Channel) templates.ChannelPage {
+	return templates.ChannelPage{
+		BasePage: a.basePage(r),
+		Channel:  channel,
+	}
 }
 
 func (a *App) channel(w http.ResponseWriter, r *http.Request) {
@@ -406,10 +420,9 @@ func (a *App) channel(w http.ResponseWriter, r *http.Request) {
 	channel := getChannel(ctx)
 
 	page := &templates.ChannelPage{
-		Channel: channel,
+		BasePage: a.basePage(r),
+		Channel:  channel,
 	}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
 	templates.WritePageTemplate(w, page)
 }
 
@@ -420,7 +433,7 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	commands, err := channel.CustomCommands(qm.Load(models.CustomCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying custom commands", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -429,11 +442,9 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	})
 
 	page := &templates.ChannelCommandsPage{
-		Commands: commands,
+		ChannelPage: a.channelPage(r, channel),
+		Commands:    commands,
 	}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -445,16 +456,14 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 	quotes, err := channel.Quotes(qm.OrderBy(models.QuoteColumns.Num)).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying quotes", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	page := &templates.ChannelQuotesPage{
-		Quotes: quotes,
+		ChannelPage: a.channelPage(r, channel),
+		Quotes:      quotes,
 	}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -466,16 +475,14 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 	autoreplies, err := channel.Autoreplies(qm.OrderBy(models.AutoreplyColumns.Num)).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying autoreplies", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	page := &templates.ChannelAutorepliesPage{
+		ChannelPage: a.channelPage(r, channel),
 		Autoreplies: autoreplies,
 	}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -487,7 +494,7 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 	lists, err := channel.CommandLists(qm.Load(models.CommandListRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying command lists", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -496,11 +503,9 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 	})
 
 	page := &templates.ChannelListsPage{
-		Lists: lists,
+		ChannelPage: a.channelPage(r, channel),
+		Lists:       lists,
 	}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
@@ -509,10 +514,9 @@ func (a *App) channelRegulars(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	page := &templates.ChannelRegularsPage{}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
+	page := &templates.ChannelRegularsPage{
+		ChannelPage: a.channelPage(r, channel),
+	}
 
 	templates.WritePageTemplate(w, page)
 }
@@ -521,10 +525,9 @@ func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	page := &templates.ChannelRulesPage{}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
+	page := &templates.ChannelRulesPage{
+		ChannelPage: a.channelPage(r, channel),
+	}
 
 	templates.WritePageTemplate(w, page)
 }
@@ -536,14 +539,14 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	repeated, err := channel.RepeatedCommands(qm.Load(models.RepeatedCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying repeated commands", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	scheduled, err := channel.ScheduledCommands(qm.Load(models.ScheduledCommandRels.CommandInfo)).All(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying scheduled commands", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
@@ -564,20 +567,18 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	})
 
 	page := &templates.ChannelScheduledPage{
-		Repeated:  repeated,
-		Scheduled: scheduled,
+		ChannelPage: a.channelPage(r, channel),
+		Repeated:    repeated,
+		Scheduled:   scheduled,
 	}
-	page.Brand = a.getBrand(r)
-	page.Channel = channel
-	page.User = a.getSession(r).getUsername()
 
 	templates.WritePageTemplate(w, page)
 }
 
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
-	page := &templates.LoginPage{}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
+	page := &templates.LoginPage{
+		BasePage: a.basePage(r),
+	}
 
 	templates.WritePageTemplate(w, page)
 }
@@ -585,19 +586,19 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 func (a *App) adminAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if len(a.AdminAuth) == 0 {
-			notAuthorized(w, false)
+			a.notAuthorized(w, r, false)
 			return
 		}
 
 		user, pass, ok := r.BasicAuth()
 		if !ok {
-			notAuthorized(w, true)
+			a.notAuthorized(w, r, true)
 			return
 		}
 
 		expected := a.AdminAuth[user]
 		if expected == "" || pass != expected {
-			notAuthorized(w, true)
+			a.notAuthorized(w, r, true)
 			return
 		}
 
@@ -627,7 +628,7 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	if err := queryparam.Parse(r.URL.Query(), &query); err != nil {
-		httpError(w, http.StatusBadRequest)
+		a.httpError(w, r, http.StatusBadRequest)
 		return
 	}
 
@@ -643,9 +644,9 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) adminImport(w http.ResponseWriter, r *http.Request) {
-	page := &templates.AdminImportPage{}
-	page.Brand = a.getBrand(r)
-	page.User = a.getSession(r).getUsername()
+	page := &templates.AdminImportPage{
+		BasePage: a.basePage(r),
+	}
 	templates.WritePageTemplate(w, page)
 }
 
@@ -693,7 +694,7 @@ func (a *App) logout(w http.ResponseWriter, r *http.Request) {
 
 	if err := a.clearSession(w, r); err != nil {
 		ctxlog.Error(ctx, "error clearing session", zap.Error(err))
-		httpError(w, http.StatusInternalServerError)
+		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 

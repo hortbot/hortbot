@@ -1,0 +1,29 @@
+{% code
+type ErrorPage struct {
+    BasePage
+    Message string
+    Image string
+}
+%}
+
+{% func (p *ErrorPage) PageTitle() %}
+{%= p.PageBrand() %} - Error
+{% endfunc %}
+
+
+{% func (p *ErrorPage) PageBody() %}
+<section class="section">
+    <div class="container content">
+        <div class="columns is-vcentered">
+            <div class="column is-8 is-offset-2 has-text-centered">
+                <img src="{%s= p.Image %}" />
+                <h3>
+                    {%s p.Message %}
+                </h3>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfunc %}
+
+
