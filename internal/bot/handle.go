@@ -26,6 +26,7 @@ var (
 	errBuiltinDisabled = errors.New("bot: builtin disabled")
 	errNotAllowed      = errors.New("bot: user not allowed")
 	errPanicked        = errors.New("bot: handler panicked")
+	errDuplicate       = errors.New("bot: duplicate message")
 )
 
 // Handle handles a single IRC message, sent via the specific origin. It always
@@ -71,7 +72,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 	switch err {
 	case nil, errNotAllowed:
-	case errPanicked: // Logged below with more info.
+	case errPanicked, errDuplicate: // Logged below with more info.
 	default:
 		metricHandleError.Inc()
 		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
@@ -156,7 +157,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 		return nil, errInvalidMessage
 	}
 
-	if seen, err := b.maybeDedupe(ctx, id); seen || err != nil {
+	if err := b.dedupe(ctx, id); err != nil {
 		return nil, err
 	}
 
@@ -240,26 +241,27 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 	return s, nil
 }
 
-func (b *Bot) maybeDedupe(ctx context.Context, id string) (seen bool, err error) {
+func (b *Bot) dedupe(ctx context.Context, id string) error {
 	ctx, span := trace.StartSpan(ctx, "maybeDedupe")
 	defer span.End()
 
 	if b.noDedupe {
-		return false, nil
+		return nil
 	}
 
-	seen, err = b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
+	seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
 	if err != nil {
 		ctxlog.Error(ctx, "error checking for duplicate", zap.Error(err), zap.String("id", id))
-		return false, err
+		return err
 	}
 
 	if seen {
 		ctxlog.Debug(ctx, "message already seen", zap.String("id", id))
 		metricDuplicateMessage.Inc()
+		return errDuplicate
 	}
 
-	return seen, nil
+	return nil
 }
 
 //nolint:gocyclo
