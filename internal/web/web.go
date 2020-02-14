@@ -319,13 +319,8 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.clearSession(w, r); err != nil {
-		ctxlog.Error(ctx, "error saving session", zap.Error(err))
-		a.httpError(w, r, http.StatusInternalServerError)
-		return
-	}
-
 	session := a.getSession(r)
+	session.clearValues()
 	session.setTwitchID(user.ID)
 	session.setUsername(user.Name)
 

@@ -31,6 +31,10 @@ func (s *session) save(w http.ResponseWriter, r *http.Request) error {
 	return s.s.Save(r, w)
 }
 
+func (s *session) clearValues() {
+	s.s.Values = make(map[interface{}]interface{})
+}
+
 func (s *session) setTwitchID(id int64) {
 	s.s.Values[sessionTwitchID] = id
 }
