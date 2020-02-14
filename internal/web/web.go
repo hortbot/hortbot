@@ -386,6 +386,7 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
 	channels, err := models.Channels(
+		qm.Select(models.ChannelColumns.Name, models.ChannelColumns.DisplayName),
 		models.ChannelWhere.Active.EQ(true),
 		qm.OrderBy(models.ChannelColumns.Name),
 	).All(ctx, a.DB)
