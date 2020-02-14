@@ -19,6 +19,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
@@ -81,6 +83,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		}
 
 		if !allowed {
+			metricRateLimited.Inc()
 			ctxlog.Error(ctx, "rate limited, requeueing")
 			return errors.New("rate limited")
 		}
@@ -165,3 +168,10 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
 }
+
+var metricRateLimited = promauto.NewCounter(prometheus.CounterOpts{
+	Namespace: "hortbot",
+	Subsystem: "irc",
+	Name:      "rate_limited_count",
+	Help:      "Total number of rate limited messages.",
+})
