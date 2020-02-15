@@ -15,17 +15,17 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.0.3+incompatible
-	github.com/go-redis/redis/v7 v7.0.1
+	github.com/go-redis/redis/v7 v7.1.0
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gobuffalo/flect v0.2.0
+	github.com/gobuffalo/flect v0.2.1
 	github.com/gofrs/uuid v3.2.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.8.0
 	github.com/google/go-cmp v0.4.0
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
-	github.com/jackc/pgconn v1.3.1
-	github.com/jackc/pgx/v4 v4.4.0
+	github.com/jackc/pgconn v1.3.2
+	github.com/jackc/pgx/v4 v4.4.1
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -50,11 +50,11 @@ require (
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.5.1
 	go.uber.org/zap v1.13.0
-	golang.org/x/crypto v0.0.0-20200210222208-86ce3cb69678 // indirect
+	golang.org/x/crypto v0.0.0-20200214034016-1d94cc7ab1c6 // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200212213243-2ee7536ab1cc
+	golang.org/x/tools v0.0.0-20200214225126-5916a50871fb
 	google.golang.org/grpc v1.27.1 // indirect
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
