@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
@@ -127,18 +128,54 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 	)
 	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
 
+	var (
+		beforeHandle time.Time
+		afterHandle  time.Time
+	)
+
 	err = transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+		beforeHandle = b.deps.Clock.Now()
+
 		s.Tx = tx
 		err := handleSession(ctx, s)
 		s.Tx = nil
+
+		afterHandle = b.deps.Clock.Now()
 		return err
 	})
 	if err != nil {
 		return err
 	}
 
-	if s.onFinish != nil {
-		return s.onFinish(ctx)
+	afterCommit := b.deps.Clock.Now()
+
+	enqueued := bnsqmeta.Timestamp(ctx)
+	badEnqueue := false
+	if enqueued.IsZero() {
+		enqueued = start
+		badEnqueue = true
+	}
+
+	var (
+		fromTwitch = enqueued.Sub(s.TMISent)
+		inQueue    = start.Sub(enqueued)
+		begin      = beforeHandle.Sub(start)
+		handle     = afterHandle.Sub(beforeHandle)
+		commit     = afterCommit.Sub(afterHandle)
+		total      = afterCommit.Sub(start)
+	)
+
+	if !badEnqueue {
+		metricHandleTimingFromTwitch.Observe(fromTwitch.Seconds())
+	}
+
+	metricHandleTimingInQueue.Observe(inQueue.Seconds())
+	metricHandleTimingBegin.Observe(begin.Seconds())
+	metricHandleTimingHandle.Observe(handle.Seconds())
+	metricHandleTimingCommit.Observe(commit.Seconds())
+
+	if s.sendRoundtrip {
+		return s.Replyf(ctx, "fromTwitch=%v, inQueue=%v, begin=%v, handle=%v, commit=%v; total=%v", fromTwitch, inQueue, begin, handle, commit, total)
 	}
 
 	return nil

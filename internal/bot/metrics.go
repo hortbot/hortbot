@@ -79,6 +79,46 @@ var (
 		Name:      "handle_error_total",
 		Help:      "Total number of handler errors.",
 	})
+
+	metricHandleTimingFromTwitch = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_timing_from_twitch_seconds",
+		Help:      "Time from Twitch to the message queue.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+	})
+
+	metricHandleTimingInQueue = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_timing_in_queue_seconds",
+		Help:      "Time in NSQ to handler.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+	})
+
+	metricHandleTimingBegin = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_timing_begin_seconds",
+		Help:      "Time spent in beginning transaction.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+	})
+
+	metricHandleTimingHandle = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_timing_handle_seconds",
+		Help:      "Time spent in actual handler function.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+	})
+
+	metricHandleTimingCommit = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_timing_commit_seconds",
+		Help:      "Time spent committing transaction.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
+	})
 )
 
 func setMetricRepeatGauges(ctx context.Context, rep *repeat.Repeater) {
