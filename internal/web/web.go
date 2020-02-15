@@ -57,7 +57,7 @@ type App struct {
 
 	Redis  *redis.DB
 	DB     *sql.DB
-	Twitch *twitch.Twitch
+	Twitch twitch.API
 
 	store *sessions.CookieStore
 }

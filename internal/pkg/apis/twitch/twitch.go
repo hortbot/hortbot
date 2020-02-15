@@ -48,9 +48,11 @@ const (
 
 //counterfeiter:generate . API
 
-// API covers the main API methods for Twitch. It does not include OAuth-only
-// methods which would not be called from the bot (but instead by a website).
+// API covers the main API methods for Twitch.
 type API interface {
+	AuthCodeURL(state string, extraScopes ...string) string
+	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
+
 	GetUserForUsername(ctx context.Context, username string) (*User, error)
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)

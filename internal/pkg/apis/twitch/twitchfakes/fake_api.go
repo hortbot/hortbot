@@ -10,6 +10,32 @@ import (
 )
 
 type FakeAPI struct {
+	AuthCodeURLStub        func(string, ...string) string
+	authCodeURLMutex       sync.RWMutex
+	authCodeURLArgsForCall []struct {
+		arg1 string
+		arg2 []string
+	}
+	authCodeURLReturns struct {
+		result1 string
+	}
+	authCodeURLReturnsOnCall map[int]struct {
+		result1 string
+	}
+	ExchangeStub        func(context.Context, string) (*oauth2.Token, error)
+	exchangeMutex       sync.RWMutex
+	exchangeArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	exchangeReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	exchangeReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
 	FollowChannelStub        func(context.Context, int64, *oauth2.Token, int64) (*oauth2.Token, error)
 	followChannelMutex       sync.RWMutex
 	followChannelArgsForCall []struct {
@@ -136,6 +162,131 @@ type FakeAPI struct {
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeAPI) AuthCodeURL(arg1 string, arg2 ...string) string {
+	fake.authCodeURLMutex.Lock()
+	ret, specificReturn := fake.authCodeURLReturnsOnCall[len(fake.authCodeURLArgsForCall)]
+	fake.authCodeURLArgsForCall = append(fake.authCodeURLArgsForCall, struct {
+		arg1 string
+		arg2 []string
+	}{arg1, arg2})
+	fake.recordInvocation("AuthCodeURL", []interface{}{arg1, arg2})
+	fake.authCodeURLMutex.Unlock()
+	if fake.AuthCodeURLStub != nil {
+		return fake.AuthCodeURLStub(arg1, arg2...)
+	}
+	if specificReturn {
+		return ret.result1
+	}
+	fakeReturns := fake.authCodeURLReturns
+	return fakeReturns.result1
+}
+
+func (fake *FakeAPI) AuthCodeURLCallCount() int {
+	fake.authCodeURLMutex.RLock()
+	defer fake.authCodeURLMutex.RUnlock()
+	return len(fake.authCodeURLArgsForCall)
+}
+
+func (fake *FakeAPI) AuthCodeURLCalls(stub func(string, ...string) string) {
+	fake.authCodeURLMutex.Lock()
+	defer fake.authCodeURLMutex.Unlock()
+	fake.AuthCodeURLStub = stub
+}
+
+func (fake *FakeAPI) AuthCodeURLArgsForCall(i int) (string, []string) {
+	fake.authCodeURLMutex.RLock()
+	defer fake.authCodeURLMutex.RUnlock()
+	argsForCall := fake.authCodeURLArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) AuthCodeURLReturns(result1 string) {
+	fake.authCodeURLMutex.Lock()
+	defer fake.authCodeURLMutex.Unlock()
+	fake.AuthCodeURLStub = nil
+	fake.authCodeURLReturns = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeAPI) AuthCodeURLReturnsOnCall(i int, result1 string) {
+	fake.authCodeURLMutex.Lock()
+	defer fake.authCodeURLMutex.Unlock()
+	fake.AuthCodeURLStub = nil
+	if fake.authCodeURLReturnsOnCall == nil {
+		fake.authCodeURLReturnsOnCall = make(map[int]struct {
+			result1 string
+		})
+	}
+	fake.authCodeURLReturnsOnCall[i] = struct {
+		result1 string
+	}{result1}
+}
+
+func (fake *FakeAPI) Exchange(arg1 context.Context, arg2 string) (*oauth2.Token, error) {
+	fake.exchangeMutex.Lock()
+	ret, specificReturn := fake.exchangeReturnsOnCall[len(fake.exchangeArgsForCall)]
+	fake.exchangeArgsForCall = append(fake.exchangeArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("Exchange", []interface{}{arg1, arg2})
+	fake.exchangeMutex.Unlock()
+	if fake.ExchangeStub != nil {
+		return fake.ExchangeStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.exchangeReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) ExchangeCallCount() int {
+	fake.exchangeMutex.RLock()
+	defer fake.exchangeMutex.RUnlock()
+	return len(fake.exchangeArgsForCall)
+}
+
+func (fake *FakeAPI) ExchangeCalls(stub func(context.Context, string) (*oauth2.Token, error)) {
+	fake.exchangeMutex.Lock()
+	defer fake.exchangeMutex.Unlock()
+	fake.ExchangeStub = stub
+}
+
+func (fake *FakeAPI) ExchangeArgsForCall(i int) (context.Context, string) {
+	fake.exchangeMutex.RLock()
+	defer fake.exchangeMutex.RUnlock()
+	argsForCall := fake.exchangeArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) ExchangeReturns(result1 *oauth2.Token, result2 error) {
+	fake.exchangeMutex.Lock()
+	defer fake.exchangeMutex.Unlock()
+	fake.ExchangeStub = nil
+	fake.exchangeReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) ExchangeReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.exchangeMutex.Lock()
+	defer fake.exchangeMutex.Unlock()
+	fake.ExchangeStub = nil
+	if fake.exchangeReturnsOnCall == nil {
+		fake.exchangeReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.exchangeReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeAPI) FollowChannel(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 int64) (*oauth2.Token, error) {
@@ -668,6 +819,10 @@ func (fake *FakeAPI) SetChannelStatusReturnsOnCall(i int, result1 string, result
 func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.authCodeURLMutex.RLock()
+	defer fake.authCodeURLMutex.RUnlock()
+	fake.exchangeMutex.RLock()
+	defer fake.exchangeMutex.RUnlock()
 	fake.followChannelMutex.RLock()
 	defer fake.followChannelMutex.RUnlock()
 	fake.getChannelByIDMutex.RLock()
