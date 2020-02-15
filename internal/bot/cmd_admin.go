@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -185,7 +186,7 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 }
 
 func cmdAdminVersion(ctx context.Context, s *session, _ string, _ string) error {
-	return s.Replyf(ctx, "hortbot version %s", version.Version())
+	return s.Replyf(ctx, "hortbot version %s, built with %s", version.Version(), runtime.Version())
 }
 
 func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) error {
