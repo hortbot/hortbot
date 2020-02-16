@@ -2,9 +2,11 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/bot"
@@ -17,6 +19,8 @@ import (
 )
 
 func main() {
+	rand.Seed(time.Now().Unix())
+
 	args := os.Args[1:]
 
 	subcommands := make(map[string]cli.Command)
