@@ -12,19 +12,22 @@ import (
 	"gotest.tools/v3/assert/cmp"
 )
 
-var allTables = []string{
-	"schema_migrations",
-	"channels",
-	"custom_commands",
-	"quotes",
-	"repeated_commands",
-	"scheduled_commands",
-	"autoreplies",
-	"variables",
-	"twitch_tokens",
-	"blocked_users",
-	"command_lists",
-	"command_infos",
+// Returns a new slice for each invocation, so that each user can modify the list as needed.
+func allTables() []string {
+	return []string{
+		"schema_migrations",
+		"channels",
+		"custom_commands",
+		"quotes",
+		"repeated_commands",
+		"scheduled_commands",
+		"autoreplies",
+		"variables",
+		"twitch_tokens",
+		"blocked_users",
+		"command_lists",
+		"command_infos",
+	}
 }
 
 func TestUp(t *testing.T) {
@@ -32,7 +35,7 @@ func TestUp(t *testing.T) {
 
 	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
 		assert.NilError(t, migrations.Up(connStr, t.Logf))
-		assertTableNames(t, db, allTables...)
+		assertTableNames(t, db, allTables()...)
 	})
 }
 
@@ -51,9 +54,9 @@ func TestReset(t *testing.T) {
 
 	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
 		assert.NilError(t, migrations.Up(connStr, t.Logf))
-		assertTableNames(t, db, allTables...)
+		assertTableNames(t, db, allTables()...)
 		assert.NilError(t, migrations.Reset(connStr, t.Logf))
-		assertTableNames(t, db, allTables...)
+		assertTableNames(t, db, allTables()...)
 	})
 }
 
