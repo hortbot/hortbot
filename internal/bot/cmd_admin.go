@@ -32,6 +32,7 @@ func init() {
 		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelAdmin},
 		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelAdmin},
 		"sleep":         {fn: cmdAdminSleep, minLevel: levelAdmin},
+		"syncjoined":    {fn: cmdAdminSyncJoined, minLevel: levelAdmin},
 	})
 }
 
@@ -277,4 +278,17 @@ func cmdAdminSleep(ctx context.Context, s *session, _ string, args string) error
 	}
 
 	return s.Replyf(ctx, "Slept for %s.", dur.String())
+}
+
+func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) error {
+	botName, _ := splitSpace(args)
+	if botName == "" {
+		botName = s.Origin
+	}
+
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
+		return err
+	}
+
+	return s.Replyf(ctx, "Triggered IRC channel sync for %s.", botName)
 }
