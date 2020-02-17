@@ -134,6 +134,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 		}
 
 		_, name := filepath.Split(file)
+		name = strings.TrimLeft(name, "#")
 
 		n := strings.TrimSuffix(name, ".json")
 		out := filepath.Join(outDir, name)
