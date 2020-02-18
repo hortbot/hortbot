@@ -4,7 +4,6 @@ package confconvert
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -50,6 +49,8 @@ type cmd struct {
 	TwitchSleep time.Duration `long:"twitch-sleep" description:"Time to require between twitch API calls"`
 
 	Pretty bool `long:"pretty" description:"Pretty print JSON output files"`
+
+	ForceInactive bool `long:"force-inactive" description:"Force all converted channels to be inactive"`
 }
 
 // Command returns a fresh conf-convert command.
@@ -154,6 +155,10 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 
 	if config == nil {
 		return
+	}
+
+	if cmd.ForceInactive {
+		config.Channel.Active = false
 	}
 
 	f, err := os.Create(out)
@@ -615,7 +620,8 @@ func (c *coeBotConfig) newMode() string {
 	case 3:
 		return models.AccessLevelSubscriber
 	default:
-		panic(fmt.Sprintf("bad mode %d", c.Mode))
+		// -1 was admin in CoeBot; that mode no longer exists so just use broadcaster.
+		return models.AccessLevelBroadcaster
 	}
 }
 
