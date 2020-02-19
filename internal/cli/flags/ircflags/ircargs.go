@@ -23,8 +23,8 @@ type IRC struct {
 	PingDeadline time.Duration `long:"irc-ping-deadline" env:"HB_IRC_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
 	Token        bool          `long:"irc-token" env:"HB_IRC_TOKEN" description:"Use a token from the database if available"`
 
-	RateLimitSlow   int           `long:"irc-rate-limit-slow" env:"HB_IRC_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (slow)"`
-	RateLimitFast   int           `long:"irc-rate-limit-fast" env:"HB_IRC_RATE_LIMIT_RATE" description:"Message allowed per rate limit period (fast)"`
+	RateLimitSlow   int           `long:"irc-rate-limit-slow" env:"HB_IRC_RATE_LIMIT_SLOW" description:"Message allowed per rate limit period (slow)"`
+	RateLimitFast   int           `long:"irc-rate-limit-fast" env:"HB_IRC_RATE_LIMIT_FAST" description:"Message allowed per rate limit period (fast)"`
 	RateLimitPeriod time.Duration `long:"irc-rate-limit-period" env:"HB_IRC_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 
 	PriorityChannels []string `long:"irc-priority-channels" env:"HB_IRC_PRIORITY_CHANNELS" description:"An ordered list of channels to prioritize joining"`
