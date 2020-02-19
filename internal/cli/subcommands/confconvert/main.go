@@ -128,10 +128,8 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	}
 
 	for _, file := range todo {
-		select {
-		case <-ctx.Done():
+		if ctx.Err() != nil {
 			return
-		default:
 		}
 
 		_, name := filepath.Split(file)
