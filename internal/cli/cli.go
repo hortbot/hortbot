@@ -6,13 +6,11 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
-	"github.com/joho/godotenv"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
 )
@@ -48,8 +46,6 @@ var Default = Common{}
 // environment variable is set, the files listed in it will be loaded
 // before parsing, to allow for a simple layered configuration setup.
 func Run(cmd Command, args []string) {
-	_ = godotenv.Load(strings.Split(os.Getenv("ENV_FILE"), ",")...)
-
 	ctx := ctxutil.Interrupt()
 
 	parser := flags.NewNamedParser(cmd.Name(), flags.HelpFlag|flags.PassDoubleDash)

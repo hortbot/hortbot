@@ -16,15 +16,16 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/subcommands/sitedbconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
 	"github.com/hortbot/hortbot/internal/version"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	rand.Seed(time.Now().Unix())
+	_ = godotenv.Load(strings.Split(os.Getenv("ENV_FILE"), ",")...)
 
 	args := os.Args[1:]
 
 	subcommands := make(map[string]cli.Command)
-
 	addCommand := func(cmd cli.Command) {
 		name := cmd.Name()
 		if subcommands[name] != nil {

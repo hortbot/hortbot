@@ -58,7 +58,7 @@ func (*cmd) Name() string {
 
 //nolint:gocyclo
 func (c *cmd) Main(ctx context.Context, _ []string) {
-	defer c.Jaeger.Init(ctx, c.Name(), c.Debug)()
+	defer c.Jaeger.Trace(ctx, c.Name(), c.Debug)()
 	c.Prometheus.Run(ctx)
 
 	driverName := c.SQL.DriverName()

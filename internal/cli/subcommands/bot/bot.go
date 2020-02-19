@@ -55,7 +55,7 @@ func (*cmd) Name() string {
 }
 
 func (c *cmd) Main(ctx context.Context, _ []string) {
-	defer c.Jaeger.Init(ctx, c.Name(), c.Debug)()
+	defer c.Jaeger.Trace(ctx, c.Name(), c.Debug)()
 	c.Prometheus.Run(ctx)
 
 	httpClient := c.HTTP.Client()

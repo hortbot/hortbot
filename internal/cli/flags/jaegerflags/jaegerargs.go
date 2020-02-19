@@ -21,7 +21,7 @@ var Default = Jaeger{}
 
 // Init initializes the Jaeger agent as the default global agent. The returned
 // function undoes this change.
-func (args *Jaeger) Init(ctx context.Context, name string, debug bool) func() {
+func (args *Jaeger) Trace(ctx context.Context, name string, debug bool) func() {
 	if args.Agent == "" {
 		return func() {}
 	}
