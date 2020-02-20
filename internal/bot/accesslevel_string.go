@@ -13,25 +13,17 @@ func _() {
 	_ = x[levelSubscriber-2]
 	_ = x[levelModerator-3]
 	_ = x[levelBroadcaster-4]
-	_ = x[levelAdmin-99]
+	_ = x[levelAdmin-5]
+	_ = x[levelSuperAdmin-6]
 }
 
-const (
-	_accessLevel_name_0 = "UnknownEveryoneSubscriberModeratorBroadcaster"
-	_accessLevel_name_1 = "Admin"
-)
+const _accessLevel_name = "UnknownEveryoneSubscriberModeratorBroadcasterAdminSuperAdmin"
 
-var (
-	_accessLevel_index_0 = [...]uint8{0, 7, 15, 25, 34, 45}
-)
+var _accessLevel_index = [...]uint8{0, 7, 15, 25, 34, 45, 50, 60}
 
 func (i accessLevel) String() string {
-	switch {
-	case 0 <= i && i <= 4:
-		return _accessLevel_name_0[_accessLevel_index_0[i]:_accessLevel_index_0[i+1]]
-	case i == 99:
-		return _accessLevel_name_1
-	default:
+	if i < 0 || i >= accessLevel(len(_accessLevel_index)-1) {
 		return "accessLevel(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
+	return _accessLevel_name[_accessLevel_index[i]:_accessLevel_index[i+1]]
 }

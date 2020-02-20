@@ -48,7 +48,8 @@ type Config struct {
 	BulletMap map[string]string
 	Cooldown  int
 
-	Admins []string
+	Admins      []string
+	SuperAdmins []string
 
 	WhitelistEnabled bool
 	Whitelist        []string
@@ -107,6 +108,7 @@ func New(config *Config) *Bot {
 		Urban:           config.Urban,
 		ReCache:         recache.New(),
 		Admins:          make(map[string]bool),
+		SuperAdmins:     make(map[string]bool),
 		WebAddr:         config.WebAddr,
 		WebAddrMap:      config.WebAddrMap,
 		PublicJoin:      config.PublicJoin,
@@ -120,6 +122,10 @@ func New(config *Config) *Bot {
 
 	for _, name := range config.Admins {
 		deps.Admins[name] = true
+	}
+
+	for _, name := range config.SuperAdmins {
+		deps.SuperAdmins[name] = true
 	}
 
 	if config.WhitelistEnabled {

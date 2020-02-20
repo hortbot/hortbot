@@ -22,9 +22,12 @@ send hortbot #foobar /color green
 send hortbot #foobar [HB] Color set to green.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined
 notify_channel_updates hortbot
 send hortbot #foobar [HB] Triggered IRC channel sync for hortbot.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined SomeBot
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined SomeBot
 notify_channel_updates somebot
 send hortbot #foobar [HB] Triggered IRC channel sync for SomeBot.

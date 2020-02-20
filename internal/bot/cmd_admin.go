@@ -21,18 +21,19 @@ var adminCommands handlerMap
 func init() {
 	// To prevent initialization loop.
 	adminCommands = newHandlerMap(map[string]handlerFunc{
-		"roundtrip":     {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
-		"block":         {fn: cmdAdminBlock, minLevel: levelAdmin},
-		"unblock":       {fn: cmdAdminUnblock, minLevel: levelAdmin},
-		"channels":      {fn: cmdAdminChannels, minLevel: levelAdmin},
-		"color":         {fn: cmdAdminColor, minLevel: levelAdmin},
-		"spam":          {fn: cmdAdminSpam, minLevel: levelAdmin},
-		"imp":           {fn: cmdAdminImp, minLevel: levelAdmin},
-		"version":       {fn: cmdAdminVersion, minLevel: levelAdmin},
-		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelAdmin},
-		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelAdmin},
-		"sleep":         {fn: cmdAdminSleep, minLevel: levelAdmin},
-		"syncjoined":    {fn: cmdAdminSyncJoined, minLevel: levelAdmin},
+		"roundtrip": {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
+		"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
+		"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
+		"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
+		"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
+		"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
+		"imp":       {fn: cmdAdminImp, minLevel: levelAdmin},
+		"version":   {fn: cmdAdminVersion, minLevel: levelAdmin},
+
+		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
+		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
+		"sleep":         {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
+		"syncjoined":    {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
 	})
 }
 

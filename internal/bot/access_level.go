@@ -11,12 +11,13 @@ import (
 type accessLevel int
 
 const (
-	levelUnknown     accessLevel = 0
-	levelEveryone    accessLevel = 1
-	levelSubscriber  accessLevel = 2
-	levelModerator   accessLevel = 3
-	levelBroadcaster accessLevel = 4
-	levelAdmin       accessLevel = 99
+	levelUnknown accessLevel = iota
+	levelEveryone
+	levelSubscriber
+	levelModerator
+	levelBroadcaster
+	levelAdmin
+	levelSuperAdmin
 )
 
 func newAccessLevel(s string) accessLevel {
@@ -37,7 +38,7 @@ func newAccessLevel(s string) accessLevel {
 }
 
 func (a accessLevel) CanAccess(resource accessLevel) bool {
-	if a == levelAdmin {
+	if a == levelSuperAdmin {
 		return true
 	}
 

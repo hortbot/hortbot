@@ -49,8 +49,9 @@ type sharedDeps struct {
 
 	DefaultCooldown int
 
-	Admins    map[string]bool
-	Whitelist map[string]bool
+	Admins      map[string]bool
+	SuperAdmins map[string]bool
+	Whitelist   map[string]bool
 
 	WebAddr    string
 	WebAddrMap map[string]string

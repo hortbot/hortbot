@@ -169,6 +169,10 @@ func (s *session) SetUserLevel() {
 }
 
 func (s *session) parseUserLevel() accessLevel {
+	if s.Deps.SuperAdmins[s.User] {
+		return levelSuperAdmin
+	}
+
 	if s.Deps.Admins[s.User] {
 		return levelAdmin
 	}
@@ -177,8 +181,13 @@ func (s *session) parseUserLevel() accessLevel {
 
 	tags := s.M.Tags
 
-	if isTesting && tags["testing-admin"] != "" {
-		return levelAdmin
+	if isTesting {
+		switch {
+		case tags["testing-super-admin"] != "":
+			return levelSuperAdmin
+		case tags["testing-admin"] != "":
+			return levelAdmin
+		}
 	}
 
 	if s.User == s.IRCChannel {

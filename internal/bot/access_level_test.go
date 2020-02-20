@@ -76,7 +76,7 @@ func TestAccessLevelCanAccess(t *testing.T) {
 			ok:       false,
 		},
 		{
-			user:     levelAdmin,
+			user:     levelSuperAdmin,
 			resource: levelUnknown,
 			ok:       true,
 		},
@@ -101,7 +101,17 @@ func TestAccessLevelCanAccess(t *testing.T) {
 			ok:       true,
 		},
 		{
-			user:     levelAdmin + 1, // Hypothetical
+			user:     levelSuperAdmin,
+			resource: levelAdmin,
+			ok:       true,
+		},
+		{
+			user:     levelAdmin,
+			resource: levelSuperAdmin,
+			ok:       false,
+		},
+		{
+			user:     levelAdmin + 100, // Hypothetical
 			resource: levelModerator,
 			ok:       true,
 		},

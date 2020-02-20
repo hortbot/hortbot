@@ -22,7 +22,8 @@ import (
 
 // Bot contains bot-specific flags.
 type Bot struct {
-	Admins []string `long:"bot-admin" env:"HB_BOT_ADMINS" env-delim:"," description:"Bot admins"`
+	Admins      []string `long:"bot-admin" env:"HB_BOT_ADMINS" env-delim:"," description:"Bot admins"`
+	SuperAdmins []string `long:"bot-super-admin" env:"HB_BOT_SUPER_ADMINS" env-delim:"," description:"Bot super admins"`
 
 	WhitelistEnabled bool     `long:"bot-whitelist-enabled" env:"HB_BOT_WHITELIST_ENABLED" description:"Enable the user whitelist"`
 	Whitelist        []string `long:"bot-whitelist" env:"HB_BOT_WHITELIST" env-delim:"," description:"User whitelist"`
@@ -100,6 +101,7 @@ func (args *Bot) New(
 		Steam:            steamAPI,
 		TinyURL:          tinyurl.New(tinyurl.HTTPClient(httpClient)),
 		Admins:           args.Admins,
+		SuperAdmins:      args.SuperAdmins,
 		WhitelistEnabled: args.WhitelistEnabled,
 		Whitelist:        args.Whitelist,
 		Cooldown:         args.DefaultCooldown,
