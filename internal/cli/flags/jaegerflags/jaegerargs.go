@@ -19,7 +19,7 @@ type Jaeger struct {
 // Default contains the default flags. Make a copy of this, do not reuse.
 var Default = Jaeger{}
 
-// Init initializes the Jaeger agent as the default global agent. The returned
+// Trace initializes the Jaeger agent as the default global agent. The returned
 // function undoes this change.
 func (args *Jaeger) Trace(ctx context.Context, name string, debug bool) func() {
 	if args.Agent == "" {

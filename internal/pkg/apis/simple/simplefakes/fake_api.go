@@ -9,7 +9,7 @@ import (
 )
 
 type FakeAPI struct {
-	PlaintextStub        func(context.Context, string) (string, int, error)
+	PlaintextStub        func(context.Context, string) (string, error)
 	plaintextMutex       sync.RWMutex
 	plaintextArgsForCall []struct {
 		arg1 context.Context
@@ -17,19 +17,17 @@ type FakeAPI struct {
 	}
 	plaintextReturns struct {
 		result1 string
-		result2 int
-		result3 error
+		result2 error
 	}
 	plaintextReturnsOnCall map[int]struct {
 		result1 string
-		result2 int
-		result3 error
+		result2 error
 	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeAPI) Plaintext(arg1 context.Context, arg2 string) (string, int, error) {
+func (fake *FakeAPI) Plaintext(arg1 context.Context, arg2 string) (string, error) {
 	fake.plaintextMutex.Lock()
 	ret, specificReturn := fake.plaintextReturnsOnCall[len(fake.plaintextArgsForCall)]
 	fake.plaintextArgsForCall = append(fake.plaintextArgsForCall, struct {
@@ -42,10 +40,10 @@ func (fake *FakeAPI) Plaintext(arg1 context.Context, arg2 string) (string, int, 
 		return fake.PlaintextStub(arg1, arg2)
 	}
 	if specificReturn {
-		return ret.result1, ret.result2, ret.result3
+		return ret.result1, ret.result2
 	}
 	fakeReturns := fake.plaintextReturns
-	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
+	return fakeReturns.result1, fakeReturns.result2
 }
 
 func (fake *FakeAPI) PlaintextCallCount() int {
@@ -54,7 +52,7 @@ func (fake *FakeAPI) PlaintextCallCount() int {
 	return len(fake.plaintextArgsForCall)
 }
 
-func (fake *FakeAPI) PlaintextCalls(stub func(context.Context, string) (string, int, error)) {
+func (fake *FakeAPI) PlaintextCalls(stub func(context.Context, string) (string, error)) {
 	fake.plaintextMutex.Lock()
 	defer fake.plaintextMutex.Unlock()
 	fake.PlaintextStub = stub
@@ -67,33 +65,30 @@ func (fake *FakeAPI) PlaintextArgsForCall(i int) (context.Context, string) {
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeAPI) PlaintextReturns(result1 string, result2 int, result3 error) {
+func (fake *FakeAPI) PlaintextReturns(result1 string, result2 error) {
 	fake.plaintextMutex.Lock()
 	defer fake.plaintextMutex.Unlock()
 	fake.PlaintextStub = nil
 	fake.plaintextReturns = struct {
 		result1 string
-		result2 int
-		result3 error
-	}{result1, result2, result3}
+		result2 error
+	}{result1, result2}
 }
 
-func (fake *FakeAPI) PlaintextReturnsOnCall(i int, result1 string, result2 int, result3 error) {
+func (fake *FakeAPI) PlaintextReturnsOnCall(i int, result1 string, result2 error) {
 	fake.plaintextMutex.Lock()
 	defer fake.plaintextMutex.Unlock()
 	fake.PlaintextStub = nil
 	if fake.plaintextReturnsOnCall == nil {
 		fake.plaintextReturnsOnCall = make(map[int]struct {
 			result1 string
-			result2 int
-			result3 error
+			result2 error
 		})
 	}
 	fake.plaintextReturnsOnCall[i] = struct {
 		result1 string
-		result2 int
-		result3 error
-	}{result1, result2, result3}
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeAPI) Invocations() map[string][][]interface{} {

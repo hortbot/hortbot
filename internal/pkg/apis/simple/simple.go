@@ -1,3 +1,4 @@
+// Package simple implements a simple HTTP client for accessing URLs.
 package simple
 
 import (
@@ -6,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/hortbot/hortbot/internal/pkg/apis"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -18,9 +20,10 @@ const (
 //counterfeiter:generate . API
 
 type API interface {
-	Plaintext(ctx context.Context, u string) (body string, code int, err error)
+	Plaintext(ctx context.Context, u string) (body string, err error)
 }
 
+// Client is a simple HTTP client to fetch URLs.
 type Client struct {
 	cli *http.Client
 }
@@ -49,10 +52,11 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
-func (c *Client) Plaintext(ctx context.Context, u string) (body string, code int, err error) {
+// Plaintext gets the specified URL as text.
+func (c *Client) Plaintext(ctx context.Context, u string) (body string, err error) {
 	resp, err := ctxhttp.Get(ctx, c.cli, u)
 	if err != nil {
-		return "", 0, err
+		return "", err
 	}
 	defer resp.Body.Close()
 
@@ -63,8 +67,15 @@ func (c *Client) Plaintext(ctx context.Context, u string) (body string, code int
 
 	b, err := ioutil.ReadAll(lr)
 	if err != nil {
-		return "", 0, err
+		return "", err
 	}
 
-	return string(b), resp.StatusCode, nil
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		err = &apis.Error{
+			API:        "simple",
+			StatusCode: resp.StatusCode,
+		}
+	}
+
+	return string(b), err
 }
