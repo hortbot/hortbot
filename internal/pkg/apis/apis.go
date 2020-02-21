@@ -10,7 +10,7 @@ import (
 type Error struct {
 	API        string
 	StatusCode int
-	Message    string
+	Err        error
 }
 
 func (e *Error) Error() string {
@@ -19,11 +19,11 @@ func (e *Error) Error() string {
 		api = "apis"
 	}
 
-	if e.Message == "" {
+	if e.Err == nil {
 		return fmt.Sprintf("%s: status code %d", api, e.StatusCode)
 	}
 
-	return fmt.Sprintf("%s: status code %d: %s", api, e.StatusCode, e.Message)
+	return fmt.Sprintf("%s: status code %d: %s", api, e.StatusCode, e.Err)
 }
 
 // IsNotFound returns true if the error is a not found.
@@ -39,4 +39,9 @@ func (e *Error) IsServerError() bool {
 // IsNotPermitted returns true if the client was not permitted to access a resource.
 func (e *Error) IsNotPermitted() bool {
 	return e.StatusCode == http.StatusUnauthorized || e.StatusCode == http.StatusForbidden
+}
+
+// IsOK return true if the provided status code is okay (2xx).
+func IsOK(code int) bool {
+	return code >= 200 && code < 300
 }

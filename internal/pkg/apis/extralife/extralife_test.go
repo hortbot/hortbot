@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/apis"
 	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
@@ -61,21 +62,28 @@ func TestGetDonationAmount(t *testing.T) {
 		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := el.GetDonationAmount(context.Background(), 404)
-		assert.Equal(t, err, extralife.ErrNotFound)
+		assert.DeepEqual(t, err, &apis.Error{API: "extralife", StatusCode: 404})
 	})
 
 	t.Run("Server error", func(t *testing.T) {
 		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := el.GetDonationAmount(context.Background(), 500)
-		assert.Equal(t, err, extralife.ErrServerError)
+		assert.DeepEqual(t, err, &apis.Error{API: "extralife", StatusCode: 500})
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
 		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := el.GetDonationAmount(context.Background(), 777)
-		assert.Equal(t, err, extralife.ErrServerError)
+		e, ok := err.(*apis.Error)
+		if !ok {
+			t.Fatalf("error has type %T", err)
+			return
+		}
+
+		assert.Equal(t, e.API, "extralife")
+		assert.ErrorContains(t, e.Err, "invalid character")
 	})
 
 	t.Run("Client error", func(t *testing.T) {

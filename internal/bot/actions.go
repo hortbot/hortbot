@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -14,7 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/pkg/apis/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/apis"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
@@ -140,16 +141,20 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		}
 
 		amount, err := s.Deps.ExtraLife.GetDonationAmount(ctx, s.Channel.ExtraLifeID)
-		switch err {
-		case nil:
+		if err == nil {
 			return fmt.Sprintf("$%.2f", amount), nil
-		case extralife.ErrNotFound:
-			return "Bad Extra Life participant ID", nil
-		case extralife.ErrServerError:
-			return "Extra Life server error", nil
-		default:
-			return "", err
 		}
+
+		var apiErr *apis.Error
+		if errors.As(err, &apiErr) {
+			if apiErr.IsNotFound() {
+				return "Bad Extra Life participant ID", nil
+			}
+			return "Extra Life server error", nil
+		}
+
+		return "", err
+
 	case "ONLINE_CHECK":
 		isLive, err := s.IsLive(ctx)
 		if err != nil {

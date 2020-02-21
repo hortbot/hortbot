@@ -1,6 +1,7 @@
 package apis_test
 
 import (
+	"fmt"
 	"strconv"
 	"testing"
 
@@ -22,7 +23,7 @@ func TestError(t *testing.T) {
 			isNotFound: true,
 		},
 		{
-			err:        &apis.Error{StatusCode: 404, Message: "we couldn't find your info"},
+			err:        &apis.Error{StatusCode: 404, Err: fmt.Errorf("we couldn't find your info")},
 			m:          "apis: status code 404: we couldn't find your info",
 			isNotFound: true,
 		},
@@ -37,7 +38,7 @@ func TestError(t *testing.T) {
 			isNotPermitted: true,
 		},
 		{
-			err: &apis.Error{API: "service", StatusCode: 451, Message: "censored"},
+			err: &apis.Error{API: "service", StatusCode: 451, Err: fmt.Errorf("censored")},
 			m:   "service: status code 451: censored",
 		},
 		{
@@ -61,4 +62,13 @@ func TestError(t *testing.T) {
 			assert.Equal(t, test.err.IsNotPermitted(), test.isNotPermitted)
 		})
 	}
+}
+
+func TestIsOK(t *testing.T) {
+	assert.Assert(t, apis.IsOK(200))
+	assert.Assert(t, apis.IsOK(204))
+	assert.Assert(t, !apis.IsOK(100))
+	assert.Assert(t, !apis.IsOK(404))
+	assert.Assert(t, !apis.IsOK(451))
+	assert.Assert(t, !apis.IsOK(500))
 }

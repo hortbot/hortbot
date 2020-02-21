@@ -3,23 +3,15 @@ package extralife
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 
+	"github.com/hortbot/hortbot/internal/pkg/apis"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
-// API HTTP status errors.
-var (
-	ErrNotFound    = errors.New("extralife: not found")
-	ErrServerError = errors.New("extralife: server error")
-)
-
-//counterfeiter:generate . API
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
@@ -67,12 +59,8 @@ func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (f
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode == http.StatusNotFound {
-		return 0, ErrNotFound
-	}
-
 	if resp.StatusCode != http.StatusOK {
-		return 0, ErrServerError
+		return 0, &apis.Error{API: "extralife", StatusCode: resp.StatusCode}
 	}
 
 	var v struct {
@@ -80,7 +68,7 @@ func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (f
 	}
 
 	if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
-		return 0, ErrServerError
+		return 0, &apis.Error{API: "extralife", Err: err}
 	}
 
 	return v.SumDonations, nil
