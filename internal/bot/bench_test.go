@@ -10,6 +10,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
@@ -37,6 +38,7 @@ func BenchmarkHandleNop(b *testing.B) {
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		Simple:   &simplefakes.FakeAPI{},
 		NoDedupe: true,
 	}
 
@@ -75,6 +77,7 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		Simple:   &simplefakes.FakeAPI{},
 		NoDedupe: true,
 	}
 
@@ -114,6 +117,7 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		Simple:   &simplefakes.FakeAPI{},
 		NoDedupe: true,
 	}
 
@@ -153,6 +157,7 @@ func BenchmarkHandleMixed(b *testing.B) {
 		Sender:   nopSender{},
 		Notifier: nopNotifier{},
 		Twitch:   &twitchfakes.FakeAPI{},
+		Simple:   &simplefakes.FakeAPI{},
 		NoDedupe: true,
 	}
 

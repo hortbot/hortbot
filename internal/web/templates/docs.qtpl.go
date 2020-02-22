@@ -995,45 +995,68 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
         <section id="actions" class="page">
             <h2 class="title">Actions</h2>
 
+            <p>
+                These actions can be used in custom commands and list commands. Actions may be nested, for example:
+            </p>
+
+            <pre>(_TEXTAPI_https://duckduckgo.com/?q=(_QESC_(_P_)_)_)</pre>
+
+
+            <h3>Common</h3>
+
             <dl>
                 `)
 	streamaction(qw422016, "PARAMETER", `The next command parameter (split by semicolon).`)
 	qw422016.N().S(`
                 `)
+	streamaction(qw422016, "P", `Same as <code>PARAMETER</code>.`)
+	qw422016.N().S(`
+                `)
 	streamaction(qw422016, "PARAMETER_CAPS", `The next command parameter, in all caps.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "MESSAGE_COUNT", `The current message count in this channel.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "SONG", `Current song.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "SONG_URL", `Current song's URL.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "LAST_SONG", `The previous song.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "QUOTE", `A random quote.`)
+	streamaction(qw422016, "P_CAPS", `Same as <code>PARAMETER_CAPS</code>.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "USER", `The user's name.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "CHANNEL_URL", `The current channel's URL.`)
+	streamaction(qw422016, "ONLINE_CHECK", `If offline, the command is disabled.`)
 	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "GAME", `The current game.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "GAME_CLEAN", `The current game, URL-safe.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "STATUS", `The current stream status.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "VIEWERS", `The current viewer count.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "CHATTERS", `The current chatter count.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "QUOTE", `A random quote.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "RANDOM_<MIN>_<MAX>", `A random number between &lt;MIN&gt; and &lt;MIN&gt;, up to one decimal place.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "RANDOM_INT_<MIN>_<MAX>", `A random integer between &lt;MIN&gt; and &lt;MIN&gt;.`)
+	qw422016.N().S(`
+            </dl>
+
+            <h3>Moderation</h3>
+
+            <dl>
                 `)
 	streamaction(qw422016, "SUBMODE_ON", `Enables submode.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "SUBMODE_OFF", `Disables submode.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "SILENT", `Silences the message containing this action.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "NUMCHANNELS", `The number of channels the bot is active in.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "HOST_<CHANNEL>", `Start hosting the specified channel.`)
@@ -1056,27 +1079,11 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamaction(qw422016, "REGULARS_ONLY", `Only allow regulars (subs) to use the command.`)
 	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "EXTRALIFE_AMOUNT", `The current Extra-Life amount.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "ONLINE_CHECK", `If offline, the command is disabled.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "GAME", `The current game.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "GAME_CLEAN", `The current game, URL-safe.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "STATUS", `The current stream status.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "VIEWERS", `The current viewer count.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "CHATTERS", `The current chatter count.`)
-	qw422016.N().S(`
+            </dl>
+
+            <h3>Date and time</h3>
+
+            <dl>
                 `)
 	streamaction(qw422016, "DATE", `The current date, UTC.`)
 	qw422016.N().S(`
@@ -1116,30 +1123,11 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamaction(qw422016, "UNTILLONG_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), long style.`)
 	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "STEAM_PROFILE", `The link to the channel's Steam profile.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "STEAM_GAME", `The current Steam game.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "STEAM_SERVER", `The current Steam game's server.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "STEAM_STORE", `A link to the current Steam game.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "TWEET_URL", `A link to Twitter which will send a tweet about the stream.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "BOT_HELP", `The bot's help message.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "RANDOM_<MIN>_<MAX>", `A random number between &lt;MIN&gt; and &lt;MIN&gt;, up to one decimal place.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "RANDOM_INT_<MIN>_<MAX>", `A random integer between &lt;MIN&gt; and &lt;MIN&gt;.`)
-	qw422016.N().S(`
+            </dl>
+
+            <h3>Variables, lists, and commands</h3>
+
+            <dl>
                 `)
 	streamaction(qw422016, "VARS_<NAME>_GET", `Gets a variable.`)
 	qw422016.N().S(`
@@ -1163,6 +1151,67 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "<COMMAND>_COUNT", `The number of times a command has been used.`)
+	qw422016.N().S(`
+            </dl>
+
+            <h3>Meta</h3>
+
+            <dl>
+                `)
+	streamaction(qw422016, "MESSAGE_COUNT", `The current message count in this channel.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "SILENT", `Silences the message containing this action.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "NUMCHANNELS", `The number of channels the bot is active in.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "BOT_HELP", `The bot's help message.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "CHANNEL_URL", `The current channel's URL.`)
+	qw422016.N().S(`
+            </dl>
+
+            <h3>Third-party APIs</h3>
+
+            <dl>
+                `)
+	streamaction(qw422016, "SONG", `Current song.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "SONG_URL", `Current song's URL.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "LAST_SONG", `The previous song.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "EXTRALIFE_AMOUNT", `The current Extra-Life amount.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "STEAM_PROFILE", `The link to the channel's Steam profile.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "STEAM_GAME", `The current Steam game.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "STEAM_SERVER", `The current Steam game's server.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "STEAM_STORE", `A link to the current Steam game.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "TWEET_URL", `A link to Twitter which will send a tweet about the stream.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "TEXTAPI_<URL>", `Sends a GET request to the provided URL and returns the resulting body.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "PESC_<TEXT>", `Path-escapes the given text.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "QESC_<TEXT>", `Query-escapes the given text.`)
 	qw422016.N().S(`
             </dl>
         </section>

@@ -20,6 +20,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam/steamfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl/tinyurlfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
@@ -69,6 +70,7 @@ type scriptTester struct {
 	steam     *steamfakes.FakeAPI
 	tinyURL   *tinyurlfakes.FakeAPI
 	urban     *urbanfakes.FakeAPI
+	simple    *simplefakes.FakeAPI
 
 	bc bot.Config
 	b  *bot.Bot
@@ -115,8 +117,9 @@ func (st *scriptTester) test(t testing.TB) {
 	st.extraLife = newFakeExtraLife(t)
 	st.twitch = newFakeTwitch(t)
 	st.steam = newFakeSteam(t)
-	st.tinyURL = newTinyURL(t)
-	st.urban = newUrban(t)
+	st.tinyURL = newFakeTinyURL(t)
+	st.urban = newFakeUrban(t)
+	st.simple = newFakeSimple(t)
 
 	st.ctx = ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
@@ -140,6 +143,7 @@ func (st *scriptTester) test(t testing.TB) {
 		Steam:      st.steam,
 		TinyURL:    st.tinyURL,
 		Urban:      st.urban,
+		Simple:     st.simple,
 		NoDedupe:   true,
 		PublicJoin: true,
 	}
@@ -319,4 +323,5 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"tiny_url_shorten":             (*scriptTester).tinyURLShorten,
 	"no_urban":                     (*scriptTester).noUrban,
 	"urban_define":                 (*scriptTester).urbanDefine,
+	"simple_plaintext":             (*scriptTester).simplePlaintext,
 }

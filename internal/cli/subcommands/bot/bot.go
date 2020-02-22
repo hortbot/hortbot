@@ -59,6 +59,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	c.Prometheus.Run(ctx)
 
 	httpClient := c.HTTP.Client()
+	untrustedClient := c.HTTP.UntrustedClient(ctx)
 	driverName := c.SQL.DriverName()
 	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
 	db := c.SQL.Open(ctx, driverName)
@@ -67,7 +68,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	sender := c.NSQ.NewSendMessagePublisher()
 	notifier := c.NSQ.NewNotifyPublisher()
 
-	b := c.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient)
+	b := c.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient, untrustedClient)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)

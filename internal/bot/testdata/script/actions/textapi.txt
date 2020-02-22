@@ -1,0 +1,32 @@
+join hortbot 2 foobar 1
+
+simple_plaintext {"URL": "https://example.com", "Body": "This is an example.\n", "StatusCode": 200}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add getsite (_TEXTAPI_https://example.com_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!getsite
+send hortbot #foobar [HB] This is an example.
+
+simple_plaintext {"URL": "https://example.com", "Body": "    This\nis\tan example.\n", "StatusCode": 404}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!getsite
+send hortbot #foobar [HB] This is an example.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add getsite (_TEXTAPI_https://example.com/?q=(_QESC_(_P_)_)_)
+send_any
+
+simple_plaintext {"URL": "https://example.com/?q=hello+there", "Body": "Hey there.", "StatusCode": 200}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!getsite hello there
+send hortbot #foobar [HB] Hey there.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add getsite (_TEXTAPI_https://example.com/(_PESC_(_P_)_)_)
+send_any
+
+simple_plaintext {"URL": "https://example.com/what%27s%20up", "Body": "Not much, you?", "StatusCode": 200}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!getsite what's up
+send hortbot #foobar [HB] Not much, you?
+
+
+simple_plaintext {"URL": "https://example.com/what%27s%20up", "Body": "Not much, you?", "StatusCode": 777}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!getsite what's up
+send hortbot #foobar [HB] (error)

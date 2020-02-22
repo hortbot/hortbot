@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/araddon/dateparse"
 	"github.com/hako/durafmt"
@@ -50,14 +51,14 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 	// Exact matches
 	switch action {
-	case "PARAMETER":
+	case "PARAMETER", "P":
 		p := s.NextParameter()
 		if p != nil {
 			return *p, nil
 		}
 		// Emulate this odd CoeBot behavior.
 		return "(_" + action + "_)", nil
-	case "PARAMETER_CAPS":
+	case "PARAMETER_CAPS", "P_CAPS":
 		p := s.NextParameter()
 		if p != nil {
 			return strings.ToUpper(*p), nil
@@ -335,6 +336,18 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		name := strings.TrimPrefix(action, "LIST_")
 		name = strings.TrimSuffix(name, "_RANDOM")
 		return s.actionList(ctx, name)
+
+	case strings.HasPrefix(action, "TEXTAPI_"):
+		u := strings.TrimPrefix(action, "TEXTAPI_")
+		return s.actionTextAPI(ctx, u)
+
+	case strings.HasPrefix(action, "PESC_"):
+		x := strings.TrimPrefix(action, "PESC_")
+		return url.PathEscape(x), nil
+
+	case strings.HasPrefix(action, "QESC_"):
+		x := strings.TrimPrefix(action, "QESC_")
+		return url.QueryEscape(x), nil
 
 	case strings.HasSuffix(action, "_COUNT"): // This case must come last.
 		name := strings.TrimSuffix(action, "_COUNT")
@@ -752,9 +765,8 @@ func (s *session) actionTweet(ctx context.Context) (string, error) {
 	}
 
 	ctx = withCommandGuard(ctx, tweetGuard)
-
 	tweet := s.Channel.Tweet
-	ctx = withCommandGuard(ctx, "?tweet")
+
 	text, err := processCommand(ctx, s, tweet)
 	if err != nil {
 		return "", err
@@ -762,4 +774,27 @@ func (s *session) actionTweet(ctx context.Context) (string, error) {
 
 	u := "https://twitter.com/intent/tweet?text=" + url.QueryEscape(text)
 	return s.ShortenLink(ctx, u)
+}
+
+func (s *session) actionTextAPI(ctx context.Context, u string) (string, error) {
+	if s.Type == sessionAutoreply {
+		return actionMsgError, nil
+	}
+
+	body, err := s.Deps.Simple.Plaintext(ctx, u)
+	if err != nil {
+		var apiErr *apiclient.Error
+		if !errors.As(err, &apiErr) {
+			return actionMsgError, nil
+		}
+	}
+
+	body = strings.Map(func(r rune) rune {
+		if unicode.IsSpace(r) {
+			return ' '
+		}
+		return r
+	}, body)
+
+	return strings.TrimSpace(body), nil
 }

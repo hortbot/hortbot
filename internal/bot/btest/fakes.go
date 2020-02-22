@@ -6,6 +6,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam/steamfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl/tinyurlfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
@@ -57,14 +58,20 @@ func newFakeSteam(t testing.TB) *steamfakes.FakeAPI {
 	return f
 }
 
-func newTinyURL(t testing.TB) *tinyurlfakes.FakeAPI {
+func newFakeTinyURL(t testing.TB) *tinyurlfakes.FakeAPI {
 	f := &tinyurlfakes.FakeAPI{}
 	fakex.StubNotImplemented(t, f)
 	return f
 }
 
-func newUrban(t testing.TB) *urbanfakes.FakeAPI {
+func newFakeUrban(t testing.TB) *urbanfakes.FakeAPI {
 	f := &urbanfakes.FakeAPI{}
+	fakex.StubNotImplemented(t, f)
+	return f
+}
+
+func newFakeSimple(t testing.TB) *simplefakes.FakeAPI {
+	f := &simplefakes.FakeAPI{}
 	fakex.StubNotImplemented(t, f)
 	return f
 }

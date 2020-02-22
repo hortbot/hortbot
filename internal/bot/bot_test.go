@@ -6,6 +6,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/jakebailey/irc"
@@ -22,6 +23,7 @@ func TestBotNewPanics(t *testing.T) {
 		Sender:   &struct{ bot.Sender }{},
 		Notifier: &struct{ bot.Notifier }{},
 		Twitch:   &struct{ twitch.API }{},
+		Simple:   &struct{ simple.API }{},
 	}
 
 	checkPanic := func() {
@@ -53,6 +55,11 @@ func TestBotNewPanics(t *testing.T) {
 	config.Twitch = nil
 	assertx.Panic(t, checkPanic, "twitch is nil")
 	config.Twitch = oldTwitch
+
+	oldSimple := config.Simple
+	config.Simple = nil
+	assertx.Panic(t, checkPanic, "simple is nil")
+	config.Simple = oldSimple
 
 	assertx.Panic(t, checkPanic, nil)
 }

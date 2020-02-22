@@ -11,9 +11,11 @@ import (
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
@@ -62,6 +64,7 @@ func (args *Bot) New(
 	notifier bot.Notifier,
 	twitchAPI twitch.API,
 	httpClient *http.Client,
+	untrustedClient *http.Client,
 ) *bot.Bot {
 	var lastFM lastfm.API
 	if args.LastFMKey != "" {
@@ -100,6 +103,8 @@ func (args *Bot) New(
 		Twitch:           twitchAPI,
 		Steam:            steamAPI,
 		TinyURL:          tinyurl.New(tinyurl.HTTPClient(httpClient)),
+		Urban:            urban.New(urban.HTTPClient(httpClient)),
+		Simple:           simple.New(simple.HTTPClient(untrustedClient)),
 		Admins:           args.Admins,
 		SuperAdmins:      args.SuperAdmins,
 		WhitelistEnabled: args.WhitelistEnabled,

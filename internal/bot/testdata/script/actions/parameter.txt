@@ -31,3 +31,22 @@ send hortbot #foobar [HB] wow foo bar, that's a cool somethingrather
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar ; somethingrather ;    
 send hortbot #foobar [HB] wow foo bar, that's a cool somethingrather
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_P_), HAVE YE?
+send hortbot #foobar [HB] Command 'pan' updated, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command; something
+send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_P_CAPS_), HAVE YE?
+send hortbot #foobar [HB] Command 'pan' updated, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command; something
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
