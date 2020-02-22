@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/hortbot/hortbot/internal/db/redis"
-	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/web"
 )
 

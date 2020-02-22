@@ -3,9 +3,9 @@
 
 package templates
 
-import "github.com/hortbot/hortbot/internal/version"
-
 import (
+	"github.com/hortbot/hortbot/internal/version"
+
 	qtio422016 "io"
 
 	qt422016 "github.com/valyala/quicktemplate"

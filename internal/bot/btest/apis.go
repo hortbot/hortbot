@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apis"
-	"github.com/hortbot/hortbot/internal/pkg/apis/lastfm"
-	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
-	"github.com/hortbot/hortbot/internal/pkg/apis/tinyurl"
-	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
-	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"gotest.tools/v3/assert"
 )
 
@@ -103,7 +103,7 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 		st.extraLife.GetDonationAmountCalls(func(_ context.Context, id int) (float64, error) {
 			a, ok := v[strconv.Itoa(id)]
 			if !ok {
-				return 0, &apis.Error{API: "extralife", StatusCode: 404}
+				return 0, &apiclient.Error{API: "extralife", StatusCode: 404}
 			}
 			return a, nil
 		})

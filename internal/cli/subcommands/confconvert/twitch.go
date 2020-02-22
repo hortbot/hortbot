@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 )
 
 var (

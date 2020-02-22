@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hortbot/hortbot/internal/pkg/apis/urban"
-	"github.com/hortbot/hortbot/internal/pkg/apis/xkcd"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 )
 
 var conchResponses = [...]string{

@@ -10,7 +10,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
-	"github.com/hortbot/hortbot/internal/pkg/apis/twitch/twitchfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"go.uber.org/atomic"

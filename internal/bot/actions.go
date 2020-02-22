@@ -15,7 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/pkg/apis"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
@@ -145,7 +145,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 			return fmt.Sprintf("$%.2f", amount), nil
 		}
 
-		var apiErr *apis.Error
+		var apiErr *apiclient.Error
 		if errors.As(err, &apiErr) {
 			if apiErr.IsNotFound() {
 				return "Bad Extra Life participant ID", nil

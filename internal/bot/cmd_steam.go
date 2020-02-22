@@ -3,7 +3,7 @@ package bot
 import (
 	"context"
 
-	"github.com/hortbot/hortbot/internal/pkg/apis/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 )
 
 func cmdWhatShouldIPlay(ctx context.Context, s *session, cmd string, args string) error {

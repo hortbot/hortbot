@@ -4,7 +4,7 @@ package twitchflags
 import (
 	"net/http"
 
-	"github.com/hortbot/hortbot/internal/pkg/apis/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 )
 
 // Twitch contains Twitch API client flags.
