@@ -159,22 +159,44 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 		config.Channel.Active = false
 	}
 
+	if err := writeJSON(out, cmd.Pretty, config); err != nil {
+		ctxlog.Error(ctx, "error writing config", ctxlog.PlainError(err))
+		return
+	}
+
+	if err := copyTimes(filename, out); err != nil {
+		ctxlog.Error(ctx, "copyTimes", ctxlog.PlainError(err))
+	}
+}
+
+func writeJSON(out string, pretty bool, v interface{}) error {
 	f, err := os.Create(out)
 	if err != nil {
-		ctxlog.Error(ctx, "error opening output file", ctxlog.PlainError(err))
-		return
+		return errors.Wrap(err, "creating file")
 	}
 	defer f.Close()
 
 	enc := json.NewEncoder(f)
 
-	if cmd.Pretty {
+	if pretty {
 		enc.SetIndent("", "    ")
 	}
 
-	if err := enc.Encode(config); err != nil {
-		ctxlog.Error(ctx, "error encoding config", ctxlog.PlainError(err))
+	if err := enc.Encode(v); err != nil {
+		return errors.Wrap(err, "writing JSON")
 	}
+
+	return nil
+}
+
+func copyTimes(from, to string) error {
+	info, err := os.Stat(from)
+	if err != nil {
+		return errors.Wrap(err, "stat-ing")
+	}
+
+	err = os.Chtimes(to, time.Now(), info.ModTime())
+	return errors.Wrap(err, "chtime-ing")
 }
 
 func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*confimport.Config, error) {
