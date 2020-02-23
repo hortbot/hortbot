@@ -41,7 +41,13 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 	}
 
 	if h.UntrustedProxy != "" {
-		dialer, err := proxy.SOCKS5("tcp", h.UntrustedProxy, &proxy.Auth{User: h.UntrustedProxyUser, Password: h.UntrustedProxyPassword}, proxy.Direct)
+		var auth *proxy.Auth
+
+		if h.UntrustedProxyUser != "" {
+			auth = &proxy.Auth{User: h.UntrustedProxyUser, Password: h.UntrustedProxyPassword}
+		}
+
+		dialer, err := proxy.SOCKS5("tcp", h.UntrustedProxy, auth, proxy.Direct)
 		if err != nil {
 			ctxlog.Fatal(ctx, "error creating SOCKS5 proxy dialer", zap.Error(err))
 		}
