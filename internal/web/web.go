@@ -99,6 +99,7 @@ func (a *App) Run(ctx context.Context) error {
 
 		r.Get("/", a.index)
 		r.Get("/about", a.about)
+		r.Get("/help", a.help)
 		r.Get("/docs", a.docs)
 		r.Get("/channels", a.channels)
 
@@ -370,6 +371,13 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 
 func (a *App) about(w http.ResponseWriter, r *http.Request) {
 	page := &templates.AboutPage{
+		BasePage: a.basePage(r),
+	}
+	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) help(w http.ResponseWriter, r *http.Request) {
+	page := &templates.HelpPage{
 		BasePage: a.basePage(r),
 	}
 	templates.WritePageTemplate(w, page)

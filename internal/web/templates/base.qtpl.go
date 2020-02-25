@@ -94,6 +94,8 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
                 <div class="navbar-start">
                     <a class="navbar-item" href="/channels">Channels</a>
                     <a class="navbar-item" href="/docs">Documentation</a>
+                    <a class="navbar-item" href="/help">Help</a>
+                    <a class="navbar-item" href="https://discord.gg/V9Eza32">Discord</a>
                     <a class="navbar-item" href="/about">About</a>
                 </div>
 

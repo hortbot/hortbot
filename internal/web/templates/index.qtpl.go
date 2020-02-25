@@ -84,7 +84,7 @@ func (p *IndexPage) StreamPageBody(qw422016 *qt422016.Writer) {
                         <p class="title">Help</p>
                         <p>
                             Check out the <a href="/docs">documentation</a> for information about the builtin commands,
-                            custom commands, and more.
+                            custom commands, and more. For questions, check out our <a href="https://discord.gg/V9Eza32">Discord server</a>.
                         </p>
                     </div>
                 </div>
