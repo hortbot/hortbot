@@ -1018,6 +1018,18 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "P_CAPS", `Same as <code>PARAMETER_CAPS</code>.`)
 	qw422016.N().S(`
                 `)
+	streamaction(qw422016, "PARAMETER_<X>", `Parameter &lt;X&gt;.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "P_<X>", `Same as <code>PARAMETER_&lt;X&gt;</code>.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "PARAMETER_<X>_CAPS", `Parameter &lt;X&gt;, in all caps.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "P_<X>_CAPS", `Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.`)
+	qw422016.N().S(`
+                `)
 	streamaction(qw422016, "USER", `The user's name.`)
 	qw422016.N().S(`
                 `)

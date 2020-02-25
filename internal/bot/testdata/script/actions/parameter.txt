@@ -1,7 +1,7 @@
 join hortbot 2 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_), HAVE YE?
-send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above.
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
@@ -11,7 +11,7 @@ send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send hortbot #foobar [HB] Command 'pan' updated, restricted to subscribers and above.
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
@@ -21,7 +21,7 @@ send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add wow wow (_PARAMETER_), that's a cool (_PARAMETER_)
-send hortbot #foobar [HB] Command 'wow' added, restricted to subscribers and above.
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!wow foo bar
 send hortbot #foobar [HB] wow foo bar, that's a cool foo bar
@@ -34,7 +34,7 @@ send hortbot #foobar [HB] wow foo bar, that's a cool somethingrather
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_P_), HAVE YE?
-send hortbot #foobar [HB] Command 'pan' updated, restricted to subscribers and above.
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
@@ -43,10 +43,23 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] FOUND THE working command, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_P_CAPS_), HAVE YE?
-send hortbot #foobar [HB] Command 'pan' updated, restricted to subscribers and above.
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command; something
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add indexed "(_PARAMETER_1_)" "(_P_1_)" "(_PARAMETER_2_)" "(_PARAMETER_0_)" "(_P_-1_)"
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!indexed foo bar ; CooL
+send hortbot #foobar [HB] "foo bar" "foo bar" "CooL" "(_PARAMETER_0_)" "(_P_-1_)"
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add indexed "(_PARAMETER_1_CAPS_)" "(_P_1_CAPS_)" "(_PARAMETER_2_CAPS_)" "(_PARAMETER_0_CAPS_)" "(_P_-1_CAPS_)"
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!indexed foo bar ; CooL
+send hortbot #foobar [HB] "FOO BAR" "FOO BAR" "COOL" "(_PARAMETER_0_CAPS_)" "(_P_-1_CAPS_)"

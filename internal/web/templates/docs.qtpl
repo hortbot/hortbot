@@ -680,6 +680,10 @@ dd {
                 {%= action("P", `Same as <code>PARAMETER</code>.`) %}
                 {%= action("PARAMETER_CAPS", `The next command parameter, in all caps.`) %}
                 {%= action("P_CAPS", `Same as <code>PARAMETER_CAPS</code>.`) %}
+                {%= action("PARAMETER_<X>", `Parameter &lt;X&gt;.`) %}
+                {%= action("P_<X>", `Same as <code>PARAMETER_&lt;X&gt;</code>.`) %}
+                {%= action("PARAMETER_<X>_CAPS", `Parameter &lt;X&gt;, in all caps.`) %}
+                {%= action("P_<X>_CAPS", `Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.`) %}
                 {%= action("USER", `The user's name.`) %}
                 {%= action("ONLINE_CHECK", `If offline, the command is disabled.`) %}
                 {%= action("GAME", `The current game.`) %}

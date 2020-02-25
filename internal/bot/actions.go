@@ -291,7 +291,32 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return s.HelpMessage(), nil
 	}
 
+	parameterAt := func(is string) string {
+		upper := false
+		if strings.HasSuffix(is, "_CAPS") {
+			upper = true
+			is = strings.TrimSuffix(is, "_CAPS")
+		}
+
+		if i, err := strconv.Atoi(is); err == nil {
+			if p := s.parameterAt(i - 1); p != nil {
+				if upper {
+					return strings.ToUpper(*p)
+				}
+				return *p
+			}
+		}
+
+		return "(_" + action + "_)"
+	}
+
 	switch {
+	case strings.HasPrefix(action, "PARAMETER_"):
+		is := strings.TrimPrefix(action, "PARAMETER_")
+		return parameterAt(is), nil
+	case strings.HasPrefix(action, "P_"):
+		is := strings.TrimPrefix(action, "P_")
+		return parameterAt(is), nil
 	case strings.HasPrefix(action, "DATE_"):
 		tz := strings.TrimPrefix(action, "DATE_")
 		return s.actionTime(ctx, tz, "Jan 2, 2006")
@@ -400,6 +425,10 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 }
 
 func (s *session) parameterAt(i int) *string {
+	if i < 0 {
+		return nil
+	}
+
 	var params []string
 	if s.Parameters == nil {
 		params = strings.Split(s.CommandParams, ";")
