@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"net/http"
 	"net/url"
 	"strconv"
 	"testing"
@@ -123,13 +124,13 @@ func steamErr(t testing.TB, lineNum int, e string) error {
 	case "":
 		return nil
 	case "ErrNotFound":
-		return steam.ErrNotFound
+		return &apiclient.Error{API: "steam", StatusCode: http.StatusNotFound}
 	case "ErrNotAuthorized":
-		return steam.ErrNotAuthorized
+		return &apiclient.Error{API: "steam", StatusCode: http.StatusUnauthorized}
 	case "ErrServerError":
-		return steam.ErrServerError
+		return &apiclient.Error{API: "steam", StatusCode: http.StatusInternalServerError}
 	case "ErrUnknown":
-		return steam.ErrUnknown
+		return &apiclient.Error{API: "steam", StatusCode: 418}
 	default:
 		t.Fatalf("unknown error type %s: line %d", e, lineNum)
 		return nil

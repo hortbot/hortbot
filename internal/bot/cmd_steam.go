@@ -2,20 +2,15 @@ package bot
 
 import (
 	"context"
+	"errors"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 )
 
 func cmdWhatShouldIPlay(ctx context.Context, s *session, cmd string, args string) error {
 	games, err := s.SteamGames(ctx)
-	switch err {
-	case errSteamDisabled:
-		return s.Reply(ctx, "Steam support is disabled.")
-	case steam.ErrServerError, steam.ErrNotFound:
-		return s.Reply(ctx, "A Steam API error occurred.")
-	case nil:
-	default:
-		return err
+	if err != nil {
+		return steamError(ctx, s, err)
 	}
 
 	if len(games) == 0 {
@@ -34,14 +29,8 @@ func cmdStatusGame(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	summary, err := s.SteamSummary(ctx)
-	switch err {
-	case errSteamDisabled:
-		return s.Reply(ctx, "Steam support is disabled.")
-	case steam.ErrServerError, steam.ErrNotFound:
-		return s.Reply(ctx, "A Steam API error occurred.")
-	case nil:
-	default:
-		return err
+	if err != nil {
+		return steamError(ctx, s, err)
 	}
 
 	replied, err := setGame(ctx, s, summary.Game)
@@ -59,14 +48,8 @@ func cmdStatusGame(ctx context.Context, s *session, cmd string, args string) err
 
 func cmdSteamGame(ctx context.Context, s *session, cmd string, args string) error {
 	summary, err := s.SteamSummary(ctx)
-	switch err {
-	case errSteamDisabled:
-		return s.Reply(ctx, "Steam support is disabled.")
-	case steam.ErrServerError, steam.ErrNotFound:
-		return s.Reply(ctx, "A Steam API error occurred.")
-	case nil:
-	default:
-		return err
+	if err != nil {
+		return steamError(ctx, s, err)
 	}
 
 	replied, err := setGame(ctx, s, summary.Game)
@@ -75,4 +58,17 @@ func cmdSteamGame(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	return s.Reply(ctx, "Game updated.")
+}
+
+func steamError(ctx context.Context, s *session, err error) error {
+	if err == errSteamDisabled {
+		return s.Reply(ctx, "Steam support is disabled.")
+	}
+
+	var apiErr *apiclient.Error
+	if errors.As(err, &apiErr) {
+		return s.Reply(ctx, "A Steam API error occurred.")
+	}
+
+	return err
 }

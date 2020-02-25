@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
@@ -74,7 +75,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.Equal(t, err, steam.ErrNotFound)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 404})
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
@@ -84,7 +85,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.Equal(t, err, steam.ErrServerError)
+		assert.ErrorContains(t, err, "unexpected EOF")
 	})
 
 	t.Run("Not found", func(t *testing.T) {
@@ -94,7 +95,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.Equal(t, err, steam.ErrNotFound)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 404})
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -104,7 +105,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.Equal(t, err, steam.ErrServerError)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 500})
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -114,7 +115,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.Equal(t, err, steam.ErrNotAuthorized)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 403})
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -124,7 +125,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.Equal(t, err, steam.ErrUnknown)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 418})
 	})
 
 	t.Run("Request error", func(t *testing.T) {
@@ -192,7 +193,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.Equal(t, err, steam.ErrServerError)
+		assert.ErrorContains(t, err, "unexpected EOF")
 	})
 
 	t.Run("Not found", func(t *testing.T) {
@@ -202,7 +203,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.Equal(t, err, steam.ErrNotFound)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 404})
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -212,7 +213,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.Equal(t, err, steam.ErrServerError)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 500})
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -222,7 +223,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.Equal(t, err, steam.ErrNotAuthorized)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 403})
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -232,7 +233,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.Equal(t, err, steam.ErrUnknown)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 418})
 	})
 
 	t.Run("Request error", func(t *testing.T) {

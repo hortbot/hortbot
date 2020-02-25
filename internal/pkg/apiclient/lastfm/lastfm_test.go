@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
@@ -66,8 +67,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-
-		assert.Equal(t, err, lastfm.ErrNotFound)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 404})
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
@@ -77,7 +77,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.Equal(t, err, lastfm.ErrServerError)
+		assert.ErrorContains(t, err, "XML syntax error")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -87,7 +87,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.Equal(t, err, lastfm.ErrServerError)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 500})
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -97,7 +97,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.Equal(t, err, lastfm.ErrNotAuthorized)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 403})
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -107,7 +107,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.Equal(t, err, lastfm.ErrUnknown)
+		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 418})
 	})
 
 	t.Run("Request error", func(t *testing.T) {

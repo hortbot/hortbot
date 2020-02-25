@@ -23,7 +23,7 @@ func (e *Error) Error() string {
 		return fmt.Sprintf("%s: status code %d", api, e.StatusCode)
 	}
 
-	return fmt.Sprintf("%s: status code %d: %s", api, e.StatusCode, e.Err)
+	return fmt.Sprintf("%s: %s", api, e.Err)
 }
 
 // IsNotFound returns true if the error is a not found.

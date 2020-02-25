@@ -58,7 +58,7 @@ send hortbot #foobar [HB] Game update sent, but did not stick.
 steam_get_player_summary {"ID": "1234567890123456789", "Err": "ErrUnknown"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!steamgame
-no_send
+send hortbot #foobar [HB] A Steam API error occurred.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!statusgame This is a new status
-no_send
+send hortbot #foobar [HB] A Steam API error occurred.

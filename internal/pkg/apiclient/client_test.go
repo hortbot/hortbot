@@ -24,7 +24,7 @@ func TestError(t *testing.T) {
 		},
 		{
 			err:        &apiclient.Error{StatusCode: 404, Err: fmt.Errorf("we couldn't find your info")},
-			m:          "client: status code 404: we couldn't find your info",
+			m:          "client: we couldn't find your info",
 			isNotFound: true,
 		},
 		{
@@ -39,7 +39,7 @@ func TestError(t *testing.T) {
 		},
 		{
 			err: &apiclient.Error{API: "service", StatusCode: 451, Err: fmt.Errorf("censored")},
-			m:   "service: status code 451: censored",
+			m:   "service: censored",
 		},
 		{
 			err:           &apiclient.Error{API: "service", StatusCode: 500},

@@ -59,7 +59,7 @@ func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (f
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if !apiclient.IsOK(resp.StatusCode) {
 		return 0, &apiclient.Error{API: "extralife", StatusCode: resp.StatusCode}
 	}
 

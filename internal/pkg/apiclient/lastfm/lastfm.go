@@ -4,30 +4,16 @@ package lastfm
 import (
 	"context"
 	"encoding/xml"
-	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"golang.org/x/net/context/ctxhttp"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
-// LastFM API errors.
-//
-//     - 200 -> nil
-//     - 404 -> ErrNotFound
-//     - 401 or 403 -> ErrNotAuthorized
-//     - 5xx -> ErrServerError
-//     - Otherwise -> ErrUnknown
-var (
-	ErrNotFound      = errors.New("lastfm: not found")
-	ErrNotAuthorized = errors.New("lastfm: not authorized")
-	ErrServerError   = errors.New("lastfm: server error")
-	ErrUnknown       = errors.New("lastfm: unknown error")
-)
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
 
 // Track represents a specific LastFM track.
 type Track struct {
@@ -37,8 +23,6 @@ type Track struct {
 	URL        string    `json:"url"`
 	Time       time.Time `json:"time"`
 }
-
-//counterfeiter:generate . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
@@ -92,8 +76,8 @@ func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track,
 	}
 	defer resp.Body.Close()
 
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
+	if !apiclient.IsOK(resp.StatusCode) {
+		return nil, &apiclient.Error{API: "lastfm", StatusCode: resp.StatusCode}
 	}
 
 	var body struct {
@@ -112,7 +96,7 @@ func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track,
 	}
 
 	if err := xml.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, ErrServerError
+		return nil, &apiclient.Error{API: "lastfm", Err: err}
 	}
 
 	tracks := body.RecentTracks.Tracks
@@ -130,23 +114,4 @@ func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track,
 	}
 
 	return ts, nil
-}
-
-func statusToError(code int) error {
-	if code >= 200 && code < 300 {
-		return nil
-	}
-
-	switch code {
-	case http.StatusNotFound:
-		return ErrNotFound
-	case http.StatusUnauthorized, http.StatusForbidden:
-		return ErrNotAuthorized
-	}
-
-	if code >= 500 {
-		return ErrServerError
-	}
-
-	return ErrUnknown
 }

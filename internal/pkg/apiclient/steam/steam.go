@@ -3,31 +3,15 @@ package steam
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/url"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/net/context/ctxhttp"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
-// Steam API errors.
-//
-//     - 200 -> nil
-//     - 404 -> ErrNotFound
-//     - 401 or 403 -> ErrNotAuthorized
-//     - 5xx -> ErrServerError
-//     - Otherwise -> ErrUnknown
-var (
-	ErrNotFound      = errors.New("steam: not found")
-	ErrNotAuthorized = errors.New("steam: not authorized")
-	ErrServerError   = errors.New("steam: server error")
-	ErrUnknown       = errors.New("steam: unknown error")
-)
-
-//counterfeiter:generate . API
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
@@ -92,8 +76,8 @@ func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, erro
 	}
 	defer resp.Body.Close()
 
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
+	if !apiclient.IsOK(resp.StatusCode) {
+		return nil, &apiclient.Error{API: "steam", StatusCode: resp.StatusCode}
 	}
 
 	body := struct {
@@ -103,13 +87,13 @@ func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, erro
 	}{}
 
 	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return nil, ErrServerError
+		return nil, &apiclient.Error{API: "steam", Err: err}
 	}
 
 	p := body.Response.Players
 
 	if len(p) == 0 {
-		return nil, ErrNotFound
+		return nil, &apiclient.Error{API: "steam", StatusCode: http.StatusNotFound}
 	}
 
 	return p[0], nil
@@ -133,8 +117,8 @@ func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
 	}
 	defer resp.Body.Close()
 
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
+	if !apiclient.IsOK(resp.StatusCode) {
+		return nil, &apiclient.Error{API: "steam", StatusCode: resp.StatusCode}
 	}
 
 	body := struct {
@@ -144,27 +128,8 @@ func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
 	}{}
 
 	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return nil, ErrServerError
+		return nil, &apiclient.Error{API: "steam", Err: err}
 	}
 
 	return body.Response.Games, nil
-}
-
-func statusToError(code int) error {
-	if code >= 200 && code < 300 {
-		return nil
-	}
-
-	switch code {
-	case http.StatusNotFound:
-		return ErrNotFound
-	case http.StatusUnauthorized, http.StatusForbidden:
-		return ErrNotAuthorized
-	}
-
-	if code >= 500 {
-		return ErrServerError
-	}
-
-	return ErrUnknown
 }
