@@ -68,27 +68,3 @@ func TestSplit(t *testing.T) {
 		})
 	}
 }
-
-var strSink1, strSink2 string
-
-func BenchmarkSplitByte(b *testing.B) {
-	for _, test := range splitByteTests {
-		test := test
-		b.Run(test.input, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				strSink1, strSink2 = stringsx.SplitByte(test.input, test.sep)
-			}
-		})
-	}
-}
-
-func BenchmarkSplit(b *testing.B) {
-	for _, test := range splitTests {
-		test := test
-		b.Run(test.input, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
-				strSink1, strSink2 = stringsx.Split(test.input, test.sep)
-			}
-		})
-	}
-}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
@@ -63,11 +64,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Limit", func(t *testing.T) {
-		text := "this is a test"
-
-		for i := 0; i < 10; i++ {
-			text += text
-		}
+		text := strings.Repeat("x", 513)
 
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(201, text))
