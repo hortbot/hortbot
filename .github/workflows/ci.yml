@@ -8,6 +8,9 @@ on:
     branches:
       - master
 
+env:
+  GO_DEV_VERSION: '1.13' # Recommended Go version for development.
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -78,9 +81,9 @@ jobs:
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
       - name: Install Go
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2-beta
         with:
-          go-version: 1.13.x
+          go-version: ${{ env.GO_DEV_VERSION }}
 
       - name: Check go.mod tidyness
         run: |
@@ -105,10 +108,10 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
-      - name: Install Go
-        uses: actions/setup-go@v1
+     - name: Install Go
+        uses: actions/setup-go@v2-beta
         with:
-          go-version: 1.13.x
+          go-version: ${{ env.GO_DEV_VERSION }}
 
       - name: go generate
         run: |
