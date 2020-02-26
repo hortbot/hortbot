@@ -1,4 +1,4 @@
-FROM golang as builder
+FROM golang:1.13 as builder
 
 WORKDIR /hortbot
 

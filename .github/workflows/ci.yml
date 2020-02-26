@@ -15,8 +15,8 @@ jobs:
       fail-fast: false
       matrix:
         # https://github.community/t5/GitHub-Actions/continue-on-error-allow-failure-UI-indication/m-p/37033/thread-id/2780
-        # go: [1.13.x, tip]
-        go: [1.13.x]
+        # go: ['1.14', '1.13', 'tip']
+        go: ['1.14', '1.13']
     name: Go ${{ matrix.go }}
 
     steps:
@@ -30,7 +30,7 @@ jobs:
 
       - name: Install Go
         if: matrix.go != 'tip'
-        uses: actions/setup-go@v1
+        uses: actions/setup-go@v2-beta
         with:
           go-version: ${{ matrix.go }}
 
