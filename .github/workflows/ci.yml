@@ -108,7 +108,7 @@ jobs:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
-     - name: Install Go
+      - name: Install Go
         uses: actions/setup-go@v2-beta
         with:
           go-version: ${{ env.GO_DEV_VERSION }}
