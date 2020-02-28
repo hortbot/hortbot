@@ -1033,6 +1033,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "USER", `The user's name.`)
 	qw422016.N().S(`
                 `)
+	streamaction(qw422016, "USER_DISPLAY", `The user's display name.`)
+	qw422016.N().S(`
+                `)
 	streamaction(qw422016, "ONLINE_CHECK", `If offline, the command is disabled.`)
 	qw422016.N().S(`
                 `)
@@ -1086,7 +1089,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "DELETE", `Delete's the message if used in an autoreply.`)
+	streamaction(qw422016, "DELETE", `Deletes the message if used in an autoreply.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "REGULARS_ONLY", `Only allow regulars (subs) to use the command.`)
@@ -1127,13 +1130,13 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "DATETIME24_<TZ>", `The current date and 24-hour time, in the specified timezone (like "America/Chicago" or "MST")..`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "UNTIL_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form).`)
+	streamaction(qw422016, "UNTIL_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 or UNIX-timestamp form).`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "UNTILSHORT_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), short style.`)
+	streamaction(qw422016, "UNTILSHORT_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 or UNIX-timestamp form), short style.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "UNTILLONG_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), long style.`)
+	streamaction(qw422016, "UNTILLONG_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 or UNIX-timestamp form), long style.`)
 	qw422016.N().S(`
             </dl>
 

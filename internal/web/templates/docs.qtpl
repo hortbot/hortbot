@@ -685,6 +685,7 @@ dd {
                 {%= action("PARAMETER_<X>_CAPS", `Parameter &lt;X&gt;, in all caps.`) %}
                 {%= action("P_<X>_CAPS", `Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.`) %}
                 {%= action("USER", `The user's name.`) %}
+                {%= action("USER_DISPLAY", `The user's display name.`) %}
                 {%= action("ONLINE_CHECK", `If offline, the command is disabled.`) %}
                 {%= action("GAME", `The current game.`) %}
                 {%= action("GAME_CLEAN", `The current game, URL-safe.`) %}
@@ -706,7 +707,7 @@ dd {
                 {%= action("PURGE", `Purges the messages of the user in the first parameter, or the sender if used in an autoreply.`) %}
                 {%= action("BAN", `Bans the user in the first parameter, or the sender if used in an autoreply.`) %}
                 {%= action("TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply.`) %}
-                {%= action("DELETE", `Delete's the message if used in an autoreply.`) %}
+                {%= action("DELETE", `Deletes the message if used in an autoreply.`) %}
                 {%= action("REGULARS_ONLY", `Only allow regulars (subs) to use the command.`) %}
             </dl>
 
@@ -723,9 +724,9 @@ dd {
                 {%= action("DATETIME_<TZ>", `The current date and time, in the specified timezone (like "America/Chicago" or "MST").`) %}
                 {%= action("DATETIME24", `The current date and 24-hour time, UTC.`) %}
                 {%= action("DATETIME24_<TZ>", `The current date and 24-hour time, in the specified timezone (like "America/Chicago" or "MST")..`) %}
-                {%= action("UNTIL_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form).`) %}
-                {%= action("UNTILSHORT_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), short style.`) %}
-                {%= action("UNTILLONG_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 form), long style.`) %}
+                {%= action("UNTIL_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 or UNIX-timestamp form).`) %}
+                {%= action("UNTILSHORT_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 or UNIX-timestamp form), short style.`) %}
+                {%= action("UNTILLONG_<TIMESTAMP>", `Time until the specified timestamp (in RFC3339 or UNIX-timestamp form), long style.`) %}
             </dl>
 
             <h3>Variables, lists, and commands</h3>
