@@ -53,10 +53,12 @@ send hortbot #foobar /timeout whoever 1
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar [HB] random
+send hortbot #foobar /timeout whoever 1
+send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar [HB] RaNDoM
+send hortbot #foobar /timeout whoever 1
+send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_TIMEOUT_)
 send_any
@@ -64,15 +66,17 @@ send_any
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test @WhoEver else
+send hortbot #foobar /timeout whoever
+send hortbot #foobar [HB] @WhoEver
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
 send hortbot #foobar /timeout whoever
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar [HB] random
-
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar [HB] RaNDoM
+send hortbot #foobar /timeout whoever
+send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_BAN_)
 send_any
@@ -85,10 +89,12 @@ send hortbot #foobar /ban whoever
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar [HB] random
+send hortbot #foobar /ban whoever
+send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar [HB] RaNDoM
+send hortbot #foobar /ban whoever
+send hortbot #foobar [HB] WhoEver
 
 # DELETE only works in autoreplies.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_DELETE_)

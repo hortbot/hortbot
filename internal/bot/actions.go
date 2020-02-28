@@ -254,19 +254,17 @@ func (s *session) NextParameter() *string {
 }
 
 func (s *session) UserForModAction() (name string, display string, do bool) {
-	switch {
-	case s.Type == sessionAutoreply:
+	if s.Type == sessionAutoreply {
 		return s.User, s.UserDisplay, true
-	case s.UserLevel.CanAccess(levelModerator):
-		p := s.FirstParameter()
-		if p == nil {
-			return "", "", false
-		}
-		u, _ := splitSpace(*p)
-		return u, u, true
-	default:
-		return s.User, s.UserDisplay, false
 	}
+
+	p := s.FirstParameter()
+	if p == nil {
+		return "", "", false
+	}
+	u, _ := splitSpace(*p)
+	u2 := cleanUsername(u)
+	return u2, u, true
 }
 
 func actionParameter(ctx context.Context, s *session, actionName, value string) (string, error) {
