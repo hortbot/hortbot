@@ -79,7 +79,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
 
       - name: Install Go
         uses: actions/setup-go@v2-beta
@@ -107,7 +107,7 @@ jobs:
         uses: actions/cache@v1
         with:
           path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
 
       - name: Install Go
         uses: actions/setup-go@v2-beta
