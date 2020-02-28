@@ -47,4 +47,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar [HB] ?
+send hortbot #foobar [HB] (error)

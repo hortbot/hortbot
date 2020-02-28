@@ -10,6 +10,9 @@ send hortbot #foobar [HB] Autoreply #2 added.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *ban_me* (_BAN_)
 send hortbot #foobar [HB] Autoreply #3 added.
 
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *delete_me* (_DELETE_)
+send hortbot #foobar [HB] Autoreply #4 added.
+
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :purge me
 send hortbot #foobar /timeout foobar 1
@@ -23,3 +26,6 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar /ban foobar
 send hortbot #foobar [HB] foobar
 
+handle hortbot @id=d6429f96-838f-4422-a0c9-f45615057cf9;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :delete me
+send hortbot #foobar /delete d6429f96-838f-4422-a0c9-f45615057cf9
+send hortbot #foobar [HB] foobar

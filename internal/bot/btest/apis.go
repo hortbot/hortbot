@@ -103,6 +103,11 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 
 	st.addAction(func(_ context.Context) {
 		st.extraLife.GetDonationAmountCalls(func(_ context.Context, id int) (float64, error) {
+			// TODO: Replace this hardcoded case and indicate body/code in args.
+			if id == 500500 {
+				return 0, &apiclient.Error{API: "extralife", StatusCode: 500}
+			}
+
 			a, ok := v[strconv.Itoa(id)]
 			if !ok {
 				return 0, &apiclient.Error{API: "extralife", StatusCode: 404}

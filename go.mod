@@ -9,6 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.11.2
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
+	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
 	github.com/felixge/httpsnoop v1.0.1
