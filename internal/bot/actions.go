@@ -214,9 +214,11 @@ func (s *session) ParameterAt(i int) *string {
 
 	var params []string
 	if s.Parameters == nil {
-		params = strings.Split(s.CommandParams, ";")
-		for i, p := range params {
-			params[i] = strings.TrimSpace(p)
+		if s.CommandParams != "" {
+			params = strings.Split(s.CommandParams, ";")
+			for i, p := range params {
+				params[i] = strings.TrimSpace(p)
+			}
 		}
 		s.Parameters = &params
 	} else {
@@ -251,19 +253,19 @@ func (s *session) NextParameter() *string {
 	return nil
 }
 
-func (s *session) UserForModAction() (string, bool) {
+func (s *session) UserForModAction() (name string, display string, do bool) {
 	switch {
 	case s.Type == sessionAutoreply:
-		return s.User, true
+		return s.User, s.UserDisplay, true
 	case s.UserLevel.CanAccess(levelModerator):
 		p := s.FirstParameter()
 		if p == nil {
-			return "", false
+			return "", "", false
 		}
 		u, _ := splitSpace(*p)
-		return u, true
+		return u, u, true
 	default:
-		return s.User, false
+		return s.User, s.UserDisplay, false
 	}
 }
 
@@ -313,7 +315,13 @@ func actionSong(ctx context.Context, s *session, actionName, value string) (stri
 		if err == errLastFMDisabled {
 			return "(Unknown)", nil
 		}
-		return actionMsgError, err
+
+		var apiErr *apiclient.Error
+		if !errors.As(err, &apiErr) {
+			return "", err
+		}
+
+		return actionMsgError, nil
 	}
 
 	url := false
@@ -391,31 +399,34 @@ func actionNumChannels(ctx context.Context, s *session, actionName, value string
 }
 
 func actionUnhost(ctx context.Context, s *session, actionName, value string) (string, error) {
-	return "", s.SendCommand(ctx, "unhost")
+	if s.UserLevel.CanAccess(levelModerator) {
+		return "", s.SendCommand(ctx, "unhost")
+	}
+	return "", nil
 }
 
 func actionPurge(ctx context.Context, s *session, actionName, value string) (string, error) {
-	u, do := s.UserForModAction()
+	u, d, do := s.UserForModAction()
 	if do && u != "" {
-		return u, s.SendCommand(ctx, "timeout", strings.ToLower(u), "1")
+		return d, s.SendCommand(ctx, "timeout", strings.ToLower(u), "1")
 	}
-	return u, nil
+	return d, nil
 }
 
 func actionTimeout(ctx context.Context, s *session, actionName, value string) (string, error) {
-	u, do := s.UserForModAction()
+	u, d, do := s.UserForModAction()
 	if do && u != "" {
-		return u, s.SendCommand(ctx, "timeout", strings.ToLower(u))
+		return d, s.SendCommand(ctx, "timeout", strings.ToLower(u))
 	}
-	return u, nil
+	return d, nil
 }
 
 func actionBan(ctx context.Context, s *session, actionName, value string) (string, error) {
-	u, do := s.UserForModAction()
+	u, d, do := s.UserForModAction()
 	if do && u != "" {
-		return u, s.SendCommand(ctx, "ban", strings.ToLower(u))
+		return d, s.SendCommand(ctx, "ban", strings.ToLower(u))
 	}
-	return u, nil
+	return d, nil
 }
 
 func actionDelete(ctx context.Context, s *session, actionName, value string) (string, error) {
@@ -716,7 +727,10 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 }
 
 func actionHost(ctx context.Context, s *session, actionName, value string) (string, error) {
-	return "", s.SendCommand(ctx, "host", strings.ToLower(value))
+	if s.UserLevel.CanAccess(levelModerator) {
+		return "", s.SendCommand(ctx, "host", strings.ToLower(value))
+	}
+	return "", nil
 }
 
 func actionVars(ctx context.Context, s *session, actionName, value string) (string, error) {

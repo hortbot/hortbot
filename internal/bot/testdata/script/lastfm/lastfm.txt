@@ -55,6 +55,16 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] No songs scrobbled on LastFM.
 
 
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm error
+send hortbot #foobar [HB] LastFM user changed to error.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+send hortbot #foobar [HB] Now playing: (error)
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm foobar
+send hortbot #foobar [HB] LastFM user changed to foobar.
+
+
 lastfm_recent_tracks {"foobar": [{"now_playing": false, "name": "Too Long", "artist": "Daft Punk", "url": "example.com"}, {"now_playing": false, "name": "No", "artist": "Wax Tailor"}]}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink

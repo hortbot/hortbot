@@ -33,6 +33,11 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 
 	st.addAction(func(_ context.Context) {
 		st.lastFM.RecentTracksCalls(func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
+			// TODO: Replace this hardcoded case and indicate body/code in args.
+			if user == "error" {
+				return nil, &apiclient.Error{API: "lastfm", StatusCode: 500}
+			}
+
 			x := v[user]
 
 			if len(x) > n {
