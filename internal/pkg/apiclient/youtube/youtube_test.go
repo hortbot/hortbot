@@ -31,9 +31,11 @@ func TestVideoTitle(t *testing.T) {
 
 	goodURLs := []string{
 		"https://www.youtube.com/watch?v=" + id,
+		"https://www.youtube.com/watch/?v=" + id,
 		"https://youtube.com/watch?v=" + id,
 		"https://youtube.com/watch?v=" + id,
 		"https://youtu.be/" + id,
+		"https://youtu.be/" + id + "/",
 		"https://www.youtube.com/embed/" + id,
 	}
 

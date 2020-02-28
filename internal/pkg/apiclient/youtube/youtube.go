@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"path"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
@@ -95,7 +96,7 @@ func (y *YouTube) VideoTitle(ctx context.Context, u *url.URL) string {
 func extractVideoID(u *url.URL) string {
 	switch u.Host {
 	case "www.youtube.com", "youtube.com":
-		if u.Path == "/watch" {
+		if path.Clean(u.Path) == "/watch" {
 			return u.Query().Get("v")
 		}
 		if strings.HasPrefix(u.Path, "/embed/") {
@@ -103,7 +104,7 @@ func extractVideoID(u *url.URL) string {
 		}
 	case "youtu.be":
 		if len(u.Path) > 1 {
-			return u.Path[1:]
+			return path.Clean(u.Path[1:])
 		}
 	}
 	return ""
