@@ -4,6 +4,7 @@ package bot
 import (
 	"context"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
@@ -19,6 +20,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/wqueue"
+	"github.com/jakebailey/irc"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
@@ -90,11 +92,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 		origin := i.Origin
 		m := i.Message
-
-		key := m.Command
-		if key == "PRIVMSG" && len(m.Params) != 0 {
-			key += "/" + m.Params[0]
-		}
+		key := buildKey(m)
 
 		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
 			ctx := attach(ctx)
@@ -113,4 +111,22 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	if err := g.WaitIgnoreStop(); err != nil {
 		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
+}
+
+func buildKey(m *irc.Message) string {
+	var keyBuilder strings.Builder
+
+	size := len(m.Command)
+	for _, p := range m.Params {
+		size += len(p) + 1
+	}
+	keyBuilder.Grow(size)
+
+	keyBuilder.WriteString(m.Command)
+	for _, p := range m.Params {
+		keyBuilder.WriteByte(' ')
+		keyBuilder.WriteString(p)
+	}
+
+	return keyBuilder.String()
 }
