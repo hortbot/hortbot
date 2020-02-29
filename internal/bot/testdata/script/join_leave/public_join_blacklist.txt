@@ -1,0 +1,10 @@
+bot_config {"PublicJoinBlacklist": ["hortbot"]}
+
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
+no_send
+no_notify_channel_updates
+
+handle otherbot @id=__UUID__;room-id=101;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #otherbot :!join
+send otherbot #otherbot [HB] otheruser, otherbot will join your channel soon with prefix !
+notify_channel_updates otherbot

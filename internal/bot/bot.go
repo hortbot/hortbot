@@ -61,7 +61,8 @@ type Config struct {
 
 	NoDedupe bool
 
-	PublicJoin bool
+	PublicJoin          bool
+	PublicJoinBlacklist []string
 }
 
 // Bot is an IRC bot. It should only be used once.
@@ -97,26 +98,27 @@ func New(config *Config) *Bot {
 	}
 
 	deps := &sharedDeps{
-		Redis:           config.Redis,
-		Sender:          config.Sender,
-		Notifier:        config.Notifier,
-		LastFM:          config.LastFM,
-		BulletMap:       config.BulletMap,
-		DefaultCooldown: config.Cooldown,
-		YouTube:         config.YouTube,
-		XKCD:            config.XKCD,
-		ExtraLife:       config.ExtraLife,
-		Twitch:          config.Twitch,
-		Steam:           config.Steam,
-		TinyURL:         config.TinyURL,
-		Urban:           config.Urban,
-		Simple:          config.Simple,
-		ReCache:         recache.New(),
-		Admins:          make(map[string]bool),
-		SuperAdmins:     make(map[string]bool),
-		WebAddr:         config.WebAddr,
-		WebAddrMap:      config.WebAddrMap,
-		PublicJoin:      config.PublicJoin,
+		Redis:               config.Redis,
+		Sender:              config.Sender,
+		Notifier:            config.Notifier,
+		LastFM:              config.LastFM,
+		BulletMap:           config.BulletMap,
+		DefaultCooldown:     config.Cooldown,
+		YouTube:             config.YouTube,
+		XKCD:                config.XKCD,
+		ExtraLife:           config.ExtraLife,
+		Twitch:              config.Twitch,
+		Steam:               config.Steam,
+		TinyURL:             config.TinyURL,
+		Urban:               config.Urban,
+		Simple:              config.Simple,
+		ReCache:             recache.New(),
+		Admins:              make(map[string]bool),
+		SuperAdmins:         make(map[string]bool),
+		WebAddr:             config.WebAddr,
+		WebAddrMap:          config.WebAddrMap,
+		PublicJoin:          config.PublicJoin,
+		PublicJoinBlacklist: config.PublicJoinBlacklist,
 	}
 
 	if config.Clock != nil {

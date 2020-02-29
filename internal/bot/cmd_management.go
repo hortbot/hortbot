@@ -51,6 +51,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	userID := s.UserID
 
 	name = cleanUsername(name)
+	botName := strings.TrimLeft(s.Origin, "#")
 
 	isAdmin := s.UserLevel.CanAccess(levelAdmin)
 
@@ -63,8 +64,14 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		userID = u.ID
 		displayName = u.DispName()
 	} else {
-		if !isAdmin && !s.Deps.PublicJoin {
-			return nil
+		if !isAdmin {
+			if !s.Deps.PublicJoin {
+				return nil
+			}
+
+			if _, ok := stringSliceIndex(s.Deps.PublicJoinBlacklist, botName); ok {
+				return nil
+			}
 		}
 
 		name = s.User
@@ -89,8 +96,6 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
-
-	botName := strings.TrimLeft(s.Origin, "#")
 
 	if err == sql.ErrNoRows {
 		channel = modelsx.NewChannel(userID, name, displayName, botName)
