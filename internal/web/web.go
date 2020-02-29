@@ -186,7 +186,10 @@ func (a *App) getBrand(r *http.Request) string {
 		return a.Brand
 	}
 
-	host, _, _ := net.SplitHostPort(r.Host)
+	host := r.Host
+	if addrHost, _, err := net.SplitHostPort(host); err == nil {
+		host = addrHost
+	}
 	host = normalizeHost(host)
 
 	if host != "" {
