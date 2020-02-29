@@ -42,9 +42,10 @@ type Bot struct {
 
 	Workers int `long:"bot-workers" env:"HB_BOT_WORKERS" description:"number of concurrent workers for handling"`
 
-	PublicJoin bool `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"enabled public join"`
+	PublicJoin          bool     `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"Enable public join"`
+	PublicJoinBlacklist []string `long:"bot-public-join-blacklist" env:"HB_BOT_PUBLIC_JOIN_BLACKLIST" env-delim:"," description:"Bots to now allow joins on even when public join is enabled"`
 
-	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"log messages instead of sending them"`
+	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"Log messages instead of sending them"`
 }
 
 // Default contains the default flags. Make a copy of this, do not reuse.
@@ -92,27 +93,29 @@ func (args *Bot) New(
 	}
 
 	b := bot.New(&bot.Config{
-		DB:               db,
-		Redis:            rdb,
-		Sender:           sender,
-		Notifier:         notifier,
-		LastFM:           lastFM,
-		YouTube:          youtubeAPI,
-		XKCD:             xkcd.New(xkcd.HTTPClient(httpClient)),
-		ExtraLife:        extralife.New(extralife.HTTPClient(httpClient)),
-		Twitch:           twitchAPI,
-		Steam:            steamAPI,
-		TinyURL:          tinyurl.New(tinyurl.HTTPClient(httpClient)),
-		Urban:            urban.New(urban.HTTPClient(httpClient)),
-		Simple:           simple.New(simple.HTTPClient(untrustedClient)),
-		Admins:           args.Admins,
-		SuperAdmins:      args.SuperAdmins,
-		WhitelistEnabled: args.WhitelistEnabled,
-		Whitelist:        args.Whitelist,
-		Cooldown:         args.DefaultCooldown,
-		WebAddr:          args.WebAddr,
-		WebAddrMap:       args.WebAddrMap,
-		BulletMap:        args.BulletMap,
+		DB:                  db,
+		Redis:               rdb,
+		Sender:              sender,
+		Notifier:            notifier,
+		LastFM:              lastFM,
+		YouTube:             youtubeAPI,
+		XKCD:                xkcd.New(xkcd.HTTPClient(httpClient)),
+		ExtraLife:           extralife.New(extralife.HTTPClient(httpClient)),
+		Twitch:              twitchAPI,
+		Steam:               steamAPI,
+		TinyURL:             tinyurl.New(tinyurl.HTTPClient(httpClient)),
+		Urban:               urban.New(urban.HTTPClient(httpClient)),
+		Simple:              simple.New(simple.HTTPClient(untrustedClient)),
+		Admins:              args.Admins,
+		SuperAdmins:         args.SuperAdmins,
+		WhitelistEnabled:    args.WhitelistEnabled,
+		Whitelist:           args.Whitelist,
+		Cooldown:            args.DefaultCooldown,
+		WebAddr:             args.WebAddr,
+		WebAddrMap:          args.WebAddrMap,
+		BulletMap:           args.BulletMap,
+		PublicJoin:          args.PublicJoin,
+		PublicJoinBlacklist: args.PublicJoinBlacklist,
 	})
 
 	if err := b.Init(ctx); err != nil {
