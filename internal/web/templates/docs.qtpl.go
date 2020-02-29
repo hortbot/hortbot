@@ -1083,13 +1083,13 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "PURGE", `Purges the messages of the user in the first parameter, or the sender if used in an autoreply.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "BAN", `Bans the user in the first parameter, or the sender if used in an autoreply.`)
+	streamaction(qw422016, "BAN", `Bans the user in the first parameter, or the sender if used in an autoreply, and returns the user.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply.`)
+	streamaction(qw422016, "TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply, and returns the user.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "DELETE", `Deletes the message if used in an autoreply.`)
+	streamaction(qw422016, "DELETE", `Deletes the message if used in an autoreply, and returns the user.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "REGULARS_ONLY", `Only allow regulars (subs) to use the command.`)

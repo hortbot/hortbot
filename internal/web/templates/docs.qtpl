@@ -705,9 +705,9 @@ dd {
                 {%= action("HOST_<CHANNEL>", `Start hosting the specified channel.`) %}
                 {%= action("UNHOST", `Deactivates host mode.`) %}
                 {%= action("PURGE", `Purges the messages of the user in the first parameter, or the sender if used in an autoreply.`) %}
-                {%= action("BAN", `Bans the user in the first parameter, or the sender if used in an autoreply.`) %}
-                {%= action("TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply.`) %}
-                {%= action("DELETE", `Deletes the message if used in an autoreply.`) %}
+                {%= action("BAN", `Bans the user in the first parameter, or the sender if used in an autoreply, and returns the user.`) %}
+                {%= action("TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply, and returns the user.`) %}
+                {%= action("DELETE", `Deletes the message if used in an autoreply, and returns the user.`) %}
                 {%= action("REGULARS_ONLY", `Only allow regulars (subs) to use the command.`) %}
             </dl>
 
