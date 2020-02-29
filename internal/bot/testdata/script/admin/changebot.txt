@@ -1,0 +1,34 @@
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot
+send hortbot #hortbot [HB] Usage: !admin changebot <name> <botName>
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar
+send hortbot #hortbot [HB] Usage: !admin changebot <name> <botName>
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar otherbot
+send hortbot #hortbot [HB] No such user foobar.
+
+
+join hortbot 999 foobar 1
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!command add something Something.
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!something
+send hortbot #foobar [HB] Something.
+
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar hortbot
+send hortbot #hortbot [HB] foobar is already using hortbot.
+
+handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar otherbot
+notify_channel_updates hortbot
+notify_channel_updates otherbot
+send hortbot #hortbot [HB] Changed foobar's bot from hortbot to otherbot.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!something
+no_send
+
+handle otherbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!something
+send otherbot #foobar [HB] Something.

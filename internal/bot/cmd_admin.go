@@ -29,6 +29,7 @@ func init() {
 		"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
 		"imp":       {fn: cmdAdminImp, minLevel: levelAdmin},
 		"version":   {fn: cmdAdminVersion, minLevel: levelAdmin},
+		"changebot": {fn: cmdAdminChangeBot, minLevel: levelAdmin},
 
 		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
 		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
@@ -292,4 +293,46 @@ func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) 
 	}
 
 	return s.Replyf(ctx, "Triggered IRC channel sync for %s.", botName)
+}
+
+func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) error {
+	name, args := splitSpace(args)
+	botName, _ := splitSpace(args)
+
+	name = cleanUsername(name)
+	botName = cleanUsername(botName)
+
+	if name == "" || botName == "" {
+		return s.ReplyUsage(ctx, "<name> <botName>")
+	}
+
+	channel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return s.Replyf(ctx, "No such user %s.", name)
+		}
+		return err
+	}
+
+	oldBotName := channel.BotName
+
+	if oldBotName == botName {
+		return s.Replyf(ctx, "%s is already using %s.", name, botName)
+	}
+
+	channel.BotName = botName
+
+	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.BotName)); err != nil {
+		return err
+	}
+
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, strings.ToLower(oldBotName)); err != nil {
+		return err
+	}
+
+	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
+		return err
+	}
+
+	return s.Replyf(ctx, "Changed %s's bot from %s to %s.", name, oldBotName, botName)
 }
