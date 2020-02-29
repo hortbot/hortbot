@@ -37,6 +37,7 @@ var ccCommands = newHandlerMap(map[string]handlerFunc{
 	"addall":          {fn: cmdCommandAddEveryone, minLevel: levelModerator},
 	"delete":          {fn: cmdCommandDelete, minLevel: levelModerator},
 	"remove":          {fn: cmdCommandDelete, minLevel: levelModerator},
+	"rm":              {fn: cmdCommandDelete, minLevel: levelModerator},
 	"restrict":        {fn: cmdCommandRestrict, minLevel: levelModerator},
 	"editor":          {fn: cmdCommandProperty, minLevel: levelModerator},
 	"author":          {fn: cmdCommandProperty, minLevel: levelModerator},

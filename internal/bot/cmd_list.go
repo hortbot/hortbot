@@ -40,6 +40,7 @@ var listCommands = newHandlerMap(map[string]handlerFunc{
 	"addall":          {fn: cmdListAddEveryone, minLevel: levelModerator},
 	"delete":          {fn: cmdListDelete, minLevel: levelModerator},
 	"remove":          {fn: cmdListDelete, minLevel: levelModerator},
+	"rm":              {fn: cmdListDelete, minLevel: levelModerator},
 	"restrict":        {fn: cmdListRestrict, minLevel: levelModerator},
 	"rename":          {fn: cmdListRename, minLevel: levelModerator},
 })
@@ -321,7 +322,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 	switch cmd {
 	case "add":
 		return true, handleListAdd(ctx, s, info, args)
-	case "delete", "remove":
+	case "delete", "remove", "rm":
 		return true, handleListDelete(ctx, s, info, cmd, args)
 	case "restrict":
 		return true, handleListRestrict(ctx, s, info, args, func() error {
