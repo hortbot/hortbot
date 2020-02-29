@@ -372,27 +372,31 @@ func cmdWinner(ctx context.Context, s *session, cmd string, args string) error {
 const followAuthError = "Could not get authorization to follow your channel; please contact an admin."
 
 func cmdFollowMe(ctx context.Context, s *session, cmd string, args string) error {
-	tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(s.Channel.BotName))).One(ctx, s.Tx)
+	err := followUser(ctx, s.Tx, s.Deps.Twitch, s.Channel.BotName, s.RoomID)
+
+	switch err {
+	case twitch.ErrServerError:
+		return s.Reply(ctx, twitchServerErrorReply)
+	case sql.ErrNoRows, twitch.ErrNotAuthorized:
+		return s.Reply(ctx, followAuthError)
+	case nil:
+		return s.Reply(ctx, "Follow update sent.")
+	default:
+		return err
+	}
+}
+
+func followUser(ctx context.Context, db boil.ContextExecutor, tw twitch.API, botName string, userID int64) error {
+	tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(botName))).One(ctx, db)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return s.Reply(ctx, followAuthError)
-		}
 		return err
 	}
 
 	tok := modelsx.ModelToToken(tt)
 
-	newToken, err := s.Deps.Twitch.FollowChannel(ctx, tt.TwitchID, tok, s.RoomID)
+	newToken, err := tw.FollowChannel(ctx, tt.TwitchID, tok, userID)
 	if err != nil {
-		switch err {
-		case twitch.ErrServerError:
-			return s.Reply(ctx, twitchServerErrorReply)
-		case twitch.ErrNotAuthorized:
-			return s.Reply(ctx, followAuthError)
-		case nil:
-		default:
-			return err
-		}
+		return err
 	}
 
 	if newToken != nil {
@@ -401,10 +405,10 @@ func cmdFollowMe(ctx context.Context, s *session, cmd string, args string) error
 		tt.RefreshToken = newToken.RefreshToken
 		tt.Expiry = newToken.Expiry
 
-		if err := tt.Update(ctx, s.Tx, boil.Blacklist()); err != nil {
+		if err := tt.Update(ctx, db, boil.Blacklist()); err != nil {
 			return err
 		}
 	}
 
-	return s.Reply(ctx, "Follow update sent.")
+	return nil
 }

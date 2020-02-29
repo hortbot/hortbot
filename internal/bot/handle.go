@@ -99,6 +99,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 		return b.handlePrivMsg(ctx, origin, m)
 	case "USERSTATE":
 		return b.handleUserState(ctx, origin, m)
+	case "NOTICE":
+		return b.handleNotice(ctx, origin, m)
 	default:
 		ctxlog.Debug(ctx, "unhandled command", zap.Any("message", m))
 		return nil
