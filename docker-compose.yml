@@ -8,7 +8,7 @@ services:
       - gopath:/go
       - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . irc
+    command: go run -mod=readonly . irc
     depends_on:
       - db
       - redis
@@ -32,7 +32,7 @@ services:
       - gopath:/go
       - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . bot
+    command: go run -mod=readonly . bot
     depends_on:
       - db
       - redis
@@ -56,7 +56,7 @@ services:
       - gopath:/go
       - go-build:/root/.cache/go-build
     working_dir: /app
-    command: go run -mod=readonly -v . web
+    command: go run -mod=readonly . web
     depends_on:
       - db
       - redis

@@ -8,7 +8,7 @@ RUN go mod download
 COPY ./ ./
 
 ARG version
-RUN go build -v -ldflags="-X github.com/hortbot/hortbot/internal/version.version=${version}" .
+RUN go build -ldflags="-X github.com/hortbot/hortbot/internal/version.version=${version}" .
 
 # TODO: Use distroless/static and statically compile above. (https://golang.org/issue/26492)
 FROM gcr.io/distroless/base:nonroot
