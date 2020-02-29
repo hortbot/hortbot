@@ -373,6 +373,7 @@ func (p *ChannelPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
 <script>
 var hash = window.location.hash;
+var realPage = window.location.origin + window.location.pathname;
 if (hash) {
     if (hash == "#overview") {
         history.replaceState(null, null, ' ');
@@ -386,7 +387,7 @@ if (hash) {
             "#chatrules": "chatrules",
         }[hash];
 
-        window.location.href = "./" + redirect;
+        window.location.href = realPage + "/" + redirect;
     }
 }
 </script>
