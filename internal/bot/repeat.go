@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/volatiletech/sqlboiler/boil"
 	"github.com/volatiletech/sqlboiler/queries"
@@ -97,88 +98,90 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 	ctx = runner.withLog(ctx)
 	start := b.deps.Clock.Now()
 
-	err = transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
-		status, err := runner.status(ctx, tx)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				status = repeatStatus{}
-			} else {
-				return err
+	err = dbx.Transact(ctx, b.db,
+		dbx.SetLocalLockTimeout(5*time.Second),
+		func(ctx context.Context, tx *sql.Tx) error {
+			status, err := runner.status(ctx, tx)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					status = repeatStatus{}
+				} else {
+					return err
+				}
 			}
-		}
 
-		if !status.Enabled || !status.Active {
-			readd = false
-			return nil
-		}
-
-		if !status.Ready {
-			return nil
-		}
-
-		if err := runner.load(ctx, tx); err != nil {
-			if err == sql.ErrNoRows {
+			if !status.Enabled || !status.Active {
 				readd = false
 				return nil
 			}
-			return err
-		}
 
-		channel := runner.channel()
-		// TODO: Remove if possible by passing the top level wqueue down here.
-		if err := pgLock(ctx, tx, channel.UserID); err != nil {
-			return err
-		}
-
-		found, allowed, err := runner.allowed(ctx)
-		readd = readd && found
-		if !allowed || err != nil {
-			return err
-		}
-
-		if err := runner.updateCount(ctx, tx); err != nil {
-			return err
-		}
-
-		s := &session{
-			Type:       sessionRepeat,
-			Deps:       b.deps,
-			Tx:         tx,
-			Start:      start,
-			UserLevel:  levelEveryone,
-			Channel:    channel,
-			Origin:     channel.BotName,
-			IRCChannel: channel.Name,
-			RoomID:     channel.UserID,
-		}
-
-		info := runner.info()
-
-		info.Count++
-
-		if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
-			return err
-		}
-
-		ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
-
-		var message string
-
-		if command := info.R.CustomCommand; command != nil {
-			message = command.Message
-		} else {
-			items := info.R.CommandList.Items
-
-			if len(items) == 0 {
+			if !status.Ready {
 				return nil
 			}
 
-			i := s.Deps.Rand.Intn(len(items))
-			message = items[i]
-		}
+			if err := runner.load(ctx, tx); err != nil {
+				if err == sql.ErrNoRows {
+					readd = false
+					return nil
+				}
+				return err
+			}
 
-		return runCommandAndCount(ctx, s, info, message, true)
-	})
+			channel := runner.channel()
+			// TODO: Remove if possible by passing the top level wqueue down here.
+			if err := pgLock(ctx, tx, channel.UserID); err != nil {
+				return err
+			}
+
+			found, allowed, err := runner.allowed(ctx)
+			readd = readd && found
+			if !allowed || err != nil {
+				return err
+			}
+
+			if err := runner.updateCount(ctx, tx); err != nil {
+				return err
+			}
+
+			s := &session{
+				Type:       sessionRepeat,
+				Deps:       b.deps,
+				Tx:         tx,
+				Start:      start,
+				UserLevel:  levelEveryone,
+				Channel:    channel,
+				Origin:     channel.BotName,
+				IRCChannel: channel.Name,
+				RoomID:     channel.UserID,
+			}
+
+			info := runner.info()
+
+			info.Count++
+
+			if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
+				return err
+			}
+
+			ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
+
+			var message string
+
+			if command := info.R.CustomCommand; command != nil {
+				message = command.Message
+			} else {
+				items := info.R.CommandList.Items
+
+				if len(items) == 0 {
+					return nil
+				}
+
+				i := s.Deps.Rand.Intn(len(items))
+				message = items[i]
+			}
+
+			return runCommandAndCount(ctx, s, info, message, true)
+		})
 
 	return readd, err
 }

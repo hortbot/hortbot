@@ -13,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/boil"
@@ -135,16 +136,18 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 		afterHandle  time.Time
 	)
 
-	err = transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
-		beforeHandle = b.deps.Clock.Now()
+	err = dbx.Transact(ctx, b.db,
+		dbx.SetLocalLockTimeout(5*time.Second),
+		func(ctx context.Context, tx *sql.Tx) error {
+			beforeHandle = b.deps.Clock.Now()
 
-		s.Tx = tx
-		err := handleSession(ctx, s)
-		s.Tx = nil
+			s.Tx = tx
+			err := handleSession(ctx, s)
+			s.Tx = nil
 
-		afterHandle = b.deps.Clock.Now()
-		return err
-	})
+			afterHandle = b.deps.Clock.Now()
+			return err
+		})
 	if err != nil {
 		return err
 	}

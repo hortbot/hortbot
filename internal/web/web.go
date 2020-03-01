@@ -22,6 +22,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/static"
@@ -665,31 +666,14 @@ func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx := r.Context()
-	tx, err := a.DB.BeginTx(ctx, nil)
+	err := dbx.Transact(r.Context(), a.DB,
+		dbx.SetLocalLockTimeout(5*time.Second),
+		func(ctx context.Context, tx *sql.Tx) error {
+			return config.Insert(ctx, tx)
+		},
+	)
 	if err != nil {
-		http.Error(w, "beginning transaction: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	rolledBack := false
-
-	defer func() {
-		if rolledBack {
-			return
-		}
-
-		if err := tx.Commit(); err != nil {
-			fmt.Fprintln(w, "committing transaction:", err)
-		}
-	}()
-
-	if err := config.Insert(ctx, tx); err != nil {
 		http.Error(w, "inserting config: "+err.Error(), http.StatusBadRequest)
-		if err := tx.Rollback(); err != nil {
-			fmt.Fprintln(w, "rolling back transaction:", err)
-		}
-		rolledBack = true
 		return
 	}
 

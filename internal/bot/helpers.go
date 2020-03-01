@@ -8,7 +8,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
-	"go.opencensus.io/trace"
 )
 
 func splitSpace(s string) (string, string) {
@@ -27,41 +26,6 @@ func parseBadges(badgeTag string) map[string]string {
 	}
 
 	return d
-}
-
-func transact(ctx context.Context, db *sql.DB, fn func(context.Context, *sql.Tx) error) (err error) {
-	ctx, span := trace.StartSpan(ctx, "transact")
-	defer span.End()
-
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-
-	rollback := true
-
-	defer func() {
-		if rollback {
-			if rerr := tx.Rollback(); err == nil && rerr != nil {
-				err = rerr
-			}
-		}
-	}()
-
-	err = func() error {
-		if _, err := tx.ExecContext(ctx, "SET LOCAL lock_timeout = '5s'"); err != nil {
-			return err
-		}
-		return fn(ctx, tx)
-	}()
-	rollback = false
-
-	if err != nil {
-		_ = tx.Rollback()
-		return err
-	}
-
-	return tx.Commit()
 }
 
 func stringSliceIndex(strs []string, s string) (int, bool) {

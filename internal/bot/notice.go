@@ -9,6 +9,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/queries/qm"
 	"go.opencensus.io/trace"
@@ -39,29 +40,31 @@ func (b *Bot) handleNotice(ctx context.Context, origin string, m *irc.Message) e
 	username := strings.TrimLeft(m.Params[0], "#")
 	ctx = ctxlog.With(ctx, zap.String("channel", m.Params[0]))
 
-	return transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
-		channel, err := models.Channels(models.ChannelWhere.Name.EQ(username), qm.Select(models.ChannelColumns.UserID)).One(ctx, tx)
-		if err != nil {
-			if err == sql.ErrNoRows {
-				ctxlog.Warn(ctx, "received follower-only message for unknown user")
+	return dbx.Transact(ctx, b.db,
+		dbx.SetLocalLockTimeout(5*time.Second),
+		func(ctx context.Context, tx *sql.Tx) error {
+			channel, err := models.Channels(models.ChannelWhere.Name.EQ(username), qm.Select(models.ChannelColumns.UserID)).One(ctx, tx)
+			if err != nil {
+				if err == sql.ErrNoRows {
+					ctxlog.Warn(ctx, "received follower-only message for unknown user")
+					return nil
+				}
+				return err
+			}
+
+			seen, err := b.deps.Redis.CheckAndMarkCooldown(ctx, strconv.FormatInt(channel.UserID, 10), "follow_cooldown", 10*time.Minute)
+			if err != nil {
+				return err
+			}
+
+			if seen {
 				return nil
 			}
-			return err
-		}
 
-		seen, err := b.deps.Redis.CheckAndMarkCooldown(ctx, strconv.FormatInt(channel.UserID, 10), "follow_cooldown", 10*time.Minute)
-		if err != nil {
-			return err
-		}
+			if err := followUser(ctx, tx, b.deps.Twitch, origin, channel.UserID); err != nil {
+				ctxlog.Warn(ctx, "error following user", zap.Error(err))
+			}
 
-		if seen {
 			return nil
-		}
-
-		if err := followUser(ctx, tx, b.deps.Twitch, origin, channel.UserID); err != nil {
-			ctxlog.Warn(ctx, "error following user", zap.Error(err))
-		}
-
-		return nil
-	})
+		})
 }

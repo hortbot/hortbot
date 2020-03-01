@@ -3,14 +3,17 @@ package confimport
 
 import (
 	"context"
+	"database/sql"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/confimport"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
@@ -105,7 +108,14 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 			return
 		}
 
-		if err := config.Insert(ctx, db); err != nil {
+		err = dbx.Transact(ctx, db,
+			dbx.SetLocalLockTimeout(5*time.Second),
+			func(ctx context.Context, tx *sql.Tx) error {
+				return config.Insert(ctx, tx)
+			},
+		)
+
+		if err != nil {
 			ctxlog.Error(ctx, "error inserting into database", ctxlog.PlainError(err))
 		}
 	}
