@@ -16,6 +16,12 @@ send_any
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] = Hello there.
 
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_what_GET_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] = Hello there.
+
 
 # Cross channel GET
 handle hortbot @id=__UUID__;room-id=10;user-id=10 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!var set othervar Hi from otherchan!

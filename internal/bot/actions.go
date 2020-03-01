@@ -738,6 +738,10 @@ func actionVars(ctx context.Context, s *session, actionName, value string) (stri
 	}
 
 	switch {
+	case value == "GET":
+		v, _, err := s.VarGet(ctx, name)
+		return v, err
+
 	case strings.HasPrefix(value, "GET_"):
 		ch := strings.TrimPrefix(value, "GET_")
 		if ch == "" {
@@ -745,11 +749,7 @@ func actionVars(ctx context.Context, s *session, actionName, value string) (stri
 		}
 
 		v, _, err := s.VarGetByChannel(ctx, ch, name)
-		if err != nil {
-			return "", err
-		}
-
-		return v, nil
+		return v, err
 
 	case strings.HasPrefix(value, "SET_"):
 		value := strings.TrimPrefix(value, "SET_")
