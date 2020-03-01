@@ -6,5 +6,5 @@ no_send
 no_notify_channel_updates
 
 handle otherbot @id=__UUID__;room-id=101;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #otherbot :!join
-send otherbot #otherbot [HB] otheruser, otherbot will join your channel soon with prefix !
+send_match otherbot #otherbot .*otheruser.*
 notify_channel_updates otherbot

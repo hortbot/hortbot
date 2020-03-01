@@ -108,12 +108,12 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return err
 		}
 
-		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", displayName, botName, channel.Prefix)
+		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'. Log in to the website to give the bot permission to access your Twitch account: %s/login", displayName, botName, channel.Prefix, s.WebAddrFor(botName))
 	}
 
 	if channel.Active {
 		if channel.Name == name {
-			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix %s", displayName, channel.BotName, channel.Prefix)
+			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'.", displayName, channel.BotName, channel.Prefix)
 		}
 
 		channel.Name = name
@@ -149,7 +149,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix %s", displayName, channel.BotName, channel.Prefix)
+	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'. Log in to the website to give the bot permission to access your Twitch account: %s/login", displayName, channel.BotName, channel.Prefix, s.WebAddrFor(botName))
 }
 
 func handleLeave(ctx context.Context, s *session, name string) error {

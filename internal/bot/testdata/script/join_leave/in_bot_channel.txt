@@ -1,9 +1,11 @@
+bot_config {"WebAddr": "http://localhost:5000"}
+
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 no_send
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
-send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix !
+send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '!'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
@@ -18,7 +20,7 @@ send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
-send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix +
+send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix '+'.
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
@@ -33,7 +35,7 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
-send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix +
+send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '+'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
@@ -47,11 +49,11 @@ no_notify_channel_updates
 twitch_get_user_for_username {"someone": {"user_id": 1234, "user_name": "someone", "display_name": "Someone"}}
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone
-send hortbot #hortbot [HB] Someone, hortbot will join your channel soon with prefix !
+send hortbot #hortbot [HB] Someone, hortbot will join your channel soon with prefix '!'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join someone
-send hortbot #hortbot [HB] Someone, hortbot is already active in your channel with prefix !
+send hortbot #hortbot [HB] Someone, hortbot is already active in your channel with prefix '!'.
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!part someone
