@@ -5,10 +5,10 @@
 - [x] Single process mode (usable but not final)
     - MVP
     - Need configuration setup
-- [ ] Multi process mode
+- [x] Multi process mode
     - [x] Messaging over NSQ
     - [x] Redis for k/v, dedupe, expiration, cooldowns
-    - [ ] No-downtime upgrades
+    - [x] No-downtime upgrades
     - [x] Rate limiting
         - [x] Needs to check userstate/badges/etc to "unlock" a faster rate.
 - [x] Website (see below)
