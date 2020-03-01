@@ -97,6 +97,10 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
+	firstJoin := func(ctx context.Context) error {
+		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'. Log in to the website to give the bot permission to access your Twitch account: %s/login", displayName, botName, channel.Prefix, s.WebAddrFor(botName))
+	}
+
 	if err == sql.ErrNoRows {
 		channel = modelsx.NewChannel(userID, name, displayName, botName)
 
@@ -108,7 +112,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return err
 		}
 
-		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'. Log in to the website to give the bot permission to access your Twitch account: %s/login", displayName, botName, channel.Prefix, s.WebAddrFor(botName))
+		return firstJoin(ctx)
 	}
 
 	if channel.Active {
@@ -149,7 +153,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'. Log in to the website to give the bot permission to access your Twitch account: %s/login", displayName, channel.BotName, channel.Prefix, s.WebAddrFor(botName))
+	return firstJoin(ctx)
 }
 
 func handleLeave(ctx context.Context, s *session, name string) error {
