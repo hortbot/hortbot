@@ -216,6 +216,8 @@ type authState struct {
 	Redirect string
 }
 
+const authTimeout = time.Hour
+
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	ctx := r.Context()
 
@@ -237,7 +239,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 
 	stateVal.Redirect = query.Redirect
 
-	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, time.Minute); err != nil {
+	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, authTimeout); err != nil {
 		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
@@ -285,7 +287,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	if normalizeHost(stateVal.Host) != normalizeHost(r.Host) {
 		// This came to the wrong host. Put the state back and redirect.
-		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, time.Minute); err != nil {
+		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, authTimeout); err != nil {
 			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 			a.httpError(w, r, http.StatusInternalServerError)
 			return
