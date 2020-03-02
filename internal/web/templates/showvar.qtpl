@@ -1,0 +1,328 @@
+{% code type ShowVarPage struct {
+    Channel string
+    Var string
+    Refresh int
+    ThemesStr string
+    Themes map[string]bool
+    ValueFont string
+    ValueColor string
+    LabelFont string
+    LabelColor string
+    Label string
+} %}
+
+{% func (p *ShowVarPage) Render() %}
+<!doctype html>
+<html id="html" class="{%s p.ThemesStr %}">
+<head>
+    {% if p.Themes["blood"] %}
+    <link href='https://fonts.googleapis.com/css?family=Trade+Winds' rel='stylesheet' type='text/css'>
+    {% endif %}
+    {% if p.Themes["plumbers"] || p.Themes["arcade"] %}
+    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
+    {% endif %}
+	<style>
+
+
+    {% if p.ValueFont != "" || p.ValueColor != "" %}
+	#value {
+        {% if p.ValueFont != "" %}
+        font-family: "{%s p.ValueFont %}", sans-serif ! important;
+        {% endif %}
+        {% if p.ValueColor != "" %}
+        color: {%s p.ValueColor %} ! important;
+        {% endif %}
+	}
+    {% endif %}
+
+    {% if p.LabelFont != "" || p.LabelColor != "" %}
+	#label {
+        {% if p.LabelFont != "" %}
+        font-family: "{%s p.LabelFont %}", sans-serif ! important;
+        {% endif %}
+        {% if p.LabelColor != "" %}
+        color: {%s p.LabelColor %} ! important;
+        {% endif %}
+	}
+    {% endif %}
+
+
+
+
+	/******************
+	 * THEME: BASIC
+	 ******************/
+	html.basic * {
+		font-weight: bold;
+		color: white;
+		text-shadow: 2px 2px 10px black;
+		text-align: center;
+		font-family: sans-serif;
+	}
+
+	html.basic #value {
+		font-size: 72px;
+	}
+
+	html.basic #value:empty:after {
+		content: '...';
+	}
+
+	html.basic #label {
+		font-size: 24px;
+		line-height: 50%;
+	}
+
+
+
+
+
+	/******************
+	 * THEME: GUUDE
+	 ******************/
+	html.guude #guude {
+		position: fixed;
+		left: 50%;
+		height: 100px;
+		width: 87px;
+		margin-left: -43px;
+		display: none;
+	}
+
+	html.guude .updated #guude {
+		display: inline;
+		opacity: 0;
+		animation: blood_fadeInOut 3s 1 ease-out;
+		-webkit-animation: blood_fadeInOut 3s 1 ease-out;
+	}
+
+
+
+
+
+	/******************
+	 * THEME: POOSE
+	 ******************/
+	html.poose #poose {
+		position: fixed;
+		left: 50%;
+		height: 100px;
+		width: 87px;
+		margin-left: -43px;
+		display: none;
+	}
+
+	html.poose .updated #poose {
+		display: inline;
+		opacity: 0;
+		animation: blood_fadeInOut 3s 1 ease-out;
+		-webkit-animation: blood_fadeInOut 3s 1 ease-out;
+	}
+
+
+
+
+
+	/******************
+	 * THEME: BLOOD
+	 ******************/
+	html.blood * {
+		font-weight: bold;
+		color:#a00;
+		text-shadow: 2px 2px 10px black;
+		text-align:center;
+	}
+
+	html.blood #value {
+		font-family: Chiller, 'Trade Winds', serif;
+		font-size: 72px;
+		line-height: 90%;
+	}
+
+	html.blood #value:empty:after {
+		content: '...';
+	}
+
+	html.blood .updated #value {
+		animation: blood_flashWhite 3s 1 ease-out;
+		-webkit-animation: blood_flashWhite 3s 1 ease-out;
+	}
+
+	html.blood #label {
+		font-family: sans-serif;
+		font-size: 24px;
+		line-height: 50%;
+	}
+
+
+	@keyframes blood_flashWhite {
+    0%   {color: #a00;}
+    50%  {color: #fff;}
+    100% {color: #a00;}
+  }
+
+	@-webkit-keyframes blood_flashWhite {
+    0%   {color: #a00;}
+    50%  {color: #fff;}
+    100% {color: #a00;}
+  }
+
+	@keyframes blood_fadeInOut {
+    0%   {opacity: 0;}
+    50%  {opacity: 1;}
+    100% {opacity: 0;}
+  }
+
+	@-webkit-keyframes blood_fadeInOut {
+    0%   {opacity: 0;}
+    50%  {opacity: 1;}
+    100% {opacity: 0;}
+  }
+
+
+
+
+
+	/******************
+	 * THEME: ARCADE
+	 ******************/
+	html.arcade * {
+		font-weight: bold;
+		color: white;
+		text-shadow: 2px 2px 10px black;
+		text-align:center;
+		font-family: 'Press Start 2P', monospace;
+	}
+
+	html.arcade #value {
+		font-size: 72px;
+	}
+
+	html.arcade #value:empty:after {
+		content: '...';
+	}
+
+	html.arcade #label {
+		font-size: 24px;
+	}
+
+
+
+
+
+	/******************
+	 * THEME: EXZENTIA_BLOOD
+	 ******************/
+	html.exzentia_blood body.updated {
+		background: url(https://i.imgur.com/AzMrQg7.gif) no-repeat fixed center top;
+	}
+
+
+
+
+
+	/******************
+	 * THEME: PLUMBERS
+	 ******************/
+	html.plumbers * {
+		font-weight: bold;
+		color: #e75a10;
+		text-align:center;
+		font-family: 'Press Start 2P', monospace;
+	}
+
+	html.plumbers #value {
+		font-size: 72px;
+		text-shadow: 9px 9px #000000;
+	}
+
+	html.plumbers #value:empty:after {
+		content: '?';
+	}
+
+	html.plumbers #label {
+		font-size: 24px;
+		text-shadow: 3px 3px #000000;
+		line-height: 150%;
+	}
+
+
+	html.plumbers #mario {
+		position: fixed;
+		left: 50%;
+		height: 100px;
+		width: 100px;
+		margin-left: -50px;
+		display: none;
+	}
+
+	html.plumbers .updated #mario {
+		display: inline;
+		opacity:0;
+		animation: plumbers_marioJump 1.2s 1 linear;
+		-webkit-animation: plumbers_marioJump 1.2s 1 linear;
+	}
+
+	@keyframes plumbers_marioJump {
+    0%   {top: 60px; opacity:0;}
+    50%  {top: 0px; opacity:1;}
+    100% {top: 60px; opacity:0;}
+  }
+
+	@-webkit-keyframes plumbers_marioJump {
+    0%   {top: 60px; opacity:0;}
+    50%  {top: 0px; opacity:1;}
+    100% {top: 60px; opacity:0;}
+  }
+	</style>
+</head>
+<body>
+	<div id="value"></div>
+	<div id="label">{%s p.Label %}</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+
+<script>
+var channel = "{%j p.Channel %}";
+var varName = "{%j p.Var %}";
+var refresh = {%d p.Refresh %};
+
+var currValue = null;
+
+function updateNumber() {
+	$.ajax({
+	  url: "/api/v1/vars/get/" + varName + "/" + channel,
+	  method: "GET",
+	  dataType: "json",
+	  cache: false
+	}).done(function(json) {
+        var txt = json.value;
+
+        if (currValue == null || currValue == txt) $('body').removeClass('updated');
+        else $('body').addClass('updated');
+
+        currValue = txt;
+        $("#value").text(currValue);
+    });
+}
+
+setInterval(updateNumber, refresh);
+updateNumber();
+
+// if ($('#html').hasClass("guude")) {
+// 	$('body').prepend('<img id="guude" src="/img/guude.png">');
+// }
+
+// if ($('#html').hasClass("poose")) {
+// 	$('body').prepend('<img id="poose" src="/img/poose.png">');
+// }
+
+// if ($('#html').hasClass("plumbers")) {
+// 	$('body').prepend('<img id="mario" src="/img/mario.png">');
+// }
+
+</script>
+</body>
+</html>
+
+{% endfunc %}

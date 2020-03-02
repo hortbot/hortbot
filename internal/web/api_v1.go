@@ -30,15 +30,15 @@ func (a *App) apiV1VarsGet(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		// Do nothing.
 	case sql.ErrNoRows:
-		a.httpError(w, r, http.StatusNotFound)
+		v1Error(w, http.StatusNotFound)
 		return
 	default:
 		ctxlog.Error(ctx, "error querying for variable", zap.Error(err))
-		a.httpError(w, r, http.StatusInternalServerError)
+		v1Error(w, http.StatusInternalServerError)
 		return
 	}
 
-	v := struct {
+	v := &struct {
 		Channel      string    `json:"channel"`
 		Var          string    `json:"var"`
 		Value        string    `json:"value"`
@@ -51,9 +51,19 @@ func (a *App) apiV1VarsGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(&v); err != nil {
+	if err := json.NewEncoder(w).Encode(v); err != nil {
 		ctxlog.Error(ctx, "failed to write response", zap.Error(err))
-		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
+}
+
+func v1Error(w http.ResponseWriter, code int) {
+	v := &struct {
+		Status string `json:"status"`
+	}{
+		Status: http.StatusText(code),
+	}
+
+	w.WriteHeader(code)
+	_ = json.NewEncoder(w).Encode(v)
 }

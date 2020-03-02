@@ -137,6 +137,7 @@ func (a *App) Run(ctx context.Context) error {
 		})
 
 		r.Route("/api/v1", a.routeAPIv1)
+		r.Get("/showvar.php", a.showVar)
 
 		r.Get("/login", a.login)
 		r.Get("/logout", a.logout)
@@ -714,4 +715,47 @@ func (a *App) logout(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+func (a *App) showVar(w http.ResponseWriter, r *http.Request) {
+	query := struct {
+		Channel    string `queryparam:"channel"`
+		Var        string `queryparam:"var"`
+		Refresh    int    `queryparam:"refresh"`
+		Themes     string `queryparam:"themes"`
+		ValueFont  string `queryparam:"valueFont"`
+		ValueColor string `queryparam:"valueColor"`
+		LabelFont  string `queryparam:"labelFont"`
+		LabelColor string `queryparam:"labelColor"`
+		Label      string `queryparam:"label"`
+	}{}
+
+	if err := queryparam.Parse(r.URL.Query(), &query); err != nil {
+		a.httpError(w, r, http.StatusBadRequest)
+		return
+	}
+
+	if query.Refresh <= 0 {
+		query.Refresh = 5000
+	}
+
+	themes := make(map[string]bool)
+	for _, theme := range strings.Fields(query.Themes) {
+		themes[theme] = true
+	}
+
+	p := &templates.ShowVarPage{
+		Channel:    query.Channel,
+		Var:        query.Var,
+		Refresh:    query.Refresh,
+		ThemesStr:  query.Themes,
+		Themes:     themes,
+		ValueFont:  query.ValueFont,
+		ValueColor: query.ValueColor,
+		LabelFont:  query.LabelFont,
+		LabelColor: query.LabelColor,
+		Label:      query.Label,
+	}
+
+	p.WriteRender(w)
 }
