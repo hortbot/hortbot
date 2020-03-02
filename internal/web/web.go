@@ -133,6 +133,7 @@ func (a *App) Run(ctx context.Context) error {
 			r.Get("/regulars", a.channelRegulars)
 			r.Get("/chatrules", a.channelChatRules)
 			r.Get("/scheduled", a.channelScheduled)
+			r.Get("/variables", a.channelVariables)
 		})
 
 		r.Get("/login", a.login)
@@ -578,6 +579,25 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 		ChannelPage: a.channelPage(r, channel),
 		Repeated:    repeated,
 		Scheduled:   scheduled,
+	}
+
+	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) channelVariables(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	channel := getChannel(ctx)
+
+	variables, err := channel.Variables(qm.OrderBy(models.VariableColumns.Name)).All(ctx, a.DB)
+	if err != nil {
+		ctxlog.Error(ctx, "error querying variables", zap.Error(err))
+		a.httpError(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	page := &templates.ChannelVariablesPage{
+		ChannelPage: a.channelPage(r, channel),
+		Variables:   variables,
 	}
 
 	templates.WritePageTemplate(w, page)

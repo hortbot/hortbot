@@ -62,6 +62,7 @@ function timeSorter(a, b) {
             <li><a href="/c/{%u p.Channel.Name %}/lists" class='{%= isActive(item, "lists") %}'>Lists</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/autoreplies" class='{%= isActive(item, "autoreplies") %}'>Autoreplies</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/scheduled" class='{%= isActive(item, "scheduled") %}'>Repeated / scheduled</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/variables" class='{%= isActive(item, "variables") %}'>Variables</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -646,4 +647,47 @@ type ChannelScheduledPage struct {
     </div>
 </div>
 {% endfunc %}
-    
+
+{% code
+type ChannelVariablesPage struct {
+    ChannelPage
+    Variables models.VariableSlice
+}
+%}
+
+{% func (p *ChannelVariablesPage) PageBody() %}
+{%= p.SidebarMobile("variables") %}
+<div class="columns is-fullheight is-clipped">
+    {%= p.Sidebar("variables") %}
+
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Variables</span>
+        <hr>
+
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="enabled"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true">Name</th>
+                    <th data-sortable="true">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, v := range p.Variables %}
+                <tr>
+                    <td>{%s v.Name %}</td>
+                    <td>{%s v.Value %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endfunc %}

@@ -175,6 +175,11 @@ func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
 	qw422016.N().S(`/scheduled" class='`)
 	streamisActive(qw422016, item, "scheduled")
 	qw422016.N().S(`'>Repeated / scheduled</a></li>
+            <li><a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/variables" class='`)
+	streamisActive(qw422016, item, "variables")
+	qw422016.N().S(`'>Variables</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -1250,6 +1255,78 @@ func (p *ChannelScheduledPage) WritePageBody(qq422016 qtio422016.Writer) {
 }
 
 func (p *ChannelScheduledPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelVariablesPage struct {
+	ChannelPage
+	Variables models.VariableSlice
+}
+
+func (p *ChannelVariablesPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "variables")
+	qw422016.N().S(`
+<div class="columns is-fullheight is-clipped">
+    `)
+	p.StreamSidebar(qw422016, "variables")
+	qw422016.N().S(`
+
+    <div class="column is-main-content content">
+        <span class="title is-1">`)
+	qw422016.E().S(displayNameFor(p.Channel))
+	qw422016.N().S(`</span><span class="subtitle is-3">Variables</span>
+        <hr>
+
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="enabled"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true">Name</th>
+                    <th data-sortable="true">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+	for _, v := range p.Variables {
+		qw422016.N().S(`
+                <tr>
+                    <td>`)
+		qw422016.E().S(v.Name)
+		qw422016.N().S(`</td>
+                    <td>`)
+		qw422016.E().S(v.Value)
+		qw422016.N().S(`</td>
+                </tr>
+                `)
+	}
+	qw422016.N().S(`
+            </tbody>
+        </table>
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelVariablesPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelVariablesPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)
