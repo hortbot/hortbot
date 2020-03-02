@@ -136,6 +136,8 @@ func (a *App) Run(ctx context.Context) error {
 			r.Get("/variables", a.channelVariables)
 		})
 
+		r.Route("/api/v1", a.routeAPIv1)
+
 		r.Get("/login", a.login)
 		r.Get("/logout", a.logout)
 		r.Get("/auth/twitch", a.authTwitchNormal)
@@ -239,7 +241,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 
 	stateVal.Redirect = query.Redirect
 
-	if err := a.Redis.SetAuthState(r.Context(), state, stateVal, authTimeout); err != nil {
+	if err := a.Redis.SetAuthState(ctx, state, stateVal, authTimeout); err != nil {
 		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
@@ -287,7 +289,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	if normalizeHost(stateVal.Host) != normalizeHost(r.Host) {
 		// This came to the wrong host. Put the state back and redirect.
-		if err := a.Redis.SetAuthState(r.Context(), state, &stateVal, authTimeout); err != nil {
+		if err := a.Redis.SetAuthState(ctx, state, &stateVal, authTimeout); err != nil {
 			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 			a.httpError(w, r, http.StatusInternalServerError)
 			return
