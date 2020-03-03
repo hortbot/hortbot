@@ -207,24 +207,28 @@ func walk(ctx context.Context, nodes []cbp.Node, fn func(ctx context.Context, ac
 	return sb.String(), nil
 }
 
+func (s *session) Parameters() []string {
+	if s.parameters != nil {
+		return *s.parameters
+	}
+
+	var params []string
+	if s.CommandParams != "" {
+		params = strings.Split(s.CommandParams, ";")
+		for i, p := range params {
+			params[i] = strings.TrimSpace(p)
+		}
+	}
+	s.parameters = &params
+	return params
+}
+
 func (s *session) ParameterAt(i int) *string {
 	if i < 0 {
 		return nil
 	}
 
-	var params []string
-	if s.Parameters == nil {
-		if s.CommandParams != "" {
-			params = strings.Split(s.CommandParams, ";")
-			for i, p := range params {
-				params[i] = strings.TrimSpace(p)
-			}
-		}
-		s.Parameters = &params
-	} else {
-		params = *s.Parameters
-	}
-
+	params := s.Parameters()
 	if i < len(params) {
 		return &params[i]
 	}
@@ -240,13 +244,13 @@ func (s *session) FirstParameter() *string {
 // have been found. If there's only one parameter, then instead of returning
 // nil when running out, it will continue to return the first.
 func (s *session) NextParameter() *string {
-	p := s.ParameterAt(s.ParameterIndex)
+	p := s.ParameterAt(s.parameterIndex)
 	if p != nil {
-		s.ParameterIndex++
+		s.parameterIndex++
 		return p
 	}
 
-	if len(*s.Parameters) == 1 {
+	if len(s.Parameters()) == 1 {
 		return s.ParameterAt(0)
 	}
 
@@ -279,7 +283,7 @@ func actionParameter(ctx context.Context, s *session, actionName, value string) 
 		}
 		return *p, nil
 	}
-	return "(_" + actionName + value + "_)", nil
+	return "", nil
 }
 
 func actionParameterIndex(ctx context.Context, s *session, actionName, value string) (string, error) {
@@ -292,11 +296,14 @@ func actionParameterIndex(ctx context.Context, s *session, actionName, value str
 	}
 
 	if i, err := strconv.Atoi(is); err == nil {
-		if p := s.ParameterAt(i - 1); p != nil {
-			if upper {
-				return strings.ToUpper(*p), nil
+		if i > 0 {
+			if p := s.ParameterAt(i - 1); p != nil {
+				if upper {
+					return strings.ToUpper(*p), nil
+				}
+				return *p, nil
 			}
-			return *p, nil
+			return "", nil
 		}
 	}
 

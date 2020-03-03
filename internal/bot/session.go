@@ -57,8 +57,8 @@ type session struct {
 	Channel *models.Channel
 
 	CommandParams  string
-	Parameters     *[]string
-	ParameterIndex int
+	parameters     *[]string
+	parameterIndex int
 
 	Silent bool
 	Imp    bool
@@ -261,7 +261,9 @@ func (s *session) SendCommand(ctx context.Context, command string, args ...strin
 		builder.WriteString(arg)
 	}
 
-	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, builder.String())
+	message := strings.TrimSpace(builder.String())
+
+	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, message)
 }
 
 func (s *session) DeleteMessage(ctx context.Context) error {
@@ -487,8 +489,8 @@ func (s *session) TwitchNotAuthMessage() string {
 
 func (s *session) SetCommandParams(params string) {
 	s.CommandParams = params
-	s.Parameters = nil
-	s.ParameterIndex = 0
+	s.parameters = nil
+	s.parameterIndex = 0
 }
 
 func (s *session) RoomIDStr() string {

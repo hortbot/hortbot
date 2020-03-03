@@ -8,7 +8,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] the best the best the best the best
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!spam the best ; the worst
-send hortbot #foobar [HB] the best the worst (_PARAMETER_) (_PARAMETER_)
+send hortbot #foobar [HB] the best the worst
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add spam (_PARAMETER_CAPS_) (_PARAMETER_CAPS_) (_PARAMETER_CAPS_) (_PARAMETER_CAPS_)
 send_any
@@ -17,4 +17,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] THE BEST THE BEST THE BEST THE BEST
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!spam the best ; the worst
-send hortbot #foobar [HB] THE BEST THE WORST (_PARAMETER_CAPS_) (_PARAMETER_CAPS_)
+send hortbot #foobar [HB] THE BEST THE WORST

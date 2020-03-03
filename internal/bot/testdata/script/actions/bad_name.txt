@@ -8,14 +8,14 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] (_THISDOESNTEXIST_)
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_PARAMETERA_)
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test "(_PARAMETERA_)"
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar [HB] (_PARAMETERA_)
+send hortbot #foobar [HB] "(_PARAMETERA_)"
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_PARAMETER__)
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test "(_PARAMETER__)"
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar [HB] (_PARAMETER__)
+send hortbot #foobar [HB] "(_PARAMETER__)"
