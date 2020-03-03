@@ -85,6 +85,8 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
 
+	ctx = ctxlog.With(ctx, zap.String("origin", origin))
+
 	defer func() {
 		if r := recover(); r != nil {
 			if _, ok := r.(testingPanic); ok {
