@@ -21,7 +21,7 @@ type AboutPage struct {
         <div class="columns">
             <div class="column is-8 is-offset-2 has-text-centered">
                 <p>
-                    {%= p.PageBrand() %} is a Twitch IRC bot, written in Go.
+                    {%= p.PageBrand() %} is an instance of HortBot, a Twitch IRC bot written in Go.
                     You can find its source code on
                     <a href="https://github.com/hortbot/hortbot">GitHub here</a>.
                 </p>

@@ -55,7 +55,7 @@ func (p *AboutPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 <p>
                     `)
 	p.StreamPageBrand(qw422016)
-	qw422016.N().S(` is a Twitch IRC bot, written in Go.
+	qw422016.N().S(` is an instance of HortBot, a Twitch IRC bot written in Go.
                     You can find its source code on
                     <a href="https://github.com/hortbot/hortbot">GitHub here</a>.
                 </p>
