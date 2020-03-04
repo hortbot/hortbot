@@ -20,7 +20,7 @@ func cmdWhatShouldIPlay(ctx context.Context, s *session, cmd string, args string
 	i := s.Deps.Rand.Intn(len(games))
 	game := games[i]
 
-	return s.Replyf(ctx, "You could always play: %s (http://store.steampowered.com/app/%d)", game.Name, game.ID)
+	return s.Replyf(ctx, "You could always play: %s (https://store.steampowered.com/app/%d)", game.Name, game.ID)
 }
 
 func cmdStatusGame(ctx context.Context, s *session, cmd string, args string) error {

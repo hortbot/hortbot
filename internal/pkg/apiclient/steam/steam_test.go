@@ -24,7 +24,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	const (
 		apiKey = "THISISTHEAPIKEY123456789"
 		id     = "12730127017230123"
-		url    = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/"
+		url    = "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/"
 		query  = "key=" + apiKey + "&format=json&steamids=" + id
 	)
 
@@ -144,7 +144,7 @@ func TestGetOwnedGames(t *testing.T) {
 	const (
 		apiKey = "THISISTHEAPIKEY123456789"
 		id     = "12730127017230123"
-		url    = "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/"
+		url    = "https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/"
 		query  = "key=" + apiKey + "&format=json&steamid=" + id + "&include_appinfo=1"
 	)
 

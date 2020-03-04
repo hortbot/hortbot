@@ -66,9 +66,9 @@ type Summary struct {
 
 // GetPlayerSummary gets a Steam user's summary.
 //
-// GET http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/
+// GET https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/
 func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, error) {
-	url := "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + url.QueryEscape(s.apiKey) + "&format=json&steamids=" + url.QueryEscape(id)
+	url := "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + url.QueryEscape(s.apiKey) + "&format=json&steamids=" + url.QueryEscape(id)
 
 	resp, err := ctxhttp.Get(ctx, s.cli, url)
 	if err != nil {
@@ -107,9 +107,9 @@ type Game struct {
 
 // GetOwnedGames gets a Steam user's owned games.
 //
-// GET http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/
+// GET https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/
 func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
-	url := "http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + s.apiKey + "&format=json&steamid=" + url.QueryEscape(id) + "&include_appinfo=1"
+	url := "https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + s.apiKey + "&format=json&steamid=" + url.QueryEscape(id) + "&include_appinfo=1"
 
 	resp, err := ctxhttp.Get(ctx, s.cli, url)
 	if err != nil {

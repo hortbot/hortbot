@@ -19,7 +19,7 @@ send hortbot #foobar [HB] (unavailable) (unavailable) (unavailable) (unavailable
 
 steam_get_player_summary {"ID": "1234567890123456789", "Summary": {"personaname": "Steam User", "profileurl": "https://steamcommunity.com/id/fakeprofile", "gameextrainfo": "Garry's Mod", "gameid": "4000", "gameserverip": "127.0.0.1:27015"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar [HB] https://steamcommunity.com/id/fakeprofile Garry's Mod 127.0.0.1:27015 http://store.steampowered.com/app/4000
+send hortbot #foobar [HB] https://steamcommunity.com/id/fakeprofile Garry's Mod 127.0.0.1:27015 https://store.steampowered.com/app/4000
 
 steam_get_player_summary {"ID": "1234567890123456789", "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test

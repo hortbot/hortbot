@@ -646,7 +646,7 @@ func actionSteamStore(ctx context.Context, s *session, actionName, value string)
 	if gameID == "" {
 		return "(unavailable)", nil
 	}
-	return "http://store.steampowered.com/app/" + gameID, nil
+	return "https://store.steampowered.com/app/" + gameID, nil
 }
 
 func actionTweet(ctx context.Context, s *session, actionName, value string) (string, error) {
