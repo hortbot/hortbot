@@ -6,3 +6,6 @@ send hortbot #someone Hi there!
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin #Who_oo Hi there!
 send hortbot #who_oo Hi there!
+
+handle hortbot @id=__UUID__;room-id=999;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin #Who_oo Hi there!
+send hortbot #who_oo Hi there!

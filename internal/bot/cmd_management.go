@@ -27,8 +27,8 @@ func handleManagement(ctx context.Context, s *session) error {
 		return nil
 	}
 
-	cmd := strings.ToLower(s.Message[1:])
-	cmd, args := splitSpace(cmd)
+	cmd, args := splitSpace(s.Message[1:])
+	cmd = cleanCommandName(cmd)
 
 	defer s.UsageContext(string(prefix) + cmd)()
 
