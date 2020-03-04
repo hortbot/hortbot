@@ -48,7 +48,10 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if strings.HasPrefix(subcommand, "#") {
-		return s.Deps.Sender.SendMessage(ctx, s.Origin, subcommand, args)
+		if s.UserLevel.CanAccess(levelSuperAdmin) {
+			return s.Deps.Sender.SendMessage(ctx, s.Origin, subcommand, args)
+		}
+		return s.Reply(ctx, "Only super admins may directly send messages.")
 	}
 
 	return s.Replyf(ctx, "Bad command %s", subcommand)
