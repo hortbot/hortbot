@@ -13,6 +13,8 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
+
+	_ "net/http/pprof" //nolint:gosec
 )
 
 func init() {
@@ -24,7 +26,8 @@ func init() {
 
 // Common contains flags common to all commands.
 type Common struct {
-	Debug bool `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+	Debug               bool   `long:"debug" env:"HB_DEBUG" description:"Enables debug mode and the debug log level"`
+	DefaultServeMuxAddr string `long:"default-serve-mux-addr" env:"HB_DEFAULT_SERVE_MUX_ADDR" description:"An address to listen on for the default serve mux HTTP calls (pprof, etc)"`
 }
 
 // IsDebug returns true if the command should be run in debug mode.
@@ -32,11 +35,18 @@ func (c *Common) IsDebug() bool {
 	return c.Debug
 }
 
+func (c *Common) RunDefaultServeMux() {
+	if c.DefaultServeMuxAddr != "" {
+		go http.ListenAndServe(c.DefaultServeMuxAddr, nil) //nolint:errcheck
+	}
+}
+
 // Command is a single command that can be parsed and run.
 type Command interface {
 	Name() string
 	Main(ctx context.Context, args []string)
 	IsDebug() bool
+	RunDefaultServeMux()
 }
 
 // Default contains the default flags. Make a copy of this, do not reuse.
@@ -60,6 +70,7 @@ func Run(cmd Command, args []string) {
 
 	logger.Info("starting", zap.String("version", version.Version()))
 
+	cmd.RunDefaultServeMux()
 	cmd.Main(ctx, args)
 }
 
