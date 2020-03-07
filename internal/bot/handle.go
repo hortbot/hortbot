@@ -462,7 +462,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		foreignChannel, name = stringsx.SplitByte(name[1:], '/')
 	}
 
-	name = cleanCommandName(name)
+	name = strings.ToLower(name)
 
 	if name == "" {
 		return false, nil
