@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  GO_DEV_VERSION: '1.13' # Recommended Go version for development.
+  GO_DEV_VERSION: "1.13" # Recommended Go version for development.
 
 jobs:
   test:
@@ -18,8 +18,8 @@ jobs:
       fail-fast: false
       matrix:
         # https://github.community/t5/GitHub-Actions/continue-on-error-allow-failure-UI-indication/m-p/37033/thread-id/2780
-        # go: ['1.14', '1.13', 'tip']
-        go: ['1.14', '1.13']
+        # go: ["1.14", "1.13", "tip"]
+        go: ["1.14", "1.13"]
     name: Go ${{ matrix.go }}
 
     steps:
@@ -124,7 +124,6 @@ jobs:
           go run ./internal/cmd/genmodels
           git diff --exit-code
 
-
   docker:
     name: Docker
     runs-on: ubuntu-latest
@@ -135,17 +134,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Build image
+      - name: Get version
         run: |
           export HB_VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
-          echo Building version $HB_VERSION
-          docker build -t hortbot/hortbot --build-arg version=$HB_VERSION .
+          echo Version $HB_VERSION
           echo "::set-env name=HB_VERSION::$HB_VERSION"
 
-      - name: Push image
-        if: github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: |
-          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-          docker tag hortbot/hortbot hortbot/hortbot:$HB_VERSION
-          docker push hortbot/hortbot
-          docker push hortbot/hortbot:$HB_VERSION
+      - name: Build / push image
+        uses: whoan/docker-build-with-cache-action@v4
+        with:
+          username: "${{ secrets.DOCKER_USERNAME }}"
+          password: "${{ secrets.DOCKER_PASSWORD }}"
+          image_name: hortbot/hortbot
+          image_tag: "latest,${{ env.HB_VERSION }}"
+          build_extra_args: "--build-arg=version=${{ env.HB_VERSION }}"
+          push_image_and_stages: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
