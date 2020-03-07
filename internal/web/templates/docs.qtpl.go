@@ -269,6 +269,14 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		`Example: <code>!command get pan</code> &mdash; Gets the response for the "pan" command.`,
 	)
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command clone #<channel> <name>",
+		`Clones a command from another channel into this channel.`,
+		"mods",
+		`Example: <code>!command clone #coestar pan</code> &mdash; Clones the "pan" command into the current channel as "pan".`,
+	)
+	qw422016.N().S(`
             </dl>
         </section>
 

@@ -192,6 +192,12 @@ dd {
                     "mods",
                     `Example: <code>!command get pan</code> &mdash; Gets the response for the "pan" command.`,
                 ) %}
+                {%= command(
+                    "!command clone #<channel> <name>",
+                    `Clones a command from another channel into this channel.`,
+                    "mods",
+                    `Example: <code>!command clone #coestar pan</code> &mdash; Clones the "pan" command into the current channel as "pan".`,
+                ) %}
             </dl>
         </section>
 
