@@ -369,6 +369,7 @@ var ChannelRels = struct {
 	CommandInfos      string
 	CommandLists      string
 	CustomCommands    string
+	Highlights        string
 	Quotes            string
 	RepeatedCommands  string
 	ScheduledCommands string
@@ -378,6 +379,7 @@ var ChannelRels = struct {
 	CommandInfos:      "CommandInfos",
 	CommandLists:      "CommandLists",
 	CustomCommands:    "CustomCommands",
+	Highlights:        "Highlights",
 	Quotes:            "Quotes",
 	RepeatedCommands:  "RepeatedCommands",
 	ScheduledCommands: "ScheduledCommands",
@@ -390,6 +392,7 @@ type channelR struct {
 	CommandInfos      CommandInfoSlice
 	CommandLists      CommandListSlice
 	CustomCommands    CustomCommandSlice
+	Highlights        HighlightSlice
 	Quotes            QuoteSlice
 	RepeatedCommands  RepeatedCommandSlice
 	ScheduledCommands ScheduledCommandSlice
@@ -581,6 +584,27 @@ func (o *Channel) CustomCommands(mods ...qm.QueryMod) customCommandQuery {
 
 	if len(queries.GetSelect(query.Query)) == 0 {
 		queries.SetSelect(query.Query, []string{"\"custom_commands\".*"})
+	}
+
+	return query
+}
+
+// Highlights retrieves all the highlight's Highlights with an executor.
+func (o *Channel) Highlights(mods ...qm.QueryMod) highlightQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("\"highlights\".\"channel_id\"=?", o.ID),
+	)
+
+	query := Highlights(queryMods...)
+	queries.SetFrom(query.Query, "\"highlights\"")
+
+	if len(queries.GetSelect(query.Query)) == 0 {
+		queries.SetSelect(query.Query, []string{"\"highlights\".*"})
 	}
 
 	return query
@@ -1012,6 +1036,94 @@ func (channelL) LoadCustomCommands(ctx context.Context, e boil.ContextExecutor, 
 				local.R.CustomCommands = append(local.R.CustomCommands, foreign)
 				if foreign.R == nil {
 					foreign.R = &customCommandR{}
+				}
+				foreign.R.Channel = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
+// LoadHighlights allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (channelL) LoadHighlights(ctx context.Context, e boil.ContextExecutor, singular bool, maybeChannel interface{}, mods queries.Applicator) error {
+	var slice []*Channel
+	var object *Channel
+
+	if singular {
+		object = maybeChannel.(*Channel)
+	} else {
+		slice = *maybeChannel.(*[]*Channel)
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &channelR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &channelR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(qm.From(`highlights`), qm.WhereIn(`highlights.channel_id in ?`, args...))
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load highlights")
+	}
+
+	var resultSlice []*Highlight
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice highlights")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on highlights")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for highlights")
+	}
+
+	if singular {
+		object.R.Highlights = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &highlightR{}
+			}
+			foreign.R.Channel = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ChannelID {
+				local.R.Highlights = append(local.R.Highlights, foreign)
+				if foreign.R == nil {
+					foreign.R = &highlightR{}
 				}
 				foreign.R.Channel = local
 				break
@@ -1577,6 +1689,59 @@ func (o *Channel) AddCustomCommands(ctx context.Context, exec boil.ContextExecut
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &customCommandR{
+				Channel: o,
+			}
+		} else {
+			rel.R.Channel = o
+		}
+	}
+	return nil
+}
+
+// AddHighlights adds the given related objects to the existing relationships
+// of the channel, optionally inserting them as new records.
+// Appends related to o.R.Highlights.
+// Sets related.R.Channel appropriately.
+func (o *Channel) AddHighlights(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*Highlight) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ChannelID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE \"highlights\" SET %s WHERE %s",
+				strmangle.SetParamNames("\"", "\"", 1, []string{"channel_id"}),
+				strmangle.WhereClause("\"", "\"", 2, highlightPrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ChannelID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &channelR{
+			Highlights: related,
+		}
+	} else {
+		o.R.Highlights = append(o.R.Highlights, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &highlightR{
 				Channel: o,
 			}
 		} else {

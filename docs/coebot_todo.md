@@ -138,8 +138,7 @@ Some features are not currently planned to be ported and have been crossed out.
     -   [x] Reset
     -   [x] Count
     -   [x] Winner
--   [x] ~~Highlights~~
-    -   Predates Twitch clips; may still consider reviving.
+-   [x] Highlights
 -   [x] ~~Binding of Isaac: Rebirth~~
 -   [x] Moderation
     -   [x] Slow mode on/of

@@ -46,14 +46,14 @@ func (s *session) RaffleCount(ctx context.Context) (int64, error) {
 
 var errInCooldown = errors.New("bot: in cooldown")
 
-func (s *session) tryCooldown(ctx context.Context, key string, seconds int) error {
+func (s *session) tryCooldown(ctx context.Context, key string, seconds int, allowMods bool) error {
 	if seconds == 0 {
 		return nil
 	}
 
 	dur := time.Duration(seconds) * time.Second
 
-	if s.UserLevel.CanAccess(levelModerator) {
+	if allowMods && s.UserLevel.CanAccess(levelModerator) {
 		return s.Deps.Redis.MarkCooldown(ctx, s.RoomIDStr(), key, dur)
 	}
 
@@ -79,11 +79,17 @@ func (s *session) TryCooldown(ctx context.Context) error {
 		cooldown = s.Channel.Cooldown.Int
 	}
 
-	return s.tryCooldown(ctx, "command_cooldown", cooldown)
+	return s.tryCooldown(ctx, "command_cooldown", cooldown, true)
 }
 
 func (s *session) TryRollCooldown(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "TryRollCooldown")
 	defer span.End()
-	return s.tryCooldown(ctx, "roll_cooldown", s.Channel.RollCooldown)
+	return s.tryCooldown(ctx, "roll_cooldown", s.Channel.RollCooldown, true)
+}
+
+func (s *session) TryHighlightCooldown(ctx context.Context) error {
+	ctx, span := trace.StartSpan(ctx, "TryHighlightCooldown")
+	defer span.End()
+	return s.tryCooldown(ctx, "ht_cooldown", 60, false)
 }

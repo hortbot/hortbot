@@ -1,0 +1,5 @@
+BEGIN;
+
+DROP TABLE IF EXISTS highlights CASCADE;
+
+COMMIT;

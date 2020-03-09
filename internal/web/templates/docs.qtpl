@@ -522,6 +522,8 @@ dd {
                 {%= command("!songlink", `Gets a link to the currently playing song.`, "everyone") %}
                 {%= command("!whatshouldiplay", `Picks a random game from the channel's Steam library.`, "broadcaster") %}
                 {%= command("!channelid", `Gets the channel's Twitch ID.`, "everyone") %}
+                {%= command("!ht", `Creates a highlight (viewable on the channel page).`, "everyone") %}
+                {%= command("!highlightthat", `Same as <code>!ht</code>.`, "everyone") %}
             </dl>
         </section>
 

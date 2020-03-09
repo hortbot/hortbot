@@ -36,12 +36,20 @@ type ChannelPage struct {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
 <script>
 function timeFormatter(value) {
-    var d = new Date(value);
-    return d.toLocaleString();
+    try {
+        var d = new Date(value);
+        return d.toLocaleString();
+    } catch {
+        return "";
+    }
 }
 
 function timeSorter(a, b) {
-    return Date.parse(a) - Date.parse(b);
+    try {
+        return Date.parse(a) - Date.parse(b);
+    } catch {
+        return 0;
+    }
 }
 </script>
 {% endfunc %}
@@ -63,6 +71,7 @@ function timeSorter(a, b) {
             <li><a href="/c/{%u p.Channel.Name %}/autoreplies" class='{%= isActive(item, "autoreplies") %}'>Autoreplies</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/scheduled" class='{%= isActive(item, "scheduled") %}'>Repeated / scheduled</a></li>
             <li><a href="/c/{%u p.Channel.Name %}/variables" class='{%= isActive(item, "variables") %}'>Variables</a></li>
+            <li><a href="/c/{%u p.Channel.Name %}/highlights" class='{%= isActive(item, "highlights") %}'>Highlights</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -664,18 +673,21 @@ type ChannelVariablesPage struct {
         <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Variables</span>
         <hr>
 
+        {% if len(p.Variables) == 0 %}
+        <p>No variables.</p>
+        {% else %}
         <table
             class="table is-striped is-hoverable is-fullwidth"
             data-toggle="table"
             data-sort-class="table-active"
-            data-sort-name="enabled"
+            data-sort-name="name"
             data-sort-order="desc"
             data-search="true"
             data-sortable="true"
         >
             <thead>
                 <tr>
-                    <th data-sortable="true">Name</th>
+                    <th data-sortable="true" data-field="name">Name</th>
                     <th data-sortable="true">Value</th>
                 </tr>
             </thead>
@@ -688,6 +700,64 @@ type ChannelVariablesPage struct {
                 {% endfor %}
             </tbody>
         </table>
+        {% endif %}
     </div>
 </div>
 {% endfunc %}
+
+{% code
+type ChannelHighlightsPage struct {
+    ChannelPage
+    Highlights models.HighlightSlice
+}
+%}
+
+{% func (p *ChannelHighlightsPage) PageBody() %}
+{%= p.SidebarMobile("highlights") %}
+<div class="columns is-fullheight is-clipped">
+    {%= p.Sidebar("highlights") %}
+
+    <div class="column is-main-content content">
+        <span class="title is-1">{%s displayNameFor(p.Channel) %}</span><span class="subtitle is-3">Highlights</span>
+        <hr>
+
+        {% if len(p.Highlights) == 0 %}
+        <p>No highlights.</p>
+        {% else %}
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="created_at"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="created_at" data-formatter="timeFormatter" data-sorter="timeSorter">Created at</th>
+                    <th data-sortable="true">Timestamp</th>
+                    <th data-sortable="true">Status</th>
+                    <th data-sortable="true">Game</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for _, h := range p.Highlights %}
+                <tr>
+                    <td>{%s h.HighlightedAt.Format(time.RFC3339) %}</td>
+                    <td>{% stripspace %}
+                        {% if h.StartedAt.Valid %}
+                        {%s durafmt.Parse(h.HighlightedAt.Sub(h.StartedAt.Time).Truncate(time.Second)).String() %}
+                        {% endif %}
+                        {% endstripspace %}</td>
+                    <td>{%s h.Status %}</td>
+                    <td>{%s h.Game %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endfunc %}
+

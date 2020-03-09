@@ -64,6 +64,8 @@ func init() {
 		"bothelp":         {fn: cmdHelp, minLevel: levelEveryone},
 		"help":            {fn: cmdHelp, minLevel: levelEveryone},
 		"channelid":       {fn: cmdChannelID, minLevel: levelEveryone},
+		"ht":              {fn: cmdHighlight, minLevel: levelEveryone, skipCooldown: true},
+		"highlightthat":   {fn: cmdHighlight, minLevel: levelEveryone, skipCooldown: true},
 	})
 }
 

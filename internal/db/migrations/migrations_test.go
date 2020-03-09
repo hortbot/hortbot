@@ -27,6 +27,7 @@ func allTables() []string {
 		"blocked_users",
 		"command_lists",
 		"command_infos",
+		"highlights",
 	}
 }
 

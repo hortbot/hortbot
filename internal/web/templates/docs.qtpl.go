@@ -737,6 +737,12 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!channelid", `Gets the channel's Twitch ID.`, "everyone")
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!ht", `Creates a highlight (viewable on the channel page).`, "everyone")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!highlightthat", `Same as <code>!ht</code>.`, "everyone")
+	qw422016.N().S(`
             </dl>
         </section>
 

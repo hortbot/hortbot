@@ -92,12 +92,20 @@ func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
 <script>
 function timeFormatter(value) {
-    var d = new Date(value);
-    return d.toLocaleString();
+    try {
+        var d = new Date(value);
+        return d.toLocaleString();
+    } catch {
+        return "";
+    }
 }
 
 function timeSorter(a, b) {
-    return Date.parse(a) - Date.parse(b);
+    try {
+        return Date.parse(a) - Date.parse(b);
+    } catch {
+        return 0;
+    }
 }
 </script>
 `)
@@ -180,6 +188,11 @@ func (p *ChannelPage) StreamSidebar(qw422016 *qt422016.Writer, item string) {
 	qw422016.N().S(`/variables" class='`)
 	streamisActive(qw422016, item, "variables")
 	qw422016.N().S(`'>Variables</a></li>
+            <li><a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/highlights" class='`)
+	streamisActive(qw422016, item, "highlights")
+	qw422016.N().S(`'>Highlights</a></li>
         </ul>
         <p class="menu-label">
             Settings
@@ -1283,38 +1296,48 @@ func (p *ChannelVariablesPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`</span><span class="subtitle is-3">Variables</span>
         <hr>
 
+        `)
+	if len(p.Variables) == 0 {
+		qw422016.N().S(`
+        <p>No variables.</p>
+        `)
+	} else {
+		qw422016.N().S(`
         <table
             class="table is-striped is-hoverable is-fullwidth"
             data-toggle="table"
             data-sort-class="table-active"
-            data-sort-name="enabled"
+            data-sort-name="name"
             data-sort-order="desc"
             data-search="true"
             data-sortable="true"
         >
             <thead>
                 <tr>
-                    <th data-sortable="true">Name</th>
+                    <th data-sortable="true" data-field="name">Name</th>
                     <th data-sortable="true">Value</th>
                 </tr>
             </thead>
             <tbody>
                 `)
-	for _, v := range p.Variables {
-		qw422016.N().S(`
+		for _, v := range p.Variables {
+			qw422016.N().S(`
                 <tr>
                     <td>`)
-		qw422016.E().S(v.Name)
-		qw422016.N().S(`</td>
+			qw422016.E().S(v.Name)
+			qw422016.N().S(`</td>
                     <td>`)
-		qw422016.E().S(v.Value)
-		qw422016.N().S(`</td>
+			qw422016.E().S(v.Value)
+			qw422016.N().S(`</td>
                 </tr>
                 `)
-	}
-	qw422016.N().S(`
+		}
+		qw422016.N().S(`
             </tbody>
         </table>
+        `)
+	}
+	qw422016.N().S(`
     </div>
 </div>
 `)
@@ -1327,6 +1350,98 @@ func (p *ChannelVariablesPage) WritePageBody(qq422016 qtio422016.Writer) {
 }
 
 func (p *ChannelVariablesPage) PageBody() string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+type ChannelHighlightsPage struct {
+	ChannelPage
+	Highlights models.HighlightSlice
+}
+
+func (p *ChannelHighlightsPage) StreamPageBody(qw422016 *qt422016.Writer) {
+	qw422016.N().S(`
+`)
+	p.StreamSidebarMobile(qw422016, "highlights")
+	qw422016.N().S(`
+<div class="columns is-fullheight is-clipped">
+    `)
+	p.StreamSidebar(qw422016, "highlights")
+	qw422016.N().S(`
+
+    <div class="column is-main-content content">
+        <span class="title is-1">`)
+	qw422016.E().S(displayNameFor(p.Channel))
+	qw422016.N().S(`</span><span class="subtitle is-3">Highlights</span>
+        <hr>
+
+        `)
+	if len(p.Highlights) == 0 {
+		qw422016.N().S(`
+        <p>No highlights.</p>
+        `)
+	} else {
+		qw422016.N().S(`
+        <table
+            class="table is-striped is-hoverable is-fullwidth"
+            data-toggle="table"
+            data-sort-class="table-active"
+            data-sort-name="created_at"
+            data-sort-order="desc"
+            data-search="true"
+            data-sortable="true"
+        >
+            <thead>
+                <tr>
+                    <th data-sortable="true" data-field="created_at" data-formatter="timeFormatter" data-sorter="timeSorter">Created at</th>
+                    <th data-sortable="true">Timestamp</th>
+                    <th data-sortable="true">Status</th>
+                    <th data-sortable="true">Game</th>
+                </tr>
+            </thead>
+            <tbody>
+                `)
+		for _, h := range p.Highlights {
+			qw422016.N().S(`
+                <tr>
+                    <td>`)
+			qw422016.E().S(h.HighlightedAt.Format(time.RFC3339))
+			qw422016.N().S(`</td>
+                    <td>`)
+			if h.StartedAt.Valid {
+				qw422016.E().S(durafmt.Parse(h.HighlightedAt.Sub(h.StartedAt.Time).Truncate(time.Second)).String())
+			}
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().S(h.Status)
+			qw422016.N().S(`</td>
+                    <td>`)
+			qw422016.E().S(h.Game)
+			qw422016.N().S(`</td>
+                </tr>
+                `)
+		}
+		qw422016.N().S(`
+            </tbody>
+        </table>
+        `)
+	}
+	qw422016.N().S(`
+    </div>
+</div>
+`)
+}
+
+func (p *ChannelHighlightsPage) WritePageBody(qq422016 qtio422016.Writer) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	p.StreamPageBody(qw422016)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func (p *ChannelHighlightsPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
 	qs422016 := string(qb422016.B)

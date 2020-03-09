@@ -134,6 +134,7 @@ func (a *App) Run(ctx context.Context) error {
 			r.Get("/chatrules", a.channelChatRules)
 			r.Get("/scheduled", a.channelScheduled)
 			r.Get("/variables", a.channelVariables)
+			r.Get("/highlights", a.channelHighlights)
 		})
 
 		r.Route("/api/v1", a.routeAPIv1)
@@ -603,6 +604,30 @@ func (a *App) channelVariables(w http.ResponseWriter, r *http.Request) {
 	page := &templates.ChannelVariablesPage{
 		ChannelPage: a.channelPage(r, channel),
 		Variables:   variables,
+	}
+
+	templates.WritePageTemplate(w, page)
+}
+
+func (a *App) channelHighlights(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	channel := getChannel(ctx)
+
+	limit := time.Now().Add(-30 * 24 * time.Hour)
+
+	highlights, err := channel.Highlights(
+		models.HighlightWhere.HighlightedAt.GT(limit),
+		qm.OrderBy(models.HighlightColumns.HighlightedAt),
+	).All(ctx, a.DB)
+	if err != nil {
+		ctxlog.Error(ctx, "error querying highlights", zap.Error(err))
+		a.httpError(w, r, http.StatusInternalServerError)
+		return
+	}
+
+	page := &templates.ChannelHighlightsPage{
+		ChannelPage: a.channelPage(r, channel),
+		Highlights:  highlights,
 	}
 
 	templates.WritePageTemplate(w, page)

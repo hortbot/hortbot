@@ -43,6 +43,10 @@ func TestGetCurrentStream(t *testing.T) {
 		Game:      "Garry's Mod",
 		Viewers:   311,
 		CreatedAt: time.Now().Add(-time.Hour).Round(time.Second),
+		Channel: &twitch.Channel{
+			ID:     twitch.IDStr(id),
+			Status: "Surfin it up",
+		},
 	}
 
 	ft.setStream(id, s)

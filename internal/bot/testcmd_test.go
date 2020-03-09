@@ -7,6 +7,8 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/volatiletech/sqlboiler/queries/qm"
 )
 
 func init() {
@@ -137,6 +139,37 @@ func init() {
 	bot.TestingBuiltin("testing_channel_display_name",
 		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
 			return s.Reply(ctx, s.Channel.DisplayName)
+		},
+		bot.LevelEveryone,
+	)
+
+	bot.TestingBuiltin("testing_highlights",
+		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+			highlights, err := s.Channel.Highlights(qm.OrderBy(models.HighlightColumns.CreatedAt)).All(ctx, s.Tx)
+			if err != nil {
+				return err
+			}
+
+			if len(highlights) == 0 {
+				return s.Reply(ctx, "No highlights.")
+			}
+
+			var builder strings.Builder
+			for i, h := range highlights {
+				if i != 0 {
+					builder.WriteByte(' ')
+				}
+
+				startedAt := h.StartedAt.Ptr()
+				if startedAt != nil {
+					x := startedAt.UTC()
+					startedAt = &x
+				}
+
+				fmt.Fprintf(&builder, "[%v, %v, %q, %q]", h.HighlightedAt.UTC(), startedAt, h.Status, h.Game)
+			}
+
+			return s.Reply(ctx, builder.String())
 		},
 		bot.LevelEveryone,
 	)

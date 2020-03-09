@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	_ "net/http/pprof" //nolint:gosec
 	"os"
 	"time"
 
@@ -13,8 +14,6 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
 	"go.uber.org/zap"
-
-	_ "net/http/pprof" //nolint:gosec
 )
 
 func init() {

@@ -16,6 +16,7 @@ type Stream struct {
 	Game      string    `json:"game"`
 	Viewers   int64     `json:"viewers"`
 	CreatedAt time.Time `json:"created_at"`
+	Channel   *Channel  `json:"channel"`
 }
 
 // GetCurrentStream gets a channel's current stream. If no stream is active,

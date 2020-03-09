@@ -275,6 +275,31 @@ HLshpoS1ciuCvZu/bIwJ/x7DvB8//yPlW2yskPq8XCFVIY05EK21lE0DnQEAAP//+j39Sl8AAAA=
 `,
 	},
 
+	"/20200305204517_add_highlights.down.sql": {
+		name:    "20200305204517_add_highlights.down.sql",
+		local:   "20200305204517_add_highlights.down.sql",
+		size:    58,
+		modtime: 0,
+		compressed: `
+H4sIAAAAAAAC/3Jydff0s+bicgnyD1AIcXTycVXwdFNwjfAMDglWyMhMz8jJTM8oKVZwdgx2dnRxtebi
+cvb39fUMseYCBAAA///YgWJpOgAAAA==
+`,
+	},
+
+	"/20200305204517_add_highlights.up.sql": {
+		name:    "20200305204517_add_highlights.up.sql",
+		local:   "20200305204517_add_highlights.up.sql",
+		size:    408,
+		modtime: 0,
+		compressed: `
+H4sIAAAAAAAC/2SRwW7qMBBF9/6KuwQJ3g+wMmRA0QumMkZVVsglJrGUOMieqlW/voKKNFW2c+foXM2s
+aZerlRAbTdIQjFwXhMbXTevrhhNmAgB8hTdf+8DYkSItDWVYl8hoK0+FgTwiz0iZ3JR40fle6hL/qVw8
+2Et0ll11tgz2nUtsuxt/Daw6vM7mUAcDdSqKhfhhGhuCa8+/Xk1b0qQ2dHyGCTNfTcih+tQ4bGK5ROYT
++3BhXGPfjTv6gD5WLoJ72LbtP3Dt4/giPoAbh5tN/O+hTGzjVLd4ZvyewO6TR03vSW0793cu5vc/HPb7
+3KzEdwAAAP//LCZT7pgBAAA=
+`,
+	},
+
 	"/": {
 		name:  "/",
 		local: `.`,
@@ -289,5 +314,7 @@ var _escDirs = map[string][]os.FileInfo{
 		_escData["/20190504194418_initial_schema.up.sql"],
 		_escData["/20191230093743_add_last_seen.down.sql"],
 		_escData["/20191230093743_add_last_seen.up.sql"],
+		_escData["/20200305204517_add_highlights.down.sql"],
+		_escData["/20200305204517_add_highlights.up.sql"],
 	},
 }
