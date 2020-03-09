@@ -64,7 +64,7 @@ func (p *ChannelPage) StreamPageMeta(qw422016 *qt422016.Writer) {
     padding-left: 1rem;
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-u49ra7w4V15McfEDsAvfE6A+W18iGcM7mWlkBmASoAs=" crossorigin="anonymous" />
 `)
 }
 
@@ -88,8 +88,8 @@ func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 	p.BasePage.StreamPageScripts(qw422016)
 	qw422016.N().S(`
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/bootstrap-table.min.js" integrity="sha256-JFzlEUS2cZGdNFhVNH3GSFuqZFLjzWIjOqG5BY+Yhvw=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-EiXUuCvnTWCYTHg2nWE3Yd0N0fprGRbVTkPMJ7s4enU=" crossorigin="anonymous"></script>
 <script>
 function timeFormatter(value) {
     try {
@@ -276,6 +276,16 @@ func (p *ChannelPage) StreamSidebarMobile(qw422016 *qt422016.Writer, item string
 	qw422016.N().S(`/scheduled" class='navbar-item `)
 	streamisActive(qw422016, item, "scheduled")
 	qw422016.N().S(`'>Repeated / scheduled</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/variables" class='`)
+	streamisActive(qw422016, item, "variables")
+	qw422016.N().S(`'>Variables</a>
+                    <a href="/c/`)
+	qw422016.N().U(p.Channel.Name)
+	qw422016.N().S(`/highlights" class='`)
+	streamisActive(qw422016, item, "highlights")
+	qw422016.N().S(`'>Highlights</a>
                 </div>
             </div>
 
@@ -485,9 +495,9 @@ func streamconvertCommand(qw422016 *qt422016.Writer, s string) {
 		if node.Text != "" {
 			qw422016.E().S(node.Text)
 		} else {
-			qw422016.N().S(`<code>`)
+			qw422016.N().S(`<code>(_`)
 			qw422016.E().S(cbp.NodesString(node.Children))
-			qw422016.N().S(`</code>`)
+			qw422016.N().S(`_)</code>`)
 		}
 	}
 }
@@ -1308,7 +1318,7 @@ func (p *ChannelVariablesPage) StreamPageBody(qw422016 *qt422016.Writer) {
             data-toggle="table"
             data-sort-class="table-active"
             data-sort-name="name"
-            data-sort-order="desc"
+            data-sort-order="asc"
             data-search="true"
             data-sortable="true"
         >

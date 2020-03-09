@@ -56,7 +56,7 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
         <title>`)
 	p.StreamPageTitle(qw422016)
 	qw422016.N().S(`</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.7.2/darkly/bulmaswatch.min.css" integrity="sha256-5wlj5TjqB2oqvRZhQYNAD3fH9QiapPtu/MkIgWMkf8s=" crossorigin="anonymous" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.7.5/darkly/bulmaswatch.min.css" integrity="sha256-QibVcUotghK/a7LpR6SwHNs5y5KRfFzP3Qq67KghR6c=" crossorigin="anonymous" />
 
         <style>
         code {
@@ -109,7 +109,7 @@ func StreamPageTemplate(qw422016 *qt422016.Writer, p Page) {
 	p.StreamPageBody(qw422016)
 	qw422016.N().S(`
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/js/all.min.js" integrity="sha256-iZGp5HAiwRmkbOKVYv5FUER4iXp5QbiEudkZOdwLrjw=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/js/all.min.js" integrity="sha256-MAgcygDRahs+F/Nk5Vz387whB4kSK9NXlDN3w58LLq0=" crossorigin="anonymous"></script>
 
         `)
 	p.StreamPageScripts(qw422016)

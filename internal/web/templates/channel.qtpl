@@ -26,14 +26,14 @@ type ChannelPage struct {
     padding-left: 1rem;
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-wIjzFXsKHqI7xqvY3UliCZv3gdzpBjZO7CX1M9zpVgk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-u49ra7w4V15McfEDsAvfE6A+W18iGcM7mWlkBmASoAs=" crossorigin="anonymous" />
 {% endfunc %}
 
 {% func (p *ChannelPage) PageScripts() %}
 {%= p.BasePage.PageScripts() %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/bootstrap-table.min.js" integrity="sha256-zuYwDcub7myT0FRW3/WZI7JefCjyTmBJIoCS7Rb9xQc=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.15.4/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-PqveQNlS1aBG/1ezXZfG6a095GB17CSjcC6N+J1+ej8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/bootstrap-table.min.js" integrity="sha256-JFzlEUS2cZGdNFhVNH3GSFuqZFLjzWIjOqG5BY+Yhvw=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-EiXUuCvnTWCYTHg2nWE3Yd0N0fprGRbVTkPMJ7s4enU=" crossorigin="anonymous"></script>
 <script>
 function timeFormatter(value) {
     try {
@@ -107,6 +107,8 @@ function timeSorter(a, b) {
                     <a href="/c/{%u p.Channel.Name %}/lists" class='navbar-item {%= isActive(item, "lists") %}'>Lists</a>
                     <a href="/c/{%u p.Channel.Name %}/autoreplies" class='navbar-item {%= isActive(item, "autoreplies") %}'>Autoreplies</a>
                     <a href="/c/{%u p.Channel.Name %}/scheduled" class='navbar-item {%= isActive(item, "scheduled") %}'>Repeated / scheduled</a>
+                    <a href="/c/{%u p.Channel.Name %}/variables" class='{%= isActive(item, "variables") %}'>Variables</a>
+                    <a href="/c/{%u p.Channel.Name %}/highlights" class='{%= isActive(item, "highlights") %}'>Highlights</a>
                 </div>
             </div>
 
@@ -222,7 +224,7 @@ Unknown
 {%s node.Text %}
 {% else %}
 <code>
-{%s cbp.NodesString(node.Children) %}
+(_{%s cbp.NodesString(node.Children) %}_)
 </code>
 {% endif %}
 {% endfor %}
@@ -681,7 +683,7 @@ type ChannelVariablesPage struct {
             data-toggle="table"
             data-sort-class="table-active"
             data-sort-name="name"
-            data-sort-order="desc"
+            data-sort-order="asc"
             data-search="true"
             data-sortable="true"
         >
