@@ -25,8 +25,8 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
-	github.com/jackc/pgconn v1.3.2
-	github.com/jackc/pgx/v4 v4.4.1
+	github.com/jackc/pgconn v1.4.0
+	github.com/jackc/pgx/v4 v4.5.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -55,7 +55,7 @@ require (
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200304193943-95d2e580d8eb
+	golang.org/x/tools v0.0.0-20200308013534-11ec41452d41
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
