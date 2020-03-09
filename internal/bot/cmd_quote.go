@@ -22,7 +22,7 @@ var quoteCommands = newHandlerMap(map[string]handlerFunc{
 	"random":   {fn: cmdQuoteRandom, minLevel: levelSubscriber},
 	"search":   {fn: cmdQuoteSearch, minLevel: levelModerator},
 	"editor":   {fn: cmdQuoteEditor, minLevel: levelSubscriber},
-	"compact":  {fn: cmdQuoteCompact, minLevel: levelSubscriber},
+	"compact":  {fn: cmdQuoteCompact, minLevel: levelModerator},
 })
 
 func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {

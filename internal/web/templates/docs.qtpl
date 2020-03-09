@@ -498,9 +498,19 @@ dd {
                     "subs",
                 ) %}
                 {%= command(
+                    "!quote edit <num> <quote>",
+                    `Edts a quote.`,
+                    "mods",
+                ) %}
+                {%= command(
                     "!quote search <phrase>",
                     `Searches all quotes for a phrase.`,
                     "mods",
+                ) %}
+                {%= command(
+                    "!quote editor <num>",
+                    `Gets the username of the last editor of the quote.`,
+                    "subs",
                 ) %}
                 {%= command(
                     "!quote compact <num>",

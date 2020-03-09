@@ -700,9 +700,23 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016,
+		"!quote edit <num> <quote>",
+		`Edts a quote.`,
+		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
 		"!quote search <phrase>",
 		`Searches all quotes for a phrase.`,
 		"mods",
+	)
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!quote editor <num>",
+		`Gets the username of the last editor of the quote.`,
+		"subs",
 	)
 	qw422016.N().S(`
                 `)

@@ -24,7 +24,7 @@ var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
 	"editpattern":  {fn: cmdAutoreplyEditPattern, minLevel: levelModerator},
 	"edittrigger":  {fn: cmdAutoreplyEditPattern, minLevel: levelModerator},
 	"list":         {fn: cmdAutoreplyList, minLevel: levelSubscriber},
-	"compact":      {fn: cmdAutoreplyCompact, minLevel: levelSubscriber},
+	"compact":      {fn: cmdAutoreplyCompact, minLevel: levelModerator},
 })
 
 func cmdAutoreply(ctx context.Context, s *session, cmd string, args string) error {
