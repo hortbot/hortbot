@@ -28,7 +28,7 @@ func (b *Bot) removeRepeat(ctx context.Context, id int64) error {
 }
 
 func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) (readd bool) {
-	ctx, span := trace.StartSpan(ctx, "runRepeatedCommand")
+	ctx, span := trace.StartSpan(ctx, "Bot.runRepeatedCommand")
 	defer span.End()
 
 	runner := &repeatedCommandRunner{
@@ -56,7 +56,7 @@ func (b *Bot) removeScheduled(ctx context.Context, id int64) error {
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) (readd bool) {
-	ctx, span := trace.StartSpan(ctx, "runScheduledCommand")
+	ctx, span := trace.StartSpan(ctx, "Bot.runScheduledCommand")
 	defer span.End()
 
 	runner := &scheduledCommandRunner{
@@ -92,8 +92,9 @@ type repeatStatus struct {
 func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, err error) {
 	readd = true
 
-	ctx, span := trace.StartSpan(ctx, "runRepeat")
+	ctx, span := trace.StartSpan(ctx, "Bot.runRepeat")
 	defer span.End()
+	defer setMetricRepeatGauges(ctx, b.rep)
 
 	ctx = runner.withLog(ctx)
 	start := b.deps.Clock.Now()
@@ -371,8 +372,9 @@ func (runner *scheduledCommandRunner) info() *models.CommandInfo {
 }
 
 func (b *Bot) loadRepeats(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "loadRepeats")
+	ctx, span := trace.StartSpan(ctx, "Bot.loadRepeats")
 	defer span.End()
+	defer setMetricRepeatGauges(ctx, b.rep)
 
 	if err := b.rep.Reset(ctx); err != nil {
 		return err
