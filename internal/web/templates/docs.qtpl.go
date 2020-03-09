@@ -1059,6 +1059,12 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "GAME_CLEAN", `The current game, URL-safe.`)
 	qw422016.N().S(`
                 `)
+	streamaction(qw422016, "GAME_IS_<GAME>", `If present and the current game is <code>&lt;GAME&gt;</code>, then the command will stop. Note that this cannot be used with nesting, e.g. you cannot do <code>(_GAME_IS_(_PARAMETER_)_)</code>.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "GAME_IS_NOT_<GAME>", `Inverse of <code>GAME_IS_&lt;GAME&gt;</code>.`)
+	qw422016.N().S(`
+                `)
 	streamaction(qw422016, "STATUS", `The current stream status.`)
 	qw422016.N().S(`
                 `)

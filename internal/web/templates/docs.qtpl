@@ -697,6 +697,8 @@ dd {
                 {%= action("ONLINE_CHECK", `If offline, the command is disabled.`) %}
                 {%= action("GAME", `The current game.`) %}
                 {%= action("GAME_CLEAN", `The current game, URL-safe.`) %}
+                {%= action("GAME_IS_<GAME>", `If present and the current game is <code>&lt;GAME&gt;</code>, then the command will stop. Note that this cannot be used with nesting, e.g. you cannot do <code>(_GAME_IS_(_PARAMETER_)_)</code>.`) %}
+                {%= action("GAME_IS_NOT_<GAME>", `Inverse of <code>GAME_IS_&lt;GAME&gt;</code>.`) %}
                 {%= action("STATUS", `The current stream status.`) %}
                 {%= action("VIEWERS", `The current viewer count.`) %}
                 {%= action("CHATTERS", `The current chatter count.`) %}
