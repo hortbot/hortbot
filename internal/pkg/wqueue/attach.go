@@ -7,7 +7,7 @@ import (
 )
 
 // An Attacher attaches an extra cancelletion to the provided context.
-type Attacher func(ctx context.Context) context.Context
+type Attacher func(ctx context.Context) (context.Context, context.CancelFunc)
 
 type joinedContext struct {
 	base  context.Context
@@ -72,13 +72,16 @@ func (j *joinedContext) Value(key interface{}) interface{} {
 
 func attachFunc(ctx context.Context) Attacher {
 	if ctx.Done() == nil {
-		return func(ctx context.Context) context.Context { return ctx }
+		return func(ctx context.Context) (context.Context, context.CancelFunc) {
+			return ctx, func() {}
+		}
 	}
 
-	return func(base context.Context) context.Context {
+	return func(base context.Context) (context.Context, context.CancelFunc) {
+		base, cancel := context.WithCancel(base)
 		return &joinedContext{
 			base:  base,
 			extra: ctx,
-		}
+		}, cancel
 	}
 }

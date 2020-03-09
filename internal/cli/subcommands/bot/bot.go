@@ -95,7 +95,9 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		key := buildKey(m)
 
 		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
-			ctx := attach(ctx)
+			ctx, cancel := attach(ctx)
+			defer cancel()
+
 			ctx = metadata.With(ctx)
 			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
 			defer span.End()

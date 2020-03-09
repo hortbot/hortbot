@@ -17,7 +17,8 @@ func TestAttachNoDone(t *testing.T) {
 	fn := attachFunc(wCtx)
 	assert.Assert(t, fn != nil)
 
-	wrapped := fn(ctx)
+	wrapped, cancel := fn(ctx)
+	defer cancel()
 	assert.Equal(t, wrapped, ctx)
 }
 
@@ -38,7 +39,8 @@ func TestDeadline(t *testing.T) {
 
 	test := func(inner, outer context.Context, deadline time.Time, ok bool) func(*testing.T) {
 		return func(t *testing.T) {
-			ctx := attachFunc(inner)(outer)
+			ctx, cancel := attachFunc(inner)(outer)
+			defer cancel()
 
 			gotDeadline, gotOk := ctx.Deadline()
 			assert.Equal(t, gotDeadline, deadline)
@@ -61,7 +63,9 @@ func TestValue(t *testing.T) {
 	other, cancel := context.WithCancel(other)
 	defer cancel()
 
-	ctx := attachFunc(other)(base)
+	ctx, cancel := attachFunc(other)(base)
+	defer cancel()
+
 	assert.Equal(t, ctx.Value(contextKey("base")), 1234)
 	assert.Equal(t, ctx.Value(contextKey("base2")), "value")
 	assert.Equal(t, ctx.Value(contextKey("other")), nil)
@@ -72,7 +76,8 @@ func TestDoneErr(t *testing.T) {
 		a, cancelA := context.WithCancel(context.Background())
 		b, cancelB := context.WithCancel(context.Background())
 
-		ctx := attachFunc(a)(b)
+		ctx, cancel := attachFunc(a)(b)
+		defer cancel()
 
 		assert.NilError(t, ctx.Err())
 		cancelA()
@@ -83,7 +88,8 @@ func TestDoneErr(t *testing.T) {
 		a, cancelA := context.WithCancel(context.Background())
 		b, cancelB := context.WithCancel(context.Background())
 
-		ctx := attachFunc(a)(b)
+		ctx, cancel := attachFunc(a)(b)
+		defer cancel()
 
 		done := ctx.Done()
 		cancelA()
@@ -97,7 +103,8 @@ func TestDoneErr(t *testing.T) {
 		a, cancelA := context.WithCancel(context.Background())
 		b, cancelB := context.WithCancel(context.Background())
 
-		ctx := attachFunc(a)(b)
+		ctx, cancel := attachFunc(a)(b)
+		defer cancel()
 
 		done := ctx.Done()
 		cancelB()

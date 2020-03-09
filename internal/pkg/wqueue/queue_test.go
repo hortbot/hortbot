@@ -95,10 +95,13 @@ func TestQueue(t *testing.T) {
 	var count int
 	const key = "key"
 	fn := func(attach wqueue.Attacher) {
+		ctx, cancel := attach(ctx)
+		defer cancel()
+
 		select {
 		case ch <- count:
 			count++
-		case <-attach(ctx).Done():
+		case <-ctx.Done():
 		}
 	}
 
@@ -106,10 +109,13 @@ func TestQueue(t *testing.T) {
 	var count2 int
 	const key2 = "key2"
 	fn2 := func(attach wqueue.Attacher) {
+		ctx, cancel := attach(context.Background())
+		defer cancel()
+
 		select {
 		case ch2 <- count2:
 			count2++
-		case <-attach(context.Background()).Done():
+		case <-ctx.Done():
 			// This one can only be canceled by the worker's context.
 		}
 	}
@@ -157,10 +163,13 @@ func TestQueuePanic(t *testing.T) {
 	var count int
 	const key = "key"
 	fn := func(attach wqueue.Attacher) {
+		ctx, cancel := attach(ctx)
+		defer cancel()
+
 		select {
 		case ch <- count:
 			count++
-		case <-attach(ctx).Done():
+		case <-ctx.Done():
 		}
 	}
 	panicker := func(attach wqueue.Attacher) {
