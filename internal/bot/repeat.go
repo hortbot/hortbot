@@ -370,20 +370,16 @@ func (runner *scheduledCommandRunner) info() *models.CommandInfo {
 	return runner.scheduled.R.CommandInfo
 }
 
-func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {
+func (b *Bot) loadRepeats(ctx context.Context) error {
 	ctx, span := trace.StartSpan(ctx, "loadRepeats")
 	defer span.End()
 
-	if reset {
-		if err := b.rep.Reset(ctx); err != nil {
-			return err
-		}
+	if err := b.rep.Reset(ctx); err != nil {
+		return err
 	}
 
-	repeats, err := models.RepeatedCommands(
-		models.RepeatedCommandWhere.Enabled.EQ(true),
-	).All(ctx, b.db)
-	if err != nil {
+	var repeats models.RepeatedCommandSlice
+	if err := queries.Raw("SELECT r.* FROM repeated_commands r JOIN channels c ON r.channel_id = c.id WHERE r.enabled AND c.active").Bind(ctx, b.db, &repeats); err != nil {
 		return err
 	}
 
@@ -391,10 +387,8 @@ func (b *Bot) loadRepeats(ctx context.Context, reset bool) error {
 		return err
 	}
 
-	scheduleds, err := models.ScheduledCommands(
-		models.ScheduledCommandWhere.Enabled.EQ(true),
-	).All(ctx, b.db)
-	if err != nil {
+	var scheduleds models.ScheduledCommandSlice
+	if err := queries.Raw("SELECT s.* FROM scheduled_commands s JOIN channels c ON s.channel_id = c.id WHERE s.enabled AND c.active").Bind(ctx, b.db, &scheduleds); err != nil {
 		return err
 	}
 

@@ -277,9 +277,11 @@ func (m *manager) queueFix(i *item) {
 }
 
 func (m *manager) queueReset() {
-	m.queue = m.queue[:0]
-	m.identToItem = make(map[ident]*item)
-	m.counts = count{}
+	if len(m.queue) != 0 {
+		m.queue = m.queue[:0]
+		m.identToItem = make(map[ident]*item)
+		m.counts = count{}
+	}
 }
 
 // A priority queue sorted by deadline.

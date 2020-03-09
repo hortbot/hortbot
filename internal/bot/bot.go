@@ -159,9 +159,7 @@ func New(config *Config) *Bot {
 	deps.RemoveRepeat = b.removeRepeat
 	deps.AddScheduled = b.addScheduled
 	deps.RemoveScheduled = b.removeScheduled
-	deps.ReloadRepeats = func(ctx context.Context) error {
-		return b.loadRepeats(ctx, true)
-	}
+	deps.ReloadRepeats = b.loadRepeats
 	deps.CountRepeats = b.rep.Count
 
 	if isTesting {
@@ -180,7 +178,7 @@ func (b *Bot) Init(ctx context.Context) error {
 	b.g = errgroupx.FromContext(ctx)
 	b.g.Go(b.rep.Run)
 
-	if err := b.loadRepeats(ctx, false); err != nil {
+	if err := b.loadRepeats(ctx); err != nil {
 		return err
 	}
 
