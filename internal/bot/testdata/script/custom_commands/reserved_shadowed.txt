@@ -14,3 +14,38 @@ send hortbot #foobar [HB] somebody added to ignored users.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add ignore FOUND THE (_PARAMETER_), HAVE YE?
 send hortbot #foobar [HB] Command 'ignore' updated, restricted to subscribers and above. Warning: 'ignore' is a builtin command and will now only be accessible via !builtin ignore.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add b test
+send hortbot #foobar [HB] Command 'b' added, restricted to subscribers and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add b test
+send hortbot #foobar [HB] Command 'b' updated, restricted to subscribers and above. Warning: '+b' is a moderation command; your custom command may not work.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add t test
+send hortbot #foobar [HB] Command 't' added, restricted to subscribers and above. Warning: '+t' is a moderation command; your custom command may not work.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add p test
+send hortbot #foobar [HB] Command 'p' added, restricted to subscribers and above. Warning: '+p' is a moderation command; your custom command may not work.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add m test
+send hortbot #foobar [HB] Command 'm' added, restricted to subscribers and above. Warning: '+m' is a moderation command; your custom command may not work.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add s test
+send hortbot #foobar [HB] Command 's' added, restricted to subscribers and above. Warning: '+s' is a moderation command; your custom command may not work.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add r9k test
+send hortbot #foobar [HB] Command 'r9k' added, restricted to subscribers and above. Warning: '+r9k' is a moderation command; your custom command may not work.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+set prefix -
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-command add b test
+send hortbot #foobar [HB] Command 'b' updated, restricted to subscribers and above. Warning: '-b' is a moderation command; your custom command may not work.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-command add t test
+send hortbot #foobar [HB] Command 't' updated, restricted to subscribers and above. Warning: '-t' is a moderation command; your custom command may not work.

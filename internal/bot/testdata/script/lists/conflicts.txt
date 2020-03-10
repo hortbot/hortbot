@@ -51,5 +51,12 @@ send hortbot #foobar [HB] 'mylist' is not a custom command.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add builtin
 send hortbot #foobar [HB] List name 'builtin' is reserved.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add list
-send hortbot #foobar [HB] List 'list' added, restricted to subscribers and above. Warning: 'list' is a builtin command and will now only be accessible via !builtin list
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add lastfm
+send hortbot #foobar [HB] List 'lastfm' added, restricted to subscribers and above. Warning: 'lastfm' is a builtin command and will now only be accessible via !builtin lastfm
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+list add b
+send hortbot #foobar [HB] List 'b' added, restricted to subscribers and above. Warning: '+b' is a moderation command; your list may not work.

@@ -96,6 +96,8 @@ func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel)
 	var warning string
 	if isBuiltinName(name) {
 		warning = " Warning: '" + name + "' is a builtin command and will now only be accessible via " + s.Channel.Prefix + "builtin " + name
+	} else if prefixAndName, ok := isModerationCommand(s.Channel.Prefix, name); ok {
+		warning = " Warning: '" + prefixAndName + "' is a moderation command; your list may not work."
 	}
 
 	info, list, err := findCommandList(ctx, s, name)

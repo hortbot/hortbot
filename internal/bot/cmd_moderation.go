@@ -22,6 +22,16 @@ var moderationCommands = newHandlerMap(map[string]handlerFunc{
 	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: levelModerator},
 })
 
+func isModerationCommand(prefix, name string) (prefixAndName string, ok bool) {
+	if prefix != "+" && prefix != "-" {
+		return "", false
+	}
+
+	prefixAndName = prefix + name
+	_, ok = moderationCommands[prefixAndName]
+	return prefixAndName, ok
+}
+
 func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 	user, _ := splitSpace(args)
 
