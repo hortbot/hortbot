@@ -19,6 +19,7 @@ const (
 
 //counterfeiter:generate . API
 
+// API represents the supported API functions. It's defined for fake generation.
 type API interface {
 	Plaintext(ctx context.Context, u string) (body string, err error)
 }

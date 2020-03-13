@@ -34,6 +34,8 @@ func (c *Common) IsDebug() bool {
 	return c.Debug
 }
 
+// RunDefaultServeMux runs the global default HTTP mux in the background, if
+// the addr has been set.
 func (c *Common) RunDefaultServeMux() {
 	if c.DefaultServeMuxAddr != "" {
 		go http.ListenAndServe(c.DefaultServeMuxAddr, nil) //nolint:errcheck
