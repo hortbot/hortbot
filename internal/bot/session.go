@@ -22,6 +22,8 @@ import (
 	"golang.org/x/oauth2"
 )
 
+const maxResponseLen = 500
+
 type sessionType int
 
 const (
@@ -83,14 +85,22 @@ type session struct {
 func (s *session) formatResponse(response string) string {
 	response = strings.TrimSpace(response)
 
-	if len(response) >= 4 {
-		switch response[:4] {
-		case "/me ", ".me ":
-			return response
-		}
+	var builder strings.Builder
+
+	if !strings.HasPrefix(response, "/me ") && !strings.HasPrefix(response, ".me ") {
+		builder.WriteString(s.bullet())
+		builder.WriteByte(' ')
 	}
 
-	return s.bullet() + " " + response
+	builder.WriteString(response)
+
+	response = builder.String()
+
+	if len(response) > maxResponseLen {
+		return response[:maxResponseLen]
+	}
+
+	return response
 }
 
 func (s *session) bullet() string {

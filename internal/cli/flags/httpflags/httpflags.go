@@ -3,10 +3,12 @@ package httpflags
 
 import (
 	"context"
+	"net"
 	"net/http"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/wader/filtertransport"
 	"go.uber.org/zap"
 	"golang.org/x/net/proxy"
 )
@@ -47,7 +49,7 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 			auth = &proxy.Auth{User: h.UntrustedProxyUser, Password: h.UntrustedProxyPassword}
 		}
 
-		dialer, err := proxy.SOCKS5("tcp", h.UntrustedProxy, auth, proxy.Direct)
+		dialer, err := proxy.SOCKS5("tcp", h.UntrustedProxy, auth, safeDialer)
 		if err != nil {
 			ctxlog.Fatal(ctx, "error creating SOCKS5 proxy dialer", zap.Error(err))
 		}
@@ -57,7 +59,28 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 		}
 	} else {
 		ctxlog.Warn(ctx, "no proxy provided for untrusted HTTP client")
+		cli.Transport = &http.Transport{
+			Dial:        safeDialer.Dial,
+			DialContext: safeDialer.DialContext,
+		}
 	}
 
 	return cli
+}
+
+type filteredDialer struct{}
+
+var safeDialer filteredDialer
+
+var (
+	_ proxy.Dialer        = safeDialer
+	_ proxy.ContextDialer = safeDialer
+)
+
+func (filteredDialer) Dial(network, addr string) (c net.Conn, err error) {
+	return filtertransport.FilterDial(context.Background(), network, addr, filtertransport.DefaultFilter, proxy.Direct.DialContext)
+}
+
+func (filteredDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
+	return filtertransport.FilterDial(ctx, network, addr, filtertransport.DefaultFilter, proxy.Direct.DialContext)
 }

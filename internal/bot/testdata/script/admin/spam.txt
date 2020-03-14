@@ -15,3 +15,6 @@ send hortbot #foobar [HB] Usage: !admin spam <num> <message>
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam 5 coeLove
 send hortbot #foobar [HB] coeLove coeLove coeLove coeLove coeLove
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin spam 5000 someVeryVeryLongWord
+send hortbot #foobar [HB] someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVeryLongWord someVeryVery

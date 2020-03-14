@@ -163,6 +163,10 @@ func cmdAdminSpam(ctx context.Context, s *session, cmd string, args string) erro
 			builder.WriteByte(' ')
 		}
 		builder.WriteString(message)
+
+		if builder.Len() > maxResponseLen {
+			break
+		}
 	}
 
 	return s.Reply(ctx, builder.String())
