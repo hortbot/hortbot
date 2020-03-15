@@ -20,7 +20,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.1
 	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.9.1
+	github.com/golang-migrate/migrate/v4 v4.10.0
 	github.com/google/go-cmp v0.4.0
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
@@ -39,7 +39,7 @@ require (
 	github.com/ory/dockertest/v3 v3.5.4
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
-	github.com/prometheus/client_golang v1.5.0
+	github.com/prometheus/client_golang v1.5.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/spf13/cast v1.3.1 // indirect
@@ -52,11 +52,11 @@ require (
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.14.0
-	golang.org/x/crypto v0.0.0-20200302210943-78000ba7a073 // indirect
+	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4 // indirect
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200308013534-11ec41452d41
+	golang.org/x/tools v0.0.0-20200313205530-4303120df7d8
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
