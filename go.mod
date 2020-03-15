@@ -51,7 +51,7 @@ require (
 	github.com/wader/filtertransport v0.0.0-20191227151438-e8c720426235
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
-	go.uber.org/zap v1.14.0
+	go.uber.org/zap v1.14.1
 	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4 // indirect
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
