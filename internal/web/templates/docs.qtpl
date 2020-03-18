@@ -556,6 +556,7 @@ dd {
                 {%= command("!host <user>", `Starts hosting the specified user. This may no longer work due to Twitch authentication changes.`, "mods") %}
                 {%= command("!unhost", `Stops host mode. This may no longer work due to Twitch authentication changes.`, "mods") %}
                 {%= command("!followme", `Make the bot follow you. Useful if the bot cannot speak due to follower-only mode.`, "broadcaster") %}
+                {%= command("!#<channel>/<command>", `Runs a command from another channel.`, "broadcaster") %}
             </dl>
         </section>
 
