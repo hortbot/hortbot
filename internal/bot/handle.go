@@ -464,8 +464,6 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	name = strings.ToLower(name)
 
-	ctxlog.Debug(ctx, "ok", zap.String("foreignChannel", foreignChannel), zap.String("name", name))
-
 	if name == "" {
 		return false, nil
 	}
