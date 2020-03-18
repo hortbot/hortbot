@@ -27,7 +27,6 @@ func init() {
 		"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
 		"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
 		"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
-		"imp":       {fn: cmdAdminImp, minLevel: levelAdmin},
 		"version":   {fn: cmdAdminVersion, minLevel: levelAdmin},
 		"changebot": {fn: cmdAdminChangeBot, minLevel: levelAdmin},
 		"exec":      {fn: cmdAdminExec, minLevel: levelAdmin},
@@ -36,6 +35,7 @@ func init() {
 		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
 		"sleep":         {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
 		"syncjoined":    {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
+		"imp":           {fn: cmdAdminImp, minLevel: levelSuperAdmin},
 	})
 }
 

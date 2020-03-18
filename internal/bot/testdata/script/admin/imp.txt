@@ -3,6 +3,9 @@ join hortbot 999 otherchan 9
 
 
 handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp
+no_send
+
+handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-super-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp
 send hortbot #otherchan [HB] Usage: !admin imp <channel> <message>
 
 
@@ -10,10 +13,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp foobar !var get fbvar
+handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-super-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp foobar !var get fbvar
 send hortbot #otherchan [HB] Variable fbvar is set to: 1
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp foobar !var increment fbvar 310
+handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-super-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp foobar !var increment fbvar 310
 send hortbot #otherchan [HB] Variable fbvar has been incremented to 311.
 
 
@@ -21,5 +24,5 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Variable fbvar is set to: 311
 
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp who !var get fbvar
+handle hortbot @id=__UUID__;room-id=9;user-id=9;testing-super-admin=1 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!admin imp who !var get fbvar
 send hortbot #otherchan [HB] Channel who does not exist.
