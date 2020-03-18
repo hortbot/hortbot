@@ -28,7 +28,7 @@ require (
 	github.com/jackc/pgconn v1.4.0
 	github.com/jackc/pgx/v4 v4.5.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
-	github.com/jarcoal/httpmock v1.0.4
+	github.com/jarcoal/httpmock v1.0.5
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
@@ -48,15 +48,15 @@ require (
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.6.1+incompatible
-	github.com/wader/filtertransport v0.0.0-20191227151438-e8c720426235
+	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.14.1
-	golang.org/x/crypto v0.0.0-20200311171314-f7b00557c8c4 // indirect
+	golang.org/x/crypto v0.0.0-20200317142112-1b76d66859c6 // indirect
 	golang.org/x/net v0.0.0-20200301022130-244492dfa37a
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
-	golang.org/x/tools v0.0.0-20200313205530-4303120df7d8
+	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
+	golang.org/x/tools v0.0.0-20200318054722-11a475a590ac
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
