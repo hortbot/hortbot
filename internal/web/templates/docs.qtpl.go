@@ -757,6 +757,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!highlightthat", `Same as <code>!ht</code>.`, "everyone")
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!#<channel>/<command>", `Runs a command from another channel.`, "broadcaster")
+	qw422016.N().S(`
             </dl>
         </section>
 
@@ -806,9 +809,6 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!followme", `Make the bot follow you. Useful if the bot cannot speak due to follower-only mode.`, "broadcaster")
-	qw422016.N().S(`
-                `)
-	streamcommand(qw422016, "!#<channel>/<command>", `Runs a command from another channel.`, "broadcaster")
 	qw422016.N().S(`
             </dl>
         </section>
