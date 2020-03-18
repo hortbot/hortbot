@@ -1,0 +1,7 @@
+clock_set 2000-10-01T03:11:22Z
+
+handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin exec The current time is (_TIME_).
+send hortbot #hortbot [HB] The current time is 3:11 AM.
+
+handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin exec (_TESTING_ERROR_).
+no_send

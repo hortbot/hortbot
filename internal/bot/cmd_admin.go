@@ -30,6 +30,7 @@ func init() {
 		"imp":       {fn: cmdAdminImp, minLevel: levelAdmin},
 		"version":   {fn: cmdAdminVersion, minLevel: levelAdmin},
 		"changebot": {fn: cmdAdminChangeBot, minLevel: levelAdmin},
+		"exec":      {fn: cmdAdminExec, minLevel: levelAdmin},
 
 		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
 		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
@@ -342,4 +343,13 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 	}
 
 	return s.Replyf(ctx, "Changed %s's bot from %s to %s.", name, oldBotName, botName)
+}
+
+func cmdAdminExec(ctx context.Context, s *session, _ string, args string) error {
+	reply, err := processCommand(ctx, s, args)
+	if err != nil {
+		return err
+	}
+
+	return s.Reply(ctx, reply)
 }
