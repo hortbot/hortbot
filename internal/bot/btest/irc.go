@@ -11,6 +11,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, lineNum int) {
@@ -67,9 +68,14 @@ func (st *scriptTester) send(t testing.TB, _, args string, lineNum int) {
 	st.addAction(func(context.Context) {
 		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
 		_, origin, target, message := st.sender.SendMessageArgsForCall(callNum)
-		assert.Equal(t, origin, sent[0], "line %d", lineNum)
-		assert.Equal(t, target, sent[1], "line %d", lineNum)
-		assert.Equal(t, message, sent[2], "line %d", lineNum)
+
+		ok := true
+		ok = assert.Check(t, cmp.Equal(origin, sent[0]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(target, sent[1]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(message, sent[2]), "line %d", lineNum) && ok
+		if !ok {
+			t.FailNow()
+		}
 	})
 
 	st.needNoSend = false
@@ -88,9 +94,14 @@ func (st *scriptTester) sendMatch(t testing.TB, _, args string, lineNum int) {
 	st.addAction(func(context.Context) {
 		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
 		_, origin, target, message := st.sender.SendMessageArgsForCall(callNum)
-		assert.Equal(t, origin, sent[0], "line %d", lineNum)
-		assert.Equal(t, target, sent[1], "line %d", lineNum)
-		assert.Assert(t, pattern.MatchString(message), "pattern=`%s`, message=`%s`: line %d", pattern, message, lineNum)
+
+		ok := true
+		ok = assert.Check(t, cmp.Equal(origin, sent[0]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(target, sent[1]), "line %d", lineNum) && ok
+		ok = assert.Check(t, pattern.MatchString(message), "pattern=`%s`, message=`%s`: line %d", pattern, message, lineNum) && ok
+		if !ok {
+			t.FailNow()
+		}
 	})
 
 	st.needNoSend = false

@@ -306,10 +306,14 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 	cmd, args := splitSpace(args)
 	cmd = strings.ToLower(cmd)
 
-	if !s.UserLevel.CanAccess(levelModerator) {
-		switch cmd {
-		case "add", "delete", "remove", "restrict":
+	switch cmd {
+	case "add", "delete", "remove", "rm", "restrict":
+		if !s.UserLevel.CanAccess(levelModerator) {
 			return true, errNotAuthorized
+		}
+
+		if !update {
+			return true, s.Reply(ctx, "Cross-channel commands may not modify lists.")
 		}
 	}
 
