@@ -277,6 +277,14 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 		`Example: <code>!command clone #coestar pan</code> &mdash; Clones the "pan" command into the current channel as "pan".`,
 	)
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016,
+		"!command exec <command string>",
+		`Executes the command string. Can be used to quickly test some commands before adding them`,
+		"mods",
+		`Example: <code>!command exec The time in Chicago is (_TIME_America/Chicago_). </code>`,
+	)
+	qw422016.N().S(`
             </dl>
         </section>
 

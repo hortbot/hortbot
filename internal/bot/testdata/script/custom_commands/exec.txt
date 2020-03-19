@@ -1,0 +1,16 @@
+join hortbot 999 foobar 1
+
+clock_set 2000-10-01T03:11:22Z
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command exec
+send hortbot #foobar [HB] Usage: !command exec <command string>
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command exec The current time is (_TIME_).
+send hortbot #foobar [HB] The current time is 3:11 AM.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command exec (_TESTING_ERROR_)
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :mod!mod@mod.tmi.twitch.tv PRIVMSG #foobar :!command exec Hello, (_USER_).
+send hortbot #foobar [HB] Hello, mod.

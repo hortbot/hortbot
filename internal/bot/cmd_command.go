@@ -45,6 +45,7 @@ var ccCommands = newHandlerMap(map[string]handlerFunc{
 	"rename":          {fn: cmdCommandRename, minLevel: levelModerator},
 	"get":             {fn: cmdCommandGet, minLevel: levelModerator},
 	"clone":           {fn: cmdCommandClone, minLevel: levelModerator},
+	"exec":            {fn: cmdCommandExec, minLevel: levelModerator},
 })
 
 func cmdCommand(ctx context.Context, s *session, cmd string, args string) error {
@@ -530,4 +531,17 @@ func findCustomCommand(ctx context.Context, s *session, name string, forUpdate b
 
 func init() {
 	flect.AddPlural("everyone", "everyone")
+}
+
+func cmdCommandExec(ctx context.Context, s *session, _ string, args string) error {
+	if args == "" {
+		return s.ReplyUsage(ctx, "<command string>")
+	}
+
+	reply, err := processCommand(ctx, s, args)
+	if err != nil {
+		return err
+	}
+
+	return s.Reply(ctx, reply)
 }

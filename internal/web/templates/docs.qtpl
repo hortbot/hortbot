@@ -198,6 +198,12 @@ dd {
                     "mods",
                     `Example: <code>!command clone #coestar pan</code> &mdash; Clones the "pan" command into the current channel as "pan".`,
                 ) %}
+                {%= command(
+                    "!command exec <command string>",
+                    `Executes the command string. Can be used to quickly test some commands before adding them`,
+                    "mods",
+                    `Example: <code>!command exec The time in Chicago is (_TIME_America/Chicago_). </code>`,
+                ) %}
             </dl>
         </section>
 
