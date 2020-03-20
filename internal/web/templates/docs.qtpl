@@ -703,12 +703,22 @@ dd {
             <dl>
                 {%= action("PARAMETER", `The next command parameter (split by semicolon).`) %}
                 {%= action("P", `Same as <code>PARAMETER</code>.`) %}
+
                 {%= action("PARAMETER_CAPS", `The next command parameter, in all caps.`) %}
                 {%= action("P_CAPS", `Same as <code>PARAMETER_CAPS</code>.`) %}
+
+                {%= action("PARAMETER_OR_<DEFAULT>", `The next command parameter, or a default value if empty.`) %}
+                {%= action("P_OR_<DEFAULT>", `Same as <code>PARAMETER_OR_&lt;DEFAULT&gt;</code>.`) %}
+
                 {%= action("PARAMETER_<X>", `Parameter &lt;X&gt;.`) %}
                 {%= action("P_<X>", `Same as <code>PARAMETER_&lt;X&gt;</code>.`) %}
+
+                {%= action("PARAMETER_<X>_OR_<DEFAULT>", `Parameter &lt;X&gt;, or a default value if empty.`) %}
+                {%= action("P_<X>_OR_<DEFAULT>", `Same as <code>PARAMETER_&lt;X&gt;_OR_&lt;DEFAULT&gt;</code>.`) %}
+
                 {%= action("PARAMETER_<X>_CAPS", `Parameter &lt;X&gt;, in all caps.`) %}
                 {%= action("P_<X>_CAPS", `Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.`) %}
+
                 {%= action("USER", `The user's name.`) %}
                 {%= action("USER_DISPLAY", `The user's display name.`) %}
                 {%= action("ONLINE_CHECK", `If offline, the command is disabled.`) %}

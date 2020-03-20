@@ -102,6 +102,8 @@ func init() {
 
 	addPrefix("PARAMETER_", actionParameterIndex)
 	addPrefix("P_", actionParameterIndex)
+	addPrefix("PARAMETER_OR_", actionParameterOr)
+	addPrefix("P_OR_", actionParameterOr)
 	addPrefix("DATE_", actionTime("Jan 2, 2006"))
 	addPrefix("TIME_", actionTime("3:04 PM"))
 	addPrefix("TIME24_", actionTime("15:04"))
@@ -286,28 +288,60 @@ func actionParameter(ctx context.Context, s *session, actionName, value string) 
 	return "", nil
 }
 
+func actionParameterOr(ctx context.Context, s *session, actionName, value string) (string, error) {
+	v := ""
+
+	if p := s.NextParameter(); p != nil {
+		v = *p
+	}
+
+	if v != "" {
+		return v, nil
+	}
+
+	return value, nil
+}
+
 func actionParameterIndex(ctx context.Context, s *session, actionName, value string) (string, error) {
 	upper := false
 	is := value
 
-	if strings.HasSuffix(is, "_CAPS") {
+	const orStr = "_OR_"
+	or := false
+	orV := ""
+
+	if i := strings.Index(value, orStr); i >= 0 {
+		is = value[:i]
+		orV = value[i+len(orStr):]
+		or = true
+	} else if strings.HasSuffix(is, "_CAPS") {
 		upper = true
 		is = strings.TrimSuffix(is, "_CAPS")
 	}
 
-	if i, err := strconv.Atoi(is); err == nil {
-		if i > 0 {
-			if p := s.ParameterAt(i - 1); p != nil {
-				if upper {
-					return strings.ToUpper(*p), nil
-				}
+	v := ""
+
+	if i, err := strconv.Atoi(is); err == nil && i > 0 {
+		if p := s.ParameterAt(i - 1); p != nil {
+			if upper {
+				v = strings.ToUpper(*p)
+			} else {
 				return *p, nil
 			}
-			return "", nil
 		}
+	} else {
+		return "(_" + actionName + value + "_)", nil
 	}
 
-	return "(_" + actionName + value + "_)", nil
+	if v != "" {
+		return v, nil
+	}
+
+	if or {
+		return orV, nil
+	}
+
+	return "", nil
 }
 
 func actionMessageCount(ctx context.Context, s *session, actionName, value string) (string, error) {

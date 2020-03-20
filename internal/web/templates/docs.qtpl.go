@@ -1050,24 +1050,42 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamaction(qw422016, "P", `Same as <code>PARAMETER</code>.`)
 	qw422016.N().S(`
+
                 `)
 	streamaction(qw422016, "PARAMETER_CAPS", `The next command parameter, in all caps.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "P_CAPS", `Same as <code>PARAMETER_CAPS</code>.`)
 	qw422016.N().S(`
+
+                `)
+	streamaction(qw422016, "PARAMETER_OR_<DEFAULT>", `The next command parameter, or a default value if empty.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "P_OR_<DEFAULT>", `Same as <code>PARAMETER_OR_&lt;DEFAULT&gt;</code>.`)
+	qw422016.N().S(`
+
                 `)
 	streamaction(qw422016, "PARAMETER_<X>", `Parameter &lt;X&gt;.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "P_<X>", `Same as <code>PARAMETER_&lt;X&gt;</code>.`)
 	qw422016.N().S(`
+
+                `)
+	streamaction(qw422016, "PARAMETER_<X>_OR_<DEFAULT>", `Parameter &lt;X&gt;, or a default value if empty.`)
+	qw422016.N().S(`
+                `)
+	streamaction(qw422016, "P_<X>_OR_<DEFAULT>", `Same as <code>PARAMETER_&lt;X&gt;_OR_&lt;DEFAULT&gt;</code>.`)
+	qw422016.N().S(`
+
                 `)
 	streamaction(qw422016, "PARAMETER_<X>_CAPS", `Parameter &lt;X&gt;, in all caps.`)
 	qw422016.N().S(`
                 `)
 	streamaction(qw422016, "P_<X>_CAPS", `Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.`)
 	qw422016.N().S(`
+
                 `)
 	streamaction(qw422016, "USER", `The user's name.`)
 	qw422016.N().S(`

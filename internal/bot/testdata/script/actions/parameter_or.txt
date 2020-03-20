@@ -1,0 +1,32 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add everest It's anyone's (_PARAMETER_OR_Everest_).
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest
+send hortbot #foobar [HB] It's anyone's Everest.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest game
+send hortbot #foobar [HB] It's anyone's game.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add everest It's anyone's (_PARAMETER_1_OR_Everest_). Right, (_P_2_OR_dude_)?
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest
+send hortbot #foobar [HB] It's anyone's Everest. Right, dude?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest game
+send hortbot #foobar [HB] It's anyone's game. Right, dude?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest game ; friend
+send hortbot #foobar [HB] It's anyone's game. Right, friend?
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add everest It's anyone's "(_P_OR__)".
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest
+send hortbot #foobar [HB] It's anyone's "".
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!everest foobar
+send hortbot #foobar [HB] It's anyone's "foobar".
