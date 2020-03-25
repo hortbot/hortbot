@@ -15,7 +15,7 @@ require (
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
-	github.com/go-chi/chi v4.0.3+incompatible
+	github.com/go-chi/chi v4.0.4+incompatible
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.1
@@ -52,11 +52,11 @@ require (
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.14.1
-	golang.org/x/crypto v0.0.0-20200320181102-891825fb96df // indirect
-	golang.org/x/net v0.0.0-20200320220750-118fecf932d8
+	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
+	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200321224714-0d839f3cf2ed
+	golang.org/x/tools v0.0.0-20200325010219-a49f79bcc224
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
