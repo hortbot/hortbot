@@ -1,0 +1,145 @@
+// Package hltb implements a HowLongToBeat client.
+package hltb
+
+import (
+	"context"
+	"net/http"
+	"net/url"
+	"strings"
+
+	"github.com/antchfx/htmlquery"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"golang.org/x/net/context/ctxhttp"
+	"golang.org/x/net/html"
+)
+
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
+
+// API represents the supported API functions. It's defined for fake generation.
+type API interface {
+	SearchGame(ctx context.Context, query string) (*Game, error)
+}
+
+// Game is a found game on HLTB.
+type Game struct {
+	Title         string
+	MainStory     string
+	MainPlusExtra string
+	Completionist string
+}
+
+// HLTB is a HowLongToBeat client.
+type HLTB struct {
+	cli *http.Client
+}
+
+var _ API = &HLTB{}
+
+// New creates a new HLTB client.
+func New(opts ...Option) *HLTB {
+	h := &HLTB{}
+
+	for _, opt := range opts {
+		opt(h)
+	}
+
+	return h
+}
+
+// Option controls client functionality.
+type Option func(*HLTB)
+
+// HTTPClient sets the HTTP client used when making requests to HLTB.
+// If given a nil client (or not set), the client will use the default
+// HTTP client in net/http.
+func HTTPClient(cli *http.Client) Option {
+	return func(e *HLTB) {
+		e.cli = cli
+	}
+}
+
+var errNotFound = &apiclient.Error{API: "hltb", StatusCode: 404}
+
+// SearchGame performs a search on HLTB and returns the first result.
+func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
+	resp, err := ctxhttp.PostForm(ctx, h.cli, "https://howlongtobeat.com/search_results?page=1", queryForm(query))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if !apiclient.IsOK(resp.StatusCode) {
+		return nil, &apiclient.Error{API: "hltb", StatusCode: resp.StatusCode}
+	}
+
+	page, err := html.Parse(resp.Body)
+	if err != nil {
+		return nil, &apiclient.Error{API: "hltb", Err: err}
+	}
+
+	noResults, err := htmlquery.Query(page, "//li[contains(text(), 'No results for')]")
+	if err != nil {
+		return nil, &apiclient.Error{API: "hltb", Err: err}
+	}
+	if noResults != nil {
+		return nil, errNotFound
+	}
+
+	title, err := htmlquery.Query(page, "//div[@class='search_list_details']/*/a")
+	if err != nil {
+		return nil, &apiclient.Error{API: "hltb", Err: err}
+	}
+	if title == nil {
+		return nil, errNotFound
+	}
+
+	game := &Game{
+		Title: trimmedInner(title),
+	}
+
+	ok := false
+
+Find:
+	for i, node := range htmlquery.Find(page, "//div[contains(@class, 'search_list_tidbit')]") {
+		switch i {
+		case 1:
+			ok = true
+			game.MainStory = trimmedInner(node)
+		case 3:
+			game.MainPlusExtra = trimmedInner(node)
+		case 5:
+			game.Completionist = trimmedInner(node)
+			break Find
+		}
+	}
+
+	if !ok {
+		return nil, errNotFound
+	}
+
+	return game, nil
+}
+
+func trimmedInner(node *html.Node) string {
+	return strings.TrimSpace(htmlquery.InnerText(node))
+}
+
+var formCommon = url.Values{
+	"t":           []string{"games"},
+	"sorthead":    []string{"popular"},
+	"sortd":       []string{"Normal Order"},
+	"plat":        []string{""},
+	"length_type": []string{"main"},
+	"length_min":  []string{""},
+	"length_max":  []string{""},
+	"detail":      []string{""},
+}
+
+func queryForm(query string) url.Values {
+	form := make(url.Values, len(formCommon)+1)
+	for k, v := range formCommon {
+		form[k] = v
+	}
+	form["queryString"] = []string{query}
+	return form
+}

@@ -7,6 +7,8 @@ require (
 	contrib.go.opencensus.io/integrations/ocsql v0.1.5
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.4
+	github.com/antchfx/htmlquery v1.2.2
+	github.com/antchfx/xpath v1.1.4 // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
 	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
