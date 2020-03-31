@@ -27,8 +27,8 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
-	github.com/jackc/pgconn v1.4.0
-	github.com/jackc/pgx/v4 v4.5.0
+	github.com/jackc/pgconn v1.5.0
+	github.com/jackc/pgx/v4 v4.6.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.5
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -54,11 +54,10 @@ require (
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.14.1
-	golang.org/x/crypto v0.0.0-20200323165209-0ec3e9974c59 // indirect
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200325010219-a49f79bcc224
+	golang.org/x/tools v0.0.0-20200331025713-a30bf2db82d4
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
