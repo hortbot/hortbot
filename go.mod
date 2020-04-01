@@ -38,7 +38,7 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/mjibson/esc v0.2.0
 	github.com/nsqio/go-nsq v1.0.8
-	github.com/ory/dockertest/v3 v3.5.4
+	github.com/ory/dockertest/v3 v3.5.5
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.5.1
@@ -57,7 +57,7 @@ require (
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200331025713-a30bf2db82d4
+	golang.org/x/tools v0.0.0-20200331202046-9d5940d49312
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
