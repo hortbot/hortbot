@@ -93,17 +93,12 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 		return nil, errNotFound
 	}
 
-	game := &Game{
-		Title: trimmedInner(title),
-	}
-
-	ok := false
+	var game Game
 
 Find:
 	for i, node := range htmlquery.Find(page, "//div[contains(@class, 'search_list_tidbit')]") {
 		switch i {
 		case 1:
-			ok = true
 			game.MainStory = cleanTime(node)
 		case 3:
 			game.MainPlusExtra = cleanTime(node)
@@ -113,11 +108,15 @@ Find:
 		}
 	}
 
-	if !ok {
+	titleText := trimmedInner(title)
+
+	if titleText == "" || game == (Game{}) {
 		return nil, errNotFound
 	}
 
-	return game, nil
+	game.Title = titleText
+
+	return &game, nil
 }
 
 func trimmedInner(node *html.Node) string {
