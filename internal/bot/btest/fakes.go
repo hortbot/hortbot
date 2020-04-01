@@ -5,6 +5,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bot/botfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifefakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplefakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam/steamfakes"
@@ -72,6 +73,12 @@ func newFakeUrban(t testing.TB) *urbanfakes.FakeAPI {
 
 func newFakeSimple(t testing.TB) *simplefakes.FakeAPI {
 	f := &simplefakes.FakeAPI{}
+	fakex.StubNotImplemented(t, f)
+	return f
+}
+
+func newFakeHLTB(t testing.TB) *hltbfakes.FakeAPI {
+	f := &hltbfakes.FakeAPI{}
 	fakex.StubNotImplemented(t, f)
 	return f
 }

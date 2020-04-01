@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
@@ -46,6 +47,7 @@ type Config struct {
 	TinyURL   tinyurl.API
 	Urban     urban.API
 	Simple    simple.API
+	HLTB      hltb.API
 
 	BulletMap map[string]string
 	Cooldown  int
@@ -95,6 +97,8 @@ func New(config *Config) *Bot {
 		panic("twitch is nil")
 	case config.Simple == nil:
 		panic("simple is nil")
+	case config.HLTB == nil:
+		panic("hltb is nil")
 	}
 
 	deps := &sharedDeps{
@@ -112,6 +116,7 @@ func New(config *Config) *Bot {
 		TinyURL:             config.TinyURL,
 		Urban:               config.Urban,
 		Simple:              config.Simple,
+		HLTB:                config.HLTB,
 		ReCache:             recache.New(),
 		Admins:              make(map[string]bool),
 		SuperAdmins:         make(map[string]bool),

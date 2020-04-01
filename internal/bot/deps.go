@@ -6,6 +6,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
@@ -35,6 +36,7 @@ type sharedDeps struct {
 	TinyURL   tinyurl.API
 	Urban     urban.API
 	Simple    simple.API
+	HLTB      hltb.API
 
 	ReCache *recache.RegexpCache
 

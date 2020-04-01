@@ -66,6 +66,7 @@ func init() {
 		"channelid":       {fn: cmdChannelID, minLevel: levelEveryone},
 		"ht":              {fn: cmdHighlight, minLevel: levelEveryone, skipCooldown: true},
 		"highlightthat":   {fn: cmdHighlight, minLevel: levelEveryone, skipCooldown: true},
+		"hltb":            {fn: cmdHLTB, minLevel: levelSubscriber},
 	})
 }
 

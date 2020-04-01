@@ -541,6 +541,7 @@ dd {
                 {%= command("!ht", `Creates a highlight (viewable on the channel page).`, "everyone") %}
                 {%= command("!highlightthat", `Same as <code>!ht</code>.`, "everyone") %}
                 {%= command("!#<channel>/<command>", `Runs a command from another channel.`, "broadcaster") %}
+                {%= command("!hltb", `Fetches the HowLongToBeat time for the current game, or an arbitrary game with a parameter.`, "subs") %}
             </dl>
         </section>
 

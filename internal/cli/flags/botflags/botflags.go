@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
@@ -106,6 +107,7 @@ func (args *Bot) New(
 		TinyURL:             tinyurl.New(tinyurl.HTTPClient(httpClient)),
 		Urban:               urban.New(urban.HTTPClient(httpClient)),
 		Simple:              simple.New(simple.HTTPClient(untrustedClient)),
+		HLTB:                hltb.New(hltb.HTTPClient(httpClient)),
 		Admins:              args.Admins,
 		SuperAdmins:         args.SuperAdmins,
 		WhitelistEnabled:    args.WhitelistEnabled,

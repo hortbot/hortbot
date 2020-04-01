@@ -768,6 +768,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!#<channel>/<command>", `Runs a command from another channel.`, "broadcaster")
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!hltb", `Fetches the HowLongToBeat time for the current game, or an arbitrary game with a parameter.`, "subs")
+	qw422016.N().S(`
             </dl>
         </section>
 

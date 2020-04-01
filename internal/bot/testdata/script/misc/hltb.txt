@@ -1,0 +1,38 @@
+join hortbot 999 foobar 1
+
+
+hltb_search {"Query": "Half-Life Alyx", "Game": {"Title": "Half-Life: Alyx", "MainStory": "2 hours", "MainPlusExtra": "2.5 hours", "Completionist": "50 hours"}, "StatusCode": 200}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb Half-Life Alyx
+send hortbot #foobar [HB] HowLongToBeat for Half-Life: Alyx - 2 hours main story, 2.5 hours main story + extra, 50 hours completionist
+
+
+hltb_search {"Query": "Half-Life Alyx", "StatusCode": 404}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb Half-Life Alyx
+send hortbot #foobar [HB] Half-Life Alyx not found on HowLongToBeat.
+
+hltb_search {"Query": "Half-Life Alyx", "StatusCode": 500}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb Half-Life Alyx
+send hortbot #foobar [HB] A HowLongToBeat API error occurred.
+
+
+hltb_search {"Query": "Some Game", "Game": {"Title": "Some+Game", "MainStory": "2 hours"}, "StatusCode": 200}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Some Game"}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb
+send hortbot #foobar [HB] HowLongToBeat for Some+Game - 2 hours main story
+
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": ""}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb
+send hortbot #foobar [HB] No game set.
+
+
+twitch_get_channel_by_id {"ID": 1, "Err": "ErrServerError"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb
+send hortbot #foobar [HB] A Twitch server error occurred.
+

@@ -57,9 +57,54 @@ func TestSearchGame(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, game, &hltb.Game{
 			Title:         "Half-Life: Alyx",
-			MainStory:     "10 Hours",
-			MainPlusExtra: "12 Hours",
-			Completionist: "13½ Hours",
+			MainStory:     "10 hours",
+			MainPlusExtra: "12 hours",
+			Completionist: "13.5 hours",
+		})
+	})
+
+	t.Run("Dashes", func(t *testing.T) {
+		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder(
+			"POST",
+			"https://howlongtobeat.com/search_results?page=1",
+			httpmock.NewStringResponder(200, `
+				<h3 class='global_padding shadow_box back_blue center'>We Found 1 Games for "Half-Life Alyx"</h3>
+				<ul>
+					<div class="clear"></div>
+					<li class="back_darkish"
+						style="background-image:linear-gradient(rgb(31, 31, 31), rgba(31, 31, 31, 0.9)), url('https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg')">
+						<div class="search_list_image">
+							<a aria-label="HalfLife Alyx" title="HalfLife Alyx" href="game?id=72067">
+								<img alt="Box Art" src="https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg" />
+							</a>
+						</div>
+						<div class="search_list_details">
+							<h3 class="shadow_text">
+								<a class="text_white" title="HalfLife Alyx" href="game?id=72067">Half-Life: Alyx</a>
+							</h3>
+							<div class="search_list_details_block">
+								<div>
+									<div class="search_list_tidbit text_white shadow_text">Main Story</div>
+									<div class="search_list_tidbit center time_100">10 Hours </div>
+									<div class="search_list_tidbit text_white shadow_text">Main + Extra</div>
+									<div class="search_list_tidbit center time_100">--</div>
+									<div class="search_list_tidbit text_white shadow_text">Completionist</div>
+									<div class="search_list_tidbit center time_40">--</div>
+								</div>
+							</div>
+						</div>
+					</li>
+					<div class="clear"></div>
+				</ul>`))
+
+		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+
+		game, err := h.SearchGame(ctx, "Half-Life Alyx")
+		assert.NilError(t, err)
+		assert.DeepEqual(t, game, &hltb.Game{
+			Title:     "Half-Life: Alyx",
+			MainStory: "10 hours",
 		})
 	})
 

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
@@ -290,6 +291,37 @@ func (st *scriptTester) simplePlaintext(t testing.TB, _, args string, lineNum in
 			}
 
 			return call.Body, err
+		})
+	})
+}
+
+func (st *scriptTester) hltbSearch(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		Query string
+
+		Game       *hltb.Game
+		StatusCode int
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(_ context.Context) {
+		st.hltb.SearchGameCalls(func(_ context.Context, query string) (*hltb.Game, error) {
+			assert.Equal(t, query, call.Query, "line %d", lineNum)
+
+			var err error
+
+			if call.StatusCode == 777 {
+				err = errors.New("testing error")
+			} else if !apiclient.IsOK(call.StatusCode) {
+				err = &apiclient.Error{
+					API:        "hltb",
+					StatusCode: call.StatusCode,
+				}
+			}
+
+			return call.Game, err
 		})
 	})
 }

@@ -104,11 +104,11 @@ Find:
 		switch i {
 		case 1:
 			ok = true
-			game.MainStory = trimmedInner(node)
+			game.MainStory = cleanTime(node)
 		case 3:
-			game.MainPlusExtra = trimmedInner(node)
+			game.MainPlusExtra = cleanTime(node)
 		case 5:
-			game.Completionist = trimmedInner(node)
+			game.Completionist = cleanTime(node)
 			break Find
 		}
 	}
@@ -122,6 +122,13 @@ Find:
 
 func trimmedInner(node *html.Node) string {
 	return strings.TrimSpace(htmlquery.InnerText(node))
+}
+
+func cleanTime(node *html.Node) string {
+	s := trimmedInner(node)
+	s = strings.Trim(s, "-")
+	s = strings.ReplaceAll(s, "½", ".5")
+	return strings.ToLower(s)
 }
 
 var formCommon = url.Values{
