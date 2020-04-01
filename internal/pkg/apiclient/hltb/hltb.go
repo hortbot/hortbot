@@ -23,6 +23,7 @@ type API interface {
 // Game is a found game on HLTB.
 type Game struct {
 	Title         string
+	URL           string
 	MainStory     string
 	MainPlusExtra string
 	Completionist string
@@ -95,8 +96,21 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 
 	var game Game
 
+	path, err := htmlquery.Query(page, "//div[@class='search_list_details']/*/a/@href")
+	if err != nil {
+		return nil, &apiclient.Error{API: "hltb", Err: err}
+	}
+	if p := trimmedInner(path); p != "" {
+		game.URL = "https://howlongtobeat.com/" + p
+	}
+
+	times, err := htmlquery.QueryAll(page, "//div[contains(@class, 'search_list_tidbit')]")
+	if err != nil {
+		return nil, &apiclient.Error{API: "hltb", Err: err}
+	}
+
 Find:
-	for i, node := range htmlquery.Find(page, "//div[contains(@class, 'search_list_tidbit')]") {
+	for i, node := range times {
 		switch i {
 		case 1:
 			game.MainStory = cleanTime(node)

@@ -41,20 +41,37 @@ func cmdHLTB(ctx context.Context, s *session, _ string, args string) error {
 	var b strings.Builder
 	b.WriteString("HowLongToBeat for ")
 	b.WriteString(game.Title)
-	b.WriteString(" - ")
-	b.WriteString(game.MainStory)
-	b.WriteString(" main story")
+	b.WriteString(" -")
+
+	needHyphen := false
+
+	if game.MainStory != "" {
+		needHyphen = true
+		b.WriteByte(' ')
+		b.WriteString(game.MainStory)
+		b.WriteString(" main story")
+	}
 
 	if game.MainPlusExtra != "" {
+		needHyphen = true
 		b.WriteString(", ")
 		b.WriteString(game.MainPlusExtra)
 		b.WriteString(" main story + extra")
 	}
 
 	if game.Completionist != "" {
+		needHyphen = true
 		b.WriteString(", ")
 		b.WriteString(game.Completionist)
 		b.WriteString(" completionist")
+	}
+
+	if game.URL != "" {
+		if needHyphen {
+			b.WriteString(" -")
+		}
+		b.WriteByte(' ')
+		b.WriteString(game.URL)
 	}
 
 	return s.Reply(ctx, b.String())

@@ -57,6 +57,7 @@ func TestSearchGame(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, game, &hltb.Game{
 			Title:         "Half-Life: Alyx",
+			URL:           "https://howlongtobeat.com/game?id=72067",
 			MainStory:     "10 hours",
 			MainPlusExtra: "12 hours",
 			Completionist: "13.5 hours",
@@ -104,6 +105,7 @@ func TestSearchGame(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, game, &hltb.Game{
 			Title:     "Half-Life: Alyx",
+			URL:       "https://howlongtobeat.com/game?id=72067",
 			MainStory: "10 hours",
 		})
 	})
@@ -145,8 +147,12 @@ func TestSearchGame(t *testing.T) {
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
-		_, err := h.SearchGame(ctx, "Half-Life Alyx")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
+		game, err := h.SearchGame(ctx, "Half-Life Alyx")
+		assert.NilError(t, err)
+		assert.DeepEqual(t, game, &hltb.Game{
+			Title: "Half-Life: Alyx",
+			URL:   "https://howlongtobeat.com/game?id=72067",
+		})
 	})
 
 	t.Run("Passes query", func(t *testing.T) {
@@ -251,7 +257,7 @@ func TestSearchGame(t *testing.T) {
 						</div>
 						<div class="search_list_details">
 							<h3 class="shadow_text">
-								<a class="text_white" title="HalfLife Alyx" href="game?id=72067">Half-Life: Alyx</a>
+								<a class="text_white" title="HalfLife Alyx" href="">Half-Life: Alyx</a>
 							</h3>
 							<div class="search_list_details_block">
 								<div></div>

@@ -6,6 +6,17 @@ hltb_search {"Query": "Half-Life Alyx", "Game": {"Title": "Half-Life: Alyx", "Ma
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb Half-Life Alyx
 send hortbot #foobar [HB] HowLongToBeat for Half-Life: Alyx - 2 hours main story, 2.5 hours main story + extra, 50 hours completionist
 
+hltb_search {"Query": "Half-Life Alyx", "Game": {"Title": "Half-Life: Alyx", "MainStory": "2 hours", "MainPlusExtra": "2.5 hours", "Completionist": "50 hours", "URL": "https://howlongtobeat.com/game?id=72067"}, "StatusCode": 200}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb Half-Life Alyx
+send hortbot #foobar [HB] HowLongToBeat for Half-Life: Alyx - 2 hours main story, 2.5 hours main story + extra, 50 hours completionist - https://howlongtobeat.com/game?id=72067
+
+
+hltb_search {"Query": "Half-Life Alyx", "Game": {"Title": "Half-Life: Alyx", "URL": "https://howlongtobeat.com/game?id=72067"}, "StatusCode": 200}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb Half-Life Alyx
+send hortbot #foobar [HB] HowLongToBeat for Half-Life: Alyx - https://howlongtobeat.com/game?id=72067
+
 
 hltb_search {"Query": "Half-Life Alyx", "StatusCode": 404}
 
@@ -35,4 +46,3 @@ twitch_get_channel_by_id {"ID": 1, "Err": "ErrServerError"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb
 send hortbot #foobar [HB] A Twitch server error occurred.
-
