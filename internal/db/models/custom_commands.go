@@ -503,7 +503,9 @@ func (o *CustomCommand) RemoveCommandInfo(ctx context.Context, exec boil.Context
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.R.CommandInfo = nil
+	if o.R != nil {
+		o.R.CommandInfo = nil
+	}
 	if related == nil || related.R == nil {
 		return nil
 	}

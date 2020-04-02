@@ -917,7 +917,9 @@ func (o *CommandInfo) RemoveCommandList(ctx context.Context, exec boil.ContextEx
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.R.CommandList = nil
+	if o.R != nil {
+		o.R.CommandList = nil
+	}
 	if related == nil || related.R == nil {
 		return nil
 	}
@@ -984,7 +986,9 @@ func (o *CommandInfo) RemoveCustomCommand(ctx context.Context, exec boil.Context
 		return errors.Wrap(err, "failed to update local table")
 	}
 
-	o.R.CustomCommand = nil
+	if o.R != nil {
+		o.R.CustomCommand = nil
+	}
 	if related == nil || related.R == nil {
 		return nil
 	}
