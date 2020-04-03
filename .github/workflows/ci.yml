@@ -23,7 +23,7 @@ jobs:
     name: Go ${{ matrix.go }}
 
     steps:
-      - uses: actions/checkout@v2-beta
+      - uses: actions/checkout@v2
 
       - name: Cache Go modules
         uses: actions/cache@v1
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2-beta
+      - uses: actions/checkout@v2
 
       - name: Cache Go modules
         uses: actions/cache@v1
@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2-beta
+      - uses: actions/checkout@v2
 
       - name: Cache Go modules
         uses: actions/cache@v1
@@ -130,7 +130,7 @@ jobs:
     needs: [test, style, generate]
 
     steps:
-      - uses: actions/checkout@v2-beta
+      - uses: actions/checkout@v2
         with:
           fetch-depth: 0
 
