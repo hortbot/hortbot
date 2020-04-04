@@ -137,6 +137,7 @@ func New(config *Config) *Bot {
 	}
 
 	for _, name := range config.SuperAdmins {
+		deps.Admins[name] = true
 		deps.SuperAdmins[name] = true
 	}
 
