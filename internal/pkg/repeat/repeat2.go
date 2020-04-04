@@ -92,9 +92,7 @@ func (m *manager) run(ctx context.Context) error {
 	for {
 		select {
 		case <-ctx.Done():
-			if err := g.Wait(); err != nil {
-				return err
-			}
+			_ = g.Wait()
 			return ctx.Err()
 
 		case <-currReady:
