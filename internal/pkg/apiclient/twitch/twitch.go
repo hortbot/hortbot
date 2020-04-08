@@ -44,7 +44,7 @@ var twitchEndpoint = oauth2.Endpoint{
 
 const (
 	krakenRoot = "https://api.twitch.tv/kraken"
-	// helixRoot  = "https://api.twitch.tv/helix"
+	helixRoot  = "https://api.twitch.tv/helix"
 )
 
 //counterfeiter:generate . API
@@ -58,6 +58,7 @@ type API interface {
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)
+	GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error)
 
 	GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)

@@ -256,6 +256,108 @@ func TestSetChannelGameErrors(t *testing.T) {
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
+func TestGetChannelModeratorsOK(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	const id = 123
+	tok := tokFor(ctx, t, tw, ft, id)
+
+	mods := []*twitch.ChannelModerator{
+		{
+			ID:   1234,
+			Name: "mod2",
+		},
+		{
+			ID:   4141,
+			Name: "mod1",
+		},
+		{
+			ID:   999,
+			Name: "mod3",
+		},
+	}
+
+	ft.setMods(id, mods)
+
+	got, newToken, err := tw.GetChannelModerators(ctx, id, tok)
+	assert.NilError(t, err)
+	assert.Assert(t, newToken == nil)
+	assert.DeepEqual(t, got, mods)
+}
+
+func TestGetChannelModeratorsErrors(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	id := int64(777)
+	tok := tokFor(ctx, t, tw, ft, id)
+	ft.setMods(id, []*twitch.ChannelModerator{})
+
+	_, _, err := tw.GetChannelModerators(ctx, 777, tok)
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
+
+	for status, expected := range expectedErrors {
+		id := int64(status)
+		tok := tokFor(ctx, t, tw, ft, id)
+		ft.setMods(id, []*twitch.ChannelModerator{})
+
+		_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
+		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, newToken == nil)
+	}
+
+	id = 888
+	tok = tokFor(ctx, t, tw, ft, id)
+	ft.setMods(id, []*twitch.ChannelModerator{})
+
+	_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
+	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Assert(t, newToken == nil)
+}
+
+func TestGetChannelModeratorsEsoteric(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	const id = 999
+	tok := tokFor(ctx, t, tw, ft, id)
+
+	mods := []*twitch.ChannelModerator{
+		{
+			ID:   1234,
+			Name: "mod2",
+		},
+		{
+			ID:   4141,
+			Name: "mod1",
+		},
+		{
+			ID:   999,
+			Name: "mod3",
+		},
+	}
+
+	ft.setMods(id, mods)
+
+	got, newToken, err := tw.GetChannelModerators(ctx, id, tok)
+	assert.NilError(t, err)
+	assert.Assert(t, newToken == nil)
+	assert.DeepEqual(t, got, mods)
+}
+
 func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch, id int64) *oauth2.Token {
 	t.Helper()
 

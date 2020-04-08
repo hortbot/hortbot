@@ -66,6 +66,23 @@ type FakeAPI struct {
 		result1 *twitch.Channel
 		result2 error
 	}
+	GetChannelModeratorsStub        func(context.Context, int64, *oauth2.Token) ([]*twitch.ChannelModerator, *oauth2.Token, error)
+	getChannelModeratorsMutex       sync.RWMutex
+	getChannelModeratorsArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 *oauth2.Token
+	}
+	getChannelModeratorsReturns struct {
+		result1 []*twitch.ChannelModerator
+		result2 *oauth2.Token
+		result3 error
+	}
+	getChannelModeratorsReturnsOnCall map[int]struct {
+		result1 []*twitch.ChannelModerator
+		result2 *oauth2.Token
+		result3 error
+	}
 	GetChattersStub        func(context.Context, string) (*twitch.Chatters, error)
 	getChattersMutex       sync.RWMutex
 	getChattersArgsForCall []struct {
@@ -417,6 +434,74 @@ func (fake *FakeAPI) GetChannelByIDReturnsOnCall(i int, result1 *twitch.Channel,
 		result1 *twitch.Channel
 		result2 error
 	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetChannelModerators(arg1 context.Context, arg2 int64, arg3 *oauth2.Token) ([]*twitch.ChannelModerator, *oauth2.Token, error) {
+	fake.getChannelModeratorsMutex.Lock()
+	ret, specificReturn := fake.getChannelModeratorsReturnsOnCall[len(fake.getChannelModeratorsArgsForCall)]
+	fake.getChannelModeratorsArgsForCall = append(fake.getChannelModeratorsArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 *oauth2.Token
+	}{arg1, arg2, arg3})
+	fake.recordInvocation("GetChannelModerators", []interface{}{arg1, arg2, arg3})
+	fake.getChannelModeratorsMutex.Unlock()
+	if fake.GetChannelModeratorsStub != nil {
+		return fake.GetChannelModeratorsStub(arg1, arg2, arg3)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2, ret.result3
+	}
+	fakeReturns := fake.getChannelModeratorsReturns
+	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
+}
+
+func (fake *FakeAPI) GetChannelModeratorsCallCount() int {
+	fake.getChannelModeratorsMutex.RLock()
+	defer fake.getChannelModeratorsMutex.RUnlock()
+	return len(fake.getChannelModeratorsArgsForCall)
+}
+
+func (fake *FakeAPI) GetChannelModeratorsCalls(stub func(context.Context, int64, *oauth2.Token) ([]*twitch.ChannelModerator, *oauth2.Token, error)) {
+	fake.getChannelModeratorsMutex.Lock()
+	defer fake.getChannelModeratorsMutex.Unlock()
+	fake.GetChannelModeratorsStub = stub
+}
+
+func (fake *FakeAPI) GetChannelModeratorsArgsForCall(i int) (context.Context, int64, *oauth2.Token) {
+	fake.getChannelModeratorsMutex.RLock()
+	defer fake.getChannelModeratorsMutex.RUnlock()
+	argsForCall := fake.getChannelModeratorsArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3
+}
+
+func (fake *FakeAPI) GetChannelModeratorsReturns(result1 []*twitch.ChannelModerator, result2 *oauth2.Token, result3 error) {
+	fake.getChannelModeratorsMutex.Lock()
+	defer fake.getChannelModeratorsMutex.Unlock()
+	fake.GetChannelModeratorsStub = nil
+	fake.getChannelModeratorsReturns = struct {
+		result1 []*twitch.ChannelModerator
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
+}
+
+func (fake *FakeAPI) GetChannelModeratorsReturnsOnCall(i int, result1 []*twitch.ChannelModerator, result2 *oauth2.Token, result3 error) {
+	fake.getChannelModeratorsMutex.Lock()
+	defer fake.getChannelModeratorsMutex.Unlock()
+	fake.GetChannelModeratorsStub = nil
+	if fake.getChannelModeratorsReturnsOnCall == nil {
+		fake.getChannelModeratorsReturnsOnCall = make(map[int]struct {
+			result1 []*twitch.ChannelModerator
+			result2 *oauth2.Token
+			result3 error
+		})
+	}
+	fake.getChannelModeratorsReturnsOnCall[i] = struct {
+		result1 []*twitch.ChannelModerator
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
 }
 
 func (fake *FakeAPI) GetChatters(arg1 context.Context, arg2 string) (*twitch.Chatters, error) {
@@ -827,6 +912,8 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.followChannelMutex.RUnlock()
 	fake.getChannelByIDMutex.RLock()
 	defer fake.getChannelByIDMutex.RUnlock()
+	fake.getChannelModeratorsMutex.RLock()
+	defer fake.getChannelModeratorsMutex.RUnlock()
 	fake.getChattersMutex.RLock()
 	defer fake.getChattersMutex.RUnlock()
 	fake.getCurrentStreamMutex.RLock()

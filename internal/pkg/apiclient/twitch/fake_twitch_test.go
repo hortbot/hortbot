@@ -31,8 +31,9 @@ type fakeTwitch struct {
 	codeToToken map[string]*oauth2.Token
 	tokenToID   map[string]int64
 
-	channels map[int64]*twitch.Channel
-	streams  map[int64]*twitch.Stream
+	channels   map[int64]*twitch.Channel
+	streams    map[int64]*twitch.Stream
+	moderators map[int64][]*twitch.ChannelModerator
 }
 
 func newFakeTwitch(t testing.TB) *fakeTwitch {
@@ -45,6 +46,7 @@ func newFakeTwitch(t testing.TB) *fakeTwitch {
 		tokenToID:   make(map[string]int64),
 		channels:    make(map[int64]*twitch.Channel),
 		streams:     make(map[int64]*twitch.Stream),
+		moderators:  make(map[int64][]*twitch.ChannelModerator),
 	}
 
 	f.route()
@@ -153,6 +155,8 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/422", httpmock.NewStringResponder(422, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/500", httpmock.NewStringResponder(500, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/901", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/moderators", f.helixModerationModerators)
 }
 
 func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
@@ -339,6 +343,75 @@ func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
 	})
 }
 
+func (f *fakeTwitch) setMods(id int64, mods []*twitch.ChannelModerator) {
+	f.moderators[id] = mods
+}
+
+func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Response, error) {
+	assert.Equal(f.t, req.Method, "GET")
+	f.checkHeaders(req, false)
+
+	const authPrefix = "Bearer "
+
+	auth := req.Header.Get("Authorization")
+	assert.Assert(f.t, strings.HasPrefix(auth, authPrefix))
+
+	id, ok := f.tokenToID[strings.TrimPrefix(auth, authPrefix)]
+	assert.Assert(f.t, ok)
+
+	q := req.URL.Query()
+	gotID, err := strconv.ParseInt(q.Get("broadcaster_id"), 10, 64)
+	assert.NilError(f.t, err)
+
+	assert.Equal(f.t, gotID, id)
+
+	if _, ok := expectedErrors[int(id)]; ok {
+		return httpmock.NewStringResponse(int(id), ""), nil
+	}
+
+	switch id {
+	case 777:
+		return nil, errTestBadRequest
+	case 888:
+		return httpmock.NewStringResponse(200, "{"), nil
+	}
+
+	mods := f.moderators[id]
+	assert.Assert(f.t, mods != nil)
+
+	var v struct {
+		Mods       []*twitch.ChannelModerator `json:"data"`
+		Pagination struct {
+			Cursor string `json:"cursor"`
+		} `json:"pagination"`
+	}
+
+	if len(mods) != 0 {
+		i := 0
+		if after := q.Get("after"); after != "" {
+			x, err := strconv.Atoi(q.Get("after"))
+			assert.NilError(f.t, err)
+			assert.Assert(f.t, x >= 0)
+			i = x + 1
+		}
+
+		cursor := ""
+		if i != len(mods)-1 || id != 999 {
+			cursor = strconv.Itoa(i)
+		}
+
+		v.Pagination.Cursor = cursor
+
+		// Allow this to go past to handle the 999 case, for testing no-change pagination.
+		if i < len(mods) {
+			m := mods[i]
+			v.Mods = []*twitch.ChannelModerator{m}
+		}
+	}
+
+	return httpmock.NewJsonResponse(200, &v)
+}
+
 func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Response, error) {
 	f.t.Helper()
 	if len(dumped) == 0 {
@@ -349,6 +422,8 @@ func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Respon
 }
 
 func (f *fakeTwitch) checkHeaders(req *http.Request, v5 bool) {
+	f.t.Helper()
+
 	assert.Equal(f.t, req.Header.Get("Client-ID"), clientID)
 	assert.Equal(f.t, req.Header.Get("Content-Type"), "application/json")
 

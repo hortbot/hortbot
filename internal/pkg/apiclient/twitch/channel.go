@@ -119,3 +119,72 @@ func (t *Twitch) SetChannelGame(ctx context.Context, id int64, userToken *oauth2
 	// TODO: Return the entire channel?
 	return c.Game, newToken, statusToError(resp.StatusCode)
 }
+
+// ChannelModerator is a channel's moderator.
+type ChannelModerator struct {
+	ID   IDStr  `json:"user_id"`
+	Name string `json:"user_name"`
+}
+
+// ChannelModerators gets the channel's moderators.
+//
+// GET https://api.twitch.tv/helix/moderation/moderators
+func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error) {
+	cursor := ""
+
+	doOne := func() error {
+		url := helixRoot + "/moderation/moderators?broadcaster_id=" + strconv.FormatInt(id, 10)
+		if cursor != "" {
+			url += "&after=" + cursor
+		}
+
+		cli := t.clientForUser(ctx, false, userToken, setToken(&newToken))
+
+		resp, err := cli.Get(ctx, url)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		if err := statusToError(resp.StatusCode); err != nil {
+			return err
+		}
+
+		var v struct {
+			Mods       []*ChannelModerator `json:"data"`
+			Pagination struct {
+				Cursor string `json:"cursor"`
+			} `json:"pagination"`
+		}
+
+		if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
+			return ErrServerError
+		}
+
+		mods = append(mods, v.Mods...)
+		cursor = v.Pagination.Cursor
+
+		return nil
+	}
+
+	prevLen := 0
+
+	for {
+		if err := doOne(); err != nil {
+			return nil, newToken, err
+		}
+
+		if cursor == "" {
+			break
+		}
+
+		// Sanity checks.
+		if len(mods) == prevLen || len(mods) >= 500 {
+			break
+		}
+
+		prevLen = len(mods)
+	}
+
+	return mods, newToken, nil
+}
