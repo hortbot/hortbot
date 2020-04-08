@@ -9,11 +9,10 @@ import (
 	"sync"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
-
-	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 // Pool provides access to a pool of fresh databases for testing.
@@ -74,7 +73,7 @@ func (p *Pool) FreshDB(t testing.TB) *sql.DB {
 
 	connStr := strings.Replace(p.connStr, "postgres?", dbName+"?", 1)
 
-	db, err := sql.Open("pgx", connStr)
+	db, err := sql.Open(driver.Name, connStr)
 	assert.NilError(t, err)
 
 	return db

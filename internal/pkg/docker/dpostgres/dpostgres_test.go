@@ -3,6 +3,7 @@ package dpostgres_test
 import (
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jmoiron/sqlx"
 	"gotest.tools/v3/assert"
@@ -17,7 +18,7 @@ func TestNew(t *testing.T) {
 	assert.Assert(t, connStr != "", "got connStr: %s", connStr)
 	assert.Assert(t, db != nil)
 
-	dbx := sqlx.NewDb(db, "pgx")
+	dbx := sqlx.NewDb(db, driver.Name)
 
 	var count int
 	err = dbx.Get(&count, "SELECT count(*) FROM schema_migrations")
@@ -33,7 +34,7 @@ func TestNoMigrate(t *testing.T) {
 	assert.Assert(t, connStr != "", "got connStr: %s", connStr)
 	assert.Assert(t, db != nil)
 
-	dbx := sqlx.NewDb(db, "pgx")
+	dbx := sqlx.NewDb(db, driver.Name)
 
 	var count int
 	err = dbx.Get(&count, "SELECT count(*) FROM schema_migrations")

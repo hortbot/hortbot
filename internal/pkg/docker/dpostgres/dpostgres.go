@@ -4,10 +4,9 @@ package dpostgres
 import (
 	"database/sql"
 
+	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker"
-
-	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 // New creates and starts a fresh PostgreSQL server, migrated up.
@@ -29,7 +28,7 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 			connStr = "postgres://postgres:mysecretpassword@" + container.GetHostPort("5432/tcp") + "/postgres?sslmode=disable"
 
 			var err error
-			db, err = sql.Open("pgx", connStr)
+			db, err = sql.Open(driver.Name, connStr)
 			if err != nil {
 				return err
 			}

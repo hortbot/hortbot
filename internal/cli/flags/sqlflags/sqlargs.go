@@ -6,11 +6,10 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"go.uber.org/zap"
-
-	_ "github.com/jackc/pgx/v4/stdlib" // For postgres.
 )
 
 // SQL contains SQL database flags.
@@ -24,7 +23,7 @@ var Default = SQL{}
 
 // DriverName returns the default driver name to connect to the database.
 func (args *SQL) DriverName() string {
-	return "pgx"
+	return driver.Name
 }
 
 // Open opens a database connection given the specified driver name.
