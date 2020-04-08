@@ -8,7 +8,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.4
 	github.com/antchfx/htmlquery v1.2.2
-	github.com/antchfx/xpath v1.1.4 // indirect
+	github.com/antchfx/xpath v1.1.5 // indirect
 	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
 	github.com/bmatcuk/doublestar v1.2.2
 	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20191009132224-3f39dc1ed9f4
-	github.com/jackc/pgconn v1.5.0
+	github.com/jackc/pgconn v1.5.1-0.20200408003821-5d2be99c254e
 	github.com/jackc/pgx/v4 v4.6.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.5
@@ -57,7 +57,7 @@ require (
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200401192744-099440627f01
+	golang.org/x/tools v0.0.0-20200408132156-9ee5ef7a2c0d
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
