@@ -33,6 +33,7 @@ var userScopes = []string{
 	"user_read",
 	"channel_editor",
 	"channel_subscriptions",
+	"moderation:read",
 }
 
 var twitchEndpoint = oauth2.Endpoint{
