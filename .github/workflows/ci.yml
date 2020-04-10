@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  GO_DEV_VERSION: "1.13" # Recommended Go version for development.
+  GO_DEV_VERSION: "1.14" # Recommended Go version for development.
 
 jobs:
   test:
