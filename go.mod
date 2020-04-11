@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.11.4
 	github.com/antchfx/htmlquery v1.2.2
 	github.com/antchfx/xpath v1.1.5 // indirect
-	github.com/araddon/dateparse v0.0.0-20190622164848-0fb0a474d195
+	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.2.2
 	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
 	github.com/dustin/go-humanize v1.0.0
@@ -38,7 +38,7 @@ require (
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/mjibson/esc v0.2.0
 	github.com/nsqio/go-nsq v1.0.8
-	github.com/ory/dockertest/v3 v3.5.5
+	github.com/ory/dockertest/v3 v3.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.5.1
@@ -57,7 +57,7 @@ require (
 	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200408132156-9ee5ef7a2c0d
+	golang.org/x/tools v0.0.0-20200410194907-79a7a3126eef
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.1.0
 )
