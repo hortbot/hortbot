@@ -120,6 +120,7 @@ func init() {
 	addPrefix("TEXTAPI_", actionTextAPI)
 	addPrefix("PESC_", actionPathEscape)
 	addPrefix("QESC_", actionQueryEscape)
+	addPrefix("CAPS_", actionCaps)
 }
 
 func findAction(action string) actionTopFunc {
@@ -994,4 +995,8 @@ func actionPathEscape(ctx context.Context, s *session, actionName, value string)
 
 func actionQueryEscape(ctx context.Context, s *session, actionName, value string) (string, error) {
 	return url.QueryEscape(value), nil
+}
+
+func actionCaps(ctx context.Context, s *session, actionName, value string) (string, error) {
+	return strings.ToUpper(value), nil
 }

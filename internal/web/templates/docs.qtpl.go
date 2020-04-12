@@ -1090,6 +1090,10 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
 
                 `)
+	streamaction(qw422016, "CAPS_<X>", `Makes &lt;X&gt; all caps.`)
+	qw422016.N().S(`
+
+                `)
 	streamaction(qw422016, "USER", `The user's name.`)
 	qw422016.N().S(`
                 `)

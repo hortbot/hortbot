@@ -720,6 +720,8 @@ dd {
                 {%= action("PARAMETER_<X>_CAPS", `Parameter &lt;X&gt;, in all caps.`) %}
                 {%= action("P_<X>_CAPS", `Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.`) %}
 
+                {%= action("CAPS_<X>", `Makes &lt;X&gt; all caps.`) %}
+
                 {%= action("USER", `The user's name.`) %}
                 {%= action("USER_DISPLAY", `The user's display name.`) %}
                 {%= action("ONLINE_CHECK", `If offline, the command is disabled.`) %}
