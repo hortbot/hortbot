@@ -10,7 +10,7 @@ require (
 	github.com/antchfx/htmlquery v1.2.2
 	github.com/antchfx/xpath v1.1.5 // indirect
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
-	github.com/bmatcuk/doublestar v1.2.2
+	github.com/bmatcuk/doublestar v1.2.3
 	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
