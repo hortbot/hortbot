@@ -19,7 +19,7 @@ import (
 type IRC struct {
 	Nick         string        `long:"irc-nick" env:"HB_IRC_NICK" description:"IRC nick" required:"true"`
 	Pass         string        `long:"irc-pass" env:"HB_IRC_PASS" description:"IRC pass" required:"true"`
-	Addr         string        `long:"irc-addr" env:"HB_IRC_ADDR" description:"IRC address" required:"true"`
+	Addr         string        `long:"irc-addr" env:"HB_IRC_ADDR" description:"IRC address"`
 	PingInterval time.Duration `long:"irc-ping-interval" env:"HB_IRC_PING_INTERVAL" description:"How often to ping the IRC server"`
 	PingDeadline time.Duration `long:"irc-ping-deadline" env:"HB_IRC_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
 	Token        bool          `long:"irc-token" env:"HB_IRC_TOKEN" description:"Use a token from the database if available"`
