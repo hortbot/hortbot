@@ -5,6 +5,7 @@ go 1.13
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.5
+	github.com/99designs/gqlgen v0.11.3
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.4
 	github.com/antchfx/htmlquery v1.2.2
@@ -47,6 +48,7 @@ require (
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.4.2-0.20200112192417-6e4d18193077
+	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
 	github.com/volatiletech/sqlboiler v3.7.0+incompatible
