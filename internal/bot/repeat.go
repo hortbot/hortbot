@@ -130,7 +130,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 
 			channel := runner.channel()
 			// TODO: Remove if possible by passing the top level wqueue down here.
-			if err := pgLock(ctx, tx, channel.UserID); err != nil {
+			if err := pgLock(ctx, tx, channel.TwitchID); err != nil {
 				return err
 			}
 
@@ -153,7 +153,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				Channel:    channel,
 				Origin:     channel.BotName,
 				IRCChannel: channel.Name,
-				RoomID:     channel.UserID,
+				RoomID:     channel.TwitchID,
 			}
 
 			info := runner.info()
@@ -236,7 +236,7 @@ func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, a
 		return true, false, nil
 	}
 
-	roomIDStr := strconv.FormatInt(channel.UserID, 10)
+	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
 	expiry := time.Duration(repeat.Delay-1) * time.Second
 
 	allowed, err = runner.deps.Redis.RepeatAllowed(ctx, roomIDStr, runner.id, expiry)
@@ -331,7 +331,7 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, 
 	// according to the clock rather than at an interval with an arbitrary
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
-	roomIDStr := strconv.FormatInt(channel.UserID, 10)
+	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
 	allowed, err = runner.deps.Redis.ScheduledAllowed(ctx, roomIDStr, runner.id, 29*time.Second)
 	return true, allowed, err
 }

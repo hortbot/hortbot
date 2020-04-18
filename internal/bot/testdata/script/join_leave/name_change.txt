@@ -1,4 +1,4 @@
-insert_channel {"id": 1, "user_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] BarFoo, hortbot will now rejoin your channel with your new username.

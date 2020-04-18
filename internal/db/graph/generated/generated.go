@@ -125,9 +125,9 @@ type ComplexityRoot struct {
 		SubsMayLink                 func(childComplexity int) int
 		TimeoutDuration             func(childComplexity int) int
 		Tweet                       func(childComplexity int) int
+		TwitchID                    func(childComplexity int) int
 		UpdatedAt                   func(childComplexity int) int
 		UrbanEnabled                func(childComplexity int) int
-		UserID                      func(childComplexity int) int
 		Variables                   func(childComplexity int) int
 	}
 
@@ -791,6 +791,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Channel.Tweet(childComplexity), true
 
+	case "Channel.twitchID":
+		if e.complexity.Channel.TwitchID == nil {
+			break
+		}
+
+		return e.complexity.Channel.TwitchID(childComplexity), true
+
 	case "Channel.updatedAt":
 		if e.complexity.Channel.UpdatedAt == nil {
 			break
@@ -804,13 +811,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Channel.UrbanEnabled(childComplexity), true
-
-	case "Channel.userId":
-		if e.complexity.Channel.UserID == nil {
-			break
-		}
-
-		return e.complexity.Channel.UserID(childComplexity), true
 
 	case "Channel.variables":
 		if e.complexity.Channel.Variables == nil {
@@ -1339,7 +1339,7 @@ type Channel {
     createdAt: Time!
     updatedAt: Time
 
-    userId: ID!
+    twitchID: ID!
     name: String!
     displayName: String!
     botName: String!
@@ -2015,7 +2015,7 @@ func (ec *executionContext) _Channel_updatedAt(ctx context.Context, field graphq
 	return ec.marshalOTime2timeᚐTime(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Channel_userId(ctx context.Context, field graphql.CollectedField, obj *models.Channel) (ret graphql.Marshaler) {
+func (ec *executionContext) _Channel_twitchID(ctx context.Context, field graphql.CollectedField, obj *models.Channel) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -2032,7 +2032,7 @@ func (ec *executionContext) _Channel_userId(ctx context.Context, field graphql.C
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.UserID, nil
+		return obj.TwitchID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -7425,8 +7425,8 @@ func (ec *executionContext) _Channel(ctx context.Context, sel ast.SelectionSet, 
 			}
 		case "updatedAt":
 			out.Values[i] = ec._Channel_updatedAt(ctx, field, obj)
-		case "userId":
-			out.Values[i] = ec._Channel_userId(ctx, field, obj)
+		case "twitchID":
+			out.Values[i] = ec._Channel_twitchID(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}

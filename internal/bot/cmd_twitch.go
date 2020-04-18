@@ -51,7 +51,7 @@ func setStatus(ctx context.Context, s *session, status string) (bool, error) {
 		status = ""
 	}
 
-	setStatus, newToken, err := s.Deps.Twitch.SetChannelStatus(ctx, s.Channel.UserID, tok, status)
+	setStatus, newToken, err := s.Deps.Twitch.SetChannelStatus(ctx, s.Channel.TwitchID, tok, status)
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
@@ -114,7 +114,7 @@ func setGame(ctx context.Context, s *session, game string) (bool, error) {
 		game = ""
 	}
 
-	setGame, newToken, err := s.Deps.Twitch.SetChannelGame(ctx, s.Channel.UserID, tok, game)
+	setGame, newToken, err := s.Deps.Twitch.SetChannelGame(ctx, s.Channel.TwitchID, tok, game)
 
 	// Check this, even if an error occurred.
 	if newToken != nil {

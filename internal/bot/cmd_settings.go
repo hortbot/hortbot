@@ -278,12 +278,12 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 		return s.Replyf(ctx, "Extra Life ID is set to %d.", s.Channel.ExtraLifeID)
 	}
 
-	id, err := strconv.Atoi(args)
+	id, err := strconv.ParseInt(args, 10, 32)
 	if err != nil || id < 0 {
 		return s.ReplyUsage(ctx, "<participant ID>")
 	}
 
-	s.Channel.ExtraLifeID = id
+	s.Channel.ExtraLifeID = int(id)
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ExtraLifeID)); err != nil {
 		return err

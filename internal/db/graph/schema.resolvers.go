@@ -168,7 +168,7 @@ func (r *queryResolver) ChannelByName(ctx context.Context, name string) (*models
 }
 
 func (r *queryResolver) ChannelByTwitchID(ctx context.Context, twitchID int64) (*models.Channel, error) {
-	return models.Channels(models.ChannelWhere.UserID.EQ(twitchID)).One(ctx, r.DB)
+	return models.Channels(models.ChannelWhere.TwitchID.EQ(twitchID)).One(ctx, r.DB)
 }
 
 func (r *quoteResolver) Channel(ctx context.Context, obj *models.Quote) (*models.Channel, error) {

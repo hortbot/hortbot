@@ -323,7 +323,7 @@ func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 		return *s.cache.tok, nil
 	}
 
-	tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.UserID)).One(ctx, s.Tx)
+	tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
 	switch {
 	case err == sql.ErrNoRows:
 		var tok *oauth2.Token
@@ -344,7 +344,7 @@ func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) er
 
 	s.cache.tok = &newToken
 
-	tt := modelsx.TokenToModel(s.Channel.UserID, newToken)
+	tt := modelsx.TokenToModel(s.Channel.TwitchID, newToken)
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
 }
 
@@ -374,7 +374,7 @@ func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 		return *s.cache.twitchChannel, nil
 	}
 
-	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.UserID)
+	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.TwitchID)
 	if err != nil {
 		return nil, err
 	}
@@ -391,7 +391,7 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 		return *s.cache.twitchStream, nil
 	}
 
-	st, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.UserID)
+	st, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.TwitchID)
 	if err != nil {
 		return nil, err
 	}

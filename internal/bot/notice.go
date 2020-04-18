@@ -49,7 +49,7 @@ func (b *Bot) handleNoticeFollow(ctx context.Context, origin string, ircChannel 
 		dbx.SetLocalLockTimeout(5*time.Second),
 		func(ctx context.Context, tx *sql.Tx) error {
 			channel, err := models.Channels(
-				qm.Select(models.ChannelColumns.UserID),
+				qm.Select(models.ChannelColumns.TwitchID),
 				models.ChannelWhere.Name.EQ(ircChannel),
 				models.ChannelWhere.BotName.EQ(origin),
 			).One(ctx, tx)
@@ -61,12 +61,12 @@ func (b *Bot) handleNoticeFollow(ctx context.Context, origin string, ircChannel 
 				return err
 			}
 
-			seen, err := b.deps.Redis.CheckAndMarkCooldown(ctx, strconv.FormatInt(channel.UserID, 10), "follow_cooldown", 10*time.Minute)
+			seen, err := b.deps.Redis.CheckAndMarkCooldown(ctx, strconv.FormatInt(channel.TwitchID, 10), "follow_cooldown", 10*time.Minute)
 			if err != nil || seen {
 				return err
 			}
 
-			if err := followUser(ctx, tx, b.deps.Twitch, origin, channel.UserID); err != nil {
+			if err := followUser(ctx, tx, b.deps.Twitch, origin, channel.TwitchID); err != nil {
 				ctxlog.Warn(ctx, "error following user", zap.Error(err))
 			}
 

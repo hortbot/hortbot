@@ -77,7 +77,7 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 		return err
 	}
 
-	channel, err := models.Channels(models.ChannelWhere.UserID.EQ(u.ID)).One(ctx, s.Tx)
+	channel, err := models.Channels(models.ChannelWhere.TwitchID.EQ(u.ID)).One(ctx, s.Tx)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
@@ -188,7 +188,7 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 		return err
 	}
 
-	s.RoomID = otherChannel.UserID
+	s.RoomID = otherChannel.TwitchID
 	s.Message = msg
 	s.Imp = true
 

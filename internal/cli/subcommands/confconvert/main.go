@@ -265,7 +265,7 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 	}
 
 	channel := cbConfig.loadChannel(ctx, defaultBullet, twitchID, name, displayName, botName)
-	repInit := time.Unix(channel.UserID%60, 0).UTC() // Pick a "random" user-specific initial time.
+	repInit := time.Unix(channel.TwitchID%60, 0).UTC() // Pick a "random" user-specific initial time.
 
 	config := &confimport.Config{
 		Channel:     channel,

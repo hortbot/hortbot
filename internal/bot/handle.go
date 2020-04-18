@@ -326,7 +326,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	// This is the most frequent query; speed it up by executing a hand written query.
 	channel := &models.Channel{}
-	err := queries.Raw(`SELECT * FROM channels WHERE user_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
+	err := queries.Raw(`SELECT * FROM channels WHERE twitch_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctxlog.Debug(ctx, "channel not found in database")

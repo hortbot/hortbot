@@ -300,6 +300,30 @@ aZerlRAbTdIQjFwXhMbXTevrhhNmAgB8hTdf+8DYkSItDWVYl8hoK0+FgTwiz0iZ3JR40fle6hL/qVw8
 `,
 	},
 
+	"/20200417115112_rename_twitch_id.down.sql": {
+		name:    "20200417115112_rename_twitch_id.down.sql",
+		local:   "20200417115112_rename_twitch_id.down.sql",
+		size:    206,
+		modtime: 0,
+		compressed: `
+H4sIAAAAAAAC/0TMTaqDMBiF4XlWcTbgXcDNKNoPG2oSkAidBTEpBmoETWmXXwr+jM953qJA2ZK4SV2j
+ugpd0z+65OewIo8BS0j9FPBY5gmvNSwueuQZ+R3zMLro/1hJtdScMdFYamFF2RCGsU8pPFe0pIUiVKbp
+lD4VrNlrfINSX+h+QHdcXfSfPWPNedj4b+aMVUYpaTn7BgAA//95yKAmzgAAAA==
+`,
+	},
+
+	"/20200417115112_rename_twitch_id.up.sql": {
+		name:    "20200417115112_rename_twitch_id.up.sql",
+		local:   "20200417115112_rename_twitch_id.up.sql",
+		size:    207,
+		modtime: 0,
+		compressed: `
+H4sIAAAAAAAC/0SMQQrCMBBF9znFXKAewKzSOtRgM4EQwV0paaQBTaGJqLeXQk2Xn//eqyqoDYqLpBaa
+s6AWj2B8HJ4+wSv5pQ8j5BnyO2Q3reM+L+DmmELKPrrvgdXYSuKMic6iASvqDsFNQ4z+kcAgCYXQ6O6q
+qASt3oN8EyWd8FbEfkP7MH7+Eav3u+grwBlrtFLScvYLAAD//6Fe1ErPAAAA
+`,
+	},
+
 	"/": {
 		name:  "/",
 		local: `.`,
@@ -316,5 +340,7 @@ var _escDirs = map[string][]os.FileInfo{
 		_escData["/20191230093743_add_last_seen.up.sql"],
 		_escData["/20200305204517_add_highlights.down.sql"],
 		_escData["/20200305204517_add_highlights.up.sql"],
+		_escData["/20200417115112_rename_twitch_id.down.sql"],
+		_escData["/20200417115112_rename_twitch_id.up.sql"],
 	},
 }

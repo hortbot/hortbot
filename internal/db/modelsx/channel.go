@@ -8,9 +8,9 @@ import "github.com/hortbot/hortbot/internal/db/models"
 const DefaultPrefix = "!"
 
 // NewChannel creates a new Channel with the defaults set.
-func NewChannel(userID int64, name, displayName string, botName string) *models.Channel {
+func NewChannel(twitchID int64, name, displayName string, botName string) *models.Channel {
 	return &models.Channel{
-		UserID:                  userID,
+		TwitchID:                twitchID,
 		Name:                    name,
 		DisplayName:             displayName,
 		BotName:                 botName,

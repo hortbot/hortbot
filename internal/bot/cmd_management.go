@@ -88,7 +88,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	}
 
 	channel, err := models.Channels(
-		models.ChannelWhere.UserID.EQ(userID),
+		models.ChannelWhere.TwitchID.EQ(userID),
 		qm.Load(models.ChannelRels.RepeatedCommands),
 		qm.Load(models.ChannelRels.ScheduledCommands),
 		qm.For("UPDATE"),
@@ -174,7 +174,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 	} else {
 		displayName = s.UserDisplay
 		channel, err = models.Channels(
-			models.ChannelWhere.UserID.EQ(s.UserID),
+			models.ChannelWhere.TwitchID.EQ(s.UserID),
 			qm.Load(models.ChannelRels.RepeatedCommands),
 			qm.Load(models.ChannelRels.ScheduledCommands),
 			qm.For("UPDATE"),

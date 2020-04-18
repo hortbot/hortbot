@@ -10,7 +10,7 @@ type Channel {
     createdAt: Time!
     updatedAt: Time
 
-    userId: ID!
+    twitchID: ID!
     name: String!
     displayName: String!
     botName: String!
