@@ -53,7 +53,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
 	github.com/volatiletech/null v8.0.0+incompatible
-	github.com/volatiletech/sqlboiler v3.7.0+incompatible
+	github.com/volatiletech/sqlboiler v3.7.1-0.20200420003822-e7037d507150+incompatible
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0

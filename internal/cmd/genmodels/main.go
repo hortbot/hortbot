@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime/debug"
 
 	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/db/migrations"
@@ -85,6 +86,7 @@ func mainErr() error {
 			"blacklist": []string{"schema_migrations"},
 		},
 		Imports: importers.NewDefaultImports(),
+		Version: sqlboilerVersion(),
 	}
 
 	state, err := boilingcore.New(bConf)
@@ -118,4 +120,22 @@ func mainErr() error {
 
 func migrateLogf(format string, v ...interface{}) {
 	fmt.Printf("\t"+format, v...)
+}
+
+func sqlboilerVersion() string {
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return ""
+	}
+
+	for _, mod := range info.Deps {
+		if mod.Path == "github.com/volatiletech/sqlboiler" {
+			if mod.Replace != nil {
+				return ""
+			}
+			return mod.Version
+		}
+	}
+
+	return ""
 }
