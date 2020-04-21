@@ -39,10 +39,10 @@ func (s *session) setTwitchID(id int64) {
 	s.s.Values[sessionTwitchID] = id
 }
 
-func (s *session) getTwitchID() int64 {
-	v, _ := s.s.Values[sessionTwitchID].(int64)
-	return v
-}
+// func (s *session) getTwitchID() int64 {
+// 	v, _ := s.s.Values[sessionTwitchID].(int64)
+// 	return v
+// }
 
 func (s *session) setUsername(name string) {
 	s.s.Values[sessionUsername] = name

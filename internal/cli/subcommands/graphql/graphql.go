@@ -1,3 +1,4 @@
+// Package graphql runs a GraphQL server.
 package graphql
 
 import (

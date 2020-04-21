@@ -126,7 +126,7 @@ type ChannelModerator struct {
 	Name string `json:"user_name"`
 }
 
-// ChannelModerators gets the channel's moderators.
+// GetChannelModerators gets the channel's moderators.
 //
 // GET https://api.twitch.tv/helix/moderation/moderators
 func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error) {
