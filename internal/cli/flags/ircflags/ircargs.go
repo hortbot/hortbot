@@ -83,7 +83,7 @@ func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool
 }
 
 // SendMessageAllowed checks if sending a message is allowed under the current
-// rate limit
+// rate limit.
 func (args *IRC) SendMessageAllowed(ctx context.Context, rdb *redis.DB, origin, target string) (bool, error) {
 	return rdb.SendMessageAllowed(ctx, origin, target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
 }

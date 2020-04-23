@@ -21,6 +21,8 @@ linters:
     - dogsled
     - dupl
     - unparam
+    - nestif
+    - testpackage
 
     - stylecheck
     - unused

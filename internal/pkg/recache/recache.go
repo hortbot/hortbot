@@ -19,7 +19,7 @@ type RegexpCache struct {
 	c *cache.Cache
 }
 
-// New creates a new RegexpCache
+// New creates a new RegexpCache.
 func New() *RegexpCache {
 	return &RegexpCache{
 		c: cache.New(DefaultExpiration, DefaultCleanupInterval),
