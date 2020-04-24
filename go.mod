@@ -8,8 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.11.3
 	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.4
-	github.com/antchfx/htmlquery v1.2.2
-	github.com/antchfx/xpath v1.1.5 // indirect
+	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.2.4
 	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
@@ -57,11 +56,11 @@ require (
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
-	go.uber.org/zap v1.14.1
-	golang.org/x/net v0.0.0-20200324143707-d3edc9973b7e
+	go.uber.org/zap v1.15.0
+	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200417140056-c07e33ef3290
+	golang.org/x/tools v0.0.0-20200423205358-59e73619c742
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
