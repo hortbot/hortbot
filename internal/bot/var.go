@@ -7,8 +7,8 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries"
 	"go.opencensus.io/trace"
 )
 

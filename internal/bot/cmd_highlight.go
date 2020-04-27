@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/null"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 func cmdHighlight(ctx context.Context, s *session, cmd string, args string) error {

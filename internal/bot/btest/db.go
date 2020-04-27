@@ -7,7 +7,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"gotest.tools/v3/assert"
 )
 

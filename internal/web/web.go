@@ -29,9 +29,9 @@ import (
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tomwright/queryparam/v4"
-	"github.com/volatiletech/null"
-	"github.com/volatiletech/sqlboiler/queries"
-	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/queries"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"go.uber.org/zap"
 )
 

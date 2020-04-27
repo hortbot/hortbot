@@ -16,8 +16,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
-	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )

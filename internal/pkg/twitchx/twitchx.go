@@ -8,8 +8,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
-	"github.com/volatiletech/null"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"golang.org/x/oauth2"
 )
 

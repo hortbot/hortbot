@@ -10,8 +10,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
-	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )

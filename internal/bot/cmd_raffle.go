@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 var raffleCommands = newHandlerMap(map[string]handlerFunc{

@@ -32,7 +32,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"gotest.tools/v3/assert"
 )
 

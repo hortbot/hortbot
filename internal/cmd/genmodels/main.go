@@ -16,10 +16,10 @@ import (
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jackc/pgconn"
-	"github.com/volatiletech/sqlboiler/boilingcore"
-	"github.com/volatiletech/sqlboiler/importers"
+	"github.com/volatiletech/sqlboiler/v4/boilingcore"
+	"github.com/volatiletech/sqlboiler/v4/importers"
 
-	_ "github.com/volatiletech/sqlboiler/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
+	_ "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
 )
 
 func main() {
@@ -129,7 +129,7 @@ func sqlboilerVersion() string {
 	}
 
 	for _, mod := range info.Deps {
-		if mod.Path == "github.com/volatiletech/sqlboiler" {
+		if mod.Path == "github.com/volatiletech/sqlboiler/v4" {
 			if mod.Replace != nil {
 				return ""
 			}

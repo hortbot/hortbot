@@ -7,7 +7,7 @@ import (
 
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/boil"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args string) error {

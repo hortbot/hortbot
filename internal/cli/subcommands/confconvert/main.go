@@ -26,7 +26,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
-	"github.com/volatiletech/null"
+	"github.com/volatiletech/null/v8"
 	"go.uber.org/zap"
 )
 

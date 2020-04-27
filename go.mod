@@ -6,7 +6,6 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.5
 	github.com/99designs/gqlgen v0.11.3
-	github.com/DATA-DOG/go-sqlmock v1.4.1 // indirect
 	github.com/alicebob/miniredis/v2 v2.11.4
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
@@ -46,13 +45,12 @@ require (
 	github.com/prometheus/client_golang v1.5.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
-	github.com/spf13/cast v1.3.1 // indirect
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.4.2-0.20200112192417-6e4d18193077
 	github.com/vektah/gqlparser/v2 v2.0.1
-	github.com/volatiletech/inflect v0.0.0-20170731032912-e7201282ae8d // indirect
-	github.com/volatiletech/null v8.0.0+incompatible
-	github.com/volatiletech/sqlboiler v3.7.1-0.20200420003822-e7037d507150+incompatible
+	github.com/volatiletech/null/v8 v8.1.0
+	github.com/volatiletech/sqlboiler/v4 v4.0.0
+	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0

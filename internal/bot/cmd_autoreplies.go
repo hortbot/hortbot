@@ -11,9 +11,9 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/null"
-	"github.com/volatiletech/sqlboiler/boil"
-	"github.com/volatiletech/sqlboiler/queries/qm"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
