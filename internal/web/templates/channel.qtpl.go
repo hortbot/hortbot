@@ -278,12 +278,12 @@ func (p *ChannelPage) StreamSidebarMobile(qw422016 *qt422016.Writer, item string
 	qw422016.N().S(`'>Repeated / scheduled</a>
                     <a href="/c/`)
 	qw422016.N().U(p.Channel.Name)
-	qw422016.N().S(`/variables" class='`)
+	qw422016.N().S(`/variables" class='navbar-item `)
 	streamisActive(qw422016, item, "variables")
 	qw422016.N().S(`'>Variables</a>
                     <a href="/c/`)
 	qw422016.N().U(p.Channel.Name)
-	qw422016.N().S(`/highlights" class='`)
+	qw422016.N().S(`/highlights" class='navbar-item `)
 	streamisActive(qw422016, item, "highlights")
 	qw422016.N().S(`'>Highlights</a>
                 </div>

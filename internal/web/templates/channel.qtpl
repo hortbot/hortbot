@@ -107,8 +107,8 @@ function timeSorter(a, b) {
                     <a href="/c/{%u p.Channel.Name %}/lists" class='navbar-item {%= isActive(item, "lists") %}'>Lists</a>
                     <a href="/c/{%u p.Channel.Name %}/autoreplies" class='navbar-item {%= isActive(item, "autoreplies") %}'>Autoreplies</a>
                     <a href="/c/{%u p.Channel.Name %}/scheduled" class='navbar-item {%= isActive(item, "scheduled") %}'>Repeated / scheduled</a>
-                    <a href="/c/{%u p.Channel.Name %}/variables" class='{%= isActive(item, "variables") %}'>Variables</a>
-                    <a href="/c/{%u p.Channel.Name %}/highlights" class='{%= isActive(item, "highlights") %}'>Highlights</a>
+                    <a href="/c/{%u p.Channel.Name %}/variables" class='navbar-item {%= isActive(item, "variables") %}'>Variables</a>
+                    <a href="/c/{%u p.Channel.Name %}/highlights" class='navbar-item {%= isActive(item, "highlights") %}'>Highlights</a>
                 </div>
             </div>
 
