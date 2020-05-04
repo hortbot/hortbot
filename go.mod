@@ -46,7 +46,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
-	github.com/valyala/quicktemplate v1.4.2-0.20200112192417-6e4d18193077
+	github.com/valyala/quicktemplate v1.5.0
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/null/v8 v8.1.0
 	github.com/volatiletech/sqlboiler/v4 v4.0.1
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20200501053045-e0ff5e5a1de5
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200501205727-542909fd9944
+	golang.org/x/tools v0.0.0-20200504022951-6b6965ac5dd1
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
