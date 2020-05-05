@@ -20,8 +20,8 @@ require (
 	github.com/go-redis/redis/v7 v7.2.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.1
-	github.com/gofrs/uuid v3.2.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.10.0
+	github.com/gofrs/uuid v3.3.0+incompatible
+	github.com/golang-migrate/migrate/v4 v4.11.0
 	github.com/google/go-cmp v0.4.0
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.2 // indirect
@@ -49,7 +49,7 @@ require (
 	github.com/valyala/quicktemplate v1.5.0
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/null/v8 v8.1.0
-	github.com/volatiletech/sqlboiler/v4 v4.0.1
+	github.com/volatiletech/sqlboiler/v4 v4.1.0
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	go.opencensus.io v0.22.3
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20200501053045-e0ff5e5a1de5
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200504022951-6b6965ac5dd1
+	golang.org/x/tools v0.0.0-20200505023115-26f46d2f7ef8
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )

@@ -76,6 +76,7 @@ func mainErr() error {
 		NoRowsAffected:  true,
 		Wipe:            true,
 		StructTagCasing: "snake",
+		RelationTag:     "-",
 		DriverConfig: map[string]interface{}{
 			"dbname":    pgConf.Database,
 			"host":      pgConf.Host,
