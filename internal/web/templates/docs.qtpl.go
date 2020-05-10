@@ -1133,7 +1133,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "RANDOM_INT_<MIN>_<MAX>", `A random integer between &lt;MIN&gt; and &lt;MIN&gt;.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "DISCARD_<X>", `Discards its parameter &lt;X&gt;. Useful to silence actions with side effects, such as variable setting.`)
+	streamaction(qw422016, "QUIET_<X>", `Evaluates to the empty string, ignoring the value of &lt;X&gt;. Useful to silence actions with side effects, such as variable setting.`)
 	qw422016.N().S(`
             </dl>
 
