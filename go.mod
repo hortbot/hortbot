@@ -49,17 +49,17 @@ require (
 	github.com/valyala/quicktemplate v1.5.0
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/null/v8 v8.1.0
-	github.com/volatiletech/sqlboiler/v4 v4.1.0
+	github.com/volatiletech/sqlboiler/v4 v4.1.1
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	go.opencensus.io v0.22.3
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200429183012-4b2356b1ed79 // indirect
-	golang.org/x/net v0.0.0-20200501053045-e0ff5e5a1de5
+	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200505023115-26f46d2f7ef8
+	golang.org/x/tools v0.0.0-20200509030707-2212a7e161a5
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
