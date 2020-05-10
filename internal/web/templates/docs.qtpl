@@ -735,6 +735,7 @@ dd {
                 {%= action("QUOTE", `A random quote.`) %}
                 {%= action("RANDOM_<MIN>_<MAX>", `A random number between &lt;MIN&gt; and &lt;MIN&gt;, up to one decimal place.`) %}
                 {%= action("RANDOM_INT_<MIN>_<MAX>", `A random integer between &lt;MIN&gt; and &lt;MIN&gt;.`) %}
+                {%= action("QUIET_<X>", `Evaluates to the empty string, ignoring the value of &lt;X&gt;. Useful to silence actions with side effects, such as variable setting.`) %}
             </dl>
 
             <h3>Moderation</h3>

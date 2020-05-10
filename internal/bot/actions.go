@@ -121,6 +121,7 @@ func init() {
 	addPrefix("PESC_", actionPathEscape)
 	addPrefix("QESC_", actionQueryEscape)
 	addPrefix("CAPS_", actionCaps)
+	addPrefix("QUIET_", actionQuiet)
 }
 
 func findAction(action string) actionTopFunc {
@@ -999,4 +1000,8 @@ func actionQueryEscape(ctx context.Context, s *session, actionName, value string
 
 func actionCaps(ctx context.Context, s *session, actionName, value string) (string, error) {
 	return strings.ToUpper(value), nil
+}
+
+func actionQuiet(ctx context.Context, s *session, actionName, value string) (string, error) {
+	return "", nil
 }
