@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 
+	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"go.uber.org/zap"
 	"golang.org/x/net/context/ctxhttp"
 	"golang.org/x/oauth2"
 )
@@ -69,6 +72,11 @@ func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response,
 
 	resp, err := ctxhttp.Do(ctx, h.cli, req)
 	if err != nil {
+		var oauthErr oauth2.RetrieveError
+		if errors.Is(err, &oauthErr) {
+			ctxlog.Error(ctx, "oauth retrieve error occurred", zap.ByteString("body", oauthErr.Body))
+		}
+
 		return nil, err
 	}
 
