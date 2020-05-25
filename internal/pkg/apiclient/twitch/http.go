@@ -20,7 +20,7 @@ type httpClient struct {
 	headers http.Header
 }
 
-func (h *httpClient) newRequest(method string, url string, body io.Reader) (*http.Request, error) {
+func (h *httpClient) newRequest(ctx context.Context, method string, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
@@ -28,6 +28,10 @@ func (h *httpClient) newRequest(method string, url string, body io.Reader) (*htt
 
 	tok, err := h.ts.Token()
 	if err != nil {
+		var oauthErr *oauth2.RetrieveError
+		if errors.As(err, &oauthErr) {
+			ctxlog.Error(ctx, "oauth retrieve error occurred", zap.ByteString("body", oauthErr.Body))
+		}
 		return nil, err
 	}
 
@@ -43,7 +47,7 @@ func (h *httpClient) newRequest(method string, url string, body io.Reader) (*htt
 }
 
 func (h *httpClient) Get(ctx context.Context, url string) (*http.Response, error) {
-	req, err := h.newRequest("GET", url, nil)
+	req, err := h.newRequest(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -58,7 +62,7 @@ func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.
 		return nil, err
 	}
 
-	req, err := h.newRequest("PUT", url, &buf)
+	req, err := h.newRequest(ctx, "PUT", url, &buf)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +80,6 @@ func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response,
 		if errors.As(err, &oauthErr) {
 			ctxlog.Error(ctx, "oauth retrieve error occurred", zap.ByteString("body", oauthErr.Body))
 		}
-
 		return nil, err
 	}
 

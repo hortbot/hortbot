@@ -14,7 +14,7 @@ import (
 func TestHTTPClient(t *testing.T) {
 	t.Run("BadRequest", func(t *testing.T) {
 		c := &httpClient{}
-		_, err := c.newRequest("not a method", "", nil)
+		_, err := c.newRequest(context.Background(), "not a method", "", nil)
 		assert.ErrorContains(t, err, "invalid method")
 	})
 
@@ -29,7 +29,7 @@ func TestHTTPClient(t *testing.T) {
 			},
 		}
 
-		_, err := c.newRequest("GET", "http://localhost", nil)
+		_, err := c.newRequest(context.Background(), "GET", "http://localhost", nil)
 		assert.Equal(t, err, testErr)
 	})
 
