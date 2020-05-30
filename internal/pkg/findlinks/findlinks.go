@@ -3,12 +3,17 @@ package findlinks
 
 import (
 	"net/url"
+	"regexp"
 
 	"github.com/goware/urlx"
 	"mvdan.cc/xurls/v2"
 )
 
-var linkRegex = xurls.Relaxed()
+var linkRegex = func() *regexp.Regexp {
+	re := regexp.MustCompile(`\b` + xurls.Relaxed().String() + `\b`)
+	re.Longest()
+	return re
+}()
 
 // Find searches for links in a given message. If schemeWhitelist items are
 // included, then the results will only include links with the provided

@@ -100,6 +100,20 @@ func TestFind(t *testing.T) {
 			message:   "this does not match git://github.com/what.git",
 			whitelist: []string{"http", "https", "ftp"},
 		},
+		{
+			message:   "don't delete config.ini as that'd be bad",
+			whitelist: []string{"http", "https", "ftp"},
+		},
+		{
+			message:   "My favorite site is example.com; it's really the place to be.",
+			whitelist: []string{"http", "https", "ftp"},
+			want: []*url.URL{
+				{
+					Scheme: "https",
+					Host:   "example.com",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
