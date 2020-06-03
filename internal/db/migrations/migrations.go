@@ -3,22 +3,11 @@ package migrations
 
 import (
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/markbates/pkger"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 )
-
-var sourceDriver source.Driver
-
-func init() {
-	var err error
-	sourceDriver, err = httpfs.New(pkger.Dir("/internal/db/migrations/static"), "/")
-	if err != nil {
-		panic(err)
-	}
-}
 
 // Up brings the database up to date to the latest migration.
 func Up(connStr string, logger LoggerFunc) error {
@@ -58,7 +47,12 @@ func Reset(connStr string, logger LoggerFunc) error {
 }
 
 func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
-	m, err := migrate.NewWithSourceInstance("esc", sourceDriver, connStr)
+	driver, err := httpfs.New(pkger.Dir("/internal/db/migrations/static"), "/")
+	if err != nil {
+		return nil, err
+	}
+
+	m, err := migrate.NewWithSourceInstance("esc", driver, connStr)
 	if err != nil {
 		return nil, err
 	}
