@@ -35,9 +35,9 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
+	github.com/markbates/pkger v0.16.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/mitchellh/mapstructure v1.3.1 // indirect
-	github.com/mjibson/esc v0.2.0
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible

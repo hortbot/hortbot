@@ -28,3 +28,5 @@ config/
 # common benchstat filenames 
 old.txt
 new.txt
+
+pkged.go

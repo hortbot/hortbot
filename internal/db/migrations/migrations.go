@@ -5,18 +5,16 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
-	"github.com/hortbot/hortbot/internal/db/migrations/esc"
+	"github.com/markbates/pkger"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 )
 
-//go:generate go run github.com/mjibson/esc -o=esc/esc.go -pkg=esc -ignore=esc -include=\.sql$ -modtime=0 .
-
-var escSource source.Driver
+var sourceDriver source.Driver
 
 func init() {
 	var err error
-	escSource, err = httpfs.New(esc.FS(false), "/")
+	sourceDriver, err = httpfs.New(pkger.Dir("/internal/db/migrations/static"), "/")
 	if err != nil {
 		panic(err)
 	}
@@ -60,7 +58,7 @@ func Reset(connStr string, logger LoggerFunc) error {
 }
 
 func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
-	m, err := migrate.NewWithSourceInstance("esc", escSource, connStr)
+	m, err := migrate.NewWithSourceInstance("esc", sourceDriver, connStr)
 	if err != nil {
 		return nil, err
 	}
