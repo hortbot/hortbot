@@ -3,6 +3,8 @@ package bot
 import (
 	"context"
 	"math/rand"
+	"sync"
+	"time"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -29,14 +31,25 @@ type Rand interface {
 	Float64() float64
 }
 
-type globalRand struct{}
+type pooledRand struct{}
 
-var _ Rand = globalRand{}
+var _ Rand = pooledRand{}
 
-func (globalRand) Intn(n int) int {
+var randPool = sync.Pool{
+	New: func() interface{} {
+		source := rand.NewSource(time.Now().Unix())
+		return rand.New(source)
+	},
+}
+
+func (pooledRand) Intn(n int) int {
+	rand := randPool.Get().(*rand.Rand)
+	defer randPool.Put(rand)
 	return rand.Intn(n)
 }
 
-func (globalRand) Float64() float64 {
+func (pooledRand) Float64() float64 {
+	rand := randPool.Get().(*rand.Rand)
+	defer randPool.Put(rand)
 	return rand.Float64()
 }

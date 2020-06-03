@@ -151,7 +151,7 @@ func New(config *Config) *Bot {
 	if config.Rand != nil {
 		deps.Rand = config.Rand
 	} else {
-		deps.Rand = globalRand{}
+		deps.Rand = pooledRand{}
 	}
 
 	b := &Bot{
