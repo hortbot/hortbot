@@ -35,7 +35,7 @@ require (
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
-	github.com/markbates/pkger v0.16.0
+	github.com/markbates/pkger v0.17.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/mitchellh/mapstructure v1.3.1 // indirect
 	github.com/nsqio/go-nsq v1.0.8
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200601175630-2caf76543d99
+	golang.org/x/tools v0.0.0-20200603170713-0310561d584d
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
