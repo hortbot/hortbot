@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY ./ ./
 
-RUN go run github.com/markbates/pkger/cmd/pkger
+RUN go run github.com/markbates/pkger/cmd/pkger -o internal/pkger
 
 ARG version
 RUN go build -ldflags="-X github.com/hortbot/hortbot/internal/version.version=${version}" .

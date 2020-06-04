@@ -1,4 +1,6 @@
 docker-compose.yml
+Dockerfile
+.dockerignore
 
 # Keep the below in sync with .gitignore
 
@@ -34,3 +36,5 @@ config/
 # common benchstat filenames 
 old.txt
 new.txt
+
+internal/pkger/pkged.go

@@ -29,4 +29,4 @@ config/
 old.txt
 new.txt
 
-pkged.go
+internal/pkger/pkged.go

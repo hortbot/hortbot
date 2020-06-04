@@ -21,7 +21,8 @@ jobs:
         # https://github.community/t5/GitHub-Actions/continue-on-error-allow-failure-UI-indication/m-p/37033/thread-id/2780
         # go: ["1.14", "tip"]
         go: ["1.14"]
-    name: Go ${{ matrix.go }}
+        pkger: [false, true]
+    name: Go ${{ matrix.go }} (${{ matrix.pkger && 'static' || 'live' }})
 
     steps:
       - uses: actions/checkout@v2
@@ -55,6 +56,12 @@ jobs:
         run: |
           docker pull zikaeroh/postgres-initialized
           docker pull nsqio/nsq
+
+      - name: Run pkger
+        if: ${{ matrix.pkger }}
+        run: |
+          go run github.com/markbates/pkger/cmd/pkger list
+          go run github.com/markbates/pkger/cmd/pkger -o internal/pkger
 
       - name: Run tests
         run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...

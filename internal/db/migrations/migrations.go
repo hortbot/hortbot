@@ -4,7 +4,7 @@ package migrations
 import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
-	"github.com/markbates/pkger"
+	"github.com/hortbot/hortbot/internal/pkger"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 )
