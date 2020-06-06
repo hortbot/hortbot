@@ -215,7 +215,7 @@ func (s *session) parseUserLevel() accessLevel {
 		return levelBroadcaster
 	case badges["moderator"] != "":
 		return levelModerator
-	case badges["subscriber"] != "", badges["vip"] != "", tags["subscriber"] == "1":
+	case badges["subscriber"] != "", badges["vip"] != "", tags["subscriber"] == "1", badges["founder"] != "":
 		return levelSubscriber
 	}
 

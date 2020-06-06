@@ -38,3 +38,6 @@ send hortbot #foobar [HB] Subscriber
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
 send hortbot #foobar [HB] Moderator
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;@badge-info=founder/9;badges=founder/0,hype-train/1;mod=0;subscriber=0;turbo=0;user-type= :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+send hortbot #foobar [HB] Subscriber
