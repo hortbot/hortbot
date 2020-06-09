@@ -27,7 +27,7 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20200605151348-3a43fc422dd9
-	github.com/jackc/pgconn v1.5.1-0.20200408003821-5d2be99c254e
+	github.com/jackc/pgconn v1.6.0
 	github.com/jackc/pgx/v4 v4.6.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.5
@@ -37,7 +37,7 @@ require (
 	github.com/leononame/clock v0.1.6
 	github.com/markbates/pkger v0.17.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
-	github.com/mitchellh/mapstructure v1.3.1 // indirect
+	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200606014950-c42cb6316fb6
+	golang.org/x/tools v0.0.0-20200608174601-1b747fd94509
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
