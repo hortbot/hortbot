@@ -74,7 +74,7 @@ func parseLevel(s string) accessLevel {
 	switch s {
 	case "everyone", "all", "everybody", "normal":
 		return levelEveryone
-	case "sub", "subs", "subscriber", "subscrbers", "regular", "regulars", "reg", "regs":
+	case "sub", "subs", "subscriber", "subscribers", "regular", "regulars", "reg", "regs":
 		return levelSubscriber
 	case "mod", "mods", "moderator", "moderators":
 		return levelModerator
