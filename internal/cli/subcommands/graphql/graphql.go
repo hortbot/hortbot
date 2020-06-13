@@ -15,11 +15,11 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/db/graph"
 	"github.com/hortbot/hortbot/internal/db/graph/generated"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/zikaeroh/ctxlog"
 )
 
 type cmd struct {

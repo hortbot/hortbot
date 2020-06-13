@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/nsqio/go-nsq"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )

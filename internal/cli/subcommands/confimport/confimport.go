@@ -12,9 +12,9 @@ import (
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/confimport"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/zikaeroh/ctxlog"
 )
 
 type cmd struct {

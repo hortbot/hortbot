@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/wader/filtertransport"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 	"golang.org/x/net/proxy"
 )

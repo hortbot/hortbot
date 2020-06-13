@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 	"golang.org/x/net/context/ctxhttp"
 	"golang.org/x/oauth2"

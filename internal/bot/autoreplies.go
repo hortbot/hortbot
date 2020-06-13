@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )

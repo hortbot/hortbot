@@ -11,9 +11,9 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/confimport/sitedb"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/docker"
 	"github.com/jmoiron/sqlx"
+	"github.com/zikaeroh/ctxlog"
 )
 
 const (

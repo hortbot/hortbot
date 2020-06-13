@@ -28,11 +28,11 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban/urbanfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd/xkcdfakes"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube/youtubefakes"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/zikaeroh/ctxlog"
 	"gotest.tools/v3/assert"
 )
 

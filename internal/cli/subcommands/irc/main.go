@@ -17,10 +17,10 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )

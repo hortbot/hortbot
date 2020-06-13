@@ -6,7 +6,7 @@ import (
 
 	"contrib.go.opencensus.io/exporter/jaeger"
 	"contrib.go.opencensus.io/integrations/ocsql"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )

@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/fortytw2/leaktest"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/leononame/clock"
+	"github.com/zikaeroh/ctxlog"
 	"gotest.tools/v3/assert"
 )
 

@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/felixge/httpsnoop"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/rs/xid"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/plugin/ochttp"
 	"go.uber.org/zap"
 )

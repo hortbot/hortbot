@@ -12,7 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/webflags"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

@@ -5,8 +5,8 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

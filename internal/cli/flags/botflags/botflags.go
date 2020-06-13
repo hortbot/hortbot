@@ -19,7 +19,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

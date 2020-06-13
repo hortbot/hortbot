@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
 	"go.opencensus.io/trace/propagation"
 	"go.uber.org/zap"

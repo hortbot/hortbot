@@ -9,8 +9,8 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/volatiletech/sqlboiler/v4/queries"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

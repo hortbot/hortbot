@@ -8,8 +8,8 @@ import (
 
 	"github.com/hortbot/hortbot/internal/confimport/sitedb"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/zikaeroh/ctxlog"
 )
 
 var (

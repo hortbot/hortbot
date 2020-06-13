@@ -10,8 +10,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/twitchx"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

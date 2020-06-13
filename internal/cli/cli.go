@@ -9,10 +9,10 @@ import (
 	"os"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
 	"github.com/posener/ctxutil"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

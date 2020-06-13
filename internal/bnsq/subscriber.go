@@ -5,9 +5,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 

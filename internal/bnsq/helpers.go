@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/nsqio/go-nsq"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/atomic"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"

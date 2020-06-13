@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/http/httputil"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/web/templates"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 	"golang.org/x/net/publicsuffix"
 )

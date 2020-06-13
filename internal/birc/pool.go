@@ -9,10 +9,10 @@ import (
 	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/atomic"
 	"go.uber.org/zap"
 )

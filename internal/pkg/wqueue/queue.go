@@ -8,7 +8,7 @@ package wqueue
 import (
 	"context"
 
-	"github.com/hortbot/hortbot/internal/pkg/ctxlog"
+	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 
