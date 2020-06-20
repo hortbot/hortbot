@@ -29,11 +29,23 @@ var (
 	ErrUnknown       = errors.New("twitch: unknown error")
 )
 
+// userScopes should be granted for all users.
 var userScopes = []string{
 	"user_read",
 	"channel_editor",
 	"channel_subscriptions",
 	"moderation:read",
+}
+
+// BotScopes are scopes which should be granted for the bot's account.
+var BotScopes = []string{
+	"user_follows_edit", // TODO: Remove once no longer using kraken follower API.
+	"channel:moderate",
+	"chat:edit",
+	"chat:read",
+	"whispers:read",
+	"whispers:edit",
+	"user:edit:follows",
 }
 
 var twitchEndpoint = oauth2.Endpoint{

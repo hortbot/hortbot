@@ -35,15 +35,6 @@ import (
 	"go.uber.org/zap"
 )
 
-var botScopes = []string{
-	"user_follows_edit",
-	"channel:moderate",
-	"chat:edit",
-	"chat:read",
-	"whispers:read",
-	"whispers:edit",
-}
-
 // App is the HortBot webapp.
 type App struct {
 	Addr       string
@@ -251,7 +242,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 
 	var extraScopes []string
 	if bot {
-		extraScopes = botScopes
+		extraScopes = twitch.BotScopes
 	}
 
 	url := a.Twitch.AuthCodeURL(state, extraScopes...)
