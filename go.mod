@@ -22,7 +22,7 @@ require (
 	github.com/gobuffalo/flect v0.2.1
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.11.0
-	github.com/google/go-cmp v0.4.1
+	github.com/google/go-cmp v0.5.0
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/goware/urlx v0.3.1
@@ -42,7 +42,7 @@ require (
 	github.com/ory/dockertest/v3 v3.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
-	github.com/prometheus/client_golang v1.6.0
+	github.com/prometheus/client_golang v1.7.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
@@ -54,14 +54,14 @@ require (
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223
-	go.opencensus.io v0.22.3
+	go.opencensus.io v0.22.4
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
 	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
 	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200615222825-6aa8f57aacd9
+	golang.org/x/tools v0.0.0-20200619210111-0f592d2728bb
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
