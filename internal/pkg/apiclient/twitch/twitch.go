@@ -191,3 +191,11 @@ func (t *Twitch) clientForUser(ctx context.Context, v5 bool, tok *oauth2.Token, 
 		headers: t.headers(v5),
 	}
 }
+
+func (t *Twitch) krakenClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
+	return t.clientForUser(ctx, true, tok, onNewToken)
+}
+
+func (t *Twitch) helixClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
+	return t.clientForUser(ctx, false, tok, onNewToken)
+}

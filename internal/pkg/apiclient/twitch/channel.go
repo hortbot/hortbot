@@ -56,7 +56,7 @@ func (t *Twitch) SetChannelStatus(ctx context.Context, id int64, userToken *oaut
 		return "", nil, ErrNotAuthorized
 	}
 
-	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
+	cli := t.krakenClientForUser(ctx, userToken, setToken(&newToken))
 
 	url := krakenRoot + "/channels/" + strconv.FormatInt(id, 10)
 
@@ -93,7 +93,7 @@ func (t *Twitch) SetChannelGame(ctx context.Context, id int64, userToken *oauth2
 		return "", nil, ErrNotAuthorized
 	}
 
-	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
+	cli := t.krakenClientForUser(ctx, userToken, setToken(&newToken))
 
 	url := krakenRoot + "/channels/" + strconv.FormatInt(id, 10)
 
@@ -138,7 +138,7 @@ func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *
 			url += "&after=" + cursor
 		}
 
-		cli := t.clientForUser(ctx, false, userToken, setToken(&newToken))
+		cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
 
 		resp, err := cli.Get(ctx, url)
 		if err != nil {

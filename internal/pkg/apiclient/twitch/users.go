@@ -28,7 +28,7 @@ func (u User) DispName() string {
 //
 // GET https://api.twitch.tv/kraken
 func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
-	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
+	cli := t.krakenClientForUser(ctx, userToken, setToken(&newToken))
 
 	resp, err := cli.Get(ctx, krakenRoot)
 	if err != nil {
@@ -106,7 +106,7 @@ func (t *Twitch) FollowChannel(ctx context.Context, id int64, userToken *oauth2.
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.clientForUser(ctx, true, userToken, setToken(&newToken))
+	cli := t.krakenClientForUser(ctx, userToken, setToken(&newToken))
 
 	url := krakenRoot + "/users/" + strconv.FormatInt(id, 10) + "/follows/channels/" + strconv.FormatInt(toFollow, 10)
 
