@@ -134,7 +134,7 @@ func TestFindBotTokenNew(t *testing.T) {
 	tw := &twitchfakes.FakeAPI{
 		GetUserForTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
 			return &twitch.User{
-				ID: newT.ID,
+				ID: twitch.IDStr(newT.ID),
 			}, newTok, nil
 		},
 	}
@@ -186,7 +186,7 @@ func TestFindBotTokenNewDBError(t *testing.T) {
 			breakDB(t, db)
 
 			return &twitch.User{
-				ID: newT.ID,
+				ID: twitch.IDStr(newT.ID),
 			}, newTok, nil
 		},
 	}

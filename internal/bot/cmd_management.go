@@ -61,7 +61,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 		}
 
-		userID = u.ID
+		userID = u.ID.AsInt64()
 		displayName = u.DispName()
 	} else {
 		if !isAdmin {

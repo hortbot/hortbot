@@ -1,4 +1,4 @@
-twitch_get_user_for_username {"someone": {"user_id": 1234, "user_name": "someone", "display_name": "Someone"}, "foobar": {"user_id": 1, "user_name": "foobar"}}
+twitch_get_user_for_username {"someone": {"id": 1234, "login": "someone", "display_name": "Someone"}, "foobar": {"id": 1, "login": "foobar"}}
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block

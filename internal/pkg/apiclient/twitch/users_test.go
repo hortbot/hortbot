@@ -36,7 +36,7 @@ func TestGetUserForToken(t *testing.T) {
 
 	user, newToken, err := tw.GetUserForToken(ctx, tok)
 	assert.NilError(t, err)
-	assert.Equal(t, user.ID, c.ID.AsInt64())
+	assert.Equal(t, user.ID, c.ID)
 	assert.Equal(t, user.Name, c.Name)
 	assert.Assert(t, newToken == nil)
 }

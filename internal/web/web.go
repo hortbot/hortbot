@@ -311,7 +311,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		tok = newToken
 	}
 
-	tt := modelsx.TokenToModel(user.ID, tok)
+	tt := modelsx.TokenToModel(user.ID.AsInt64(), tok)
 	if stateVal.Bot {
 		tt.BotName = null.StringFrom(user.Name)
 	}
@@ -324,7 +324,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	session := a.getSession(r)
 	session.clearValues()
-	session.setTwitchID(user.ID)
+	session.setTwitchID(user.ID.AsInt64())
 	session.setUsername(user.Name)
 
 	if err := session.save(w, r); err != nil {
@@ -341,7 +341,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	page := &templates.LoginSuccessPage{
 		BasePage: a.basePage(r),
 		Name:     user.Name,
-		ID:       user.ID,
+		ID:       user.ID.AsInt64(),
 		Bot:      stateVal.Bot,
 	}
 

@@ -239,7 +239,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, u.ID)
+	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, u.ID.AsInt64())
 	if err != nil {
 		switch err {
 		case twitch.ErrServerError:

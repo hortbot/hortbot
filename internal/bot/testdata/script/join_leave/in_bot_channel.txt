@@ -46,7 +46,7 @@ handle hortbot @id=__UUID__;room-id=2;user-id=3 :nobody!nobody@nobody.tmi.twitch
 no_send
 no_notify_channel_updates
 
-twitch_get_user_for_username {"someone": {"user_id": 1234, "user_name": "someone", "display_name": "Someone"}}
+twitch_get_user_for_username {"someone": {"id": 1234, "login": "someone", "display_name": "Someone"}}
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone
 send hortbot #hortbot [HB] Someone, hortbot will join your channel soon with prefix '!'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login

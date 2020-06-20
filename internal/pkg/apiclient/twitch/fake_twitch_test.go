@@ -107,6 +107,9 @@ func (f *fakeTwitch) tokenForCode(code string) *oauth2.Token {
 func (f *fakeTwitch) route() {
 	f.mt.RegisterNoResponder(f.notFound)
 	f.mt.RegisterResponder("POST", "https://id.twitch.tv/oauth2/token", f.oauth2Token)
+
+	// Kraken API
+
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/channel", f.krakenChannel)
 
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/channels/401$`, httpmock.NewStringResponder(401, "{}"))
@@ -134,21 +137,6 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/901$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/\d+$`, f.krakenStreamByID)
 
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken", f.kraken)
-
-	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/foobar/chatters", httpmock.NewStringResponder(200, `{"chatter_count": 1234, "chatters": {"broadcaster": ["foobar"], "viewers": ["foo", "bar"]}}`))
-	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/notfound/chatters", httpmock.NewStringResponder(404, ""))
-	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/servererror/chatters", httpmock.NewStringResponder(500, ""))
-	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/badbody/chatters", httpmock.NewStringResponder(200, "}"))
-	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/geterr/chatters", httpmock.NewErrorResponder(errTestBadRequest))
-
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=foobar", httpmock.NewStringResponder(200, `{"users": [{"_id": 1234, "name": "foobar", "display_name": "Foobar"}]}`))
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound", httpmock.NewStringResponder(404, ""))
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=notfound2", httpmock.NewStringResponder(200, `{"users": []}`))
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=servererror", httpmock.NewStringResponder(500, ""))
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=decodeerror", httpmock.NewStringResponder(200, "}"))
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/kraken/users?login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
-
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/200", httpmock.NewStringResponder(200, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/401", httpmock.NewStringResponder(401, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/404", httpmock.NewStringResponder(404, "{}"))
@@ -156,7 +144,26 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/500", httpmock.NewStringResponder(500, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/901", httpmock.NewErrorResponder(errTestBadRequest))
 
+	// Helix API
+
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users", f.helixUsers)
+
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=foobar", httpmock.NewStringResponder(200, `{"data": [{"id": 1234, "login": "foobar", "display_name": "Foobar"}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=notfound", httpmock.NewStringResponder(404, ""))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=notfound2", httpmock.NewStringResponder(200, `{"data": []}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=servererror", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=decodeerror", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
+
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/moderators", f.helixModerationModerators)
+
+	// TMI API
+
+	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/foobar/chatters", httpmock.NewStringResponder(200, `{"chatter_count": 1234, "chatters": {"broadcaster": ["foobar"], "viewers": ["foo", "bar"]}}`))
+	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/notfound/chatters", httpmock.NewStringResponder(404, ""))
+	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/servererror/chatters", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/badbody/chatters", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/geterr/chatters", httpmock.NewErrorResponder(errTestBadRequest))
 }
 
 func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
@@ -307,14 +314,16 @@ func (f *fakeTwitch) krakenStreamByID(req *http.Request) (*http.Response, error)
 	return httpmock.NewJsonResponse(200, v)
 }
 
-func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
+func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {
 	assert.Equal(f.t, req.Method, "GET")
-	f.checkHeaders(req, true)
+	f.checkHeaders(req, false)
+
+	const authPrefix = "Bearer "
 
 	auth := req.Header.Get("Authorization")
-	assert.Assert(f.t, strings.HasPrefix(auth, "OAuth "))
+	assert.Assert(f.t, strings.HasPrefix(auth, authPrefix))
 
-	tok := strings.TrimPrefix(auth, "OAuth ")
+	tok := strings.TrimPrefix(auth, authPrefix)
 	if tok == "requesterror" {
 		return nil, errTestBadRequest
 	}
@@ -336,9 +345,12 @@ func (f *fakeTwitch) kraken(req *http.Request) (*http.Response, error) {
 	}
 
 	return httpmock.NewJsonResponse(200, map[string]interface{}{
-		"token": map[string]interface{}{
-			"user_id":   c.ID,
-			"user_name": c.Name,
+		"data": []twitch.User{
+			{
+				ID:          c.ID,
+				Name:        c.Name,
+				DisplayName: c.DisplayName,
+			},
 		},
 	})
 }
@@ -421,13 +433,13 @@ func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Respon
 	return httpmock.ConnectionFailure(req)
 }
 
-func (f *fakeTwitch) checkHeaders(req *http.Request, v5 bool) {
+func (f *fakeTwitch) checkHeaders(req *http.Request, kraken bool) {
 	f.t.Helper()
 
 	assert.Equal(f.t, req.Header.Get("Client-ID"), clientID)
 	assert.Equal(f.t, req.Header.Get("Content-Type"), "application/json")
 
-	if v5 {
+	if kraken {
 		assert.Equal(f.t, req.Header.Get("Accept"), "application/vnd.twitchtv.v5+json")
 	}
 }

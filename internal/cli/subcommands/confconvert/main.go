@@ -215,7 +215,7 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 
 	if cbConfig.ChannelID == "" {
 		name = expectedName
-		twitchID, displayName, err = cmd.getChannelbyName(ctx, expectedName)
+		twitchID, displayName, err = cmd.getChannelByName(ctx, expectedName)
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")

@@ -72,12 +72,12 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
 
-	bu := &models.BlockedUser{TwitchID: u.ID}
+	bu := &models.BlockedUser{TwitchID: u.ID.AsInt64()}
 	if err := bu.Upsert(ctx, s.Tx, false, []string{models.BlockedUserColumns.TwitchID}, boil.Infer(), boil.Infer()); err != nil {
 		return err
 	}
 
-	channel, err := models.Channels(models.ChannelWhere.TwitchID.EQ(u.ID)).One(ctx, s.Tx)
+	channel, err := models.Channels(models.ChannelWhere.TwitchID.EQ(u.ID.AsInt64())).One(ctx, s.Tx)
 	if err != nil && err != sql.ErrNoRows {
 		return err
 	}
@@ -107,7 +107,7 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
 
-	if err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(u.ID)).DeleteAll(ctx, s.Tx); err != nil {
+	if err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(u.ID.AsInt64())).DeleteAll(ctx, s.Tx); err != nil {
 		return err
 	}
 
