@@ -156,6 +156,8 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?id=1234", httpmock.NewStringResponder(200, `{"data": [{"id": 1234, "login": "foobar", "display_name": "Foobar"}]}`))
 
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/users/follows$`, f.helixUserFollows)
+
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/moderators", f.helixModerationModerators)
 
 	// TMI API
@@ -423,6 +425,35 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 	}
 
 	return httpmock.NewJsonResponse(200, &v)
+}
+
+func (f *fakeTwitch) helixUserFollows(req *http.Request) (*http.Response, error) {
+	assert.Equal(f.t, req.Method, "POST")
+	f.checkHeaders(req, false)
+
+	auth := req.Header.Get("Authorization")
+	assert.Assert(f.t, strings.HasPrefix(auth, "Bearer "))
+
+	body := &struct {
+		FromID string `json:"from_id"`
+		ToID   string `json:"to_id"`
+	}{}
+
+	assert.NilError(f.t, jsonx.DecodeSingle(req.Body, &body))
+
+	switch body.ToID {
+	case "777":
+		return httpmock.NewStringResponse(204, "}"), nil
+	case "901":
+		return nil, errTestBadRequest
+	}
+
+	assert.Equal(f.t, body.FromID, "1234")
+
+	status, err := strconv.Atoi(body.ToID)
+	assert.NilError(f.t, err)
+
+	return httpmock.NewStringResponse(status, ""), nil
 }
 
 func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Response, error) {

@@ -72,7 +72,7 @@ func TestAuthExchange(t *testing.T) {
 
 	const (
 		state         = "some-state"
-		expectedScope = "user_read+channel_editor+channel_subscriptions+moderation%3Aread"
+		expectedScope = "user_read+channel_editor+channel_subscriptions+moderation%3Aread+user%3Aedit%3Abroadcast"
 	)
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))

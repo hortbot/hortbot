@@ -67,6 +67,29 @@ func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.
 		return nil, err
 	}
 
+	if v != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
+	return h.do(ctx, req)
+}
+
+func (h *httpClient) Post(ctx context.Context, url string, v interface{}) (*http.Response, error) {
+	var buf bytes.Buffer
+
+	if err := json.NewEncoder(&buf).Encode(v); err != nil {
+		return nil, err
+	}
+
+	req, err := h.newRequest(ctx, "POST", url, &buf)
+	if err != nil {
+		return nil, err
+	}
+
+	if v != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
+
 	return h.do(ctx, req)
 }
 

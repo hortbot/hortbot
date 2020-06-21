@@ -31,21 +31,22 @@ var (
 
 // userScopes should be granted for all users.
 var userScopes = []string{
-	"user_read",
-	"channel_editor",
-	"channel_subscriptions",
-	"moderation:read",
+	"user_read",             // Kraken: ???
+	"channel_editor",        // Kraken: update channel
+	"channel_subscriptions", // Kraken: ???
+	"moderation:read",       // Helix: get moderator list
+	"user:edit:broadcast",   // Helix: modify channel information
 }
 
 // BotScopes are scopes which should be granted for the bot's account.
 var BotScopes = []string{
-	"user_follows_edit", // TODO: Remove once no longer using kraken follower API.
-	"channel:moderate",
-	"chat:edit",
-	"chat:read",
-	"whispers:read",
-	"whispers:edit",
-	"user:edit:follows",
+	"user_follows_edit", // Kraken: followers
+	"channel:moderate",  // Chat
+	"chat:edit",         // Chat
+	"chat:read",         // Chat
+	"whispers:read",     // Chat
+	"whispers:edit",     // Chat
+	"user:edit:follows", // Helix: followers
 }
 
 var twitchEndpoint = oauth2.Endpoint{

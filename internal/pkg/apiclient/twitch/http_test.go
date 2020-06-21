@@ -43,9 +43,12 @@ func TestHTTPClient(t *testing.T) {
 
 		_, err = c.Put(context.Background(), "\n", 123) //nolint:bodyclose
 		assert.ErrorContains(t, err, errMsg)
+
+		_, err = c.Post(context.Background(), "\n", 123) //nolint:bodyclose
+		assert.ErrorContains(t, err, errMsg)
 	})
 
-	t.Run("PutBad", func(t *testing.T) {
+	t.Run("Unmarshallable body", func(t *testing.T) {
 		c := &httpClient{
 			ts: &oauth2xfakes.FakeTokenSource{
 				TokenStub: func() (*oauth2.Token, error) {
@@ -55,6 +58,9 @@ func TestHTTPClient(t *testing.T) {
 		}
 
 		_, err := c.Put(context.Background(), "http://localhost", jsonx.Unmarshallable()) //nolint:bodyclose
+		assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
+
+		_, err = c.Post(context.Background(), "http://localhost", jsonx.Unmarshallable()) //nolint:bodyclose
 		assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
 	})
 
