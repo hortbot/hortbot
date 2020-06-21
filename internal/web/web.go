@@ -301,7 +301,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, newToken, err := a.Twitch.GetUserForToken(ctx, tok)
+	user, newToken, err := a.Twitch.GetUserByToken(ctx, tok)
 	if err != nil {
 		ctxlog.Error(ctx, "error getting user for token", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)

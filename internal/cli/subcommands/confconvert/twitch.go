@@ -17,7 +17,7 @@ func (cmd *cmd) getChannelByID(ctx context.Context, id int64) (name string, disp
 		return "", "", err
 	}
 
-	user, err := tw.GetUserForID(ctx, id)
+	user, err := tw.GetUserByID(ctx, id)
 	if err != nil {
 		return "", "", err
 	}
@@ -29,7 +29,7 @@ func (cmd *cmd) getChannelByName(ctx context.Context, name string) (id int64, di
 		return 0, "", err
 	}
 
-	ch, err := tw.GetUserForUsername(ctx, name)
+	ch, err := tw.GetUserByUsername(ctx, name)
 	if err != nil {
 		return 0, "", err
 	}

@@ -24,26 +24,26 @@ func (u User) DispName() string {
 	return u.Name
 }
 
-// GetUserForToken gets the Twitch user for the specified token.
+// GetUserByToken gets the Twitch user for the specified token.
 //
 // GET https://api.twitch.tv/helix/users
-func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
+func (t *Twitch) GetUserByToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
 	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
 	user, err = getUser(ctx, cli, "", 0)
 	return user, newToken, err
 }
 
-// GetUserForUsername gets the Twitch user for the specified username.
+// GetUserByUsername gets the Twitch user for the specified username.
 //
 // GET https://api.twitch.tv/helix/users?login=<username>
-func (t *Twitch) GetUserForUsername(ctx context.Context, username string) (*User, error) {
+func (t *Twitch) GetUserByUsername(ctx context.Context, username string) (*User, error) {
 	return getUser(ctx, t.helixCli, username, 0)
 }
 
-// GetUserForID gets the Twitch user for the specified UD.
+// GetUserByID gets the Twitch user for the specified UD.
 //
 // GET https://api.twitch.tv/helix/users?id=<id>
-func (t *Twitch) GetUserForID(ctx context.Context, id int64) (*User, error) {
+func (t *Twitch) GetUserByID(ctx context.Context, id int64) (*User, error) {
 	return getUser(ctx, t.helixCli, "", id)
 }
 

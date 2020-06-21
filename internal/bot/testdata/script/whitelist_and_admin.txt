@@ -1,6 +1,6 @@
 bot_config {"WhitelistEnabled": true, "Whitelist": ["whitelisted", "admin", "superadmin"], "Admins": ["admin"], "SuperAdmins": ["superadmin"]}
 
-twitch_get_user_for_username {"foobar": {"id": 1, "login": "foobar"}}
+twitch_get_user_by_username {"foobar": {"id": 1, "login": "foobar"}}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=3;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!join foobar
 send_any

@@ -78,7 +78,7 @@ func TestFindBotTokenGetError(t *testing.T) {
 	defer cancel()
 
 	tw := &twitchfakes.FakeAPI{
-		GetUserForTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
+		GetUserByTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
 			return nil, nil, errTest
 		},
 	}
@@ -132,7 +132,7 @@ func TestFindBotTokenNew(t *testing.T) {
 	newTok := modelsx.ModelToToken(newT)
 
 	tw := &twitchfakes.FakeAPI{
-		GetUserForTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
+		GetUserByTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
 			return &twitch.User{
 				ID: twitch.IDStr(newT.ID),
 			}, newTok, nil
@@ -182,7 +182,7 @@ func TestFindBotTokenNewDBError(t *testing.T) {
 	db := pool.FreshDB(t)
 	defer db.Close()
 	tw := &twitchfakes.FakeAPI{
-		GetUserForTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
+		GetUserByTokenStub: func(context.Context, *oauth2.Token) (*twitch.User, *oauth2.Token, error) {
 			breakDB(t, db)
 
 			return &twitch.User{

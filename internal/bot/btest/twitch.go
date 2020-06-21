@@ -122,14 +122,14 @@ func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string, lineNum 
 	})
 }
 
-func (st *scriptTester) twitchGetUserForUsername(t testing.TB, _, args string, lineNum int) {
+func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, lineNum int) {
 	var v map[string]*twitch.User
 
 	err := json.Unmarshal([]byte(args), &v)
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetUserForUsernameCalls(func(_ context.Context, username string) (*twitch.User, error) {
+		st.twitch.GetUserByUsernameCalls(func(_ context.Context, username string) (*twitch.User, error) {
 			u := v[username]
 			if u == nil {
 				return nil, twitch.ErrNotFound

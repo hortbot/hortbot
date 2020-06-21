@@ -67,7 +67,7 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 		return s.ReplyUsage(ctx, "<username>")
 	}
 
-	u, err := s.Deps.Twitch.GetUserForUsername(ctx, args)
+	u, err := s.Deps.Twitch.GetUserByUsername(ctx, args)
 	if err != nil {
 		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
@@ -102,7 +102,7 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 		return s.ReplyUsage(ctx, "<username>")
 	}
 
-	u, err := s.Deps.Twitch.GetUserForUsername(ctx, args)
+	u, err := s.Deps.Twitch.GetUserByUsername(ctx, args)
 	if err != nil {
 		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}

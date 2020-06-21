@@ -34,7 +34,7 @@ func TestGetUserForToken(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-	user, newToken, err := tw.GetUserForToken(ctx, tok)
+	user, newToken, err := tw.GetUserByToken(ctx, tok)
 	assert.NilError(t, err)
 	assert.Equal(t, user.ID, c.ID)
 	assert.Equal(t, user.Name, c.Name)
@@ -63,7 +63,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-	_, _, err = tw.GetUserForToken(ctx, tok)
+	_, _, err = tw.GetUserByToken(ctx, tok)
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
@@ -89,7 +89,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
-	_, _, err = tw.GetUserForToken(ctx, tok)
+	_, _, err = tw.GetUserByToken(ctx, tok)
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
@@ -101,7 +101,7 @@ func TestGetUserForTokenRequestError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, _, err := tw.GetUserForToken(ctx, &oauth2.Token{AccessToken: "requesterror"})
+	_, _, err := tw.GetUserByToken(ctx, &oauth2.Token{AccessToken: "requesterror"})
 	assert.ErrorContains(t, err, errTestBadRequest.Error())
 }
 
@@ -121,7 +121,7 @@ func TestGetUserForUsername(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	u, err := tw.GetUserForUsername(ctx, "foobar")
+	u, err := tw.GetUserByUsername(ctx, "foobar")
 	assert.NilError(t, err)
 	assert.DeepEqual(t, u, &twitch.User{
 		ID:          1234,
@@ -146,7 +146,7 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetUserForUsername(ctx, "servererror")
+	_, err := tw.GetUserByUsername(ctx, "servererror")
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
@@ -166,7 +166,7 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetUserForUsername(ctx, "notfound")
+	_, err := tw.GetUserByUsername(ctx, "notfound")
 	assert.Equal(t, err, twitch.ErrNotFound)
 }
 
@@ -186,7 +186,7 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetUserForUsername(ctx, "notfound2")
+	_, err := tw.GetUserByUsername(ctx, "notfound2")
 	assert.Equal(t, err, twitch.ErrNotFound)
 }
 
@@ -206,7 +206,7 @@ func TestGetUserForUsernameDecodeError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetUserForUsername(ctx, "requesterror")
+	_, err := tw.GetUserByUsername(ctx, "requesterror")
 	assert.ErrorContains(t, err, errTestBadRequest.Error())
 }
 
@@ -226,7 +226,7 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	_, err := tw.GetUserForUsername(ctx, "decodeerror")
+	_, err := tw.GetUserByUsername(ctx, "decodeerror")
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
@@ -246,7 +246,7 @@ func TestGetUserForID(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	u, err := tw.GetUserForID(ctx, 1234)
+	u, err := tw.GetUserByID(ctx, 1234)
 	assert.NilError(t, err)
 	assert.DeepEqual(t, u, &twitch.User{
 		ID:          1234,

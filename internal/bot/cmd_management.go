@@ -56,7 +56,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	isAdmin := s.UserLevel.CanAccess(levelAdmin)
 
 	if name != "" && isAdmin {
-		u, err := s.Deps.Twitch.GetUserForUsername(ctx, name)
+		u, err := s.Deps.Twitch.GetUserByUsername(ctx, name)
 		if err != nil {
 			return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 		}

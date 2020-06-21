@@ -28,7 +28,7 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 	}
 
 	tok := modelsx.ModelToToken(token)
-	_, newTok, err := tw.GetUserForToken(ctx, tok)
+	_, newTok, err := tw.GetUserByToken(ctx, tok)
 	if err != nil {
 		return nil, err
 	}
