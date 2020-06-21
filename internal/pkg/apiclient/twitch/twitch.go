@@ -66,16 +66,21 @@ type API interface {
 	AuthCodeURL(state string, extraScopes ...string) string
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
 
-	GetUserForUsername(ctx context.Context, username string) (*User, error)
+	// Kraken
 	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
-	GetChatters(ctx context.Context, channel string) (*Chatters, error)
-	GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error)
-
-	GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
 	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
+
+	// Helix
+	GetUserForUsername(ctx context.Context, username string) (*User, error)
+	GetUserForID(ctx context.Context, id int64) (*User, error)
+	GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error)
+	GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error)
+
+	// TMI
+	GetChatters(ctx context.Context, channel string) (*Chatters, error)
 }
 
 // Twitch is the Twitch API client.

@@ -17,11 +17,11 @@ func (cmd *cmd) getChannelByID(ctx context.Context, id int64) (name string, disp
 		return "", "", err
 	}
 
-	ch, err := tw.GetChannelByID(ctx, id)
+	user, err := tw.GetUserForID(ctx, id)
 	if err != nil {
 		return "", "", err
 	}
-	return ch.Name, ch.DisplayName, nil
+	return user.Name, user.DisplayName, nil
 }
 
 func (cmd *cmd) getChannelByName(ctx context.Context, name string) (id int64, displayName string, err error) {

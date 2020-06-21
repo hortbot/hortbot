@@ -230,6 +230,31 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 	assert.Equal(t, err, twitch.ErrServerError)
 }
 
+func TestGetUserForID(t *testing.T) {
+	ctx := context.Background()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tok := &oauth2.Token{
+		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
+		TokenType:   "bearer",
+	}
+
+	ft.setClientTokens(tok)
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	u, err := tw.GetUserForID(ctx, 1234)
+	assert.NilError(t, err)
+	assert.DeepEqual(t, u, &twitch.User{
+		ID:          1234,
+		Name:        "foobar",
+		DisplayName: "Foobar",
+	})
+}
+
 func TestFollowChannel(t *testing.T) {
 	ctx := context.Background()
 

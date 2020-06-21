@@ -29,7 +29,7 @@ func (u User) DispName() string {
 // GET https://api.twitch.tv/helix/users
 func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
 	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
-	user, err = getUser(ctx, cli, "")
+	user, err = getUser(ctx, cli, "", 0)
 	return user, newToken, err
 }
 
@@ -37,13 +37,22 @@ func (t *Twitch) GetUserForToken(ctx context.Context, userToken *oauth2.Token) (
 //
 // GET https://api.twitch.tv/helix/users?login=<username>
 func (t *Twitch) GetUserForUsername(ctx context.Context, username string) (*User, error) {
-	return getUser(ctx, t.helixCli, username)
+	return getUser(ctx, t.helixCli, username, 0)
 }
 
-func getUser(ctx context.Context, cli *httpClient, username string) (*User, error) {
+// GetUserForID gets the Twitch user for the specified UD.
+//
+// GET https://api.twitch.tv/helix/users?id=<id>
+func (t *Twitch) GetUserForID(ctx context.Context, id int64) (*User, error) {
+	return getUser(ctx, t.helixCli, "", id)
+}
+
+func getUser(ctx context.Context, cli *httpClient, username string, id int64) (*User, error) {
 	u := helixRoot + "/users"
 	if username != "" {
 		u += "?login=" + url.QueryEscape(username)
+	} else if id != 0 {
+		u += "?id=" + strconv.FormatInt(id, 10)
 	}
 
 	resp, err := cli.Get(ctx, u)
