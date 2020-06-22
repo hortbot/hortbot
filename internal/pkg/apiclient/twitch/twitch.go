@@ -79,6 +79,7 @@ type API interface {
 	GetUserByUsername(ctx context.Context, username string) (*User, error)
 	GetUserByID(ctx context.Context, id int64) (*User, error)
 	GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error)
+	SearchCategories(ctx context.Context, query string) ([]*Category, error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

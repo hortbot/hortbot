@@ -155,6 +155,20 @@ type FakeAPI struct {
 		result1 *twitch.User
 		result2 error
 	}
+	SearchCategoriesStub        func(context.Context, string) ([]*twitch.Category, error)
+	searchCategoriesMutex       sync.RWMutex
+	searchCategoriesArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	searchCategoriesReturns struct {
+		result1 []*twitch.Category
+		result2 error
+	}
+	searchCategoriesReturnsOnCall map[int]struct {
+		result1 []*twitch.Category
+		result2 error
+	}
 	SetChannelGameStub        func(context.Context, int64, *oauth2.Token, string) (string, *oauth2.Token, error)
 	setChannelGameMutex       sync.RWMutex
 	setChannelGameArgsForCall []struct {
@@ -841,6 +855,70 @@ func (fake *FakeAPI) GetUserByUsernameReturnsOnCall(i int, result1 *twitch.User,
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) SearchCategories(arg1 context.Context, arg2 string) ([]*twitch.Category, error) {
+	fake.searchCategoriesMutex.Lock()
+	ret, specificReturn := fake.searchCategoriesReturnsOnCall[len(fake.searchCategoriesArgsForCall)]
+	fake.searchCategoriesArgsForCall = append(fake.searchCategoriesArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("SearchCategories", []interface{}{arg1, arg2})
+	fake.searchCategoriesMutex.Unlock()
+	if fake.SearchCategoriesStub != nil {
+		return fake.SearchCategoriesStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.searchCategoriesReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) SearchCategoriesCallCount() int {
+	fake.searchCategoriesMutex.RLock()
+	defer fake.searchCategoriesMutex.RUnlock()
+	return len(fake.searchCategoriesArgsForCall)
+}
+
+func (fake *FakeAPI) SearchCategoriesCalls(stub func(context.Context, string) ([]*twitch.Category, error)) {
+	fake.searchCategoriesMutex.Lock()
+	defer fake.searchCategoriesMutex.Unlock()
+	fake.SearchCategoriesStub = stub
+}
+
+func (fake *FakeAPI) SearchCategoriesArgsForCall(i int) (context.Context, string) {
+	fake.searchCategoriesMutex.RLock()
+	defer fake.searchCategoriesMutex.RUnlock()
+	argsForCall := fake.searchCategoriesArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) SearchCategoriesReturns(result1 []*twitch.Category, result2 error) {
+	fake.searchCategoriesMutex.Lock()
+	defer fake.searchCategoriesMutex.Unlock()
+	fake.SearchCategoriesStub = nil
+	fake.searchCategoriesReturns = struct {
+		result1 []*twitch.Category
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) SearchCategoriesReturnsOnCall(i int, result1 []*twitch.Category, result2 error) {
+	fake.searchCategoriesMutex.Lock()
+	defer fake.searchCategoriesMutex.Unlock()
+	fake.SearchCategoriesStub = nil
+	if fake.searchCategoriesReturnsOnCall == nil {
+		fake.searchCategoriesReturnsOnCall = make(map[int]struct {
+			result1 []*twitch.Category
+			result2 error
+		})
+	}
+	fake.searchCategoriesReturnsOnCall[i] = struct {
+		result1 []*twitch.Category
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeAPI) SetChannelGame(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (string, *oauth2.Token, error) {
 	fake.setChannelGameMutex.Lock()
 	ret, specificReturn := fake.setChannelGameReturnsOnCall[len(fake.setChannelGameArgsForCall)]
@@ -1002,6 +1080,8 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.getUserByTokenMutex.RUnlock()
 	fake.getUserByUsernameMutex.RLock()
 	defer fake.getUserByUsernameMutex.RUnlock()
+	fake.searchCategoriesMutex.RLock()
+	defer fake.searchCategoriesMutex.RUnlock()
 	fake.setChannelGameMutex.RLock()
 	defer fake.setChannelGameMutex.RUnlock()
 	fake.setChannelStatusMutex.RLock()
