@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"context"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 // This script implements a sliding-window rate limiter using a sorted set.
@@ -64,10 +65,10 @@ add(slow_key)
 return 1
 `)
 
-func rateLimit(client redis.Cmdable, key string, window time.Duration, slowLimit, fastLimit int, onlyFastKey string) (allowed bool, err error) {
+func rateLimit(ctx context.Context, client redis.Cmdable, key string, window time.Duration, slowLimit, fastLimit int, onlyFastKey string) (allowed bool, err error) {
 	windowMicro := int64(window / time.Microsecond)
 	if windowMicro <= 0 {
 		return false, nil
 	}
-	return scriptRateLimit.Run(client, []string{key, onlyFastKey}, windowMicro, slowLimit, fastLimit).Bool()
+	return scriptRateLimit.Run(ctx, client, []string{key, onlyFastKey}, windowMicro, slowLimit, fastLimit).Bool()
 }

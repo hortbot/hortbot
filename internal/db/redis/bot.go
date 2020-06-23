@@ -36,9 +36,8 @@ func (db *DB) LinkPermit(ctx context.Context, channel, user string, expiry time.
 	ctx, span := trace.StartSpan(ctx, "LinkPermit")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := linkPermitKey(channel, user)
-	return mark(client, key, expiry)
+	return mark(ctx, db.client, key, expiry)
 }
 
 // HasLinkPermit returns true if a user has a link permit, invalidating the permit.
@@ -46,9 +45,8 @@ func (db *DB) HasLinkPermit(ctx context.Context, channel, user string) (bool, er
 	ctx, span := trace.StartSpan(ctx, "HasLinkPermit")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := linkPermitKey(channel, user)
-	return checkAndDelete(client, key)
+	return checkAndDelete(ctx, db.client, key)
 }
 
 // Confirm checks that a user has confirmed something (keyed on "key").
@@ -56,14 +54,13 @@ func (db *DB) Confirm(ctx context.Context, channel, user, key string, expiry tim
 	ctx, span := trace.StartSpan(ctx, "Confirm")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	rkey := buildKey(
 		keyChannel.is(channel),
 		keyConfirm.is(user),
 		keyKey.is(key),
 	)
 
-	return markOrDelete(client, rkey, expiry)
+	return markOrDelete(ctx, db.client, rkey, expiry)
 }
 
 // RepeatAllowed returns true if a certain repeat is allowed to run,
@@ -72,12 +69,11 @@ func (db *DB) RepeatAllowed(ctx context.Context, channel string, id int64, expir
 	ctx, span := trace.StartSpan(ctx, "RepeatAllowed")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := buildKey(
 		keyChannel.is(channel),
 		keyRepeatedCommand.is(strconv.FormatInt(id, 10)),
 	)
-	seen, err := checkAndMark(client, key, expiry)
+	seen, err := checkAndMark(ctx, db.client, key, expiry)
 	return !seen, err
 }
 
@@ -87,12 +83,11 @@ func (db *DB) ScheduledAllowed(ctx context.Context, channel string, id int64, ex
 	ctx, span := trace.StartSpan(ctx, "ScheduledAllowed")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := buildKey(
 		keyChannel.is(channel),
 		keyScheduledCommand.is(strconv.FormatInt(id, 10)),
 	)
-	seen, err := checkAndMark(client, key, expiry)
+	seen, err := checkAndMark(ctx, db.client, key, expiry)
 	return !seen, err
 }
 
@@ -102,12 +97,11 @@ func (db *DB) AutoreplyAllowed(ctx context.Context, channel string, id int64, ex
 	ctx, span := trace.StartSpan(ctx, "AutoreplyAllowed")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := buildKey(
 		keyChannel.is(channel),
 		keyAutoreply.is(strconv.FormatInt(id, 10)),
 	)
-	seen, err := checkAndMark(client, key, expiry)
+	seen, err := checkAndMark(ctx, db.client, key, expiry)
 	return !seen, err
 }
 
@@ -116,13 +110,12 @@ func (db *DB) FilterWarned(ctx context.Context, channel, user, filter string, ex
 	ctx, span := trace.StartSpan(ctx, "FilterWarned")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := buildKey(
 		keyChannel.is(channel),
 		keyFilterWarned.is(user),
 		keyFilter.is(filter),
 	)
-	return checkAndRefresh(client, key, expiry)
+	return checkAndRefresh(ctx, db.client, key, expiry)
 }
 
 func raffleKey(channel string) string {
@@ -137,9 +130,8 @@ func (db *DB) RaffleAdd(ctx context.Context, channel, user string) error {
 	ctx, span := trace.StartSpan(ctx, "RaffleAdd")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := raffleKey(channel)
-	return setAdd(client, key, user)
+	return setAdd(ctx, db.client, key, user)
 }
 
 // RaffleReset removes all entires from the current raffle.
@@ -147,9 +139,8 @@ func (db *DB) RaffleReset(ctx context.Context, channel string) error {
 	ctx, span := trace.StartSpan(ctx, "RaffleReset")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := raffleKey(channel)
-	return setClear(client, key)
+	return setClear(ctx, db.client, key)
 }
 
 // RaffleWinner removes a user from the raffle entries and returns them.
@@ -157,9 +148,8 @@ func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, e
 	ctx, span := trace.StartSpan(ctx, "RaffleWinner")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := raffleKey(channel)
-	return setPop(client, key)
+	return setPop(ctx, db.client, key)
 }
 
 // RaffleCount returns the number of entries in the current raffle.
@@ -167,9 +157,8 @@ func (db *DB) RaffleCount(ctx context.Context, channel string) (int64, error) {
 	ctx, span := trace.StartSpan(ctx, "RaffleCount")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := raffleKey(channel)
-	return setLen(client, key)
+	return setLen(ctx, db.client, key)
 }
 
 func cooldownKey(channel string, key string) string {
@@ -184,9 +173,8 @@ func (db *DB) MarkCooldown(ctx context.Context, channel, key string, expiry time
 	ctx, span := trace.StartSpan(ctx, "MarkCooldown")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	rkey := cooldownKey(channel, key)
-	return mark(client, rkey, expiry)
+	return mark(ctx, db.client, rkey, expiry)
 }
 
 // CheckAndMarkCooldown checks that a command is on cooldown, and marks it.
@@ -194,9 +182,8 @@ func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, exp
 	ctx, span := trace.StartSpan(ctx, "CheckAndMarkCooldown")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	rkey := cooldownKey(channel, key)
-	return checkAndMark(client, rkey, expiry)
+	return checkAndMark(ctx, db.client, rkey, expiry)
 }
 
 func userStateKey(botName, target string) string {
@@ -217,9 +204,8 @@ func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast
 		v = "1"
 	}
 
-	client := db.client.WithContext(ctx)
 	key := userStateKey(botName, ircChannel)
-	return client.Set(key, v, expiry).Err()
+	return db.client.Set(ctx, key, v, expiry).Err()
 }
 
 // GetUserState returns the current user state of the bot in the given IRC channel.
@@ -227,8 +213,7 @@ func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (boo
 	ctx, span := trace.StartSpan(ctx, "GetUserState")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	key := userStateKey(botName, ircChannel)
-	r, err := client.Get(key).Result()
+	r, err := db.client.Get(ctx, key).Result()
 	return r == "1", ignoreRedisNil(err)
 }

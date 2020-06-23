@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -111,6 +112,8 @@ func TestRateLimit(t *testing.T) {
 		test := test
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
 
 			clk := clock.NewMock()
 
@@ -125,7 +128,7 @@ func TestRateLimit(t *testing.T) {
 				clk.Forward(check.dur)
 				s.SetTime(clk.Now()) // Hack, as FastForward doesn't actually change TIME.
 
-				allowed, err := rateLimit(c, "some:key", test.window, test.slowLimit, test.slowLimit, onlyFastKey)
+				allowed, err := rateLimit(ctx, c, "some:key", test.window, test.slowLimit, test.slowLimit, onlyFastKey)
 
 				assert.NilError(t, err)
 				assert.Equal(t, check.allowed, allowed, "check %d", i)

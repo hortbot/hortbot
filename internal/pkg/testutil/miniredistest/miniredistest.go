@@ -3,7 +3,7 @@ package miniredistest
 
 import (
 	"github.com/alicebob/miniredis/v2"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 // New creates a new miniredis server and returns a pre-prepared client.

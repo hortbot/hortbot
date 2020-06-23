@@ -2,7 +2,7 @@
 package redisflags
 
 import (
-	goredis "github.com/go-redis/redis/v7"
+	goredis "github.com/go-redis/redis/v8"
 	"github.com/hortbot/hortbot/internal/db/redis"
 )
 

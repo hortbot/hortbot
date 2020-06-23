@@ -15,9 +15,8 @@ func (db *DB) SendMessageAllowed(ctx context.Context, botName, target string, li
 	ctx, span := trace.StartSpan(ctx, "SendMessageAllowed")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	onlyFastKey := userStateKey(botName, target)
 
 	key := buildKey(keyRateLimit.is(botName))
-	return rateLimit(client, key, window, limitSlow, limitFast, onlyFastKey)
+	return rateLimit(ctx, db.client, key, window, limitSlow, limitFast, onlyFastKey)
 }

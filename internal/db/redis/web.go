@@ -20,9 +20,8 @@ func (db *DB) SetAuthState(ctx context.Context, key string, value interface{}, e
 		return err
 	}
 
-	client := db.client.WithContext(ctx)
 	rkey := buildKey(keyAuthState.is(key))
-	return client.Set(rkey, b, expiry).Err()
+	return db.client.Set(ctx, rkey, b, expiry).Err()
 }
 
 // GetAuthState gets the arbitrary authentication state for the login workflow.
@@ -30,13 +29,12 @@ func (db *DB) GetAuthState(ctx context.Context, key string, v interface{}) (bool
 	ctx, span := trace.StartSpan(ctx, "GetAuthState")
 	defer span.End()
 
-	client := db.client.WithContext(ctx)
 	rkey := buildKey(keyAuthState.is(key))
 
-	pipeline := client.TxPipeline()
-	get := pipeline.Get(rkey)
-	pipeline.Del(rkey)
-	_, _ = pipeline.Exec() // Error is propogated below.
+	pipeline := db.client.TxPipeline()
+	get := pipeline.Get(ctx, rkey)
+	pipeline.Del(ctx, rkey)
+	_, _ = pipeline.Exec(ctx) // Error is propogated below.
 
 	b, err := get.Bytes()
 	if err != nil {

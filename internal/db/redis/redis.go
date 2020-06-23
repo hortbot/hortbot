@@ -1,7 +1,7 @@
 // Package redis implements a type-safe redis database client.
 package redis
 
-import "github.com/go-redis/redis/v7"
+import "github.com/go-redis/redis/v8"
 
 // DB is a redis client wrapper, consolidating the common schema in one place.
 type DB struct {

@@ -1,9 +1,10 @@
 package redis
 
 import (
+	"context"
 	"time"
 
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 // KEYS[1] = key
@@ -43,36 +44,36 @@ return 0
 `)
 
 // mark unconditionally sets a value in the database, expiring in the specified number of seconds.
-func mark(client redis.Cmdable, key string, expiry time.Duration) error {
-	return client.Set(key, "1", expiry).Err()
+func mark(ctx context.Context, client redis.Cmdable, key string, expiry time.Duration) error {
+	return client.Set(ctx, key, "1", expiry).Err()
 }
 
 // check checks if a key has been set. It does not modify the value or change its expiration.
-func check(client redis.Cmdable, key string) (exists bool, err error) {
-	v, err := client.Exists(key).Result()
+func check(ctx context.Context, client redis.Cmdable, key string) (exists bool, err error) {
+	v, err := client.Exists(ctx, key).Result()
 	return v == 1, err
 }
 
 // checkAndMark checks that a key exists, and if it doesn't marks it and sets its expiry.
-func checkAndMark(client redis.Cmdable, key string, expiry time.Duration) (exists bool, err error) {
+func checkAndMark(ctx context.Context, client redis.Cmdable, key string, expiry time.Duration) (exists bool, err error) {
 	secs := int64(expiry / time.Second)
-	return scriptCheckAndMark.Run(client, []string{key}, secs).Bool()
+	return scriptCheckAndMark.Run(ctx, client, []string{key}, secs).Bool()
 }
 
 // checkAndRefresh checks that a key exists and refreshes its expiry. If it does not exist, it will be set.
-func checkAndRefresh(client redis.Cmdable, key string, expiry time.Duration) (exists bool, err error) {
+func checkAndRefresh(ctx context.Context, client redis.Cmdable, key string, expiry time.Duration) (exists bool, err error) {
 	secs := int64(expiry / time.Second)
-	return scriptCheckAndRefresh.Run(client, []string{key}, secs).Bool()
+	return scriptCheckAndRefresh.Run(ctx, client, []string{key}, secs).Bool()
 }
 
 // checkAndDelete checks that a key exists, and removes if it does.
-func checkAndDelete(client redis.Cmdable, key string) (exists bool, err error) {
-	v, err := client.Del(key).Result()
+func checkAndDelete(ctx context.Context, client redis.Cmdable, key string) (exists bool, err error) {
+	v, err := client.Del(ctx, key).Result()
 	return v == 1, err
 }
 
 // markOrDelete marks a key, or deletes it if already present.
-func markOrDelete(client redis.Cmdable, key string, expiry time.Duration) (exists bool, err error) {
+func markOrDelete(ctx context.Context, client redis.Cmdable, key string, expiry time.Duration) (exists bool, err error) {
 	secs := int64(expiry / time.Second)
-	return scriptMarkOrDelete.Run(client, []string{key}, secs).Bool()
+	return scriptMarkOrDelete.Run(ctx, client, []string{key}, secs).Bool()
 }
