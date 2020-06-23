@@ -31,21 +31,22 @@ var (
 
 // userScopes should be granted for all users.
 var userScopes = []string{
-	"user_read",             // Kraken: ???
-	"channel_editor",        // Kraken: update channel
-	"channel_subscriptions", // Kraken: ???
-	"moderation:read",       // Helix: get moderator list
-	"user:edit:broadcast",   // Helix: modify channel information
+	"user_read",                  // Kraken: ???
+	"channel_editor",             // Kraken: update channel
+	"moderation:read",            // Helix: get moderator list
+	"user:read:broadcast",        // Helix: read channel info, markers (implied by user:edit:broadcast?)
+	"user:edit:broadcast",        // Helix: modify channel information
+	"channel:read:subscriptions", // Helix: get broadcaster subscriptions
 }
 
 // BotScopes are scopes which should be granted for the bot's account.
 var BotScopes = []string{
+	"channel:moderate",  // Chat: run moderator commands
+	"chat:read",         // Chat: read messages
+	"chat:edit",         // Chat: send messages
+	"whispers:read",     // Chat: read whispers
+	"whispers:edit",     // Chat: send whispers
 	"user_follows_edit", // Kraken: followers
-	"channel:moderate",  // Chat
-	"chat:edit",         // Chat
-	"chat:read",         // Chat
-	"whispers:read",     // Chat
-	"whispers:edit",     // Chat
 	"user:edit:follows", // Helix: followers
 }
 

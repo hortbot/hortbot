@@ -70,16 +70,13 @@ func TestAuthExchange(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	const (
-		state         = "some-state"
-		expectedScope = "user_read+channel_editor+channel_subscriptions+moderation%3Aread+user%3Aedit%3Abroadcast"
-	)
+	const state = "some-state"
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
 	assert.Equal(t,
 		tw.AuthCodeURL(state),
-		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=%s&state=%s", clientID, url.QueryEscape(redirectURL), expectedScope, state),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=%s&state=%s", clientID, url.QueryEscape(redirectURL), twitch.ExpectedUserScopes, state),
 	)
 
 	code := ft.codeForUser(1234)
@@ -90,6 +87,6 @@ func TestAuthExchange(t *testing.T) {
 
 	assert.Equal(t,
 		tw.AuthCodeURL(state, "user_follows_edit"),
-		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=%s+user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), expectedScope, state),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=%s+user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), twitch.ExpectedUserScopes, state),
 	)
 }
