@@ -12,6 +12,8 @@ import (
 func TestStatusToError(t *testing.T) {
 	tests := map[int]error{
 		200: nil,
+		204: nil,
+		400: ErrBadRequest,
 		401: ErrNotAuthorized,
 		403: ErrNotAuthorized,
 		404: ErrNotFound,

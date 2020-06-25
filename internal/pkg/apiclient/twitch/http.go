@@ -55,14 +55,20 @@ func (h *httpClient) Get(ctx context.Context, url string) (*http.Response, error
 	return h.do(ctx, req)
 }
 
-func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.Response, error) {
-	var buf bytes.Buffer
+func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url string, v interface{}) (*http.Response, error) {
+	var body io.Reader
 
-	if err := json.NewEncoder(&buf).Encode(v); err != nil {
-		return nil, err
+	if v != nil {
+		var buf bytes.Buffer
+
+		if err := json.NewEncoder(&buf).Encode(v); err != nil {
+			return nil, err
+		}
+
+		body = &buf
 	}
 
-	req, err := h.newRequest(ctx, "PUT", url, &buf)
+	req, err := h.newRequest(ctx, method, url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -74,23 +80,16 @@ func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.
 	return h.do(ctx, req)
 }
 
+func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.Response, error) {
+	return h.makeJSONRequest(ctx, "PUT", url, v)
+}
+
 func (h *httpClient) Post(ctx context.Context, url string, v interface{}) (*http.Response, error) {
-	var buf bytes.Buffer
+	return h.makeJSONRequest(ctx, "POST", url, v)
+}
 
-	if err := json.NewEncoder(&buf).Encode(v); err != nil {
-		return nil, err
-	}
-
-	req, err := h.newRequest(ctx, "POST", url, &buf)
-	if err != nil {
-		return nil, err
-	}
-
-	if v != nil {
-		req.Header.Set("Content-Type", "application/json")
-	}
-
-	return h.do(ctx, req)
+func (h *httpClient) Patch(ctx context.Context, url string, v interface{}) (*http.Response, error) {
+	return h.makeJSONRequest(ctx, "PATCH", url, v)
 }
 
 func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response, error) {

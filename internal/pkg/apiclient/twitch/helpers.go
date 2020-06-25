@@ -14,6 +14,8 @@ func statusToError(code int) error {
 	}
 
 	switch code {
+	case http.StatusBadRequest:
+		return ErrBadRequest
 	case http.StatusNotFound:
 		return ErrNotFound
 	case http.StatusUnauthorized, http.StatusForbidden:

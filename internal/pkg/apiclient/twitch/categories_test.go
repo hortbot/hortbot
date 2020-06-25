@@ -59,3 +59,65 @@ func TestSearchCategories(t *testing.T) {
 		assert.ErrorContains(t, err, errTestBadRequest.Error())
 	})
 }
+
+func TestGetGame(t *testing.T) {
+	ctx := context.Background()
+
+	tok := &oauth2.Token{
+		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
+		TokenType:   "bearer",
+	}
+
+	t.Run("Success name", func(t *testing.T) {
+		ft, tw := createTester(t)
+		ft.setClientTokens(tok)
+
+		game, err := tw.GetGameByName(ctx, "PLAYERUNKNOWN's BATTLEGROUNDS")
+		assert.NilError(t, err)
+
+		assert.DeepEqual(t, game, &twitch.Category{ID: 287491, Name: "PLAYERUNKNOWN's BATTLEGROUNDS"})
+	})
+
+	t.Run("Success name", func(t *testing.T) {
+		ft, tw := createTester(t)
+		ft.setClientTokens(tok)
+
+		game, err := tw.GetGameByID(ctx, 287491)
+		assert.NilError(t, err)
+
+		assert.DeepEqual(t, game, &twitch.Category{ID: 287491, Name: "PLAYERUNKNOWN's BATTLEGROUNDS"})
+	})
+
+	t.Run("Not found", func(t *testing.T) {
+		ft, tw := createTester(t)
+		ft.setClientTokens(tok)
+
+		_, err := tw.GetGameByName(ctx, "notfound")
+		assert.Equal(t, err, twitch.ErrNotFound)
+	})
+
+	t.Run("Server error", func(t *testing.T) {
+		ft, tw := createTester(t)
+		ft.setClientTokens(tok)
+
+		_, err := tw.GetGameByName(ctx, "servererror")
+		assert.Equal(t, err, twitch.ErrServerError)
+	})
+
+	t.Run("Decode error", func(t *testing.T) {
+		ft, tw := createTester(t)
+		ft.setClientTokens(tok)
+
+		_, err := tw.GetGameByName(ctx, "decodeerror")
+		assert.Equal(t, err, twitch.ErrServerError)
+	})
+
+	t.Run("Request error", func(t *testing.T) {
+		ft, tw := createTester(t)
+		ft.setClientTokens(tok)
+
+		_, err := tw.GetGameByName(ctx, "requesterror")
+		assert.ErrorContains(t, err, errTestBadRequest.Error())
+	})
+}

@@ -166,6 +166,15 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/search/categories?query=decodeerror", httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/search/categories?query=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
 
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/games?name=PLAYERUNKNOWN%27s+BATTLEGROUNDS", httpmock.NewStringResponder(200, `{"data": [{"id": "287491", "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/games?id=287491", httpmock.NewStringResponder(200, `{"data": [{"id": "287491", "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/games?name=notfound", httpmock.NewStringResponder(200, `{"data": []}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/games?name=servererror", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/games?name=decodeerror", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/games?name=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("PATCH", "https://api.twitch.tv/helix/channels", f.helixChannelsPatch)
+
 	// TMI API
 
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/foobar/chatters", httpmock.NewStringResponder(200, `{"chatter_count": 1234, "chatters": {"broadcaster": ["foobar"], "viewers": ["foo", "bar"]}}`))
@@ -462,6 +471,44 @@ func (f *fakeTwitch) helixUserFollows(req *http.Request) (*http.Response, error)
 	return httpmock.NewStringResponse(status, ""), nil
 }
 
+func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, error) {
+	assert.Equal(f.t, req.Method, "PATCH")
+	f.checkHeaders(req, false)
+
+	const authPrefix = "Bearer "
+
+	auth := req.Header.Get("Authorization")
+	assert.Assert(f.t, strings.HasPrefix(auth, authPrefix))
+
+	id, ok := f.tokenToID[strings.TrimPrefix(auth, authPrefix)]
+	assert.Assert(f.t, ok)
+
+	body := &struct {
+		BroadcasterID twitch.IDStr  `json:"broadcaster_id"`
+		Title         *string       `json:"title,omitempty"`
+		GameID        *twitch.IDStr `json:"game_id,omitempty"`
+	}{}
+
+	assert.NilError(f.t, jsonx.DecodeSingle(req.Body, &body))
+
+	assert.Equal(f.t, int64(body.BroadcasterID), id)
+
+	switch id {
+	case 1234:
+		assert.Equal(f.t, *body.Title, "some new title")
+		assert.Equal(f.t, body.GameID, (*twitch.IDStr)(nil))
+		return httpmock.NewStringResponse(204, ""), nil
+	case 5678:
+		assert.Equal(f.t, body.Title, (*string)(nil))
+		assert.Equal(f.t, int64(*body.GameID), int64(9876))
+		return httpmock.NewStringResponse(204, ""), nil
+	case 900:
+		return nil, errTestBadRequest
+	}
+
+	return httpmock.NewStringResponse(int(id), ""), nil
+}
+
 func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Response, error) {
 	f.t.Helper()
 	if len(dumped) == 0 {
@@ -480,4 +527,11 @@ func (f *fakeTwitch) checkHeaders(req *http.Request, kraken bool) {
 	if kraken {
 		assert.Equal(f.t, req.Header.Get("Accept"), "application/vnd.twitchtv.v5+json")
 	}
+}
+
+func createTester(t *testing.T) (*fakeTwitch, *twitch.Twitch) {
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	return ft, tw
 }

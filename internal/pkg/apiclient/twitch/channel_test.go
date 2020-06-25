@@ -358,6 +358,60 @@ func TestGetChannelModeratorsEsoteric(t *testing.T) {
 	assert.DeepEqual(t, got, mods)
 }
 
+func TestModifyChannel(t *testing.T) {
+	ctx := context.Background()
+
+	t.Run("Success title", func(t *testing.T) {
+		ft, tw := createTester(t)
+
+		const id = 1234
+		tok := tokFor(ctx, t, tw, ft, id)
+		newToken, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		assert.NilError(t, err)
+		assert.Assert(t, newToken == nil)
+	})
+
+	t.Run("Success game", func(t *testing.T) {
+		ft, tw := createTester(t)
+		const id = 5678
+		tok := tokFor(ctx, t, tw, ft, id)
+		newToken, err := tw.ModifyChannel(ctx, id, tok, "", 9876)
+		assert.NilError(t, err)
+		assert.Assert(t, newToken == nil)
+	})
+
+	t.Run("Server error", func(t *testing.T) {
+		ft, tw := createTester(t)
+		const id = 500
+		tok := tokFor(ctx, t, tw, ft, id)
+		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		assert.Equal(t, err, twitch.ErrServerError)
+	})
+
+	t.Run("Request error", func(t *testing.T) {
+		ft, tw := createTester(t)
+		const id = 900
+		tok := tokFor(ctx, t, tw, ft, id)
+		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		assert.ErrorContains(t, err, errTestBadRequest.Error())
+	})
+
+	t.Run("Nil token", func(t *testing.T) {
+		_, tw := createTester(t)
+		const id = 900
+		_, err := tw.ModifyChannel(ctx, id, nil, "some new title", 0)
+		assert.Equal(t, err, twitch.ErrNotAuthorized)
+	})
+
+	t.Run("Bad request", func(t *testing.T) {
+		ft, tw := createTester(t)
+		const id = 900
+		tok := tokFor(ctx, t, tw, ft, id)
+		_, err := tw.ModifyChannel(ctx, id, tok, "", 0)
+		assert.Equal(t, err, twitch.ErrBadRequest)
+	})
+}
+
 func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch, id int64) *oauth2.Token {
 	t.Helper()
 

@@ -18,6 +18,7 @@ import (
 // Twitch API errors.
 //
 //     - 200 -> nil
+//     - 400 -> ErrBadRequest
 //     - 404 -> ErrNotFound
 //     - 401 or 403 -> ErrNotAuthorized
 //     - 5xx -> ErrServerError
@@ -25,6 +26,7 @@ import (
 var (
 	ErrNotFound      = errors.New("twitch: not found")
 	ErrNotAuthorized = errors.New("twitch: not authorized")
+	ErrBadRequest    = errors.New("twitch: bad request")
 	ErrServerError   = errors.New("twitch: server error")
 	ErrUnknown       = errors.New("twitch: unknown error")
 )
@@ -81,6 +83,7 @@ type API interface {
 	GetUserByID(ctx context.Context, id int64) (*User, error)
 	GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error)
 	SearchCategories(ctx context.Context, query string) ([]*Category, error)
+	ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title string, gameID int64) (newToken *oauth2.Token, err error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

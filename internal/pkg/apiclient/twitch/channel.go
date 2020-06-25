@@ -188,3 +188,37 @@ func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *
 
 	return mods, newToken, nil
 }
+
+// ModifyChannel modifies a channel. Either or both of the title and game ID must be non-zero.
+//
+// PATCH https://api.twitch.tv/helix/channels
+func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title string, gameID int64) (newToken *oauth2.Token, err error) {
+	if title == "" && gameID == 0 {
+		return nil, ErrBadRequest
+	}
+
+	if userToken == nil || userToken.AccessToken == "" {
+		return nil, ErrNotAuthorized
+	}
+
+	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
+	url := helixRoot + "/channels"
+
+	body := &struct {
+		BroadcasterID IDStr  `json:"broadcaster_id"`
+		Title         string `json:"title,omitempty"`
+		GameID        IDStr  `json:"game_id,omitempty"`
+	}{
+		BroadcasterID: IDStr(broadcasterID),
+		Title:         title,
+		GameID:        IDStr(gameID),
+	}
+
+	resp, err := cli.Patch(ctx, url, body)
+	if err != nil {
+		return newToken, err
+	}
+	defer resp.Body.Close()
+
+	return newToken, statusToError(resp.StatusCode)
+}
