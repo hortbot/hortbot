@@ -29,6 +29,7 @@ var (
 	ErrBadRequest    = errors.New("twitch: bad request")
 	ErrServerError   = errors.New("twitch: server error")
 	ErrUnknown       = errors.New("twitch: unknown error")
+	ErrDeadToken     = errors.New("twitch: oauth token is dead")
 )
 
 // userScopes should be granted for all users.
@@ -199,6 +200,7 @@ func (t *Twitch) headers(v5 bool) http.Header {
 }
 
 func (t *Twitch) clientForUser(ctx context.Context, v5 bool, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
+	ctx = context.WithValue(ctx, oauth2.HTTPClient, t.cli)
 	ts := t.forUser.TokenSource(ctx, tok)
 	ts = oauth2x.NewOnNewWithToken(ts, onNewToken, tok)
 

@@ -1,7 +1,6 @@
 package twitch_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -12,7 +11,8 @@ import (
 )
 
 func TestGetCurrentStream(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -57,7 +57,8 @@ func TestGetCurrentStream(t *testing.T) {
 }
 
 func TestGetCurrentStreamErrors(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()

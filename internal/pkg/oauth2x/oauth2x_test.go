@@ -87,7 +87,7 @@ func TestOverrideEmpty(t *testing.T) {
 			ts := oauth2x.NewTypeOverride(fake, test.override)
 
 			tok, err := ts.Token()
-			assert.Assert(t, err == test.expectedErr)
+			assert.Equal(t, err, test.expectedErr)
 			assert.DeepEqual(t, tok, test.expectedTok, ignoreUnexportedInToken)
 		})
 	}
@@ -331,9 +331,18 @@ func TestEquals(t *testing.T) {
 			},
 			equal: false,
 		},
+		{
+			other: &oauth2.Token{
+				AccessToken:  orig.AccessToken,
+				TokenType:    orig.TokenType,
+				RefreshToken: orig.RefreshToken,
+			},
+			equal: false,
+		},
 	}
 
 	for i, test := range tests {
 		assert.Assert(t, oauth2x.Equals(orig, test.other) == test.equal, "test %d", i)
+		assert.Assert(t, oauth2x.Equals(test.other, orig) == test.equal, "test %d", i)
 	}
 }

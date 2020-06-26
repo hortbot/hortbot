@@ -1,7 +1,6 @@
 package twitch_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -12,7 +11,8 @@ import (
 )
 
 func TestGetUserForToken(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -42,7 +42,8 @@ func TestGetUserForToken(t *testing.T) {
 }
 
 func TestGetUserForTokenServerError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -68,7 +69,8 @@ func TestGetUserForTokenServerError(t *testing.T) {
 }
 
 func TestGetUserForTokenDecodeError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -94,7 +96,8 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 }
 
 func TestGetUserForTokenRequestError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -106,7 +109,8 @@ func TestGetUserForTokenRequestError(t *testing.T) {
 }
 
 func TestGetUserForUsername(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -131,7 +135,8 @@ func TestGetUserForUsername(t *testing.T) {
 }
 
 func TestGetUserForUsernameServerError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -151,7 +156,8 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 }
 
 func TestGetUserForUsernameNotFound(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -171,7 +177,8 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 }
 
 func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -191,7 +198,8 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 }
 
 func TestGetUserForUsernameDecodeError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -211,7 +219,8 @@ func TestGetUserForUsernameDecodeError(t *testing.T) {
 }
 
 func TestGetUserForUsernameRequestError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -231,7 +240,8 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 }
 
 func TestGetUserForID(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -256,7 +266,8 @@ func TestGetUserForID(t *testing.T) {
 }
 
 func TestFollowChannel(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -316,7 +327,8 @@ func TestUserDispName(t *testing.T) {
 }
 
 func TestHelixFollowChannel(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()

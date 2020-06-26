@@ -1,7 +1,6 @@
 package twitch_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -11,8 +10,6 @@ import (
 )
 
 func TestGetChatters(t *testing.T) {
-	ctx := context.Background()
-
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
@@ -50,6 +47,9 @@ func TestGetChatters(t *testing.T) {
 	for _, test := range tests {
 		test := test
 		t.Run(test.Channel, func(t *testing.T) {
+			ctx, cancel := testContext(t)
+			defer cancel()
+
 			chatters, err := tw.GetChatters(ctx, test.Channel)
 			assert.Equal(t, err, test.Err)
 			assert.Assert(t, cmp.DeepEqual(chatters, test.Chatters, cmpopts.EquateEmpty()))
@@ -58,7 +58,8 @@ func TestGetChatters(t *testing.T) {
 }
 
 func TestGetChattersError(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()

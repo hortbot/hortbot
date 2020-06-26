@@ -1,7 +1,6 @@
 package twitch_test
 
 import (
-	"context"
 	"fmt"
 	"net/url"
 	"testing"
@@ -65,7 +64,8 @@ func TestNewPanic(t *testing.T) {
 }
 
 func TestAuthExchange(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()

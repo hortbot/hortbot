@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -30,7 +31,23 @@ func (h *httpClient) newRequest(ctx context.Context, method string, url string, 
 	if err != nil {
 		var oauthErr *oauth2.RetrieveError
 		if errors.As(err, &oauthErr) {
-			ctxlog.Error(ctx, "oauth retrieve error occurred", zap.ByteString("body", oauthErr.Body))
+			var body struct {
+				Error   string `json:"error"`
+				Status  int    `json:"status"`
+				Message string `json:"message"`
+			}
+
+			if err := json.Unmarshal(oauthErr.Body, &body); err != nil {
+				return nil, ErrServerError
+			}
+
+			ctxlog.Info(ctx, "dead oauth token", zap.Any("body", &body))
+
+			if !strings.EqualFold(body.Message, "Invalid refresh token") {
+				ctxlog.Warn(ctx, "unknown oauth token error message", zap.String("error_message", body.Message))
+			}
+
+			return nil, ErrDeadToken
 		}
 		return nil, err
 	}
@@ -98,10 +115,6 @@ func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response,
 
 	resp, err := ctxhttp.Do(ctx, h.cli, req)
 	if err != nil {
-		var oauthErr *oauth2.RetrieveError
-		if errors.As(err, &oauthErr) {
-			ctxlog.Error(ctx, "oauth retrieve error occurred", zap.ByteString("body", oauthErr.Body))
-		}
 		return nil, err
 	}
 

@@ -12,7 +12,8 @@ import (
 )
 
 func TestGetChannelByID(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -42,7 +43,8 @@ func TestGetChannelByID(t *testing.T) {
 }
 
 func TestGetChannelByIDErrors(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -68,7 +70,8 @@ func TestGetChannelByIDErrors(t *testing.T) {
 }
 
 func TestSetChannelStatus(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -111,7 +114,8 @@ func TestSetChannelStatus(t *testing.T) {
 }
 
 func TestSetChannelStatusNilToken(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -133,7 +137,8 @@ func TestSetChannelStatusNilToken(t *testing.T) {
 }
 
 func TestSetChannelGame(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -176,7 +181,8 @@ func TestSetChannelGame(t *testing.T) {
 }
 
 func TestSetChannelGameNilToken(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -197,7 +203,8 @@ func TestSetChannelGameNilToken(t *testing.T) {
 }
 
 func TestSetChannelStatusErrors(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -227,7 +234,8 @@ func TestSetChannelStatusErrors(t *testing.T) {
 }
 
 func TestSetChannelGameErrors(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -257,7 +265,8 @@ func TestSetChannelGameErrors(t *testing.T) {
 }
 
 func TestGetChannelModeratorsOK(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -291,7 +300,8 @@ func TestGetChannelModeratorsOK(t *testing.T) {
 }
 
 func TestGetChannelModeratorsErrors(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -325,7 +335,8 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 }
 
 func TestGetChannelModeratorsEsoteric(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := testContext(t)
+	defer cancel()
 
 	ft := newFakeTwitch(t)
 	cli := ft.client()
@@ -359,9 +370,10 @@ func TestGetChannelModeratorsEsoteric(t *testing.T) {
 }
 
 func TestModifyChannel(t *testing.T) {
-	ctx := context.Background()
-
 	t.Run("Success title", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 
 		const id = 1234
@@ -372,6 +384,9 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Success game", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		const id = 5678
 		tok := tokFor(ctx, t, tw, ft, id)
@@ -381,6 +396,9 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		const id = 500
 		tok := tokFor(ctx, t, tw, ft, id)
@@ -389,6 +407,9 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)
@@ -397,6 +418,9 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Nil token", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		_, tw := createTester(t)
 		const id = 900
 		_, err := tw.ModifyChannel(ctx, id, nil, "some new title", 0)
@@ -404,6 +428,9 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Bad request", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)

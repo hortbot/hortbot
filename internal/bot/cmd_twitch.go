@@ -62,7 +62,7 @@ func setStatus(ctx context.Context, s *session, status string) (bool, error) {
 
 	if err != nil {
 		switch err {
-		case twitch.ErrNotAuthorized:
+		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
 			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
 		case twitch.ErrServerError:
 			return true, s.Reply(ctx, twitchServerErrorReply)
@@ -125,7 +125,7 @@ func setGame(ctx context.Context, s *session, game string) (bool, error) {
 
 	if err != nil {
 		switch err {
-		case twitch.ErrNotAuthorized:
+		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
 			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
 		case twitch.ErrServerError:
 			return true, s.Reply(ctx, twitchServerErrorReply)

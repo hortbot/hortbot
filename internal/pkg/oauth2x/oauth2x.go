@@ -102,6 +102,7 @@ func Equals(x, y *oauth2.Token) bool {
 	case x.AccessToken != y.AccessToken:
 	case x.TokenType != y.TokenType:
 	case x.RefreshToken != y.RefreshToken:
+	case x.Expiry.IsZero() != y.Expiry.IsZero():
 	case absDur(x.Expiry.Sub(y.Expiry)) > time.Second:
 	default:
 		return true

@@ -1,7 +1,6 @@
 package twitch_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -12,8 +11,6 @@ import (
 )
 
 func TestSearchCategories(t *testing.T) {
-	ctx := context.Background()
-
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
@@ -28,6 +25,9 @@ func TestSearchCategories(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
 	t.Run("Success", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		cats, err := tw.SearchCategories(ctx, "pubg")
 		assert.NilError(t, err)
 
@@ -38,6 +38,9 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		cats, err := tw.SearchCategories(ctx, "notfound")
 		assert.NilError(t, err)
 
@@ -45,24 +48,31 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		_, err := tw.SearchCategories(ctx, "servererror")
 		assert.Equal(t, err, twitch.ErrServerError)
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		_, err := tw.SearchCategories(ctx, "decodeerror")
 		assert.Equal(t, err, twitch.ErrServerError)
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		_, err := tw.SearchCategories(ctx, "requesterror")
 		assert.ErrorContains(t, err, errTestBadRequest.Error())
 	})
 }
 
 func TestGetGame(t *testing.T) {
-	ctx := context.Background()
-
 	tok := &oauth2.Token{
 		AccessToken: uuid.Must(uuid.NewV4()).String(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
@@ -70,6 +80,9 @@ func TestGetGame(t *testing.T) {
 	}
 
 	t.Run("Success name", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		ft.setClientTokens(tok)
 
@@ -80,6 +93,9 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Success name", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		ft.setClientTokens(tok)
 
@@ -90,6 +106,9 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		ft.setClientTokens(tok)
 
@@ -98,6 +117,9 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		ft.setClientTokens(tok)
 
@@ -106,6 +128,9 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		ft.setClientTokens(tok)
 
@@ -114,6 +139,9 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
 		ft, tw := createTester(t)
 		ft.setClientTokens(tok)
 

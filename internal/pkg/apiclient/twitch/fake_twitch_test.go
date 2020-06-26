@@ -1,6 +1,7 @@
 package twitch_test
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httputil"
@@ -12,7 +13,9 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/jarcoal/httpmock"
+	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
@@ -72,7 +75,7 @@ func (f *fakeTwitch) setClientTokens(tokens ...*oauth2.Token) {
 	f.clientTokens = tokens
 }
 
-func (f *fakeTwitch) codeForUser(id int64) string {
+func (f *fakeTwitch) codeForUserAux(id int64, forceRefresh string) string {
 	f.t.Helper()
 	code, ok := f.idToCode[id]
 	if ok {
@@ -89,10 +92,25 @@ func (f *fakeTwitch) codeForUser(id int64) string {
 		Expiry:       time.Now().Add(time.Hour).Round(time.Second),
 	}
 
+	if forceRefresh != "" {
+		tok.RefreshToken = forceRefresh
+		tok.Expiry = time.Now().Add(15 * time.Second)
+	}
+
 	f.codeToToken[code] = tok
 	f.tokenToID[tok.AccessToken] = id
 
 	return code
+}
+
+func (f *fakeTwitch) codeForUser(id int64) string {
+	f.t.Helper()
+	return f.codeForUserAux(id, "")
+}
+
+func (f *fakeTwitch) codeForUserInvalidRefresh(id int64, forceRefresh string) string {
+	f.t.Helper()
+	return f.codeForUserAux(id, forceRefresh)
 }
 
 func (f *fakeTwitch) tokenForCode(code string) *oauth2.Token {
@@ -197,6 +215,8 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 	grantType := req.FormValue("grant_type")
 
 	if grantType == "client_credentials" {
+		f.t.Logf("%s", dumped)
+
 		tok := f.nextToken()
 
 		return httpmock.NewJsonResponse(200, map[string]interface{}{
@@ -218,6 +238,30 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 		})
 	}
 
+	if grantType == "refresh_token" {
+		// Currently this only tests the "error" case where this refresh is happening.
+		refreshToken := req.FormValue("refresh_token")
+		switch refreshToken {
+		case "invalid":
+			return httpmock.NewJsonResponse(400, map[string]interface{}{
+				"error":   "Bad Request",
+				"status":  400,
+				"message": "Invalid refresh token",
+			})
+		case "unknown":
+			return httpmock.NewJsonResponse(400, map[string]interface{}{
+				"error":   "Bad Request",
+				"status":  400,
+				"message": "huh",
+			})
+		case "decodeerror":
+			return httpmock.NewStringResponse(400, "}"), nil
+		default:
+			f.t.Errorf("unknown refresh token: %s", refreshToken)
+		}
+	}
+
+	f.t.Logf("unknown grant type: %s", grantType)
 	return f.dumpAndFail(req, dumped)
 }
 
@@ -534,4 +578,10 @@ func createTester(t *testing.T) (*fakeTwitch, *twitch.Twitch) {
 	cli := ft.client()
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 	return ft, tw
+}
+
+func testContext(t testing.TB) (context.Context, context.CancelFunc) {
+	t.Helper()
+	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
+	return context.WithTimeout(ctx, 10*time.Minute)
 }
