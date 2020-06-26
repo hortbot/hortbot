@@ -446,8 +446,10 @@ dd {
             </p>
 
             <dl>
-                {%= command("!owner|mod|regular list", `Lists users in that group.`, "mods") %}
-                {%= command("!owner|mod|regular add|remove <user>", `Adds or removes a user from a group.`, "mods") %}
+                {%= command("!regular list", `Lists regulars.`, "mods") %}
+                {%= command("!regular add|remove <user>", `Adds or removes a user from the regular list.`, "mods") %}
+                {%= command("!owner|mod list", `Lists users in that group.`, "broadcaster") %}
+                {%= command("!owner|mod add|remove <user>", `Adds or removes a user from a list.`, "broadcaster") %}
             </dl>
         </section>
 

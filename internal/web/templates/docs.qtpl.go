@@ -614,10 +614,16 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 
             <dl>
                 `)
-	streamcommand(qw422016, "!owner|mod|regular list", `Lists users in that group.`, "mods")
+	streamcommand(qw422016, "!regular list", `Lists regulars.`, "mods")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!owner|mod|regular add|remove <user>", `Adds or removes a user from a group.`, "mods")
+	streamcommand(qw422016, "!regular add|remove <user>", `Adds or removes a user from the regular list.`, "mods")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!owner|mod list", `Lists users in that group.`, "broadcaster")
+	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!owner|mod add|remove <user>", `Adds or removes a user from a list.`, "broadcaster")
 	qw422016.N().S(`
             </dl>
         </section>

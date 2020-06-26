@@ -17,7 +17,7 @@ func init() {
 		"setting":         {fn: cmdSettings, minLevel: levelModerator},
 		"owner":           {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},
 		"mod":             {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},
-		"regular":         {fn: cmdOwnerModRegularIgnore, minLevel: levelBroadcaster},
+		"regular":         {fn: cmdOwnerModRegularIgnore, minLevel: levelModerator},
 		"ignore":          {fn: cmdOwnerModRegularIgnore, minLevel: levelModerator},
 		"quote":           {fn: cmdQuote, minLevel: levelSubscriber},
 		"clear":           {fn: cmdModClear, minLevel: levelModerator},
