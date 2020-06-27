@@ -6,7 +6,7 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.6
 	github.com/99designs/gqlgen v0.11.3
-	github.com/alicebob/miniredis/v2 v2.12.0
+	github.com/alicebob/miniredis/v2 v2.13.0
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.3.1
@@ -42,7 +42,7 @@ require (
 	github.com/ory/dockertest/v3 v3.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
-	github.com/prometheus/client_golang v1.7.0
+	github.com/prometheus/client_golang v1.7.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
@@ -57,11 +57,10 @@ require (
 	go.opencensus.io v0.22.4
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9 // indirect
-	golang.org/x/net v0.0.0-20200602114024-627f9648deb9
+	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sync v0.0.0-20200317015054-43a5402ce75a
-	golang.org/x/tools v0.0.0-20200619210111-0f592d2728bb
+	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
+	golang.org/x/tools v0.0.0-20200626171337-aa94e735be7f
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
