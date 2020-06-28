@@ -450,3 +450,74 @@ func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch
 
 	return tok
 }
+
+func TestGetHelixChannelByID(t *testing.T) {
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tok := &oauth2.Token{
+		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
+		TokenType:   "bearer",
+	}
+
+	ft.setClientTokens(tok)
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	t.Run("Success", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		channel, err := tw.GetHelixChannelByID(ctx, 1234)
+		assert.NilError(t, err)
+
+		assert.DeepEqual(t, channel, &twitch.HelixChannel{
+			ID:     1234,
+			Name:   "foobar",
+			Game:   "PUBG MOBILE",
+			GameID: 58730284,
+			Title:  "This is the title.",
+		})
+	})
+
+	t.Run("Empty", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		_, err := tw.GetHelixChannelByID(ctx, 444)
+		assert.Equal(t, err, twitch.ErrNotFound)
+	})
+
+	t.Run("Empty 404", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		_, err := tw.GetHelixChannelByID(ctx, 404)
+		assert.Equal(t, err, twitch.ErrNotFound)
+	})
+
+	t.Run("Server error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		_, err := tw.GetHelixChannelByID(ctx, 500)
+		assert.Equal(t, err, twitch.ErrServerError)
+	})
+
+	t.Run("Decode error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		_, err := tw.GetHelixChannelByID(ctx, 900)
+		assert.Equal(t, err, twitch.ErrServerError)
+	})
+
+	t.Run("Request error", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		_, err := tw.GetHelixChannelByID(ctx, 901)
+		assert.ErrorContains(t, err, errTestBadRequest.Error())
+	})
+}

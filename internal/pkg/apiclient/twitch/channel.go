@@ -222,3 +222,44 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 
 	return newToken, statusToError(resp.StatusCode)
 }
+
+// HelixChannel is a channel as exposed by the Helix API.
+type HelixChannel struct {
+	ID     IDStr  `json:"broadcaster_id"`
+	Name   string `json:"broadcaster_name"`
+	Game   string `json:"game_name"`
+	GameID IDStr  `json:"game_id"`
+	Title  string `json:"title"`
+}
+
+// GetHelixChannelByID gets a channel using the client's token.
+//
+// GET https://api.twitch.tv/helix/channels?broadcaster_id<id>
+func (t *Twitch) GetHelixChannelByID(ctx context.Context, id int64) (*HelixChannel, error) {
+	cli := t.helixCli
+	url := helixRoot + "/channels?broadcaster_id=" + strconv.FormatInt(id, 10)
+
+	resp, err := cli.Get(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if err := statusToError(resp.StatusCode); err != nil {
+		return nil, err
+	}
+
+	body := &struct {
+		Data []*HelixChannel `json:"data"`
+	}{}
+
+	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
+		return nil, ErrServerError
+	}
+
+	if len(body.Data) == 0 {
+		return nil, ErrNotFound
+	}
+
+	return body.Data[0], nil
+}

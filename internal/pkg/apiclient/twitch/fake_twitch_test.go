@@ -202,6 +202,13 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=decodeerror", httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
 
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=1234", httpmock.NewStringResponder(200, `{"data": [{"broadcaster_id": "1234", "broadcaster_name": "foobar", "game_id": "58730284", "game_name": "PUBG MOBILE", "title": "This is the title."}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=404", httpmock.NewStringResponder(404, `{"data": []}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=444", httpmock.NewStringResponder(200, `{"data": []}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=500", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=900", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=901", httpmock.NewErrorResponder(errTestBadRequest))
+
 	// TMI API
 
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/foobar/chatters", httpmock.NewStringResponder(200, `{"chatter_count": 1234, "chatters": {"broadcaster": ["foobar"], "viewers": ["foo", "bar"]}}`))

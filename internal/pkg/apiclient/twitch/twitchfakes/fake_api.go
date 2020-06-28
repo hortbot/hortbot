@@ -139,6 +139,20 @@ type FakeAPI struct {
 		result1 *twitch.Category
 		result2 error
 	}
+	GetHelixChannelByIDStub        func(context.Context, int64) (*twitch.HelixChannel, error)
+	getHelixChannelByIDMutex       sync.RWMutex
+	getHelixChannelByIDArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+	}
+	getHelixChannelByIDReturns struct {
+		result1 *twitch.HelixChannel
+		result2 error
+	}
+	getHelixChannelByIDReturnsOnCall map[int]struct {
+		result1 *twitch.HelixChannel
+		result2 error
+	}
 	GetStreamByUserIDStub        func(context.Context, int64) (*twitch.HelixStream, error)
 	getStreamByUserIDMutex       sync.RWMutex
 	getStreamByUserIDArgsForCall []struct {
@@ -861,6 +875,70 @@ func (fake *FakeAPI) GetGameByNameReturnsOnCall(i int, result1 *twitch.Category,
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) GetHelixChannelByID(arg1 context.Context, arg2 int64) (*twitch.HelixChannel, error) {
+	fake.getHelixChannelByIDMutex.Lock()
+	ret, specificReturn := fake.getHelixChannelByIDReturnsOnCall[len(fake.getHelixChannelByIDArgsForCall)]
+	fake.getHelixChannelByIDArgsForCall = append(fake.getHelixChannelByIDArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+	}{arg1, arg2})
+	fake.recordInvocation("GetHelixChannelByID", []interface{}{arg1, arg2})
+	fake.getHelixChannelByIDMutex.Unlock()
+	if fake.GetHelixChannelByIDStub != nil {
+		return fake.GetHelixChannelByIDStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.getHelixChannelByIDReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) GetHelixChannelByIDCallCount() int {
+	fake.getHelixChannelByIDMutex.RLock()
+	defer fake.getHelixChannelByIDMutex.RUnlock()
+	return len(fake.getHelixChannelByIDArgsForCall)
+}
+
+func (fake *FakeAPI) GetHelixChannelByIDCalls(stub func(context.Context, int64) (*twitch.HelixChannel, error)) {
+	fake.getHelixChannelByIDMutex.Lock()
+	defer fake.getHelixChannelByIDMutex.Unlock()
+	fake.GetHelixChannelByIDStub = stub
+}
+
+func (fake *FakeAPI) GetHelixChannelByIDArgsForCall(i int) (context.Context, int64) {
+	fake.getHelixChannelByIDMutex.RLock()
+	defer fake.getHelixChannelByIDMutex.RUnlock()
+	argsForCall := fake.getHelixChannelByIDArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) GetHelixChannelByIDReturns(result1 *twitch.HelixChannel, result2 error) {
+	fake.getHelixChannelByIDMutex.Lock()
+	defer fake.getHelixChannelByIDMutex.Unlock()
+	fake.GetHelixChannelByIDStub = nil
+	fake.getHelixChannelByIDReturns = struct {
+		result1 *twitch.HelixChannel
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetHelixChannelByIDReturnsOnCall(i int, result1 *twitch.HelixChannel, result2 error) {
+	fake.getHelixChannelByIDMutex.Lock()
+	defer fake.getHelixChannelByIDMutex.Unlock()
+	fake.GetHelixChannelByIDStub = nil
+	if fake.getHelixChannelByIDReturnsOnCall == nil {
+		fake.getHelixChannelByIDReturnsOnCall = make(map[int]struct {
+			result1 *twitch.HelixChannel
+			result2 error
+		})
+	}
+	fake.getHelixChannelByIDReturnsOnCall[i] = struct {
+		result1 *twitch.HelixChannel
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeAPI) GetStreamByUserID(arg1 context.Context, arg2 int64) (*twitch.HelixStream, error) {
 	fake.getStreamByUserIDMutex.Lock()
 	ret, specificReturn := fake.getStreamByUserIDReturnsOnCall[len(fake.getStreamByUserIDArgsForCall)]
@@ -1474,6 +1552,8 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.getGameByIDMutex.RUnlock()
 	fake.getGameByNameMutex.RLock()
 	defer fake.getGameByNameMutex.RUnlock()
+	fake.getHelixChannelByIDMutex.RLock()
+	defer fake.getHelixChannelByIDMutex.RUnlock()
 	fake.getStreamByUserIDMutex.RLock()
 	defer fake.getStreamByUserIDMutex.RUnlock()
 	fake.getStreamByUsernameMutex.RLock()
