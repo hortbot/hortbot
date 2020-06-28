@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/deanishe/awgo/fuzzy"
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -42,6 +43,10 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func setStatus(ctx context.Context, s *session, status string) (bool, error) {
+	if s.BetaFeatures() {
+		return setStatusHelix(ctx, s, status)
+	}
+
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
 		return true, err
@@ -78,6 +83,42 @@ func setStatus(ctx context.Context, s *session, status string) (bool, error) {
 	return false, nil
 }
 
+func setStatusHelix(ctx context.Context, s *session, status string) (bool, error) {
+	tok, err := s.TwitchToken(ctx)
+	if err != nil {
+		return true, err
+	}
+
+	if status == "-" {
+		status = ""
+	}
+
+	if status == "" {
+		return true, s.Reply(ctx, "Cannot unset status.")
+	}
+
+	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, status, 0)
+
+	// Check this, even if an error occurred.
+	if newToken != nil {
+		if err := s.SetTwitchToken(ctx, newToken); err != nil {
+			return true, err
+		}
+	}
+
+	if err != nil {
+		switch err {
+		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
+			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
+		case twitch.ErrServerError:
+			return true, s.Reply(ctx, twitchServerErrorReply)
+		}
+		return true, err
+	}
+
+	return false, nil
+}
+
 func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	if args != "" && s.UserLevel.CanAccess(levelModerator) {
 		replied, err := setGame(ctx, s, args)
@@ -105,6 +146,10 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func setGame(ctx context.Context, s *session, game string) (bool, error) {
+	if s.BetaFeatures() {
+		return setGameHelix(ctx, s, game)
+	}
+
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
 		return true, err
@@ -139,6 +184,126 @@ func setGame(ctx context.Context, s *session, game string) (bool, error) {
 	}
 
 	return false, nil
+}
+
+func setGameHelix(ctx context.Context, s *session, game string) (bool, error) {
+	tok, err := s.TwitchToken(ctx)
+	if err != nil {
+		return true, err
+	}
+
+	if game == "-" {
+		// TODO: Allow unsetting of game.
+		game = ""
+	}
+
+	if game == "" {
+		return true, s.Reply(ctx, "Cannot unset game.")
+	}
+
+	exact, suggestions, err := searchGame(ctx, s, game)
+	if err != nil {
+		if err == twitch.ErrServerError {
+			return true, s.Reply(ctx, twitchServerErrorReply)
+		}
+		return true, err
+	}
+
+	if exact == nil {
+		if suggestions[0] == nil {
+			return true, s.Replyf(ctx, `Could not find a valid game matching "%s".`, game)
+		}
+
+		if suggestions[1] != nil {
+			return true, s.Replyf(ctx, `Could not find a valid game matching "%s". Did you mean "%s" or "%s"?`, game, suggestions[0].Name, suggestions[1].Name)
+		}
+
+		return true, s.Replyf(ctx, `Could not find a valid game matching "%s". Did you mean "%s"?`, game, suggestions[0].Name)
+	}
+
+	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, "", exact.ID.AsInt64())
+
+	// Check this, even if an error occurred.
+	if newToken != nil {
+		if err := s.SetTwitchToken(ctx, newToken); err != nil {
+			return true, err
+		}
+	}
+
+	if err != nil {
+		switch err {
+		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
+			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
+		case twitch.ErrServerError:
+			return true, s.Reply(ctx, twitchServerErrorReply)
+		}
+		return true, err
+	}
+
+	return false, nil
+}
+
+type gameSuggestion [2]*twitch.Category
+
+func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Category, suggestions gameSuggestion, err error) {
+	{
+		g, err := s.Deps.Twitch.GetGameByName(ctx, name)
+		switch err {
+		case nil:
+			return g, gameSuggestion{}, nil
+		case twitch.ErrNotFound:
+			// Do nothing.
+		default:
+			return nil, gameSuggestion{}, err
+		}
+	}
+
+	// Game name did not match exactly; search.
+
+	gs, err := s.Deps.Twitch.SearchCategories(ctx, name)
+	if err != nil {
+		return nil, gameSuggestion{}, err
+	}
+
+	if len(gs) == 0 {
+		return nil, gameSuggestion{}, nil
+	}
+
+	for _, g := range gs {
+		eq := strings.EqualFold(name, g.Name)
+		if eq {
+			return g, gameSuggestion{}, nil
+		}
+	}
+
+	first := gs[0]
+
+	fuzzy.Sort(sortableCategories(gs), name)
+	closest := gs[0]
+
+	if first == closest {
+		return nil, gameSuggestion{first}, nil
+	}
+
+	return nil, gameSuggestion{closest, first}, nil
+}
+
+type sortableCategories []*twitch.Category
+
+func (s sortableCategories) Len() int {
+	return len(s)
+}
+
+func (s sortableCategories) Less(i, j int) bool {
+	return s[i].Name < s[j].Name
+}
+
+func (s sortableCategories) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s sortableCategories) Keywords(i int) string {
+	return s[i].Name
 }
 
 func cmdUptime(ctx context.Context, s *session, cmd string, args string) error {

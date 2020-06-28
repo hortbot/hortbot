@@ -47,7 +47,7 @@ type session struct {
 
 	ID         string
 	RoomID     int64
-	IRCChannel string
+	IRCChannel string // No '#' prefix.
 	Message    string
 	Me         bool
 
@@ -505,4 +505,9 @@ func (s *session) SetCommandParams(params string) {
 
 func (s *session) RoomIDStr() string {
 	return strconv.FormatInt(s.RoomID, 10)
+}
+
+func (s *session) BetaFeatures() bool {
+	_, ok := stringSliceIndex(s.Deps.BetaFeatures, s.IRCChannel)
+	return ok
 }

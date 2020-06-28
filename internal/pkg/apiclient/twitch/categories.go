@@ -27,6 +27,9 @@ func (t *Twitch) SearchCategories(ctx context.Context, query string) ([]*Categor
 	defer resp.Body.Close()
 
 	if err := statusToError(resp.StatusCode); err != nil {
+		if err == ErrNotFound {
+			return []*Category{}, nil
+		}
 		return nil, err
 	}
 

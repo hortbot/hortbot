@@ -46,6 +46,8 @@ type Bot struct {
 	PublicJoin          bool     `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"Enable public join"`
 	PublicJoinBlacklist []string `long:"bot-public-join-blacklist" env:"HB_BOT_PUBLIC_JOIN_BLACKLIST" env-delim:"," description:"Bots to now allow joins on even when public join is enabled"`
 
+	BetaFeatures []string `long:"bot-beta-features" env:"HB_BOT_BETA_FEATURES" description:"List of channel where beta features are enabled"`
+
 	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"Log messages instead of sending them"`
 }
 
@@ -118,6 +120,7 @@ func (args *Bot) New(
 		BulletMap:           args.BulletMap,
 		PublicJoin:          args.PublicJoin,
 		PublicJoinBlacklist: args.PublicJoinBlacklist,
+		BetaFeatures:        args.BetaFeatures,
 	})
 
 	if err := b.Init(ctx); err != nil {

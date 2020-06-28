@@ -85,6 +85,8 @@ type API interface {
 	GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error)
 	SearchCategories(ctx context.Context, query string) ([]*Category, error)
 	ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title string, gameID int64) (newToken *oauth2.Token, err error)
+	GetGameByName(ctx context.Context, name string) (*Category, error)
+	GetGameByID(ctx context.Context, id int64) (*Category, error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

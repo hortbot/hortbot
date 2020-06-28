@@ -65,6 +65,8 @@ type Config struct {
 
 	PublicJoin          bool
 	PublicJoinBlacklist []string
+
+	BetaFeatures []string
 }
 
 // Bot is an IRC bot. It should only be used once.
@@ -124,6 +126,7 @@ func New(config *Config) *Bot {
 		WebAddrMap:          config.WebAddrMap,
 		PublicJoin:          config.PublicJoin,
 		PublicJoinBlacklist: config.PublicJoinBlacklist,
+		BetaFeatures:        config.BetaFeatures,
 	}
 
 	if config.Clock != nil {

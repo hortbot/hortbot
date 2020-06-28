@@ -62,6 +62,8 @@ type sharedDeps struct {
 
 	PublicJoin          bool
 	PublicJoinBlacklist []string
+
+	BetaFeatures []string
 }
 
 func (s *sharedDeps) IsAllowed(name string) bool {

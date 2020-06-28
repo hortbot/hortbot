@@ -47,6 +47,16 @@ func TestSearchCategories(t *testing.T) {
 		assert.DeepEqual(t, cats, []*twitch.Category{})
 	})
 
+	t.Run("Empty 404", func(t *testing.T) {
+		ctx, cancel := testContext(t)
+		defer cancel()
+
+		cats, err := tw.SearchCategories(ctx, "notfound2")
+		assert.NilError(t, err)
+
+		assert.DeepEqual(t, cats, []*twitch.Category{})
+	})
+
 	t.Run("Server error", func(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()

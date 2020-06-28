@@ -111,6 +111,34 @@ type FakeAPI struct {
 		result1 *twitch.Stream
 		result2 error
 	}
+	GetGameByIDStub        func(context.Context, int64) (*twitch.Category, error)
+	getGameByIDMutex       sync.RWMutex
+	getGameByIDArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+	}
+	getGameByIDReturns struct {
+		result1 *twitch.Category
+		result2 error
+	}
+	getGameByIDReturnsOnCall map[int]struct {
+		result1 *twitch.Category
+		result2 error
+	}
+	GetGameByNameStub        func(context.Context, string) (*twitch.Category, error)
+	getGameByNameMutex       sync.RWMutex
+	getGameByNameArgsForCall []struct {
+		arg1 context.Context
+		arg2 string
+	}
+	getGameByNameReturns struct {
+		result1 *twitch.Category
+		result2 error
+	}
+	getGameByNameReturnsOnCall map[int]struct {
+		result1 *twitch.Category
+		result2 error
+	}
 	GetUserByIDStub        func(context.Context, int64) (*twitch.User, error)
 	getUserByIDMutex       sync.RWMutex
 	getUserByIDArgsForCall []struct {
@@ -677,6 +705,134 @@ func (fake *FakeAPI) GetCurrentStreamReturnsOnCall(i int, result1 *twitch.Stream
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) GetGameByID(arg1 context.Context, arg2 int64) (*twitch.Category, error) {
+	fake.getGameByIDMutex.Lock()
+	ret, specificReturn := fake.getGameByIDReturnsOnCall[len(fake.getGameByIDArgsForCall)]
+	fake.getGameByIDArgsForCall = append(fake.getGameByIDArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+	}{arg1, arg2})
+	fake.recordInvocation("GetGameByID", []interface{}{arg1, arg2})
+	fake.getGameByIDMutex.Unlock()
+	if fake.GetGameByIDStub != nil {
+		return fake.GetGameByIDStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.getGameByIDReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) GetGameByIDCallCount() int {
+	fake.getGameByIDMutex.RLock()
+	defer fake.getGameByIDMutex.RUnlock()
+	return len(fake.getGameByIDArgsForCall)
+}
+
+func (fake *FakeAPI) GetGameByIDCalls(stub func(context.Context, int64) (*twitch.Category, error)) {
+	fake.getGameByIDMutex.Lock()
+	defer fake.getGameByIDMutex.Unlock()
+	fake.GetGameByIDStub = stub
+}
+
+func (fake *FakeAPI) GetGameByIDArgsForCall(i int) (context.Context, int64) {
+	fake.getGameByIDMutex.RLock()
+	defer fake.getGameByIDMutex.RUnlock()
+	argsForCall := fake.getGameByIDArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) GetGameByIDReturns(result1 *twitch.Category, result2 error) {
+	fake.getGameByIDMutex.Lock()
+	defer fake.getGameByIDMutex.Unlock()
+	fake.GetGameByIDStub = nil
+	fake.getGameByIDReturns = struct {
+		result1 *twitch.Category
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetGameByIDReturnsOnCall(i int, result1 *twitch.Category, result2 error) {
+	fake.getGameByIDMutex.Lock()
+	defer fake.getGameByIDMutex.Unlock()
+	fake.GetGameByIDStub = nil
+	if fake.getGameByIDReturnsOnCall == nil {
+		fake.getGameByIDReturnsOnCall = make(map[int]struct {
+			result1 *twitch.Category
+			result2 error
+		})
+	}
+	fake.getGameByIDReturnsOnCall[i] = struct {
+		result1 *twitch.Category
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetGameByName(arg1 context.Context, arg2 string) (*twitch.Category, error) {
+	fake.getGameByNameMutex.Lock()
+	ret, specificReturn := fake.getGameByNameReturnsOnCall[len(fake.getGameByNameArgsForCall)]
+	fake.getGameByNameArgsForCall = append(fake.getGameByNameArgsForCall, struct {
+		arg1 context.Context
+		arg2 string
+	}{arg1, arg2})
+	fake.recordInvocation("GetGameByName", []interface{}{arg1, arg2})
+	fake.getGameByNameMutex.Unlock()
+	if fake.GetGameByNameStub != nil {
+		return fake.GetGameByNameStub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	fakeReturns := fake.getGameByNameReturns
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) GetGameByNameCallCount() int {
+	fake.getGameByNameMutex.RLock()
+	defer fake.getGameByNameMutex.RUnlock()
+	return len(fake.getGameByNameArgsForCall)
+}
+
+func (fake *FakeAPI) GetGameByNameCalls(stub func(context.Context, string) (*twitch.Category, error)) {
+	fake.getGameByNameMutex.Lock()
+	defer fake.getGameByNameMutex.Unlock()
+	fake.GetGameByNameStub = stub
+}
+
+func (fake *FakeAPI) GetGameByNameArgsForCall(i int) (context.Context, string) {
+	fake.getGameByNameMutex.RLock()
+	defer fake.getGameByNameMutex.RUnlock()
+	argsForCall := fake.getGameByNameArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) GetGameByNameReturns(result1 *twitch.Category, result2 error) {
+	fake.getGameByNameMutex.Lock()
+	defer fake.getGameByNameMutex.Unlock()
+	fake.GetGameByNameStub = nil
+	fake.getGameByNameReturns = struct {
+		result1 *twitch.Category
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetGameByNameReturnsOnCall(i int, result1 *twitch.Category, result2 error) {
+	fake.getGameByNameMutex.Lock()
+	defer fake.getGameByNameMutex.Unlock()
+	fake.GetGameByNameStub = nil
+	if fake.getGameByNameReturnsOnCall == nil {
+		fake.getGameByNameReturnsOnCall = make(map[int]struct {
+			result1 *twitch.Category
+			result2 error
+		})
+	}
+	fake.getGameByNameReturnsOnCall[i] = struct {
+		result1 *twitch.Category
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeAPI) GetUserByID(arg1 context.Context, arg2 int64) (*twitch.User, error) {
 	fake.getUserByIDMutex.Lock()
 	ret, specificReturn := fake.getUserByIDReturnsOnCall[len(fake.getUserByIDArgsForCall)]
@@ -1158,6 +1314,10 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.getChattersMutex.RUnlock()
 	fake.getCurrentStreamMutex.RLock()
 	defer fake.getCurrentStreamMutex.RUnlock()
+	fake.getGameByIDMutex.RLock()
+	defer fake.getGameByIDMutex.RUnlock()
+	fake.getGameByNameMutex.RLock()
+	defer fake.getGameByNameMutex.RUnlock()
 	fake.getUserByIDMutex.RLock()
 	defer fake.getUserByIDMutex.RUnlock()
 	fake.getUserByTokenMutex.RLock()

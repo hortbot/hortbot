@@ -164,3 +164,67 @@ func (st *scriptTester) twitchFollowChannel(t testing.TB, _, args string, lineNu
 		})
 	})
 }
+
+func (st *scriptTester) twitchModifyChannel(t testing.TB, directive, args string, lineNum int) {
+	var call struct {
+		ID     int64
+		Tok    *oauth2.Token
+		Status string
+		GameID int64
+
+		NewTok *oauth2.Token
+		Err    string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.ModifyChannelCalls(func(_ context.Context, broadcasterID int64, tok *oauth2.Token, status string, gameID int64) (*oauth2.Token, error) {
+			assert.Equal(t, broadcasterID, call.ID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(tok, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, status, call.Status, "line %d", lineNum)
+			assert.Equal(t, gameID, call.GameID, "line %d", lineNum)
+
+			return call.NewTok, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchGetGameByName(t testing.TB, directive, args string, lineNum int) {
+	var calls map[string]struct {
+		Category *twitch.Category
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &calls)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetGameByNameCalls(func(_ context.Context, name string) (*twitch.Category, error) {
+			call, ok := calls[name]
+			assert.Assert(t, ok, `unknown name "%s": line %d`, name, lineNum)
+
+			return call.Category, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchSearchCategories(t testing.TB, directive, args string, lineNum int) {
+	var calls map[string]struct {
+		Categories []*twitch.Category
+		Err        string
+	}
+
+	err := json.Unmarshal([]byte(args), &calls)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.SearchCategoriesCalls(func(_ context.Context, query string) ([]*twitch.Category, error) {
+			call, ok := calls[query]
+			assert.Assert(t, ok, `unknown query "%s": line %d`, query, lineNum)
+
+			return call.Categories, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}

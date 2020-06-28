@@ -329,4 +329,7 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"urban_define":                (*scriptTester).urbanDefine,
 	"simple_plaintext":            (*scriptTester).simplePlaintext,
 	"hltb_search":                 (*scriptTester).hltbSearch,
+	"twitch_modify_channel":       (*scriptTester).twitchModifyChannel,
+	"twitch_get_game_by_name":     (*scriptTester).twitchGetGameByName,
+	"twitch_search_categories":    (*scriptTester).twitchSearchCategories,
 }
