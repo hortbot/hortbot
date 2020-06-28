@@ -87,6 +87,8 @@ type API interface {
 	ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title string, gameID int64) (newToken *oauth2.Token, err error)
 	GetGameByName(ctx context.Context, name string) (*Category, error)
 	GetGameByID(ctx context.Context, id int64) (*Category, error)
+	GetStreamByUserID(ctx context.Context, id int64) (*HelixStream, error)
+	GetStreamByUsername(ctx context.Context, username string) (*HelixStream, error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

@@ -194,6 +194,14 @@ func (f *fakeTwitch) route() {
 
 	f.mt.RegisterResponder("PATCH", "https://api.twitch.tv/helix/channels", f.helixChannelsPatch)
 
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_id=1234", httpmock.NewStringResponder(200, `{"data": [{"id": "512301723123", "user_id": "1234", "user_name": "FooBar", "game_id": "847362", "title": "This is the title.", "viewer_count": 4321, "started_at": "2017-08-14T16:08:32Z"}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=foobar", httpmock.NewStringResponder(200, `{"data": [{"id": "512301723123", "user_id": "1234", "user_name": "FooBar", "game_id": "847362", "title": "This is the title.", "viewer_count": 4321, "started_at": "2017-08-14T16:08:32Z"}]}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=notfound", httpmock.NewStringResponder(404, `{"data": []}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=notfound2", httpmock.NewStringResponder(200, `{"data": []}`))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=servererror", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=decodeerror", httpmock.NewStringResponder(200, "}"))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/streams?user_login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
+
 	// TMI API
 
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/foobar/chatters", httpmock.NewStringResponder(200, `{"chatter_count": 1234, "chatters": {"broadcaster": ["foobar"], "viewers": ["foo", "bar"]}}`))
