@@ -20,6 +20,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
 )
 
@@ -975,6 +976,8 @@ func actionTextAPI(ctx context.Context, s *session, prefix, u string) (string, e
 	if err != nil {
 		var apiErr *apiclient.Error
 		if !errors.As(err, &apiErr) {
+			// This usually indicates an error with the bot.
+			ctxlog.Error(ctx, "error fetching API", ctxlog.PlainError(err))
 			return actionMsgError, nil
 		}
 		// If it's an API error (i.e. 404, 500, etc), then just use the body below.
