@@ -3,14 +3,14 @@ package httpflags
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/wader/filtertransport"
 	"github.com/zikaeroh/ctxlog"
-	"go.uber.org/zap"
-	"golang.org/x/net/proxy"
 )
 
 // HTTP contains HTTP client flags.
@@ -44,27 +44,53 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 	}
 
 	if h.UntrustedProxy != "" {
-		var auth *proxy.Auth
+		u := &url.URL{
+			Scheme: "socks5",
+			Host:   h.UntrustedProxy,
+		}
 
 		if h.UntrustedProxyUser != "" {
-			auth = &proxy.Auth{User: h.UntrustedProxyUser, Password: h.UntrustedProxyPassword}
+			if h.UntrustedProxyPassword == "" {
+				u.User = url.User(h.UntrustedProxyUser)
+			} else {
+				u.User = url.UserPassword(h.UntrustedProxyUser, h.UntrustedProxyPassword)
+			}
 		}
 
-		// TODO: safeDialer performs name resolution locally rather than the proxy. Is this safe?
-		dialer, err := proxy.SOCKS5("tcp", h.UntrustedProxy, auth, safeDialer)
-		if err != nil {
-			ctxlog.Fatal(ctx, "error creating SOCKS5 proxy dialer", zap.Error(err))
-		}
+		transport := (http.DefaultTransport).(*http.Transport).Clone()
+		transport.Proxy = func(r *http.Request) (*url.URL, error) {
+			// Hack to pre-filter the address before handing it to the proxy.
 
-		transport := filtertransport.DefaultTransport.Clone()
+			// Similar to canonicalAddr in net/http.
+			host := r.URL.Hostname()
+			if v, err := idnaASCII(host); err == nil {
+				host = v
+			}
 
-		//lint:ignore SA1019 As a backup in case DialContext is nil.
-		transport.Dial = dialer.Dial //nolint
+			port := r.URL.Port()
+			if port == "" {
+				switch r.URL.Scheme {
+				case "http":
+					port = "80"
+				case "https":
+					port = "443"
+				default:
+					return nil, fmt.Errorf("unknown scheme: %s", r.URL.Scheme)
+				}
+			}
 
-		if ctxDialer, ok := dialer.(proxy.ContextDialer); ok {
-			transport.DialContext = ctxDialer.DialContext
-		} else {
-			transport.DialContext = nil
+			addr := net.JoinHostPort(host, port)
+
+			tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
+			if err != nil {
+				return nil, err
+			}
+
+			if err := filtertransport.DefaultFilter(*tcpAddr); err != nil {
+				return nil, err
+			}
+
+			return u, nil
 		}
 
 		cli.Transport = transport
@@ -74,21 +100,4 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 	}
 
 	return cli
-}
-
-type filteredDialer struct{}
-
-var (
-	netDialer  net.Dialer
-	safeDialer *filteredDialer
-	_          proxy.Dialer        = safeDialer
-	_          proxy.ContextDialer = safeDialer
-)
-
-func (*filteredDialer) Dial(network, addr string) (c net.Conn, err error) {
-	return filtertransport.FilterDial(context.Background(), network, addr, filtertransport.DefaultFilter, netDialer.DialContext)
-}
-
-func (*filteredDialer) DialContext(ctx context.Context, network, addr string) (net.Conn, error) {
-	return filtertransport.FilterDial(ctx, network, addr, filtertransport.DefaultFilter, netDialer.DialContext)
 }
