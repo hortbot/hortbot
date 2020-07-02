@@ -28,8 +28,8 @@ require (
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20200605151348-3a43fc422dd9
-	github.com/jackc/pgconn v1.6.0
-	github.com/jackc/pgx/v4 v4.6.0
+	github.com/jackc/pgconn v1.6.1
+	github.com/jackc/pgx/v4 v4.7.2-0.20200629194023-eeda0368e66f
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.5
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -61,7 +61,7 @@ require (
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200626171337-aa94e735be7f
+	golang.org/x/tools v0.0.0-20200701221012-f01a4bec33ec
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
