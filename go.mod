@@ -50,7 +50,7 @@ require (
 	github.com/valyala/quicktemplate v1.5.0
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/null/v8 v8.1.0
-	github.com/volatiletech/sqlboiler/v4 v4.1.3-0.20200703171608-b656a98e17a2
+	github.com/volatiletech/sqlboiler/v4 v4.2.0
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
@@ -61,7 +61,7 @@ require (
 	golang.org/x/net v0.0.0-20200625001655-4c5254603344
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200701221012-f01a4bec33ec
+	golang.org/x/tools v0.0.0-20200702044944-0cc1aa72b347
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
