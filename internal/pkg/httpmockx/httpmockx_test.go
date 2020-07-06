@@ -20,7 +20,7 @@ func TestNewMockTransport(t *testing.T) {
 		Transport: mt,
 	}
 
-	_, err := client.Get("http://example.org") //nolint:bodyclose
+	_, err := client.Get("http://example.org") //nolint
 	assert.ErrorContains(t, err, "not found")
 
 	assert.Assert(t, fake.HelperCallCount() > 1)

@@ -22,7 +22,7 @@ type httpClient struct {
 }
 
 func (h *httpClient) newRequest(ctx context.Context, method string, url string, body io.Reader) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequest(method, url, body) //nolint:noctx
 	if err != nil {
 		return nil, err
 	}

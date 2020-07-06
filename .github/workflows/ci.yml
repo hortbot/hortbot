@@ -10,7 +10,7 @@ on:
 
 env:
   GO_DEV_VERSION: "1.14" # Recommended Go version for development.
-  GOLANGCI_LINT_VERSION: "v1.26.0"
+  GOLANGCI_LINT_VERSION: "v1.28.1"
 
 jobs:
   test:

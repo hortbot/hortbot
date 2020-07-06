@@ -27,6 +27,7 @@ func Channels(ctx context.Context, db *sqlx.DB) (map[string]*Channel, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	channels := make(map[string]*Channel)
 
@@ -57,6 +58,10 @@ func Channels(ctx context.Context, db *sqlx.DB) (map[string]*Channel, error) {
 		}
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return channels, nil
 }
 
@@ -74,6 +79,7 @@ func Vars(ctx context.Context, db *sqlx.DB) (map[string][]*Var, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	vars := make(map[string][]*Var)
 
@@ -98,6 +104,10 @@ func Vars(ctx context.Context, db *sqlx.DB) (map[string][]*Var, error) {
 		}
 
 		vars[row.Channel] = append(vars[row.Channel], v)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 
 	return vars, nil
