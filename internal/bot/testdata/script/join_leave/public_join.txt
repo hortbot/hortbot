@@ -2,7 +2,7 @@ bot_config {"PublicJoin": false}
 
 
 handle hortbot @id=__UUID__;room-id=999;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
-no_send
+send hortbot #hortbot [HB] Public join is disabled for hortbot; please contact an admin if you believe this to be an error.
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join

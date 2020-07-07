@@ -65,12 +65,16 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		displayName = u.DispName()
 	} else {
 		if !isAdmin {
-			if !s.Deps.PublicJoin {
-				return nil
+			replyDisabled := func() error {
+				return s.Replyf(ctx, "Public join is disabled for %s; please contact an admin if you believe this to be an error.", botName)
 			}
 
-			if _, ok := stringSliceIndex(s.Deps.PublicJoinBlacklist, botName); ok {
-				return nil
+			if !s.Deps.PublicJoin {
+				return replyDisabled()
+			}
+
+			if _, ok := stringSliceIndex(s.Deps.PublicJoinDisabled, botName); ok {
+				return replyDisabled()
 			}
 		}
 

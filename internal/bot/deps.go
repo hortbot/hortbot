@@ -60,8 +60,8 @@ type sharedDeps struct {
 	WebAddr    string
 	WebAddrMap map[string]string
 
-	PublicJoin          bool
-	PublicJoinBlacklist []string
+	PublicJoin         bool
+	PublicJoinDisabled []string
 
 	BetaFeatures []string
 }

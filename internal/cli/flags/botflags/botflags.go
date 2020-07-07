@@ -32,7 +32,7 @@ type Bot struct {
 	Whitelist        []string `long:"bot-whitelist" env:"HB_BOT_WHITELIST" env-delim:"," description:"User whitelist"`
 
 	BulletMap       map[string]string `long:"bot-bullet-map" env:"HB_BOT_BULLET_MAP" env-delim:"," description:"Mapping from bot name to default bullet"`
-	DefaultCooldown int               `long:"bot-default-cooldown" env:"HB_BOT_DEFAULT_COOLDOWN" description:"default command cooldown"`
+	DefaultCooldown int               `long:"bot-default-cooldown" env:"HB_BOT_DEFAULT_COOLDOWN" description:"Default command cooldown"`
 
 	WebAddr    string            `long:"bot-web-addr" env:"HB_BOT_WEB_ADDR" description:"Default address for the bot website"`
 	WebAddrMap map[string]string `long:"bot-web-addr-map" env:"HB_BOT_WEB_ADDR_MAP" env-delim:"," description:"Bot name to web address mapping"`
@@ -43,8 +43,8 @@ type Bot struct {
 
 	Workers int `long:"bot-workers" env:"HB_BOT_WORKERS" description:"number of concurrent workers for handling"`
 
-	PublicJoin          bool     `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"Enable public join"`
-	PublicJoinBlacklist []string `long:"bot-public-join-blacklist" env:"HB_BOT_PUBLIC_JOIN_BLACKLIST" env-delim:"," description:"Bots to now allow joins on even when public join is enabled"`
+	PublicJoin         bool     `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"Enable public join for all bots"`
+	PublicJoinDisabled []string `long:"bot-public-join-disabled" env:"HB_BOT_PUBLIC_JOIN_DISABLED" env-delim:"," description:"Bots to disable public join on regardless of global public join setting"`
 
 	BetaFeatures []string `long:"bot-beta-features" env:"HB_BOT_BETA_FEATURES" description:"List of channel where beta features are enabled"`
 
@@ -96,31 +96,31 @@ func (args *Bot) New(
 	}
 
 	b := bot.New(&bot.Config{
-		DB:                  db,
-		Redis:               rdb,
-		Sender:              sender,
-		Notifier:            notifier,
-		LastFM:              lastFM,
-		YouTube:             youtubeAPI,
-		XKCD:                xkcd.New(xkcd.HTTPClient(httpClient)),
-		ExtraLife:           extralife.New(extralife.HTTPClient(httpClient)),
-		Twitch:              twitchAPI,
-		Steam:               steamAPI,
-		TinyURL:             tinyurl.New(tinyurl.HTTPClient(httpClient)),
-		Urban:               urban.New(urban.HTTPClient(httpClient)),
-		Simple:              simple.New(simple.HTTPClient(untrustedClient)),
-		HLTB:                hltb.New(hltb.HTTPClient(httpClient)),
-		Admins:              args.Admins,
-		SuperAdmins:         args.SuperAdmins,
-		WhitelistEnabled:    args.WhitelistEnabled,
-		Whitelist:           args.Whitelist,
-		Cooldown:            args.DefaultCooldown,
-		WebAddr:             args.WebAddr,
-		WebAddrMap:          args.WebAddrMap,
-		BulletMap:           args.BulletMap,
-		PublicJoin:          args.PublicJoin,
-		PublicJoinBlacklist: args.PublicJoinBlacklist,
-		BetaFeatures:        args.BetaFeatures,
+		DB:                 db,
+		Redis:              rdb,
+		Sender:             sender,
+		Notifier:           notifier,
+		LastFM:             lastFM,
+		YouTube:            youtubeAPI,
+		XKCD:               xkcd.New(xkcd.HTTPClient(httpClient)),
+		ExtraLife:          extralife.New(extralife.HTTPClient(httpClient)),
+		Twitch:             twitchAPI,
+		Steam:              steamAPI,
+		TinyURL:            tinyurl.New(tinyurl.HTTPClient(httpClient)),
+		Urban:              urban.New(urban.HTTPClient(httpClient)),
+		Simple:             simple.New(simple.HTTPClient(untrustedClient)),
+		HLTB:               hltb.New(hltb.HTTPClient(httpClient)),
+		Admins:             args.Admins,
+		SuperAdmins:        args.SuperAdmins,
+		WhitelistEnabled:   args.WhitelistEnabled,
+		Whitelist:          args.Whitelist,
+		Cooldown:           args.DefaultCooldown,
+		WebAddr:            args.WebAddr,
+		WebAddrMap:         args.WebAddrMap,
+		BulletMap:          args.BulletMap,
+		PublicJoin:         args.PublicJoin,
+		PublicJoinDisabled: args.PublicJoinDisabled,
+		BetaFeatures:       args.BetaFeatures,
 	})
 
 	if err := b.Init(ctx); err != nil {
