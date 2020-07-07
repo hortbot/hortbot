@@ -67,6 +67,8 @@ type Config struct {
 	PublicJoinDisabled []string
 
 	BetaFeatures []string
+
+	GlobalIgnore []string
 }
 
 // Bot is an IRC bot. It should only be used once.
@@ -127,6 +129,7 @@ func New(config *Config) *Bot {
 		PublicJoin:         config.PublicJoin,
 		PublicJoinDisabled: config.PublicJoinDisabled,
 		BetaFeatures:       config.BetaFeatures,
+		GlobalIgnore:       make(map[string]bool),
 	}
 
 	if config.Clock != nil {
@@ -149,6 +152,10 @@ func New(config *Config) *Bot {
 		for _, name := range config.Whitelist {
 			deps.Whitelist[name] = true
 		}
+	}
+
+	for _, name := range config.GlobalIgnore {
+		deps.GlobalIgnore[name] = true
 	}
 
 	if config.Rand != nil {

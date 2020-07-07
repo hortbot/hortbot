@@ -49,6 +49,8 @@ type Bot struct {
 	BetaFeatures []string `long:"bot-beta-features" env:"HB_BOT_BETA_FEATURES" description:"List of channel where beta features are enabled"`
 
 	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"Log messages instead of sending them"`
+
+	GlobalIgnore []string `long:"bot-global-ignore" env:"HB_BOT_GLOBAL_IGNORE" description:"List of users to ignore globally (e.g. known bots)"`
 }
 
 // Default contains the default flags. Make a copy of this, do not reuse.

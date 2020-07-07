@@ -1,0 +1,12 @@
+bot_config {"GlobalIgnore": ["ignoreduser"]}
+
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2 :nobodu!nobodu@nobodu.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+
+handle hortbot @id=__UUID__;room-id=1;user-id=3 :ignoreduser!ignoreduser@ignoreduser.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+no_send

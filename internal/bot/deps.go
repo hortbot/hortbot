@@ -55,7 +55,7 @@ type sharedDeps struct {
 
 	Admins      map[string]bool
 	SuperAdmins map[string]bool
-	Whitelist   map[string]bool
+	Whitelist   map[string]bool // nil == no whitelist
 
 	WebAddr    string
 	WebAddrMap map[string]string
@@ -64,11 +64,18 @@ type sharedDeps struct {
 	PublicJoinDisabled []string
 
 	BetaFeatures []string
+
+	GlobalIgnore map[string]bool
 }
 
 func (s *sharedDeps) IsAllowed(name string) bool {
+	if s.GlobalIgnore[name] {
+		return false
+	}
+
 	if s.Whitelist == nil {
 		return true
 	}
+
 	return s.Admins[name] || s.Whitelist[name]
 }
