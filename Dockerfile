@@ -17,3 +17,6 @@ RUN go build -ldflags="-X github.com/hortbot/hortbot/internal/version.version=${
 FROM gcr.io/distroless/base:nonroot
 COPY --from=builder /hortbot/hortbot /hortbot
 ENTRYPOINT [ "/hortbot" ]
+
+# Verify that the binary works.
+RUN [ "/hortbot", "version" ]
