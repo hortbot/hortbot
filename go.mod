@@ -10,7 +10,7 @@ require (
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.3.1
-	github.com/deanishe/awgo v0.24.0
+	github.com/deanishe/awgo v0.24.1
 	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
@@ -38,7 +38,6 @@ require (
 	github.com/leononame/clock v0.1.6
 	github.com/markbates/pkger v0.17.0
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
-	github.com/mitchellh/mapstructure v1.3.2 // indirect
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -58,10 +57,10 @@ require (
 	go.opencensus.io v0.22.4
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/net v0.0.0-20200625001655-4c5254603344
+	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200706180831-95bc2bdf7e31
+	golang.org/x/tools v0.0.0-20200708183856-df98bc6d456c
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
