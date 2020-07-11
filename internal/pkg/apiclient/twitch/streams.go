@@ -65,7 +65,7 @@ func (t *Twitch) GetStreamByUserID(ctx context.Context, id int64) (*HelixStream,
 	return t.getStream(ctx, "user_id="+strconv.FormatInt(id, 10))
 }
 
-// GetStreamByUserID gets the current stream by username.
+// GetStreamByUsername gets the current stream by username.
 //
 // GET https://api.twitch.tv/helix/streams?user_login=<username>
 func (t *Twitch) GetStreamByUsername(ctx context.Context, username string) (*HelixStream, error) {

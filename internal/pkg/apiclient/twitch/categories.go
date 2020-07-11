@@ -44,14 +44,14 @@ func (t *Twitch) SearchCategories(ctx context.Context, query string) ([]*Categor
 	return body.Data, nil
 }
 
-// GetGame queries for a game by name. The name must match exactly.
+// GetGameByName queries for a game by name. The name must match exactly.
 //
 // GET https://api.twitch.tv/helix/games?name=<name>
 func (t *Twitch) GetGameByName(ctx context.Context, name string) (*Category, error) {
 	return t.getGame(ctx, "name="+url.QueryEscape(name))
 }
 
-// GetGame queries for a game by ID.
+// GetGameByID queries for a game by ID.
 //
 // GET https://api.twitch.tv/helix/games?id=<id>
 func (t *Twitch) GetGameByID(ctx context.Context, id int64) (*Category, error) {
