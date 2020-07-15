@@ -11,7 +11,7 @@ require (
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.3.1
 	github.com/deanishe/awgo v0.24.1
-	github.com/dghubble/trie v0.0.0-20200219060618-c42a287caf69
+	github.com/dghubble/trie v0.0.0-20200711235126-a36c59ca14af
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
 	github.com/felixge/httpsnoop v1.0.1
@@ -27,9 +27,9 @@ require (
 	github.com/gorilla/sessions v1.2.0
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/goware/urlx v0.3.1
-	github.com/hako/durafmt v0.0.0-20200605151348-3a43fc422dd9
-	github.com/jackc/pgconn v1.6.1
-	github.com/jackc/pgx/v4 v4.7.2-0.20200629194023-eeda0368e66f
+	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
+	github.com/jackc/pgconn v1.6.2
+	github.com/jackc/pgx/v4 v4.7.2
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.5
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -46,7 +46,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
-	github.com/valyala/quicktemplate v1.5.0
+	github.com/valyala/quicktemplate v1.5.1
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/null/v8 v8.1.0
 	github.com/volatiletech/sqlboiler/v4 v4.2.0
@@ -60,7 +60,7 @@ require (
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200708183856-df98bc6d456c
+	golang.org/x/tools v0.0.0-20200714190737-9048b464a08d
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
