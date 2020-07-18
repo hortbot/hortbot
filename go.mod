@@ -6,12 +6,12 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.0
 	contrib.go.opencensus.io/integrations/ocsql v0.1.6
 	github.com/99designs/gqlgen v0.11.3
-	github.com/alicebob/miniredis/v2 v2.13.0
+	github.com/alicebob/miniredis/v2 v2.13.1
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.3.1
-	github.com/deanishe/awgo v0.24.1
-	github.com/dghubble/trie v0.0.0-20200711235126-a36c59ca14af
+	github.com/deanishe/awgo v0.25.0
+	github.com/dghubble/trie v0.0.0-20200716043226-5a94efb202d5
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
 	github.com/felixge/httpsnoop v1.0.1
@@ -60,7 +60,7 @@ require (
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200714190737-9048b464a08d
+	golang.org/x/tools v0.0.0-20200717024301-6ddee64345a6
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
