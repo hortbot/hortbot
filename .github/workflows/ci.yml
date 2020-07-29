@@ -35,7 +35,7 @@ jobs:
 
       - name: Install Go
         if: matrix.go != 'tip'
-        uses: actions/setup-go@v2-beta
+        uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
 
@@ -90,7 +90,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
 
       - name: Install Go
-        uses: actions/setup-go@v2-beta
+        uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_DEV_VERSION }}
 
@@ -118,7 +118,7 @@ jobs:
           key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
 
       - name: Install Go
-        uses: actions/setup-go@v2-beta
+        uses: actions/setup-go@v2
         with:
           go-version: ${{ env.GO_DEV_VERSION }}
 
