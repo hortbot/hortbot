@@ -37,6 +37,7 @@ jobs:
         if: matrix.go != 'tip'
         uses: actions/setup-go@v2
         with:
+          stable: "false"
           go-version: ${{ matrix.go }}
 
       - name: Install Go tip
@@ -92,6 +93,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
+          stable: "false"
           go-version: ${{ env.GO_DEV_VERSION }}
 
       - name: Check go.mod tidyness
@@ -120,6 +122,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2
         with:
+          stable: "false"
           go-version: ${{ env.GO_DEV_VERSION }}
 
       - name: go generate
