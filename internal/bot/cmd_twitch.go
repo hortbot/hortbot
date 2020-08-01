@@ -6,13 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/deanishe/awgo/fuzzy"
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"go.deanishe.net/fuzzy"
 )
 
 const twitchServerErrorReply = "A Twitch server error occurred."
