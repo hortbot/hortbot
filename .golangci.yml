@@ -26,11 +26,12 @@ linters:
     - goerr113
     - nolintlint
     - godot
-
     - stylecheck
     - unused
     - gofumpt
     - exhaustive # Breaks on enum values exported from test packages.
+    - nlreturn
+    - gci
 
     # - staticcheck
 

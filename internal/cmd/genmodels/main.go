@@ -17,9 +17,8 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jackc/pgconn"
 	"github.com/volatiletech/sqlboiler/v4/boilingcore"
-	"github.com/volatiletech/sqlboiler/v4/importers"
-
 	_ "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
+	"github.com/volatiletech/sqlboiler/v4/importers"
 )
 
 func main() {

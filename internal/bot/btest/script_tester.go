@@ -252,7 +252,7 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 	}
 
 	if bcj.Rand != nil {
-		rng := rand.New(rand.NewSource(int64(*bcj.Rand)))
+		rng := rand.New(rand.NewSource(int64(*bcj.Rand))) //nolint:gosec
 
 		fakeRand := newFakeRand(t)
 		fakeRand.IntnCalls(rng.Intn)

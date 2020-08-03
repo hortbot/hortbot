@@ -3,11 +3,10 @@ package migrations
 
 import (
 	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	"github.com/hortbot/hortbot/internal/pkger"
-
-	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 )
 
 var sourceDriver source.Driver
