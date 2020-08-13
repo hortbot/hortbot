@@ -429,6 +429,9 @@ github.com/magefile/mage v1.10.0/go.mod h1:z5UZb/iS3GoOSn0JgWuiw7dxlurVYTu+/jHXq
 github.com/magiconair/properties v1.8.0/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=
 github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
+github.com/markbates/pkger v0.15.1/go.mod h1:0JoVlrol20BSywW79rN3kdFFsE5xYM+rSCQDXbLhiuI=
+github.com/markbates/pkger v0.17.1-0.20200812175352-0273362499c7 h1:wl9cUpEnuYXg8XD3739gKmaMAOWIzx4C1tz4M8AZaWE=
+github.com/markbates/pkger v0.17.1-0.20200812175352-0273362499c7/go.mod h1:0JoVlrol20BSywW79rN3kdFFsE5xYM+rSCQDXbLhiuI=
 github.com/matryer/moq v0.0.0-20200106131100-75d0ddfc0007 h1:reVOUXwnhsYv/8UqjvhrMOu5CNT9UapHFLbQ2JcXsmg=
 github.com/matryer/moq v0.0.0-20200106131100-75d0ddfc0007/go.mod h1:9ELz6aaclSIGnZBoaSLZ3NAl1VTufbOrXBPvtcy6WiQ=
 github.com/mattn/go-colorable v0.1.1/go.mod h1:FuOcm+DKB9mbwrcAfNl7/TZVBZ6rcnceauSikq3lYCQ=
@@ -636,8 +639,6 @@ github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310 h1:nzMukvhYHxWxiS
 github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310/go.mod h1:bR1HcUSJKqE19Z24xgoSc1nMAbWr+P0nuhzx2kYJv8M=
 github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223 h1:q/vMrH84j1PzDoMEWAY+82XNL377I72ePdKmEGvsUCQ=
 github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223/go.mod h1:C1CXIChfvvg4uviDtaOINYpQ5qzUxwbqE7h/MOc7IPw=
-github.com/zikaeroh/pkger v0.17.1-0.20200604025301-dceb832975ba h1:t0aP/yT6220rbPXYRf4ASwgWkynUvy+SGQqR6jNzutc=
-github.com/zikaeroh/pkger v0.17.1-0.20200604025301-dceb832975ba/go.mod h1:0JoVlrol20BSywW79rN3kdFFsE5xYM+rSCQDXbLhiuI=
 gitlab.com/nyarla/go-crypt v0.0.0-20160106005555-d9a5dc2b789b/go.mod h1:T3BPAOm2cqquPa0MKWeNkmOM5RQsRhkrwMWonFMN7fE=
 go.deanishe.net/fuzzy v1.0.0 h1:3Qp6PCX0DLb9z03b5OHwAGsbRSkgJpSLncsiDdXDt4Y=
 go.deanishe.net/fuzzy v1.0.0/go.mod h1:2yEEMfG7jWgT1s5EO0TteVWmx2MXFBRMr5cMm84bQNY=

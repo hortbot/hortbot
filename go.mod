@@ -35,7 +35,7 @@ require (
 	github.com/jmoiron/sqlx v1.2.1-0.20190826204134-d7d95172beb5
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
-	github.com/markbates/pkger v0.17.0
+	github.com/markbates/pkger v0.17.1-0.20200812175352-0273362499c7
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.0
@@ -64,5 +64,3 @@ require (
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
-
-replace github.com/markbates/pkger => github.com/zikaeroh/pkger v0.17.1-0.20200604025301-dceb832975ba
