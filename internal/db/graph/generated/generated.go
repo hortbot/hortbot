@@ -1543,6 +1543,7 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("name"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -1557,6 +1558,7 @@ func (ec *executionContext) field_Query_channelByName_args(ctx context.Context, 
 	args := map[string]interface{}{}
 	var arg0 string
 	if tmp, ok := rawArgs["name"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("name"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -1571,6 +1573,7 @@ func (ec *executionContext) field_Query_channelByTwitchID_args(ctx context.Conte
 	args := map[string]interface{}{}
 	var arg0 int64
 	if tmp, ok := rawArgs["twitchID"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("twitchID"))
 		arg0, err = ec.unmarshalNID2int64(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -1585,6 +1588,7 @@ func (ec *executionContext) field___Type_enumValues_args(ctx context.Context, ra
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("includeDeprecated"))
 		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -1599,6 +1603,7 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 	args := map[string]interface{}{}
 	var arg0 bool
 	if tmp, ok := rawArgs["includeDeprecated"]; ok {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithField("includeDeprecated"))
 		arg0, err = ec.unmarshalOBoolean2bool(ctx, tmp)
 		if err != nil {
 			return nil, err
@@ -8840,10 +8845,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNAutoreply2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐAutoreply(ctx context.Context, sel ast.SelectionSet, v models.Autoreply) graphql.Marshaler {
-	return ec._Autoreply(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNAutoreply2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐAutoreplyᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Autoreply) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -8892,7 +8893,8 @@ func (ec *executionContext) marshalNAutoreply2ᚖgithubᚗcomᚋhortbotᚋhortbo
 }
 
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
-	return graphql.UnmarshalBoolean(v)
+	res, err := graphql.UnmarshalBoolean(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
@@ -8970,10 +8972,6 @@ func (ec *executionContext) marshalNCommandInfo2ᚖgithubᚗcomᚋhortbotᚋhort
 	return ec._CommandInfo(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCommandList2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCommandList(ctx context.Context, sel ast.SelectionSet, v models.CommandList) graphql.Marshaler {
-	return ec._CommandList(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNCommandList2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCommandListᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.CommandList) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -9021,10 +9019,6 @@ func (ec *executionContext) marshalNCommandList2ᚖgithubᚗcomᚋhortbotᚋhort
 	return ec._CommandList(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNCustomCommand2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCustomCommand(ctx context.Context, sel ast.SelectionSet, v models.CustomCommand) graphql.Marshaler {
-	return ec._CustomCommand(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNCustomCommand2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCustomCommandᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.CustomCommand) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -9070,10 +9064,6 @@ func (ec *executionContext) marshalNCustomCommand2ᚖgithubᚗcomᚋhortbotᚋho
 		return graphql.Null
 	}
 	return ec._CustomCommand(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNHighlight2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐHighlight(ctx context.Context, sel ast.SelectionSet, v models.Highlight) graphql.Marshaler {
-	return ec._Highlight(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNHighlight2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐHighlightᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Highlight) graphql.Marshaler {
@@ -9124,7 +9114,8 @@ func (ec *executionContext) marshalNHighlight2ᚖgithubᚗcomᚋhortbotᚋhortbo
 }
 
 func (ec *executionContext) unmarshalNID2int64(ctx context.Context, v interface{}) (int64, error) {
-	return graphql.UnmarshalInt64(v)
+	res, err := graphql.UnmarshalInt64(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNID2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
@@ -9138,7 +9129,8 @@ func (ec *executionContext) marshalNID2int64(ctx context.Context, sel ast.Select
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
-	return graphql.UnmarshalInt(v)
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
@@ -9152,7 +9144,8 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 }
 
 func (ec *executionContext) unmarshalNInt2int64(ctx context.Context, v interface{}) (int64, error) {
-	return graphql.UnmarshalInt64(v)
+	res, err := graphql.UnmarshalInt64(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.SelectionSet, v int64) graphql.Marshaler {
@@ -9166,7 +9159,8 @@ func (ec *executionContext) marshalNInt2int64(ctx context.Context, sel ast.Selec
 }
 
 func (ec *executionContext) unmarshalNInt642string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalString(v)
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNInt642string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -9177,10 +9171,6 @@ func (ec *executionContext) marshalNInt642string(ctx context.Context, sel ast.Se
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNQuote2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐQuote(ctx context.Context, sel ast.SelectionSet, v models.Quote) graphql.Marshaler {
-	return ec._Quote(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNQuote2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐQuoteᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Quote) graphql.Marshaler {
@@ -9230,10 +9220,6 @@ func (ec *executionContext) marshalNQuote2ᚖgithubᚗcomᚋhortbotᚋhortbotᚋ
 	return ec._Quote(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNRepeatedCommand2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐRepeatedCommand(ctx context.Context, sel ast.SelectionSet, v models.RepeatedCommand) graphql.Marshaler {
-	return ec._RepeatedCommand(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNRepeatedCommand2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐRepeatedCommandᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.RepeatedCommand) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -9279,10 +9265,6 @@ func (ec *executionContext) marshalNRepeatedCommand2ᚖgithubᚗcomᚋhortbotᚋ
 		return graphql.Null
 	}
 	return ec._RepeatedCommand(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalNScheduledCommand2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐScheduledCommand(ctx context.Context, sel ast.SelectionSet, v models.ScheduledCommand) graphql.Marshaler {
-	return ec._ScheduledCommand(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNScheduledCommand2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐScheduledCommandᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.ScheduledCommand) graphql.Marshaler {
@@ -9333,7 +9315,8 @@ func (ec *executionContext) marshalNScheduledCommand2ᚖgithubᚗcomᚋhortbot�
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalString(v)
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -9358,9 +9341,10 @@ func (ec *executionContext) unmarshalNString2ᚕstringᚄ(ctx context.Context, v
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
 		res[i], err = ec.unmarshalNString2string(ctx, vSlice[i])
 		if err != nil {
-			return nil, err
+			return nil, graphql.WrapErrorWithInputPath(ctx, err)
 		}
 	}
 	return res, nil
@@ -9376,7 +9360,8 @@ func (ec *executionContext) marshalNString2ᚕstringᚄ(ctx context.Context, sel
 }
 
 func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
-	return graphql.UnmarshalTime(v)
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
@@ -9387,10 +9372,6 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 		}
 	}
 	return res
-}
-
-func (ec *executionContext) marshalNVariable2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐVariable(ctx context.Context, sel ast.SelectionSet, v models.Variable) graphql.Marshaler {
-	return ec._Variable(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNVariable2ᚕᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐVariableᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Variable) graphql.Marshaler {
@@ -9482,7 +9463,8 @@ func (ec *executionContext) marshalN__Directive2ᚕgithubᚗcomᚋ99designsᚋgq
 }
 
 func (ec *executionContext) unmarshalN__DirectiveLocation2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalString(v)
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__DirectiveLocation2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -9507,9 +9489,10 @@ func (ec *executionContext) unmarshalN__DirectiveLocation2ᚕstringᚄ(ctx conte
 	var err error
 	res := make([]string, len(vSlice))
 	for i := range vSlice {
+		ctx := graphql.WithFieldInputContext(ctx, graphql.NewFieldInputWithIndex(i))
 		res[i], err = ec.unmarshalN__DirectiveLocation2string(ctx, vSlice[i])
 		if err != nil {
-			return nil, err
+			return nil, graphql.WrapErrorWithInputPath(ctx, err)
 		}
 	}
 	return res, nil
@@ -9653,7 +9636,8 @@ func (ec *executionContext) marshalN__Type2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 }
 
 func (ec *executionContext) unmarshalN__TypeKind2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalString(v)
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -9667,7 +9651,8 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
-	return graphql.UnmarshalBoolean(v)
+	res, err := graphql.UnmarshalBoolean(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOBoolean2bool(ctx context.Context, sel ast.SelectionSet, v bool) graphql.Marshaler {
@@ -9678,19 +9663,15 @@ func (ec *executionContext) unmarshalOBoolean2ᚖbool(ctx context.Context, v int
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOBoolean2bool(ctx, v)
-	return &res, err
+	res, err := graphql.UnmarshalBoolean(v)
+	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast.SelectionSet, v *bool) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOBoolean2bool(ctx, sel, *v)
-}
-
-func (ec *executionContext) marshalOChannel2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐChannel(ctx context.Context, sel ast.SelectionSet, v models.Channel) graphql.Marshaler {
-	return ec._Channel(ctx, sel, &v)
+	return graphql.MarshalBoolean(*v)
 }
 
 func (ec *executionContext) marshalOChannel2ᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐChannel(ctx context.Context, sel ast.SelectionSet, v *models.Channel) graphql.Marshaler {
@@ -9700,19 +9681,11 @@ func (ec *executionContext) marshalOChannel2ᚖgithubᚗcomᚋhortbotᚋhortbot�
 	return ec._Channel(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOCommandList2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCommandList(ctx context.Context, sel ast.SelectionSet, v models.CommandList) graphql.Marshaler {
-	return ec._CommandList(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalOCommandList2ᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCommandList(ctx context.Context, sel ast.SelectionSet, v *models.CommandList) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec._CommandList(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOCustomCommand2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCustomCommand(ctx context.Context, sel ast.SelectionSet, v models.CustomCommand) graphql.Marshaler {
-	return ec._CustomCommand(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOCustomCommand2ᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐCustomCommand(ctx context.Context, sel ast.SelectionSet, v *models.CustomCommand) graphql.Marshaler {
@@ -9722,31 +9695,19 @@ func (ec *executionContext) marshalOCustomCommand2ᚖgithubᚗcomᚋhortbotᚋho
 	return ec._CustomCommand(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
-	return graphql.UnmarshalInt(v)
-}
-
-func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	return graphql.MarshalInt(v)
-}
-
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOInt2int(ctx, v)
-	return &res, err
+	res, err := graphql.UnmarshalInt(v)
+	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.SelectionSet, v *int) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOInt2int(ctx, sel, *v)
-}
-
-func (ec *executionContext) marshalORepeatedCommand2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐRepeatedCommand(ctx context.Context, sel ast.SelectionSet, v models.RepeatedCommand) graphql.Marshaler {
-	return ec._RepeatedCommand(ctx, sel, &v)
+	return graphql.MarshalInt(*v)
 }
 
 func (ec *executionContext) marshalORepeatedCommand2ᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐRepeatedCommand(ctx context.Context, sel ast.SelectionSet, v *models.RepeatedCommand) graphql.Marshaler {
@@ -9754,10 +9715,6 @@ func (ec *executionContext) marshalORepeatedCommand2ᚖgithubᚗcomᚋhortbotᚋ
 		return graphql.Null
 	}
 	return ec._RepeatedCommand(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalOScheduledCommand2githubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐScheduledCommand(ctx context.Context, sel ast.SelectionSet, v models.ScheduledCommand) graphql.Marshaler {
-	return ec._ScheduledCommand(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalOScheduledCommand2ᚖgithubᚗcomᚋhortbotᚋhortbotᚋinternalᚋdbᚋmodelsᚐScheduledCommand(ctx context.Context, sel ast.SelectionSet, v *models.ScheduledCommand) graphql.Marshaler {
@@ -9768,7 +9725,8 @@ func (ec *executionContext) marshalOScheduledCommand2ᚖgithubᚗcomᚋhortbot�
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {
-	return graphql.UnmarshalString(v)
+	res, err := graphql.UnmarshalString(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
@@ -9779,19 +9737,20 @@ func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v in
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOString2string(ctx, v)
-	return &res, err
+	res, err := graphql.UnmarshalString(v)
+	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOString2string(ctx, sel, *v)
+	return graphql.MarshalString(*v)
 }
 
 func (ec *executionContext) unmarshalOTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
-	return graphql.UnmarshalTime(v)
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
@@ -9802,15 +9761,15 @@ func (ec *executionContext) unmarshalOTime2ᚖtimeᚐTime(ctx context.Context, v
 	if v == nil {
 		return nil, nil
 	}
-	res, err := ec.unmarshalOTime2timeᚐTime(ctx, v)
-	return &res, err
+	res, err := graphql.UnmarshalTime(v)
+	return &res, graphql.WrapErrorWithInputPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel ast.SelectionSet, v *time.Time) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec.marshalOTime2timeᚐTime(ctx, sel, *v)
+	return graphql.MarshalTime(*v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
@@ -9933,19 +9892,11 @@ func (ec *executionContext) marshalO__InputValue2ᚕgithubᚗcomᚋ99designsᚋg
 	return ret
 }
 
-func (ec *executionContext) marshalO__Schema2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v introspection.Schema) graphql.Marshaler {
-	return ec.___Schema(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx context.Context, sel ast.SelectionSet, v *introspection.Schema) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
 	return ec.___Schema(ctx, sel, v)
-}
-
-func (ec *executionContext) marshalO__Type2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐType(ctx context.Context, sel ast.SelectionSet, v introspection.Type) graphql.Marshaler {
-	return ec.___Type(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalO__Type2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.Type) graphql.Marshaler {

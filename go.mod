@@ -5,11 +5,11 @@ go 1.13
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.6
-	github.com/99designs/gqlgen v0.11.3
+	github.com/99designs/gqlgen v0.12.1
 	github.com/alicebob/miniredis/v2 v2.13.1
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
-	github.com/bmatcuk/doublestar v1.3.1
+	github.com/bmatcuk/doublestar v1.3.2
 	github.com/dghubble/trie v0.0.0-20200716043226-5a94efb202d5
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
@@ -24,13 +24,12 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.12.2
 	github.com/google/go-cmp v0.5.1
 	github.com/gorilla/sessions v1.2.0
-	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
 	github.com/jackc/pgconn v1.6.4
 	github.com/jackc/pgx/v4 v4.8.1
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
-	github.com/jarcoal/httpmock v1.0.5
+	github.com/jarcoal/httpmock v1.0.6
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/jmoiron/sqlx v1.2.1-0.20190826204134-d7d95172beb5
 	github.com/joho/godotenv v1.3.0
@@ -57,10 +56,10 @@ require (
 	go.opencensus.io v0.22.4
 	go.uber.org/atomic v1.6.0
 	go.uber.org/zap v1.15.0
-	golang.org/x/net v0.0.0-20200707034311-ab3426394381
+	golang.org/x/net v0.0.0-20200813134508-3edf25e44fcc
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200806022845-90696ccdc692
+	golang.org/x/tools v0.0.0-20200815165600-90abf76919f3
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
