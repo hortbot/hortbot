@@ -788,7 +788,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!game", `Gets the current game.`, "everyone")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!game <new game>", `Sets the current game.`, "mods")
+	streamcommand(qw422016, "!game <new game>", `Sets the current game. Only valid game names are allowed, but the bot will autocorrect or suggest game names when possible.`, "mods")
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!status", `Gets the current status.`, "everyone")

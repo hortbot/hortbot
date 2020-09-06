@@ -42,7 +42,7 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Reply(ctx, v)
 }
 
-func setStatus(ctx context.Context, s *session, status string) (bool, error) {
+func setStatus(ctx context.Context, s *session, status string) (replied bool, err error) {
 	if s.BetaFeatures() {
 		return setStatusHelix(ctx, s, status)
 	}
@@ -83,7 +83,7 @@ func setStatus(ctx context.Context, s *session, status string) (bool, error) {
 	return false, nil
 }
 
-func setStatusHelix(ctx context.Context, s *session, status string) (bool, error) {
+func setStatusHelix(ctx context.Context, s *session, status string) (replied bool, err error) {
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
 		return true, err
@@ -121,12 +121,8 @@ func setStatusHelix(ctx context.Context, s *session, status string) (bool, error
 
 func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	if args != "" && s.UserLevel.CanAccess(levelModerator) {
-		replied, err := setGame(ctx, s, args)
-		if replied || err != nil {
-			return err
-		}
-
-		return s.Reply(ctx, "Game updated.")
+		_, err := setGame(ctx, s, args, true)
+		return err
 	}
 
 	ch, err := s.TwitchChannel(ctx)
@@ -145,18 +141,26 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Reply(ctx, "Current game: "+v)
 }
 
-func setGame(ctx context.Context, s *session, game string) (bool, error) {
+func setGame(ctx context.Context, s *session, game string, replyOnSuccess bool) (ok bool, err error) {
 	if s.BetaFeatures() {
-		return setGameHelix(ctx, s, game)
+		return setGameHelix(ctx, s, game, replyOnSuccess)
 	}
 
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
-		return true, err
+		return false, err
 	}
 
 	if game == "-" {
 		game = ""
+	}
+
+	if game != "" {
+		found, err := fixGameOrSuggest(ctx, s, game)
+		if err != nil || found == nil {
+			return false, err
+		}
+		game = found.Name
 	}
 
 	setGame, newToken, err := s.Deps.Twitch.SetChannelGame(ctx, s.Channel.TwitchID, tok, game)
@@ -164,83 +168,109 @@ func setGame(ctx context.Context, s *session, game string) (bool, error) {
 	// Check this, even if an error occurred.
 	if newToken != nil {
 		if err := s.SetTwitchToken(ctx, newToken); err != nil {
-			return true, err
+			return false, err
 		}
 	}
 
 	if err != nil {
 		switch err {
 		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
-			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
+			return false, s.Reply(ctx, s.TwitchNotAuthMessage())
 		case twitch.ErrServerError:
-			return true, s.Reply(ctx, twitchServerErrorReply)
+			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
-		return true, err
+		return false, err
 	}
 
 	setGame = strings.TrimSpace(setGame)
 	if !strings.EqualFold(game, setGame) {
-		return true, s.Reply(ctx, "Game update sent, but did not stick.")
+		if err := s.Reply(ctx, "Game update sent, but did not stick."); err != nil {
+			return false, err
+		}
+		return false, nil
 	}
 
-	return false, nil
+	if !replyOnSuccess {
+		return true, nil
+	}
+
+	if game == "" {
+		return true, s.Reply(ctx, "Game unset.")
+	}
+
+	return true, s.Replyf(ctx, "Game updated to: %s", game)
 }
 
-func setGameHelix(ctx context.Context, s *session, game string) (bool, error) {
+func setGameHelix(ctx context.Context, s *session, game string, replyOnSuccess bool) (ok bool, err error) {
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
-		return true, err
+		return false, err
 	}
 
 	if game == "-" {
-		// TODO: Allow unsetting of game.
 		game = ""
 	}
 
 	if game == "" {
-		return true, s.Reply(ctx, "Cannot unset game.")
+		return false, s.Reply(ctx, "Cannot unset game.")
 	}
 
-	exact, suggestions, err := searchGame(ctx, s, game)
-	if err != nil {
-		if err == twitch.ErrServerError {
-			return true, s.Reply(ctx, twitchServerErrorReply)
-		}
-		return true, err
+	found, err := fixGameOrSuggest(ctx, s, game)
+	if err != nil || found == nil {
+		return false, err
 	}
 
-	if exact == nil {
-		if suggestions[0] == nil {
-			return true, s.Replyf(ctx, `Could not find a valid game matching "%s".`, game)
-		}
-
-		if suggestions[1] != nil {
-			return true, s.Replyf(ctx, `Could not find a valid game matching "%s". Did you mean "%s" or "%s"?`, game, suggestions[0].Name, suggestions[1].Name)
-		}
-
-		return true, s.Replyf(ctx, `Could not find a valid game matching "%s". Did you mean "%s"?`, game, suggestions[0].Name)
-	}
-
-	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, "", exact.ID.AsInt64())
+	// NOTE: This is broken on Twitch's end, as updates using this API do not propagate correctly.
+	// For example, any queries to Kraken will still return the old game, clips and highlights will
+	// show the wrong game, and so on, but the channel page and dashboard will be correct.
+	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, "", found.ID.AsInt64())
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
 		if err := s.SetTwitchToken(ctx, newToken); err != nil {
-			return true, err
+			return false, err
 		}
 	}
 
 	if err != nil {
 		switch err {
 		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
-			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
+			return false, s.Reply(ctx, s.TwitchNotAuthMessage())
 		case twitch.ErrServerError:
-			return true, s.Reply(ctx, twitchServerErrorReply)
+			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
-		return true, err
+		return false, err
 	}
 
-	return false, nil
+	if !replyOnSuccess {
+		return true, nil
+	}
+
+	return true, s.Replyf(ctx, "Game updated to: %s", found.Name)
+}
+
+func fixGameOrSuggest(ctx context.Context, s *session, game string) (*twitch.Category, error) {
+	exact, suggestions, err := searchGame(ctx, s, game)
+	if err != nil {
+		if err == twitch.ErrServerError {
+			return nil, s.Reply(ctx, twitchServerErrorReply)
+		}
+		return nil, err
+	}
+
+	if exact != nil {
+		return exact, nil
+	}
+
+	if suggestions[0] == nil {
+		return nil, s.Replyf(ctx, `Could not find a valid game matching "%s".`, game)
+	}
+
+	if suggestions[1] != nil {
+		return nil, s.Replyf(ctx, `Could not find a valid game matching "%s". Did you mean "%s" or "%s"?`, game, suggestions[0].Name, suggestions[1].Name)
+	}
+
+	return nil, s.Replyf(ctx, `Could not find a valid game matching "%s". Did you mean "%s"?`, game, suggestions[0].Name)
 }
 
 type gameSuggestion [2]*twitch.Category

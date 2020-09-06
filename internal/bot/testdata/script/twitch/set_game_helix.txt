@@ -35,7 +35,7 @@ send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log 
 
 twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 473625}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting
-send hortbot #foobar [HB] Game updated.
+send hortbot #foobar [HB] Game updated to: Just Chatting
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game -
 send hortbot #foobar [HB] Cannot unset game.
@@ -71,14 +71,14 @@ twitch_get_game_by_name {"playerunknown's battlegrounds": {"Err": "ErrNotFound"}
 twitch_search_categories {"playerunknown's battlegrounds": {"Categories": [{"ID": 287491, "Name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}}
 twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 287491}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game playerunknown's battlegrounds
-send hortbot #foobar [HB] Game updated.
+send hortbot #foobar [HB] Game updated to: PLAYERUNKNOWN's BATTLEGROUNDS
 
 
 twitch_get_game_by_name {"K-Shoot Mania": {"Category": {"ID": 424242, "Name": "K-Shoot Mania"}}}
 
 twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 424242, "NewTok": {"access_token": "some-access-token2", "token_type": "bearer", "refresh_token": "some-refresh-token2", "expiry": "2060-10-01T03:11:00Z"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game K-Shoot Mania
-send hortbot #foobar [HB] Game updated.
+send hortbot #foobar [HB] Game updated to: K-Shoot Mania
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token2","token_type":"bearer","refresh_token":"some-refresh-token2","expiry":"2060-10-01T03:11:00Z"}

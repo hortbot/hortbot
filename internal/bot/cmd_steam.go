@@ -33,12 +33,11 @@ func cmdStatusGame(ctx context.Context, s *session, cmd string, args string) err
 		return steamError(ctx, s, err)
 	}
 
-	replied, err := setGame(ctx, s, summary.Game)
-	if replied || err != nil {
+	if ok, err := setGame(ctx, s, summary.Game, false); !ok || err != nil {
 		return err
 	}
 
-	replied, err = setStatus(ctx, s, args)
+	replied, err := setStatus(ctx, s, args)
 	if replied || err != nil {
 		return err
 	}
@@ -51,13 +50,8 @@ func cmdSteamGame(ctx context.Context, s *session, cmd string, args string) erro
 	if err != nil {
 		return steamError(ctx, s, err)
 	}
-
-	replied, err := setGame(ctx, s, summary.Game)
-	if replied || err != nil {
-		return err
-	}
-
-	return s.Reply(ctx, "Game updated.")
+	_, err = setGame(ctx, s, summary.Game, true)
+	return err
 }
 
 func steamError(ctx context.Context, s *session, err error) error {

@@ -1,6 +1,10 @@
 bot_config {"WebAddr": "http://localhost:5000"}
 twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": "This is the status!", "Game": "Garry's Mod"}}
 
+twitch_get_game_by_name {"Just Chatting": {"Category": {"ID": 54321, "Name": "Just Chatting"}}, "kshoot mania": {"Err": "ErrNotFound"}, "K-Shoot Mania": {"Category": {"ID": 424242, "Name": "K-Shoot Mania"}}}
+twitch_search_categories {"kshoot mania": {"Categories": [{"ID": 424242, "Name": "K-Shoot Mania"}]}}
+
+
 join hortbot 999 foobar 1
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!game
@@ -37,11 +41,15 @@ send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log 
 
 twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Just Chatting", "Set": "Just Chatting"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting
-send hortbot #foobar [HB] Game updated.
+send hortbot #foobar [HB] Game updated to: Just Chatting
 
 twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "", "Set": ""}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game -
-send hortbot #foobar [HB] Game updated.
+send hortbot #foobar [HB] Game unset.
+
+twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "", "Set": ""}
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game kshoot mania
+send hortbot #foobar [HB] Could not find a valid game matching "kshoot mania". Did you mean "K-Shoot Mania"?
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token","token_type":"bearer","refresh_token":"some-refresh-token","expiry":"2050-10-01T03:11:00Z"}
@@ -49,7 +57,7 @@ send hortbot #foobar [HB] {"access_token":"some-access-token","token_type":"bear
 
 twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "K-Shoot Mania", "Set": "K-Shoot Mania", "NewTok": {"access_token": "some-access-token2", "token_type": "bearer", "refresh_token": "some-refresh-token2", "expiry": "2060-10-01T03:11:00Z"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game K-Shoot Mania
-send hortbot #foobar [HB] Game updated.
+send hortbot #foobar [HB] Game updated to: K-Shoot Mania
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token2","token_type":"bearer","refresh_token":"some-refresh-token2","expiry":"2060-10-01T03:11:00Z"}

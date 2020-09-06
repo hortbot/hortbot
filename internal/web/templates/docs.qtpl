@@ -552,7 +552,7 @@ dd {
 
             <dl>
                 {%= command("!game", `Gets the current game.`, "everyone") %}
-                {%= command("!game <new game>", `Sets the current game.`, "mods") %}
+                {%= command("!game <new game>", `Sets the current game. Only valid game names are allowed, but the bot will autocorrect or suggest game names when possible.`, "mods") %}
                 {%= command("!status", `Gets the current status.`, "everyone") %}
                 {%= command("!status <new status>", `Sets the current status.`, "mods") %}
                 {%= command("!uptime", `Gets the current uptime.`, "everyone") %}
