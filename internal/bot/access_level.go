@@ -20,6 +20,11 @@ const (
 	levelSuperAdmin
 )
 
+const (
+	levelMinValid = levelEveryone
+	levelMaxValid = levelSuperAdmin
+)
+
 func newAccessLevel(s string) accessLevel {
 	switch s {
 	case models.AccessLevelEveryone:
@@ -37,12 +42,16 @@ func newAccessLevel(s string) accessLevel {
 	}
 }
 
+func (a accessLevel) Valid() bool {
+	return a >= levelMinValid && a <= levelMaxValid
+}
+
 func (a accessLevel) CanAccess(resource accessLevel) bool {
 	if a == levelSuperAdmin {
 		return true
 	}
 
-	if a <= levelUnknown || resource <= levelUnknown {
+	if !a.Valid() || !resource.Valid() {
 		return false
 	}
 

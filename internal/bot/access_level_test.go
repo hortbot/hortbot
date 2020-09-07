@@ -113,7 +113,7 @@ func TestAccessLevelCanAccess(t *testing.T) {
 		{
 			user:     levelAdmin + 100, // Hypothetical
 			resource: levelModerator,
-			ok:       true,
+			ok:       false,
 		},
 	}
 

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"go.opencensus.io/trace"
@@ -25,8 +26,8 @@ func verifyHandlerMapEntry(name string, hf handlerFunc) {
 		panic("nil handler func")
 	}
 
-	if hf.minLevel == levelUnknown {
-		panic("unknown minLevel")
+	if !hf.minLevel.Valid() {
+		panic(fmt.Sprintf("invalid minLevel %v", hf.minLevel))
 	}
 }
 
