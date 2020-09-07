@@ -68,9 +68,11 @@ func init() {
 		"highlightthat":   {fn: cmdHighlight, minLevel: levelEveryone, skipCooldown: true},
 		"hltb":            {fn: cmdHLTB, minLevel: levelSubscriber},
 	})
+
+	builtinCommands.isBuiltins = true
 }
 
 func isBuiltinName(name string) bool {
-	_, ok := builtinCommands[name]
+	_, ok := builtinCommands.m[name]
 	return ok
 }

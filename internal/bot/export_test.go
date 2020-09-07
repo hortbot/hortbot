@@ -33,7 +33,7 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd st
 		panic("unknown level for added builtin " + name)
 	}
 
-	if _, ok := builtinCommands[name]; ok {
+	if _, ok := builtinCommands.m[name]; ok {
 		panic(name + " already exists")
 	}
 
@@ -44,7 +44,7 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd st
 
 	verifyHandlerMapEntry(name, hf)
 
-	builtinCommands[name] = hf
+	builtinCommands.m[name] = hf
 }
 
 func TestingAction(fn func(ctx context.Context, action string) (string, error, bool)) {

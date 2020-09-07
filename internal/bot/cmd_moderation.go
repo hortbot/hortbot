@@ -28,7 +28,7 @@ func isModerationCommand(prefix, name string) (prefixAndName string, ok bool) {
 	}
 
 	prefixAndName = prefix + name
-	_, ok = moderationCommands[prefixAndName]
+	_, ok = moderationCommands.m[prefixAndName]
 	return prefixAndName, ok
 }
 

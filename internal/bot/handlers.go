@@ -7,7 +7,10 @@ import (
 	"go.opencensus.io/trace"
 )
 
-type handlerMap map[string]handlerFunc
+type handlerMap struct {
+	m          map[string]handlerFunc
+	isBuiltins bool
+}
 
 func verifyHandlerMapEntry(name string, hf handlerFunc) {
 	if name == "" {
@@ -31,7 +34,9 @@ func newHandlerMap(m map[string]handlerFunc) handlerMap {
 	for k, v := range m {
 		verifyHandlerMapEntry(k, v)
 	}
-	return m
+	return handlerMap{
+		m: m,
+	}
 }
 
 func (h handlerMap) Run(ctx context.Context, s *session, cmd string, args string) (bool, error) {
@@ -50,7 +55,7 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 
 	span.AddAttributes(trace.StringAttribute("cmd", cmd))
 
-	bc, ok := h[cmd]
+	bc, ok := h.m[cmd]
 	if !ok {
 		return false, nil
 	}
