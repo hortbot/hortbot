@@ -24,5 +24,12 @@ func TestVerifyHandlerMapEntry(t *testing.T) {
 		verifyHandlerMapEntry("foobar", handlerFunc{
 			fn: func(ctx context.Context, s *session, cmd, args string) error { return nil },
 		})
-	}, "unknown minLevel")
+	}, "invalid minLevel Unknown")
+
+	assertx.Panic(t, func() {
+		verifyHandlerMapEntry("foobar", handlerFunc{
+			fn:       func(ctx context.Context, s *session, cmd, args string) error { return nil },
+			minLevel: -1,
+		})
+	}, "invalid minLevel accessLevel(-1)")
 }
