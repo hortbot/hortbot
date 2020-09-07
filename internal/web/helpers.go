@@ -1,13 +1,9 @@
 package web
 
 import (
-	"fmt"
 	"net/http"
-	"net/http/httputil"
 
 	"github.com/hortbot/hortbot/internal/web/templates"
-	"github.com/zikaeroh/ctxlog"
-	"go.uber.org/zap"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -57,16 +53,6 @@ func (a *App) notAuthorized(w http.ResponseWriter, r *http.Request, header bool)
 		w.Header().Add("WWW-Authenticate", `Basic realm="hortbot"`)
 	}
 	a.httpError(w, r, http.StatusUnauthorized)
-}
-
-func dumpRequest(w http.ResponseWriter, r *http.Request) {
-	b, err := httputil.DumpRequest(r, true)
-	if err != nil {
-		ctxlog.Error(r.Context(), "error dumping request", zap.Error(err))
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprintf(w, "%s", b)
 }
 
 func normalizeHost(host string) string {

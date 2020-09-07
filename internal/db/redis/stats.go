@@ -2,14 +2,14 @@ package redis
 
 import "context"
 
-const usageStatsHash = "statistics"
+const builtinUsageStatsHash = "stats_builtin_usage"
 
-// IncrementUsageStatistic increments a usage statistic by one.
-func (db *DB) IncrementUsageStatistic(ctx context.Context, name string) error {
-	return db.client.HIncrBy(ctx, usageStatsHash, name, 1).Err()
+// IncrementBuiltinUsageStat increments a usage statistic by one.
+func (db *DB) IncrementBuiltinUsageStat(ctx context.Context, name string) error {
+	return db.client.HIncrBy(ctx, builtinUsageStatsHash, name, 1).Err()
 }
 
-// GetUsageStatistics gets all usage statistics.
-func (db *DB) GetUsageStatistics(ctx context.Context) (map[string]string, error) {
-	return db.client.HGetAll(ctx, usageStatsHash).Result()
+// GetBuiltinUsageStats gets all usage statistics.
+func (db *DB) GetBuiltinUsageStats(ctx context.Context) (map[string]string, error) {
+	return db.client.HGetAll(ctx, builtinUsageStatsHash).Result()
 }

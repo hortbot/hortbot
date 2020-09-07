@@ -71,6 +71,12 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 		}
 	}
 
+	if h.isBuiltins {
+		if err := s.Deps.Redis.IncrementBuiltinUsageStat(ctx, cmd); err != nil {
+			return false, err
+		}
+	}
+
 	defer s.UsageContext(cmd)()
 
 	return true, bc.fn(ctx, s, cmd, args)

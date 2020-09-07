@@ -4,8 +4,6 @@ package web
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
-	"fmt"
 	"net"
 	"net/http"
 	"sort"
@@ -16,13 +14,10 @@ import (
 	"github.com/go-chi/chi/middleware"
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/sessions"
-	"github.com/hortbot/hortbot/internal/confimport"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
-	"github.com/hortbot/hortbot/internal/pkg/dbx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkger"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
@@ -137,25 +132,11 @@ func (a *App) Run(ctx context.Context) error {
 		r.Get("/auth/twitch/bot", a.authTwitchBot)
 		r.Get("/auth/twitch/callback", a.authTwitchCallback)
 
-		routeDebug := func(r chi.Router) {
-			r.Use(middleware.NoCache)
-			r.Get("/request", dumpRequest)
-		}
-
 		if a.Debug {
-			r.Route("/debug", routeDebug)
+			r.Route("/debug", a.routeDebug)
 		}
 
-		r.Route("/admin", func(r chi.Router) {
-			r.Use(middleware.NoCache)
-			r.Use(a.adminAuth)
-
-			r.Route("/debug", routeDebug)
-
-			r.Get("/import", a.adminImport)
-			r.Post("/import", a.adminImportPost)
-			r.Get("/export/{channel}", a.adminExport)
-		})
+		r.Route("/admin", a.routeAdmin)
 	})
 
 	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(pkger.Dir("/internal/web/static"))))
@@ -630,95 +611,6 @@ func (a *App) login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	templates.WritePageTemplate(w, page)
-}
-
-func (a *App) adminAuth(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if len(a.AdminAuth) == 0 {
-			a.notAuthorized(w, r, false)
-			return
-		}
-
-		user, pass, ok := r.BasicAuth()
-		if !ok {
-			a.notAuthorized(w, r, true)
-			return
-		}
-
-		expected := a.AdminAuth[user]
-		if expected == "" || pass != expected {
-			a.notAuthorized(w, r, true)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
-}
-
-func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	channelName := chi.URLParam(r, "channel")
-
-	config, err := confimport.ExportByName(ctx, a.DB, strings.ToLower(channelName))
-	if err != nil {
-		if err == sql.ErrNoRows {
-			http.NotFound(w, r)
-		} else {
-			ctxlog.Error(ctx, "error exporting channel", zap.Error(err))
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-
-	enc := json.NewEncoder(w)
-
-	query := struct {
-		Pretty bool `queryparam:"pretty"`
-	}{}
-
-	if err := queryparam.Parse(r.URL.Query(), &query); err != nil {
-		a.httpError(w, r, http.StatusBadRequest)
-		return
-	}
-
-	if query.Pretty {
-		enc.SetIndent("", "    ")
-	}
-
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-
-	if err := enc.Encode(config); err != nil {
-		ctxlog.Error(ctx, "error encoding exported config", zap.Error(err))
-	}
-}
-
-func (a *App) adminImport(w http.ResponseWriter, r *http.Request) {
-	page := &templates.AdminImportPage{
-		BasePage: a.basePage(r),
-	}
-	templates.WritePageTemplate(w, page)
-}
-
-func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
-	config := &confimport.Config{}
-
-	if err := jsonx.DecodeSingle(r.Body, config); err != nil {
-		http.Error(w, "decoding body: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err := dbx.Transact(r.Context(), a.DB,
-		dbx.SetLocalLockTimeout(5*time.Second),
-		func(ctx context.Context, tx *sql.Tx) error {
-			return config.Insert(ctx, tx)
-		},
-	)
-	if err != nil {
-		http.Error(w, "inserting config: "+err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	fmt.Fprintln(w, "Successfully inserted channel", config.Channel.ID)
 }
 
 func (a *App) logout(w http.ResponseWriter, r *http.Request) {
