@@ -3,7 +3,6 @@ package graphql
 
 import (
 	"context"
-	"log"
 	"net/http"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -20,6 +19,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/zikaeroh/ctxlog"
+	"go.uber.org/zap"
 )
 
 type cmd struct {
@@ -73,7 +73,8 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	r.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	r.Handle("/query", srv)
 
-	log.Fatal(http.ListenAndServe(c.Addr, r))
+	err := http.ListenAndServe(c.Addr, r)
+	ctxlog.Info(ctx, "exiting", zap.Error(err))
 }
 
 var metricRequest = promauto.NewCounterVec(prometheus.CounterOpts{
