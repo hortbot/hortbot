@@ -753,9 +753,9 @@ func (p *ChannelAutorepliesPage) StreamPageBody(qw422016 *qt422016.Writer) {
                     <td>`)
 			qw422016.N().D(a.Num)
 			qw422016.N().S(`</td>
-                    <td><code>`)
-			qw422016.E().S(a.OrigPattern.String)
-			qw422016.N().S(`</code></td>
+                    <td>`)
+			qw422016.N().S(autoreplyPattern(a.OrigPattern.String))
+			qw422016.N().S(`</td>
                     <td><code>`)
 			qw422016.E().S(a.Trigger)
 			qw422016.N().S(`</code></td>
@@ -795,6 +795,30 @@ func (p *ChannelAutorepliesPage) WritePageBody(qq422016 qtio422016.Writer) {
 func (p *ChannelAutorepliesPage) PageBody() string {
 	qb422016 := qt422016.AcquireByteBuffer()
 	p.WritePageBody(qb422016)
+	qs422016 := string(qb422016.B)
+	qt422016.ReleaseByteBuffer(qb422016)
+	return qs422016
+}
+
+func streamautoreplyPattern(qw422016 *qt422016.Writer, s string) {
+	if s == "" {
+		qw422016.N().S(`<em>Unknown</em>`)
+	} else {
+		qw422016.N().S(`<code>`)
+		qw422016.E().S(s)
+		qw422016.N().S(`</code>`)
+	}
+}
+
+func writeautoreplyPattern(qq422016 qtio422016.Writer, s string) {
+	qw422016 := qt422016.AcquireWriter(qq422016)
+	streamautoreplyPattern(qw422016, s)
+	qt422016.ReleaseWriter(qw422016)
+}
+
+func autoreplyPattern(s string) string {
+	qb422016 := qt422016.AcquireByteBuffer()
+	writeautoreplyPattern(qb422016, s)
 	qs422016 := string(qb422016.B)
 	qt422016.ReleaseByteBuffer(qb422016)
 	return qs422016

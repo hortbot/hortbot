@@ -372,7 +372,7 @@ type ChannelAutorepliesPage struct {
                 {% for _, a := range p.Autoreplies %}
                 <tr>
                     <td>{%d a.Num %}</td>
-                    <td><code>{%s a.OrigPattern.String %}</code></td>
+                    <td>{%s= autoreplyPattern(a.OrigPattern.String) %}</td>
                     <td><code>{%s a.Trigger %}</code></td>
                     <td>{%s= convertCommand(a.Response) %}</td>
                     <td>{%d a.Count %}</td>
@@ -388,6 +388,12 @@ type ChannelAutorepliesPage struct {
 </div>
 {% endfunc %}
 
+{% func autoreplyPattern(s string) %}{% stripspace %}
+{% if s == "" %}<em>Unknown</em>
+{% else %}
+<code>{%s s %}</code>
+{% endif %}
+{% endstripspace %}{% endfunc %}
 
 {% code
 type ChannelListsPage struct {
