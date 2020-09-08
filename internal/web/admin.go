@@ -145,6 +145,9 @@ func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sort.Slice(pairs, func(i, j int) bool {
+		if pairs[i].value == pairs[j].value {
+			return pairs[i].key < pairs[j].key
+		}
 		return pairs[i].value > pairs[j].value
 	})
 
