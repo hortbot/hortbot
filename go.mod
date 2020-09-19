@@ -6,7 +6,7 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.6
 	github.com/99designs/gqlgen v0.12.2
-	github.com/alicebob/miniredis/v2 v2.13.2
+	github.com/alicebob/miniredis/v2 v2.13.3
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
 	github.com/bmatcuk/doublestar v1.3.2
@@ -17,7 +17,7 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-redis/redis/v8 v8.0.0-beta.11
+	github.com/go-redis/redis/v8 v8.1.3
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v3.3.0+incompatible
@@ -44,7 +44,7 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
-	github.com/valyala/quicktemplate v1.6.2
+	github.com/valyala/quicktemplate v1.6.3
 	github.com/vektah/gqlparser/v2 v2.0.1
 	github.com/volatiletech/null/v8 v8.1.0
 	github.com/volatiletech/sqlboiler/v4 v4.2.0
@@ -54,12 +54,12 @@ require (
 	github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223
 	go.deanishe.net/fuzzy v1.0.0
 	go.opencensus.io v0.22.4
-	go.uber.org/atomic v1.6.0
+	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200910165216-53e29e9d1252
+	golang.org/x/tools v0.0.0-20200918232735-d647fc253266
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
