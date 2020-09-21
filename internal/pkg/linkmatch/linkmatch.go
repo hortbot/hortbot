@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/bmatcuk/doublestar"
+	"github.com/bmatcuk/doublestar/v2"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 )
 

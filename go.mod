@@ -5,11 +5,11 @@ go 1.13
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.6
-	github.com/99designs/gqlgen v0.12.2
+	github.com/99designs/gqlgen v0.13.0
 	github.com/alicebob/miniredis/v2 v2.13.3
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
-	github.com/bmatcuk/doublestar v1.3.2
+	github.com/bmatcuk/doublestar/v2 v2.0.1
 	github.com/dghubble/trie v0.0.0-20200716043226-5a94efb202d5
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.6.3
-	github.com/vektah/gqlparser/v2 v2.0.1
+	github.com/vektah/gqlparser/v2 v2.1.0
 	github.com/volatiletech/null/v8 v8.1.0
 	github.com/volatiletech/sqlboiler/v4 v4.2.0
 	github.com/volatiletech/strmangle v0.0.1
