@@ -19,7 +19,7 @@ type Queue struct {
 	noWork         chan *state // Empty, or all subqueues are locked.
 	noWorkLimited  chan *state // All subqueues are locked, and the number of items is at the limit.
 	hasWork        chan *state // There may be work to do.
-	hasWorklimited chan *state // There may be work to do, and the number of items is at the limit.
+	hasWorkLimited chan *state // There may be work to do, and the number of items is at the limit.
 }
 
 // NewQueue creates a new Queue which can grow to a maximum size of limit.
@@ -32,7 +32,7 @@ func NewQueue(limit int) *Queue {
 		noWork:         make(chan *state, 1),
 		noWorkLimited:  make(chan *state, 1),
 		hasWork:        make(chan *state, 1),
-		hasWorklimited: make(chan *state, 1),
+		hasWorkLimited: make(chan *state, 1),
 	}
 
 	// Seed with some initial state.
@@ -136,11 +136,11 @@ func (q *Queue) getForPut(ctx context.Context) (*state, error) {
 }
 
 func (q *Queue) getForWork(ctx context.Context) (*state, error) {
-	return getState(ctx, q.hasWork, q.hasWorklimited, nil, nil)
+	return getState(ctx, q.hasWork, q.hasWorkLimited, nil, nil)
 }
 
 func (q *Queue) getAny(ctx context.Context) (*state, error) {
-	return getState(ctx, q.noWork, q.noWorkLimited, q.hasWork, q.hasWorklimited)
+	return getState(ctx, q.noWork, q.noWorkLimited, q.hasWork, q.hasWorkLimited)
 }
 
 func (q *Queue) putNoWork(ctx context.Context, state *state) error {
@@ -148,7 +148,7 @@ func (q *Queue) putNoWork(ctx context.Context, state *state) error {
 }
 
 func (q *Queue) putWork(ctx context.Context, state *state) error {
-	return putState(ctx, state, q.hasWork, q.hasWorklimited)
+	return putState(ctx, state, q.hasWork, q.hasWorkLimited)
 }
 
 type subQueue struct {
