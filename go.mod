@@ -17,17 +17,17 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-redis/redis/v8 v8.2.1
+	github.com/go-redis/redis/v8 v8.2.2
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v3.3.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.12.2
+	github.com/golang-migrate/migrate/v4 v4.13.0
 	github.com/google/go-cmp v0.5.2
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
-	github.com/jackc/pgconn v1.6.4
-	github.com/jackc/pgx/v4 v4.8.1
+	github.com/jackc/pgconn v1.7.0
+	github.com/jackc/pgx/v4 v4.9.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.6
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
@@ -56,10 +56,10 @@ require (
 	go.opencensus.io v0.22.4
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20200923182212-328152dc79b1
+	golang.org/x/net v0.0.0-20200927032502-5d4f70055728
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200923182640-463111b69878
+	golang.org/x/tools v0.0.0-20200925191224-5d1fdd8fa346
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
