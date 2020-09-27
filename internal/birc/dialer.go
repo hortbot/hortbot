@@ -44,16 +44,22 @@ func (d Dialer) Dial(ctx context.Context) (conn net.Conn, err error) {
 	if d.dial != nil {
 		return d.dial()
 	}
+	return d.contextDialer()(ctx, "tcp", d.Addr)
+}
 
-	dialer := d.Dialer
-	if dialer == nil {
-		dialer = &net.Dialer{}
+func (d Dialer) contextDialer() func(ctx context.Context, network, addr string) (net.Conn, error) {
+	if d.Insecure {
+		if d.Dialer != nil {
+			return d.Dialer.DialContext
+		}
+		var d net.Dialer
+		return d.DialContext
 	}
 
-	if !d.Insecure {
-		// TODO: Use DialContext once it exists. https://golang.org/issue/18482
-		return tls.DialWithDialer(dialer, "tcp", d.Addr, d.TLSConfig)
+	tlsDialer := &tls.Dialer{
+		NetDialer: d.Dialer,
+		Config:    d.TLSConfig,
 	}
 
-	return dialer.DialContext(ctx, "tcp", d.Addr)
+	return tlsDialer.DialContext
 }

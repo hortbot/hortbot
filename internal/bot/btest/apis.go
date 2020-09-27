@@ -34,7 +34,6 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 
 	st.addAction(func(_ context.Context) {
 		st.lastFM.RecentTracksCalls(func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
-			// TODO: Replace this hardcoded case and indicate body/code in args.
 			if user == "error" {
 				return nil, &apiclient.Error{API: "lastfm", StatusCode: 500}
 			}
@@ -109,7 +108,6 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 
 	st.addAction(func(_ context.Context) {
 		st.extraLife.GetDonationAmountCalls(func(_ context.Context, id int) (float64, error) {
-			// TODO: Replace this hardcoded case and indicate body/code in args.
 			if id == 500500 {
 				return 0, &apiclient.Error{API: "extralife", StatusCode: 500}
 			}

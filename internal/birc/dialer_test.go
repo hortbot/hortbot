@@ -2,6 +2,7 @@ package birc_test
 
 import (
 	"crypto/tls"
+	"net"
 	"testing"
 
 	"github.com/fortytw2/leaktest"
@@ -22,6 +23,31 @@ func TestDialerCanceled(t *testing.T) {
 
 	d := birc.Dialer{
 		Addr:     h.Addr(),
+		Insecure: true,
+	}
+
+	conn, err := d.Dial(canceledContext(ctx))
+	assert.ErrorContains(t, err, "operation was canceled")
+	assert.Assert(t, conn == nil)
+
+	h.StopServer()
+
+	h.AssertMessages(serverMessages)
+}
+
+func TestDialerCanceledWithDialer(t *testing.T) {
+	defer leaktest.Check(t)()
+
+	ctx, cancel := testContext()
+	defer cancel()
+
+	h := fakeirc.NewHelper(ctx, t)
+	defer h.StopServer()
+	serverMessages := h.CollectSentToServer()
+
+	d := birc.Dialer{
+		Addr:     h.Addr(),
+		Dialer:   &net.Dialer{},
 		Insecure: true,
 	}
 

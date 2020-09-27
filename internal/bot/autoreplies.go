@@ -28,7 +28,6 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 		return true, err
 	}
 
-	// TODO: Keep local cache of autoreplies per channel, instead of just the Regexps themselves.
 	for _, autoreply := range autoreplies {
 		re, err := s.Deps.ReCache.Compile(autoreply.Trigger)
 		if err != nil {
