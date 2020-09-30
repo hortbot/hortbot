@@ -14,7 +14,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confimport"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/graphql"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/irc"
-	"github.com/hortbot/hortbot/internal/cli/subcommands/sitedbconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/joho/godotenv"
@@ -51,7 +50,6 @@ func main() {
 	addCommand(bot.Command())
 	addCommand(irc.Command())
 	addCommand(web.Command())
-	addCommand(sitedbconvert.Command())
 	addCommand(confconvert.Command())
 	addCommand(confimport.Command())
 	addCommand(graphql.Command())
