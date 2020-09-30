@@ -151,6 +151,12 @@ jobs:
           echo Version $HB_VERSION
           echo "::set-env name=HB_VERSION::$HB_VERSION"
 
+      - name: Turnstyle
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build / push image
         uses: whoan/docker-build-with-cache-action@v4
         with:
