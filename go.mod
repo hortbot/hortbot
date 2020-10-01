@@ -8,7 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/alicebob/miniredis/v2 v2.13.3
 	github.com/antchfx/htmlquery v1.2.3
-	github.com/araddon/dateparse v0.0.0-20200409225146-d820a6159ab1
+	github.com/araddon/dateparse v0.0.0-20200930201622-fcfe3a02eb30
 	github.com/bmatcuk/doublestar/v2 v2.0.1
 	github.com/dghubble/trie v0.0.0-20200716043226-5a94efb202d5
 	github.com/dustin/go-humanize v1.0.0
@@ -17,7 +17,7 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-redis/redis/v8 v8.2.2
+	github.com/go-redis/redis/v8 v8.2.3
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v3.3.0+incompatible
@@ -56,10 +56,12 @@ require (
 	go.opencensus.io v0.22.4
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20200927032502-5d4f70055728
+	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sync v0.0.0-20200625203802-6e8e738ad208
-	golang.org/x/tools v0.0.0-20200925191224-5d1fdd8fa346
+	golang.org/x/sync v0.0.0-20200930132711-30421366ff76
+	golang.org/x/tools v0.0.0-20200930213115-e57f6d466a48
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
+
+replace github.com/araddon/dateparse => github.com/zikaeroh/dateparse v0.0.0-20201001042724-56dec34db17c
