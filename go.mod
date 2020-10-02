@@ -8,7 +8,7 @@ require (
 	github.com/99designs/gqlgen v0.13.0
 	github.com/alicebob/miniredis/v2 v2.13.3
 	github.com/antchfx/htmlquery v1.2.3
-	github.com/araddon/dateparse v0.0.0-20200930201622-fcfe3a02eb30
+	github.com/araddon/dateparse v0.0.0-20201001162425-8aadafed4dc4
 	github.com/bmatcuk/doublestar/v2 v2.0.1
 	github.com/dghubble/trie v0.0.0-20200716043226-5a94efb202d5
 	github.com/dustin/go-humanize v1.0.0
@@ -59,9 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/sync v0.0.0-20200930132711-30421366ff76
-	golang.org/x/tools v0.0.0-20200930213115-e57f6d466a48
+	golang.org/x/tools v0.0.0-20201001230009-b5b87423c93b
 	gotest.tools/v3 v3.0.2
 	mvdan.cc/xurls/v2 v2.2.0
 )
-
-replace github.com/araddon/dateparse => github.com/zikaeroh/dateparse v0.0.0-20201001042724-56dec34db17c
