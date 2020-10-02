@@ -14,7 +14,8 @@ import (
 )
 
 func (r *autoreplyResolver) Channel(ctx context.Context, obj *models.Autoreply) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *autoreplyResolver) OrigPattern(ctx context.Context, obj *models.Autoreply) (*string, error) {
@@ -58,39 +59,48 @@ func (r *channelResolver) FilterBannedPhrasesPatterns(ctx context.Context, obj *
 }
 
 func (r *channelResolver) Autoreplies(ctx context.Context, obj *models.Channel) ([]*models.Autoreply, error) {
-	return obj.Autoreplies().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Autoreplies().All(ctx, tx)
 }
 
 func (r *channelResolver) CommandInfos(ctx context.Context, obj *models.Channel) ([]*models.CommandInfo, error) {
-	return obj.CommandInfos().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandInfos().All(ctx, tx)
 }
 
 func (r *channelResolver) CommandLists(ctx context.Context, obj *models.Channel) ([]*models.CommandList, error) {
-	return obj.CommandLists().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandLists().All(ctx, tx)
 }
 
 func (r *channelResolver) CustomCommands(ctx context.Context, obj *models.Channel) ([]*models.CustomCommand, error) {
-	return obj.CustomCommands().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CustomCommands().All(ctx, tx)
 }
 
 func (r *channelResolver) Highlights(ctx context.Context, obj *models.Channel) ([]*models.Highlight, error) {
-	return obj.Highlights().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Highlights().All(ctx, tx)
 }
 
 func (r *channelResolver) Quotes(ctx context.Context, obj *models.Channel) ([]*models.Quote, error) {
-	return obj.Quotes().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Quotes().All(ctx, tx)
 }
 
 func (r *channelResolver) RepeatedCommands(ctx context.Context, obj *models.Channel) ([]*models.RepeatedCommand, error) {
-	return obj.RepeatedCommands().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.RepeatedCommands().All(ctx, tx)
 }
 
 func (r *channelResolver) ScheduledCommands(ctx context.Context, obj *models.Channel) ([]*models.ScheduledCommand, error) {
-	return obj.ScheduledCommands().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.ScheduledCommands().All(ctx, tx)
 }
 
 func (r *channelResolver) Variables(ctx context.Context, obj *models.Channel) ([]*models.Variable, error) {
-	return obj.Variables().All(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Variables().All(ctx, tx)
 }
 
 func (r *commandInfoResolver) Count(ctx context.Context, obj *models.CommandInfo) (string, error) {
@@ -102,25 +112,29 @@ func (r *commandInfoResolver) LastUsed(ctx context.Context, obj *models.CommandI
 }
 
 func (r *commandInfoResolver) Channel(ctx context.Context, obj *models.CommandInfo) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *commandInfoResolver) CommandList(ctx context.Context, obj *models.CommandInfo) (*models.CommandList, error) {
 	if !obj.CommandListID.Valid {
 		return nil, nil
 	}
-	return obj.CommandList().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandList().One(ctx, tx)
 }
 
 func (r *commandInfoResolver) CustomCommand(ctx context.Context, obj *models.CommandInfo) (*models.CustomCommand, error) {
 	if !obj.CustomCommandID.Valid {
 		return nil, nil
 	}
-	return obj.CustomCommand().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CustomCommand().One(ctx, tx)
 }
 
 func (r *commandInfoResolver) RepeatedCommand(ctx context.Context, obj *models.CommandInfo) (*models.RepeatedCommand, error) {
-	rc, err := obj.RepeatedCommand().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	rc, err := obj.RepeatedCommand().One(ctx, tx)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -128,7 +142,8 @@ func (r *commandInfoResolver) RepeatedCommand(ctx context.Context, obj *models.C
 }
 
 func (r *commandInfoResolver) ScheduledCommand(ctx context.Context, obj *models.CommandInfo) (*models.ScheduledCommand, error) {
-	sc, err := obj.ScheduledCommand().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	sc, err := obj.ScheduledCommand().One(ctx, tx)
 	if err == sql.ErrNoRows {
 		return nil, nil
 	}
@@ -140,19 +155,23 @@ func (r *commandListResolver) Items(ctx context.Context, obj *models.CommandList
 }
 
 func (r *commandListResolver) Channel(ctx context.Context, obj *models.CommandList) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *commandListResolver) CommandInfo(ctx context.Context, obj *models.CommandList) (*models.CommandInfo, error) {
-	return obj.CommandInfo().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandInfo().One(ctx, tx)
 }
 
 func (r *customCommandResolver) Channel(ctx context.Context, obj *models.CustomCommand) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *customCommandResolver) CommandInfo(ctx context.Context, obj *models.CustomCommand) (*models.CommandInfo, error) {
-	return obj.CommandInfo().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandInfo().One(ctx, tx)
 }
 
 func (r *highlightResolver) StartedAt(ctx context.Context, obj *models.Highlight) (*time.Time, error) {
@@ -160,19 +179,23 @@ func (r *highlightResolver) StartedAt(ctx context.Context, obj *models.Highlight
 }
 
 func (r *highlightResolver) Channel(ctx context.Context, obj *models.Highlight) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *queryResolver) ChannelByName(ctx context.Context, name string) (*models.Channel, error) {
-	return models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, tx)
 }
 
 func (r *queryResolver) ChannelByTwitchID(ctx context.Context, twitchID int64) (*models.Channel, error) {
-	return models.Channels(models.ChannelWhere.TwitchID.EQ(twitchID)).One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return models.Channels(models.ChannelWhere.TwitchID.EQ(twitchID)).One(ctx, tx)
 }
 
 func (r *quoteResolver) Channel(ctx context.Context, obj *models.Quote) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *repeatedCommandResolver) LastCount(ctx context.Context, obj *models.RepeatedCommand) (string, error) {
@@ -184,11 +207,13 @@ func (r *repeatedCommandResolver) InitTimestamp(ctx context.Context, obj *models
 }
 
 func (r *repeatedCommandResolver) Channel(ctx context.Context, obj *models.RepeatedCommand) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *repeatedCommandResolver) CommandInfo(ctx context.Context, obj *models.RepeatedCommand) (*models.CommandInfo, error) {
-	return obj.CommandInfo().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandInfo().One(ctx, tx)
 }
 
 func (r *scheduledCommandResolver) LastCount(ctx context.Context, obj *models.ScheduledCommand) (string, error) {
@@ -196,15 +221,18 @@ func (r *scheduledCommandResolver) LastCount(ctx context.Context, obj *models.Sc
 }
 
 func (r *scheduledCommandResolver) Channel(ctx context.Context, obj *models.ScheduledCommand) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 func (r *scheduledCommandResolver) CommandInfo(ctx context.Context, obj *models.ScheduledCommand) (*models.CommandInfo, error) {
-	return obj.CommandInfo().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.CommandInfo().One(ctx, tx)
 }
 
 func (r *variableResolver) Channel(ctx context.Context, obj *models.Variable) (*models.Channel, error) {
-	return obj.Channel().One(ctx, r.DB)
+	tx := txFromContext(ctx)
+	return obj.Channel().One(ctx, tx)
 }
 
 // Autoreply returns generated.AutoreplyResolver implementation.

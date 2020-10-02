@@ -54,7 +54,8 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
 	db := c.SQL.Open(ctx, driverName)
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{DB: db}}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
+	srv.Use(graph.NewTransacter(db))
 
 	r := chi.NewRouter()
 
