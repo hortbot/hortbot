@@ -40,6 +40,10 @@ func (s *session) RaffleWinner(ctx context.Context) (string, bool, error) {
 	return s.Deps.Redis.RaffleWinner(ctx, s.RoomIDStr())
 }
 
+func (s *session) RaffleWinners(ctx context.Context, n int64) ([]string, error) {
+	return s.Deps.Redis.RaffleWinners(ctx, s.RoomIDStr(), n)
+}
+
 func (s *session) RaffleCount(ctx context.Context) (int64, error) {
 	return s.Deps.Redis.RaffleCount(ctx, s.RoomIDStr())
 }

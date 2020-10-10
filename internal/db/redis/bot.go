@@ -152,6 +152,15 @@ func (db *DB) RaffleWinner(ctx context.Context, channel string) (string, bool, e
 	return setPop(ctx, db.client, key)
 }
 
+// RaffleWinners removes N users from the raffle entries and returns them.
+func (db *DB) RaffleWinners(ctx context.Context, channel string, n int64) ([]string, error) {
+	ctx, span := trace.StartSpan(ctx, "RaffleWinners")
+	defer span.End()
+
+	key := raffleKey(channel)
+	return setPopN(ctx, db.client, key, n)
+}
+
 // RaffleCount returns the number of entries in the current raffle.
 func (db *DB) RaffleCount(ctx context.Context, channel string) (int64, error) {
 	ctx, span := trace.StartSpan(ctx, "RaffleCount")

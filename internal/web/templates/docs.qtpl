@@ -578,6 +578,7 @@ dd {
                 {%= command("!raffle reset", `Resets the raffle entries.`, "mods") %}
                 {%= command("!raffle count", `Counts the number of raffle entries.`, "mods") %}
                 {%= command("!raffle winner", `Picks a random winner.`, "mods") %}
+                {%= command("!raffle winner <X>", `Picks &lt;X&gt; random winners.`, "mods") %}
             </dl>
         </section>
 

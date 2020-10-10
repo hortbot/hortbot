@@ -22,6 +22,11 @@ func setPop(ctx context.Context, client redis.Cmdable, key string) (string, bool
 	return "", false, ignoreRedisNil(err)
 }
 
+// setPopN pops a N values from a set at random.
+func setPopN(ctx context.Context, client redis.Cmdable, key string, n int64) ([]string, error) {
+	return client.SPopN(ctx, key, n).Result()
+}
+
 // setLen gets the length of a set. Sets which do not exist are treated as empty.
 func setLen(ctx context.Context, client redis.Cmdable, key string) (int64, error) {
 	return client.SCard(ctx, key).Result()

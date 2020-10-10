@@ -133,3 +133,36 @@ func TestSetPop(t *testing.T) {
 	assert.Assert(t, !ok)
 	assert.Equal(t, v, "")
 }
+
+func TestSetPopN(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	s, c, cleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer cleanup()
+
+	s.Seed(311)
+
+	l, err := setLen(ctx, c, "foobar")
+	assert.NilError(t, err)
+	assert.Equal(t, l, int64(0))
+
+	assert.NilError(t, setAdd(ctx, c, "foobar", "v1"))
+	assert.NilError(t, setAdd(ctx, c, "foobar", "v2"))
+	assert.NilError(t, setAdd(ctx, c, "foobar", "v3"))
+	assert.NilError(t, setAdd(ctx, c, "foobar", "v4"))
+
+	v, err := setPopN(ctx, c, "foobar", 3)
+	assert.NilError(t, err)
+	assert.DeepEqual(t, v, []string{"v4", "v2", "v3"})
+
+	v, err = setPopN(ctx, c, "foobar", 2)
+	assert.NilError(t, err)
+	assert.DeepEqual(t, v, []string{"v1"})
+
+	v, err = setPopN(ctx, c, "foobar", 2)
+	assert.NilError(t, err)
+	assert.DeepEqual(t, v, []string{})
+}

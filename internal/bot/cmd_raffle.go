@@ -2,6 +2,8 @@ package bot
 
 import (
 	"context"
+	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -93,16 +95,51 @@ func cmdRaffleCount(ctx context.Context, s *session, cmd string, args string) er
 }
 
 func cmdRaffleWinner(ctx context.Context, s *session, cmd string, args string) error {
-	winner, ok, err := s.RaffleWinner(ctx)
+	count, _ := splitSpace(args)
+	if count == "" {
+		winner, ok, err := s.RaffleWinner(ctx)
+		if err != nil {
+			return err
+		}
+
+		if !ok {
+			return s.Reply(ctx, "Raffle has no entries.")
+		}
+
+		return s.Replyf(ctx, "Winner is %s!", winner)
+	}
+
+	n, err := strconv.ParseInt(count, 10, 64)
+	if err != nil || n < 1 || n > 20 {
+		return s.ReplyUsage(ctx, "<count>")
+	}
+
+	winners, err := s.RaffleWinners(ctx, n)
 	if err != nil {
 		return err
 	}
 
-	if !ok {
+	if len(winners) == 0 {
 		return s.Reply(ctx, "Raffle has no entries.")
+	} else if len(winners) == 1 {
+		return s.Replyf(ctx, "Winner is %s!", winners[0])
 	}
 
-	return s.Replyf(ctx, "Winner is %s!", winner)
+	sort.Slice(winners, func(i, j int) bool {
+		return strings.ToLower(winners[i]) < strings.ToLower(winners[j])
+	})
+
+	var sb strings.Builder
+	sb.WriteString("Winners: ")
+
+	for i, w := range winners {
+		if i != 0 {
+			sb.WriteString(", ")
+		}
+		sb.WriteString(w)
+	}
+
+	return s.Reply(ctx, sb.String())
 }
 
 func cmdRaffleReset(ctx context.Context, s *session, cmd string, args string) error {

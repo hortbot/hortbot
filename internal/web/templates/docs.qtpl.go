@@ -849,6 +849,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!raffle winner", `Picks a random winner.`, "mods")
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!raffle winner <X>", `Picks &lt;X&gt; random winners.`, "mods")
+	qw422016.N().S(`
             </dl>
         </section>
 

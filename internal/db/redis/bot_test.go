@@ -59,6 +59,9 @@ func TestBot(t *testing.T) {
 	_, err = db.RaffleCount(ctx, "foo")
 	assert.NilError(t, err)
 
+	_, err = db.RaffleWinners(ctx, "foo", 10)
+	assert.NilError(t, err)
+
 	err = db.MarkCooldown(ctx, "foo", "bar", time.Minute)
 	assert.NilError(t, err)
 
