@@ -53,13 +53,13 @@ require (
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223
 	go.deanishe.net/fuzzy v1.0.0
-	go.opencensus.io v0.22.4
+	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20200930145003-4acb6c075d10
+	golang.org/x/net v0.0.0-20201009032441-dbdefad45b89
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sync v0.0.0-20200930132711-30421366ff76
-	golang.org/x/tools v0.0.0-20201001230009-b5b87423c93b
-	gotest.tools/v3 v3.0.2
+	golang.org/x/sync v0.0.0-20201008141435-b3e1573b7520
+	golang.org/x/tools v0.0.0-20201009162240-fcf82128ed91
+	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.0
 )
