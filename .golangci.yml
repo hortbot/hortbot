@@ -32,6 +32,9 @@ linters:
     - exhaustive # Breaks on enum values exported from test packages.
     - nlreturn
     - gci
+    - exhaustivestruct
+    - errorlint
+    - wrapcheck
 
     # - staticcheck
 

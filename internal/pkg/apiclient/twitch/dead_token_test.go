@@ -11,6 +11,8 @@ import (
 )
 
 func TestDeadToken(t *testing.T) {
+	t.Parallel()
+
 	t.Run("Normal", func(t *testing.T) {
 		t.Parallel()
 
