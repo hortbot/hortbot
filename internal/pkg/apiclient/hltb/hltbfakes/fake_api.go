@@ -34,15 +34,16 @@ func (fake *FakeAPI) SearchGame(arg1 context.Context, arg2 string) (*hltb.Game, 
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.SearchGameStub
+	fakeReturns := fake.searchGameReturns
 	fake.recordInvocation("SearchGame", []interface{}{arg1, arg2})
 	fake.searchGameMutex.Unlock()
-	if fake.SearchGameStub != nil {
-		return fake.SearchGameStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.searchGameReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

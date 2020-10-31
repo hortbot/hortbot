@@ -32,15 +32,16 @@ func (fake *FakeNotifier) NotifyChannelUpdates(arg1 context.Context, arg2 string
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.NotifyChannelUpdatesStub
+	fakeReturns := fake.notifyChannelUpdatesReturns
 	fake.recordInvocation("NotifyChannelUpdates", []interface{}{arg1, arg2})
 	fake.notifyChannelUpdatesMutex.Unlock()
-	if fake.NotifyChannelUpdatesStub != nil {
-		return fake.NotifyChannelUpdatesStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.notifyChannelUpdatesReturns
 	return fakeReturns.result1
 }
 

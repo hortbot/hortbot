@@ -33,9 +33,10 @@ func (fake *FakeTestingT) Fail() {
 	fake.failMutex.Lock()
 	fake.failArgsForCall = append(fake.failArgsForCall, struct {
 	}{})
+	stub := fake.FailStub
 	fake.recordInvocation("Fail", []interface{}{})
 	fake.failMutex.Unlock()
-	if fake.FailStub != nil {
+	if stub != nil {
 		fake.FailStub()
 	}
 }
@@ -56,9 +57,10 @@ func (fake *FakeTestingT) FailNow() {
 	fake.failNowMutex.Lock()
 	fake.failNowArgsForCall = append(fake.failNowArgsForCall, struct {
 	}{})
+	stub := fake.FailNowStub
 	fake.recordInvocation("FailNow", []interface{}{})
 	fake.failNowMutex.Unlock()
-	if fake.FailNowStub != nil {
+	if stub != nil {
 		fake.FailNowStub()
 	}
 }
@@ -79,9 +81,10 @@ func (fake *FakeTestingT) Helper() {
 	fake.helperMutex.Lock()
 	fake.helperArgsForCall = append(fake.helperArgsForCall, struct {
 	}{})
+	stub := fake.HelperStub
 	fake.recordInvocation("Helper", []interface{}{})
 	fake.helperMutex.Unlock()
-	if fake.HelperStub != nil {
+	if stub != nil {
 		fake.HelperStub()
 	}
 }
@@ -103,9 +106,10 @@ func (fake *FakeTestingT) Log(arg1 ...interface{}) {
 	fake.logArgsForCall = append(fake.logArgsForCall, struct {
 		arg1 []interface{}
 	}{arg1})
+	stub := fake.LogStub
 	fake.recordInvocation("Log", []interface{}{arg1})
 	fake.logMutex.Unlock()
-	if fake.LogStub != nil {
+	if stub != nil {
 		fake.LogStub(arg1...)
 	}
 }

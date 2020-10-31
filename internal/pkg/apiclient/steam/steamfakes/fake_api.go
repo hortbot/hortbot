@@ -48,15 +48,16 @@ func (fake *FakeAPI) GetOwnedGames(arg1 context.Context, arg2 string) ([]*steam.
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.GetOwnedGamesStub
+	fakeReturns := fake.getOwnedGamesReturns
 	fake.recordInvocation("GetOwnedGames", []interface{}{arg1, arg2})
 	fake.getOwnedGamesMutex.Unlock()
-	if fake.GetOwnedGamesStub != nil {
-		return fake.GetOwnedGamesStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getOwnedGamesReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -112,15 +113,16 @@ func (fake *FakeAPI) GetPlayerSummary(arg1 context.Context, arg2 string) (*steam
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.GetPlayerSummaryStub
+	fakeReturns := fake.getPlayerSummaryReturns
 	fake.recordInvocation("GetPlayerSummary", []interface{}{arg1, arg2})
 	fake.getPlayerSummaryMutex.Unlock()
-	if fake.GetPlayerSummaryStub != nil {
-		return fake.GetPlayerSummaryStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getPlayerSummaryReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

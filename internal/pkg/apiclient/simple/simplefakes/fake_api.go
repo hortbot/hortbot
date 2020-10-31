@@ -34,15 +34,16 @@ func (fake *FakeAPI) Plaintext(arg1 context.Context, arg2 string) (string, error
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.PlaintextStub
+	fakeReturns := fake.plaintextReturns
 	fake.recordInvocation("Plaintext", []interface{}{arg1, arg2})
 	fake.plaintextMutex.Unlock()
-	if fake.PlaintextStub != nil {
-		return fake.PlaintextStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.plaintextReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

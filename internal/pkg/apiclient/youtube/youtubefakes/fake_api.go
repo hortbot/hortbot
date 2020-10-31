@@ -33,15 +33,16 @@ func (fake *FakeAPI) VideoTitle(arg1 context.Context, arg2 *url.URL) string {
 		arg1 context.Context
 		arg2 *url.URL
 	}{arg1, arg2})
+	stub := fake.VideoTitleStub
+	fakeReturns := fake.videoTitleReturns
 	fake.recordInvocation("VideoTitle", []interface{}{arg1, arg2})
 	fake.videoTitleMutex.Unlock()
-	if fake.VideoTitleStub != nil {
-		return fake.VideoTitleStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.videoTitleReturns
 	return fakeReturns.result1
 }
 

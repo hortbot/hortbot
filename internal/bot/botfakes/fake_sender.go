@@ -36,15 +36,16 @@ func (fake *FakeSender) SendMessage(arg1 context.Context, arg2 string, arg3 stri
 		arg3 string
 		arg4 string
 	}{arg1, arg2, arg3, arg4})
+	stub := fake.SendMessageStub
+	fakeReturns := fake.sendMessageReturns
 	fake.recordInvocation("SendMessage", []interface{}{arg1, arg2, arg3, arg4})
 	fake.sendMessageMutex.Unlock()
-	if fake.SendMessageStub != nil {
-		return fake.SendMessageStub(arg1, arg2, arg3, arg4)
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.sendMessageReturns
 	return fakeReturns.result1
 }
 

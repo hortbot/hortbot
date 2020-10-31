@@ -6,10 +6,10 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.6
 	github.com/99designs/gqlgen v0.13.0
-	github.com/alicebob/miniredis/v2 v2.13.3
+	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20201001162425-8aadafed4dc4
-	github.com/bmatcuk/doublestar/v2 v2.0.1
+	github.com/bmatcuk/doublestar/v2 v2.0.3
 	github.com/dghubble/trie v0.0.0-20201011220304-ed6d6b8add55
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
@@ -17,7 +17,7 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-redis/redis/v8 v8.3.2
+	github.com/go-redis/redis/v8 v8.3.3
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v3.3.0+incompatible
@@ -35,9 +35,9 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
 	github.com/markbates/pkger v0.17.1
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.2.3
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.3.0
 	github.com/nsqio/go-nsq v1.0.8
-	github.com/ory/dockertest/v3 v3.6.1
+	github.com/ory/dockertest/v3 v3.6.2
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.8.0
@@ -56,10 +56,10 @@ require (
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0
+	golang.org/x/net v0.0.0-20201029221708-28c70e62bb1d
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/sync v0.0.0-20201008141435-b3e1573b7520
-	golang.org/x/tools v0.0.0-20201017001424-6003fad69a88
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
+	golang.org/x/tools v0.0.0-20201030204249-4fc0492b8eca
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.0
 )

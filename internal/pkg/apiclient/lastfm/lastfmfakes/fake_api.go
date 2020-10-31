@@ -36,15 +36,16 @@ func (fake *FakeAPI) RecentTracks(arg1 context.Context, arg2 string, arg3 int) (
 		arg2 string
 		arg3 int
 	}{arg1, arg2, arg3})
+	stub := fake.RecentTracksStub
+	fakeReturns := fake.recentTracksReturns
 	fake.recordInvocation("RecentTracks", []interface{}{arg1, arg2, arg3})
 	fake.recentTracksMutex.Unlock()
-	if fake.RecentTracksStub != nil {
-		return fake.RecentTracksStub(arg1, arg2, arg3)
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.recentTracksReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

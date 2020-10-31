@@ -34,15 +34,16 @@ func (fake *FakeAPI) Shorten(arg1 context.Context, arg2 string) (string, error) 
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.ShortenStub
+	fakeReturns := fake.shortenReturns
 	fake.recordInvocation("Shorten", []interface{}{arg1, arg2})
 	fake.shortenMutex.Unlock()
-	if fake.ShortenStub != nil {
-		return fake.ShortenStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.shortenReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

@@ -34,15 +34,16 @@ func (fake *FakeAPI) GetComic(arg1 context.Context, arg2 int) (*xkcd.Comic, erro
 		arg1 context.Context
 		arg2 int
 	}{arg1, arg2})
+	stub := fake.GetComicStub
+	fakeReturns := fake.getComicReturns
 	fake.recordInvocation("GetComic", []interface{}{arg1, arg2})
 	fake.getComicMutex.Unlock()
-	if fake.GetComicStub != nil {
-		return fake.GetComicStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getComicReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

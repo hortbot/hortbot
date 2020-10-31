@@ -34,15 +34,16 @@ func (fake *FakeAPI) Define(arg1 context.Context, arg2 string) (string, error) {
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.DefineStub
+	fakeReturns := fake.defineReturns
 	fake.recordInvocation("Define", []interface{}{arg1, arg2})
 	fake.defineMutex.Unlock()
-	if fake.DefineStub != nil {
-		return fake.DefineStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.defineReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

@@ -38,15 +38,16 @@ func (fake *FakeRand) Float64() float64 {
 	ret, specificReturn := fake.float64ReturnsOnCall[len(fake.float64ArgsForCall)]
 	fake.float64ArgsForCall = append(fake.float64ArgsForCall, struct {
 	}{})
+	stub := fake.Float64Stub
+	fakeReturns := fake.float64Returns
 	fake.recordInvocation("Float64", []interface{}{})
 	fake.float64Mutex.Unlock()
-	if fake.Float64Stub != nil {
-		return fake.Float64Stub()
+	if stub != nil {
+		return stub()
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.float64Returns
 	return fakeReturns.result1
 }
 
@@ -91,15 +92,16 @@ func (fake *FakeRand) Intn(arg1 int) int {
 	fake.intnArgsForCall = append(fake.intnArgsForCall, struct {
 		arg1 int
 	}{arg1})
+	stub := fake.IntnStub
+	fakeReturns := fake.intnReturns
 	fake.recordInvocation("Intn", []interface{}{arg1})
 	fake.intnMutex.Unlock()
-	if fake.IntnStub != nil {
-		return fake.IntnStub(arg1)
+	if stub != nil {
+		return stub(arg1)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.intnReturns
 	return fakeReturns.result1
 }
 

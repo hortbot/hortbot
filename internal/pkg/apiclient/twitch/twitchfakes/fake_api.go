@@ -303,15 +303,16 @@ func (fake *FakeAPI) AuthCodeURL(arg1 string, arg2 ...string) string {
 		arg1 string
 		arg2 []string
 	}{arg1, arg2})
+	stub := fake.AuthCodeURLStub
+	fakeReturns := fake.authCodeURLReturns
 	fake.recordInvocation("AuthCodeURL", []interface{}{arg1, arg2})
 	fake.authCodeURLMutex.Unlock()
-	if fake.AuthCodeURLStub != nil {
-		return fake.AuthCodeURLStub(arg1, arg2...)
+	if stub != nil {
+		return stub(arg1, arg2...)
 	}
 	if specificReturn {
 		return ret.result1
 	}
-	fakeReturns := fake.authCodeURLReturns
 	return fakeReturns.result1
 }
 
@@ -364,15 +365,16 @@ func (fake *FakeAPI) Exchange(arg1 context.Context, arg2 string) (*oauth2.Token,
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.ExchangeStub
+	fakeReturns := fake.exchangeReturns
 	fake.recordInvocation("Exchange", []interface{}{arg1, arg2})
 	fake.exchangeMutex.Unlock()
-	if fake.ExchangeStub != nil {
-		return fake.ExchangeStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.exchangeReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -430,15 +432,16 @@ func (fake *FakeAPI) FollowChannel(arg1 context.Context, arg2 int64, arg3 *oauth
 		arg3 *oauth2.Token
 		arg4 int64
 	}{arg1, arg2, arg3, arg4})
+	stub := fake.FollowChannelStub
+	fakeReturns := fake.followChannelReturns
 	fake.recordInvocation("FollowChannel", []interface{}{arg1, arg2, arg3, arg4})
 	fake.followChannelMutex.Unlock()
-	if fake.FollowChannelStub != nil {
-		return fake.FollowChannelStub(arg1, arg2, arg3, arg4)
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.followChannelReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -494,15 +497,16 @@ func (fake *FakeAPI) GetChannelByID(arg1 context.Context, arg2 int64) (*twitch.C
 		arg1 context.Context
 		arg2 int64
 	}{arg1, arg2})
+	stub := fake.GetChannelByIDStub
+	fakeReturns := fake.getChannelByIDReturns
 	fake.recordInvocation("GetChannelByID", []interface{}{arg1, arg2})
 	fake.getChannelByIDMutex.Unlock()
-	if fake.GetChannelByIDStub != nil {
-		return fake.GetChannelByIDStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getChannelByIDReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -559,15 +563,16 @@ func (fake *FakeAPI) GetChannelModerators(arg1 context.Context, arg2 int64, arg3
 		arg2 int64
 		arg3 *oauth2.Token
 	}{arg1, arg2, arg3})
+	stub := fake.GetChannelModeratorsStub
+	fakeReturns := fake.getChannelModeratorsReturns
 	fake.recordInvocation("GetChannelModerators", []interface{}{arg1, arg2, arg3})
 	fake.getChannelModeratorsMutex.Unlock()
-	if fake.GetChannelModeratorsStub != nil {
-		return fake.GetChannelModeratorsStub(arg1, arg2, arg3)
+	if stub != nil {
+		return stub(arg1, arg2, arg3)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
 	}
-	fakeReturns := fake.getChannelModeratorsReturns
 	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 
@@ -626,15 +631,16 @@ func (fake *FakeAPI) GetChatters(arg1 context.Context, arg2 string) (*twitch.Cha
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.GetChattersStub
+	fakeReturns := fake.getChattersReturns
 	fake.recordInvocation("GetChatters", []interface{}{arg1, arg2})
 	fake.getChattersMutex.Unlock()
-	if fake.GetChattersStub != nil {
-		return fake.GetChattersStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getChattersReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -690,15 +696,16 @@ func (fake *FakeAPI) GetCurrentStream(arg1 context.Context, arg2 int64) (*twitch
 		arg1 context.Context
 		arg2 int64
 	}{arg1, arg2})
+	stub := fake.GetCurrentStreamStub
+	fakeReturns := fake.getCurrentStreamReturns
 	fake.recordInvocation("GetCurrentStream", []interface{}{arg1, arg2})
 	fake.getCurrentStreamMutex.Unlock()
-	if fake.GetCurrentStreamStub != nil {
-		return fake.GetCurrentStreamStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getCurrentStreamReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -754,15 +761,16 @@ func (fake *FakeAPI) GetGameByID(arg1 context.Context, arg2 int64) (*twitch.Cate
 		arg1 context.Context
 		arg2 int64
 	}{arg1, arg2})
+	stub := fake.GetGameByIDStub
+	fakeReturns := fake.getGameByIDReturns
 	fake.recordInvocation("GetGameByID", []interface{}{arg1, arg2})
 	fake.getGameByIDMutex.Unlock()
-	if fake.GetGameByIDStub != nil {
-		return fake.GetGameByIDStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getGameByIDReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -818,15 +826,16 @@ func (fake *FakeAPI) GetGameByName(arg1 context.Context, arg2 string) (*twitch.C
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.GetGameByNameStub
+	fakeReturns := fake.getGameByNameReturns
 	fake.recordInvocation("GetGameByName", []interface{}{arg1, arg2})
 	fake.getGameByNameMutex.Unlock()
-	if fake.GetGameByNameStub != nil {
-		return fake.GetGameByNameStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getGameByNameReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -882,15 +891,16 @@ func (fake *FakeAPI) GetHelixChannelByID(arg1 context.Context, arg2 int64) (*twi
 		arg1 context.Context
 		arg2 int64
 	}{arg1, arg2})
+	stub := fake.GetHelixChannelByIDStub
+	fakeReturns := fake.getHelixChannelByIDReturns
 	fake.recordInvocation("GetHelixChannelByID", []interface{}{arg1, arg2})
 	fake.getHelixChannelByIDMutex.Unlock()
-	if fake.GetHelixChannelByIDStub != nil {
-		return fake.GetHelixChannelByIDStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getHelixChannelByIDReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -946,15 +956,16 @@ func (fake *FakeAPI) GetStreamByUserID(arg1 context.Context, arg2 int64) (*twitc
 		arg1 context.Context
 		arg2 int64
 	}{arg1, arg2})
+	stub := fake.GetStreamByUserIDStub
+	fakeReturns := fake.getStreamByUserIDReturns
 	fake.recordInvocation("GetStreamByUserID", []interface{}{arg1, arg2})
 	fake.getStreamByUserIDMutex.Unlock()
-	if fake.GetStreamByUserIDStub != nil {
-		return fake.GetStreamByUserIDStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getStreamByUserIDReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -1010,15 +1021,16 @@ func (fake *FakeAPI) GetStreamByUsername(arg1 context.Context, arg2 string) (*tw
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.GetStreamByUsernameStub
+	fakeReturns := fake.getStreamByUsernameReturns
 	fake.recordInvocation("GetStreamByUsername", []interface{}{arg1, arg2})
 	fake.getStreamByUsernameMutex.Unlock()
-	if fake.GetStreamByUsernameStub != nil {
-		return fake.GetStreamByUsernameStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getStreamByUsernameReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -1074,15 +1086,16 @@ func (fake *FakeAPI) GetUserByID(arg1 context.Context, arg2 int64) (*twitch.User
 		arg1 context.Context
 		arg2 int64
 	}{arg1, arg2})
+	stub := fake.GetUserByIDStub
+	fakeReturns := fake.getUserByIDReturns
 	fake.recordInvocation("GetUserByID", []interface{}{arg1, arg2})
 	fake.getUserByIDMutex.Unlock()
-	if fake.GetUserByIDStub != nil {
-		return fake.GetUserByIDStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getUserByIDReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -1138,15 +1151,16 @@ func (fake *FakeAPI) GetUserByToken(arg1 context.Context, arg2 *oauth2.Token) (*
 		arg1 context.Context
 		arg2 *oauth2.Token
 	}{arg1, arg2})
+	stub := fake.GetUserByTokenStub
+	fakeReturns := fake.getUserByTokenReturns
 	fake.recordInvocation("GetUserByToken", []interface{}{arg1, arg2})
 	fake.getUserByTokenMutex.Unlock()
-	if fake.GetUserByTokenStub != nil {
-		return fake.GetUserByTokenStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
 	}
-	fakeReturns := fake.getUserByTokenReturns
 	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 
@@ -1205,15 +1219,16 @@ func (fake *FakeAPI) GetUserByUsername(arg1 context.Context, arg2 string) (*twit
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.GetUserByUsernameStub
+	fakeReturns := fake.getUserByUsernameReturns
 	fake.recordInvocation("GetUserByUsername", []interface{}{arg1, arg2})
 	fake.getUserByUsernameMutex.Unlock()
-	if fake.GetUserByUsernameStub != nil {
-		return fake.GetUserByUsernameStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getUserByUsernameReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -1272,15 +1287,16 @@ func (fake *FakeAPI) ModifyChannel(arg1 context.Context, arg2 int64, arg3 *oauth
 		arg4 string
 		arg5 int64
 	}{arg1, arg2, arg3, arg4, arg5})
+	stub := fake.ModifyChannelStub
+	fakeReturns := fake.modifyChannelReturns
 	fake.recordInvocation("ModifyChannel", []interface{}{arg1, arg2, arg3, arg4, arg5})
 	fake.modifyChannelMutex.Unlock()
-	if fake.ModifyChannelStub != nil {
-		return fake.ModifyChannelStub(arg1, arg2, arg3, arg4, arg5)
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.modifyChannelReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -1336,15 +1352,16 @@ func (fake *FakeAPI) SearchCategories(arg1 context.Context, arg2 string) ([]*twi
 		arg1 context.Context
 		arg2 string
 	}{arg1, arg2})
+	stub := fake.SearchCategoriesStub
+	fakeReturns := fake.searchCategoriesReturns
 	fake.recordInvocation("SearchCategories", []interface{}{arg1, arg2})
 	fake.searchCategoriesMutex.Unlock()
-	if fake.SearchCategoriesStub != nil {
-		return fake.SearchCategoriesStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.searchCategoriesReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
@@ -1402,15 +1419,16 @@ func (fake *FakeAPI) SetChannelGame(arg1 context.Context, arg2 int64, arg3 *oaut
 		arg3 *oauth2.Token
 		arg4 string
 	}{arg1, arg2, arg3, arg4})
+	stub := fake.SetChannelGameStub
+	fakeReturns := fake.setChannelGameReturns
 	fake.recordInvocation("SetChannelGame", []interface{}{arg1, arg2, arg3, arg4})
 	fake.setChannelGameMutex.Unlock()
-	if fake.SetChannelGameStub != nil {
-		return fake.SetChannelGameStub(arg1, arg2, arg3, arg4)
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
 	}
-	fakeReturns := fake.setChannelGameReturns
 	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 
@@ -1471,15 +1489,16 @@ func (fake *FakeAPI) SetChannelStatus(arg1 context.Context, arg2 int64, arg3 *oa
 		arg3 *oauth2.Token
 		arg4 string
 	}{arg1, arg2, arg3, arg4})
+	stub := fake.SetChannelStatusStub
+	fakeReturns := fake.setChannelStatusReturns
 	fake.recordInvocation("SetChannelStatus", []interface{}{arg1, arg2, arg3, arg4})
 	fake.setChannelStatusMutex.Unlock()
-	if fake.SetChannelStatusStub != nil {
-		return fake.SetChannelStatusStub(arg1, arg2, arg3, arg4)
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2, ret.result3
 	}
-	fakeReturns := fake.setChannelStatusReturns
 	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
 }
 

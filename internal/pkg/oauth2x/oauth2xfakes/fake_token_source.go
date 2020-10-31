@@ -29,15 +29,16 @@ func (fake *FakeTokenSource) Token() (*oauth2.Token, error) {
 	ret, specificReturn := fake.tokenReturnsOnCall[len(fake.tokenArgsForCall)]
 	fake.tokenArgsForCall = append(fake.tokenArgsForCall, struct {
 	}{})
+	stub := fake.TokenStub
+	fakeReturns := fake.tokenReturns
 	fake.recordInvocation("Token", []interface{}{})
 	fake.tokenMutex.Unlock()
-	if fake.TokenStub != nil {
-		return fake.TokenStub()
+	if stub != nil {
+		return stub()
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.tokenReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 

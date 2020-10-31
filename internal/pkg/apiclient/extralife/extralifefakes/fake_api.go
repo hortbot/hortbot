@@ -34,15 +34,16 @@ func (fake *FakeAPI) GetDonationAmount(arg1 context.Context, arg2 int) (float64,
 		arg1 context.Context
 		arg2 int
 	}{arg1, arg2})
+	stub := fake.GetDonationAmountStub
+	fakeReturns := fake.getDonationAmountReturns
 	fake.recordInvocation("GetDonationAmount", []interface{}{arg1, arg2})
 	fake.getDonationAmountMutex.Unlock()
-	if fake.GetDonationAmountStub != nil {
-		return fake.GetDonationAmountStub(arg1, arg2)
+	if stub != nil {
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
 	}
-	fakeReturns := fake.getDonationAmountReturns
 	return fakeReturns.result1, fakeReturns.result2
 }
 
