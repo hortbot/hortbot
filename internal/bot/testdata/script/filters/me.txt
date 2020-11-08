@@ -39,7 +39,7 @@ send hortbot #foobar [HB] Me filter is now enabled.
 
 handle_me hortbot @id=f5b6adc3-e741-4661-b1e7-93372ef10098;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hehe
 send hortbot #foobar /delete f5b6adc3-e741-4661-b1e7-93372ef10098
-send hortbot #foobar [HB] Random, /me is not allowed in this channel - warning
+send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :ok
@@ -54,7 +54,7 @@ send hortbot #foobar [HB] random added to ignored users.
 clock_forward 3h
 handle_me hortbot @id=f5ceb6c5-83ce-4dc1-8501-a37eda3d7594;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
 send hortbot #foobar /delete f5ceb6c5-83ce-4dc1-8501-a37eda3d7594
-send hortbot #foobar [HB] Random, /me is not allowed in this channel - warning
+send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off

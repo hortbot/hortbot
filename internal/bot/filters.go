@@ -49,7 +49,7 @@ func filterMe(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	return true, filterDoPunish(ctx, s, "me", "/me is not allowed in this channel")
+	return true, filterDoPunish(ctx, s, "me", "\"/me\" is not allowed in this channel")
 }
 
 func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
@@ -326,9 +326,9 @@ func filterDoPunish(ctx context.Context, s *session, filter, message string) err
 	var err error
 
 	if s.Channel.TimeoutDuration == 0 {
-		err = s.SendCommand(ctx, "timeout", s.User)
+		err = s.SendCommand(ctx, "timeout", s.User, "600", message)
 	} else {
-		err = s.SendCommand(ctx, "timeout", s.User, strconv.Itoa(s.Channel.TimeoutDuration))
+		err = s.SendCommand(ctx, "timeout", s.User, strconv.Itoa(s.Channel.TimeoutDuration), message)
 	}
 
 	if err != nil {

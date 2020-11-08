@@ -15,19 +15,19 @@ send_any
 
 handle_me hortbot @id=0aa5119d-ce7d-4720-896c-57e56934b7dc;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
 send hortbot #foobar /delete 0aa5119d-ce7d-4720-896c-57e56934b7dc
-send hortbot #foobar [HB] Random, /me is not allowed in this channel - warning
+send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
 
 
 handle_me hortbot @id=dfad3fe2-68e9-4a29-a5cc-e22ea3cd9ec6;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
-send hortbot #foobar /timeout random 600
-send hortbot #foobar [HB] Random, /me is not allowed in this channel - timeout
+send hortbot #foobar /timeout random 600 "/me" is not allowed in this channel
+send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - timeout
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration 0
 send_any
 
 handle_me hortbot @id=1a6753f7-b7e1-4468-934d-3cd6c8410fe0;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
-send hortbot #foobar /timeout random
-send hortbot #foobar [HB] Random, /me is not allowed in this channel - timeout
+send hortbot #foobar /timeout random 600 "/me" is not allowed in this channel
+send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - timeout
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set timeoutDuration 100
 send_any
@@ -36,7 +36,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 handle_me hortbot @id=0d0c4575-7d17-4983-91c5-686e360c35cf;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
-send hortbot #foobar /timeout random 100
+send hortbot #foobar /timeout random 100 "/me" is not allowed in this channel
 
 
 handle hortbot @id=76c44540-c2f1-4606-a7f9-13d10aab6459;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :AAAAAAAAAAAAAAAAAAAAAAAAAAAA
