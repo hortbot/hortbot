@@ -31,5 +31,6 @@ func NewChannel(twitchID int64, name, displayName string, botName string) *model
 		FilterMaxLength:         500,
 		FilterEmotesMax:         4,
 		Tweet:                   "Check out (_CHANNEL_URL_) playing (_GAME_) on @Twitch!",
+		FilterExemptLevel:       models.AccessLevelSubscriber,
 	}
 }

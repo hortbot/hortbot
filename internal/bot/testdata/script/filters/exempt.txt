@@ -1,0 +1,41 @@
+join hortbot 999 foobar 1
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+send_any
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+send hortbot #foobar [HB] Filters are now enabled.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me on
+send hortbot #foobar [HB] Me filter is now enabled.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter exempt
+send hortbot #foobar [HB] Filter exempt level is set to subscribers.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+no_send
+
+
+handle_me hortbot @id=f5b6adc3-e741-4661-b1e7-93372ef10098;subscriber=1;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hehe
+no_send
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter exempt broadcaster
+send hortbot #foobar [HB] Invalid level.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter exempt nobody
+send hortbot #foobar [HB] Invalid level.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter exempt moderators
+send hortbot #foobar [HB] Filter exempt level set to moderators.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter exempt moderators
+send hortbot #foobar [HB] Filter exempt level is already set to moderators.
+
+
+handle_me hortbot @id=a37ae19a-1227-4b72-8c6b-94379287b927;subscriber=1;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hehe
+send hortbot #foobar /delete a37ae19a-1227-4b72-8c6b-94379287b927
+send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
+

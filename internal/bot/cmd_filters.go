@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -25,6 +26,7 @@ var filterCommands = newHandlerMap(map[string]handlerFunc{
 	"messagelength": {fn: cmdFilterMessageLength, minLevel: levelModerator},
 	"emotes":        {fn: cmdFilterEmotes, minLevel: levelModerator},
 	"banphrase":     {fn: cmdFilterBanPhrase, minLevel: levelModerator},
+	"exempt":        {fn: cmdFilterExemptLevel, minLevel: levelModerator},
 })
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -592,4 +594,29 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 	}
 
 	return s.Reply(ctx, response)
+}
+
+func cmdFilterExemptLevel(ctx context.Context, s *session, cmd string, args string) error {
+	if args == "" {
+		return s.Replyf(ctx, "Filter exempt level is set to %s.", flect.Pluralize(s.Channel.FilterExemptLevel))
+	}
+
+	newLevel := parseLevel(args)
+	if newLevel == levelUnknown || !levelModerator.CanAccess(newLevel) {
+		return s.Reply(ctx, "Invalid level.")
+	}
+
+	newLevelPG := newLevel.PGEnum()
+
+	if s.Channel.FilterExemptLevel == newLevelPG {
+		return s.Replyf(ctx, "Filter exempt level is already set to %s.", flect.Pluralize(newLevel.PGEnum()))
+	}
+
+	s.Channel.FilterExemptLevel = newLevelPG
+
+	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterExemptLevel)); err != nil {
+		return err
+	}
+
+	return s.Replyf(ctx, "Filter exempt level set to %s.", flect.Pluralize(newLevelPG))
 }

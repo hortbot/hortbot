@@ -942,6 +942,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!filter messagelength <length>", `Sets the maximum message length.`, "mods")
 	qw422016.N().S(`
+                `)
+	streamcommand(qw422016, "!filter exempt all|subs|mods|owner", `Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.`, "mods")
+	qw422016.N().S(`
             </dl>
         </section>
 

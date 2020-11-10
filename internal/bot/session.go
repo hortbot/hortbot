@@ -511,3 +511,7 @@ func (s *session) BetaFeatures() bool {
 	_, ok := stringSliceIndex(s.Deps.BetaFeatures, s.IRCChannel)
 	return ok
 }
+
+func (s *session) FilterExemptLevel() accessLevel {
+	return newAccessLevel(s.Channel.FilterExemptLevel)
+}

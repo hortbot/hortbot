@@ -627,6 +627,7 @@ dd {
                 {%= command("!filter status", `Shows the status of all filters.`, "mods") %}
                 {%= command("!filter me on|off", `Enables/disables the /me filter.`, "mods") %}
                 {%= command("!filter messagelength <length>", `Sets the maximum message length.`, "mods") %}
+                {%= command("!filter exempt all|subs|mods|owner", `Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.`, "mods") %}
             </dl>
         </section>
 

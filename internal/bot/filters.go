@@ -45,7 +45,7 @@ func filterMe(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if s.UserLevel.CanAccess(s.FilterExemptLevel()) {
 		return false, nil
 	}
 
@@ -142,7 +142,7 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if s.UserLevel.CanAccess(s.FilterExemptLevel()) {
 		return false, nil
 	}
 
@@ -189,7 +189,7 @@ func filterSymbols(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if s.UserLevel.CanAccess(s.FilterExemptLevel()) {
 		return false, nil
 	}
 
@@ -227,7 +227,7 @@ func filterLength(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if s.UserLevel.CanAccess(s.FilterExemptLevel()) {
 		return false, nil
 	}
 
@@ -243,7 +243,7 @@ func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if s.UserLevel.CanAccess(s.FilterExemptLevel()) {
 		return false, nil
 	}
 
@@ -267,7 +267,7 @@ func filterBannedPhrases(ctx context.Context, s *session) (filtered bool, err er
 		return false, nil
 	}
 
-	if s.UserLevel.CanAccess(levelSubscriber) {
+	if s.UserLevel.CanAccess(s.FilterExemptLevel()) {
 		return false, nil
 	}
 
