@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -212,6 +213,53 @@ func BenchmarkHandleMixed(b *testing.B) {
 	b.StopTimer()
 }
 
+func BenchmarkHandleManyBannedPhrases(b *testing.B) {
+	rand.Seed(0)
+
+	const botName = "hortbot"
+
+	rServer, rClient, rCleanup, err := miniredistest.New()
+	assert.NilError(b, err)
+	defer rCleanup()
+
+	db := pool.FreshDB(b)
+	defer db.Close()
+
+	ctx := context.Background()
+
+	userID, name := getNextUserID()
+
+	config := &bot.Config{
+		DB:         db,
+		Redis:      redis.New(rClient),
+		Sender:     nopSender{},
+		Notifier:   nopNotifier{},
+		Twitch:     &twitchfakes.FakeAPI{},
+		Simple:     &simplefakes.FakeAPI{},
+		HLTB:       &hltbfakes.FakeAPI{},
+		NoDedupe:   true,
+		PublicJoin: true,
+	}
+
+	bb := bot.New(config)
+	assert.NilError(b, bb.Init(ctx))
+
+	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter on"))
+	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter banphrase on"))
+
+	for i := 0; i < 300; i++ {
+		bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter banphrase add "+randomString(10)))
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		bb.Handle(ctx, botName, privMSG(name, userID, "someone", 9999999, "nothing interesting"))
+		rServer.FastForward(time.Minute)
+	}
+	b.StopTimer()
+}
+
 var nextUserID = atomic.NewInt64(1)
 
 func getNextUserID() (int64, string) {
@@ -243,4 +291,18 @@ func privMSG(ch string, roomID int64, user string, userID int64, msg string) *ir
 		Params:   []string{"#" + ch},
 		Trailing: msg,
 	}
+}
+
+func randomString(n int) string {
+	const characters = "qwertyuiopasdfghjklzxcvbnm"
+
+	var builder strings.Builder
+	builder.Grow(n)
+
+	for i := 0; i < n; i++ {
+		x := rand.Intn(len(characters)) //nolint:gosec
+		builder.WriteByte(characters[x])
+	}
+
+	return builder.String()
 }
