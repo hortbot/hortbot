@@ -111,14 +111,32 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 	}
 }
 
+var sessionPool = sync.Pool{
+	New: func() interface{} {
+		return &session{}
+	},
+}
+
+func getSession() *session {
+	channel := sessionPool.Get().(*session)
+	*channel = session{}
+	return channel
+}
+
+func putSession(s *session) {
+	sessionPool.Put(s)
+}
+
 func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) error {
 	ctx, span := trace.StartSpan(ctx, "handlePrivMsg")
 	defer span.End()
 
 	start := b.deps.Clock.Now()
 
-	s, err := b.buildSession(ctx, origin, m)
-	if err != nil {
+	s := getSession()
+	defer putSession(s)
+
+	if err := b.buildSession(ctx, s, origin, m); err != nil {
 		return err
 	}
 
@@ -139,7 +157,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 		afterHandle  time.Time
 	)
 
-	err = dbx.Transact(ctx, b.db,
+	err := dbx.Transact(ctx, b.db,
 		dbx.SetLocalLockTimeout(5*time.Second),
 		func(ctx context.Context, tx *sql.Tx) error {
 			beforeHandle = b.deps.Clock.Now()
@@ -189,44 +207,42 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 	return nil
 }
 
-func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (*session, error) {
+func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *irc.Message) error {
 	ctx, span := trace.StartSpan(ctx, "buildSession")
 	defer span.End()
 
 	if len(m.Tags) == 0 || len(m.Params) == 0 {
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	id := m.Tags["id"]
 	if id == "" {
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	if err := b.dedupe(ctx, id); err != nil {
-		return nil, err
+		return err
 	}
 
 	user := strings.ToLower(m.Prefix.Name)
 
 	if !b.deps.IsAllowed(user) {
-		return nil, errNotAllowed
+		return errNotAllowed
 	}
 
 	message, me := readMessage(m)
 	if message == "" {
-		return nil, nil
+		return nil
 	}
 
-	s := &session{
-		Type:    sessionNormal,
-		Origin:  origin,
-		M:       m,
-		Deps:    b.deps,
-		ID:      id,
-		User:    user,
-		Message: message,
-		Me:      me,
-	}
+	s.Type = sessionNormal
+	s.Origin = origin
+	s.M = m
+	s.Deps = b.deps
+	s.ID = id
+	s.User = user
+	s.Message = message
+	s.Me = me
 
 	if displayName := m.Tags["display-name"]; displayName != "" {
 		s.UserDisplay = displayName
@@ -237,36 +253,36 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 	roomID := m.Tags["room-id"]
 	if roomID == "" {
 		ctxlog.Debug(ctx, "no room ID")
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	var err error
 	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
 	if err != nil {
 		ctxlog.Debug(ctx, "error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
-		return nil, err
+		return err
 	}
 
 	if s.RoomID == 0 {
 		ctxlog.Debug(ctx, "room ID cannot be zero")
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	userID := m.Tags["user-id"]
 	if userID == "" {
 		ctxlog.Debug(ctx, "no user ID")
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	s.UserID, err = strconv.ParseInt(userID, 10, 64)
 	if err != nil {
 		ctxlog.Debug(ctx, "error parsing user ID", zap.String("parsed", userID), zap.Error(err))
-		return nil, err
+		return err
 	}
 
 	if s.UserID == 0 {
 		ctxlog.Debug(ctx, "user ID cannot be zero")
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	tmiSent, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
@@ -275,7 +291,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
 		ctxlog.Debug(ctx, "bad channel name", zap.Strings("params", m.Params))
-		return nil, errInvalidMessage
+		return errInvalidMessage
 	}
 
 	s.IRCChannel = channelName[1:]
@@ -283,7 +299,7 @@ func (b *Bot) buildSession(ctx context.Context, origin string, m *irc.Message) (
 	b.testingHelper.checkUserNameID(s.User, s.UserID)
 	b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
 
-	return s, nil
+	return nil
 }
 
 func (b *Bot) dedupe(ctx context.Context, id string) error {
