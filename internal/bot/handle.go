@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
@@ -308,6 +309,22 @@ func (b *Bot) dedupe(ctx context.Context, id string) error {
 	return nil
 }
 
+var channelPool = sync.Pool{
+	New: func() interface{} {
+		return &models.Channel{}
+	},
+}
+
+func getChannel() *models.Channel {
+	channel := channelPool.Get().(*models.Channel)
+	*channel = models.Channel{}
+	return channel
+}
+
+func putChannel(channel *models.Channel) {
+	channelPool.Put(channel)
+}
+
 //nolint:gocyclo
 func handleSession(ctx context.Context, s *session) error {
 	ctx, span := trace.StartSpan(ctx, "handleSession")
@@ -325,7 +342,9 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	// This is the most frequent query; speed it up by executing a hand written query.
-	channel := &models.Channel{}
+	channel := getChannel()
+	defer putChannel(channel)
+
 	err := queries.Raw(`SELECT * FROM channels WHERE twitch_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -366,6 +385,10 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	s.Channel = channel
+	defer func() {
+		s.Channel = nil // For safety.
+	}()
+
 	s.SetUserLevel()
 
 	_, ignored := stringSliceIndex(channel.Ignored, s.User)
