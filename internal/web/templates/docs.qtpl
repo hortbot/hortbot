@@ -163,7 +163,7 @@ dd {
                     `Example: <code>!command delete pan</code> &mdash; Deletes the command called "pan".`,
                 ) %}
                 {%= command(
-                    "!command restrict <name> all|subs|mods|owner",
+                    "!command restrict <name> all|subs|vips|mods|owner",
                     `Restricts a command to a specific group.`,
                     "mods",
                     `Example: <code>!command restrict pan mods</code> &mdash; Restricts "pan" to moderators and above.`,
@@ -347,7 +347,7 @@ dd {
                     "mods",
                 ) %}
                 {%= command(
-                    "!list restrict <name> all|subs|mods|owner",
+                    "!list restrict <name> all|subs|vips|mods|owner",
                     `Restricts a list.`,
                     "mods",
                 ) %}
@@ -599,7 +599,7 @@ dd {
                 {%= command("!set timeoutDuration <seconds>", `Sets the moderation timeout duration.`, "mods") %}
                 {%= command("!set extraLifeID <ID>", `Sets the Extra-Life ID.`, "mods") %}
                 {%= command("!set subsMayLink on|off", `Allow subscribers to link.`, "mods") %}
-                {%= command("!set mode all|subs|mods|owner", `Sets the minimum user level for the bot to respond to.`, "mods") %}
+                {%= command("!set mode all|subs|vips|mods|owner", `Sets the minimum user level for the bot to respond to.`, "mods") %}
                 {%= command("!set steam <ID>", `Sets the channel's Steam ID.`, "mods") %}
                 {%= command("!set urban on|off", `Enables/disables the urban command.`, "mods") %}
                 {%= command("!set tweet <message>", `Sets the ClickToTweet message.`, "mods") %}
@@ -612,7 +612,7 @@ dd {
             <dl>
                 {%= command("!set roll default <num>", `Set the default roll amount.`, "mods") %}
                 {%= command("!set roll cooldown <seconds>", `Set the roll cooldown.`, "mods") %}
-                {%= command("!set roll userlevel all|subs|mods|owner", `Set the minimum user level for roll/random.`, "mods") %}
+                {%= command("!set roll userlevel all|subs|vips|mods|owner", `Set the minimum user level for roll/random.`, "mods") %}
             </dl>
         </section>
 
@@ -627,7 +627,7 @@ dd {
                 {%= command("!filter status", `Shows the status of all filters.`, "mods") %}
                 {%= command("!filter me on|off", `Enables/disables the /me filter.`, "mods") %}
                 {%= command("!filter messagelength <length>", `Sets the maximum message length.`, "mods") %}
-                {%= command("!filter exempt all|subs|mods|owner", `Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.`, "mods") %}
+                {%= command("!filter exempt all|subs|vips|mods|owner", `Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.`, "mods") %}
             </dl>
         </section>
 

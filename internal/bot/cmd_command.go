@@ -28,6 +28,9 @@ var ccCommands = newHandlerMap(map[string]handlerFunc{
 	"addm":            {fn: cmdCommandAddModerator, minLevel: levelModerator},
 	"addmod":          {fn: cmdCommandAddModerator, minLevel: levelModerator},
 	"addmods":         {fn: cmdCommandAddModerator, minLevel: levelModerator},
+	"addv":            {fn: cmdCommandAddVIP, minLevel: levelModerator},
+	"addvip":          {fn: cmdCommandAddVIP, minLevel: levelModerator},
+	"addvips":         {fn: cmdCommandAddVIP, minLevel: levelModerator},
 	"adds":            {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
 	"addsub":          {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
 	"addsubs":         {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
@@ -74,6 +77,10 @@ func cmdCommandAddBroadcaster(ctx context.Context, s *session, cmd string, args 
 
 func cmdCommandAddModerator(ctx context.Context, s *session, cmd string, args string) error {
 	return cmdCommandAdd(ctx, s, args, levelModerator, true)
+}
+
+func cmdCommandAddVIP(ctx context.Context, s *session, cmd string, args string) error {
+	return cmdCommandAdd(ctx, s, args, levelVIP, true)
 }
 
 func cmdCommandAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
@@ -258,7 +265,7 @@ func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) 
 
 func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage(ctx, "<name> everyone|regulars|subs|mods|broadcaster|admin")
+		return s.ReplyUsage(ctx, "<name> everyone|regulars|subs|vips|mods|broadcaster|admin")
 	}
 
 	name, level := splitSpace(args)

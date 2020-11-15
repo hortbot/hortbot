@@ -231,7 +231,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016,
-		"!command restrict <name> all|subs|mods|owner",
+		"!command restrict <name> all|subs|vips|mods|owner",
 		`Restricts a command to a specific group.`,
 		"mods",
 		`Example: <code>!command restrict pan mods</code> &mdash; Restricts "pan" to moderators and above.`,
@@ -461,7 +461,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016,
-		"!list restrict <name> all|subs|mods|owner",
+		"!list restrict <name> all|subs|vips|mods|owner",
 		`Restricts a list.`,
 		"mods",
 	)
@@ -893,7 +893,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!set subsMayLink on|off", `Allow subscribers to link.`, "mods")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!set mode all|subs|mods|owner", `Sets the minimum user level for the bot to respond to.`, "mods")
+	streamcommand(qw422016, "!set mode all|subs|vips|mods|owner", `Sets the minimum user level for the bot to respond to.`, "mods")
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!set steam <ID>", `Sets the channel's Steam ID.`, "mods")
@@ -918,7 +918,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!set roll cooldown <seconds>", `Set the roll cooldown.`, "mods")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!set roll userlevel all|subs|mods|owner", `Set the minimum user level for roll/random.`, "mods")
+	streamcommand(qw422016, "!set roll userlevel all|subs|vips|mods|owner", `Set the minimum user level for roll/random.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>
@@ -943,7 +943,7 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!filter messagelength <length>", `Sets the maximum message length.`, "mods")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!filter exempt all|subs|mods|owner", `Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.`, "mods")
+	streamcommand(qw422016, "!filter exempt all|subs|vips|mods|owner", `Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.`, "mods")
 	qw422016.N().S(`
             </dl>
         </section>

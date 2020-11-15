@@ -201,7 +201,7 @@ func cmdListDelete(ctx context.Context, s *session, cmd string, args string) err
 
 func cmdListRestrict(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
-		return s.ReplyUsage(ctx, "<name> everyone|regulars|subs|mods|broadcaster|admin")
+		return s.ReplyUsage(ctx, "<name> everyone|regulars|subs|vips|mods|broadcaster|admin")
 	}
 
 	name, level := splitSpace(args)
@@ -332,7 +332,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 		return true, handleListDelete(ctx, s, info, cmd, args)
 	case "restrict":
 		return true, handleListRestrict(ctx, s, info, args, func() error {
-			return s.ReplyUsage(ctx, "restrict everyone|regulars|subs|mods|broadcaster|admin")
+			return s.ReplyUsage(ctx, "restrict everyone|regulars|subs|vips|mods|broadcaster|admin")
 		})
 	case "random", "":
 		random = true

@@ -14,6 +14,7 @@ const (
 	levelUnknown accessLevel = iota
 	levelEveryone
 	levelSubscriber
+	levelVIP
 	levelModerator
 	levelBroadcaster
 	levelAdmin
@@ -31,6 +32,8 @@ func newAccessLevel(s string) accessLevel {
 		return levelEveryone
 	case models.AccessLevelSubscriber:
 		return levelSubscriber
+	case models.AccessLevelVip:
+		return levelVIP
 	case models.AccessLevelModerator:
 		return levelModerator
 	case models.AccessLevelBroadcaster:
@@ -68,6 +71,8 @@ func (a accessLevel) PGEnum() string {
 		return models.AccessLevelEveryone
 	case levelSubscriber:
 		return models.AccessLevelSubscriber
+	case levelVIP:
+		return models.AccessLevelVip
 	case levelModerator:
 		return models.AccessLevelModerator
 	case levelBroadcaster:
@@ -85,6 +90,8 @@ func parseLevel(s string) accessLevel {
 		return levelEveryone
 	case "sub", "subs", "subscriber", "subscribers", "regular", "regulars", "reg", "regs":
 		return levelSubscriber
+	case "vip", "vips":
+		return levelVIP
 	case "mod", "mods", "moderator", "moderators":
 		return levelModerator
 	case "broadcaster", "broadcasters", "owner", "owners", "streamer", "streamers":

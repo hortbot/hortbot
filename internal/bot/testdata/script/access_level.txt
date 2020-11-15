@@ -34,7 +34,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!rand
 send hortbot #foobar [HB] Subscriber
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=vip/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
-send hortbot #foobar [HB] Subscriber
+send hortbot #foobar [HB] VIP
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
 send hortbot #foobar [HB] Moderator

@@ -54,4 +54,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Roll command is now available to moderators and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set roll userlevel what
-send hortbot #foobar [HB] Usage: !set roll userlevel everyone|regulars|subs|mods|broadcaster|admin
+send hortbot #foobar [HB] Usage: !set roll userlevel everyone|regulars|subs|vips|mods|broadcaster|admin

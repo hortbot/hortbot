@@ -434,7 +434,7 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 		args = strings.ToLower(args)
 		level := parseLevelPG(args)
 		if level == "" {
-			return s.ReplyUsage(ctx, "userlevel everyone|regulars|subs|mods|broadcaster|admin")
+			return s.ReplyUsage(ctx, "userlevel everyone|regulars|subs|vips|mods|broadcaster|admin")
 		}
 
 		s.Channel.RollLevel = level

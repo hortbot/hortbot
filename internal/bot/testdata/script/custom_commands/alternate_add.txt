@@ -51,3 +51,13 @@ send hortbot #foobar [HB] Command 'own3' updated, restricted to broadcasters and
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adds own3 test
 send hortbot #foobar [HB] Command 'own3' updated, restricted to subscribers and above.
+
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addv vip1 test
+send hortbot #foobar [HB] Command 'vip1' added, restricted to vips and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addvip vip2 test
+send hortbot #foobar [HB] Command 'vip2' added, restricted to vips and above.
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addvips vip3 test
+send hortbot #foobar [HB] Command 'vip3' added, restricted to vips and above.

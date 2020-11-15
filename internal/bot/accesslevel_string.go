@@ -11,15 +11,16 @@ func _() {
 	_ = x[levelUnknown-0]
 	_ = x[levelEveryone-1]
 	_ = x[levelSubscriber-2]
-	_ = x[levelModerator-3]
-	_ = x[levelBroadcaster-4]
-	_ = x[levelAdmin-5]
-	_ = x[levelSuperAdmin-6]
+	_ = x[levelVIP-3]
+	_ = x[levelModerator-4]
+	_ = x[levelBroadcaster-5]
+	_ = x[levelAdmin-6]
+	_ = x[levelSuperAdmin-7]
 }
 
-const _accessLevel_name = "UnknownEveryoneSubscriberModeratorBroadcasterAdminSuperAdmin"
+const _accessLevel_name = "UnknownEveryoneSubscriberVIPModeratorBroadcasterAdminSuperAdmin"
 
-var _accessLevel_index = [...]uint8{0, 7, 15, 25, 34, 45, 50, 60}
+var _accessLevel_index = [...]uint8{0, 7, 15, 25, 28, 37, 48, 53, 63}
 
 func (i accessLevel) String() string {
 	if i < 0 || i >= accessLevel(len(_accessLevel_index)-1) {

@@ -39,3 +39,13 @@ handle_me hortbot @id=a37ae19a-1227-4b72-8c6b-94379287b927;subscriber=1;room-id=
 send hortbot #foobar /delete a37ae19a-1227-4b72-8c6b-94379287b927
 send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
 
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter exempt vips
+send hortbot #foobar [HB] Filter exempt level set to vips.
+
+handle_me hortbot @id=__UUID__;badges=vip/1;room-id=1;user-id=3;display-name=Random3 :random3!random3@random3.tmi.twitch.tv PRIVMSG #foobar :hehe
+no_send
+
+handle_me hortbot @id=4c8efc42-cab6-4289-9d8f-aa63c5dda349;subscriber=1;room-id=1;user-id=3;display-name=Random3 :random3!random3@random3.tmi.twitch.tv PRIVMSG #foobar :hehe
+send hortbot #foobar /delete 4c8efc42-cab6-4289-9d8f-aa63c5dda349
+send hortbot #foobar [HB] Random3, "/me" is not allowed in this channel - warning

@@ -27,6 +27,10 @@ func TestAccessLevelConversion(t *testing.T) {
 			l: levelModerator,
 		},
 		{
+			s: models.AccessLevelVip,
+			l: levelVIP,
+		},
+		{
 			s: models.AccessLevelBroadcaster,
 			l: levelBroadcaster,
 		},

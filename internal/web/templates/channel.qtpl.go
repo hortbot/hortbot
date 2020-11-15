@@ -453,6 +453,10 @@ All
 		qw422016.N().S(`
 <span class="has-text-info">Subs</span>
 `)
+	case models.AccessLevelVip:
+		qw422016.N().S(`
+<span class="has-text-warning">VIPs</span>
+`)
 	case models.AccessLevelModerator:
 		qw422016.N().S(`
 <span class="has-text-success">Mods</span>

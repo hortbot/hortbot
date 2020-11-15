@@ -55,6 +55,7 @@ func makeCacheKey(cols boil.Columns, nzDefaults []string) string {
 const (
 	AccessLevelEveryone    = "everyone"
 	AccessLevelSubscriber  = "subscriber"
+	AccessLevelVip         = "vip"
 	AccessLevelModerator   = "moderator"
 	AccessLevelBroadcaster = "broadcaster"
 	AccessLevelAdmin       = "admin"

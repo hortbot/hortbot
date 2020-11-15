@@ -204,6 +204,8 @@ type ChannelCommandsPage struct {
 All
 {% case models.AccessLevelSubscriber %}
 <span class="has-text-info">Subs</span>
+{% case models.AccessLevelVip %}
+<span class="has-text-warning">VIPs</span>
 {% case models.AccessLevelModerator %}
 <span class="has-text-success">Mods</span>
 {% case models.AccessLevelBroadcaster %}
