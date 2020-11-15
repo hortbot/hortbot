@@ -3,6 +3,7 @@ package bot_test
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"strconv"
 	"testing"
 	"time"
@@ -20,6 +21,8 @@ import (
 )
 
 func BenchmarkHandleNop(b *testing.B) {
+	rand.Seed(0)
+
 	const botName = "hortbot"
 
 	db := pool.FreshDB(b)
@@ -34,14 +37,15 @@ func BenchmarkHandleNop(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Sender:   nopSender{},
-		Notifier: nopNotifier{},
-		Twitch:   &twitchfakes.FakeAPI{},
-		Simple:   &simplefakes.FakeAPI{},
-		HLTB:     &hltbfakes.FakeAPI{},
-		NoDedupe: true,
+		DB:         db,
+		Redis:      redis.New(rClient),
+		Sender:     nopSender{},
+		Notifier:   nopNotifier{},
+		Twitch:     &twitchfakes.FakeAPI{},
+		Simple:     &simplefakes.FakeAPI{},
+		HLTB:       &hltbfakes.FakeAPI{},
+		NoDedupe:   true,
+		PublicJoin: true,
 	}
 
 	bb := bot.New(config)
@@ -60,6 +64,8 @@ func BenchmarkHandleNop(b *testing.B) {
 }
 
 func BenchmarkHandleNopParallel(b *testing.B) {
+	rand.Seed(0)
+
 	const botName = "hortbot"
 
 	db := pool.FreshDB(b)
@@ -74,14 +80,15 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Sender:   nopSender{},
-		Notifier: nopNotifier{},
-		Twitch:   &twitchfakes.FakeAPI{},
-		Simple:   &simplefakes.FakeAPI{},
-		HLTB:     &hltbfakes.FakeAPI{},
-		NoDedupe: true,
+		DB:         db,
+		Redis:      redis.New(rClient),
+		Sender:     nopSender{},
+		Notifier:   nopNotifier{},
+		Twitch:     &twitchfakes.FakeAPI{},
+		Simple:     &simplefakes.FakeAPI{},
+		HLTB:       &hltbfakes.FakeAPI{},
+		NoDedupe:   true,
+		PublicJoin: true,
 	}
 
 	bb := bot.New(config)
@@ -101,6 +108,8 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 }
 
 func BenchmarkHandleCustomCommand(b *testing.B) {
+	rand.Seed(0)
+
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
@@ -115,14 +124,15 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Sender:   nopSender{},
-		Notifier: nopNotifier{},
-		Twitch:   &twitchfakes.FakeAPI{},
-		Simple:   &simplefakes.FakeAPI{},
-		HLTB:     &hltbfakes.FakeAPI{},
-		NoDedupe: true,
+		DB:         db,
+		Redis:      redis.New(rClient),
+		Sender:     nopSender{},
+		Notifier:   nopNotifier{},
+		Twitch:     &twitchfakes.FakeAPI{},
+		Simple:     &simplefakes.FakeAPI{},
+		HLTB:       &hltbfakes.FakeAPI{},
+		NoDedupe:   true,
+		PublicJoin: true,
 	}
 
 	bb := bot.New(config)
@@ -142,6 +152,8 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 }
 
 func BenchmarkHandleMixed(b *testing.B) {
+	rand.Seed(0)
+
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
@@ -156,14 +168,15 @@ func BenchmarkHandleMixed(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Sender:   nopSender{},
-		Notifier: nopNotifier{},
-		Twitch:   &twitchfakes.FakeAPI{},
-		Simple:   &simplefakes.FakeAPI{},
-		HLTB:     &hltbfakes.FakeAPI{},
-		NoDedupe: true,
+		DB:         db,
+		Redis:      redis.New(rClient),
+		Sender:     nopSender{},
+		Notifier:   nopNotifier{},
+		Twitch:     &twitchfakes.FakeAPI{},
+		Simple:     &simplefakes.FakeAPI{},
+		HLTB:       &hltbfakes.FakeAPI{},
+		NoDedupe:   true,
+		PublicJoin: true,
 	}
 
 	bb := bot.New(config)
