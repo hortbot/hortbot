@@ -132,15 +132,15 @@ func (q *Queue) Worker(ctx context.Context) error {
 }
 
 func (q *Queue) getForPut(ctx context.Context) (*state, error) {
-	return getState(ctx, q.noWork, q.hasWork, nil, nil)
+	return getState2(ctx, q.noWork, q.hasWork)
 }
 
 func (q *Queue) getForWork(ctx context.Context) (*state, error) {
-	return getState(ctx, q.hasWork, q.hasWorkLimited, nil, nil)
+	return getState2(ctx, q.hasWork, q.hasWorkLimited)
 }
 
 func (q *Queue) getAny(ctx context.Context) (*state, error) {
-	return getState(ctx, q.noWork, q.noWorkLimited, q.hasWork, q.hasWorkLimited)
+	return getState4(ctx, q.noWork, q.noWorkLimited, q.hasWork, q.hasWorkLimited)
 }
 
 func (q *Queue) putNoWork(ctx context.Context, state *state) error {
@@ -218,7 +218,17 @@ func (s *state) isLimited() bool {
 	return s.size >= s.sizeLimit
 }
 
-func getState(ctx context.Context, a, b, c, d chan *state) (state *state, err error) {
+func getState2(ctx context.Context, a, b chan *state) (state *state, err error) {
+	select {
+	case state = <-a:
+	case state = <-b:
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+	return state, nil
+}
+
+func getState4(ctx context.Context, a, b, c, d chan *state) (state *state, err error) {
 	select {
 	case state = <-a:
 	case state = <-b:
