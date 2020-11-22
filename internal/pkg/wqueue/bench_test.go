@@ -51,7 +51,9 @@ func BenchmarkQueueSameName(b *testing.B) {
 	}
 }
 
-func BenchmarkQueueUniqueName(b *testing.B) {
+func BenchmarkQueueManyNames(b *testing.B) {
+	const names = 200
+
 	for workers := 0; workers < 6; workers++ {
 		workers := int(math.Pow(2, float64(workers)))
 
@@ -76,12 +78,12 @@ func BenchmarkQueueUniqueName(b *testing.B) {
 				wg.Done()
 			}
 
-			var name atomic.Int64
+			var name atomic.Uint64
 
 			b.RunParallel(func(p *testing.PB) {
 				for p.Next() {
 					wg.Add(1)
-					q.Put(ctx, strconv.FormatInt(name.Inc(), 10), fn) //nolint:errcheck
+					q.Put(ctx, strconv.FormatUint(name.Inc()%names, 10), fn) //nolint:errcheck
 				}
 			})
 
