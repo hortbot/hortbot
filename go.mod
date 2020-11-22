@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20201001162425-8aadafed4dc4
-	github.com/bmatcuk/doublestar/v2 v2.0.3
+	github.com/bmatcuk/doublestar/v2 v2.0.4
 	github.com/dghubble/trie v0.0.0-20201011220304-ed6d6b8add55
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
@@ -17,12 +17,12 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v4.1.2+incompatible
-	github.com/go-redis/redis/v8 v8.3.3
+	github.com/go-redis/redis/v8 v8.4.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v3.3.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.13.0
-	github.com/google/go-cmp v0.5.2
+	github.com/golang-migrate/migrate/v4 v4.14.1
+	github.com/google/go-cmp v0.5.3
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
@@ -47,7 +47,7 @@ require (
 	github.com/valyala/quicktemplate v1.6.3
 	github.com/vektah/gqlparser/v2 v2.1.0
 	github.com/volatiletech/null/v8 v8.1.0
-	github.com/volatiletech/sqlboiler/v4 v4.3.0
+	github.com/volatiletech/sqlboiler/v4 v4.3.1
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
@@ -56,10 +56,10 @@ require (
 	go.opencensus.io v0.22.5
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20201031054903-ff519b6c9102
-	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	golang.org/x/net v0.0.0-20201110031124-69a78807bb2b
+	golang.org/x/oauth2 v0.0.0-20201109201403-9fd604954f58
 	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
-	golang.org/x/tools v0.0.0-20201103235415-b653051172e4
+	golang.org/x/tools v0.0.0-20201121010211-780cb80bd7fb
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.0
 )
