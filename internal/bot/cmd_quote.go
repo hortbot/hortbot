@@ -330,7 +330,7 @@ FROM (
 	WHERE q2.channel_id = $1 AND q2.num >= $2
 	ORDER BY q2.num ASC
 ) q3
-WHERE q3.id = q.id AND q3.id != q3.new_num
+WHERE q3.id = q.id AND q3.num != q3.new_num
 `
 
 func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) error {
