@@ -143,8 +143,9 @@ func (a *App) Run(ctx context.Context) error {
 	r.Handle("/favicon.ico", http.RedirectHandler("/static/icons/favicon.ico", http.StatusFound))
 
 	srv := http.Server{
-		Addr:    a.Addr,
-		Handler: r,
+		Addr:        a.Addr,
+		Handler:     r,
+		BaseContext: func(_ net.Listener) context.Context { return ctx },
 	}
 
 	go func() {
