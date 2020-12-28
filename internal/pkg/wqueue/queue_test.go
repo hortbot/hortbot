@@ -193,7 +193,7 @@ func TestQueueStress(t *testing.T) {
 	}
 }
 
-func testQueueStress(t *testing.T) {
+func testQueueStress(t *testing.T) { //nolint:thelper
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue(1000)

@@ -56,7 +56,7 @@ func TestDeadToken(t *testing.T) {
 	})
 }
 
-func invalidRefreshTokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch, id int64, refresh string) *oauth2.Token {
+func invalidRefreshTokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch, id int64, refresh string) *oauth2.Token { //nolint:thelper
 	code := ft.codeForUserInvalidRefresh(id, refresh)
 
 	tok, err := tw.Exchange(ctx, code)

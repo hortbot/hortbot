@@ -439,7 +439,7 @@ func TestModifyChannel(t *testing.T) {
 	})
 }
 
-func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch, id int64) *oauth2.Token {
+func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch, id int64) *oauth2.Token { //nolint:thelper
 	t.Helper()
 
 	code := ft.codeForUser(id)

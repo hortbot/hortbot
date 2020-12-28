@@ -36,6 +36,7 @@ linters:
     - errorlint
     - wrapcheck
     - paralleltest
+    - forbidigo
 
     # - staticcheck
 

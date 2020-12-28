@@ -588,6 +588,7 @@ func (f *fakeTwitch) checkHeaders(req *http.Request, kraken bool) {
 }
 
 func createTester(t *testing.T) (*fakeTwitch, *twitch.Twitch) {
+	t.Helper()
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))

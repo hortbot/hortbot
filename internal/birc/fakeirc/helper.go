@@ -40,7 +40,7 @@ type Helper struct {
 }
 
 // NewHelper creates a new Helper.
-func NewHelper(ctx context.Context, t *testing.T, opts ...Option) *Helper {
+func NewHelper(ctx context.Context, t *testing.T, opts ...Option) *Helper { //nolint:thelper
 	t.Helper()
 
 	dur, err := getSleepDur()
