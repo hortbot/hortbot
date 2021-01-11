@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bmatcuk/doublestar/v2"
+	"github.com/bmatcuk/doublestar/v3"
 	"github.com/hortbot/hortbot/internal/bot/btest"
 	"gotest.tools/v3/assert"
 )

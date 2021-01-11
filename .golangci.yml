@@ -37,6 +37,7 @@ linters:
     - wrapcheck
     - paralleltest
     - forbidigo
+    - thelper # Broken and racy.
 
     # - staticcheck
 

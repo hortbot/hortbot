@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.14.1
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20201001162425-8aadafed4dc4
-	github.com/bmatcuk/doublestar/v2 v2.0.4
+	github.com/bmatcuk/doublestar/v3 v3.0.0
 	github.com/dghubble/trie v0.0.0-20201011220304-ed6d6b8add55
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20191206042408-88212e6cfca9 // indirect
@@ -17,10 +17,10 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v1.5.1
-	github.com/go-redis/redis/v8 v8.4.4
+	github.com/go-redis/redis/v8 v8.4.8
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
-	github.com/gofrs/uuid v3.3.0+incompatible
+	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.14.1
 	github.com/google/go-cmp v0.5.4
 	github.com/gorilla/sessions v1.2.1
@@ -29,7 +29,7 @@ require (
 	github.com/jackc/pgconn v1.8.0
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
-	github.com/jarcoal/httpmock v1.0.6
+	github.com/jarcoal/httpmock v1.0.7
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
 	github.com/jmoiron/sqlx v1.2.1-0.20190826204134-d7d95172beb5
 	github.com/joho/godotenv v1.3.0
@@ -46,7 +46,7 @@ require (
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.6.3
 	github.com/vektah/gqlparser/v2 v2.1.0
-	github.com/volatiletech/null/v8 v8.1.0
+	github.com/volatiletech/null/v8 v8.1.1
 	github.com/volatiletech/sqlboiler/v4 v4.4.0
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
@@ -59,7 +59,7 @@ require (
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
-	golang.org/x/tools v0.0.0-20201228185149-0661ca7ea1ee
+	golang.org/x/tools v0.0.0-20210108195828-e2f9c7f1fc8e
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.0
 )
