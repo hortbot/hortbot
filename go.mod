@@ -17,7 +17,7 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi v1.5.1
-	github.com/go-redis/redis/v8 v8.4.8
+	github.com/go-redis/redis/v8 v8.4.11
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
@@ -29,9 +29,9 @@ require (
 	github.com/jackc/pgconn v1.8.0
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
-	github.com/jarcoal/httpmock v1.0.7
+	github.com/jarcoal/httpmock v1.0.8
 	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
-	github.com/jmoiron/sqlx v1.2.1-0.20190826204134-d7d95172beb5
+	github.com/jmoiron/sqlx v1.3.1
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
 	github.com/markbates/pkger v0.17.1
@@ -53,13 +53,13 @@ require (
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223
 	go.deanishe.net/fuzzy v1.0.0
-	go.opencensus.io v0.22.5
+	go.opencensus.io v0.22.6
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
-	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
+	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
+	golang.org/x/oauth2 v0.0.0-20210126194326-f9ce19ea3013
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
-	golang.org/x/tools v0.0.0-20210111221946-d33bae441459
+	golang.org/x/tools v0.1.0
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.0
 )

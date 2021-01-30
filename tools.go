@@ -3,6 +3,7 @@
 package tools
 
 import (
+	_ "github.com/99designs/gqlgen"
 	_ "github.com/markbates/pkger/cmd/pkger"
 	_ "github.com/maxbrunsfeld/counterfeiter/v6"
 	_ "github.com/valyala/quicktemplate/qtc"

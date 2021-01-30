@@ -38,6 +38,7 @@ linters:
     - paralleltest
     - forbidigo
     - thelper # Broken and racy.
+    - ifshort # Inaccurate.
 
     # - staticcheck
 
