@@ -1,7 +1,7 @@
 version: "3.7"
 
 x-golang-image: &golang-image
-  image: golang:1.15
+  image: golang:1.16
 
 services:
   irc:

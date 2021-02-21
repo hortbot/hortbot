@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  GO_DEV_VERSION: "1.15" # Recommended Go version for development.
+  GO_DEV_VERSION: "1.16" # Sync with README, go.mod, Dockerfile, and docker-compose.yml.
   GOLANGCI_LINT_VERSION: "v1.37.1"
 
 jobs:
@@ -18,9 +18,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # https://github.community/t5/GitHub-Actions/continue-on-error-allow-failure-UI-indication/m-p/37033/thread-id/2780
-        # go: ["1.15", "tip"]
-        go: ["1.15"]
+        # https://github.com/actions/toolkit/issues/399
+        # go: ["1.16", "tip"]
+        go: ["1.16"]
         pkger: [false, true]
     name: Go ${{ matrix.go }} (${{ matrix.pkger && 'static' || 'live' }})
 
