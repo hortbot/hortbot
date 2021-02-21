@@ -21,8 +21,7 @@ jobs:
         # https://github.com/actions/toolkit/issues/399
         # go: ["1.16", "tip"]
         go: ["1.16"]
-        pkger: [false, true]
-    name: Go ${{ matrix.go }} (${{ matrix.pkger && 'static' || 'live' }})
+    name: Go ${{ matrix.go }}
 
     steps:
       - uses: actions/checkout@v2
@@ -57,12 +56,6 @@ jobs:
         run: |
           docker pull zikaeroh/postgres-initialized
           docker pull nsqio/nsq
-
-      - name: Run pkger
-        if: ${{ matrix.pkger }}
-        run: |
-          go run github.com/markbates/pkger/cmd/pkger list
-          go run github.com/markbates/pkger/cmd/pkger -o internal/pkger
 
       - name: Run tests
         run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...

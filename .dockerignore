@@ -36,5 +36,3 @@ config/
 # common benchstat filenames 
 old.txt
 new.txt
-
-internal/pkger/pkged.go

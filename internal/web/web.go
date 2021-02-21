@@ -4,6 +4,8 @@ package web
 import (
 	"context"
 	"database/sql"
+	"embed"
+	"io/fs"
 	"net"
 	"net/http"
 	"sort"
@@ -18,7 +20,6 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
-	"github.com/hortbot/hortbot/internal/pkger"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -29,6 +30,19 @@ import (
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
+
+//go:embed static
+var static embed.FS
+
+var staticDir fs.FS
+
+func init() {
+	var err error
+	staticDir, err = fs.Sub(static, "static")
+	if err != nil {
+		panic(err)
+	}
+}
 
 // App is the HortBot webapp.
 type App struct {
@@ -139,7 +153,7 @@ func (a *App) Run(ctx context.Context) error {
 		r.Route("/admin", a.routeAdmin)
 	})
 
-	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(pkger.Dir("/internal/web/static"))))
+	r.Handle("/static/*", http.StripPrefix("/static", http.FileServer(http.FS(staticDir))))
 	r.Handle("/favicon.ico", http.RedirectHandler("/static/icons/favicon.ico", http.StatusFound))
 
 	srv := http.Server{

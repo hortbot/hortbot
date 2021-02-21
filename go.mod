@@ -5,7 +5,7 @@ go 1.16
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
-	github.com/99designs/gqlgen v0.13.1-0.20201207060723-862762c77bae
+	github.com/99designs/gqlgen v0.13.1-0.20210113020329-997da421b0b8
 	github.com/alicebob/miniredis/v2 v2.14.3
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20210207001429-0eec95c9db7e
@@ -21,7 +21,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.14.1
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210219053336-e57a02496045
 	github.com/google/go-cmp v0.5.4
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
@@ -30,11 +30,11 @@ require (
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.8
-	github.com/jessevdk/go-flags v1.4.1-0.20181221193153-c0795c8afcf4
+	github.com/jessevdk/go-flags v1.4.1-0.20200711081900-c17162fe8fd7
 	github.com/jmoiron/sqlx v1.3.1
+	github.com/johejo/golang-migrate-extra v0.0.0-20210217013041-51a992e50d16
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
-	github.com/markbates/pkger v0.17.1
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.3.0
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.3
