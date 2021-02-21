@@ -341,7 +341,9 @@ func (p *ShowVarPage) StreamRender(qw422016 *qt422016.Writer) {
 	qw422016.E().S(p.Label)
 	qw422016.N().S(`</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+`)
+	streamjqueryScript(qw422016)
+	qw422016.N().S(`
 
 <script>
 var channel = "`)

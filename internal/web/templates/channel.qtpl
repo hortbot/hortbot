@@ -26,14 +26,14 @@ type ChannelPage struct {
     padding-left: 1rem;
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-u49ra7w4V15McfEDsAvfE6A+W18iGcM7mWlkBmASoAs=" crossorigin="anonymous" />
+{%= bootstrapTableCSS() %}
 {% endfunc %}
 
 {% func (p *ChannelPage) PageScripts() %}
 {%= p.BasePage.PageScripts() %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/bootstrap-table.min.js" integrity="sha256-JFzlEUS2cZGdNFhVNH3GSFuqZFLjzWIjOqG5BY+Yhvw=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-EiXUuCvnTWCYTHg2nWE3Yd0N0fprGRbVTkPMJ7s4enU=" crossorigin="anonymous"></script>
+{%= jqueryScript() %}
+{%= bootstrapTableScript() %}
+{%= bootstrapTableBulmaScript() %}
 <script>
 function timeFormatter(value) {
     try {

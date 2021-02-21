@@ -39,6 +39,8 @@ linters:
     - forbidigo
     - thelper # Broken and racy.
     - ifshort # Inaccurate.
+    - cyclop
+    - durationcheck
 
     # - staticcheck
 

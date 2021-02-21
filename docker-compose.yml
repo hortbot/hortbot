@@ -1,8 +1,11 @@
 version: "3.7"
 
+x-golang-image: &golang-image
+  image: golang:1.15
+
 services:
   irc:
-    image: golang
+    <<: *golang-image
     volumes:
       - .:/app:ro
       - gopath:/go
@@ -26,7 +29,7 @@ services:
       - HB_JAEGER_AGENT=jaeger:6831
 
   bot:
-    image: golang
+    <<: *golang-image
     volumes:
       - .:/app:ro
       - gopath:/go
@@ -50,7 +53,7 @@ services:
       - HB_JAEGER_AGENT=jaeger:6831
 
   web:
-    image: golang
+    <<: *golang-image
     volumes:
       - .:/app:ro
       - gopath:/go
@@ -76,7 +79,7 @@ services:
       - HB_WEB_ADMIN_AUTH=admin:admin
 
   graphql:
-    image: golang
+    <<: *golang-image
     volumes:
       - .:/app:ro
       - gopath:/go

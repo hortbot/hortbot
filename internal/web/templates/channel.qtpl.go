@@ -64,7 +64,9 @@ func (p *ChannelPage) StreamPageMeta(qw422016 *qt422016.Writer) {
     padding-left: 1rem;
 }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha256-u49ra7w4V15McfEDsAvfE6A+W18iGcM7mWlkBmASoAs=" crossorigin="anonymous" />
+`)
+	streambootstrapTableCSS(qw422016)
+	qw422016.N().S(`
 `)
 }
 
@@ -87,9 +89,15 @@ func (p *ChannelPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 `)
 	p.BasePage.StreamPageScripts(qw422016)
 	qw422016.N().S(`
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/bootstrap-table.min.js" integrity="sha256-JFzlEUS2cZGdNFhVNH3GSFuqZFLjzWIjOqG5BY+Yhvw=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.16.0/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha256-EiXUuCvnTWCYTHg2nWE3Yd0N0fprGRbVTkPMJ7s4enU=" crossorigin="anonymous"></script>
+`)
+	streamjqueryScript(qw422016)
+	qw422016.N().S(`
+`)
+	streambootstrapTableScript(qw422016)
+	qw422016.N().S(`
+`)
+	streambootstrapTableBulmaScript(qw422016)
+	qw422016.N().S(`
 <script>
 function timeFormatter(value) {
     try {

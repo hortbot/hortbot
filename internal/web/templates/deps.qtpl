@@ -1,0 +1,27 @@
+{% func jqueryScript() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+{% endfunc %}
+
+{% func bulmaswatchCSS() %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulmaswatch/0.8.1/darkly/bulmaswatch.min.css" integrity="sha512-lLXTQR9X0YWtbfqUt47t7cXs2b7SWbMqGD4YdOYkCXDeTCm4+Mm84OhHl/pz2sd6ievpE+VE+/qdtvJE8uhcdA==" crossorigin="anonymous" />
+{% endfunc %}
+
+{% func fontAwesomeScript() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/js/all.min.js" integrity="sha512-UwcC/iaz5ziHX7V6LjSKaXgCuRRqbTp1QHpbOJ4l1nw2/boCfZ2KlFIqBUA/uRVF0onbREnY9do8rM/uT/ilqw==" crossorigin="anonymous"></script>
+{% endfunc %}
+
+{% func bootstrapTableScript() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.18.2/bootstrap-table.min.js" integrity="sha512-ffrlJUspXYOW6r1y8tWOJHIE6yRUsbq6ESHxcUNU9NU9GWDZ+sS9zlb5SvKqeMEw8XSJXyDLz59PZFIqHHpJBQ==" crossorigin="anonymous"></script>
+{% endfunc %}
+
+{% func bootstrapTableCSS() %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.18.2/themes/bulma/bootstrap-table-bulma.min.css" integrity="sha512-ht14kGa/I1+0X+Rw4HXtfn4KnkFHIGbfVcloLfT4XsIa7oCq0BRyaqHvlZGkrstmTcXNG8MzxPHm8Cffkw5SkQ==" crossorigin="anonymous" />
+{% endfunc %}
+
+{% func bootstrapTableBulmaScript() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.18.2/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha512-0WE6w7cM26L/zrrfAvL8h6wslqj3ywElmoQEtArOlCCqqzxojUyjESVaF0P1J0iZhE7uIPQMNuv15Te/EqKcYw==" crossorigin="anonymous"></script>
+{% endfunc %}
+
+{% func gumshoeScript() %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gumshoe/5.1.1/gumshoe.polyfills.min.js" integrity="sha256-nxQlu6aVkhkHICQuYc1Ga85x2MX+FpvJYV1F+O8Awy8=" crossorigin="anonymous"></script>
+{% endfunc %}

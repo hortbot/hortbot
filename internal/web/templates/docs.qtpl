@@ -820,8 +820,8 @@ dd {
 
 {% func (p *DocsPage) PageScripts() %}
 {%= p.BasePage.PageScripts() %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gumshoe/5.1.1/gumshoe.polyfills.min.js" integrity="sha256-nxQlu6aVkhkHICQuYc1Ga85x2MX+FpvJYV1F+O8Awy8=" crossorigin="anonymous"></script>
+{%= jqueryScript() %}
+{%= gumshoeScript() %}
 
 <script>
 $(function() {

@@ -1339,8 +1339,12 @@ func (p *DocsPage) StreamPageScripts(qw422016 *qt422016.Writer) {
 `)
 	p.BasePage.StreamPageScripts(qw422016)
 	qw422016.N().S(`
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gumshoe/5.1.1/gumshoe.polyfills.min.js" integrity="sha256-nxQlu6aVkhkHICQuYc1Ga85x2MX+FpvJYV1F+O8Awy8=" crossorigin="anonymous"></script>
+`)
+	streamjqueryScript(qw422016)
+	qw422016.N().S(`
+`)
+	streamgumshoeScript(qw422016)
+	qw422016.N().S(`
 
 <script>
 $(function() {

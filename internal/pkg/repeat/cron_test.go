@@ -289,7 +289,7 @@ func mustParseCron(s string) *repeat.Cron {
 	return e
 }
 
-//nolint:golint
+//nolint:golint,revive
 func recv(t *testing.T, ctx context.Context, ch <-chan struct{}) {
 	t.Helper()
 
