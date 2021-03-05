@@ -41,6 +41,8 @@ linters:
     - ifshort # Inaccurate.
     - cyclop
     - durationcheck
+    - forcetypeassert
+    - wastedassign # Inaccurate.
 
     # - staticcheck
 

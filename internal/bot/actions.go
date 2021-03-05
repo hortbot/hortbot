@@ -547,7 +547,7 @@ func actionGame(ctx context.Context, s *session, actionName, value string) (stri
 func actionStatus(ctx context.Context, s *session, actionName, value string) (string, error) {
 	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
-		return actionMsgError, nil
+		return actionMsgError, nil //nolint:nilerr
 	}
 
 	status := ch.Status
@@ -582,7 +582,7 @@ func actionUntil(ctx context.Context, s *session, actionName, value string) (str
 
 	t, err := parseUntilTimestamp(value)
 	if err != nil {
-		return actionMsgError, nil
+		return actionMsgError, nil //nolint:nilerr
 	}
 
 	now := s.Deps.Clock.Now()
@@ -627,7 +627,7 @@ func actionUntil(ctx context.Context, s *session, actionName, value string) (str
 func actionSteamProfile(ctx context.Context, s *session, actionName, value string) (string, error) {
 	summary, err := s.SteamSummary(ctx)
 	if err != nil {
-		return actionMsgError, nil
+		return actionMsgError, nil //nolint:nilerr
 	}
 
 	url := summary.ProfileURL
@@ -663,7 +663,7 @@ func actionSteamGame(ctx context.Context, s *session, actionName, value string) 
 func actionSteamServer(ctx context.Context, s *session, actionName, value string) (string, error) {
 	summary, err := s.SteamSummary(ctx)
 	if err != nil {
-		return actionMsgError, nil
+		return actionMsgError, nil //nolint:nilerr
 	}
 
 	server := summary.GameServer
@@ -676,7 +676,7 @@ func actionSteamServer(ctx context.Context, s *session, actionName, value string
 func actionSteamStore(ctx context.Context, s *session, actionName, value string) (string, error) {
 	summary, err := s.SteamSummary(ctx)
 	if err != nil {
-		return actionMsgError, nil
+		return actionMsgError, nil //nolint:nilerr
 	}
 
 	gameID := summary.GameID
@@ -719,12 +719,12 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 
 		min, err := strconv.Atoi(minStr)
 		if err != nil {
-			return "0", nil
+			return "0", nil //nolint:nilerr
 		}
 
 		max, err := strconv.Atoi(maxStr)
 		if err != nil {
-			return "0", nil
+			return "0", nil //nolint:nilerr
 		}
 
 		switch {
@@ -745,12 +745,12 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 
 	min, err := strconv.ParseFloat(minStr, 64)
 	if err != nil {
-		return "0.0", nil
+		return "0.0", nil //nolint:nilerr
 	}
 
 	max, err := strconv.ParseFloat(maxStr, 64)
 	if err != nil {
-		return "0.0", nil
+		return "0.0", nil //nolint:nilerr
 	}
 
 	var x float64
@@ -824,7 +824,7 @@ func actionVarInc(ctx context.Context, s *session, name, incStr string, dec bool
 
 	inc, err := strconv.ParseInt(incStr, 10, 64)
 	if err != nil {
-		return actionMsgError, nil
+		return actionMsgError, nil //nolint:nilerr
 	}
 
 	if dec {
