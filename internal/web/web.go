@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/hortbot/hortbot/internal/db/models"

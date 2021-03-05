@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"

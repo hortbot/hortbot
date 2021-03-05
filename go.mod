@@ -16,13 +16,13 @@ require (
 	github.com/felixge/httpsnoop v1.0.1
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
-	github.com/go-chi/chi v1.5.3
+	github.com/go-chi/chi/v5 v5.0.0
 	github.com/go-redis/redis/v8 v8.6.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210219053336-e57a02496045
-	github.com/google/go-cmp v0.5.4
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210224173646-7dc03e3c0d14
+	github.com/google/go-cmp v0.5.5
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
@@ -53,10 +53,10 @@ require (
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223
 	go.deanishe.net/fuzzy v1.0.0
-	go.opencensus.io v0.22.6
+	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210220033124-5f55cee0dc0d
+	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
 	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.0
