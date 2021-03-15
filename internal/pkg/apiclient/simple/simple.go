@@ -8,8 +8,8 @@ import (
 	"net/http"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/version"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 const (
@@ -27,7 +27,7 @@ type API interface {
 
 // Client is a simple HTTP client to fetch URLs.
 type Client struct {
-	cli *http.Client
+	cli httpx.Client
 }
 
 var _ API = (*Client)(nil)
@@ -50,7 +50,7 @@ type Option func(*Client)
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(c *Client) {
-		c.cli = cli
+		c.cli.Client = cli
 	}
 }
 
@@ -58,14 +58,14 @@ var userAgent = "HortBot/" + version.Version()
 
 // Plaintext gets the specified URL as text.
 func (c *Client) Plaintext(ctx context.Context, u string) (body string, err error) {
-	req, err := http.NewRequest("GET", u, nil) //nolint:noctx
+	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
 	if err != nil {
 		return "", err
 	}
 
 	req.Header.Set("User-Agent", userAgent)
 
-	resp, err := ctxhttp.Do(ctx, c.cli, req)
+	resp, err := c.cli.Do(req)
 	if err != nil {
 		return "", err
 	}

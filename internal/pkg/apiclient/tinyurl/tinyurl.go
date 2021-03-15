@@ -9,7 +9,7 @@ import (
 	"net/url"
 	"strings"
 
-	"golang.org/x/net/context/ctxhttp"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -26,7 +26,7 @@ type API interface {
 
 // TinyURL is a TinyURL API client.
 type TinyURL struct {
-	cli *http.Client
+	cli httpx.Client
 }
 
 var _ API = (*TinyURL)(nil)
@@ -49,7 +49,7 @@ type Option func(*TinyURL)
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(s *TinyURL) {
-		s.cli = cli
+		s.cli.Client = cli
 	}
 }
 
@@ -57,7 +57,7 @@ func HTTPClient(cli *http.Client) Option {
 func (t *TinyURL) Shorten(ctx context.Context, u string) (shortened string, err error) {
 	u = "https://tinyurl.com/api-create.php?url=" + url.QueryEscape(u)
 
-	resp, err := ctxhttp.Get(ctx, t.cli, u)
+	resp, err := t.cli.Get(ctx, u)
 	if err != nil {
 		return "", err
 	}

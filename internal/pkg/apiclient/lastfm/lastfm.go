@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
-	"golang.org/x/net/context/ctxhttp"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
@@ -32,7 +32,7 @@ type API interface {
 // LastFM is a LastFM API client.
 type LastFM struct {
 	apiKey string
-	cli    *http.Client
+	cli    httpx.Client
 }
 
 var _ API = (*LastFM)(nil)
@@ -61,7 +61,7 @@ type Option func(*LastFM)
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(l *LastFM) {
-		l.cli = cli
+		l.cli.Client = cli
 	}
 }
 
@@ -70,7 +70,7 @@ func HTTPClient(cli *http.Client) Option {
 func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track, error) {
 	url := "https://ws.audioscrobbler.com/2.0/?api_key=" + url.QueryEscape(l.apiKey) + "&limit=" + strconv.Itoa(n) + "&method=user.getRecentTracks&user=" + url.QueryEscape(user)
 
-	resp, err := ctxhttp.Get(ctx, l.cli, url)
+	resp, err := l.cli.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}

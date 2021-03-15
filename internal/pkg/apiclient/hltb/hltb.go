@@ -9,7 +9,7 @@ import (
 
 	"github.com/antchfx/htmlquery"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
-	"golang.org/x/net/context/ctxhttp"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"golang.org/x/net/html"
 )
 
@@ -31,7 +31,7 @@ type Game struct {
 
 // HLTB is a HowLongToBeat client.
 type HLTB struct {
-	cli *http.Client
+	cli httpx.Client
 }
 
 var _ API = &HLTB{}
@@ -55,7 +55,7 @@ type Option func(*HLTB)
 // HTTP client in net/http.
 func HTTPClient(cli *http.Client) Option {
 	return func(e *HLTB) {
-		e.cli = cli
+		e.cli.Client = cli
 	}
 }
 
@@ -63,7 +63,7 @@ var errNotFound = &apiclient.Error{API: "hltb", StatusCode: 404}
 
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
-	resp, err := ctxhttp.PostForm(ctx, h.cli, "https://howlongtobeat.com/search_results?page=1", queryForm(query))
+	resp, err := h.cli.PostForm(ctx, "https://howlongtobeat.com/search_results?page=1", queryForm(query))
 	if err != nil {
 		return nil, err
 	}

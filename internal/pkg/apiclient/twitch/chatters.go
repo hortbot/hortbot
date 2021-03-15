@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 // Chatters is a summary of the current chat room state returned by Twitch's
@@ -29,7 +28,7 @@ type Chatters struct {
 func (t *Twitch) GetChatters(ctx context.Context, channel string) (*Chatters, error) {
 	url := "https://tmi.twitch.tv/group/user/" + strings.ToLower(channel) + "/chatters"
 
-	resp, err := ctxhttp.Get(ctx, t.cli, url)
+	resp, err := t.cli.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}

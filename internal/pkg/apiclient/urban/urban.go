@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -30,7 +30,7 @@ type API interface {
 
 // Urban is an Urban Dictionary API client.
 type Urban struct {
-	cli *http.Client
+	cli httpx.Client
 }
 
 var _ API = (*Urban)(nil)
@@ -53,7 +53,7 @@ type Option func(*Urban)
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(s *Urban) {
-		s.cli = cli
+		s.cli.Client = cli
 	}
 }
 
@@ -62,7 +62,7 @@ func HTTPClient(cli *http.Client) Option {
 func (u *Urban) Define(ctx context.Context, term string) (string, error) {
 	ur := "https://api.urbandictionary.com/v0/define?term=" + url.QueryEscape(term)
 
-	resp, err := ctxhttp.Get(ctx, u.cli, ur)
+	resp, err := u.cli.Get(ctx, ur)
 	if err != nil {
 		return "", err
 	}

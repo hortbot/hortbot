@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
@@ -20,7 +20,7 @@ type API interface {
 
 // ExtraLife is an Extra-Life API client.
 type ExtraLife struct {
-	cli *http.Client
+	cli httpx.Client
 }
 
 var _ API = &ExtraLife{}
@@ -44,7 +44,7 @@ type Option func(*ExtraLife)
 // HTTP client in net/http.
 func HTTPClient(cli *http.Client) Option {
 	return func(e *ExtraLife) {
-		e.cli = cli
+		e.cli.Client = cli
 	}
 }
 
@@ -53,7 +53,7 @@ func HTTPClient(cli *http.Client) Option {
 func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (float64, error) {
 	url := fmt.Sprintf("https://www.extra-life.org/api/participants/%d", participantID)
 
-	resp, err := ctxhttp.Get(ctx, e.cli, url)
+	resp, err := e.cli.Get(ctx, url)
 	if err != nil {
 		return 0, err
 	}

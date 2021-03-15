@@ -7,8 +7,8 @@ import (
 	"net/url"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
@@ -22,7 +22,7 @@ type API interface {
 // Steam is a Steam API client.
 type Steam struct {
 	apiKey string
-	cli    *http.Client
+	cli    httpx.Client
 }
 
 var _ API = (*Steam)(nil)
@@ -51,7 +51,7 @@ func New(apiKey string, opts ...Option) *Steam {
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(s *Steam) {
-		s.cli = cli
+		s.cli.Client = cli
 	}
 }
 
@@ -70,7 +70,7 @@ type Summary struct {
 func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, error) {
 	url := "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + url.QueryEscape(s.apiKey) + "&format=json&steamids=" + url.QueryEscape(id)
 
-	resp, err := ctxhttp.Get(ctx, s.cli, url)
+	resp, err := s.cli.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ type Game struct {
 func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
 	url := "https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + s.apiKey + "&format=json&steamid=" + url.QueryEscape(id) + "&include_appinfo=1"
 
-	resp, err := ctxhttp.Get(ctx, s.cli, url)
+	resp, err := s.cli.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}

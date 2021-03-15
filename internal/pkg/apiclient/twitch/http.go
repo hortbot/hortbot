@@ -9,20 +9,20 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
-	"golang.org/x/net/context/ctxhttp"
 	"golang.org/x/oauth2"
 )
 
 type httpClient struct {
-	cli     *http.Client
+	cli     httpx.Client
 	ts      oauth2.TokenSource
 	headers http.Header
 }
 
 func (h *httpClient) newRequest(ctx context.Context, method string, url string, body io.Reader) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, body) //nolint:noctx
+	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (h *httpClient) Get(ctx context.Context, url string) (*http.Response, error
 		return nil, err
 	}
 
-	return h.do(ctx, req)
+	return h.do(req)
 }
 
 func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url string, v interface{}) (*http.Response, error) {
@@ -94,7 +94,7 @@ func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url str
 		req.Header.Set("Content-Type", "application/json")
 	}
 
-	return h.do(ctx, req)
+	return h.do(req)
 }
 
 func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.Response, error) {
@@ -109,11 +109,11 @@ func (h *httpClient) Patch(ctx context.Context, url string, v interface{}) (*htt
 	return h.makeJSONRequest(ctx, "PATCH", url, v)
 }
 
-func (h *httpClient) do(ctx context.Context, req *http.Request) (*http.Response, error) {
+func (h *httpClient) do(req *http.Request) (*http.Response, error) {
 	// x, _ := httputil.DumpRequestOut(req, true)
 	// log.Printf("%s", x)
 
-	resp, err := ctxhttp.Do(ctx, h.cli, req)
+	resp, err := h.cli.Do(req)
 	if err != nil {
 		return nil, err
 	}

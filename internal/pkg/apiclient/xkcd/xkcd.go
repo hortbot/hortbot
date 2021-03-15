@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 // ErrNotFound is returned when the requested comic cannot be found.
@@ -32,7 +32,7 @@ type API interface {
 
 // XKCD is an XKCD API client.
 type XKCD struct {
-	cli *http.Client
+	cli httpx.Client
 }
 
 var _ API = &XKCD{}
@@ -53,7 +53,7 @@ func New(opts ...Option) *XKCD {
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(s *XKCD) {
-		s.cli = cli
+		s.cli.Client = cli
 	}
 }
 
@@ -61,7 +61,7 @@ func HTTPClient(cli *http.Client) Option {
 func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
 	url := "https://xkcd.com/" + strconv.Itoa(id) + "/info.0.json"
 
-	resp, err := ctxhttp.Get(ctx, x.cli, url)
+	resp, err := x.cli.Get(ctx, url)
 	if err != nil {
 		return nil, err
 	}

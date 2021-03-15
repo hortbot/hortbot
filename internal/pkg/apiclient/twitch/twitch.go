@@ -7,6 +7,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -97,7 +98,7 @@ type API interface {
 
 // Twitch is the Twitch API client.
 type Twitch struct {
-	cli      *http.Client
+	cli      httpx.Client
 	clientID string
 	forUser  *oauth2.Config
 
@@ -123,7 +124,6 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 	}
 
 	t := &Twitch{
-		cli:      http.DefaultClient,
 		clientID: clientID,
 		forUser: &oauth2.Config{
 			ClientID:     clientID,
@@ -145,7 +145,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 		AuthStyle:    twitchEndpoint.AuthStyle,
 	}
 
-	ctx := context.WithValue(context.Background(), oauth2.HTTPClient, t.cli)
+	ctx := t.cli.AsOAuth2Client(context.TODO())
 	clientTS := cconf.TokenSource(ctx)
 
 	t.krakenCli = &httpClient{
@@ -167,7 +167,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(t *Twitch) {
-		t.cli = cli
+		t.cli.Client = cli
 	}
 }
 
@@ -188,7 +188,7 @@ func (t *Twitch) AuthCodeURL(state string, extraScopes ...string) string {
 // Exchange provides the Twitch OAuth server with the code and exchanges it
 // for an OAuth token for the user who provided the code.
 func (t *Twitch) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
-	ctx = context.WithValue(ctx, oauth2.HTTPClient, t.cli)
+	ctx = t.cli.AsOAuth2Client(ctx)
 	return t.forUser.Exchange(ctx, code)
 }
 
@@ -205,7 +205,7 @@ func (t *Twitch) headers(v5 bool) http.Header {
 }
 
 func (t *Twitch) clientForUser(ctx context.Context, v5 bool, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
-	ctx = context.WithValue(ctx, oauth2.HTTPClient, t.cli)
+	ctx = t.cli.AsOAuth2Client(ctx)
 	ts := t.forUser.TokenSource(ctx, tok)
 	ts = oauth2x.NewOnNewWithToken(ts, onNewToken, tok)
 

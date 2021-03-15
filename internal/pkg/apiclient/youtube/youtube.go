@@ -8,8 +8,8 @@ import (
 	"path"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"golang.org/x/net/context/ctxhttp"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -24,7 +24,7 @@ type API interface {
 // YouTube is a YouTube API client.
 type YouTube struct {
 	apiKey string
-	cli    *http.Client
+	cli    httpx.Client
 }
 
 var _ API = &YouTube{}
@@ -53,7 +53,7 @@ type Option func(*YouTube)
 // If nil (or if this option wasn't used), http.DefaultClient will be used.
 func HTTPClient(cli *http.Client) Option {
 	return func(y *YouTube) {
-		y.cli = cli
+		y.cli.Client = cli
 	}
 }
 
@@ -67,7 +67,7 @@ func (y *YouTube) VideoTitle(ctx context.Context, u *url.URL) string {
 
 	url := "https://www.googleapis.com/youtube/v3/videos?part=snippet&key=" + url.QueryEscape(y.apiKey) + "&id=" + url.QueryEscape(id)
 
-	resp, err := ctxhttp.Get(ctx, y.cli, url)
+	resp, err := y.cli.Get(ctx, url)
 	if err != nil {
 		return ""
 	}

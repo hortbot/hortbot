@@ -58,6 +58,9 @@ func newFakeTwitch(t testing.TB) *fakeTwitch {
 }
 
 func (f *fakeTwitch) client() *http.Client {
+	if f.mt == nil {
+		panic("MockTransport unset")
+	}
 	return &http.Client{Transport: f.mt}
 }
 
