@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/version"
 	"golang.org/x/net/context/ctxhttp"
 )
 
@@ -53,9 +54,18 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
+var userAgent = "HortBot/" + version.Version()
+
 // Plaintext gets the specified URL as text.
 func (c *Client) Plaintext(ctx context.Context, u string) (body string, err error) {
-	resp, err := ctxhttp.Get(ctx, c.cli, u)
+	req, err := http.NewRequest("GET", u, nil) //nolint:noctx
+	if err != nil {
+		return "", err
+	}
+
+	req.Header.Set("User-Agent", userAgent)
+
+	resp, err := ctxhttp.Do(ctx, c.cli, req)
 	if err != nil {
 		return "", err
 	}
