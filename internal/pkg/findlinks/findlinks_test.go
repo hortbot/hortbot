@@ -123,10 +123,39 @@ func TestFind(t *testing.T) {
 }
 
 func BenchmarkFind(b *testing.B) {
-	const message = "twitch.tv is cool and http://github.com/hortbot/hortbot look https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time huh"
+	tests := []struct {
+		name    string
+		message string
+	}{
+		{
+			name:    "long with links",
+			message: "twitch.tv is cool and http://github.com/hortbot/hortbot look https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time huh",
+		},
+		{
+			name:    "short no links",
+			message: "LUL",
+		},
+		{
+			name:    "medium no links",
+			message: "This is a message, and it doesn't have any links. Isn't that interesting? I sure think so.",
+		},
+		{
+			name:    "long no links",
+			message: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
+		},
+		{
+			name:    "custom command",
+			message: "!pan working command",
+		},
+	}
 
-	b.ReportAllocs()
-	for i := 0; i < b.N; i++ {
-		findlinks.Find(message)
+	for _, test := range tests {
+		test := test
+		b.Run(test.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for i := 0; i < b.N; i++ {
+				findlinks.Find(test.message)
+			}
+		})
 	}
 }

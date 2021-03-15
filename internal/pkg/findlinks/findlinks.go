@@ -19,10 +19,17 @@ var linkRegex = func() *regexp.Regexp {
 // included, then the results will only include links with the provided
 // schemes.
 func Find(message string, schemeWhitelist ...string) []*url.URL {
+	if !linkRegex.MatchString(message) {
+		// Fast path to check for a message without links. Increases
+		// overall runtime, but most messages do not contain links and
+		// FindAllString still does more work than this precheck.
+		return nil
+	}
+
 	matches := linkRegex.FindAllString(message, -1)
 
 	if len(matches) == 0 {
-		return nil
+		panic("findlinks: no matches, but precheck matched")
 	}
 
 	urls := make([]*url.URL, 0, len(matches))
