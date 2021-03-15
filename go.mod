@@ -61,5 +61,5 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.0
 	gotest.tools/v3 v3.0.3
-	mvdan.cc/xurls/v2 v2.2.0
+	mvdan.cc/xurls/v2 v2.2.1-0.20210102120322-544f965eea08
 )
