@@ -5,7 +5,7 @@ go 1.16
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
-	github.com/99designs/gqlgen v0.13.1-0.20210315040414-82a8e1bf39ae
+	github.com/99designs/gqlgen v0.13.1-0.20210315223818-7985db44855b
 	github.com/alicebob/miniredis/v2 v2.14.3
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20210207001429-0eec95c9db7e
@@ -21,16 +21,16 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210314053601-707fc52dfe44
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210319040357-511ae9f5b6be
 	github.com/google/go-cmp v0.5.5
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
-	github.com/hako/durafmt v0.0.0-20200710122514-c0fb7b4da026
+	github.com/hako/durafmt v0.0.0-20210316092057-3a2c319c1acd
 	github.com/jackc/pgconn v1.8.0
 	github.com/jackc/pgx/v4 v4.10.1
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.8
-	github.com/jessevdk/go-flags v1.4.1-0.20200711081900-c17162fe8fd7
+	github.com/jessevdk/go-flags v1.5.0
 	github.com/jmoiron/sqlx v1.3.1
 	github.com/johejo/golang-migrate-extra v0.0.0-20210217013041-51a992e50d16
 	github.com/joho/godotenv v1.3.0
@@ -40,7 +40,7 @@ require (
 	github.com/ory/dockertest/v3 v3.6.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/posener/ctxutil v1.0.0
-	github.com/prometheus/client_golang v1.9.0
+	github.com/prometheus/client_golang v1.10.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.2.1
 	github.com/tomwright/queryparam/v4 v4.1.0
@@ -56,10 +56,10 @@ require (
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210226172049-e18ecbb05110
+	golang.org/x/net v0.0.0-20210316092652-d523dce5a7f4
 	golang.org/x/oauth2 v0.0.0-20210313182246-cd4f82c27b84
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.0
 	gotest.tools/v3 v3.0.3
-	mvdan.cc/xurls/v2 v2.2.1-0.20210102120322-544f965eea08
+	mvdan.cc/xurls/v2 v2.2.1-0.20210316190237-15fbd5aeee83
 )
