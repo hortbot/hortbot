@@ -10,7 +10,7 @@ import (
 )
 
 var linkRegex = func() *regexp.Regexp {
-	re := regexp.MustCompile(`\b` + xurls.Relaxed().String() + `\b`)
+	re := regexp.MustCompile(`\b(` + xurls.Relaxed().String() + `)\b`)
 	re.Longest()
 	return re
 }()
