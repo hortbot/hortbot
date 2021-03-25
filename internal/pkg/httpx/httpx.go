@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/useragent"
 	"golang.org/x/oauth2"
 )
 
@@ -17,6 +18,9 @@ import (
 type Client struct {
 	// Client is the HTTP client that will be used. If nil, http.DefaultClient will be used.
 	Client *http.Client
+
+	// AsBrowser instructs the client to perform the request like a browser.
+	AsBrowser bool
 }
 
 func (c *Client) client() *http.Client {
@@ -27,6 +31,16 @@ func (c *Client) client() *http.Client {
 }
 
 func (c *Client) Do(req *http.Request) (*http.Response, error) {
+	const userAgentHeader = "User-Agent"
+
+	if _, ok := req.Header[userAgentHeader]; !ok {
+		if c.AsBrowser {
+			req.Header.Set(userAgentHeader, useragent.Browser())
+		} else {
+			req.Header.Set(userAgentHeader, useragent.Bot())
+		}
+	}
+
 	resp, err := c.client().Do(req)
 	// If we got an error, and the context has been canceled,
 	// the context's error is probably more useful.

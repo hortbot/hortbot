@@ -9,7 +9,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/version"
 )
 
 const (
@@ -54,16 +53,12 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
-var userAgent = "HortBot/" + version.Version()
-
 // Plaintext gets the specified URL as text.
 func (c *Client) Plaintext(ctx context.Context, u string) (body string, err error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
 	if err != nil {
 		return "", err
 	}
-
-	req.Header.Set("User-Agent", userAgent)
 
 	resp, err := c.cli.Do(req)
 	if err != nil {

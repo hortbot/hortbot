@@ -36,6 +36,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.3.0
+	github.com/mroth/weightedrand v0.4.1
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.3
 	github.com/patrickmn/go-cache v2.1.0+incompatible

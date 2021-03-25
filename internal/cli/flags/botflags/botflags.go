@@ -111,7 +111,7 @@ func (args *Bot) New(
 		TinyURL:            tinyurl.New(tinyurl.HTTPClient(httpClient)),
 		Urban:              urban.New(urban.HTTPClient(httpClient)),
 		Simple:             simple.New(simple.HTTPClient(untrustedClient)),
-		HLTB:               hltb.New(hltb.HTTPClient(httpClient)),
+		HLTB:               hltb.New(hltb.HTTPClient(untrustedClient)),
 		Admins:             args.Admins,
 		SuperAdmins:        args.SuperAdmins,
 		WhitelistEnabled:   args.WhitelistEnabled,
