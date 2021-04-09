@@ -13,7 +13,9 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . API
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
+//counterfeiter:generate . API
 
 // Track represents a specific LastFM track.
 type Track struct {

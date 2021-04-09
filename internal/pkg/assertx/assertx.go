@@ -3,7 +3,9 @@ package assertx
 
 import "gotest.tools/v3/assert"
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 . TestingT
+//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+
+//counterfeiter:generate . TestingT
 
 // TestingT is the assert package's TestingT, but includes Helper.
 type TestingT interface {
