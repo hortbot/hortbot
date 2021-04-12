@@ -47,16 +47,11 @@ var (
 // These functions are copied from promhttp, with modifications.
 
 func makeLabels(clientName string, reqMethod string, status int) prometheus.Labels {
-	labels := prometheus.Labels{
+	return prometheus.Labels{
 		labelClientName: clientName,
 		labelMethod:     sanitizeMethod(reqMethod),
+		labelCode:       sanitizeCode(status),
 	}
-
-	if status != 0 {
-		labels[labelCode] = sanitizeCode(status)
-	}
-
-	return labels
 }
 
 func sanitizeMethod(m string) string {
@@ -82,18 +77,18 @@ func sanitizeMethod(m string) string {
 	}
 }
 
-// If the wrapped http.Handler has not set a status code, i.e. the value is
-// currently 0, santizeCode will return 200, for consistency with behavior in
-// the stdlib.
 //nolint
 func sanitizeCode(s int) string {
 	switch s {
+	case 0:
+		return "0" // error
+
 	case 100:
 		return "100"
 	case 101:
 		return "101"
 
-	case 200, 0:
+	case 200:
 		return "200"
 	case 201:
 		return "201"
