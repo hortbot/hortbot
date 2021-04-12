@@ -52,6 +52,8 @@ func cmdSettings(ctx context.Context, s *session, cmd string, args string) error
 }
 
 func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) error {
+	args = strings.TrimSpace(args)
+
 	if args == "" {
 		var bullet string
 		if s.Channel.Bullet.Valid {
@@ -88,6 +90,8 @@ func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) 
 }
 
 func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) error {
+	args = strings.TrimSpace(args)
+
 	if args == "" {
 		return s.Replyf(ctx, "Prefix is %s", s.Channel.Prefix)
 	}
