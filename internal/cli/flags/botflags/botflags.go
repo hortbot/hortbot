@@ -123,6 +123,7 @@ func (args *Bot) New(
 		PublicJoin:         args.PublicJoin,
 		PublicJoinDisabled: args.PublicJoinDisabled,
 		BetaFeatures:       args.BetaFeatures,
+		GlobalIgnore:       args.GlobalIgnore,
 	})
 
 	if err := b.Init(ctx); err != nil {

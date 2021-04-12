@@ -4,6 +4,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"strings"
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -155,6 +156,7 @@ func New(config *Config) *Bot {
 	}
 
 	for _, name := range config.GlobalIgnore {
+		name = strings.ToLower(name)
 		deps.GlobalIgnore[name] = true
 	}
 
