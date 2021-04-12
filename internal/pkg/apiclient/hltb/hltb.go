@@ -40,7 +40,11 @@ var _ API = &HLTB{}
 
 // New creates a new HLTB client.
 func New(opts ...Option) *HLTB {
-	h := &HLTB{}
+	h := &HLTB{
+		cli: httpx.Client{
+			Name: "hltb",
+		},
+	}
 
 	for _, opt := range opts {
 		opt(h)

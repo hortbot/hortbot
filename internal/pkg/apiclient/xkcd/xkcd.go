@@ -42,7 +42,11 @@ type Option func(*XKCD)
 
 // New creates a new XKCD API client.
 func New(opts ...Option) *XKCD {
-	x := &XKCD{}
+	x := &XKCD{
+		cli: httpx.Client{
+			Name: "xkcd",
+		},
+	}
 	for _, opt := range opts {
 		opt(x)
 	}

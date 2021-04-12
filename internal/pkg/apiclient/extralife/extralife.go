@@ -29,7 +29,11 @@ var _ API = &ExtraLife{}
 
 // New creates a new Extra-Life API client.
 func New(opts ...Option) *ExtraLife {
-	e := &ExtraLife{}
+	e := &ExtraLife{
+		cli: httpx.Client{
+			Name: "extralife",
+		},
+	}
 
 	for _, opt := range opts {
 		opt(e)

@@ -47,6 +47,9 @@ func New(apiKey string, opts ...Option) *LastFM {
 
 	l := &LastFM{
 		apiKey: apiKey,
+		cli: httpx.Client{
+			Name: "lastfm",
+		},
 	}
 
 	for _, o := range opts {

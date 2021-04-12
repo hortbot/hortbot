@@ -33,7 +33,11 @@ var _ API = (*TinyURL)(nil)
 
 // New creates a new TinyURL API client.
 func New(opts ...Option) *TinyURL {
-	t := &TinyURL{}
+	t := &TinyURL{
+		cli: httpx.Client{
+			Name: "tinyurl",
+		},
+	}
 
 	for _, opt := range opts {
 		opt(t)

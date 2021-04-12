@@ -132,6 +132,9 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 			RedirectURL:  redirectURL,
 			Scopes:       userScopes,
 		},
+		cli: httpx.Client{
+			Name: "twitch",
+		},
 	}
 
 	for _, opt := range opts {

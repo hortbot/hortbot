@@ -40,6 +40,9 @@ func New(apiKey string, opts ...Option) *Steam {
 
 	s := &Steam{
 		apiKey: apiKey,
+		cli: httpx.Client{
+			Name: "steam",
+		},
 	}
 
 	for _, opt := range opts {

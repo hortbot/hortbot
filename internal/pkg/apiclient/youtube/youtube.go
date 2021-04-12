@@ -37,6 +37,9 @@ func New(apiKey string, opts ...Option) *YouTube {
 
 	yt := &YouTube{
 		apiKey: apiKey,
+		cli: httpx.Client{
+			Name: "youtube",
+		},
 	}
 
 	for _, o := range opts {

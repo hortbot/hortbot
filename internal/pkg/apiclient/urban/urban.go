@@ -37,7 +37,11 @@ var _ API = (*Urban)(nil)
 
 // New creates a new Urban Dictionary client.
 func New(opts ...Option) *Urban {
-	t := &Urban{}
+	t := &Urban{
+		cli: httpx.Client{
+			Name: "urban",
+		},
+	}
 
 	for _, opt := range opts {
 		opt(t)

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/useragent"
 	"golang.org/x/oauth2"
@@ -21,6 +22,9 @@ type Client struct {
 
 	// AsBrowser instructs the client to perform the request like a browser.
 	AsBrowser bool
+
+	// Name is the name of the client, for metrics.
+	Name string
 }
 
 func (c *Client) client() *http.Client {
@@ -30,7 +34,26 @@ func (c *Client) client() *http.Client {
 	return http.DefaultClient
 }
 
-func (c *Client) Do(req *http.Request) (*http.Response, error) {
+func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
+	start := time.Now()
+	defer func() {
+		end := time.Now()
+
+		code := 0
+		if resp != nil {
+			code = resp.StatusCode
+		}
+
+		labels := makeLabels(c.Name, req.Method, code)
+
+		metricRequests.With(labels).Inc()
+		if err != nil {
+			metricErrors.With(labels).Inc()
+		} else {
+			metricRequestDuration.With(labels).Observe(end.Sub(start).Seconds())
+		}
+	}()
+
 	const userAgentHeader = "User-Agent"
 
 	if _, ok := req.Header[userAgentHeader]; !ok {
@@ -41,7 +64,7 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		}
 	}
 
-	resp, err := c.client().Do(req)
+	resp, err = c.client().Do(req)
 	// If we got an error, and the context has been canceled,
 	// the context's error is probably more useful.
 	if err != nil {
