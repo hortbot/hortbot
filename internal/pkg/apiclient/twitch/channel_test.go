@@ -28,7 +28,7 @@ func TestSetChannelStatus(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:          1234,
 		DisplayName: "FooBar",
 		Status:      "What a cool stream!",
@@ -64,7 +64,7 @@ func TestSetChannelStatusNilToken(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:          1234,
 		DisplayName: "FooBar",
 		Status:      "What a cool stream!",
@@ -95,7 +95,7 @@ func TestSetChannelGame(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:          1234,
 		DisplayName: "FooBar",
 		Status:      "What a cool stream!",
@@ -131,7 +131,7 @@ func TestSetChannelGameNilToken(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:     1234,
 		Status: "What a cool stream!",
 		Game:   "Garry's Mod",
@@ -396,7 +396,7 @@ func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch
 	return tok
 }
 
-func TestGetHelixChannelByID(t *testing.T) {
+func TestGetChannelByID(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
@@ -414,10 +414,10 @@ func TestGetHelixChannelByID(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
-		channel, err := tw.GetHelixChannelByID(ctx, 1234)
+		channel, err := tw.GetChannelByID(ctx, 1234)
 		assert.NilError(t, err)
 
-		assert.DeepEqual(t, channel, &twitch.HelixChannel{
+		assert.DeepEqual(t, channel, &twitch.Channel{
 			ID:     1234,
 			Name:   "foobar",
 			Game:   "PUBG MOBILE",
@@ -430,7 +430,7 @@ func TestGetHelixChannelByID(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
-		_, err := tw.GetHelixChannelByID(ctx, 444)
+		_, err := tw.GetChannelByID(ctx, 444)
 		assert.Equal(t, err, twitch.ErrNotFound)
 	})
 
@@ -438,7 +438,7 @@ func TestGetHelixChannelByID(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
-		_, err := tw.GetHelixChannelByID(ctx, 404)
+		_, err := tw.GetChannelByID(ctx, 404)
 		assert.Equal(t, err, twitch.ErrNotFound)
 	})
 
@@ -446,7 +446,7 @@ func TestGetHelixChannelByID(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
-		_, err := tw.GetHelixChannelByID(ctx, 500)
+		_, err := tw.GetChannelByID(ctx, 500)
 		assert.Equal(t, err, twitch.ErrServerError)
 	})
 
@@ -454,7 +454,7 @@ func TestGetHelixChannelByID(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
-		_, err := tw.GetHelixChannelByID(ctx, 900)
+		_, err := tw.GetChannelByID(ctx, 900)
 		assert.Equal(t, err, twitch.ErrServerError)
 	})
 
@@ -462,7 +462,7 @@ func TestGetHelixChannelByID(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
-		_, err := tw.GetHelixChannelByID(ctx, 901)
+		_, err := tw.GetChannelByID(ctx, 901)
 		assert.ErrorContains(t, err, errTestBadRequest.Error())
 	})
 }

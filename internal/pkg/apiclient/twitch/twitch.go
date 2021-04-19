@@ -88,7 +88,7 @@ type API interface {
 	GetGameByID(ctx context.Context, id int64) (*Category, error)
 	GetStreamByUserID(ctx context.Context, id int64) (*Stream, error)
 	GetStreamByUsername(ctx context.Context, username string) (*Stream, error)
-	GetHelixChannelByID(ctx context.Context, id int64) (*HelixChannel, error)
+	GetChannelByID(ctx context.Context, id int64) (*Channel, error)
 	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
 
 	// TMI

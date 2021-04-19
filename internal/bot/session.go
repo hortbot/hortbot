@@ -74,7 +74,7 @@ type session struct {
 		tracks         *[]lastfm.Track
 		tok            **oauth2.Token
 		isLive         *bool
-		twitchChannel  **twitch.HelixChannel
+		twitchChannel  **twitch.Channel
 		twitchStream   **twitch.Stream
 		twitchChatters **twitch.Chatters
 		steamSummary   **steam.Summary
@@ -372,7 +372,7 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	return isLive, nil
 }
 
-func (s *session) TwitchChannel(ctx context.Context) (*twitch.HelixChannel, error) {
+func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchChannel")
 	defer span.End()
 
@@ -380,7 +380,7 @@ func (s *session) TwitchChannel(ctx context.Context) (*twitch.HelixChannel, erro
 		return *s.cache.twitchChannel, nil
 	}
 
-	ch, err := s.Deps.Twitch.GetHelixChannelByID(ctx, s.Channel.TwitchID)
+	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.TwitchID)
 	if err != nil {
 		return nil, err
 	}

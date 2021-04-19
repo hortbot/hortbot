@@ -34,7 +34,7 @@ type fakeTwitch struct {
 	codeToToken map[string]*oauth2.Token
 	tokenToID   map[string]int64
 
-	channels   map[int64]*twitch.Channel
+	channels   map[int64]*twitch.KrakenChannel
 	moderators map[int64][]*twitch.ChannelModerator
 }
 
@@ -46,7 +46,7 @@ func newFakeTwitch(t testing.TB) *fakeTwitch {
 		idToCode:    make(map[int64]string),
 		codeToToken: make(map[string]*oauth2.Token),
 		tokenToID:   make(map[string]int64),
-		channels:    make(map[int64]*twitch.Channel),
+		channels:    make(map[int64]*twitch.KrakenChannel),
 		moderators:  make(map[int64][]*twitch.ChannelModerator),
 	}
 
@@ -271,7 +271,7 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 	return f.dumpAndFail(req, dumped)
 }
 
-func (f *fakeTwitch) setChannel(c *twitch.Channel) {
+func (f *fakeTwitch) setChannel(c *twitch.KrakenChannel) {
 	f.channels[c.ID.AsInt64()] = c
 }
 

@@ -8,10 +8,10 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// Channel represents a Twitch channel as described by the Kraken
+// krakenChannel represents a Twitch channel as described by the Kraken
 // channel/channels endpoint. Some fields are missing (but may be added as
 // needed in the future).
-type channel struct {
+type krakenChannel struct {
 	ID          IDStr  `json:"_id"`
 	Name        string `json:"name"`
 	DisplayName string `json:"display_name"`
@@ -22,7 +22,7 @@ type channel struct {
 // getChannelByID gets a channel using the client's token.
 //
 // GET https://api.twitch.tv/kraken/channels/<id>
-func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *channel, err error) {
+func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *krakenChannel, err error) {
 	cli := t.krakenCli
 
 	url := krakenRoot + "/channels/" + strconv.FormatInt(id, 10)
@@ -37,7 +37,7 @@ func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *channel, err 
 		return nil, err
 	}
 
-	c = &channel{}
+	c = &krakenChannel{}
 
 	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return nil, ErrServerError
@@ -73,7 +73,7 @@ func (t *Twitch) SetChannelStatus(ctx context.Context, id int64, userToken *oaut
 	}
 	defer resp.Body.Close()
 
-	c := &channel{}
+	c := &krakenChannel{}
 
 	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return "", newToken, ErrServerError
@@ -109,7 +109,7 @@ func (t *Twitch) SetChannelGame(ctx context.Context, id int64, userToken *oauth2
 	}
 	defer resp.Body.Close()
 
-	c := &channel{}
+	c := &krakenChannel{}
 
 	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return "", newToken, ErrServerError
@@ -226,8 +226,8 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 	return newToken, statusToError(resp.StatusCode)
 }
 
-// HelixChannel is a channel as exposed by the Helix API.
-type HelixChannel struct {
+// Channel is a channel as exposed by the Helix API.
+type Channel struct {
 	ID     IDStr  `json:"broadcaster_id"`
 	Name   string `json:"broadcaster_name"`
 	Game   string `json:"game_name"`
@@ -235,10 +235,10 @@ type HelixChannel struct {
 	Title  string `json:"title"`
 }
 
-// GetHelixChannelByID gets a channel using the client's token.
+// GetChannelByID gets a channel using the client's token.
 //
 // GET https://api.twitch.tv/helix/channels?broadcaster_id<id>
-func (t *Twitch) GetHelixChannelByID(ctx context.Context, id int64) (*HelixChannel, error) {
+func (t *Twitch) GetChannelByID(ctx context.Context, id int64) (*Channel, error) {
 	cli := t.helixCli
 	url := helixRoot + "/channels?broadcaster_id=" + strconv.FormatInt(id, 10)
 
@@ -253,7 +253,7 @@ func (t *Twitch) GetHelixChannelByID(ctx context.Context, id int64) (*HelixChann
 	}
 
 	body := &struct {
-		Data []*HelixChannel `json:"data"`
+		Data []*Channel `json:"data"`
 	}{}
 
 	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {

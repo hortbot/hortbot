@@ -21,4 +21,4 @@ var ExpectedUserScopes = func() string {
 
 var GetChannelByID = (*Twitch).getChannelByID
 
-type Channel = channel
+type KrakenChannel = krakenChannel

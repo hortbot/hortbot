@@ -19,7 +19,7 @@ func TestGetUserForToken(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:     1234,
 		Name:   "someone",
 		Status: "What a cool stream!",
@@ -50,7 +50,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:     503,
 		Status: "What a cool stream!",
 		Game:   "Garry's Mod",
@@ -77,7 +77,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID:     777,
 		Status: "What a cool stream!",
 		Game:   "Garry's Mod",
@@ -285,7 +285,7 @@ func TestFollowChannel(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	c := &twitch.Channel{
+	c := &twitch.KrakenChannel{
 		ID: 1234,
 	}
 
