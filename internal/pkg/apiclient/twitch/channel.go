@@ -11,7 +11,7 @@ import (
 // Channel represents a Twitch channel as described by the Kraken
 // channel/channels endpoint. Some fields are missing (but may be added as
 // needed in the future).
-type Channel struct {
+type channel struct {
 	ID          IDStr  `json:"_id"`
 	Name        string `json:"name"`
 	DisplayName string `json:"display_name"`
@@ -22,7 +22,7 @@ type Channel struct {
 // getChannelByID gets a channel using the client's token.
 //
 // GET https://api.twitch.tv/kraken/channels/<id>
-func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *Channel, err error) {
+func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *channel, err error) {
 	cli := t.krakenCli
 
 	url := krakenRoot + "/channels/" + strconv.FormatInt(id, 10)
@@ -37,7 +37,7 @@ func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *Channel, err 
 		return nil, err
 	}
 
-	c = &Channel{}
+	c = &channel{}
 
 	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return nil, ErrServerError
@@ -73,13 +73,12 @@ func (t *Twitch) SetChannelStatus(ctx context.Context, id int64, userToken *oaut
 	}
 	defer resp.Body.Close()
 
-	c := &Channel{}
+	c := &channel{}
 
 	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return "", newToken, ErrServerError
 	}
 
-	// TODO: Return the entire channel?
 	return c.Status, newToken, statusToError(resp.StatusCode)
 }
 
@@ -110,13 +109,12 @@ func (t *Twitch) SetChannelGame(ctx context.Context, id int64, userToken *oauth2
 	}
 	defer resp.Body.Close()
 
-	c := &Channel{}
+	c := &channel{}
 
 	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
 		return "", newToken, ErrServerError
 	}
 
-	// TODO: Return the entire channel?
 	return c.Game, newToken, statusToError(resp.StatusCode)
 }
 

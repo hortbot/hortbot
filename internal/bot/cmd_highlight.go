@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
@@ -14,24 +15,32 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	stream, err := s.TwitchStream(ctx)
-	if err != nil || stream == nil {
+	if err != nil {
+		if err == twitch.ErrNotFound {
+			return nil
+		}
 		return err
 	}
 
-	game := stream.Game
-	start := stream.CreatedAt
+	var gameName string
 
-	var status string
-	if stream.Channel != nil {
-		status = stream.Channel.Status
+	if stream.GameID != 0 {
+		game, err := s.Deps.Twitch.GetGameByID(ctx, stream.GameID.AsInt64())
+		if err != nil {
+			return err
+		}
+		gameName = game.Name
 	}
+
+	start := stream.StartedAt
+	status := stream.Title
 
 	highlight := &models.Highlight{
 		ChannelID:     s.Channel.ID,
 		HighlightedAt: s.Deps.Clock.Now(),
 		StartedAt:     null.NewTime(start, !start.IsZero()),
 		Status:        status,
-		Game:          game,
+		Game:          gameName,
 	}
 
 	return highlight.Insert(ctx, s.Tx, boil.Infer())

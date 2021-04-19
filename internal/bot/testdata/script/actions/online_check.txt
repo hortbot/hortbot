@@ -3,14 +3,14 @@ join hortbot 999 foobar 1
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test Hey! (_ONLINE_CHECK_)
 send_any
 
-twitch_get_current_stream {"ID": 1}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
 
-twitch_get_current_stream {"ID": 1, "Stream": {"created_at": "2000-10-01T00:00:11Z", "viewers": 1234}}
+twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T00:00:11Z", "viewer_count": 1234}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] Hey!
 
-twitch_get_current_stream {"ID": 1, "Err": "ErrServerError"}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send

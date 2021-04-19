@@ -84,25 +84,6 @@ func (st *scriptTester) twitchSetChannel(t testing.TB, directive, args string, l
 	})
 }
 
-func (st *scriptTester) twitchGetCurrentStream(t testing.TB, _, args string, lineNum int) {
-	var call struct {
-		ID int64
-
-		Stream *twitch.Stream
-		Err    string
-	}
-
-	err := json.Unmarshal([]byte(args), &call)
-	assert.NilError(t, err, "line %d", lineNum)
-
-	st.addAction(func(ctx context.Context) {
-		st.twitch.GetCurrentStreamCalls(func(_ context.Context, id int64) (*twitch.Stream, error) {
-			assert.Equal(t, id, call.ID, "line %d", lineNum)
-			return call.Stream, twitchErr(t, lineNum, call.Err)
-		})
-	})
-}
-
 func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		Channel string
@@ -210,6 +191,25 @@ func (st *scriptTester) twitchGetGameByName(t testing.TB, directive, args string
 	})
 }
 
+func (st *scriptTester) twitchGetGameByID(t testing.TB, directive, args string, lineNum int) {
+	var calls map[twitch.IDStr]struct {
+		Category *twitch.Category
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &calls)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetGameByIDCalls(func(_ context.Context, id int64) (*twitch.Category, error) {
+			call, ok := calls[twitch.IDStr(id)]
+			assert.Assert(t, ok, `unknown id "%v": line %d`, id, lineNum)
+
+			return call.Category, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
 func (st *scriptTester) twitchSearchCategories(t testing.TB, directive, args string, lineNum int) {
 	var calls map[string]struct {
 		Categories []*twitch.Category
@@ -225,6 +225,45 @@ func (st *scriptTester) twitchSearchCategories(t testing.TB, directive, args str
 			assert.Assert(t, ok, `unknown query "%s": line %d`, query, lineNum)
 
 			return call.Categories, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchGetStreamByUserID(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		ID int64
+
+		Stream *twitch.Stream
+		Err    string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetStreamByUserIDCalls(func(_ context.Context, id int64) (*twitch.Stream, error) {
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+
+			return call.Stream, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+func (st *scriptTester) twitchGetStreamByUsername(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		Username string
+
+		Stream *twitch.Stream
+		Err    string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetStreamByUsernameCalls(func(_ context.Context, username string) (*twitch.Stream, error) {
+			assert.Equal(t, username, call.Username, "line %d", lineNum)
+
+			return call.Stream, twitchErr(t, lineNum, call.Err)
 		})
 	})
 }

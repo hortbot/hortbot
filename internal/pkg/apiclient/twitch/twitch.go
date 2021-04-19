@@ -74,7 +74,6 @@ type API interface {
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
 
 	// Kraken
-	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
 
@@ -87,8 +86,8 @@ type API interface {
 	ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title *string, gameID *int64) (newToken *oauth2.Token, err error)
 	GetGameByName(ctx context.Context, name string) (*Category, error)
 	GetGameByID(ctx context.Context, id int64) (*Category, error)
-	GetStreamByUserID(ctx context.Context, id int64) (*HelixStream, error)
-	GetStreamByUsername(ctx context.Context, username string) (*HelixStream, error)
+	GetStreamByUserID(ctx context.Context, id int64) (*Stream, error)
+	GetStreamByUsername(ctx context.Context, username string) (*Stream, error)
 	GetHelixChannelByID(ctx context.Context, id int64) (*HelixChannel, error)
 	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
 

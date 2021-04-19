@@ -360,7 +360,11 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 
 	stream, err := s.TwitchStream(ctx)
 	if err != nil {
-		return false, err
+		if err == twitch.ErrNotFound {
+			stream = nil
+		} else {
+			return false, err
+		}
 	}
 
 	isLive := stream != nil
@@ -393,7 +397,7 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 		return *s.cache.twitchStream, nil
 	}
 
-	st, err := s.Deps.Twitch.GetCurrentStream(ctx, s.Channel.TwitchID)
+	st, err := s.Deps.Twitch.GetStreamByUserID(ctx, s.Channel.TwitchID)
 	if err != nil {
 		return nil, err
 	}

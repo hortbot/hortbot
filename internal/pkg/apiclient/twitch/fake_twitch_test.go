@@ -35,7 +35,6 @@ type fakeTwitch struct {
 	tokenToID   map[string]int64
 
 	channels   map[int64]*twitch.Channel
-	streams    map[int64]*twitch.Stream
 	moderators map[int64][]*twitch.ChannelModerator
 }
 
@@ -48,7 +47,6 @@ func newFakeTwitch(t testing.TB) *fakeTwitch {
 		codeToToken: make(map[string]*oauth2.Token),
 		tokenToID:   make(map[string]int64),
 		channels:    make(map[int64]*twitch.Channel),
-		streams:     make(map[int64]*twitch.Stream),
 		moderators:  make(map[int64][]*twitch.ChannelModerator),
 	}
 
@@ -148,15 +146,6 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/900$`, httpmock.NewErrorResponder(errTestBadRequest))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/901$`, httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("PUT", `=~https://api.twitch.tv/kraken/channels/\d+$`, f.krakenChannelByIDPut)
-
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/401$`, httpmock.NewStringResponder(401, "{}"))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/404$`, httpmock.NewStringResponder(404, "{}"))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/418$`, httpmock.NewStringResponder(418, "{}"))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/500$`, httpmock.NewStringResponder(500, "{}"))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/777$`, httpmock.NewStringResponder(200, "}"))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/900$`, httpmock.NewErrorResponder(errTestBadRequest))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/901$`, httpmock.NewStringResponder(200, "}"))
-	f.mt.RegisterResponder("GET", `=~https://api.twitch.tv/kraken/streams/\d+$`, f.krakenStreamByID)
 
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/200", httpmock.NewStringResponder(200, "{}"))
 	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/kraken/users/1234/follows/channels/401", httpmock.NewStringResponder(401, "{}"))
@@ -360,37 +349,6 @@ func (f *fakeTwitch) krakenChannelByIDPut(req *http.Request) (*http.Response, er
 	}
 
 	return httpmock.NewJsonResponse(200, c)
-}
-
-func (f *fakeTwitch) setStream(id int64, s *twitch.Stream) {
-	f.streams[id] = s
-}
-
-func (f *fakeTwitch) krakenStreamByID(req *http.Request) (*http.Response, error) {
-	assert.Equal(f.t, req.Method, "GET")
-	f.checkHeaders(req, true)
-	assert.Equal(f.t, req.Header.Get("Authorization"), "OAuth "+f.clientTok.AccessToken)
-
-	path := req.URL.Path
-	i := strings.LastIndexByte(path, '/')
-	path = path[i+1:]
-
-	id, err := strconv.ParseInt(path, 10, 64)
-	assert.NilError(f.t, err)
-
-	s, ok := f.streams[id]
-
-	if !ok {
-		return httpmock.NewStringResponse(404, "{}"), nil
-	}
-
-	v := &struct {
-		Stream *twitch.Stream `json:"stream"`
-	}{
-		Stream: s,
-	}
-
-	return httpmock.NewJsonResponse(200, v)
 }
 
 func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {

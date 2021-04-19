@@ -346,7 +346,7 @@ func cmdUptime(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	uptime := s.Deps.Clock.Since(stream.CreatedAt).Truncate(time.Minute)
+	uptime := s.Deps.Clock.Since(stream.StartedAt).Truncate(time.Minute)
 	uStr := durafmt.Parse(uptime).String()
 
 	return s.Replyf(ctx, "Live for %s.", uStr)
@@ -358,7 +358,7 @@ func cmdViewers(ctx context.Context, s *session, cmd string, args string) error 
 		return err
 	}
 
-	viewers := stream.Viewers
+	viewers := stream.ViewerCount
 
 	vs := "viewers"
 	if viewers == 1 {
@@ -372,18 +372,15 @@ func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, erro
 	stream, err := s.TwitchStream(ctx)
 
 	switch err {
+	case nil:
+		return stream, nil
+	case twitch.ErrNotFound:
+		return nil, s.Reply(ctx, "Stream is not live.")
 	case twitch.ErrServerError:
 		return nil, s.Reply(ctx, twitchServerErrorReply)
-	case nil:
 	default:
 		return nil, err
 	}
-
-	if stream == nil {
-		return nil, s.Reply(ctx, "Stream is not live.")
-	}
-
-	return stream, nil
 }
 
 func cmdChatters(ctx context.Context, s *session, cmd string, args string) error {
@@ -438,9 +435,11 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	stream, err := s.Deps.Twitch.GetCurrentStream(ctx, u.ID.AsInt64())
+	stream, err := s.Deps.Twitch.GetStreamByUserID(ctx, u.ID.AsInt64())
 	if err != nil {
 		switch err {
+		case twitch.ErrNotFound:
+			return s.Replyf(ctx, "No, %s isn't live.", name)
 		case twitch.ErrServerError:
 			return s.Reply(ctx, twitchServerErrorReply)
 		case nil:
@@ -449,23 +448,25 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		}
 	}
 
-	if stream == nil {
-		return s.Replyf(ctx, "No, %s isn't live.", name)
-	}
-
-	viewers := stream.Viewers
+	viewers := stream.ViewerCount
 
 	v := "viewers"
 	if viewers == 1 {
 		v = "viewer"
 	}
 
-	game := stream.Game
-	if game == "" {
-		game = "(Not set)"
+	var gameName string
+	if stream.GameID == 0 {
+		gameName = "(Not set)"
+	} else {
+		game, err := s.Deps.Twitch.GetGameByID(ctx, stream.GameID.AsInt64())
+		if err != nil {
+			return err
+		}
+		gameName = game.Name
 	}
 
-	return s.Replyf(ctx, "Yes, %s is live playing %s with %d %s.", name, game, viewers, v)
+	return s.Replyf(ctx, "Yes, %s is live playing %s with %d %s.", name, gameName, viewers, v)
 }
 
 func cmdIsHere(ctx context.Context, s *session, cmd string, args string) error {

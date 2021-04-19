@@ -563,7 +563,7 @@ func actionViewers(ctx context.Context, s *session, actionName, value string) (s
 	var viewers int64
 	stream, err := s.TwitchStream(ctx)
 	if err == nil && stream != nil {
-		viewers = stream.Viewers
+		viewers = int64(stream.ViewerCount)
 	}
 	return strconv.FormatInt(viewers, 10), nil
 }

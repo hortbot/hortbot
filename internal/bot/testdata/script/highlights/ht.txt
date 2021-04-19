@@ -2,19 +2,21 @@ join hortbot 999 foobar 1
 
 clock_set 2000-10-01T03:11:22Z
 
+twitch_get_game_by_id {"424242": {"Category": {"ID": 424242, "Name": "Garry's Mod"}}, "567890": {"Category": {"ID": 567890, "Name": "Retro"}}}
+
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
 send hortbot #foobar [HB] No highlights.
 
 
-twitch_get_current_stream {"ID": 1}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotFound"}
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!ht
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
 send hortbot #foobar [HB] No highlights.
 
-twitch_get_current_stream {"ID": 1, "Err": "ErrServerError"}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!ht
 no_send
 
@@ -24,7 +26,7 @@ send hortbot #foobar [HB] No highlights.
 clock_forward 2m
 
 
-twitch_get_current_stream {"ID": 1, "Stream": {"created_at": "2000-10-01T00:00:11Z", "viewers": 1234, "game": "Retro"}}
+twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T00:00:11Z", "viewer_count": 1234, "game_id": 567890}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ht
 no_send
 
@@ -37,7 +39,7 @@ send hortbot #foobar [HB] [2000-10-01 03:13:22 +0000 UTC, 2000-10-01 00:00:11 +0
 
 clock_forward 2m
 
-twitch_get_current_stream {"ID": 1, "Stream": {"created_at": "2000-10-01T01:11:11Z", "viewers": 1234, "game": "Garry's Mod", "channel": {"status": "Playing something cool"}}}
+twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T01:11:11Z", "viewer_count": 1234, "game_id": "424242", "title": "Playing something cool"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!highlightthat
 no_send
 

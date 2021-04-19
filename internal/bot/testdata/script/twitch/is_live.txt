@@ -1,42 +1,43 @@
 twitch_get_user_by_username {"foobar": {"id": 1, "login": "foobar"}, "liveguy": {"id": 1234, "login": "liveguy", "display_name": "LiveGuy"}, "notlivegal": {"id": 1337, "login": "notlivegal"}}
+twitch_get_game_by_id {"424242": {"Category": {"ID": 424242, "Name": "Garry's Mod"}}}
 
 join hortbot 999 foobar 1
 
-twitch_get_current_stream {"ID": 1, "Stream": {"Game": "Retro", "Viewers": 999}}
+twitch_get_stream_by_user_id {"ID": 1, "Stream": {"game_id": 424242, "viewer_count": 999}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive
 send hortbot #foobar [HB] Yes, foobar is live.
 
-twitch_get_current_stream {"ID": 1, "Stream": null}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotFound"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive
 send hortbot #foobar [HB] No, foobar isn't live.
 
-twitch_get_current_stream {"ID": 1, "Err": "ErrServerError"}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive
 send hortbot #foobar [HB] A Twitch server error occurred.
 
 
-twitch_get_current_stream {"ID": 1234, "Stream": {"Game": "Garry's Mod", "Viewers": 1}}
+twitch_get_stream_by_user_id {"ID": 1234, "Stream": {"game_id": 424242, "viewer_count": 1}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive liveguy
 send hortbot #foobar [HB] Yes, liveguy is live playing Garry's Mod with 1 viewer.
 
-twitch_get_current_stream {"ID": 1234, "Stream": {"Game": "Garry's Mod", "Viewers": 311}}
+twitch_get_stream_by_user_id {"ID": 1234, "Stream": {"game_id": 424242, "viewer_count": 311}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive liveguy
 send hortbot #foobar [HB] Yes, liveguy is live playing Garry's Mod with 311 viewers.
 
-twitch_get_current_stream {"ID": 1234, "Stream": {"Game": null, "Viewers": 0}}
+twitch_get_stream_by_user_id {"ID": 1234, "Stream": {"game_id": 0, "viewer_count": 0}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive liveguy
 send hortbot #foobar [HB] Yes, liveguy is live playing (Not set) with 0 viewers.
 
-twitch_get_current_stream {"ID": 1234, "Err": "ErrServerError"}
+twitch_get_stream_by_user_id {"ID": 1234, "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive liveguy
 send hortbot #foobar [HB] A Twitch server error occurred.
 
 
-twitch_get_current_stream {"ID": 1337, "Stream": null}
+twitch_get_stream_by_user_id {"ID": 1337, "Err": "ErrNotFound"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive notlivegal
 send hortbot #foobar [HB] No, notlivegal isn't live.
 
-twitch_get_current_stream {"ID": 1337, "Err": "ErrServerError"}
+twitch_get_stream_by_user_id {"ID": 1337, "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive notlivegal
 send hortbot #foobar [HB] A Twitch server error occurred.
 
@@ -44,10 +45,10 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] User who does not exist.
 
 
-twitch_get_current_stream {"ID": 1, "Err": "ErrNotAuthorized"}
+twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive
 no_send
 
-twitch_get_current_stream {"ID": 1337, "Err": "ErrNotAuthorized"}
+twitch_get_stream_by_user_id {"ID": 1337, "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!islive notlivegal
 no_send
