@@ -38,9 +38,11 @@ var userScopes = []string{
 	"user_read",                  // Kraken: ???
 	"channel_editor",             // Kraken: update channel
 	"moderation:read",            // Helix: get moderator list
+	"user:read:email",            // Helix: read user email address (replaces user_read)
 	"user:read:broadcast",        // Helix: read channel info, markers (implied by user:edit:broadcast?)
-	"user:edit:broadcast",        // Helix: modify channel information
+	"user:edit:broadcast",        // Helix: modify channel information (remove?)
 	"channel:read:subscriptions", // Helix: get broadcaster subscriptions
+	"channel:manage:broadcast",   // Helix: modify channel information (replaces user:edit:broadcast for channel info)
 }
 
 // BotScopes are scopes which should be granted for the bot's account.
@@ -72,7 +74,6 @@ type API interface {
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
 
 	// Kraken
-	GetChannelByID(ctx context.Context, id int64) (c *Channel, err error)
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)

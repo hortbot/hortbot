@@ -11,64 +11,6 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestGetChannelByID(t *testing.T) {
-	ctx, cancel := testContext(t)
-	defer cancel()
-
-	ft := newFakeTwitch(t)
-	cli := ft.client()
-
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
-
-	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
-		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
-		TokenType:   "bearer",
-	}
-
-	ft.setClientTokens(tok)
-
-	c := &twitch.Channel{
-		ID:          1234,
-		DisplayName: "FooBar",
-		Status:      "What a cool stream!",
-		Game:        "Garry's Mod",
-	}
-
-	ft.setChannel(c)
-
-	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
-	assert.NilError(t, err)
-	assert.DeepEqual(t, c, got)
-}
-
-func TestGetChannelByIDErrors(t *testing.T) {
-	ctx, cancel := testContext(t)
-	defer cancel()
-
-	ft := newFakeTwitch(t)
-	cli := ft.client()
-
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
-
-	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
-		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
-		TokenType:   "bearer",
-	}
-
-	ft.setClientTokens(tok)
-
-	_, err := tw.GetChannelByID(ctx, 999)
-	assert.Equal(t, err, twitch.ErrNotFound)
-
-	_, err = tw.GetChannelByID(ctx, 900)
-	assert.ErrorContains(t, err, errTestBadRequest.Error())
-
-	_, err = tw.GetChannelByID(ctx, 901)
-	assert.Equal(t, err, twitch.ErrServerError)
-}
-
 func TestSetChannelStatus(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
@@ -108,7 +50,7 @@ func TestSetChannelStatus(t *testing.T) {
 	assert.Assert(t, newToken == nil)
 	assert.Equal(t, getStatus, newStatus)
 
-	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
+	got, err := twitch.GetChannelByID(tw, ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
 	assert.Equal(t, got.Status, newStatus)
 }
@@ -175,7 +117,7 @@ func TestSetChannelGame(t *testing.T) {
 	assert.Assert(t, newToken == nil)
 	assert.Equal(t, setGame, newGame)
 
-	got, err := tw.GetChannelByID(ctx, c.ID.AsInt64())
+	got, err := twitch.GetChannelByID(tw, ctx, c.ID.AsInt64())
 	assert.NilError(t, err)
 	assert.Equal(t, got.Game, newGame)
 }

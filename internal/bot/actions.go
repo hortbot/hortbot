@@ -550,7 +550,7 @@ func actionStatus(ctx context.Context, s *session, actionName, value string) (st
 		return actionMsgError, nil //nolint:nilerr
 	}
 
-	status := ch.Status
+	status := ch.Title
 
 	if status == "" {
 		return actionMsgNotSet, nil

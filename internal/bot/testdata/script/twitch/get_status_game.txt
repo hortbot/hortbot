@@ -1,4 +1,4 @@
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": "This is the status!", "Game": "Garry's Mod"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"title": "This is the status!", "game_name": "Garry's Mod"}}
 
 join hortbot 999 foobar 1
 
@@ -9,7 +9,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch
 send hortbot #foobar [HB] Current game: Garry's Mod
 
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": null, "Game": null}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"title": "", "game_name": ""}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!status
 send hortbot #foobar [HB] (Not set)

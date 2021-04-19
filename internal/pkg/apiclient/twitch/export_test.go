@@ -18,3 +18,5 @@ var ExpectedUserScopes = func() string {
 
 	return b.String()
 }()
+
+var GetChannelByID = (*Twitch).getChannelByID

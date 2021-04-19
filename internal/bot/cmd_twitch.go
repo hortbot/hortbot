@@ -34,7 +34,7 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	v := ch.Status
+	v := ch.Title
 	if v == "" {
 		v = "(Not set)"
 	}

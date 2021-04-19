@@ -1,6 +1,6 @@
 join hortbot 99 foobar 1
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": null}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": ""}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_GAME_)
 send_any
@@ -15,7 +15,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] -Not-set-
 
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Somebody's weird 世界 game: 2"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": "Somebody's weird 世界 game: 2"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] Somebody's weird 世界 game: 2

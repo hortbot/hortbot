@@ -39,7 +39,7 @@ func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string, lineN
 	var call struct {
 		ID int64
 
-		Channel *twitch.Channel
+		Channel *twitch.HelixChannel
 		Err     string
 	}
 
@@ -47,7 +47,7 @@ func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string, lineN
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetChannelByIDCalls(func(_ context.Context, id int64) (*twitch.Channel, error) {
+		st.twitch.GetHelixChannelByIDCalls(func(_ context.Context, id int64) (*twitch.HelixChannel, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 			return call.Channel, twitchErr(t, lineNum, call.Err)
 		})

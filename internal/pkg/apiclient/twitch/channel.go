@@ -19,10 +19,10 @@ type Channel struct {
 	Status      string `json:"status"`
 }
 
-// GetChannelByID gets a channel using the client's token.
+// getChannelByID gets a channel using the client's token.
 //
 // GET https://api.twitch.tv/kraken/channels/<id>
-func (t *Twitch) GetChannelByID(ctx context.Context, id int64) (c *Channel, err error) {
+func (t *Twitch) getChannelByID(ctx context.Context, id int64) (c *Channel, err error) {
 	cli := t.krakenCli
 
 	url := krakenRoot + "/channels/" + strconv.FormatInt(id, 10)

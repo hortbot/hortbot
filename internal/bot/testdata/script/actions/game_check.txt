@@ -1,6 +1,6 @@
 join hortbot 99 foobar 1
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": null}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": ""}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_VARS_testvar_INCREMENT_1_) (_GAME_IS_Garry's-Mod_)
 send_any
@@ -12,7 +12,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Variable testvar does not exist.
 
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Garry's Mod"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": "Garry's Mod"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] 1
@@ -28,13 +28,13 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Garry's Mod"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": "Garry's Mod"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
 
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Minecraft"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": "Minecraft"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] 2
@@ -46,7 +46,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] 3
 
 
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": null}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": ""}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] 4

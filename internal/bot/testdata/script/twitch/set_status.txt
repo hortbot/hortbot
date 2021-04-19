@@ -1,5 +1,5 @@
 bot_config {"WebAddr": "http://localhost:5000"}
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Status": "This is the status!", "Game": "Garry's Mod"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"title": "This is the status!", "game_name": "Garry's Mod"}}
 
 join hortbot 999 foobar 1
 

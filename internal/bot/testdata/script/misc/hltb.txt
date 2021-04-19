@@ -30,7 +30,7 @@ send hortbot #foobar [HB] A HowLongToBeat API error occurred.
 
 
 hltb_search {"Query": "Some Game", "Game": {"Title": "Some+Game", "MainStory": "2 hours"}, "StatusCode": 200}
-twitch_get_channel_by_id {"ID": 1, "Channel": {"Game": "Some Game"}}
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_name": "Some Game"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!hltb
 send hortbot #foobar [HB] HowLongToBeat for Some+Game - 2 hours main story
