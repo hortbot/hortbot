@@ -50,7 +50,6 @@ var BotScopes = []string{
 	"chat:edit",         // Chat: send messages
 	"whispers:read",     // Chat: read whispers
 	"whispers:edit",     // Chat: send whispers
-	"user_follows_edit", // Kraken: followers
 	"user:edit:follows", // Helix: followers
 }
 
@@ -77,7 +76,6 @@ type API interface {
 	GetCurrentStream(ctx context.Context, id int64) (s *Stream, err error)
 	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
 	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
-	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
 
 	// Helix
 	GetUserByToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error)
@@ -91,6 +89,7 @@ type API interface {
 	GetStreamByUserID(ctx context.Context, id int64) (*HelixStream, error)
 	GetStreamByUsername(ctx context.Context, username string) (*HelixStream, error)
 	GetHelixChannelByID(ctx context.Context, id int64) (*HelixChannel, error)
+	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)
