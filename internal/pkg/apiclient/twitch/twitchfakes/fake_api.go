@@ -225,14 +225,14 @@ type FakeAPI struct {
 		result1 *twitch.User
 		result2 error
 	}
-	ModifyChannelStub        func(context.Context, int64, *oauth2.Token, string, int64) (*oauth2.Token, error)
+	ModifyChannelStub        func(context.Context, int64, *oauth2.Token, *string, *int64) (*oauth2.Token, error)
 	modifyChannelMutex       sync.RWMutex
 	modifyChannelArgsForCall []struct {
 		arg1 context.Context
 		arg2 int64
 		arg3 *oauth2.Token
-		arg4 string
-		arg5 int64
+		arg4 *string
+		arg5 *int64
 	}
 	modifyChannelReturns struct {
 		result1 *oauth2.Token
@@ -1277,15 +1277,15 @@ func (fake *FakeAPI) GetUserByUsernameReturnsOnCall(i int, result1 *twitch.User,
 	}{result1, result2}
 }
 
-func (fake *FakeAPI) ModifyChannel(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string, arg5 int64) (*oauth2.Token, error) {
+func (fake *FakeAPI) ModifyChannel(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 *string, arg5 *int64) (*oauth2.Token, error) {
 	fake.modifyChannelMutex.Lock()
 	ret, specificReturn := fake.modifyChannelReturnsOnCall[len(fake.modifyChannelArgsForCall)]
 	fake.modifyChannelArgsForCall = append(fake.modifyChannelArgsForCall, struct {
 		arg1 context.Context
 		arg2 int64
 		arg3 *oauth2.Token
-		arg4 string
-		arg5 int64
+		arg4 *string
+		arg5 *int64
 	}{arg1, arg2, arg3, arg4, arg5})
 	stub := fake.ModifyChannelStub
 	fakeReturns := fake.modifyChannelReturns
@@ -1306,13 +1306,13 @@ func (fake *FakeAPI) ModifyChannelCallCount() int {
 	return len(fake.modifyChannelArgsForCall)
 }
 
-func (fake *FakeAPI) ModifyChannelCalls(stub func(context.Context, int64, *oauth2.Token, string, int64) (*oauth2.Token, error)) {
+func (fake *FakeAPI) ModifyChannelCalls(stub func(context.Context, int64, *oauth2.Token, *string, *int64) (*oauth2.Token, error)) {
 	fake.modifyChannelMutex.Lock()
 	defer fake.modifyChannelMutex.Unlock()
 	fake.ModifyChannelStub = stub
 }
 
-func (fake *FakeAPI) ModifyChannelArgsForCall(i int) (context.Context, int64, *oauth2.Token, string, int64) {
+func (fake *FakeAPI) ModifyChannelArgsForCall(i int) (context.Context, int64, *oauth2.Token, *string, *int64) {
 	fake.modifyChannelMutex.RLock()
 	defer fake.modifyChannelMutex.RUnlock()
 	argsForCall := fake.modifyChannelArgsForCall[i]

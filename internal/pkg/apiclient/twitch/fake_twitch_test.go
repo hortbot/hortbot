@@ -603,3 +603,11 @@ func testContext(t testing.TB) (context.Context, context.CancelFunc) {
 	ctx := ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 	return context.WithTimeout(ctx, 10*time.Minute)
 }
+
+func strPtr(s string) *string {
+	return &s
+}
+
+func int64Ptr(x int64) *int64 {
+	return &x
+}

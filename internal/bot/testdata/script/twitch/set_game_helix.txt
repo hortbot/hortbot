@@ -37,8 +37,9 @@ twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "to
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting
 send hortbot #foobar [HB] Game updated to: Just Chatting
 
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 0}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game -
-send hortbot #foobar [HB] Cannot unset game.
+send hortbot #foobar [HB] Game unset.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token","token_type":"bearer","refresh_token":"some-refresh-token","expiry":"2050-10-01T03:11:00Z"}

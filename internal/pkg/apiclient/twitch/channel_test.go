@@ -378,7 +378,7 @@ func TestModifyChannel(t *testing.T) {
 
 		const id = 1234
 		tok := tokFor(ctx, t, tw, ft, id)
-		newToken, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		newToken, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
 		assert.NilError(t, err)
 		assert.Assert(t, newToken == nil)
 	})
@@ -390,7 +390,7 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 5678
 		tok := tokFor(ctx, t, tw, ft, id)
-		newToken, err := tw.ModifyChannel(ctx, id, tok, "", 9876)
+		newToken, err := tw.ModifyChannel(ctx, id, tok, nil, int64Ptr(9876))
 		assert.NilError(t, err)
 		assert.Assert(t, newToken == nil)
 	})
@@ -402,7 +402,7 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 500
 		tok := tokFor(ctx, t, tw, ft, id)
-		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
 		assert.Equal(t, err, twitch.ErrServerError)
 	})
 
@@ -413,7 +413,7 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)
-		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
 		assert.ErrorContains(t, err, errTestBadRequest.Error())
 	})
 
@@ -423,7 +423,7 @@ func TestModifyChannel(t *testing.T) {
 
 		_, tw := createTester(t)
 		const id = 900
-		_, err := tw.ModifyChannel(ctx, id, nil, "some new title", 0)
+		_, err := tw.ModifyChannel(ctx, id, nil, strPtr("some new title"), nil)
 		assert.Equal(t, err, twitch.ErrNotAuthorized)
 	})
 
@@ -434,7 +434,10 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)
-		_, err := tw.ModifyChannel(ctx, id, tok, "", 0)
+		_, err := tw.ModifyChannel(ctx, id, tok, nil, nil)
+		assert.Equal(t, err, twitch.ErrBadRequest)
+
+		_, err = tw.ModifyChannel(ctx, id, tok, strPtr(""), nil)
 		assert.Equal(t, err, twitch.ErrBadRequest)
 	})
 }

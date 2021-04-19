@@ -94,10 +94,10 @@ func setStatusHelix(ctx context.Context, s *session, status string) (replied boo
 	}
 
 	if status == "" {
-		return true, s.Reply(ctx, "Cannot unset status.")
+		return true, s.Reply(ctx, "Statuses cannot be unset.")
 	}
 
-	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, status, 0)
+	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, &status, nil)
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
@@ -211,19 +211,19 @@ func setGameHelix(ctx context.Context, s *session, game string, replyOnSuccess b
 		game = ""
 	}
 
-	if game == "" {
-		return false, s.Reply(ctx, "Cannot unset game.")
+	var gameID int64
+	var gameName string
+
+	if game != "" {
+		found, err := fixGameOrSuggest(ctx, s, game)
+		if err != nil || found == nil {
+			return false, err
+		}
+		gameID = found.ID.AsInt64()
+		gameName = found.Name
 	}
 
-	found, err := fixGameOrSuggest(ctx, s, game)
-	if err != nil || found == nil {
-		return false, err
-	}
-
-	// NOTE: This is broken on Twitch's end, as updates using this API do not propagate correctly.
-	// For example, any queries to Kraken will still return the old game, clips and highlights will
-	// show the wrong game, and so on, but the channel page and dashboard will be correct.
-	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, "", found.ID.AsInt64())
+	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, nil, &gameID)
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
@@ -246,7 +246,11 @@ func setGameHelix(ctx context.Context, s *session, game string, replyOnSuccess b
 		return true, nil
 	}
 
-	return true, s.Replyf(ctx, "Game updated to: %s", found.Name)
+	if game == "" {
+		return true, s.Reply(ctx, "Game unset.")
+	}
+
+	return true, s.Replyf(ctx, "Game updated to: %s", gameName)
 }
 
 func fixGameOrSuggest(ctx context.Context, s *session, game string) (*twitch.Category, error) {

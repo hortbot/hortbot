@@ -189,11 +189,16 @@ func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *
 	return mods, newToken, nil
 }
 
-// ModifyChannel modifies a channel. Either or both of the title and game ID must be non-zero.
+// ModifyChannel modifies a channel. Either or both of the title and game ID must be provided.
+// The title must not be empty. If zero, the game will be unset.
 //
 // PATCH https://api.twitch.tv/helix/channels
-func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title string, gameID int64) (newToken *oauth2.Token, err error) {
-	if title == "" && gameID == 0 {
+func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title *string, gameID *int64) (newToken *oauth2.Token, err error) {
+	if title == nil && gameID == nil {
+		return nil, ErrBadRequest
+	}
+
+	if title != nil && *title == "" {
 		return nil, ErrBadRequest
 	}
 
@@ -205,13 +210,13 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 	url := helixRoot + "/channels"
 
 	body := &struct {
-		BroadcasterID IDStr  `json:"broadcaster_id"`
-		Title         string `json:"title,omitempty"`
-		GameID        IDStr  `json:"game_id,omitempty"`
+		BroadcasterID IDStr   `json:"broadcaster_id"`
+		Title         *string `json:"title,omitempty"`
+		GameID        *IDStr  `json:"game_id,omitempty"`
 	}{
 		BroadcasterID: IDStr(broadcasterID),
 		Title:         title,
-		GameID:        IDStr(gameID),
+		GameID:        (*IDStr)(gameID),
 	}
 
 	resp, err := cli.Patch(ctx, url, body)

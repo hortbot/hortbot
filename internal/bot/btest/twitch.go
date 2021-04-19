@@ -169,8 +169,8 @@ func (st *scriptTester) twitchModifyChannel(t testing.TB, directive, args string
 	var call struct {
 		ID     int64
 		Tok    *oauth2.Token
-		Status string
-		GameID int64
+		Status *string
+		GameID *int64
 
 		NewTok *oauth2.Token
 		Err    string
@@ -180,11 +180,11 @@ func (st *scriptTester) twitchModifyChannel(t testing.TB, directive, args string
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.ModifyChannelCalls(func(_ context.Context, broadcasterID int64, tok *oauth2.Token, status string, gameID int64) (*oauth2.Token, error) {
+		st.twitch.ModifyChannelCalls(func(_ context.Context, broadcasterID int64, tok *oauth2.Token, status *string, gameID *int64) (*oauth2.Token, error) {
 			assert.Equal(t, broadcasterID, call.ID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(tok, call.Tok, tokenCmp), "line %d", lineNum)
-			assert.Equal(t, status, call.Status, "line %d", lineNum)
-			assert.Equal(t, gameID, call.GameID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(status, call.Status), "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(gameID, call.GameID), "line %d", lineNum)
 
 			return call.NewTok, twitchErr(t, lineNum, call.Err)
 		})

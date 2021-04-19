@@ -36,7 +36,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Status updated.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status -
-send hortbot #foobar [HB] Cannot unset status.
+send hortbot #foobar [HB] Statuses cannot be unset.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token","token_type":"bearer","refresh_token":"some-refresh-token","expiry":"2050-10-01T03:11:00Z"}

@@ -23,7 +23,7 @@ func TestDeadToken(t *testing.T) {
 
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "invalid")
-		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
 		assert.Equal(t, err, twitch.ErrDeadToken)
 	})
 
@@ -37,7 +37,7 @@ func TestDeadToken(t *testing.T) {
 
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "unknown")
-		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
 		assert.Equal(t, err, twitch.ErrDeadToken)
 	})
 
@@ -51,7 +51,7 @@ func TestDeadToken(t *testing.T) {
 
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "decodeerror")
-		_, err := tw.ModifyChannel(ctx, id, tok, "some new title", 0)
+		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
 		assert.Equal(t, err, twitch.ErrServerError)
 	})
 }
