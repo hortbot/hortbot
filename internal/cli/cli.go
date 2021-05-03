@@ -7,11 +7,11 @@ import (
 	"net/http"
 	_ "net/http/pprof" //nolint:gosec
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
-	"github.com/posener/ctxutil"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -57,7 +57,8 @@ var Default = Common{}
 // environment variable is set, the files listed in it will be loaded
 // before parsing, to allow for a simple layered configuration setup.
 func Run(cmd Command, args []string) {
-	ctx := ctxutil.Interrupt()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
 
 	parser := flags.NewNamedParser(cmd.Name(), flags.HelpFlag|flags.PassDoubleDash)
 	_, _ = parser.AddGroup("Options", "", cmd)

@@ -40,7 +40,6 @@ require (
 	github.com/nsqio/go-nsq v1.0.8
 	github.com/ory/dockertest/v3 v3.6.5
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/posener/ctxutil v1.0.0
 	github.com/prometheus/client_golang v1.10.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.3.0
