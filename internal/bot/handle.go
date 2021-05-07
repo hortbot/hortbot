@@ -285,8 +285,11 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 		return errInvalidMessage
 	}
 
-	tmiSent, _ := strconv.ParseInt(m.Tags["tmi-sent-ts"], 10, 64)
-	s.TMISent = time.Unix(tmiSent/1000, 0)
+	tmiSentStr := m.Tags["tmi-sent-ts"]
+	if tmiSentStr != "" {
+		tmiSent, _ := strconv.ParseInt(tmiSentStr, 10, 64)
+		s.TMISent = time.Unix(tmiSent/1000, 0)
+	}
 
 	channelName := m.Params[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
