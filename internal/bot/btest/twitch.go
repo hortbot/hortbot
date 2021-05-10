@@ -54,36 +54,6 @@ func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string, lineN
 	})
 }
 
-func (st *scriptTester) twitchSetChannel(t testing.TB, directive, args string, lineNum int) {
-	var call struct {
-		ID  int64
-		Tok *oauth2.Token
-		New string
-
-		Set    string
-		NewTok *oauth2.Token
-		Err    string
-	}
-
-	err := json.Unmarshal([]byte(args), &call)
-	assert.NilError(t, err, "line %d", lineNum)
-
-	st.addAction(func(ctx context.Context) {
-		fn := st.twitch.SetChannelGameCalls
-		if directive == "twitch_set_channel_status" {
-			fn = st.twitch.SetChannelStatusCalls
-		}
-
-		fn(func(_ context.Context, id int64, tok *oauth2.Token, n string) (string, *oauth2.Token, error) {
-			assert.Equal(t, id, call.ID, "line %d", lineNum)
-			assert.Assert(t, cmp.DeepEqual(tok, call.Tok, tokenCmp), "line %d", lineNum)
-			assert.Equal(t, n, call.New, "line %d", lineNum)
-
-			return call.Set, call.NewTok, twitchErr(t, lineNum, call.Err)
-		})
-	})
-}
-
 func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		Channel string

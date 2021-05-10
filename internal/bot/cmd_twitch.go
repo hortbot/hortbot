@@ -43,47 +43,6 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func setStatus(ctx context.Context, s *session, status string) (replied bool, err error) {
-	if s.BetaFeatures() {
-		return setStatusHelix(ctx, s, status)
-	}
-
-	tok, err := s.TwitchToken(ctx)
-	if err != nil {
-		return true, err
-	}
-
-	if status == "-" {
-		status = ""
-	}
-
-	setStatus, newToken, err := s.Deps.Twitch.SetChannelStatus(ctx, s.Channel.TwitchID, tok, status)
-
-	// Check this, even if an error occurred.
-	if newToken != nil {
-		if err := s.SetTwitchToken(ctx, newToken); err != nil {
-			return true, err
-		}
-	}
-
-	if err != nil {
-		switch err {
-		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
-			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
-		case twitch.ErrServerError:
-			return true, s.Reply(ctx, twitchServerErrorReply)
-		}
-		return true, err
-	}
-
-	setStatus = strings.TrimSpace(setStatus)
-	if !strings.EqualFold(status, setStatus) {
-		return true, s.Reply(ctx, "Status update sent, but did not stick.")
-	}
-
-	return false, nil
-}
-
-func setStatusHelix(ctx context.Context, s *session, status string) (replied bool, err error) {
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
 		return true, err
@@ -121,7 +80,7 @@ func setStatusHelix(ctx context.Context, s *session, status string) (replied boo
 
 func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	if args != "" && s.UserLevel.CanAccess(levelModerator) {
-		_, err := setGame(ctx, s, args, true)
+		_, err := setGame(ctx, s, args)
 		return err
 	}
 
@@ -141,11 +100,8 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Reply(ctx, "Current game: "+v)
 }
 
-func setGame(ctx context.Context, s *session, game string, replyOnSuccess bool) (ok bool, err error) {
-	if s.BetaFeatures() {
-		return setGameHelix(ctx, s, game, replyOnSuccess)
-	}
-
+// TODO: This is a dupe of the above code.
+func setGameAndStatus(ctx context.Context, s *session, game string, status string) (ok bool, err error) {
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
 		return false, err
@@ -155,15 +111,25 @@ func setGame(ctx context.Context, s *session, game string, replyOnSuccess bool) 
 		game = ""
 	}
 
+	if status == "-" {
+		status = ""
+	}
+
+	if status == "" {
+		return true, s.Reply(ctx, "Statuses cannot be unset.")
+	}
+
+	var gameID int64
+
 	if game != "" {
 		found, err := fixGameOrSuggest(ctx, s, game)
 		if err != nil || found == nil {
 			return false, err
 		}
-		game = found.Name
+		gameID = found.ID.AsInt64()
 	}
 
-	setGame, newToken, err := s.Deps.Twitch.SetChannelGame(ctx, s.Channel.TwitchID, tok, game)
+	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, &status, &gameID)
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
@@ -182,26 +148,10 @@ func setGame(ctx context.Context, s *session, game string, replyOnSuccess bool) 
 		return false, err
 	}
 
-	setGame = strings.TrimSpace(setGame)
-	if !strings.EqualFold(game, setGame) {
-		if err := s.Reply(ctx, "Game update sent, but did not stick."); err != nil {
-			return false, err
-		}
-		return false, nil
-	}
-
-	if !replyOnSuccess {
-		return true, nil
-	}
-
-	if game == "" {
-		return true, s.Reply(ctx, "Game unset.")
-	}
-
-	return true, s.Replyf(ctx, "Game updated to: %s", game)
+	return true, nil
 }
 
-func setGameHelix(ctx context.Context, s *session, game string, replyOnSuccess bool) (ok bool, err error) {
+func setGame(ctx context.Context, s *session, game string) (ok bool, err error) {
 	tok, err := s.TwitchToken(ctx)
 	if err != nil {
 		return false, err
@@ -240,10 +190,6 @@ func setGameHelix(ctx context.Context, s *session, game string, replyOnSuccess b
 			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
 		return false, err
-	}
-
-	if !replyOnSuccess {
-		return true, nil
 	}
 
 	if game == "" {

@@ -62,20 +62,17 @@ var twitchEndpoint = oauth2.Endpoint{
 }
 
 const (
-	krakenRoot = "https://api.twitch.tv/kraken"
-	helixRoot  = "https://api.twitch.tv/helix"
+	// krakenRoot = "https://api.twitch.tv/kraken"
+	helixRoot = "https://api.twitch.tv/helix"
 )
 
 //counterfeiter:generate . API
 
 // API covers the main API methods for Twitch.
 type API interface {
+	// Auth
 	AuthCodeURL(state string, extraScopes ...string) string
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
-
-	// Kraken
-	SetChannelStatus(ctx context.Context, id int64, userToken *oauth2.Token, status string) (newStatus string, newToken *oauth2.Token, err error)
-	SetChannelGame(ctx context.Context, id int64, userToken *oauth2.Token, game string) (newGame string, newToken *oauth2.Token, err error)
 
 	// Helix
 	GetUserByToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error)
@@ -101,8 +98,8 @@ type Twitch struct {
 	clientID string
 	forUser  *oauth2.Config
 
-	krakenCli *httpClient
-	helixCli  *httpClient
+	// krakenCli *httpClient
+	helixCli *httpClient
 }
 
 var _ API = (*Twitch)(nil)
@@ -150,11 +147,11 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 	ctx := t.cli.AsOAuth2Client(context.TODO())
 	clientTS := cconf.TokenSource(ctx)
 
-	t.krakenCli = &httpClient{
-		cli:     t.cli,
-		ts:      oauth2x.NewTypeOverride(clientTS, "OAuth"),
-		headers: t.headers(true),
-	}
+	// t.krakenCli = &httpClient{
+	// 	cli:     t.cli,
+	// 	ts:      oauth2x.NewTypeOverride(clientTS, "OAuth"),
+	// 	headers: t.headers(true),
+	// }
 
 	t.helixCli = &httpClient{
 		cli:     t.cli,
@@ -224,9 +221,9 @@ func (t *Twitch) clientForUser(ctx context.Context, v5 bool, tok *oauth2.Token, 
 	}
 }
 
-func (t *Twitch) krakenClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
-	return t.clientForUser(ctx, true, tok, onNewToken)
-}
+// func (t *Twitch) krakenClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
+// 	return t.clientForUser(ctx, true, tok, onNewToken)
+// }
 
 func (t *Twitch) helixClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
 	return t.clientForUser(ctx, false, tok, onNewToken)

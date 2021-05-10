@@ -12,7 +12,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch
 send hortbot #foobar [HB] This is the status!
 
 
-twitch_set_channel_status {"ID": 1, "New": "This is a new status", "Err": "ErrNotAuthorized"}
+twitch_modify_channel {"ID": 1, "Status": "This is a new status", "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status
 send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log in on the website to give permission: http://localhost:5000/login
 
@@ -23,31 +23,26 @@ upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token","token_type":"bearer","refresh_token":"some-refresh-token","expiry":"2050-10-01T03:11:00Z"}
 
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "This is a new status"}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status
-send hortbot #foobar [HB] Status update sent, but did not stick.
-
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "This is a new status", "Err": "ErrServerError"}
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Status": "This is a new status", "Err": "ErrServerError"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status
 send hortbot #foobar [HB] A Twitch server error occurred.
 
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "This is a new status", "Err": "ErrNotAuthorized"}
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Status": "This is a new status", "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status
 send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log in on the website to give permission: http://localhost:5000/login
 
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "This is a new status", "Set": "This is a new status"}
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Status": "This is a new status"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status
 send hortbot #foobar [HB] Status updated.
 
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "", "Set": ""}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status -
-send hortbot #foobar [HB] Status updated.
+send hortbot #foobar [HB] Statuses cannot be unset.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_twitch_token
 send hortbot #foobar [HB] {"access_token":"some-access-token","token_type":"bearer","refresh_token":"some-refresh-token","expiry":"2050-10-01T03:11:00Z"}
 
 
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Another status", "Set": "Another status", "NewTok": {"access_token": "some-access-token2", "token_type": "bearer", "refresh_token": "some-refresh-token2", "expiry": "2060-10-01T03:11:00Z"}}
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Status": "Another status", "NewTok": {"access_token": "some-access-token2", "token_type": "bearer", "refresh_token": "some-refresh-token2", "expiry": "2060-10-01T03:11:00Z"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status Another status
 send hortbot #foobar [HB] Status updated.
 

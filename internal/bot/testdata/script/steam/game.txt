@@ -18,7 +18,7 @@ send_any
 
 
 steam_get_player_summary {"ID": "1234567890123456789", "Err": "ErrServerError"}
-twitch_get_game_by_name {"Garry's Mod": {"Category": {"ID": 424242, "Name": "Garry's Mod"}}}
+twitch_get_game_by_name {"Garry's Mod": {"Category": {"ID": 473625, "Name": "Garry's Mod"}}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!steamgame
 send hortbot #foobar [HB] A Steam API error occurred.
@@ -28,32 +28,14 @@ send hortbot #foobar [HB] A Steam API error occurred.
 
 
 steam_get_player_summary {"ID": "1234567890123456789", "Summary": {"gameextrainfo": "Garry's Mod"}}
-twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Garry's Mod"}
-
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!steamgame
-send hortbot #foobar [HB] Game update sent, but did not stick.
-
-twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Garry's Mod", "Set": "Garry's Mod"}
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 473625}
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!steamgame
 send hortbot #foobar [HB] Game updated to: Garry's Mod
 
 
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "This is a new status", "Set": "This is a new status"}
-
+twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 473625, "Status": "This is a new status"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!statusgame This is a new status
 send hortbot #foobar [HB] Status and game updated.
-
-
-twitch_set_channel_status {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "This is a new status"}
-
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!statusgame This is a new status
-send hortbot #foobar [HB] Status update sent, but did not stick.
-
-
-twitch_set_channel_game {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "New": "Garry's Mod"}
-
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!statusgame This is a new status
-send hortbot #foobar [HB] Game update sent, but did not stick.
 
 
 steam_get_player_summary {"ID": "1234567890123456789", "Err": "ErrUnknown"}
