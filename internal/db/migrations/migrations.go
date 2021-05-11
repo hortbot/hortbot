@@ -7,7 +7,7 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 	"github.com/golang-migrate/migrate/v4/source"
-	"github.com/johejo/golang-migrate-extra/source/iofs"
+	"github.com/golang-migrate/migrate/v4/source/iofs"
 )
 
 //go:embed static
@@ -61,7 +61,7 @@ func Reset(connStr string, logger LoggerFunc) error {
 }
 
 func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
-	m, err := migrate.NewWithSourceInstance("esc", sourceDriver, connStr)
+	m, err := migrate.NewWithSourceInstance("iofs", sourceDriver, connStr)
 	if err != nil {
 		return nil, err
 	}
