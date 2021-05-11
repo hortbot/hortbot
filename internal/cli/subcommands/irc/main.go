@@ -172,6 +172,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 var metricRateLimited = promauto.NewCounter(prometheus.CounterOpts{
 	Namespace: "hortbot",
 	Subsystem: "irc",
-	Name:      "rate_limited_count",
+	Name:      "rate_limited_total",
 	Help:      "Total number of rate limited messages.",
 })

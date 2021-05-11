@@ -10,7 +10,7 @@ on:
 
 env:
   GO_DEV_VERSION: "1.16" # Sync with README, go.mod, Dockerfile, and docker-compose.yml.
-  GOLANGCI_LINT_VERSION: "v1.39.0"
+  GOLANGCI_LINT_VERSION: "v1.40.0"
 
 jobs:
   test:
