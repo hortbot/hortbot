@@ -9,7 +9,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.14.3
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
-	github.com/bmatcuk/doublestar/v3 v3.0.0
+	github.com/bmatcuk/doublestar/v4 v4.0.1
 	github.com/dghubble/trie v0.0.0-20210506170352-7bfa5d9a3938
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ericlagergren/decimal v0.0.0-20210307182354-5f8425a47c58 // indirect

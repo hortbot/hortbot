@@ -1,11 +1,12 @@
 package bot_test
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/bmatcuk/doublestar/v3"
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hortbot/hortbot/internal/bot/btest"
 	"gotest.tools/v3/assert"
 )
@@ -13,15 +14,15 @@ import (
 func TestScripts(t *testing.T) {
 	t.Parallel()
 
-	files, err := doublestar.Glob(filepath.Join("testdata", "script", "**", "*.txt"))
+	scriptDir := filepath.Join("testdata", "script")
+
+	files, err := doublestar.Glob(os.DirFS(scriptDir), "**/*.txt")
 	assert.NilError(t, err)
 	assert.Assert(t, len(files) != 0)
 
-	prefix := filepath.Join("testdata", "script")
-
 	for _, file := range files {
-		file := file
-		name := strings.TrimSuffix(strings.TrimPrefix(file, prefix)[1:], ".txt")
+		name := strings.TrimSuffix(file, ".txt")
+		file := filepath.Join(scriptDir, filepath.FromSlash(file))
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			btest.RunScript(t, file, pool.FreshDB)
