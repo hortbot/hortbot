@@ -31,7 +31,7 @@ require (
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.0.8
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/jmoiron/sqlx v1.3.3
+	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.3.0
 	github.com/leononame/clock v0.1.6
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.4.1
@@ -56,9 +56,9 @@ require (
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
 	golang.org/x/net v0.0.0-20210510120150-4163338589ed
-	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/tools v0.1.0
+	golang.org/x/tools v0.1.1
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.1-0.20210316190237-15fbd5aeee83
 )
