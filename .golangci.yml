@@ -45,6 +45,7 @@ linters:
     - wastedassign # Inaccurate.
     - scopelint # Deprecated
     - tagliatelle
+    - golint # Deprecated
 
     # - staticcheck
 
