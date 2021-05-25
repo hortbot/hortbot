@@ -21,7 +21,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210519051621-1695f40b3e1d
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210521165626-8a1a8534dc64
 	github.com/google/go-cmp v0.5.5
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
@@ -55,10 +55,10 @@ require (
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.7.0
 	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
+	golang.org/x/net v0.0.0-20210521195947-fe42d452be8f
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.1
 	gotest.tools/v3 v3.0.3
-	mvdan.cc/xurls/v2 v2.2.1-0.20210519145239-cee2e13ff09d
+	mvdan.cc/xurls/v2 v2.2.1-0.20210524140259-43eaf7b5052c
 )
