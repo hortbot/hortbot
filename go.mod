@@ -22,7 +22,7 @@ require (
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210521165626-8a1a8534dc64
-	github.com/google/go-cmp v0.5.5
+	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
 	github.com/hako/durafmt v0.0.0-20210316092057-3a2c319c1acd
@@ -50,15 +50,15 @@ require (
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
-	github.com/zikaeroh/ctxlog v0.0.0-20200613043947-8791c8613223
+	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
 	go.deanishe.net/fuzzy v1.0.0
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.7.0
-	go.uber.org/zap v1.16.0
-	golang.org/x/net v0.0.0-20210521195947-fe42d452be8f
+	go.uber.org/zap v1.17.0
+	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/tools v0.1.1
+	golang.org/x/tools v0.1.2
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.1-0.20210524140259-43eaf7b5052c
 )

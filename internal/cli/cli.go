@@ -66,7 +66,7 @@ func Run(cmd Command, args []string) {
 	args, err := parser.ParseArgs(args)
 	checkParseError(err)
 
-	logger := ctxlog.New(cmd.IsDebug())
+	logger := ctxlog.NewUnsampled(cmd.IsDebug())
 	defer zap.RedirectStdLog(logger)()
 	ctx = ctxlog.WithLogger(ctx, logger)
 
