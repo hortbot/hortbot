@@ -6,26 +6,25 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
 	github.com/99designs/gqlgen v0.13.1-0.20210415065809-5ad012e3d7be
-	github.com/alicebob/miniredis/v2 v2.14.4
+	github.com/alicebob/miniredis/v2 v2.14.5
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.0.1
 	github.com/dghubble/trie v0.0.0-20210506170352-7bfa5d9a3938
 	github.com/dustin/go-humanize v1.0.0
-	github.com/ericlagergren/decimal v0.0.0-20210307182354-5f8425a47c58 // indirect
 	github.com/felixge/httpsnoop v1.0.2
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.0.3
-	github.com/go-redis/redis/v8 v8.8.3
+	github.com/go-redis/redis/v8 v8.10.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/flect v0.2.2
 	github.com/gofrs/uuid v4.0.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210521165626-8a1a8534dc64
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210528215629-3b3c1b6aa582
 	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
-	github.com/hako/durafmt v0.0.0-20210316092057-3a2c319c1acd
+	github.com/hako/durafmt v0.0.0-20210601083242-f49dacec7612
 	github.com/jackc/pgconn v1.8.1
 	github.com/jackc/pgx/v4 v4.11.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
@@ -46,7 +45,7 @@ require (
 	github.com/valyala/quicktemplate v1.6.3
 	github.com/vektah/gqlparser/v2 v2.2.0
 	github.com/volatiletech/null/v8 v8.1.2
-	github.com/volatiletech/sqlboiler/v4 v4.5.0
+	github.com/volatiletech/sqlboiler/v4 v4.6.0
 	github.com/volatiletech/strmangle v0.0.1
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
