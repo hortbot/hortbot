@@ -4,13 +4,23 @@ package findlinks
 import (
 	"net/url"
 	"regexp"
+	"regexp/syntax"
 
 	"github.com/goware/urlx"
 	"mvdan.cc/xurls/v2"
 )
 
 var linkRegex = func() *regexp.Regexp {
-	re := regexp.MustCompile(`\b(` + xurls.Relaxed().String() + `)\b`)
+	reStr := xurls.Relaxed().String()
+
+	// Convert all capture groups into non-capturing groups; we only need to
+	// know the full match, and they're faster and allocate less.
+	reStr = mustDecaptureString(reStr)
+
+	// Don't match links within words, only whole words.
+	reStr = `\b(?:` + reStr + `)\b`
+
+	re := regexp.MustCompile(reStr)
 	re.Longest()
 	return re
 }()
@@ -53,4 +63,26 @@ func inWhitelist(s string, whitelist []string) bool {
 		}
 	}
 	return false
+}
+
+func mustDecaptureString(in string) string {
+	re, err := syntax.Parse(in, syntax.Perl)
+	if err != nil {
+		panic(err)
+	}
+	decapture(re)
+	return re.String()
+}
+
+func decapture(re *syntax.Regexp) {
+	if re.Op == syntax.OpCapture {
+		if len(re.Sub) != 1 {
+			panic("invalid capture")
+		}
+		*re = *re.Sub[0]
+	}
+
+	for _, sub := range re.Sub {
+		decapture(sub)
+	}
 }
