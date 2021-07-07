@@ -6,7 +6,7 @@ require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
 	github.com/99designs/gqlgen v0.13.1-0.20210415065809-5ad012e3d7be
-	github.com/alicebob/miniredis/v2 v2.14.5
+	github.com/alicebob/miniredis/v2 v2.15.0
 	github.com/antchfx/htmlquery v1.2.3
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.0.2
@@ -16,11 +16,11 @@ require (
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.0.3
-	github.com/go-redis/redis/v8 v8.10.0
+	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/flect v0.2.3
 	github.com/gofrs/uuid v4.0.0+incompatible
-	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210528215629-3b3c1b6aa582
+	github.com/golang-migrate/migrate/v4 v4.14.2-0.20210706174543-31cedbb9613a
 	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.1
@@ -53,11 +53,11 @@ require (
 	go.deanishe.net/fuzzy v1.0.0
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.8.0
-	go.uber.org/zap v1.17.0
+	go.uber.org/zap v1.18.1
 	golang.org/x/net v0.0.0-20210614182718-04defd469f4e
-	golang.org/x/oauth2 v0.0.0-20210615190721-d04028783cf1
+	golang.org/x/oauth2 v0.0.0-20210628180205-a41e5a781914
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/tools v0.1.3
+	golang.org/x/tools v0.1.4
 	gotest.tools/v3 v3.0.3
 	mvdan.cc/xurls/v2 v2.2.1-0.20210524140259-43eaf7b5052c
 )
