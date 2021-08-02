@@ -65,10 +65,8 @@ func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string
 	t.Helper()
 
 	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
-	assert.NilError(t, err)
+	assert.NilError(t, err, "creating new db without migrations")
 	defer cleanup()
-
-	assert.NilError(t, migrations.Up(connStr, nil))
 
 	fn(t, db, connStr)
 }

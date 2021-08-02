@@ -47,7 +47,7 @@ func (p *Pool) init(t testing.TB) {
 		}()
 	})
 
-	assert.NilError(t, p.err)
+	assert.NilError(t, p.err, "initializing database")
 }
 
 // Cleanup cleans up the pool. It's safe to run, even if the pool was never used.
@@ -69,12 +69,12 @@ func (p *Pool) FreshDB(t testing.TB) *sql.DB {
 	dbName := fmt.Sprintf("temp%d", p.num.Inc())
 
 	_, err := p.db.Exec(fmt.Sprintf(`CREATE DATABASE %s WITH TEMPLATE temp_template`, dbName))
-	assert.NilError(t, err)
+	assert.NilError(t, err, "creating temp database")
 
 	connStr := strings.Replace(p.connStr, "postgres?", dbName+"?", 1)
 
 	db, err := sql.Open(driver.Name, connStr)
-	assert.NilError(t, err)
+	assert.NilError(t, err, "opening temp database")
 
 	return db
 }
