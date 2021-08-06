@@ -1,3 +1,6 @@
+# This used to test auto-follow, but Twitch removed the follower APIs.
+# Ensure that we still at least handle these notices without errors.
+
 handle hortbot @msg-id=msg_followersonly_zero :tmi.twitch.tv NOTICE #foobar :This room is in followers-only mode. Follow foobar to join the community!
 no_send
 clock_forward 1h
@@ -5,7 +8,6 @@ clock_forward 1h
 
 join hortbot 999 foobar 1
 
-twitch_follow_channel {"ID": 999, "ToFollow": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}}
 handle hortbot @msg-id=msg_followersonly :tmi.twitch.tv NOTICE #foobar :This room is in followers-only mode. Follow foobar to join the community!
 no_send
 
@@ -14,7 +16,6 @@ no_send
 
 clock_forward 1h
 
-twitch_follow_channel {"ID": 999, "ToFollow": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Err": "ErrServerError"}
 handle hortbot @msg-id=msg_followersonly_zero :tmi.twitch.tv NOTICE #foobar :This room is in followers-only mode. Follow foobar to join the community!
 no_send
 

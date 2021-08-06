@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"database/sql"
-	"strconv"
 	"strings"
 	"time"
 
@@ -45,33 +44,11 @@ func (b *Bot) handleNotice(ctx context.Context, origin string, m *irc.Message) e
 }
 
 func (b *Bot) handleNoticeFollow(ctx context.Context, origin string, ircChannel string) error {
-	return dbx.Transact(ctx, b.db,
-		dbx.SetLocalLockTimeout(5*time.Second),
-		func(ctx context.Context, tx *sql.Tx) error {
-			channel, err := models.Channels(
-				qm.Select(models.ChannelColumns.TwitchID),
-				models.ChannelWhere.Name.EQ(ircChannel),
-				models.ChannelWhere.BotName.EQ(origin),
-			).One(ctx, tx)
-			if err != nil {
-				if err == sql.ErrNoRows {
-					ctxlog.Warn(ctx, "received follower-only message for unknown user")
-					return nil
-				}
-				return err
-			}
-
-			seen, err := b.deps.Redis.CheckAndMarkCooldown(ctx, strconv.FormatInt(channel.TwitchID, 10), "follow_cooldown", 10*time.Minute)
-			if err != nil || seen {
-				return err
-			}
-
-			if err := followUser(ctx, tx, b.deps.Twitch, origin, channel.TwitchID); err != nil {
-				ctxlog.Warn(ctx, "error following user", zap.Error(err))
-			}
-
-			return nil
-		})
+	// Twitch dropped support for its follow API, so there's nothing we can do
+	// about this automatically anymore. But, verified bots are (apparently)
+	// able to chat without following, which mitigates this for the most part.
+	ctxlog.Info(ctx, "bot tried to talk in follower-only channel")
+	return nil
 }
 
 func (b *Bot) handleNoticeLeaveChannel(ctx context.Context, origin string, ircChannel string) error {

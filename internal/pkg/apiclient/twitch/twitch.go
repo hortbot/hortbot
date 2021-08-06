@@ -47,12 +47,11 @@ var userScopes = []string{
 
 // BotScopes are scopes which should be granted for the bot's account.
 var BotScopes = []string{
-	"channel:moderate",  // Chat: run moderator commands
-	"chat:read",         // Chat: read messages
-	"chat:edit",         // Chat: send messages
-	"whispers:read",     // Chat: read whispers
-	"whispers:edit",     // Chat: send whispers
-	"user:edit:follows", // Helix: followers
+	"channel:moderate", // Chat: run moderator commands
+	"chat:read",        // Chat: read messages
+	"chat:edit",        // Chat: send messages
+	"whispers:read",    // Chat: read whispers
+	"whispers:edit",    // Chat: send whispers
 }
 
 var twitchEndpoint = oauth2.Endpoint{
@@ -86,7 +85,6 @@ type API interface {
 	GetStreamByUserID(ctx context.Context, id int64) (*Stream, error)
 	GetStreamByUsername(ctx context.Context, username string) (*Stream, error)
 	GetChannelByID(ctx context.Context, id int64) (*Channel, error)
-	FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

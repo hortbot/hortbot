@@ -80,32 +80,3 @@ func getUser(ctx context.Context, cli *httpClient, username string, id int64) (*
 
 	return users[0], nil
 }
-
-// FollowChannel makes one channel follow another. This requires the
-// user:edit:follows scope on the provided token.
-//
-// PUT https://api.twitch.tv/helix/users/follows
-func (t *Twitch) FollowChannel(ctx context.Context, id int64, userToken *oauth2.Token, toFollow int64) (newToken *oauth2.Token, err error) {
-	if userToken == nil || userToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
-	}
-
-	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
-	url := helixRoot + "/users/follows"
-
-	body := &struct {
-		FromID IDStr `json:"from_id"`
-		ToID   IDStr `json:"to_id"`
-	}{
-		FromID: IDStr(id),
-		ToID:   IDStr(toFollow),
-	}
-
-	resp, err := cli.Post(ctx, url, body)
-	if err != nil {
-		return newToken, err
-	}
-	defer resp.Body.Close()
-
-	return newToken, statusToError(resp.StatusCode)
-}

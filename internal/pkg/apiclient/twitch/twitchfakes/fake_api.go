@@ -36,22 +36,6 @@ type FakeAPI struct {
 		result1 *oauth2.Token
 		result2 error
 	}
-	FollowChannelStub        func(context.Context, int64, *oauth2.Token, int64) (*oauth2.Token, error)
-	followChannelMutex       sync.RWMutex
-	followChannelArgsForCall []struct {
-		arg1 context.Context
-		arg2 int64
-		arg3 *oauth2.Token
-		arg4 int64
-	}
-	followChannelReturns struct {
-		result1 *oauth2.Token
-		result2 error
-	}
-	followChannelReturnsOnCall map[int]struct {
-		result1 *oauth2.Token
-		result2 error
-	}
 	GetChannelByIDStub        func(context.Context, int64) (*twitch.Channel, error)
 	getChannelByIDMutex       sync.RWMutex
 	getChannelByIDArgsForCall []struct {
@@ -354,73 +338,6 @@ func (fake *FakeAPI) ExchangeReturnsOnCall(i int, result1 *oauth2.Token, result2
 		})
 	}
 	fake.exchangeReturnsOnCall[i] = struct {
-		result1 *oauth2.Token
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeAPI) FollowChannel(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 int64) (*oauth2.Token, error) {
-	fake.followChannelMutex.Lock()
-	ret, specificReturn := fake.followChannelReturnsOnCall[len(fake.followChannelArgsForCall)]
-	fake.followChannelArgsForCall = append(fake.followChannelArgsForCall, struct {
-		arg1 context.Context
-		arg2 int64
-		arg3 *oauth2.Token
-		arg4 int64
-	}{arg1, arg2, arg3, arg4})
-	stub := fake.FollowChannelStub
-	fakeReturns := fake.followChannelReturns
-	fake.recordInvocation("FollowChannel", []interface{}{arg1, arg2, arg3, arg4})
-	fake.followChannelMutex.Unlock()
-	if stub != nil {
-		return stub(arg1, arg2, arg3, arg4)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	return fakeReturns.result1, fakeReturns.result2
-}
-
-func (fake *FakeAPI) FollowChannelCallCount() int {
-	fake.followChannelMutex.RLock()
-	defer fake.followChannelMutex.RUnlock()
-	return len(fake.followChannelArgsForCall)
-}
-
-func (fake *FakeAPI) FollowChannelCalls(stub func(context.Context, int64, *oauth2.Token, int64) (*oauth2.Token, error)) {
-	fake.followChannelMutex.Lock()
-	defer fake.followChannelMutex.Unlock()
-	fake.FollowChannelStub = stub
-}
-
-func (fake *FakeAPI) FollowChannelArgsForCall(i int) (context.Context, int64, *oauth2.Token, int64) {
-	fake.followChannelMutex.RLock()
-	defer fake.followChannelMutex.RUnlock()
-	argsForCall := fake.followChannelArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
-}
-
-func (fake *FakeAPI) FollowChannelReturns(result1 *oauth2.Token, result2 error) {
-	fake.followChannelMutex.Lock()
-	defer fake.followChannelMutex.Unlock()
-	fake.FollowChannelStub = nil
-	fake.followChannelReturns = struct {
-		result1 *oauth2.Token
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeAPI) FollowChannelReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
-	fake.followChannelMutex.Lock()
-	defer fake.followChannelMutex.Unlock()
-	fake.FollowChannelStub = nil
-	if fake.followChannelReturnsOnCall == nil {
-		fake.followChannelReturnsOnCall = make(map[int]struct {
-			result1 *oauth2.Token
-			result2 error
-		})
-	}
-	fake.followChannelReturnsOnCall[i] = struct {
 		result1 *oauth2.Token
 		result2 error
 	}{result1, result2}
@@ -1223,8 +1140,6 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.authCodeURLMutex.RUnlock()
 	fake.exchangeMutex.RLock()
 	defer fake.exchangeMutex.RUnlock()
-	fake.followChannelMutex.RLock()
-	defer fake.followChannelMutex.RUnlock()
 	fake.getChannelByIDMutex.RLock()
 	defer fake.getChannelByIDMutex.RUnlock()
 	fake.getChannelModeratorsMutex.RLock()
