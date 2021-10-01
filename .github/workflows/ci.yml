@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  GO_DEV_VERSION: "1.16" # Sync with README, go.mod, Dockerfile, and docker-compose.yml.
+  GO_DEV_VERSION: "1.17" # Sync with README, go.mod, Dockerfile, and docker-compose.yml.
   GOLANGCI_LINT_VERSION: "v1.41.1"
 
 jobs:
@@ -20,7 +20,7 @@ jobs:
       matrix:
         # https://github.com/actions/toolkit/issues/399
         # go: ["1.16", "tip"]
-        go: ["1.16"]
+        go: ["1.17"]
     name: Go ${{ matrix.go }}
 
     steps:
