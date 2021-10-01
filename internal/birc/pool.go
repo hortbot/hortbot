@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
+	"github.com/zikaeroh/ctxjoin"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/atomic"
 	"go.uber.org/zap"
@@ -505,10 +506,12 @@ func (p *Pool) runSubConn() <-chan *Connection {
 
 		conn.sendFrom(p.sendChan)
 
-		// No need to track this goroutine, when the pool or the connection
-		// close, either the context will be cancelled, or the incoming channel
-		// will be closed.
-		go func() {
+		// Ensure this goroutine is tracked so that it exists before Run
+		// closes recvChan.
+		p.g.Go(func(gCtx context.Context) error {
+			ctx, cancel := ctxjoin.AddCancel(ctx, gCtx)
+			defer cancel()
+
 			incoming := conn.Incoming()
 
 			for {
@@ -518,20 +521,22 @@ func (p *Pool) runSubConn() <-chan *Connection {
 				select {
 				case m, ok = <-incoming:
 					if !ok {
-						return
+						return nil
 					}
 				case <-ctx.Done():
-					return
+					return nil
 				}
 
 				select {
 				case p.recvChan <- m:
-					// Do nothing.
+					continue
 				case <-ctx.Done():
-					return
+				case <-p.stopChan:
 				}
+
+				return nil
 			}
-		}()
+		})
 
 		p.connsMu.Lock()
 		p.conns[conn] = struct{}{}
