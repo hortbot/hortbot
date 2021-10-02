@@ -36,6 +36,7 @@ func cmdHLTB(ctx context.Context, s *session, _ string, args string) error {
 			}
 			return s.Reply(ctx, "A HowLongToBeat API error occurred.")
 		}
+		return err
 	}
 
 	var b strings.Builder
