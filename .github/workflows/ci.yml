@@ -163,11 +163,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx
 
-      # - name: Login to DockerHub
-      #   uses: docker/login-action@v1
-      #   with:
-      #     username: ${{ secrets.DOCKER_USERNAME }}
-      #     password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -184,12 +184,9 @@ jobs:
           push: true
           build-args: |
             version=${{ env.HB_VERSION }}
-          # tags: |
-          #   hortbot/hortbot:latest
-          #   hortbot/hortbot:${{ env.HB_VERSION }}
-          #   ghcr.io/hortbot/hortbot:latest
-          #   ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
           tags: |
+            hortbot/hortbot:latest
+            hortbot/hortbot:${{ env.HB_VERSION }}
             ghcr.io/hortbot/hortbot:latest
             ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
           cache-from: type=local,src=/tmp/.buildx-cache
