@@ -10,20 +10,20 @@ require (
 	github.com/antchfx/htmlquery v1.2.4
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.0.2
-	github.com/dghubble/trie v0.0.0-20210609182954-9a58e577d803
+	github.com/dghubble/trie v0.0.0-20211002190126-ca25329b35c6
 	github.com/dustin/go-humanize v1.0.0
 	github.com/felixge/httpsnoop v1.0.2
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.0.4
-	github.com/go-redis/redis/v8 v8.11.3
+	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/flect v0.2.3
 	github.com/gofrs/uuid v4.0.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.15.0
 	github.com/google/go-cmp v0.5.6
 	github.com/gorilla/sessions v1.2.1
-	github.com/goware/urlx v0.3.1
+	github.com/goware/urlx v0.3.2-0.20210602194825-dcd04f6df527
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/jackc/pgconn v1.10.0
 	github.com/jackc/pgx/v4 v4.13.0
@@ -54,8 +54,8 @@ require (
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.9.0
 	go.uber.org/zap v1.19.1
-	golang.org/x/net v0.0.0-20210929193557-e81a3d93ecf6
-	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f
+	golang.org/x/net v0.0.0-20211008194852-3b03d305991f
+	golang.org/x/oauth2 v0.0.0-20211005180243-6b3c2da341f1
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.7
 	gotest.tools/v3 v3.0.3
@@ -73,7 +73,7 @@ require (
 	github.com/antchfx/xpath v1.2.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
-	github.com/cespare/xxhash/v2 v2.1.1 // indirect
+	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/containerd/continuity v0.0.0-20190827140505-75bee3e2ccb6 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
