@@ -205,7 +205,7 @@ jobs:
           stable: "false"
           go-version: ${{ env.GO_DEV_VERSION }}
 
-      - name: imjasonh/setup-ko@v0.4
+      - uses: imjasonh/setup-ko@v0.4
 
       - name: Build image
         run: |
