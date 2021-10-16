@@ -160,16 +160,17 @@ jobs:
           image_name: hortbot/hortbot
           image_tag: "latest,${{ env.HB_VERSION }}"
           build_extra_args: "--build-arg=version=${{ env.HB_VERSION }}"
-          push_image_and_stages: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          # push_image_and_stages: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+          push_image_and_stages: false
 
-      - name: Push image to GitHub
-        if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        run: |
-          echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
-          docker tag hortbot/hortbot:latest ghcr.io/hortbot/hortbot:latest
-          docker tag hortbot/hortbot:${{ env.HB_VERSION }} ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
-          docker push ghcr.io/hortbot/hortbot:latest
-          docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+      # - name: Push image to GitHub
+      #   if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      #   run: |
+      #     echo ${{ secrets.CR_PAT }} | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+      #     docker tag hortbot/hortbot:latest ghcr.io/hortbot/hortbot:latest
+      #     docker tag hortbot/hortbot:${{ env.HB_VERSION }} ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+      #     docker push ghcr.io/hortbot/hortbot:latest
+      #     docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
 
   ko:
     name: Docker (ko)
@@ -217,8 +218,8 @@ jobs:
           echo '${{ secrets.DOCKER_TOKEN }}' | docker login docker.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
           docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:latest
           docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
-          # docker push docker.io/hortbot/hortbot:latest
-          # docker push docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker push docker.io/hortbot/hortbot:latest
+          docker push docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
 
       - name: Push image to GitHub
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
@@ -226,5 +227,5 @@ jobs:
           echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
           docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:latest
           docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
-          # docker push ghcr.io/hortbot/hortbot:latest
-          # docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker push ghcr.io/hortbot/hortbot:latest
+          docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
