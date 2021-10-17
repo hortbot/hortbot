@@ -56,3 +56,4 @@ runs:
     # Not strictly required, but makes the cache identical in all tasks regardless of what they use.
     - name: Download Go modules
       run: go mod download
+      shell: bash
