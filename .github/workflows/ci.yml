@@ -26,31 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Go modules
-        uses: actions/cache@v2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ matrix.go }}-${{ hashFiles('**/go.sum') }}
-
-      - name: Install Go
-        if: matrix.go != 'tip'
-        uses: actions/setup-go@v2
-        with:
-          stable: "false"
-          go-version: ${{ matrix.go }}
-
-      - name: Install Go tip
-        if: matrix.go == 'tip'
-        run: |
-          git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
-          cd $HOME/gotip/src
-          ./make.bash
-          ../bin/go version
-          echo "::set-env name=GOROOT::$HOME/gotip"
-          echo "::add-path::$HOME/gotip/bin"
-
-      - name: Download Go modules
-        run: go mod download
+      - uses: ./.github/actions/setup-go
+        go-version: ${{ matrix.go }}
 
       - name: Pull docker images
         run: |
@@ -77,17 +54,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Go modules
-        uses: actions/cache@v2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
-
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          stable: "false"
-          go-version: ${{ env.GO_DEV_VERSION }}
+      - uses: ./.github/actions/setup-go
+        go-version: ${{ matrix.go }}
 
       - name: Check go.mod tidyness
         run: |
@@ -108,17 +76,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Cache Go modules
-        uses: actions/cache@v2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
-
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          stable: "false"
-          go-version: ${{ env.GO_DEV_VERSION }}
+      - uses: ./.github/actions/setup-go
+        go-version: ${{ matrix.go }}
 
       - name: go generate
         run: |
@@ -146,23 +105,8 @@ jobs:
           echo Version $HB_VERSION
           echo HB_VERSION=$HB_VERSION >> $GITHUB_ENV
 
-      - name: Turnstyle
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: softprops/turnstyle@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Cache Go modules
-        uses: actions/cache@v2
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-${{ env.GO_DEV_VERSION }}-${{ hashFiles('**/go.sum') }}
-
-      - name: Install Go
-        uses: actions/setup-go@v2
-        with:
-          stable: "false"
-          go-version: ${{ env.GO_DEV_VERSION }}
+      - uses: ./.github/actions/setup-go
+        go-version: ${{ matrix.go }}
 
       - uses: imjasonh/setup-ko@v0.4
 
@@ -171,10 +115,22 @@ jobs:
         run: |
           ko publish --local --preserve-import-paths github.com/hortbot/hortbot
 
-      - name: Push image to Docker Hub
+      # This must go before the registry pushes to ensure ordering of the latest tag.
+      - name: Turnstyle
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        uses: softprops/turnstyle@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker login
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
           echo '${{ secrets.DOCKER_TOKEN }}' | docker login docker.io -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+          echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
+
+      - name: Push image to Docker Hub
+        if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+        run: |
           docker tag ko.local/github.com/hortbot/hortbot:latest docker.io/hortbot/hortbot:latest
           docker tag ko.local/github.com/hortbot/hortbot:latest docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
           docker push docker.io/hortbot/hortbot:latest
@@ -183,7 +139,6 @@ jobs:
       - name: Push image to GitHub
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
-          echo '${{ secrets.GITHUB_TOKEN }}' | docker login ghcr.io -u $GITHUB_ACTOR --password-stdin
           docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:latest
           docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
           docker push ghcr.io/hortbot/hortbot:latest

@@ -1,0 +1,58 @@
+name: Setup Go and caches
+description: Setup Go and build/module caches
+
+inputs:
+  go-version:
+    description: "The Go version to download (if necessary) and use. Supports semver spec and ranges."
+    default: "1.17" # Sync with README, go.mod, Dockerfile, and docker-compose.yml.
+  stable:
+    description: "Whether to download only stable versions"
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Install Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ inputs.go-version }}
+        stable: ${{ inputs.stable }}
+
+    - name: Install Go
+      if: ${{ inputs.go-version }} != 'tip'
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ inputs.go-version }}
+        stable: ${{ inputs.stable }}
+
+    - name: Install Go tip
+      if: ${{ inputs.go-version }} == 'tip'
+      run: |
+        git clone --depth=1 https://go.googlesource.com/go $HOME/gotip
+        cd $HOME/gotip/src
+        ./make.bash
+        ../bin/go version
+        echo "GOROOT=$HOME/gotip" >> $GITHUB_ENV
+        echo "$HOME/gotip/bin:$PATH" >> $GITHUB_PATH
+
+    # https://github.com/mvdan/github-actions-golang
+    - name: Cache Go modules
+      uses: actions/cache@v2
+      with:
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-modules-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
+
+    - name: Cache go-build
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/Library/Caches/go-build
+          %LocalAppData%\go-build
+        key: ${{ runner.os }}-go-build-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-build-
+
+    # Not strictly required, but makes the cache identical in all tasks regardless of what they use.
+    - name: Download Go modules
+      run: go mod download
