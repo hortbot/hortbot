@@ -1,6 +1,5 @@
 defaultBaseImage: gcr.io/distroless/base:nonroot
 builds:
   - id: main
-    main: github.com/hortbot/hortbot
     ldflags:
       - -X github.com/hortbot/hortbot/internal/version.version={{.Env.HB_VERSION}}
