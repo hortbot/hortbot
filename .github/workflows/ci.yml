@@ -113,7 +113,7 @@ jobs:
 
       - name: Check version
         run: |
-          GOT_HB_VERSION=$(docker run {{ steps.ko.outputs.image }} version)
+          GOT_HB_VERSION=$(docker run ${{ steps.ko.outputs.image }} version)
           echo $GOT_HB_VERSION
           [[ "$GOT_HB_VERSION" = "$HB_VERSION" ]]
 
@@ -133,15 +133,15 @@ jobs:
       - name: Push image to Docker Hub
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
-          docker tag {{ steps.ko.outputs.image }} docker.io/hortbot/hortbot:latest
-          docker tag {{ steps.ko.outputs.image }} docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker tag ${{ steps.ko.outputs.image }} docker.io/hortbot/hortbot:latest
+          docker tag ${{ steps.ko.outputs.image }} docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
           docker push docker.io/hortbot/hortbot:latest
           docker push docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
 
       - name: Push image to GitHub
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
-          docker tag {{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:latest
-          docker tag {{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker tag ${{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:latest
+          docker tag ${{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
           docker push ghcr.io/hortbot/hortbot:latest
           docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
