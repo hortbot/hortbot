@@ -26,7 +26,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: ./.github/actions/setup-go
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
         with:
           go-version: ${{ matrix.go }}
 
@@ -55,7 +56,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: ./.github/actions/setup-go
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
 
       - name: Check go.mod tidyness
         run: |
@@ -76,7 +78,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: ./.github/actions/setup-go
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
 
       - name: go generate
         run: |
@@ -104,7 +107,8 @@ jobs:
           echo Version $HB_VERSION
           echo HB_VERSION=$HB_VERSION >> $GITHUB_ENV
 
-      - uses: ./.github/actions/setup-go
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
 
       - uses: imjasonh/setup-ko@v0.4
 
