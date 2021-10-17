@@ -94,7 +94,7 @@ jobs:
 
       - name: Get version
         run: |
-          export HB_VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
+          HB_VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
           echo Version $HB_VERSION
           echo HB_VERSION=$HB_VERSION >> $GITHUB_ENV
 
@@ -105,8 +105,15 @@ jobs:
 
       # TODO: Let ko push directly to registry? (Need to find a way to omit the hash-based tags.)
       - name: Build image
+        id: ko
         run: |
-          ko publish --local --preserve-import-paths github.com/hortbot/hortbot
+          echo "::set-output name=image::$(ko publish --local --preserve-import-paths .)"
+
+      - name: Check version
+        run: |
+          GOT_HB_VERSION=$(docker run {{ steps.ko.outputs.image }} version)
+          echo GOT_HB_VERSION
+          [[ "$GOT_HB_VERSION" = "$HB_VERSION" ]]
 
       # This must go before the registry pushes to ensure ordering of the latest tag.
       - name: Turnstyle
@@ -124,15 +131,15 @@ jobs:
       - name: Push image to Docker Hub
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
-          docker tag ko.local/github.com/hortbot/hortbot:latest docker.io/hortbot/hortbot:latest
-          docker tag ko.local/github.com/hortbot/hortbot:latest docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker tag {{ steps.ko.outputs.image }} docker.io/hortbot/hortbot:latest
+          docker tag {{ steps.ko.outputs.image }} docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
           docker push docker.io/hortbot/hortbot:latest
           docker push docker.io/hortbot/hortbot:${{ env.HB_VERSION }}
 
       - name: Push image to GitHub
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
-          docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:latest
-          docker tag ko.local/github.com/hortbot/hortbot:latest ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker tag {{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:latest
+          docker tag {{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
           docker push ghcr.io/hortbot/hortbot:latest
           docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
