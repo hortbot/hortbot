@@ -9,27 +9,18 @@ on:
       - master
 
 env:
-  GO_DEV_VERSION: "1.17" # Sync with README, go.mod, Dockerfile, and docker-compose.yml.
   GOLANGCI_LINT_VERSION: "v1.41.1"
 
 jobs:
   test:
+    name: Tests
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        # https://github.com/actions/toolkit/issues/399
-        # go: ["1.16", "tip"]
-        go: ["1.17"]
-    name: Go ${{ matrix.go }}
 
     steps:
       - uses: actions/checkout@v2
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
-        with:
-          go-version: ${{ matrix.go }}
 
       - name: Pull docker images
         run: |
