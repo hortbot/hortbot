@@ -55,7 +55,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - uses: ./.github/actions/setup-go
-        go-version: ${{ matrix.go }}
+        with:
+          go-version: ${{ matrix.go }}
 
       - name: Check go.mod tidyness
         run: |
