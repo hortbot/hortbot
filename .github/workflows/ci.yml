@@ -107,12 +107,14 @@ jobs:
       - name: Build image
         id: ko
         run: |
-          echo "::set-output name=image::$(ko publish --local --preserve-import-paths .)"
+          KO_IMAGE=$(ko publish --local --preserve-import-paths .)
+          echo $KO_IMAGE
+          echo "::set-output name=image::$KO_IMAGE"
 
       - name: Check version
         run: |
           GOT_HB_VERSION=$(docker run {{ steps.ko.outputs.image }} version)
-          echo GOT_HB_VERSION
+          echo $GOT_HB_VERSION
           [[ "$GOT_HB_VERSION" = "$HB_VERSION" ]]
 
       # This must go before the registry pushes to ensure ordering of the latest tag.
