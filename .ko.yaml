@@ -1,4 +1,3 @@
-defaultBaseImage: gcr.io/distroless/base:nonroot
 builds:
   - id: main
     ldflags:
