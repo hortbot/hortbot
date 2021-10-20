@@ -8,6 +8,9 @@ inputs:
   stable:
     description: "Whether to download only stable versions"
     default: "false"
+  cache-name:
+    description: "Name of the cache"
+    default: "cache"
 
 runs:
   using: composite
@@ -40,9 +43,15 @@ runs:
       uses: actions/cache@v2
       with:
         path: ~/go/pkg/mod
-        key: ${{ runner.os }}-go-modules-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
+        key: ${{ runner.os }}-go-${{ inputs.cache-name }}-modules-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
 
-    # Not strictly required, but makes the cache identical in all tasks regardless of what they use.
-    - name: Download Go modules
-      run: go mod download
-      shell: bash
+    - name: Cache go-build
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/go-build
+          ~/Library/Caches/go-build
+          %LocalAppData%\go-build
+        key: ${{ runner.os }}-go-${{ inputs.cache-name }}-build-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-build-

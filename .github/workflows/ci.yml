@@ -21,6 +21,8 @@ jobs:
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
+        with:
+          cache-name: test
 
       - name: Pull docker images
         run: |
@@ -49,6 +51,8 @@ jobs:
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
+        with:
+          cache-name: style
 
       - name: Check go.mod tidyness
         run: |
@@ -71,6 +75,8 @@ jobs:
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
+        with:
+          cache-name: generate
 
       - name: go generate
         run: |
@@ -100,6 +106,8 @@ jobs:
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
+        with:
+          cache-name: ko
 
       - uses: imjasonh/setup-ko@v0.4
 
