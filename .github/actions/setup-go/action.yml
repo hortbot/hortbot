@@ -6,10 +6,10 @@ inputs:
     description: "The Go version to download (if necessary) and use. Supports semver spec and ranges."
     default: "1.17" # Sync with README, go.mod, and docker-compose.yml.
   stable:
-    description: "Whether to download only stable versions"
+    description: "Whether to download only stable versions."
     default: "false"
   cache-name:
-    description: "Name of the cache"
+    description: "Name of the cache, for separate jobs which may use different modules/builds."
     default: "cache"
 
 runs:
