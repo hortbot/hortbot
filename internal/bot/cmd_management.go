@@ -121,7 +121,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 
 	if channel.Active {
 		if channel.Name == name {
-			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'.", displayName, channel.BotName, channel.Prefix)
+			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.", displayName, channel.BotName, channel.Prefix)
 		}
 
 		channel.Name = name

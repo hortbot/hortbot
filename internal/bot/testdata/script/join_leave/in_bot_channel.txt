@@ -20,7 +20,7 @@ send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
-send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix '+'.
+send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix '+'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
@@ -53,7 +53,7 @@ send hortbot #hortbot [HB] Someone, hortbot will join your channel soon with pre
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join someone
-send hortbot #hortbot [HB] Someone, hortbot is already active in your channel with prefix '!'.
+send hortbot #hortbot [HB] Someone, hortbot is already active in your channel with prefix '!'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.
 no_notify_channel_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!part someone
