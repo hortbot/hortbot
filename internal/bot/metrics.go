@@ -119,6 +119,20 @@ var (
 		Help:      "Time spent committing transaction.",
 		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
 	})
+
+	metricRepeatedError = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "repeated_error_total",
+		Help:      "Total number of repeated command errors.",
+	})
+
+	metricScheduledError = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "scheduled_error_total",
+		Help:      "Total number of scheduled command errors.",
+	})
 )
 
 func setMetricRepeatGauges(ctx context.Context, rep *repeat.Repeater) {

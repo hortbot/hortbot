@@ -38,7 +38,8 @@ func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) (readd bool) {
 
 	readd, err := b.runRepeat(ctx, runner)
 	if err != nil {
-		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err))
+		metricRepeatedError.Inc()
+		ctxlog.Warn(ctx, "error running repeated command", zap.Error(err), zap.Int64("id", id))
 	} else {
 		metricRepeated.Inc()
 	}
@@ -66,7 +67,8 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) (readd bool) {
 
 	readd, err := b.runRepeat(ctx, runner)
 	if err != nil {
-		ctxlog.Warn(ctx, "error running scheduled command", zap.Error(err))
+		metricScheduledError.Inc()
+		ctxlog.Warn(ctx, "error running scheduled command", zap.Error(err), zap.Int64("id", id))
 	} else {
 		metricScheduled.Inc()
 	}
