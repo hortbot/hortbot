@@ -391,12 +391,12 @@ func actionSong(ctx context.Context, s *session, actionName, value string) (stri
 }
 
 func actionQuote(ctx context.Context, s *session, actionName, value string) (string, error) {
-	q, err := getRandomQuote(ctx, s.Tx, s.Channel)
+	q, ok, err := getRandomQuote(ctx, s.Tx, s.Channel)
 	if err != nil {
 		return "", err
 	}
 
-	if q == nil {
+	if !ok {
 		return "No quotes.", nil
 	}
 

@@ -46,6 +46,9 @@ linters:
     - scopelint # Deprecated
     - tagliatelle
     - golint # Deprecated
+    - varnamelen # Silly.
+    - ireturn # Noisy.
+    - contextcheck # Inaccurate.
 
     # - staticcheck
 

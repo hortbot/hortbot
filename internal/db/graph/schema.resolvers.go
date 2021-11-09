@@ -118,7 +118,7 @@ func (r *commandInfoResolver) Channel(ctx context.Context, obj *models.CommandIn
 
 func (r *commandInfoResolver) CommandList(ctx context.Context, obj *models.CommandInfo) (*models.CommandList, error) {
 	if !obj.CommandListID.Valid {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 	tx := txFromContext(ctx)
 	return obj.CommandList().One(ctx, tx)
@@ -126,7 +126,7 @@ func (r *commandInfoResolver) CommandList(ctx context.Context, obj *models.Comma
 
 func (r *commandInfoResolver) CustomCommand(ctx context.Context, obj *models.CommandInfo) (*models.CustomCommand, error) {
 	if !obj.CustomCommandID.Valid {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 	tx := txFromContext(ctx)
 	return obj.CustomCommand().One(ctx, tx)
@@ -136,7 +136,7 @@ func (r *commandInfoResolver) RepeatedCommand(ctx context.Context, obj *models.C
 	tx := txFromContext(ctx)
 	rc, err := obj.RepeatedCommand().One(ctx, tx)
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 	return rc, err
 }
@@ -145,7 +145,7 @@ func (r *commandInfoResolver) ScheduledCommand(ctx context.Context, obj *models.
 	tx := txFromContext(ctx)
 	sc, err := obj.ScheduledCommand().One(ctx, tx)
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	}
 	return sc, err
 }

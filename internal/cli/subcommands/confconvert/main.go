@@ -145,13 +145,13 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 	ctx = ctxlog.With(ctx, zap.String("filename", filename))
 
-	config, err := cmd.convert(ctx, name, filename)
+	config, ok, err := cmd.convert(ctx, name, filename)
 	if err != nil {
 		ctxlog.Error(ctx, "error importing config", ctxlog.PlainError(err))
 		return
 	}
 
-	if config == nil {
+	if !ok {
 		return
 	}
 
@@ -199,15 +199,14 @@ func copyTimes(from, to string) error {
 	return errors.Wrap(err, "chtime-ing")
 }
 
-func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*confimport.Config, error) {
+func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (conf *confimport.Config, ok bool, err error) {
 	cbConfig := &coeBotConfig{}
 
 	if err := cbConfig.load(filename); err != nil {
-		return nil, errors.Wrap(err, "loading file")
+		return nil, false, errors.Wrap(err, "loading file")
 	}
 
 	var (
-		err         error
 		name        string
 		displayName string
 		twitchID    int64
@@ -219,23 +218,23 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
-				return nil, nil
+				return nil, false, nil
 			}
-			return nil, errors.Wrap(err, "getting channel by name from twitch")
+			return nil, false, errors.Wrap(err, "getting channel by name from twitch")
 		}
 	} else {
 		twitchID, err = strconv.ParseInt(cbConfig.ChannelID, 10, 64)
 		if err != nil {
-			return nil, errors.Wrap(err, "parsing channel ID")
+			return nil, false, errors.Wrap(err, "parsing channel ID")
 		}
 
 		name, displayName, err = cmd.getChannelByID(ctx, twitchID)
 		if err != nil {
 			if err == twitch.ErrNotFound {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
-				return nil, nil
+				return nil, false, nil
 			}
-			return nil, errors.Wrap(err, "getting channel info from twitch")
+			return nil, false, errors.Wrap(err, "getting channel info from twitch")
 		}
 	}
 
@@ -244,12 +243,12 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 	botName, active, found := getSiteInfo(expectedName)
 	if !found {
 		ctxlog.Warn(ctx, "user not found in site database")
-		return nil, nil
+		return nil, false, nil
 	}
 
 	if botName == name {
 		ctxlog.Warn(ctx, "bot, skipping")
-		return nil, nil
+		return nil, false, nil
 	}
 
 	if name != expectedName {
@@ -277,7 +276,7 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (*co
 
 	config.Channel.Active = active
 
-	return config, nil
+	return config, true, nil
 }
 
 type coeBotConfig struct {

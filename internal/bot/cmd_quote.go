@@ -219,22 +219,22 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 	return s.Replyf(ctx, "Quote #%d: %s", quote.Num, quote.Quote)
 }
 
-func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *models.Channel) (*models.Quote, error) {
-	quote, err := channel.Quotes(qm.OrderBy("random()")).One(ctx, cx)
+func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *models.Channel) (quote *models.Quote, ok bool, err error) {
+	quote, err = channel.Quotes(qm.OrderBy("random()")).One(ctx, cx)
 	if err == sql.ErrNoRows {
-		return nil, nil
+		return nil, false, nil
 	}
 
-	return quote, err
+	return quote, true, err
 }
 
 func cmdQuoteRandom(ctx context.Context, s *session, cmd string, args string) error {
-	quote, err := getRandomQuote(ctx, s.Tx, s.Channel)
+	quote, ok, err := getRandomQuote(ctx, s.Tx, s.Channel)
 	if err != nil {
 		return err
 	}
 
-	if quote == nil {
+	if !ok {
 		return s.Reply(ctx, "There are no quotes.")
 	}
 

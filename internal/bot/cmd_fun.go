@@ -32,12 +32,12 @@ func cmdConch(ctx context.Context, s *session, cmd string, args string) error {
 		return s.Reply(ctx, conchResponses[i])
 	}
 
-	quote, err := getRandomQuote(ctx, s.Tx, s.Channel)
+	quote, ok, err := getRandomQuote(ctx, s.Tx, s.Channel)
 	if err != nil {
 		return err
 	}
 
-	if quote == nil {
+	if !ok {
 		return s.Reply(ctx, "I can provide no help for your situation.")
 	}
 

@@ -317,6 +317,8 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 	return tracks, nil
 }
 
+// TwitchToken returns the twitch token for the user. If not found, the token is nil,
+// which is a valid token to use in the Twitch API client.
 func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchToken")
 	defer span.End()
@@ -330,7 +332,7 @@ func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 	case err == sql.ErrNoRows:
 		var tok *oauth2.Token
 		s.cache.tok = &tok
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	case err != nil:
 		return nil, err
 	}

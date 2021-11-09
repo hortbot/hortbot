@@ -22,7 +22,7 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 	switch err {
 	case nil:
 	case sql.ErrNoRows:
-		return nil, nil
+		return nil, nil //nolint:nilnil
 	default:
 		return nil, err
 	}

@@ -34,6 +34,6 @@ func BenchmarkCompile(b *testing.B) {
 
 func BenchmarkCompileNative(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		_, _ = regexp.Compile(pattern)
+		_, _ = regexp.Compile(pattern) //nolint:gocritic
 	}
 }
