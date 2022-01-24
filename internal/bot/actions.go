@@ -100,6 +100,7 @@ func init() {
 	addExact("STEAM_STORE", actionSteamStore)
 	addExact("TWEET_URL", actionTweet)
 	addExact("BOT_HELP", actionBotHelp)
+	addExact("GAME_LINK", actionGameLink)
 
 	addPrefix("PARAMETER_", actionParameterIndex)
 	addPrefix("P_", actionParameterIndex)
@@ -542,6 +543,19 @@ func actionGame(ctx context.Context, s *session, actionName, value string) (stri
 	}
 
 	return game, nil
+}
+
+func actionGameLink(ctx context.Context, s *session, actionName, value string) (string, error) {
+	links, err := s.GameLinks(ctx)
+	if err != nil {
+		return actionMsgError, nil //nolint:nilerr
+	}
+
+	if len(links) == 0 {
+		return "(unavailable)", nil
+	}
+
+	return links[0].URL, nil
 }
 
 func actionStatus(ctx context.Context, s *session, actionName, value string) (string, error) {

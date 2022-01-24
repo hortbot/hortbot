@@ -3,6 +3,7 @@ package twitch_test
 import (
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httputil"
 	"strconv"
@@ -173,6 +174,8 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=500", httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=900", httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=901", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("POST", "https://api.igdb.com/v4/games", f.igdbGames)
 
 	// TMI API
 
@@ -423,6 +426,123 @@ func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, erro
 	}
 
 	return httpmock.NewStringResponse(int(id), ""), nil
+}
+
+const igdbSuccessResponse = `[
+    {
+        "id": 121084,
+        "external_games": [
+            {
+                "id": 1728356,
+                "category": 1,
+                "url": "https://store.steampowered.com/app/1119980"
+            },
+            {
+                "id": 1883089,
+                "category": 14,
+                "url": "https://www.twitch.tv/directory/game/In%20Sound%20Mind"
+            },
+            {
+                "id": 2070779,
+                "category": 5,
+                "url": "https://www.gog.com/game/in_sound_mind"
+            },
+            {
+                "id": 2071943,
+                "category": 20,
+                "url": "https://amazon.com/dp/B0987SBLFL"
+            },
+            {
+                "id": 2071976,
+                "category": 20,
+                "url": "https://amazon.de/dp/B098BLJDMY"
+            },
+            {
+                "id": 2071978,
+                "category": 20,
+                "url": "https://amazon.co.uk/dp/B098BJY9YK"
+            },
+            {
+                "id": 2072070,
+                "category": 20,
+                "url": "https://amazon.fr/dp/B098BR9T58"
+            },
+            {
+                "id": 2124403,
+                "category": 26,
+                "url": "https://www.epicgames.com/store/p/in-sound-mind"
+            },
+            {
+                "id": 2125622,
+                "category": 11,
+                "url": "https://www.microsoft.com/en-us/p/-1-/9PKDNVFFZCWX"
+            }
+        ]
+    }
+]`
+
+const igdbNoGamesResponse = `[
+    {
+        "id": 121084,
+        "external_games": [
+            {
+                "id": 2071943,
+                "category": 20,
+                "url": "https://amazon.com/dp/B0987SBLFL"
+            },
+            {
+                "id": 2071976,
+                "category": 20,
+                "url": "https://amazon.de/dp/B098BLJDMY"
+            },
+            {
+                "id": 2071978,
+                "category": 20,
+                "url": "https://amazon.co.uk/dp/B098BJY9YK"
+            },
+            {
+                "id": 2072070,
+                "category": 20,
+                "url": "https://amazon.fr/dp/B098BR9T58"
+            },
+            {
+                "id": 2125622,
+                "category": 11,
+                "url": "https://www.microsoft.com/en-us/p/-1-/9PKDNVFFZCWX"
+            }
+        ]
+    }
+]`
+
+func (f *fakeTwitch) igdbGames(req *http.Request) (*http.Response, error) {
+	assert.Equal(f.t, req.Method, "POST")
+	f.checkHeaders(req, false)
+
+	auth := req.Header.Get("Authorization")
+	assert.Assert(f.t, strings.HasPrefix(auth, "Bearer "))
+
+	body, err := io.ReadAll(req.Body)
+	assert.NilError(f.t, err)
+	bodyString := string(body)
+
+	switch bodyString {
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "518088"; limit 1;`:
+		return httpmock.NewStringResponse(200, igdbSuccessResponse), nil
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4040"; limit 1;`:
+		return httpmock.NewStringResponse(200, `[{"id": 1234, "external_games": []}]`), nil
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4041"; limit 1;`:
+		return httpmock.NewStringResponse(200, `[]`), nil
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "404"; limit 1;`:
+		return httpmock.NewStringResponse(404, ""), nil
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "777"; limit 1;`:
+		return httpmock.NewStringResponse(200, igdbNoGamesResponse), nil
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "500"; limit 1;`:
+		return httpmock.NewStringResponse(500, ""), nil
+	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "700"; limit 1;`:
+		return httpmock.NewStringResponse(200, "{"), nil
+	default:
+		return nil, errTestBadRequest
+	}
 }
 
 func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Response, error) {

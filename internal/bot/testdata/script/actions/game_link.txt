@@ -1,0 +1,30 @@
+join hortbot 99 foobar 1
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_id": 518088}}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_GAME_LINK_) (_GAME_LINK_)
+send_any
+
+twitch_get_game_links {"ID": 518088, "Links": []}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (unavailable) (unavailable)
+
+
+twitch_get_game_links {"ID": 518088, "Links": [{"category": 1, "url": "https://store.steampowered.com/app/1119980"}, {"category": 26, "url": "https://www.epicgames.com/store/p/in-sound-mind"}, {"category": 5, "url": "https://www.gog.com/game/in_sound_mind"}]}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] https://store.steampowered.com/app/1119980 https://store.steampowered.com/app/1119980
+
+
+twitch_get_channel_by_id {"ID": 1, "Err": "ErrServerError"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (error) (error)
+
+
+twitch_get_channel_by_id {"ID": 1, "Channel": {"game_id": 518088}}
+twitch_get_game_links {"ID": 518088, "Err": "ErrServerError"}
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+send hortbot #foobar [HB] (error) (error)

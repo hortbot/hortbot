@@ -88,6 +88,9 @@ type API interface {
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)
+
+	// IGDB
+	GetGameLinks(ctx context.Context, twitchCategory int64) ([]GameLink, error)
 }
 
 // Twitch is the Twitch API client.

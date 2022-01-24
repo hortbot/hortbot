@@ -109,6 +109,20 @@ type FakeAPI struct {
 		result1 *twitch.Category
 		result2 error
 	}
+	GetGameLinksStub        func(context.Context, int64) ([]twitch.GameLink, error)
+	getGameLinksMutex       sync.RWMutex
+	getGameLinksArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+	}
+	getGameLinksReturns struct {
+		result1 []twitch.GameLink
+		result2 error
+	}
+	getGameLinksReturnsOnCall map[int]struct {
+		result1 []twitch.GameLink
+		result2 error
+	}
 	GetStreamByUserIDStub        func(context.Context, int64) (*twitch.Stream, error)
 	getStreamByUserIDMutex       sync.RWMutex
 	getStreamByUserIDArgsForCall []struct {
@@ -672,6 +686,71 @@ func (fake *FakeAPI) GetGameByNameReturnsOnCall(i int, result1 *twitch.Category,
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) GetGameLinks(arg1 context.Context, arg2 int64) ([]twitch.GameLink, error) {
+	fake.getGameLinksMutex.Lock()
+	ret, specificReturn := fake.getGameLinksReturnsOnCall[len(fake.getGameLinksArgsForCall)]
+	fake.getGameLinksArgsForCall = append(fake.getGameLinksArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+	}{arg1, arg2})
+	stub := fake.GetGameLinksStub
+	fakeReturns := fake.getGameLinksReturns
+	fake.recordInvocation("GetGameLinks", []interface{}{arg1, arg2})
+	fake.getGameLinksMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) GetGameLinksCallCount() int {
+	fake.getGameLinksMutex.RLock()
+	defer fake.getGameLinksMutex.RUnlock()
+	return len(fake.getGameLinksArgsForCall)
+}
+
+func (fake *FakeAPI) GetGameLinksCalls(stub func(context.Context, int64) ([]twitch.GameLink, error)) {
+	fake.getGameLinksMutex.Lock()
+	defer fake.getGameLinksMutex.Unlock()
+	fake.GetGameLinksStub = stub
+}
+
+func (fake *FakeAPI) GetGameLinksArgsForCall(i int) (context.Context, int64) {
+	fake.getGameLinksMutex.RLock()
+	defer fake.getGameLinksMutex.RUnlock()
+	argsForCall := fake.getGameLinksArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) GetGameLinksReturns(result1 []twitch.GameLink, result2 error) {
+	fake.getGameLinksMutex.Lock()
+	defer fake.getGameLinksMutex.Unlock()
+	fake.GetGameLinksStub = nil
+	fake.getGameLinksReturns = struct {
+		result1 []twitch.GameLink
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) GetGameLinksReturnsOnCall(i int, result1 []twitch.GameLink, result2 error) {
+	fake.getGameLinksMutex.Lock()
+	defer fake.getGameLinksMutex.Unlock()
+	fake.GetGameLinksStub = nil
+	if fake.getGameLinksReturnsOnCall == nil {
+		fake.getGameLinksReturnsOnCall = make(map[int]struct {
+			result1 []twitch.GameLink
+			result2 error
+		})
+	}
+	fake.getGameLinksReturnsOnCall[i] = struct {
+		result1 []twitch.GameLink
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeAPI) GetStreamByUserID(arg1 context.Context, arg2 int64) (*twitch.Stream, error) {
 	fake.getStreamByUserIDMutex.Lock()
 	ret, specificReturn := fake.getStreamByUserIDReturnsOnCall[len(fake.getStreamByUserIDArgsForCall)]
@@ -1150,6 +1229,8 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.getGameByIDMutex.RUnlock()
 	fake.getGameByNameMutex.RLock()
 	defer fake.getGameByNameMutex.RUnlock()
+	fake.getGameLinksMutex.RLock()
+	defer fake.getGameLinksMutex.RUnlock()
 	fake.getStreamByUserIDMutex.RLock()
 	defer fake.getStreamByUserIDMutex.RUnlock()
 	fake.getStreamByUsernameMutex.RLock()

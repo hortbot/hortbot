@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -79,6 +80,7 @@ type session struct {
 		twitchChatters **twitch.Chatters
 		steamSummary   **steam.Summary
 		steamGames     *[]*steam.Game
+		gameLinks      *[]twitch.GameLink
 	}
 }
 
@@ -467,6 +469,30 @@ func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 
 	s.cache.steamGames = &games
 	return games, nil
+}
+
+func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
+	ctx, span := trace.StartSpan(ctx, "GameLinks")
+	defer span.End()
+
+	if s.cache.gameLinks != nil {
+		return *s.cache.gameLinks, nil
+	}
+
+	ch, err := s.TwitchChannel(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	links, err := s.Deps.Twitch.GetGameLinks(ctx, ch.GameID.AsInt64())
+	if err != nil {
+		return nil, err
+	}
+
+	sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })
+
+	s.cache.gameLinks = &links
+	return links, nil
 }
 
 func (s *session) ShortenLink(ctx context.Context, link string) (string, error) {

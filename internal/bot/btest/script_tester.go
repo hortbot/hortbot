@@ -331,4 +331,5 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"twitch_search_categories":      (*scriptTester).twitchSearchCategories,
 	"twitch_get_stream_by_user_id":  (*scriptTester).twitchGetStreamByUserID,
 	"twitch_get_stream_by_username": (*scriptTester).twitchGetStreamByUsername,
+	"twitch_get_game_links":         (*scriptTester).twitchGetGameLinks,
 }

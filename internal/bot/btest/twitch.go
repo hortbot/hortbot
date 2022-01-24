@@ -213,3 +213,23 @@ func (st *scriptTester) twitchGetStreamByUsername(t testing.TB, _, args string, 
 		})
 	})
 }
+
+func (st *scriptTester) twitchGetGameLinks(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		ID int64
+
+		Links []twitch.GameLink
+		Err   string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.GetGameLinksCalls(func(_ context.Context, id int64) ([]twitch.GameLink, error) {
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+
+			return call.Links, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
