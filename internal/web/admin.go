@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"sort"
 	"strconv"
@@ -126,13 +127,28 @@ func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	stats, err := a.Redis.GetBuiltinUsageStats(ctx)
+	builtinStats, err := a.Redis.GetBuiltinUsageStats(ctx)
 	if err != nil {
 		ctxlog.Error(ctx, "error fetching builtin usage statistics", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	fmt.Fprintln(w, "Builtin command usage:")
+	writeStatsResponse(w, builtinStats)
+
+	actionStats, err := a.Redis.GetActionUsageStats(ctx)
+	if err != nil {
+		ctxlog.Error(ctx, "error fetching builtin usage statistics", zap.Error(err))
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintln(w, "\nAction usage:")
+	writeStatsResponse(w, actionStats)
+}
+
+func writeStatsResponse(w io.Writer, stats map[string]string) {
 	type pair struct {
 		key   string
 		value int
@@ -150,8 +166,6 @@ func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 		}
 		return pairs[i].value > pairs[j].value
 	})
-
-	fmt.Fprintln(w, "Builtin command usage:")
 
 	for _, p := range pairs {
 		fmt.Fprintf(w, "%s = %d\n", p.key, p.value)

@@ -49,12 +49,21 @@ func init() {
 			if action != name {
 				return "(_" + action + "_)", nil
 			}
+
+			if err := s.Deps.Redis.IncrementActionUsageStat(ctx, action); err != nil {
+				return "", err
+			}
+
 			return fn(ctx, s, name, "")
 		})
 	}
 
 	addPrefix := func(prefix string, fn actionFunc) {
 		add(prefix, func(ctx context.Context, s *session, action string) (string, error) {
+			if err := s.Deps.Redis.IncrementActionUsageStat(ctx, prefix); err != nil {
+				return "", err
+			}
+
 			value := strings.TrimPrefix(action, prefix)
 			return fn(ctx, s, prefix, value)
 		})
