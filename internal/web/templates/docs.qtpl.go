@@ -1124,6 +1124,9 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "GAME_IS_NOT_<GAME>", `Inverse of <code>GAME_IS_&lt;GAME&gt;</code>.`)
 	qw422016.N().S(`
                 `)
+	streamaction(qw422016, "GAME_LINK", `A link to the current game, at its relevent game store.`)
+	qw422016.N().S(`
+                `)
 	streamaction(qw422016, "STATUS", `The current stream status.`)
 	qw422016.N().S(`
                 `)
