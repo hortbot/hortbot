@@ -32,6 +32,7 @@ func TestGetGameLinks(t *testing.T) {
 			{Type: twitch.GameLinkSteam, URL: "https://store.steampowered.com/app/1119980"},
 			{Type: twitch.GameLinkEpic, URL: "https://www.epicgames.com/store/p/in-sound-mind"},
 			{Type: twitch.GameLinkGOG, URL: "https://www.gog.com/game/in_sound_mind"},
+			{Type: twitch.GameLinkOfficial, URL: "https://modusgames.com/in-sound-mind"},
 		}
 
 		links, err := tw.GetGameLinks(ctx, 518088)

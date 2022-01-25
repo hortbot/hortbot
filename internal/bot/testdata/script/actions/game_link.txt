@@ -11,7 +11,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] (unavailable) (unavailable)
 
 
-twitch_get_game_links {"ID": 518088, "Links": [{"category": 1, "url": "https://store.steampowered.com/app/1119980"}, {"category": 26, "url": "https://www.epicgames.com/store/p/in-sound-mind"}, {"category": 5, "url": "https://www.gog.com/game/in_sound_mind"}]}
+twitch_get_game_links {"ID": 518088, "Links": [{"category": 1, "url": "https://store.steampowered.com/app/1119980"}, {"category": 2, "url": "https://www.epicgames.com/store/p/in-sound-mind"}, {"category": 3, "url": "https://www.gog.com/game/in_sound_mind"}]}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 send hortbot #foobar [HB] https://store.steampowered.com/app/1119980 https://store.steampowered.com/app/1119980

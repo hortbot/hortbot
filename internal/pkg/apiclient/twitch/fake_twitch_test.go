@@ -477,6 +477,43 @@ const igdbSuccessResponse = `[
                 "category": 11,
                 "url": "https://www.microsoft.com/en-us/p/-1-/9PKDNVFFZCWX"
             }
+        ],
+        "websites": [
+            {
+                "id": 114698,
+                "category": 13,
+                "url": "https://store.steampowered.com/app/1119980"
+            },
+            {
+                "id": 148717,
+                "category": 5,
+                "url": "https://twitter.com/insoundmindgame"
+            },
+            {
+                "id": 182350,
+                "category": 17,
+                "url": "https://www.gog.com/game/in_sound_mind"
+            },
+            {
+                "id": 215595,
+                "category": 1,
+                "url": "https://modusgames.com/in-sound-mind"
+            },
+            {
+                "id": 228911,
+                "category": 16,
+                "url": "https://www.epicgames.com/store/p/in-sound-mind"
+            },
+            {
+                "id": 228912,
+                "category": 6,
+                "url": "https://www.twitch.tv/modus_games"
+            },
+            {
+                "id": 228913,
+                "category": 18,
+                "url": "https://discord.gg/modus"
+            }
         ]
     }
 ]`
@@ -510,6 +547,18 @@ const igdbNoGamesResponse = `[
                 "category": 11,
                 "url": "https://www.microsoft.com/en-us/p/-1-/9PKDNVFFZCWX"
             }
+        ],
+        "websites": [
+            {
+                "id": 228912,
+                "category": 6,
+                "url": "https://www.twitch.tv/modus_games"
+            },
+            {
+                "id": 228913,
+                "category": 18,
+                "url": "https://discord.gg/modus"
+            }
         ]
     }
 ]`
@@ -526,19 +575,19 @@ func (f *fakeTwitch) igdbGames(req *http.Request) (*http.Response, error) {
 	bodyString := string(body)
 
 	switch bodyString {
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "518088"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "518088"; limit 1;`:
 		return httpmock.NewStringResponse(200, igdbSuccessResponse), nil
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4040"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4040"; limit 1;`:
 		return httpmock.NewStringResponse(200, `[{"id": 1234, "external_games": []}]`), nil
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4041"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4041"; limit 1;`:
 		return httpmock.NewStringResponse(200, `[]`), nil
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "404"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "404"; limit 1;`:
 		return httpmock.NewStringResponse(404, ""), nil
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "777"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "777"; limit 1;`:
 		return httpmock.NewStringResponse(200, igdbNoGamesResponse), nil
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "500"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "500"; limit 1;`:
 		return httpmock.NewStringResponse(500, ""), nil
-	case `fields external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "700"; limit 1;`:
+	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "700"; limit 1;`:
 		return httpmock.NewStringResponse(200, "{"), nil
 	default:
 		return nil, errTestBadRequest

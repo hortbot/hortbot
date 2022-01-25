@@ -9,61 +9,20 @@ func _() {
 	// Re-run the stringer command to generate them again.
 	var x [1]struct{}
 	_ = x[GameLinkSteam-1]
-	_ = x[GameLinkGamesDB-2]
-	_ = x[GameLinkGiantBomb-3]
-	_ = x[GameLinkGoOptimuz-4]
-	_ = x[GameLinkGOG-5]
-	_ = x[GameLinkPushSquare-6]
-	_ = x[GameLinkIsThereAnyDeal-7]
-	_ = x[GameLinkGamersGate-8]
-	_ = x[GameLinkYouTube-10]
-	_ = x[GameLinkMicrosoft-11]
-	_ = x[GameLinkNintendoLife-12]
-	_ = x[GameLinkApple-13]
-	_ = x[GameLinkTwitch-14]
-	_ = x[GameLinkAndroid-15]
-	_ = x[GameLinkPlaystation-16]
-	_ = x[GameLinkXbox-18]
-	_ = x[GameLinkGamersPress-19]
-	_ = x[GameLinkAmazon-20]
-	_ = x[GameLinkNintendo-21]
-	_ = x[GameLinkPlayAmazon-22]
-	_ = x[GameLinkPlayAsia-24]
-	_ = x[GameLinkTapTap-25]
-	_ = x[GameLinkEpic-26]
-	_ = x[GameLinkTouchArcade-27]
-	_ = x[GameLinkOculus-28]
+	_ = x[GameLinkEpic-2]
+	_ = x[GameLinkGOG-3]
+	_ = x[GameLinkItch-4]
+	_ = x[GameLinkOfficial-5]
 }
 
-const (
-	_GameLinkType_name_0 = "SteamGamesDBGiantBombGoOptimuzGOGPushSquareIsThereAnyDealGamersGate"
-	_GameLinkType_name_1 = "YouTubeMicrosoftNintendoLifeAppleTwitchAndroidPlaystation"
-	_GameLinkType_name_2 = "XboxGamersPressAmazonNintendoPlayAmazon"
-	_GameLinkType_name_3 = "PlayAsiaTapTapEpicTouchArcadeOculus"
-)
+const _GameLinkType_name = "SteamEpicGOGItchOfficial"
 
-var (
-	_GameLinkType_index_0 = [...]uint8{0, 5, 12, 21, 30, 33, 43, 57, 67}
-	_GameLinkType_index_1 = [...]uint8{0, 7, 16, 28, 33, 39, 46, 57}
-	_GameLinkType_index_2 = [...]uint8{0, 4, 15, 21, 29, 39}
-	_GameLinkType_index_3 = [...]uint8{0, 8, 14, 18, 29, 35}
-)
+var _GameLinkType_index = [...]uint8{0, 5, 9, 12, 16, 24}
 
 func (i GameLinkType) String() string {
-	switch {
-	case 1 <= i && i <= 8:
-		i -= 1
-		return _GameLinkType_name_0[_GameLinkType_index_0[i]:_GameLinkType_index_0[i+1]]
-	case 10 <= i && i <= 16:
-		i -= 10
-		return _GameLinkType_name_1[_GameLinkType_index_1[i]:_GameLinkType_index_1[i+1]]
-	case 18 <= i && i <= 22:
-		i -= 18
-		return _GameLinkType_name_2[_GameLinkType_index_2[i]:_GameLinkType_index_2[i+1]]
-	case 24 <= i && i <= 28:
-		i -= 24
-		return _GameLinkType_name_3[_GameLinkType_index_3[i]:_GameLinkType_index_3[i+1]]
-	default:
-		return "GameLinkType(" + strconv.FormatInt(int64(i), 10) + ")"
+	i -= 1
+	if i >= GameLinkType(len(_GameLinkType_index)-1) {
+		return "GameLinkType(" + strconv.FormatInt(int64(i+1), 10) + ")"
 	}
+	return _GameLinkType_name[_GameLinkType_index[i]:_GameLinkType_index[i+1]]
 }
