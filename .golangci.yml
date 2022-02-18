@@ -49,6 +49,8 @@ linters:
     - varnamelen # Silly.
     - ireturn # Noisy.
     - contextcheck # Inaccurate.
+    - containedctx # Silly.
+    - errchkjson # Redundant.
 
     # - staticcheck
 

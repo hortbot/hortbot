@@ -5,7 +5,7 @@ go 1.17
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
-	github.com/99designs/gqlgen v0.15.1
+	github.com/99designs/gqlgen v0.16.0
 	github.com/alicebob/miniredis/v2 v2.18.0
 	github.com/antchfx/htmlquery v1.2.4
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
@@ -25,8 +25,8 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.2-0.20210602194825-dcd04f6df527
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
-	github.com/jackc/pgconn v1.10.1
-	github.com/jackc/pgx/v4 v4.14.1
+	github.com/jackc/pgconn v1.11.0
+	github.com/jackc/pgx/v4 v4.15.0
 	github.com/jakebailey/irc v0.0.0-20190904051515-2d11e69506b0
 	github.com/jarcoal/httpmock v1.1.0
 	github.com/jessevdk/go-flags v1.5.0
@@ -38,26 +38,26 @@ require (
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.8.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible
-	github.com/prometheus/client_golang v1.12.0
+	github.com/prometheus/client_golang v1.12.1
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.3.0
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.7.0
-	github.com/vektah/gqlparser/v2 v2.2.0
+	github.com/vektah/gqlparser/v2 v2.3.1
 	github.com/volatiletech/null/v8 v8.1.2
-	github.com/volatiletech/sqlboiler/v4 v4.8.3
-	github.com/volatiletech/strmangle v0.0.1
+	github.com/volatiletech/sqlboiler/v4 v4.8.6
+	github.com/volatiletech/strmangle v0.0.2
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
 	go.deanishe.net/fuzzy v1.0.0
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.9.0
-	go.uber.org/zap v1.20.0
-	golang.org/x/net v0.0.0-20220121210141-e204ce36a2ba
+	go.uber.org/zap v1.21.0
+	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd
 	golang.org/x/oauth2 v0.0.0-20211104180415-d3ed0bb246c8
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/tools v0.1.8
+	golang.org/x/tools v0.1.9
 	gotest.tools/v3 v3.1.0
 	mvdan.cc/xurls/v2 v2.3.0
 )
@@ -99,7 +99,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.2.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20200714003250-2b9c44734f2b // indirect
-	github.com/jackc/pgtype v1.9.1 // indirect
+	github.com/jackc/pgtype v1.10.0 // indirect
 	github.com/lib/pq v1.10.2 // indirect
 	github.com/magefile/mage v1.10.0 // indirect
 	github.com/matryer/moq v0.2.3 // indirect
