@@ -1,6 +1,7 @@
 version: "3.7"
 
-x-golang-image: &golang-image
+x-golang-image:
+  &golang-image
   image: golang:1.17
 
 services:
@@ -107,7 +108,9 @@ services:
       - DATABASE_URL=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
 
   db:
-    image: zikaeroh/postgres-initialized
+    image: postgres:12
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
 
   redis:
     image: redis
