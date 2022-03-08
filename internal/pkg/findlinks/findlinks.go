@@ -4,7 +4,6 @@ package findlinks
 import (
 	"net/url"
 	"regexp"
-	"regexp/syntax"
 
 	"github.com/goware/urlx"
 	"mvdan.cc/xurls/v2"
@@ -13,11 +12,9 @@ import (
 var linkRegex = func() *regexp.Regexp {
 	reStr := xurls.Relaxed().String()
 
-	// Convert all capture groups into non-capturing groups; we only need to
-	// know the full match, and they're faster and allocate less.
-	reStr = mustDecaptureString(reStr)
-
-	// Don't match links within words, only whole words.
+	// This used to be required before xurls v2.3.0 to ensure that we don't
+	// match domains within other strings, but not doing this seems to slow
+	// down Find by anywhere from 2-3x.
 	reStr = `\b(?:` + reStr + `)\b`
 
 	re := regexp.MustCompile(reStr)
@@ -63,26 +60,4 @@ func inWhitelist(s string, whitelist []string) bool {
 		}
 	}
 	return false
-}
-
-func mustDecaptureString(in string) string {
-	re, err := syntax.Parse(in, syntax.Perl)
-	if err != nil {
-		panic(err)
-	}
-	decapture(re)
-	return re.String()
-}
-
-func decapture(re *syntax.Regexp) {
-	if re.Op == syntax.OpCapture {
-		if len(re.Sub) != 1 {
-			panic("invalid capture")
-		}
-		*re = *re.Sub[0]
-	}
-
-	for _, sub := range re.Sub {
-		decapture(sub)
-	}
 }
