@@ -114,6 +114,22 @@ func TestFind(t *testing.T) {
 				},
 			},
 		},
+		{
+			message:   "thisisn'tgoogle.comoranything",
+			whitelist: []string{"http", "https", "ftp"},
+		},
+		{
+			message:   "中国.中国/中国",
+			whitelist: []string{"http", "https", "ftp"},
+			want: []*url.URL{
+				{
+					Scheme:  "https",
+					Host:    "中国.中国",
+					Path:    "/中国",
+					RawPath: "/中国",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
