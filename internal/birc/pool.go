@@ -410,8 +410,8 @@ func (p *Pool) joinableConn(ctx context.Context, forceNew bool) (*Connection, er
 	}
 
 	select {
-	case conn := <-p.runSubConn():
-		return conn, nil
+	case connOrErr := <-p.runSubConn():
+		return connOrErr.conn, connOrErr.err
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	}
@@ -482,8 +482,13 @@ func (p *Pool) NumConns() int {
 	return len(p.conns)
 }
 
-func (p *Pool) runSubConn() <-chan *Connection {
-	newConn := make(chan *Connection)
+type connOrErr struct {
+	conn *Connection
+	err  error
+}
+
+func (p *Pool) runSubConn() <-chan connOrErr {
+	newConn := make(chan connOrErr, 1)
 
 	// This function should only return a non-nil error if the entire pool
 	// needs to shut down. If a connection is closing, then it will queue
@@ -546,15 +551,20 @@ func (p *Pool) runSubConn() <-chan *Connection {
 		metricSubconns.WithLabelValues(p.config.UserConfig.Nick).Set(float64(connsLen))
 
 		go func() {
-			if err := conn.WaitUntilReady(ctx); err != nil {
-				ctxlog.Warn(ctx, "waiting for connection to become ready", zap.Error(err))
-				return
+			v := connOrErr{
+				conn: conn,
 			}
 
-			select {
-			case newConn <- conn:
-			case <-ctx.Done():
+			if err := conn.WaitUntilReady(ctx); err != nil {
+				ctxlog.Warn(ctx, "waiting for connection to become ready", zap.Error(err))
+				v = connOrErr{
+					err: err,
+				}
 			}
+
+			// newConn is buffered; send will not block.
+			newConn <- v
+			close(newConn)
 		}()
 
 		err = conn.Run(ctx)
