@@ -45,8 +45,8 @@ require (
 	github.com/valyala/quicktemplate v1.7.0
 	github.com/vektah/gqlparser/v2 v2.4.1
 	github.com/volatiletech/null/v8 v8.1.2
-	github.com/volatiletech/sqlboiler/v4 v4.9.1
-	github.com/volatiletech/strmangle v0.0.2
+	github.com/volatiletech/sqlboiler/v4 v4.10.2
+	github.com/volatiletech/strmangle v0.0.3
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
@@ -54,8 +54,8 @@ require (
 	go.opencensus.io v0.23.0
 	go.uber.org/atomic v1.9.0
 	go.uber.org/zap v1.21.0
-	golang.org/x/net v0.0.0-20220407224826-aac1ed45d8e3
-	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
+	golang.org/x/net v0.0.0-20220412020605-290c469a71a5
+	golang.org/x/oauth2 v0.0.0-20220411215720-9780585627b5
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/tools v0.1.10
 	gotest.tools/v3 v3.1.0
