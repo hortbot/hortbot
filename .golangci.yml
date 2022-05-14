@@ -51,6 +51,9 @@ linters:
     - contextcheck # Inaccurate.
     - containedctx # Silly.
     - errchkjson # Redundant.
+    - execinquery # Broken in v1.46.1
+    - nonamedreturns # No.
+    - exhaustruct # Pass.
 
     # - staticcheck
 

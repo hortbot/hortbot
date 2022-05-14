@@ -97,7 +97,7 @@ func (h *Helper) CollectFromConn(conn irc.Decoder) *[]*irc.Message {
 	h.t.Helper()
 	messages := []*irc.Message{}
 
-	h.g.Go(func(ctx context.Context) error {
+	h.g.Go(func(_ context.Context) error {
 		h.t.Helper()
 
 		for {

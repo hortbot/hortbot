@@ -7,7 +7,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jmoiron/sqlx"
 	"gotest.tools/v3/assert"
-	"gotest.tools/v3/env"
 )
 
 func TestNew(t *testing.T) {
@@ -43,7 +42,7 @@ func TestNoMigrate(t *testing.T) {
 }
 
 func TestNewBadDocker(t *testing.T) {
-	defer env.Patch(t, "DOCKER_URL", "tcp://[[[[[")()
+	t.Setenv("DOCKER_URL", "tcp://[[[[[")
 
 	_, _, _, err := dpostgres.New()
 	assert.ErrorContains(t, err, "invalid endpoint")

@@ -12,8 +12,7 @@ import (
 )
 
 func init() {
-	//lint:ignore ST1008 To match the map lookup signature.
-	bot.TestingAction(func(ctx context.Context, action string) (string, error, bool) {
+	bot.TestingAction(func(_ context.Context, action string) (string, error, bool) {
 		if action == "TESTING_ERROR" {
 			return "(error)", fmt.Errorf("%s", action), true
 		}
@@ -64,7 +63,7 @@ func init() {
 	)
 
 	bot.TestingBuiltin("testing_links",
-		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
 			var builder strings.Builder
 			builder.WriteString("Links: ")
 
@@ -106,7 +105,7 @@ func init() {
 	)
 
 	bot.TestingBuiltin("testing_twitch_token",
-		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
 			tok, err := s.TwitchToken(ctx)
 			if err != nil {
 				return err
@@ -126,7 +125,7 @@ func init() {
 	)
 
 	bot.TestingBuiltin("testing_user_state",
-		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
 			fast, err := s.Deps.Redis.GetUserState(ctx, s.Origin, "#"+s.IRCChannel)
 			if err != nil {
 				return err
@@ -144,7 +143,7 @@ func init() {
 	)
 
 	bot.TestingBuiltin("testing_highlights",
-		func(ctx context.Context, s *bot.Session, cmd string, args string) error {
+		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
 			highlights, err := s.Channel.Highlights(qm.OrderBy(models.HighlightColumns.CreatedAt)).All(ctx, s.Tx)
 			if err != nil {
 				return err

@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"gotest.tools/v3/assert"
-	"gotest.tools/v3/env"
 )
 
 func TestHelperSleepDur(t *testing.T) {
@@ -15,7 +14,7 @@ func TestHelperSleepDur(t *testing.T) {
 }
 
 func TestHelperSleepDurEnv(t *testing.T) {
-	defer env.Patch(t, sleepEnvVarName, "100ms")()
+	t.Setenv(sleepEnvVarName, "100ms")
 
 	dur, err := getSleepDur()
 	assert.NilError(t, err)
@@ -23,7 +22,7 @@ func TestHelperSleepDurEnv(t *testing.T) {
 }
 
 func TestHelperSleepDurEnvBad(t *testing.T) {
-	defer env.Patch(t, sleepEnvVarName, "100")()
+	t.Setenv(sleepEnvVarName, "100")
 
 	_, err := getSleepDur()
 	assert.Assert(t, err != nil)

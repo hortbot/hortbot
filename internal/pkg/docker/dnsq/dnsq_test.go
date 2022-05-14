@@ -5,7 +5,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"gotest.tools/v3/assert"
-	"gotest.tools/v3/env"
 )
 
 func TestNew(t *testing.T) {
@@ -17,7 +16,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewBadDocker(t *testing.T) {
-	defer env.Patch(t, "DOCKER_URL", "tcp://[[[[[")()
+	defer t.Setenv("DOCKER_URL", "tcp://[[[[[")
 
 	_, _, err := dnsq.New()
 	assert.ErrorContains(t, err, "invalid endpoint")
