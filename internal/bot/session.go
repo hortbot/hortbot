@@ -71,16 +71,16 @@ type session struct {
 	sendRoundtrip bool
 
 	cache struct {
-		links          *[]*url.URL
-		tracks         *[]lastfm.Track
-		tok            **oauth2.Token
-		isLive         *bool
-		twitchChannel  **twitch.Channel
-		twitchStream   **twitch.Stream
-		twitchChatters **twitch.Chatters
-		steamSummary   **steam.Summary
-		steamGames     *[]*steam.Game
-		gameLinks      *[]twitch.GameLink
+		links          onced[[]*url.URL]
+		tracks         onced[[]lastfm.Track]
+		tok            onced[*oauth2.Token]
+		isLive         onced[bool]
+		twitchChannel  onced[*twitch.Channel]
+		twitchStream   onced[*twitch.Stream]
+		twitchChatters onced[*twitch.Chatters]
+		steamSummary   onced[*steam.Summary]
+		steamGames     onced[[]*steam.Game]
+		gameLinks      onced[[]twitch.GameLink]
 	}
 }
 
@@ -288,12 +288,9 @@ func (s *session) Links(ctx context.Context) []*url.URL {
 	_, span := trace.StartSpan(ctx, "Links")
 	defer span.End()
 
-	if s.cache.links != nil {
-		return *s.cache.links
-	}
-
-	links := findlinks.Find(s.Message, "http", "https", "ftp")
-	s.cache.links = &links
+	links, _ := s.cache.links.get(func() ([]*url.URL, error) {
+		return findlinks.Find(s.Message, "http", "https", "ftp"), nil
+	})
 	return links
 }
 
@@ -303,20 +300,12 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 	_, span := trace.StartSpan(ctx, "Tracks")
 	defer span.End()
 
-	if s.cache.tracks != nil {
-		return *s.cache.tracks, nil
-	}
-
-	if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
-		return nil, errLastFMDisabled
-	}
-
-	tracks, err := s.Deps.LastFM.RecentTracks(ctx, s.Channel.LastFM, 2)
-	if err != nil {
-		return nil, err
-	}
-	s.cache.tracks = &tracks
-	return tracks, nil
+	return s.cache.tracks.get(func() ([]lastfm.Track, error) {
+		if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
+			return nil, errLastFMDisabled
+		}
+		return s.Deps.LastFM.RecentTracks(ctx, s.Channel.LastFM, 2)
+	})
 }
 
 // TwitchToken returns the twitch token for the user. If not found, the token is nil,
@@ -325,30 +314,24 @@ func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchToken")
 	defer span.End()
 
-	if s.cache.tok != nil {
-		return *s.cache.tok, nil
-	}
+	return s.cache.tok.get(func() (*oauth2.Token, error) {
+		tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
+		switch {
+		case err == sql.ErrNoRows:
+			return nil, nil //nolint:nilnil
+		case err != nil:
+			return nil, err
+		}
 
-	tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
-	switch {
-	case err == sql.ErrNoRows:
-		var tok *oauth2.Token
-		s.cache.tok = &tok
-		return nil, nil //nolint:nilnil
-	case err != nil:
-		return nil, err
-	}
-
-	tok := modelsx.ModelToToken(tt)
-	s.cache.tok = &tok
-	return tok, nil
+		return modelsx.ModelToToken(tt), nil
+	})
 }
 
 func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
 	ctx, span := trace.StartSpan(ctx, "SetTwitchToken")
 	defer span.End()
 
-	s.cache.tok = &newToken
+	s.cache.tok.set(newToken, nil)
 
 	tt := modelsx.TokenToModel(s.Channel.TwitchID, newToken)
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
@@ -358,73 +341,44 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	ctx, span := trace.StartSpan(ctx, "IsLive")
 	defer span.End()
 
-	if s.cache.isLive != nil {
-		return *s.cache.isLive, nil
-	}
-
-	stream, err := s.TwitchStream(ctx)
-	if err != nil {
-		if err == twitch.ErrNotFound {
-			stream = nil
-		} else {
-			return false, err
+	return s.cache.isLive.get(func() (bool, error) {
+		stream, err := s.TwitchStream(ctx)
+		if err != nil {
+			if err == twitch.ErrNotFound {
+				stream = nil
+			} else {
+				return false, err
+			}
 		}
-	}
-
-	isLive := stream != nil
-	s.cache.isLive = &isLive
-	return isLive, nil
+		return stream != nil, nil
+	})
 }
 
 func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchChannel")
 	defer span.End()
 
-	if s.cache.twitchChannel != nil {
-		return *s.cache.twitchChannel, nil
-	}
-
-	ch, err := s.Deps.Twitch.GetChannelByID(ctx, s.Channel.TwitchID)
-	if err != nil {
-		return nil, err
-	}
-
-	s.cache.twitchChannel = &ch
-	return ch, nil
+	return s.cache.twitchChannel.get(func() (*twitch.Channel, error) {
+		return s.Deps.Twitch.GetChannelByID(ctx, s.Channel.TwitchID)
+	})
 }
 
 func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchStream")
 	defer span.End()
 
-	if s.cache.twitchStream != nil {
-		return *s.cache.twitchStream, nil
-	}
-
-	st, err := s.Deps.Twitch.GetStreamByUserID(ctx, s.Channel.TwitchID)
-	if err != nil {
-		return nil, err
-	}
-
-	s.cache.twitchStream = &st
-	return st, nil
+	return s.cache.twitchStream.get(func() (*twitch.Stream, error) {
+		return s.Deps.Twitch.GetStreamByUserID(ctx, s.Channel.TwitchID)
+	})
 }
 
 func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) {
 	ctx, span := trace.StartSpan(ctx, "TwitchChatters")
 	defer span.End()
 
-	if s.cache.twitchChatters != nil {
-		return *s.cache.twitchChatters, nil
-	}
-
-	chatters, err := s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
-	if err != nil {
-		return nil, err
-	}
-
-	s.cache.twitchChatters = &chatters
-	return chatters, nil
+	return s.cache.twitchChatters.get(func() (*twitch.Chatters, error) {
+		return s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
+	})
 }
 
 var errSteamDisabled = errors.New("bot: steam disabled")
@@ -433,66 +387,44 @@ func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
 	ctx, span := trace.StartSpan(ctx, "SteamSummary")
 	defer span.End()
 
-	if s.cache.steamSummary != nil {
-		return *s.cache.steamSummary, nil
-	}
-
-	if s.Deps.Steam == nil || s.Channel.SteamID == "" {
-		return nil, errSteamDisabled
-	}
-
-	summary, err := s.Deps.Steam.GetPlayerSummary(ctx, s.Channel.SteamID)
-	if err != nil {
-		return nil, err
-	}
-
-	s.cache.steamSummary = &summary
-	return summary, nil
+	return s.cache.steamSummary.get(func() (*steam.Summary, error) {
+		if s.Deps.Steam == nil || s.Channel.SteamID == "" {
+			return nil, errSteamDisabled
+		}
+		return s.Deps.Steam.GetPlayerSummary(ctx, s.Channel.SteamID)
+	})
 }
 
 func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 	ctx, span := trace.StartSpan(ctx, "SteamGames")
 	defer span.End()
 
-	if s.cache.steamGames != nil {
-		return *s.cache.steamGames, nil
-	}
-
-	if s.Deps.Steam == nil || s.Channel.SteamID == "" {
-		return nil, errSteamDisabled
-	}
-
-	games, err := s.Deps.Steam.GetOwnedGames(ctx, s.Channel.SteamID)
-	if err != nil {
-		return nil, err
-	}
-
-	s.cache.steamGames = &games
-	return games, nil
+	return s.cache.steamGames.get(func() ([]*steam.Game, error) {
+		if s.Deps.Steam == nil || s.Channel.SteamID == "" {
+			return nil, errSteamDisabled
+		}
+		return s.Deps.Steam.GetOwnedGames(ctx, s.Channel.SteamID)
+	})
 }
 
 func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
 	ctx, span := trace.StartSpan(ctx, "GameLinks")
 	defer span.End()
 
-	if s.cache.gameLinks != nil {
-		return *s.cache.gameLinks, nil
-	}
+	return s.cache.gameLinks.get(func() ([]twitch.GameLink, error) {
+		ch, err := s.TwitchChannel(ctx)
+		if err != nil {
+			return nil, err
+		}
 
-	ch, err := s.TwitchChannel(ctx)
-	if err != nil {
-		return nil, err
-	}
+		links, err := s.Deps.Twitch.GetGameLinks(ctx, ch.GameID.AsInt64())
+		if err != nil {
+			return nil, err
+		}
 
-	links, err := s.Deps.Twitch.GetGameLinks(ctx, ch.GameID.AsInt64())
-	if err != nil {
-		return nil, err
-	}
-
-	sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })
-
-	s.cache.gameLinks = &links
-	return links, nil
+		sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })
+		return links, nil
+	})
 }
 
 func (s *session) ShortenLink(ctx context.Context, link string) (string, error) {
@@ -548,4 +480,24 @@ func (s *session) BetaFeatures() bool {
 
 func (s *session) FilterExemptLevel() accessLevel {
 	return newAccessLevel(s.Channel.FilterExemptLevel)
+}
+
+// onced is not safe for concurrent use.
+type onced[T any] struct {
+	v     T
+	err   error
+	valid bool
+}
+
+func (o *onced[T]) get(fn func() (T, error)) (T, error) {
+	if !o.valid {
+		o.set(fn())
+	}
+	return o.v, o.err
+}
+
+func (o *onced[T]) set(v T, err error) {
+	o.v = v
+	o.err = err
+	o.valid = true
 }
