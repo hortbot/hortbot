@@ -4,7 +4,7 @@ description: Setup Go and build/module caches
 inputs:
   go-version:
     description: "The Go version to download (if necessary) and use. Supports semver spec and ranges."
-    default: "1.17" # Sync with README, go.mod, and docker-compose.yml.
+    default: "1.18" # Sync with README, go.mod, and docker-compose.yml.
   stable:
     description: "Whether to download only stable versions."
     default: "false"
