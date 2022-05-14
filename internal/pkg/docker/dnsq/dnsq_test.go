@@ -16,7 +16,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewBadDocker(t *testing.T) {
-	defer t.Setenv("DOCKER_URL", "tcp://[[[[[")
+	t.Setenv("DOCKER_URL", "tcp://[[[[[")
 
 	_, _, err := dnsq.New()
 	assert.ErrorContains(t, err, "invalid endpoint")
