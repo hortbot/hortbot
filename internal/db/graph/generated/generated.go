@@ -1330,7 +1330,7 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "schema.graphqls", Input: `scalar Time
+	{Name: "../schema.graphqls", Input: `scalar Time
 scalar Int64
 
 type Query {
