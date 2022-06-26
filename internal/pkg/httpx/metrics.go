@@ -77,7 +77,6 @@ func sanitizeMethod(m string) string {
 	}
 }
 
-//nolint
 func sanitizeCode(s int) string {
 	switch s {
 	case 0:

@@ -18,12 +18,12 @@ import (
 
 // Twitch API errors.
 //
-//     - 200 -> nil
-//     - 400 -> ErrBadRequest
-//     - 404 -> ErrNotFound
-//     - 401 or 403 -> ErrNotAuthorized
-//     - 5xx -> ErrServerError
-//     - Otherwise -> ErrUnknown
+//   - 200 -> nil
+//   - 400 -> ErrBadRequest
+//   - 404 -> ErrNotFound
+//   - 401 or 403 -> ErrNotAuthorized
+//   - 5xx -> ErrServerError
+//   - Otherwise -> ErrUnknown
 var (
 	ErrNotFound      = errors.New("twitch: not found")
 	ErrNotAuthorized = errors.New("twitch: not authorized")

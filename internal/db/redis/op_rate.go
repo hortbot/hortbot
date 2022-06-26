@@ -11,13 +11,13 @@ import (
 // Set items and their scores are timestamps, and querying the set for the
 // current window just means starting somewhere in the set and counting.
 //
-// 1) Get the current time at the finest grain in redis, microseconds.
-// 2) Calculate the beginning of the current window relative to the current time.
-// 3) Remove all timestamps in the set which are outside the window.
-// 4) If the number of timestamps in the set exceed the limit, then disallow the request.
-//    Otherwise, add the current timestamp to the set, and allow the request.
-//    Also mark the set to expire after the window that starts at the current time,
-//    since if the data isn't read by then, the set won't contain any useful data.
+//  1. Get the current time at the finest grain in redis, microseconds.
+//  2. Calculate the beginning of the current window relative to the current time.
+//  3. Remove all timestamps in the set which are outside the window.
+//  4. If the number of timestamps in the set exceed the limit, then disallow the request.
+//     Otherwise, add the current timestamp to the set, and allow the request.
+//     Also mark the set to expire after the window that starts at the current time,
+//     since if the data isn't read by then, the set won't contain any useful data.
 //
 // KEYS[1] = overall key
 // KEYS[2] = a key which is true when only a fast token is needed

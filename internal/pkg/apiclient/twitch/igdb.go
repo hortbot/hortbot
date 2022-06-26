@@ -133,9 +133,9 @@ const gameLinkQuery = `fields websites.category, websites.url, external_games.ca
 // GetGameLinks gets a Twitch game's links to other services. Results are returned in this order,
 // with unknown matches removed:
 //
-//     - Steam
-//     - Epic
-//     - GOG
+//   - Steam
+//   - Epic
+//   - GOG
 func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]GameLink, error) {
 	query := fmt.Sprintf(gameLinkQuery, externalGameTwitch, twitchCategory)
 

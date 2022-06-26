@@ -14,8 +14,8 @@ import (
 // The host and path are treated differently. For hosts, following rules
 // are applied:
 //
-//     - If the host is the same as the pattern, then it's a match.
-//     - If the host has the suffix ".<pattern>", then it's a match.
+//   - If the host is the same as the pattern, then it's a match.
+//   - If the host has the suffix ".<pattern>", then it's a match.
 //
 // For example, "twitch.tv" would match "twitch.tv", "www.twitch.tv", and
 // "clips.twitch.tv". In the future, globs may be accepted here.
