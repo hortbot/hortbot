@@ -35,13 +35,10 @@ var (
 
 // userScopes should be granted for all users.
 var userScopes = []string{
-	"user_read",                  // Kraken: ???
-	"channel_editor",             // Kraken: update channel
 	"moderation:read",            // Helix: get moderator list
-	"user:read:email",            // Helix: read user email address (replaces user_read)
 	"user:read:broadcast",        // Helix: read channel info, markers (implied by user:edit:broadcast?)
-	"user:edit:broadcast",        // Helix: modify channel information (remove?)
 	"channel:read:subscriptions", // Helix: get broadcaster subscriptions
+	"channel:read:editors",       // Helix: get channel editors
 	"channel:manage:broadcast",   // Helix: modify channel information (replaces user:edit:broadcast for channel info)
 }
 
@@ -60,10 +57,7 @@ var twitchEndpoint = oauth2.Endpoint{
 	AuthStyle: oauth2.AuthStyleInParams,
 }
 
-const (
-	// krakenRoot = "https://api.twitch.tv/kraken"
-	helixRoot = "https://api.twitch.tv/helix"
-)
+const helixRoot = "https://api.twitch.tv/helix"
 
 //counterfeiter:generate . API
 
@@ -98,8 +92,6 @@ type Twitch struct {
 	cli      httpx.Client
 	clientID string
 	forUser  *oauth2.Config
-
-	// krakenCli *httpClient
 	helixCli *httpClient
 }
 
@@ -147,12 +139,6 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 
 	ctx := t.cli.AsOAuth2Client(context.TODO())
 	clientTS := cconf.TokenSource(ctx)
-
-	// t.krakenCli = &httpClient{
-	// 	cli:     t.cli,
-	// 	ts:      oauth2x.NewTypeOverride(clientTS, "OAuth"),
-	// 	headers: t.headers(true),
-	// }
 
 	t.helixCli = &httpClient{
 		cli:     t.cli,
@@ -221,10 +207,6 @@ func (t *Twitch) clientForUser(ctx context.Context, v5 bool, tok *oauth2.Token, 
 		headers: t.headers(v5),
 	}
 }
-
-// func (t *Twitch) krakenClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
-// 	return t.clientForUser(ctx, true, tok, onNewToken)
-// }
 
 func (t *Twitch) helixClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
 	return t.clientForUser(ctx, false, tok, onNewToken)

@@ -253,7 +253,7 @@ func (f *fakeTwitch) setChannel(c *twitch.Channel) {
 
 func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {
 	assert.Equal(f.t, req.Method, "GET")
-	f.checkHeaders(req, false)
+	f.checkHeaders(req)
 
 	const authPrefix = "Bearer "
 
@@ -298,7 +298,7 @@ func (f *fakeTwitch) setMods(id int64, mods []*twitch.ChannelModerator) {
 
 func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Response, error) {
 	assert.Equal(f.t, req.Method, "GET")
-	f.checkHeaders(req, false)
+	f.checkHeaders(req)
 
 	const authPrefix = "Bearer "
 
@@ -363,7 +363,7 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 
 func (f *fakeTwitch) helixUserFollows(req *http.Request) (*http.Response, error) {
 	assert.Equal(f.t, req.Method, "POST")
-	f.checkHeaders(req, false)
+	f.checkHeaders(req)
 
 	auth := req.Header.Get("Authorization")
 	assert.Assert(f.t, strings.HasPrefix(auth, "Bearer "))
@@ -392,7 +392,7 @@ func (f *fakeTwitch) helixUserFollows(req *http.Request) (*http.Response, error)
 
 func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, error) {
 	assert.Equal(f.t, req.Method, "PATCH")
-	f.checkHeaders(req, false)
+	f.checkHeaders(req)
 
 	const authPrefix = "Bearer "
 
@@ -565,7 +565,7 @@ const igdbNoGamesResponse = `[
 
 func (f *fakeTwitch) igdbGames(req *http.Request) (*http.Response, error) {
 	assert.Equal(f.t, req.Method, "POST")
-	f.checkHeaders(req, false)
+	f.checkHeaders(req)
 
 	auth := req.Header.Get("Authorization")
 	assert.Assert(f.t, strings.HasPrefix(auth, "Bearer "))
@@ -603,15 +603,11 @@ func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Respon
 	return httpmock.ConnectionFailure(req)
 }
 
-func (f *fakeTwitch) checkHeaders(req *http.Request, kraken bool) {
+func (f *fakeTwitch) checkHeaders(req *http.Request) {
 	f.t.Helper()
 
 	assert.Equal(f.t, req.Header.Get("Client-ID"), clientID)
 	assert.Equal(f.t, req.Header.Get("Content-Type"), "application/json")
-
-	if kraken {
-		assert.Equal(f.t, req.Header.Get("Accept"), "application/vnd.twitchtv.v5+json")
-	}
 }
 
 func createTester(t *testing.T) (*fakeTwitch, *twitch.Twitch) {
