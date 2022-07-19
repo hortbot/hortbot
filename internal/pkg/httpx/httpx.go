@@ -90,17 +90,20 @@ func (c *Client) Get(ctx context.Context, url string) (*http.Response, error) {
 	return c.Do(req)
 }
 
-func (c *Client) Post(ctx context.Context, url string, bodyType string, body io.Reader) (*http.Response, error) {
+func (c *Client) Post(ctx context.Context, url string, bodyType string, body io.Reader, extraHeaders http.Header) (*http.Response, error) {
 	req, err := http.NewRequestWithContext(ctx, "POST", url, body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", bodyType)
+	for k, v := range extraHeaders {
+		req.Header[k] = v
+	}
 	return c.Do(req)
 }
 
-func (c *Client) PostForm(ctx context.Context, url string, data url.Values) (*http.Response, error) {
-	return c.Post(ctx, url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
+func (c *Client) PostForm(ctx context.Context, url string, data url.Values, extraHeaders http.Header) (*http.Response, error) {
+	return c.Post(ctx, url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()), extraHeaders)
 }
 
 // AsOAuth2Client registers the client as the client to use in the OAuth2 library.

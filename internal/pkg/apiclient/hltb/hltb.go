@@ -3,6 +3,7 @@ package hltb
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
@@ -69,13 +70,18 @@ var errNotFound = &apiclient.Error{API: "hltb", StatusCode: 404}
 
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
-	resp, err := h.cli.PostForm(ctx, "https://howlongtobeat.com/search_results?page=1", queryForm(query))
+	extraHeaders := make(http.Header)
+	extraHeaders.Set("origin", "https://howlongtobeat.com")
+	extraHeaders.Set("referer", "https://howlongtobeat.com/")
+
+	resp, err := h.cli.PostForm(ctx, "https://howlongtobeat.com/search_results?page=1", queryForm(query), extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if !apiclient.IsOK(resp.StatusCode) {
+		fmt.Println(resp.StatusCode)
 		return nil, &apiclient.Error{API: "hltb", StatusCode: resp.StatusCode}
 	}
 
@@ -153,12 +159,16 @@ func cleanTime(node *html.Node) string {
 var formCommon = url.Values{
 	"t":           []string{"games"},
 	"sorthead":    []string{"popular"},
-	"sortd":       []string{"Normal Order"},
+	"sortd":       []string{"0"},
 	"plat":        []string{""},
 	"length_type": []string{"main"},
 	"length_min":  []string{""},
 	"length_max":  []string{""},
+	"v":           []string{""},
+	"f":           []string{""},
+	"g":           []string{""},
 	"detail":      []string{""},
+	"randomize":   []string{"0"},
 }
 
 func queryForm(query string) url.Values {
