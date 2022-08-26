@@ -4,7 +4,6 @@ package confimport
 import (
 	"context"
 	"database/sql"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"time"
@@ -58,7 +57,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	for _, dir := range c.Dir {
 		dir = filepath.Clean(dir)
 
-		files, err := ioutil.ReadDir(dir)
+		files, err := os.ReadDir(dir)
 		if err != nil {
 			ctxlog.Fatal(ctx, "error reading dir", ctxlog.PlainError(err))
 		}

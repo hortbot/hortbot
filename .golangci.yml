@@ -53,6 +53,11 @@ linters:
     - errchkjson # Redundant.
     - nonamedreturns # No.
     - exhaustruct # Pass.
+    - varcheck # dead
+    - deadcode # dead
+    - structcheck # dead
+    - nosnakecase # dead
+    - interfacebloat # nope
 
     # - staticcheck
 

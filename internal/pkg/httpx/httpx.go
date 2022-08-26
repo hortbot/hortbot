@@ -83,7 +83,7 @@ func (c *Client) DoWithContext(ctx context.Context, req *http.Request) (*http.Re
 }
 
 func (c *Client) Get(ctx context.Context, url string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +91,7 @@ func (c *Client) Get(ctx context.Context, url string) (*http.Response, error) {
 }
 
 func (c *Client) Post(ctx context.Context, url string, bodyType string, body io.Reader, extraHeaders http.Header) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, "POST", url, body)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, body)
 	if err != nil {
 		return nil, err
 	}

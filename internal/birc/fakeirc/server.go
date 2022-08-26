@@ -85,7 +85,7 @@ func Start(opts ...Option) (*Server, error) {
 // Stop stops the server and waits for all worker goroutines to exit.
 func (s *Server) Stop() error {
 	// Not a sync.Once so that the defer below can work.
-	if s.stopped.CAS(false, true) {
+	if s.stopped.CompareAndSwap(false, true) {
 		defer close(s.recvChan)
 
 		// No sync.Once; This package is for testing so a panic is more useful.

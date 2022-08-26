@@ -38,7 +38,8 @@ func (c *Common) IsDebug() bool {
 // the addr has been set.
 func (c *Common) RunDefaultServeMux() {
 	if c.DefaultServeMuxAddr != "" {
-		go http.ListenAndServe(c.DefaultServeMuxAddr, nil) //nolint:errcheck
+		// Note: no timeut here as this may power things like profiling.
+		go http.ListenAndServe(c.DefaultServeMuxAddr, nil) //nolint
 	}
 }
 

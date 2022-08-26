@@ -4,6 +4,7 @@ package promflags
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/zikaeroh/ctxlog"
@@ -29,7 +30,12 @@ func (args *Prometheus) Run(ctx context.Context) {
 	mux.Handle("/metrics", promhttp.Handler())
 
 	go func() {
-		if err := http.ListenAndServe(":2112", mux); err != nil {
+		srv := http.Server{
+			Addr:              ":2112",
+			Handler:           mux,
+			ReadHeaderTimeout: 5 * time.Second,
+		}
+		if err := srv.ListenAndServe(); err != nil {
 			ctxlog.Error(ctx, "prometheus server error", zap.Error(err))
 		}
 	}()

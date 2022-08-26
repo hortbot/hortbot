@@ -4,7 +4,7 @@ package tinyurl
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -71,7 +71,7 @@ func (t *TinyURL) Shorten(ctx context.Context, u string) (shortened string, err 
 		return "", ErrServerError
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", ErrServerError
 	}

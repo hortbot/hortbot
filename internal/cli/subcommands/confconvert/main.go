@@ -4,7 +4,6 @@ package confconvert
 import (
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -98,7 +97,7 @@ func (cmd *cmd) Main(ctx context.Context, _ []string) {
 	for _, dir := range cmd.Dir {
 		dir = filepath.Clean(dir)
 
-		files, err := ioutil.ReadDir(dir)
+		files, err := os.ReadDir(dir)
 		if err != nil {
 			ctxlog.Fatal(ctx, "error reading dir", ctxlog.PlainError(err))
 		}

@@ -71,7 +71,7 @@ func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode >= 400 {
+	if resp.StatusCode >= http.StatusBadRequest {
 		return nil, ErrNotFound
 	}
 

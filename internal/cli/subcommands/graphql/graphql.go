@@ -4,6 +4,7 @@ package graphql
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -74,7 +75,13 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	r.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	r.Handle("/query", srv)
 
-	err := http.ListenAndServe(c.Addr, r)
+	httpSrv := http.Server{
+		Addr:              c.Addr,
+		Handler:           r,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
+
+	err := httpSrv.ListenAndServe()
 	ctxlog.Info(ctx, "exiting", zap.Error(err))
 }
 

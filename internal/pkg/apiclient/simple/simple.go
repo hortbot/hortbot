@@ -4,7 +4,6 @@ package simple
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
@@ -59,7 +58,7 @@ func HTTPClient(cli *http.Client) Option {
 
 // Plaintext gets the specified URL as text.
 func (c *Client) Plaintext(ctx context.Context, u string) (body string, err error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", u, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
 	if err != nil {
 		return "", err
 	}
@@ -75,7 +74,7 @@ func (c *Client) Plaintext(ctx context.Context, u string) (body string, err erro
 		N: plaintextLimit,
 	}
 
-	b, err := ioutil.ReadAll(lr)
+	b, err := io.ReadAll(lr)
 	if err != nil {
 		return "", err
 	}
