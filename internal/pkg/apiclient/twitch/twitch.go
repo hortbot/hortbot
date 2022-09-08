@@ -36,19 +36,22 @@ var (
 // userScopes should be granted for all users.
 var userScopes = []string{
 	"moderation:read",            // Helix: get moderator list
-	"user:read:broadcast",        // Helix: read channel info, markers (implied by user:edit:broadcast?)
+	"user:read:broadcast",        // Helix: read channel info, markers
 	"channel:read:subscriptions", // Helix: get broadcaster subscriptions
 	"channel:read:editors",       // Helix: get channel editors
-	"channel:manage:broadcast",   // Helix: modify channel information (replaces user:edit:broadcast for channel info)
+	"channel:manage:broadcast",   // Helix: modify channel information
 }
 
 // BotScopes are scopes which should be granted for the bot's account.
 var BotScopes = []string{
-	"channel:moderate", // Chat: run moderator commands
-	"chat:read",        // Chat: read messages
-	"chat:edit",        // Chat: send messages
-	"whispers:read",    // Chat: read whispers
-	"whispers:edit",    // Chat: send whispers
+	"channel:moderate",               // Chat: run moderator commands (TODO: defunct in Feb 2023)
+	"chat:read",                      // Chat: read messages
+	"chat:edit",                      // Chat: send messages
+	"whispers:read",                  // Chat: read whispers
+	"whispers:edit",                  // Chat: send whispers
+	"moderator:manage:chat_settings", // Helix: Change chat settings, like emote only, slow mode
+	"moderator:manage:banned_users",  // Helix: Ban/timeout users
+	"user:manage:chat_color",         // Helix: Change bot user color
 }
 
 var twitchEndpoint = oauth2.Endpoint{
