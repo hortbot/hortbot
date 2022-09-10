@@ -5,9 +5,6 @@ inputs:
   go-version:
     description: "The Go version to download (if necessary) and use. Supports semver spec and ranges."
     default: "1.19" # Sync with README, go.mod, and docker-compose.yml.
-  stable:
-    description: "Whether to download only stable versions."
-    default: "false"
   cache-name:
     description: "Name of the cache, for separate jobs which may use different modules/builds."
     default: "cache"
@@ -19,14 +16,14 @@ runs:
       uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go-version }}
-        stable: ${{ inputs.stable }}
+        check-latest: true
 
     - name: Install Go
       # if: ${{ inputs.go-version }} != 'tip'
       uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go-version }}
-        stable: ${{ inputs.stable }}
+        check-latest: true
 
     # - name: Install Go tip
     #   if: ${{ inputs.go-version }} == 'tip'
