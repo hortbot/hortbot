@@ -2,6 +2,7 @@ package bnsq_test
 
 import (
 	"encoding/json"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
-	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -215,7 +215,7 @@ func TestSendMessageBadDecode(t *testing.T) {
 
 	var count atomic.Int64
 	inc := func(*bnsq.SendMessage, *bnsq.Metadata) error {
-		count.Inc()
+		count.Add(1)
 		return nil
 	}
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/friendsofgo/errors"
@@ -14,7 +15,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 	"github.com/zikaeroh/ctxlog"
-	"go.uber.org/atomic"
 	"go.uber.org/zap"
 )
 

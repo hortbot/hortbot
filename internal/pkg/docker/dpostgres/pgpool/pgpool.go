@@ -7,11 +7,11 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
-	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -66,7 +66,7 @@ func (p *Pool) FreshDB(t testing.TB) *sql.DB {
 	t.Helper()
 	p.init(t)
 
-	dbName := fmt.Sprintf("temp%d", p.num.Inc())
+	dbName := fmt.Sprintf("temp%d", p.num.Add(1))
 
 	_, err := p.db.Exec(fmt.Sprintf(`CREATE DATABASE %s WITH TEMPLATE temp_template`, dbName))
 	assert.NilError(t, err, "creating temp database")

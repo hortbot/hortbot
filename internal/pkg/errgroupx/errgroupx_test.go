@@ -3,12 +3,12 @@ package errgroupx_test
 import (
 	"context"
 	"errors"
+	"sync/atomic"
 	"testing"
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"go.opencensus.io/trace"
-	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )

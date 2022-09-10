@@ -6,10 +6,10 @@ import (
 	"math"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/wqueue"
-	"go.uber.org/atomic"
 )
 
 func BenchmarkQueueSameName(b *testing.B) {
@@ -83,7 +83,7 @@ func BenchmarkQueueManyNames(b *testing.B) {
 			b.RunParallel(func(p *testing.PB) {
 				for p.Next() {
 					wg.Add(1)
-					q.Put(ctx, strconv.FormatUint(name.Inc()%names, 10), fn) //nolint:errcheck
+					q.Put(ctx, strconv.FormatUint(name.Add(1)%names, 10), fn) //nolint:errcheck
 				}
 			})
 

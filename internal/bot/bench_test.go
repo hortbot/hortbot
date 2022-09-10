@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -17,7 +18,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
-	"go.uber.org/atomic"
 	"gotest.tools/v3/assert"
 )
 
@@ -260,10 +260,14 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	b.StopTimer()
 }
 
-var nextUserID = atomic.NewInt64(1)
+var nextUserID atomic.Int64
+
+func init() {
+	nextUserID.Store(1) // The bot is canonically user 1; start at user 2.
+}
 
 func getNextUserID() (int64, string) {
-	id := nextUserID.Inc()
+	id := nextUserID.Add(1)
 	return id, fmt.Sprintf("user%d", id)
 }
 

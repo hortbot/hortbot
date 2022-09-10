@@ -9,12 +9,12 @@ import (
 	"net"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
-	"go.uber.org/atomic"
 )
 
 // ChannelTag is a tag key which can be used to direct messages at specific

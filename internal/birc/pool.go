@@ -4,6 +4,7 @@ import (
 	"context"
 	"sort"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/friendsofgo/errors"
@@ -14,7 +15,6 @@ import (
 	"github.com/jakebailey/irc"
 	"github.com/zikaeroh/ctxjoin"
 	"github.com/zikaeroh/ctxlog"
-	"go.uber.org/atomic"
 	"go.uber.org/zap"
 )
 
@@ -497,7 +497,7 @@ func (p *Pool) runSubConn() <-chan connOrErr {
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 
-		id := p.connID.Inc()
+		id := p.connID.Add(1)
 
 		ctx = ctxlog.With(ctx, zap.Uint64("subconnID", id))
 
