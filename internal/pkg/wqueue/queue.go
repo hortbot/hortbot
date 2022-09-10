@@ -14,32 +14,32 @@ import (
 
 // Queue is a work queue, consisting of multiple subqueues which can operate
 // independently while sharing the same workers.
-type Queue struct {
+type Queue[K comparable] struct {
 	// States the state machine can be in.
-	noWork         chan *state // Empty, or all subqueues are locked.
-	noWorkLimited  chan *state // All subqueues are locked, and the number of items is at the limit.
-	hasWork        chan *state // There may be work to do.
-	hasWorkLimited chan *state // There may be work to do, and the number of items is at the limit.
+	noWork         chan *state[K] // Empty, or all subqueues are locked.
+	noWorkLimited  chan *state[K] // All subqueues are locked, and the number of items is at the limit.
+	hasWork        chan *state[K] // There may be work to do.
+	hasWorkLimited chan *state[K] // There may be work to do, and the number of items is at the limit.
 }
 
 // NewQueue creates a new Queue which can grow to a maximum size of limit.
-func NewQueue(limit int) *Queue {
+func NewQueue[K comparable](limit int) *Queue[K] {
 	if limit <= 0 {
 		panic("bad limit")
 	}
 
-	q := &Queue{
-		noWork:         make(chan *state, 1),
-		noWorkLimited:  make(chan *state, 1),
-		hasWork:        make(chan *state, 1),
-		hasWorkLimited: make(chan *state, 1),
+	q := &Queue[K]{
+		noWork:         make(chan *state[K], 1),
+		noWorkLimited:  make(chan *state[K], 1),
+		hasWork:        make(chan *state[K], 1),
+		hasWorkLimited: make(chan *state[K], 1),
 	}
 
 	// Seed with some initial state.
-	q.noWork <- &state{
-		empty:     make(map[string]*subQueue),
-		unlocked:  newOrderedSet(),
-		locked:    make(map[string]*subQueue),
+	q.noWork <- &state[K]{
+		empty:     make(map[K]*subQueue),
+		unlocked:  newOrderedSet[K, *subQueue](),
+		locked:    make(map[K]*subQueue),
 		sizeLimit: limit,
 	}
 
@@ -53,7 +53,7 @@ type WorkFunc func(attach Attacher)
 // Put puts the worker function into the keyed subqueue. This function will
 // be called at some point in the future by a worker, but never concurrently
 // with other items in the keyed subqueue.
-func (q *Queue) Put(ctx context.Context, key string, fn WorkFunc) error {
+func (q *Queue[K]) Put(ctx context.Context, key K, fn WorkFunc) error {
 	if fn == nil {
 		panic("nil WorkFunc")
 	}
@@ -70,7 +70,7 @@ func (q *Queue) Put(ctx context.Context, key string, fn WorkFunc) error {
 }
 
 // Worker runs items from the queues, exiting when the context has been canceled.
-func (q *Queue) Worker(ctx context.Context) error {
+func (q *Queue[K]) Worker(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -78,7 +78,7 @@ func (q *Queue) Worker(ctx context.Context) error {
 
 	for {
 		var work WorkFunc
-		var key string
+		var key K
 
 		// Use a block here to enforce that the below state does not get reused once put.
 		{
@@ -106,7 +106,7 @@ func (q *Queue) Worker(ctx context.Context) error {
 		func() {
 			defer func() {
 				if r := recover(); r != nil {
-					ctxlog.Error(ctx, "work function panicked", zap.String("key", key), zap.Any("value", r))
+					ctxlog.Error(ctx, "work function panicked", zap.Any("key", key), zap.Any("value", r))
 				}
 			}()
 			work(attach)
@@ -131,23 +131,23 @@ func (q *Queue) Worker(ctx context.Context) error {
 	}
 }
 
-func (q *Queue) getForPut(ctx context.Context) (*state, error) {
+func (q *Queue[K]) getForPut(ctx context.Context) (*state[K], error) {
 	return getState2(ctx, q.noWork, q.hasWork)
 }
 
-func (q *Queue) getForWork(ctx context.Context) (*state, error) {
+func (q *Queue[K]) getForWork(ctx context.Context) (*state[K], error) {
 	return getState2(ctx, q.hasWork, q.hasWorkLimited)
 }
 
-func (q *Queue) getAny(ctx context.Context) (*state, error) {
+func (q *Queue[K]) getAny(ctx context.Context) (*state[K], error) {
 	return getState4(ctx, q.noWork, q.noWorkLimited, q.hasWork, q.hasWorkLimited)
 }
 
-func (q *Queue) putNoWork(ctx context.Context, state *state) error {
+func (q *Queue[K]) putNoWork(ctx context.Context, state *state[K]) error {
 	return putState(ctx, state, q.noWork, q.noWorkLimited)
 }
 
-func (q *Queue) putWork(ctx context.Context, state *state) error {
+func (q *Queue[K]) putWork(ctx context.Context, state *state[K]) error {
 	return putState(ctx, state, q.hasWork, q.hasWorkLimited)
 }
 
@@ -159,14 +159,14 @@ type subQueue struct {
 // being the empty struct), but having a dedicated type for this helps enforce
 // the invariant that only one goroutine can get, modify, and put this state at
 // once.
-type state struct {
-	empty           map[string]*subQueue // len(items) == 0
-	unlocked        *orderedSet          // len(items) != 0 and no worker is operating on this subqueue
-	locked          map[string]*subQueue // len(items) != 0 and a worker is operating on this subqueue
+type state[K comparable] struct {
+	empty           map[K]*subQueue           // len(items) == 0
+	unlocked        *orderedSet[K, *subQueue] // len(items) != 0 and no worker is operating on this subqueue
+	locked          map[K]*subQueue           // len(items) != 0 and a worker is operating on this subqueue
 	size, sizeLimit int
 }
 
-func (s *state) addWork(key string, work WorkFunc) {
+func (s *state[K]) addWork(key K, work WorkFunc) {
 	subQ := s.empty[key]
 	if subQ == nil {
 		subQ = s.locked[key]
@@ -188,11 +188,12 @@ func (s *state) addWork(key string, work WorkFunc) {
 	s.size++
 }
 
-func (s *state) findWork() (fn WorkFunc, key string) {
+func (s *state[K]) findWork() (fn WorkFunc, key K) {
 	key, subQ := s.unlocked.next()
 
 	if subQ == nil {
-		return nil, ""
+		var zero K
+		return nil, zero
 	}
 
 	s.size--
@@ -203,7 +204,7 @@ func (s *state) findWork() (fn WorkFunc, key string) {
 	return fn, key
 }
 
-func (s *state) unlock(key string) {
+func (s *state[K]) unlock(key K) {
 	subQ := s.locked[key] // Should never be nil.
 	delete(s.locked, key)
 
@@ -214,11 +215,11 @@ func (s *state) unlock(key string) {
 	}
 }
 
-func (s *state) isLimited() bool {
+func (s *state[_]) isLimited() bool {
 	return s.size >= s.sizeLimit
 }
 
-func getState2(ctx context.Context, a, b chan *state) (state *state, err error) {
+func getState2[K comparable](ctx context.Context, a, b chan *state[K]) (state *state[K], err error) {
 	select {
 	case state = <-a:
 	case state = <-b:
@@ -228,7 +229,7 @@ func getState2(ctx context.Context, a, b chan *state) (state *state, err error) 
 	return state, nil
 }
 
-func getState4(ctx context.Context, a, b, c, d chan *state) (state *state, err error) {
+func getState4[K comparable](ctx context.Context, a, b, c, d chan *state[K]) (state *state[K], err error) {
 	select {
 	case state = <-a:
 	case state = <-b:
@@ -240,7 +241,7 @@ func getState4(ctx context.Context, a, b, c, d chan *state) (state *state, err e
 	return state, nil
 }
 
-func putState(ctx context.Context, state *state, ch chan *state, limited chan *state) error {
+func putState[K comparable](ctx context.Context, state *state[K], ch chan *state[K], limited chan *state[K]) error {
 	if state.isLimited() {
 		ch = limited
 	}

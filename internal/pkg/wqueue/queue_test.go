@@ -18,18 +18,18 @@ func TestQueueBadLimit(t *testing.T) {
 	t.Parallel()
 
 	assertx.Panic(t, func() {
-		wqueue.NewQueue(0)
+		wqueue.NewQueue[string](0)
 	}, "bad limit")
 
 	assertx.Panic(t, func() {
-		wqueue.NewQueue(-999)
+		wqueue.NewQueue[string](-999)
 	}, "bad limit")
 }
 
 func TestQueueNoWorker(t *testing.T) {
 	t.Parallel()
 
-	q := wqueue.NewQueue(10)
+	q := wqueue.NewQueue[string](10)
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
 
@@ -51,7 +51,7 @@ func TestQueueNoWorker(t *testing.T) {
 func TestQueueHitLimit(t *testing.T) {
 	t.Parallel()
 
-	q := wqueue.NewQueue(2)
+	q := wqueue.NewQueue[string](2)
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
 
@@ -69,7 +69,7 @@ func TestQueueHitLimit(t *testing.T) {
 }
 
 func TestQueueNilWork(t *testing.T) {
-	q := wqueue.NewQueue(2)
+	q := wqueue.NewQueue[string](2)
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
 
@@ -81,7 +81,7 @@ func TestQueueNilWork(t *testing.T) {
 func TestQueue(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	q := wqueue.NewQueue(10)
+	q := wqueue.NewQueue[string](10)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -149,7 +149,7 @@ func TestQueue(t *testing.T) {
 func TestQueuePanic(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	q := wqueue.NewQueue(10)
+	q := wqueue.NewQueue[string](10)
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
@@ -196,7 +196,7 @@ func TestQueueStress(t *testing.T) {
 func testQueueStress(t *testing.T) { //nolint:thelper
 	defer leaktest.Check(t)()
 
-	q := wqueue.NewQueue(1000)
+	q := wqueue.NewQueue[string](1000)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -245,7 +245,7 @@ func testQueueStress(t *testing.T) { //nolint:thelper
 func TestQueueStressCancel(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	q := wqueue.NewQueue(1000)
+	q := wqueue.NewQueue[string](1000)
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

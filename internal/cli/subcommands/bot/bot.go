@@ -81,7 +81,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	}
 
 	// TODO: pass the queue down to the bot to use internally
-	queue := wqueue.NewQueue(10 * workers)
+	queue := wqueue.NewQueue[string](10 * workers)
 	for i := 0; i < workers; i++ {
 		g.Go(queue.Worker)
 	}

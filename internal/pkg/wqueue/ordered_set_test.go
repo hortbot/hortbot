@@ -9,16 +9,16 @@ import (
 )
 
 func TestOrderedSet(t *testing.T) {
-	set := newOrderedSet()
+	set := newOrderedSet[string, *subQueue]()
 
 	k, v := set.next()
 	assert.Equal(t, k, "")
 	assert.Equal(t, v, (*subQueue)(nil))
 
-	var pairs []pair
+	var pairs []pair[string, *subQueue]
 
 	for i := 0; i < 100; i++ {
-		p := pair{
+		p := pair[string, *subQueue]{
 			key:   strconv.Itoa(i),
 			value: &subQueue{},
 		}
