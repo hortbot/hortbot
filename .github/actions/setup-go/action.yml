@@ -16,14 +16,14 @@ runs:
   using: composite
   steps:
     - name: Install Go
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go-version }}
         stable: ${{ inputs.stable }}
 
     - name: Install Go
       # if: ${{ inputs.go-version }} != 'tip'
-      uses: actions/setup-go@v2
+      uses: actions/setup-go@v3
       with:
         go-version: ${{ inputs.go-version }}
         stable: ${{ inputs.stable }}
