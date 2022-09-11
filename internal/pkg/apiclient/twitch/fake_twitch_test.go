@@ -1,6 +1,7 @@
 package twitch_test
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
@@ -19,6 +20,7 @@ import (
 	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
+	"gotest.tools/v3/assert/cmp"
 )
 
 var errTestBadRequest = errors.New("twitch_test: bad request")
@@ -66,7 +68,8 @@ func (f *fakeTwitch) client() *http.Client {
 func (f *fakeTwitch) nextToken() *oauth2.Token {
 	f.t.Helper()
 	if len(f.clientTokens) == 0 {
-		f.t.Fatal("No more client tokens.")
+		f.t.Error("No more client tokens.")
+		panic("failed assertion")
 	}
 
 	f.clientTok, f.clientTokens = f.clientTokens[0], f.clientTokens[1:]
@@ -119,7 +122,7 @@ func (f *fakeTwitch) tokenForCode(code string) *oauth2.Token {
 	f.t.Helper()
 	tok := f.codeToToken[code]
 	if tok == nil {
-		f.t.Fatalf("code %s has nil token", code)
+		f.fatalf("code %s has nil token", code)
 	}
 	return tok
 }
@@ -173,6 +176,39 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=900", httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/channels?broadcaster_id=901", httpmock.NewErrorResponder(errTestBadRequest))
 
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/moderation/bans$`, f.helixModerationBans)
+
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=1234&moderator_id=3141&user_id=666", httpmock.NewStringResponder(200, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=401&moderator_id=3141&user_id=666", httpmock.NewStringResponder(401, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=404&moderator_id=3141&user_id=666", httpmock.NewStringResponder(404, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=418&moderator_id=3141&user_id=666", httpmock.NewStringResponder(418, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=500&moderator_id=3141&user_id=666", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/bans?broadcaster_id=777&moderator_id=3141&user_id=666", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/helix/chat/color?user_id=1234&color=%239146FF", httpmock.NewStringResponder(200, ``))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/helix/chat/color?user_id=401&color=%239146FF", httpmock.NewStringResponder(401, ``))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/helix/chat/color?user_id=404&color=%239146FF", httpmock.NewStringResponder(404, ``))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/helix/chat/color?user_id=418&color=%239146FF", httpmock.NewStringResponder(418, ``))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/helix/chat/color?user_id=500&color=%239146FF", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("PUT", "https://api.twitch.tv/helix/chat/color?user_id=777&color=%239146FF", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=1234&moderator_id=3141&message_id=somemessage", httpmock.NewStringResponder(200, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=401&moderator_id=3141&message_id=somemessage", httpmock.NewStringResponder(401, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=404&moderator_id=3141&message_id=somemessage", httpmock.NewStringResponder(404, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=418&moderator_id=3141&message_id=somemessage", httpmock.NewStringResponder(418, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=500&moderator_id=3141&message_id=somemessage", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=777&moderator_id=3141&message_id=somemessage", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=1234&moderator_id=3141", httpmock.NewStringResponder(200, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=401&moderator_id=3141", httpmock.NewStringResponder(401, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=404&moderator_id=3141", httpmock.NewStringResponder(404, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=418&moderator_id=3141", httpmock.NewStringResponder(418, ``))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=500&moderator_id=3141", httpmock.NewStringResponder(500, ""))
+	f.mt.RegisterResponder("DELETE", "https://api.twitch.tv/helix/moderation/chat?broadcaster_id=777&moderator_id=3141", httpmock.NewErrorResponder(errTestBadRequest))
+
+	f.mt.RegisterResponder("PATCH", `=~https://api.twitch.tv/helix/chat/settings$`, f.helixChatSettings)
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/announcements$`, f.helixChatAnnouncements)
+
 	f.mt.RegisterResponder("POST", "https://api.igdb.com/v4/games", f.igdbGames)
 
 	// TMI API
@@ -184,15 +220,43 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://tmi.twitch.tv/group/user/geterr/chatters", httpmock.NewErrorResponder(errTestBadRequest))
 }
 
+// Helpers for use in responders, which are run in a different goroutine so cannot
+// call runtime.Goexit().
+
+func (f *fakeTwitch) assert(comparison assert.BoolOrComparison, msgAndArgs ...any) {
+	// Workaround for httpmock running responders in a separate goroutine.
+	// If t.Fail is called from a responder, the test hangs.
+	f.t.Helper()
+	if !assert.Check(f.t, comparison, msgAndArgs...) {
+		panic("failed assertion")
+	}
+}
+
+func (f *fakeTwitch) assertEqual(x, y any, msgAndArgs ...any) {
+	f.t.Helper()
+	f.assert(cmp.Equal(x, y), msgAndArgs...)
+}
+
+func (f *fakeTwitch) assertNilError(err error, msgAndArgs ...any) {
+	f.t.Helper()
+	f.assert(err, msgAndArgs...)
+}
+
+func (f *fakeTwitch) fatalf(format string, args ...any) {
+	f.t.Helper()
+	f.t.Errorf(format, args...)
+	panic("test failed")
+}
+
 func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
-	assert.Equal(f.t, req.Method, "POST")
+	f.assertEqual(req.Method, "POST")
 	dumped, _ := httputil.DumpRequest(req, true)
 
 	id := req.FormValue("client_id")
-	assert.Equal(f.t, id, clientID)
+	f.assertEqual(id, clientID)
 
 	secret := req.FormValue("client_secret")
-	assert.Equal(f.t, secret, clientSecret)
+	f.assertEqual(secret, clientSecret)
 
 	grantType := req.FormValue("grant_type")
 
@@ -237,7 +301,8 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 		case "decodeerror":
 			return httpmock.NewStringResponse(400, "}"), nil
 		default:
-			f.t.Errorf("unknown refresh token: %s", refreshToken)
+			f.fatalf("unknown refresh token: %s", refreshToken)
+			return f.dumpAndFail(req, dumped)
 		}
 	}
 
@@ -250,13 +315,13 @@ func (f *fakeTwitch) setChannel(c *twitch.Channel) {
 }
 
 func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {
-	assert.Equal(f.t, req.Method, "GET")
+	f.assertEqual(req.Method, "GET")
 	f.checkHeaders(req)
 
 	const authPrefix = "Bearer "
 
 	auth := req.Header.Get("Authorization")
-	assert.Assert(f.t, strings.HasPrefix(auth, authPrefix))
+	f.assert(strings.HasPrefix(auth, authPrefix))
 
 	tok := strings.TrimPrefix(auth, authPrefix)
 	if tok == "requesterror" {
@@ -264,12 +329,12 @@ func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {
 	}
 
 	id, ok := f.tokenToID[tok]
-	assert.Assert(f.t, ok)
+	f.assert(ok)
 
 	c := f.channels[id]
 	if c == nil {
-		f.t.Fatalf("nil channel for %d", id)
-		panic("unreachable")
+		f.t.Errorf("nil channel for %d", id)
+		panic("failed assertion")
 	}
 
 	switch c.ID {
@@ -295,22 +360,22 @@ func (f *fakeTwitch) setMods(id int64, mods []*twitch.ChannelModerator) {
 }
 
 func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Response, error) {
-	assert.Equal(f.t, req.Method, "GET")
+	f.assertEqual(req.Method, "GET")
 	f.checkHeaders(req)
 
 	const authPrefix = "Bearer "
 
 	auth := req.Header.Get("Authorization")
-	assert.Assert(f.t, strings.HasPrefix(auth, authPrefix))
+	f.assert(strings.HasPrefix(auth, authPrefix))
 
 	id, ok := f.tokenToID[strings.TrimPrefix(auth, authPrefix)]
-	assert.Assert(f.t, ok)
+	f.assert(ok)
 
 	q := req.URL.Query()
 	gotID, err := strconv.ParseInt(q.Get("broadcaster_id"), 10, 64)
-	assert.NilError(f.t, err)
+	f.assertNilError(err)
 
-	assert.Equal(f.t, gotID, id)
+	f.assertEqual(gotID, id)
 
 	if _, ok := expectedErrors[int(id)]; ok {
 		return httpmock.NewStringResponse(int(id), ""), nil
@@ -324,7 +389,7 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 	}
 
 	mods := f.moderators[id]
-	assert.Assert(f.t, mods != nil)
+	f.assert(mods != nil)
 
 	var v struct {
 		Mods       []*twitch.ChannelModerator `json:"data"`
@@ -337,8 +402,8 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 		i := 0
 		if after := q.Get("after"); after != "" {
 			x, err := strconv.Atoi(q.Get("after"))
-			assert.NilError(f.t, err)
-			assert.Assert(f.t, x >= 0)
+			f.assertNilError(err)
+			f.assert(x >= 0)
 			i = x + 1
 		}
 
@@ -360,16 +425,16 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 }
 
 func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, error) {
-	assert.Equal(f.t, req.Method, "PATCH")
+	f.assertEqual(req.Method, "PATCH")
 	f.checkHeaders(req)
 
 	const authPrefix = "Bearer "
 
 	auth := req.Header.Get("Authorization")
-	assert.Assert(f.t, strings.HasPrefix(auth, authPrefix))
+	f.assert(strings.HasPrefix(auth, authPrefix))
 
 	id, ok := f.tokenToID[strings.TrimPrefix(auth, authPrefix)]
-	assert.Assert(f.t, ok)
+	f.assert(ok)
 
 	body := &struct {
 		BroadcasterID twitch.IDStr  `json:"broadcaster_id"`
@@ -377,18 +442,18 @@ func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, erro
 		GameID        *twitch.IDStr `json:"game_id,omitempty"`
 	}{}
 
-	assert.NilError(f.t, jsonx.DecodeSingle(req.Body, &body))
+	f.assertNilError(jsonx.DecodeSingle(req.Body, &body))
 
-	assert.Equal(f.t, int64(body.BroadcasterID), id)
+	f.assertEqual(int64(body.BroadcasterID), id)
 
 	switch id {
 	case 1234:
-		assert.Equal(f.t, *body.Title, "some new title")
-		assert.Equal(f.t, body.GameID, (*twitch.IDStr)(nil))
+		f.assertEqual(*body.Title, "some new title")
+		f.assertEqual(body.GameID, (*twitch.IDStr)(nil))
 		return httpmock.NewStringResponse(204, ""), nil
 	case 5678:
-		assert.Equal(f.t, body.Title, (*string)(nil))
-		assert.Equal(f.t, int64(*body.GameID), int64(9876))
+		f.assertEqual(body.Title, (*string)(nil))
+		f.assertEqual(int64(*body.GameID), int64(9876))
 		return httpmock.NewStringResponse(204, ""), nil
 	case 900:
 		return nil, errTestBadRequest
@@ -533,14 +598,14 @@ const igdbNoGamesResponse = `[
 ]`
 
 func (f *fakeTwitch) igdbGames(req *http.Request) (*http.Response, error) {
-	assert.Equal(f.t, req.Method, "POST")
+	f.assertEqual(req.Method, "POST")
 	f.checkHeaders(req)
 
 	auth := req.Header.Get("Authorization")
-	assert.Assert(f.t, strings.HasPrefix(auth, "Bearer "))
+	f.assert(strings.HasPrefix(auth, "Bearer "))
 
 	body, err := io.ReadAll(req.Body)
-	assert.NilError(f.t, err)
+	f.assertNilError(err)
 	bodyString := string(body)
 
 	switch bodyString {
@@ -563,20 +628,147 @@ func (f *fakeTwitch) igdbGames(req *http.Request) (*http.Response, error) {
 	}
 }
 
+func (f *fakeTwitch) helixModerationBans(req *http.Request) (*http.Response, error) {
+	f.assertEqual(req.Method, "POST")
+	f.checkHeaders(req)
+
+	auth := req.Header.Get("Authorization")
+	f.assert(strings.HasPrefix(auth, "Bearer "))
+
+	q := req.URL.Query()
+	broadcasterID, err := strconv.ParseInt(q.Get("broadcaster_id"), 10, 64)
+	f.assertNilError(err)
+	moderatorID, err := strconv.ParseInt(q.Get("moderator_id"), 10, 64)
+	f.assertNilError(err)
+
+	bodyBytes, err := io.ReadAll(req.Body)
+	f.assertNilError(err)
+
+	var body struct {
+		Data *twitch.BanRequest `json:"data"`
+	}
+
+	f.assertNilError(jsonx.DecodeSingle(bytes.NewReader(bodyBytes), &body))
+
+	if body.Data.Duration == 0 {
+		f.assert(!bytes.Contains(bodyBytes, []byte("duration")))
+	}
+
+	switch {
+	case broadcasterID == 1 && moderatorID == 123:
+		f.assertEqual(body.Data.UserID.AsInt64(), int64(666))
+		f.assertEqual(body.Data.Duration, int64(30))
+		f.assertEqual(body.Data.Reason, "Broke a rule.")
+	case broadcasterID == 404:
+		return httpmock.NewStringResponse(404, ""), nil
+	case broadcasterID == 401:
+		return httpmock.NewStringResponse(401, ""), nil
+	case broadcasterID == 418:
+		return httpmock.NewStringResponse(418, ""), nil
+	case broadcasterID == 500:
+		return httpmock.NewStringResponse(500, ""), nil
+	default:
+		return nil, errTestBadRequest
+	}
+
+	return httpmock.NewStringResponse(200, "{}"), nil
+}
+
+func (f *fakeTwitch) helixChatSettings(req *http.Request) (*http.Response, error) {
+	f.assertEqual(req.Method, "PATCH")
+	f.checkHeaders(req)
+
+	auth := req.Header.Get("Authorization")
+	f.assert(strings.HasPrefix(auth, "Bearer "))
+
+	q := req.URL.Query()
+	broadcasterID, err := strconv.ParseInt(q.Get("broadcaster_id"), 10, 64)
+	f.assertNilError(err)
+	moderatorID, err := strconv.ParseInt(q.Get("moderator_id"), 10, 64)
+	f.assertNilError(err)
+
+	bodyBytes, err := io.ReadAll(req.Body)
+	f.assertNilError(err)
+
+	var body twitch.ChatSettingsPatch
+
+	f.assertNilError(jsonx.DecodeSingle(bytes.NewReader(bodyBytes), &body))
+
+	switch {
+	case broadcasterID == 1 && moderatorID == 123:
+		f.assertEqual(*body.EmoteMode, true)
+	case broadcasterID == 404:
+		return httpmock.NewStringResponse(404, ""), nil
+	case broadcasterID == 401:
+		return httpmock.NewStringResponse(401, ""), nil
+	case broadcasterID == 418:
+		return httpmock.NewStringResponse(418, ""), nil
+	case broadcasterID == 500:
+		return httpmock.NewStringResponse(500, ""), nil
+	default:
+		return nil, errTestBadRequest
+	}
+
+	return httpmock.NewStringResponse(200, "{}"), nil
+}
+
+func (f *fakeTwitch) helixChatAnnouncements(req *http.Request) (*http.Response, error) {
+	f.assertEqual(req.Method, "POST")
+	f.checkHeaders(req)
+
+	auth := req.Header.Get("Authorization")
+	f.assert(strings.HasPrefix(auth, "Bearer "))
+
+	q := req.URL.Query()
+	broadcasterID, err := strconv.ParseInt(q.Get("broadcaster_id"), 10, 64)
+	f.assertNilError(err)
+	moderatorID, err := strconv.ParseInt(q.Get("moderator_id"), 10, 64)
+	f.assertNilError(err)
+
+	bodyBytes, err := io.ReadAll(req.Body)
+	f.assertNilError(err)
+
+	var body struct {
+		Message string `json:"message"`
+		Color   string `json:"color,omitempty"`
+	}
+
+	f.assertNilError(jsonx.DecodeSingle(bytes.NewReader(bodyBytes), &body))
+
+	switch {
+	case broadcasterID == 1 && moderatorID == 123:
+		f.assertEqual(body.Message, "Some announcement!")
+		f.assertEqual(body.Color, "purple")
+	case broadcasterID == 404:
+		return httpmock.NewStringResponse(404, ""), nil
+	case broadcasterID == 401:
+		return httpmock.NewStringResponse(401, ""), nil
+	case broadcasterID == 418:
+		return httpmock.NewStringResponse(418, ""), nil
+	case broadcasterID == 500:
+		return httpmock.NewStringResponse(500, ""), nil
+	default:
+		return nil, errTestBadRequest
+	}
+
+	return httpmock.NewStringResponse(200, "{}"), nil
+}
+
 func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Response, error) {
 	f.t.Helper()
 	if len(dumped) == 0 {
 		dumped, _ = httputil.DumpRequest(req, true)
 	}
 	f.t.Logf("%s\n", dumped)
+	f.t.Fail()
 	return httpmock.ConnectionFailure(req)
 }
 
 func (f *fakeTwitch) checkHeaders(req *http.Request) {
 	f.t.Helper()
 
-	assert.Equal(f.t, req.Header.Get("Client-ID"), clientID)
-	assert.Equal(f.t, req.Header.Get("Content-Type"), "application/json")
+	f.assertEqual(req.Header.Get("Client-ID"), clientID)
+	f.assertEqual(req.Header.Get("Content-Type"), "application/json")
 }
 
 func createTester(t *testing.T) (*fakeTwitch, *twitch.Twitch) {

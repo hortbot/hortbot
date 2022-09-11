@@ -111,6 +111,15 @@ func (h *httpClient) Patch(ctx context.Context, url string, v interface{}) (*htt
 	return h.makeJSONRequest(ctx, "PATCH", url, v, nil)
 }
 
+func (h *httpClient) Delete(ctx context.Context, url string) (*http.Response, error) {
+	req, err := h.newRequest(ctx, "DELETE", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return h.do(req)
+}
+
 func (h *httpClient) do(req *http.Request) (*http.Response, error) {
 	// x, _ := httputil.DumpRequestOut(req, true)
 	// log.Printf("%s", x)

@@ -82,6 +82,13 @@ type API interface {
 	GetStreamByUserID(ctx context.Context, id int64) (*Stream, error)
 	GetStreamByUsername(ctx context.Context, username string) (*Stream, error)
 	GetChannelByID(ctx context.Context, id int64) (*Channel, error)
+	Ban(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, req *BanRequest) (newToken *oauth2.Token, err error)
+	Unban(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, userID int64) (newToken *oauth2.Token, err error)
+	UpdateChatSettings(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *ChatSettingsPatch) (newToken *oauth2.Token, err error)
+	SetChatColor(ctx context.Context, userID int64, userToken *oauth2.Token, color string) (newToken *oauth2.Token, err error)
+	DeleteChatMessage(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (newToken *oauth2.Token, err error)
+	ClearChat(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (newToken *oauth2.Token, err error)
+	Announce(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error)
 
 	// TMI
 	GetChatters(ctx context.Context, channel string) (*Chatters, error)

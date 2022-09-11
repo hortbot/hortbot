@@ -246,22 +246,22 @@ func (s *session) parseUserLevel() accessLevel {
 
 func (s *session) SendCommand(ctx context.Context, command string, args ...string) error {
 	switch command {
-	case "slow":
-	case "slowoff":
-	case "subscribers":
-	case "subscribersoff":
-	case "r9kbeta":
-	case "r9kbetaoff":
-	case "ban":
-	case "unban":
-	case "timeout":
-	case "untimeout":
-	case "me":
-	case "delete":
-	case "clear":
-	case "host":
-	case "unhost":
-	case "color":
+	case "slow": // TODO: s.Deps.Twitch.UpdateChatSettings
+	case "slowoff": // TODO: s.Deps.Twitch.UpdateChatSettings
+	case "subscribers": // TODO: s.Deps.Twitch.UpdateChatSettings
+	case "subscribersoff": // TODO: s.Deps.Twitch.UpdateChatSettings
+	case "r9kbeta": // TODO: s.Deps.Twitch.UpdateChatSettings
+	case "r9kbetaoff": // TODO: s.Deps.Twitch.UpdateChatSettings
+	case "ban": // TODO: s.Deps.Twitch.Ban
+	case "unban": // TODO: s.Deps.Twitch.Unban
+	case "timeout": // TODO: s.Deps.Twitch.Ban(1)
+	case "untimeout": // TODO: s.Deps.Twitch.Unban
+	case "me": // OK
+	case "delete": // TODO: s.Deps.Twitch.DeleteChatMessage
+	case "clear": // TODO: s.Deps.Twitch.ClearChat
+	case "host": // TODO: remove
+	case "unhost": // TODO: remove
+	case "color": // TODO: s.Deps.Twitch.SetChatColor
 	default:
 		panic("attempt to use IRC command " + command)
 	}

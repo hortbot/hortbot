@@ -10,6 +10,24 @@ import (
 )
 
 type FakeAPI struct {
+	AnnounceStub        func(context.Context, int64, int64, *oauth2.Token, string, string) (*oauth2.Token, error)
+	announceMutex       sync.RWMutex
+	announceArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 string
+		arg6 string
+	}
+	announceReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	announceReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
 	AuthCodeURLStub        func(string, ...string) string
 	authCodeURLMutex       sync.RWMutex
 	authCodeURLArgsForCall []struct {
@@ -21,6 +39,56 @@ type FakeAPI struct {
 	}
 	authCodeURLReturnsOnCall map[int]struct {
 		result1 string
+	}
+	BanStub        func(context.Context, int64, int64, *oauth2.Token, *twitch.BanRequest) (*oauth2.Token, error)
+	banMutex       sync.RWMutex
+	banArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 *twitch.BanRequest
+	}
+	banReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	banReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	ClearChatStub        func(context.Context, int64, int64, *oauth2.Token) (*oauth2.Token, error)
+	clearChatMutex       sync.RWMutex
+	clearChatArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+	}
+	clearChatReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	clearChatReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	DeleteChatMessageStub        func(context.Context, int64, int64, *oauth2.Token, string) (*oauth2.Token, error)
+	deleteChatMessageMutex       sync.RWMutex
+	deleteChatMessageArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 string
+	}
+	deleteChatMessageReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	deleteChatMessageReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
 	}
 	ExchangeStub        func(context.Context, string) (*oauth2.Token, error)
 	exchangeMutex       sync.RWMutex
@@ -226,8 +294,127 @@ type FakeAPI struct {
 		result1 []*twitch.Category
 		result2 error
 	}
+	SetChatColorStub        func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)
+	setChatColorMutex       sync.RWMutex
+	setChatColorArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 *oauth2.Token
+		arg4 string
+	}
+	setChatColorReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	setChatColorReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	UnbanStub        func(context.Context, int64, int64, *oauth2.Token, int64) (*oauth2.Token, error)
+	unbanMutex       sync.RWMutex
+	unbanArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 int64
+	}
+	unbanReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	unbanReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	UpdateChatSettingsStub        func(context.Context, int64, int64, *oauth2.Token, *twitch.ChatSettingsPatch) (*oauth2.Token, error)
+	updateChatSettingsMutex       sync.RWMutex
+	updateChatSettingsArgsForCall []struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 *twitch.ChatSettingsPatch
+	}
+	updateChatSettingsReturns struct {
+		result1 *oauth2.Token
+		result2 error
+	}
+	updateChatSettingsReturnsOnCall map[int]struct {
+		result1 *oauth2.Token
+		result2 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
+}
+
+func (fake *FakeAPI) Announce(arg1 context.Context, arg2 int64, arg3 int64, arg4 *oauth2.Token, arg5 string, arg6 string) (*oauth2.Token, error) {
+	fake.announceMutex.Lock()
+	ret, specificReturn := fake.announceReturnsOnCall[len(fake.announceArgsForCall)]
+	fake.announceArgsForCall = append(fake.announceArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 string
+		arg6 string
+	}{arg1, arg2, arg3, arg4, arg5, arg6})
+	stub := fake.AnnounceStub
+	fakeReturns := fake.announceReturns
+	fake.recordInvocation("Announce", []interface{}{arg1, arg2, arg3, arg4, arg5, arg6})
+	fake.announceMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5, arg6)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) AnnounceCallCount() int {
+	fake.announceMutex.RLock()
+	defer fake.announceMutex.RUnlock()
+	return len(fake.announceArgsForCall)
+}
+
+func (fake *FakeAPI) AnnounceCalls(stub func(context.Context, int64, int64, *oauth2.Token, string, string) (*oauth2.Token, error)) {
+	fake.announceMutex.Lock()
+	defer fake.announceMutex.Unlock()
+	fake.AnnounceStub = stub
+}
+
+func (fake *FakeAPI) AnnounceArgsForCall(i int) (context.Context, int64, int64, *oauth2.Token, string, string) {
+	fake.announceMutex.RLock()
+	defer fake.announceMutex.RUnlock()
+	argsForCall := fake.announceArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5, argsForCall.arg6
+}
+
+func (fake *FakeAPI) AnnounceReturns(result1 *oauth2.Token, result2 error) {
+	fake.announceMutex.Lock()
+	defer fake.announceMutex.Unlock()
+	fake.AnnounceStub = nil
+	fake.announceReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) AnnounceReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.announceMutex.Lock()
+	defer fake.announceMutex.Unlock()
+	fake.AnnounceStub = nil
+	if fake.announceReturnsOnCall == nil {
+		fake.announceReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.announceReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeAPI) AuthCodeURL(arg1 string, arg2 ...string) string {
@@ -290,6 +477,209 @@ func (fake *FakeAPI) AuthCodeURLReturnsOnCall(i int, result1 string) {
 	fake.authCodeURLReturnsOnCall[i] = struct {
 		result1 string
 	}{result1}
+}
+
+func (fake *FakeAPI) Ban(arg1 context.Context, arg2 int64, arg3 int64, arg4 *oauth2.Token, arg5 *twitch.BanRequest) (*oauth2.Token, error) {
+	fake.banMutex.Lock()
+	ret, specificReturn := fake.banReturnsOnCall[len(fake.banArgsForCall)]
+	fake.banArgsForCall = append(fake.banArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 *twitch.BanRequest
+	}{arg1, arg2, arg3, arg4, arg5})
+	stub := fake.BanStub
+	fakeReturns := fake.banReturns
+	fake.recordInvocation("Ban", []interface{}{arg1, arg2, arg3, arg4, arg5})
+	fake.banMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) BanCallCount() int {
+	fake.banMutex.RLock()
+	defer fake.banMutex.RUnlock()
+	return len(fake.banArgsForCall)
+}
+
+func (fake *FakeAPI) BanCalls(stub func(context.Context, int64, int64, *oauth2.Token, *twitch.BanRequest) (*oauth2.Token, error)) {
+	fake.banMutex.Lock()
+	defer fake.banMutex.Unlock()
+	fake.BanStub = stub
+}
+
+func (fake *FakeAPI) BanArgsForCall(i int) (context.Context, int64, int64, *oauth2.Token, *twitch.BanRequest) {
+	fake.banMutex.RLock()
+	defer fake.banMutex.RUnlock()
+	argsForCall := fake.banArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
+}
+
+func (fake *FakeAPI) BanReturns(result1 *oauth2.Token, result2 error) {
+	fake.banMutex.Lock()
+	defer fake.banMutex.Unlock()
+	fake.BanStub = nil
+	fake.banReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) BanReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.banMutex.Lock()
+	defer fake.banMutex.Unlock()
+	fake.BanStub = nil
+	if fake.banReturnsOnCall == nil {
+		fake.banReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.banReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) ClearChat(arg1 context.Context, arg2 int64, arg3 int64, arg4 *oauth2.Token) (*oauth2.Token, error) {
+	fake.clearChatMutex.Lock()
+	ret, specificReturn := fake.clearChatReturnsOnCall[len(fake.clearChatArgsForCall)]
+	fake.clearChatArgsForCall = append(fake.clearChatArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+	}{arg1, arg2, arg3, arg4})
+	stub := fake.ClearChatStub
+	fakeReturns := fake.clearChatReturns
+	fake.recordInvocation("ClearChat", []interface{}{arg1, arg2, arg3, arg4})
+	fake.clearChatMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) ClearChatCallCount() int {
+	fake.clearChatMutex.RLock()
+	defer fake.clearChatMutex.RUnlock()
+	return len(fake.clearChatArgsForCall)
+}
+
+func (fake *FakeAPI) ClearChatCalls(stub func(context.Context, int64, int64, *oauth2.Token) (*oauth2.Token, error)) {
+	fake.clearChatMutex.Lock()
+	defer fake.clearChatMutex.Unlock()
+	fake.ClearChatStub = stub
+}
+
+func (fake *FakeAPI) ClearChatArgsForCall(i int) (context.Context, int64, int64, *oauth2.Token) {
+	fake.clearChatMutex.RLock()
+	defer fake.clearChatMutex.RUnlock()
+	argsForCall := fake.clearChatArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeAPI) ClearChatReturns(result1 *oauth2.Token, result2 error) {
+	fake.clearChatMutex.Lock()
+	defer fake.clearChatMutex.Unlock()
+	fake.ClearChatStub = nil
+	fake.clearChatReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) ClearChatReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.clearChatMutex.Lock()
+	defer fake.clearChatMutex.Unlock()
+	fake.ClearChatStub = nil
+	if fake.clearChatReturnsOnCall == nil {
+		fake.clearChatReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.clearChatReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) DeleteChatMessage(arg1 context.Context, arg2 int64, arg3 int64, arg4 *oauth2.Token, arg5 string) (*oauth2.Token, error) {
+	fake.deleteChatMessageMutex.Lock()
+	ret, specificReturn := fake.deleteChatMessageReturnsOnCall[len(fake.deleteChatMessageArgsForCall)]
+	fake.deleteChatMessageArgsForCall = append(fake.deleteChatMessageArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 string
+	}{arg1, arg2, arg3, arg4, arg5})
+	stub := fake.DeleteChatMessageStub
+	fakeReturns := fake.deleteChatMessageReturns
+	fake.recordInvocation("DeleteChatMessage", []interface{}{arg1, arg2, arg3, arg4, arg5})
+	fake.deleteChatMessageMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) DeleteChatMessageCallCount() int {
+	fake.deleteChatMessageMutex.RLock()
+	defer fake.deleteChatMessageMutex.RUnlock()
+	return len(fake.deleteChatMessageArgsForCall)
+}
+
+func (fake *FakeAPI) DeleteChatMessageCalls(stub func(context.Context, int64, int64, *oauth2.Token, string) (*oauth2.Token, error)) {
+	fake.deleteChatMessageMutex.Lock()
+	defer fake.deleteChatMessageMutex.Unlock()
+	fake.DeleteChatMessageStub = stub
+}
+
+func (fake *FakeAPI) DeleteChatMessageArgsForCall(i int) (context.Context, int64, int64, *oauth2.Token, string) {
+	fake.deleteChatMessageMutex.RLock()
+	defer fake.deleteChatMessageMutex.RUnlock()
+	argsForCall := fake.deleteChatMessageArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
+}
+
+func (fake *FakeAPI) DeleteChatMessageReturns(result1 *oauth2.Token, result2 error) {
+	fake.deleteChatMessageMutex.Lock()
+	defer fake.deleteChatMessageMutex.Unlock()
+	fake.DeleteChatMessageStub = nil
+	fake.deleteChatMessageReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) DeleteChatMessageReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.deleteChatMessageMutex.Lock()
+	defer fake.deleteChatMessageMutex.Unlock()
+	fake.DeleteChatMessageStub = nil
+	if fake.deleteChatMessageReturnsOnCall == nil {
+		fake.deleteChatMessageReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.deleteChatMessageReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
 }
 
 func (fake *FakeAPI) Exchange(arg1 context.Context, arg2 string) (*oauth2.Token, error) {
@@ -1212,11 +1602,222 @@ func (fake *FakeAPI) SearchCategoriesReturnsOnCall(i int, result1 []*twitch.Cate
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) SetChatColor(arg1 context.Context, arg2 int64, arg3 *oauth2.Token, arg4 string) (*oauth2.Token, error) {
+	fake.setChatColorMutex.Lock()
+	ret, specificReturn := fake.setChatColorReturnsOnCall[len(fake.setChatColorArgsForCall)]
+	fake.setChatColorArgsForCall = append(fake.setChatColorArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 *oauth2.Token
+		arg4 string
+	}{arg1, arg2, arg3, arg4})
+	stub := fake.SetChatColorStub
+	fakeReturns := fake.setChatColorReturns
+	fake.recordInvocation("SetChatColor", []interface{}{arg1, arg2, arg3, arg4})
+	fake.setChatColorMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) SetChatColorCallCount() int {
+	fake.setChatColorMutex.RLock()
+	defer fake.setChatColorMutex.RUnlock()
+	return len(fake.setChatColorArgsForCall)
+}
+
+func (fake *FakeAPI) SetChatColorCalls(stub func(context.Context, int64, *oauth2.Token, string) (*oauth2.Token, error)) {
+	fake.setChatColorMutex.Lock()
+	defer fake.setChatColorMutex.Unlock()
+	fake.SetChatColorStub = stub
+}
+
+func (fake *FakeAPI) SetChatColorArgsForCall(i int) (context.Context, int64, *oauth2.Token, string) {
+	fake.setChatColorMutex.RLock()
+	defer fake.setChatColorMutex.RUnlock()
+	argsForCall := fake.setChatColorArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4
+}
+
+func (fake *FakeAPI) SetChatColorReturns(result1 *oauth2.Token, result2 error) {
+	fake.setChatColorMutex.Lock()
+	defer fake.setChatColorMutex.Unlock()
+	fake.SetChatColorStub = nil
+	fake.setChatColorReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) SetChatColorReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.setChatColorMutex.Lock()
+	defer fake.setChatColorMutex.Unlock()
+	fake.SetChatColorStub = nil
+	if fake.setChatColorReturnsOnCall == nil {
+		fake.setChatColorReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.setChatColorReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) Unban(arg1 context.Context, arg2 int64, arg3 int64, arg4 *oauth2.Token, arg5 int64) (*oauth2.Token, error) {
+	fake.unbanMutex.Lock()
+	ret, specificReturn := fake.unbanReturnsOnCall[len(fake.unbanArgsForCall)]
+	fake.unbanArgsForCall = append(fake.unbanArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 int64
+	}{arg1, arg2, arg3, arg4, arg5})
+	stub := fake.UnbanStub
+	fakeReturns := fake.unbanReturns
+	fake.recordInvocation("Unban", []interface{}{arg1, arg2, arg3, arg4, arg5})
+	fake.unbanMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) UnbanCallCount() int {
+	fake.unbanMutex.RLock()
+	defer fake.unbanMutex.RUnlock()
+	return len(fake.unbanArgsForCall)
+}
+
+func (fake *FakeAPI) UnbanCalls(stub func(context.Context, int64, int64, *oauth2.Token, int64) (*oauth2.Token, error)) {
+	fake.unbanMutex.Lock()
+	defer fake.unbanMutex.Unlock()
+	fake.UnbanStub = stub
+}
+
+func (fake *FakeAPI) UnbanArgsForCall(i int) (context.Context, int64, int64, *oauth2.Token, int64) {
+	fake.unbanMutex.RLock()
+	defer fake.unbanMutex.RUnlock()
+	argsForCall := fake.unbanArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
+}
+
+func (fake *FakeAPI) UnbanReturns(result1 *oauth2.Token, result2 error) {
+	fake.unbanMutex.Lock()
+	defer fake.unbanMutex.Unlock()
+	fake.UnbanStub = nil
+	fake.unbanReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) UnbanReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.unbanMutex.Lock()
+	defer fake.unbanMutex.Unlock()
+	fake.UnbanStub = nil
+	if fake.unbanReturnsOnCall == nil {
+		fake.unbanReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.unbanReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) UpdateChatSettings(arg1 context.Context, arg2 int64, arg3 int64, arg4 *oauth2.Token, arg5 *twitch.ChatSettingsPatch) (*oauth2.Token, error) {
+	fake.updateChatSettingsMutex.Lock()
+	ret, specificReturn := fake.updateChatSettingsReturnsOnCall[len(fake.updateChatSettingsArgsForCall)]
+	fake.updateChatSettingsArgsForCall = append(fake.updateChatSettingsArgsForCall, struct {
+		arg1 context.Context
+		arg2 int64
+		arg3 int64
+		arg4 *oauth2.Token
+		arg5 *twitch.ChatSettingsPatch
+	}{arg1, arg2, arg3, arg4, arg5})
+	stub := fake.UpdateChatSettingsStub
+	fakeReturns := fake.updateChatSettingsReturns
+	fake.recordInvocation("UpdateChatSettings", []interface{}{arg1, arg2, arg3, arg4, arg5})
+	fake.updateChatSettingsMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2, arg3, arg4, arg5)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2
+	}
+	return fakeReturns.result1, fakeReturns.result2
+}
+
+func (fake *FakeAPI) UpdateChatSettingsCallCount() int {
+	fake.updateChatSettingsMutex.RLock()
+	defer fake.updateChatSettingsMutex.RUnlock()
+	return len(fake.updateChatSettingsArgsForCall)
+}
+
+func (fake *FakeAPI) UpdateChatSettingsCalls(stub func(context.Context, int64, int64, *oauth2.Token, *twitch.ChatSettingsPatch) (*oauth2.Token, error)) {
+	fake.updateChatSettingsMutex.Lock()
+	defer fake.updateChatSettingsMutex.Unlock()
+	fake.UpdateChatSettingsStub = stub
+}
+
+func (fake *FakeAPI) UpdateChatSettingsArgsForCall(i int) (context.Context, int64, int64, *oauth2.Token, *twitch.ChatSettingsPatch) {
+	fake.updateChatSettingsMutex.RLock()
+	defer fake.updateChatSettingsMutex.RUnlock()
+	argsForCall := fake.updateChatSettingsArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2, argsForCall.arg3, argsForCall.arg4, argsForCall.arg5
+}
+
+func (fake *FakeAPI) UpdateChatSettingsReturns(result1 *oauth2.Token, result2 error) {
+	fake.updateChatSettingsMutex.Lock()
+	defer fake.updateChatSettingsMutex.Unlock()
+	fake.UpdateChatSettingsStub = nil
+	fake.updateChatSettingsReturns = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
+func (fake *FakeAPI) UpdateChatSettingsReturnsOnCall(i int, result1 *oauth2.Token, result2 error) {
+	fake.updateChatSettingsMutex.Lock()
+	defer fake.updateChatSettingsMutex.Unlock()
+	fake.UpdateChatSettingsStub = nil
+	if fake.updateChatSettingsReturnsOnCall == nil {
+		fake.updateChatSettingsReturnsOnCall = make(map[int]struct {
+			result1 *oauth2.Token
+			result2 error
+		})
+	}
+	fake.updateChatSettingsReturnsOnCall[i] = struct {
+		result1 *oauth2.Token
+		result2 error
+	}{result1, result2}
+}
+
 func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
+	fake.announceMutex.RLock()
+	defer fake.announceMutex.RUnlock()
 	fake.authCodeURLMutex.RLock()
 	defer fake.authCodeURLMutex.RUnlock()
+	fake.banMutex.RLock()
+	defer fake.banMutex.RUnlock()
+	fake.clearChatMutex.RLock()
+	defer fake.clearChatMutex.RUnlock()
+	fake.deleteChatMessageMutex.RLock()
+	defer fake.deleteChatMessageMutex.RUnlock()
 	fake.exchangeMutex.RLock()
 	defer fake.exchangeMutex.RUnlock()
 	fake.getChannelByIDMutex.RLock()
@@ -1245,6 +1846,12 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.modifyChannelMutex.RUnlock()
 	fake.searchCategoriesMutex.RLock()
 	defer fake.searchCategoriesMutex.RUnlock()
+	fake.setChatColorMutex.RLock()
+	defer fake.setChatColorMutex.RUnlock()
+	fake.unbanMutex.RLock()
+	defer fake.unbanMutex.RUnlock()
+	fake.updateChatSettingsMutex.RLock()
+	defer fake.updateChatSettingsMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
