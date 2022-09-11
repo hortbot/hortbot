@@ -49,8 +49,11 @@ var BotScopes = []string{
 	"chat:edit",                      // Chat: send messages
 	"whispers:read",                  // Chat: read whispers
 	"whispers:edit",                  // Chat: send whispers
-	"moderator:manage:chat_settings", // Helix: Change chat settings, like emote only, slow mode
+	"moderator:manage:announcements", // Helix: Make announcements
 	"moderator:manage:banned_users",  // Helix: Ban/timeout users
+	"moderator:manage:chat_messages", // Helix: Delete messages
+	"moderator:read:chat_settings",   // Helix: Read chat settings, like emote only, slow mode
+	"moderator:manage:chat_settings", // Helix: Change chat settings, like emote only, slow mode
 	"user:manage:chat_color",         // Helix: Change bot user color
 }
 
