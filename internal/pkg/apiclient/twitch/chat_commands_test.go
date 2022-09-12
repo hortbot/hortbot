@@ -86,7 +86,6 @@ func TestBanErrors(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	const broadcasterID = 1
 	const modID = 123
 	tok := tokFor(ctx, t, tw, ft, modID)
 
@@ -444,7 +443,6 @@ func TestUpdateChatSettingsErrors(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	const broadcasterID = 1
 	const modID = 123
 	tok := tokFor(ctx, t, tw, ft, modID)
 
@@ -516,7 +514,6 @@ func TestAnnounceErrors(t *testing.T) {
 
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
-	const broadcasterID = 1
 	const modID = 123
 	tok := tokFor(ctx, t, tw, ft, modID)
 
