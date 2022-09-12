@@ -106,7 +106,6 @@ func (s *session) formatResponse(response string) (message string, announce bool
 		response = strings.TrimPrefix(response, "/announce ")
 		if s.Type != sessionAutoreply && (s.UserLevel.CanAccess(levelModerator) || s.Type == sessionRepeat) {
 			announce = true
-			addBullet = false
 		}
 	}
 
