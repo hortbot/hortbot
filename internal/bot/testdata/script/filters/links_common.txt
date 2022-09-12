@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -22,8 +23,8 @@ send_any
 
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "e47c3f9a-c573-4044-afd1-c7750936b9d2"}
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete e47c3f9a-c573-4044-afd1-c7750936b9d2
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :my favorite overwatch character is d.va
@@ -42,6 +43,6 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!rand
 no_send
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "a55ea676-5ed9-414d-ae49-13cdd52b9f47"}
 handle hortbot @id=a55ea676-5ed9-414d-ae49-13cdd52b9f47;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :mixed https://clips.twitch.tv/ModernDaintyZebraMikeHogu example.com https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
-send hortbot #foobar /delete a55ea676-5ed9-414d-ae49-13cdd52b9f47
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning

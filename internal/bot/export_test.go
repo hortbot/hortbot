@@ -2,6 +2,10 @@ package bot
 
 import "context"
 
+func init() {
+	isTesting = true
+}
+
 // Exports for testing.
 
 var ErrBuiltinDisabled = errBuiltinDisabled

@@ -1,7 +1,8 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"slow_mode": true}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+m
-send hortbot #foobar /slow
 send hortbot #foobar [HB] Chat is now in slow mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+m
@@ -11,8 +12,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi
 no_send
 
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"slow_mode": false}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-m
-send hortbot #foobar /slowoff
 send hortbot #foobar [HB] Chat is no longer in slow mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-m
@@ -22,8 +23,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi
 no_send
 
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"subscriber_mode": true}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+s
-send hortbot #foobar /subscribers
 send hortbot #foobar [HB] Chat is now in subscribers only mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+s
@@ -33,8 +34,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi
 no_send
 
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"subscriber_mode": false}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-s
-send hortbot #foobar /subscribersoff
 send hortbot #foobar [HB] Chat is no longer in subscribers only mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-s
@@ -44,8 +45,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi
 no_send
 
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"unique_chat_mode": true}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+r9k
-send hortbot #foobar /r9kbeta
 send hortbot #foobar [HB] Chat is now in r9k mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+r9k
@@ -55,8 +56,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi
 no_send
 
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"unique_chat_mode": false}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :-r9k
-send hortbot #foobar /r9kbetaoff
 send hortbot #foobar [HB] Chat is no longer in r9k mode.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :-r9k

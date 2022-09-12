@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 )
 
 var moderationCommands = newHandlerMap(map[string]handlerFunc{
@@ -41,7 +42,8 @@ func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 
 	user = cleanUsername(user)
 
-	if err := s.SendCommand(ctx, "ban", user); err != nil {
+	reason := "Banned via +b by " + s.UserDisplay
+	if err := s.BanByUsername(ctx, user, 0, reason); err != nil {
 		return err
 	}
 
@@ -57,7 +59,7 @@ func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error
 
 	user = cleanUsername(user)
 
-	if err := s.SendCommand(ctx, "unban", user); err != nil {
+	if err := s.UnbanByUsername(ctx, user); err != nil {
 		return err
 	}
 
@@ -77,20 +79,22 @@ func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	user = cleanUsername(user)
+	reason := "Timed out via +t by " + s.UserDisplay
 
 	if seconds == "" {
-		if err := s.SendCommand(ctx, "timeout", user); err != nil {
+		if err := s.BanByUsername(ctx, user, 600, reason); err != nil {
 			return err
 		}
 
 		return s.Replyf(ctx, "%s has been timed out.", user)
 	}
 
-	if _, err := strconv.Atoi(seconds); err != nil {
+	duration, err := strconv.ParseInt(seconds, 10, 64)
+	if err != nil {
 		return usage()
 	}
 
-	if err := s.SendCommand(ctx, "timeout", user, seconds); err != nil {
+	if err := s.BanByUsername(ctx, user, duration, reason); err != nil {
 		return err
 	}
 
@@ -106,7 +110,7 @@ func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) e
 
 	user = cleanUsername(user)
 
-	if err := s.SendCommand(ctx, "untimeout", user); err != nil {
+	if err := s.UnbanByUsername(ctx, user); err != nil {
 		return err
 	}
 
@@ -115,7 +119,26 @@ func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) e
 
 func cmdChangeMode(command, message string) func(ctx context.Context, s *session, cmd string, args string) error {
 	return func(ctx context.Context, s *session, cmd string, args string) error {
-		if err := s.SendCommand(ctx, command); err != nil {
+		patch := &twitch.ChatSettingsPatch{}
+
+		switch command {
+		case "slow":
+			patch.SlowMode = ptrTo(true)
+		case "slowoff":
+			patch.SlowMode = ptrTo(false)
+		case "subscribers":
+			patch.SubscriberMode = ptrTo(true)
+		case "subscribersoff":
+			patch.SubscriberMode = ptrTo(false)
+		case "r9kbeta":
+			patch.UniqueChatMode = ptrTo(true)
+		case "r9kbetaoff":
+			patch.UniqueChatMode = ptrTo(false)
+		default:
+			panic("unknown cmdChangeMode command: " + command)
+		}
+
+		if err := s.UpdateChatSettings(ctx, patch); err != nil {
 			return err
 		}
 		return s.Reply(ctx, message)
@@ -138,7 +161,7 @@ func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error
 
 	user = cleanUsername(user)
 
-	if err := s.SendCommand(ctx, "timeout", user, "1"); err != nil {
+	if err := s.BanByUsername(ctx, user, 1, "Purging chat messages"); err != nil {
 		return err
 	}
 
@@ -146,7 +169,7 @@ func cmdModPurge(ctx context.Context, s *session, cmd string, args string) error
 }
 
 func cmdModClear(ctx context.Context, s *session, cmd string, args string) error {
-	return s.SendCommand(ctx, "clear")
+	return s.ClearChat(ctx)
 }
 
 const permitDur = 5 * time.Minute

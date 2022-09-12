@@ -129,7 +129,7 @@ func cmdAdminColor(ctx context.Context, s *session, cmd string, args string) err
 		return s.ReplyUsage(ctx, "<color>")
 	}
 
-	if err := s.SendCommand(ctx, "color", args); err != nil {
+	if err := s.SetBotColor(ctx, args); err != nil {
 		return err
 	}
 

@@ -1,10 +1,13 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+twitch_get_user_by_username {"whoever": {"id": 2, "login": "whoever"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda test (_SUBMODE_ON_)
 send_any
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"subscriber_mode": true}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar /subscribers
+no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
@@ -12,8 +15,9 @@ no_send
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_SUBMODE_OFF_)
 send_any
 
+twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"subscriber_mode": false}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
-send hortbot #foobar /subscribersoff
+no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
@@ -48,16 +52,15 @@ send_any
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
 
+twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 1, "reason": "Purging chat messages"}}
+
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /timeout whoever 1
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /timeout whoever 1
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /timeout whoever 1
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_TIMEOUT_)
@@ -66,16 +69,15 @@ send_any
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
 
+twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 600, "reason": "Timeout via command action"}}
+
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test @WhoEver else
-send hortbot #foobar /timeout whoever
 send hortbot #foobar [HB] @WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /timeout whoever
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /timeout whoever
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_BAN_)
@@ -84,16 +86,15 @@ send_any
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
 no_send
 
+twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 0, "reason": "Ban via command action"}}
+
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /ban whoever
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /ban whoever
 send hortbot #foobar [HB] WhoEver
 
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
-send hortbot #foobar /ban whoever
 send hortbot #foobar [HB] WhoEver
 
 # DELETE only works in autoreplies.

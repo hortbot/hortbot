@@ -3,7 +3,6 @@ package bot
 import (
 	"context"
 	"net/url"
-	"strconv"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -326,9 +325,9 @@ func filterDoPunish(ctx context.Context, s *session, filter, message string) err
 	var err error
 
 	if s.Channel.TimeoutDuration == 0 {
-		err = s.SendCommand(ctx, "timeout", s.User, "600", message)
+		err = s.BanByID(ctx, s.UserID, 600, message)
 	} else {
-		err = s.SendCommand(ctx, "timeout", s.User, strconv.Itoa(s.Channel.TimeoutDuration), message)
+		err = s.BanByID(ctx, s.UserID, int64(s.Channel.TimeoutDuration), message)
 	}
 
 	if err != nil {

@@ -233,3 +233,189 @@ func (st *scriptTester) twitchGetGameLinks(t testing.TB, _, args string, lineNum
 		})
 	})
 }
+
+func (st *scriptTester) twitchBan(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		BroadcasterID int64
+		ModID         int64
+		Tok           *oauth2.Token
+		Req           *twitch.BanRequest
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.BanCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, req *twitch.BanRequest) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(req, call.Req), "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchUnban(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		BroadcasterID int64
+		ModID         int64
+		Tok           *oauth2.Token
+		UserID        int64
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.UnbanCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, userID int64) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, userID, call.UserID, "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchUpdateChatSettings(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		BroadcasterID int64
+		ModID         int64
+		Tok           *oauth2.Token
+		Patch         *twitch.ChatSettingsPatch
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.UpdateChatSettingsCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(patch, call.Patch), "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchSetChatColor(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		UserID int64
+		Tok    *oauth2.Token
+		Color  string
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.SetChatColorCalls(func(_ context.Context, userID int64, userToken *oauth2.Token, color string) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, userID, call.UserID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(userToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, color, call.Color, "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchDeleteChatMessage(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		BroadcasterID int64
+		ModID         int64
+		Tok           *oauth2.Token
+		ID            string
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.DeleteChatMessageCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, id, call.ID, "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchClearChat(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		BroadcasterID int64
+		ModID         int64
+		Tok           *oauth2.Token
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.ClearChatCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}
+
+func (st *scriptTester) twitchAnnounce(t testing.TB, _, args string, lineNum int) {
+	var call struct {
+		BroadcasterID int64
+		ModID         int64
+		Tok           *oauth2.Token
+		Message       string
+		Color         string
+
+		NewToken *oauth2.Token
+		Err      string
+	}
+
+	err := json.Unmarshal([]byte(args), &call)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		st.twitch.AnnounceCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error) {
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
+			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
+			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
+			assert.Equal(t, message, call.Message, "line %d", lineNum)
+			assert.Equal(t, color, call.Color, "line %d", lineNum)
+
+			return call.NewToken, twitchErr(t, lineNum, call.Err)
+		})
+	})
+}

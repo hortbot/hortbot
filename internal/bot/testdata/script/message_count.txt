@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
 send hortbot #foobar [HB] 1
@@ -45,8 +46,8 @@ send hortbot #foobar [HB] Link filter is now enabled.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
 send hortbot #foobar [HB] 11
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "a8649dd0-95e0-11e9-b475-0800200c9a66"}
 handle hortbot @id=a8649dd0-95e0-11e9-b475-0800200c9a66;room-id=1;user-id=3 :other!other@other.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete a8649dd0-95e0-11e9-b475-0800200c9a66
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
 send hortbot #foobar [HB] 12

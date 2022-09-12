@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -28,8 +29,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Max message length set to 10.
 
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "c3420ced-acdf-4654-bb83-4b4d56b2b962"}
 handle hortbot @id=c3420ced-acdf-4654-bb83-4b4d56b2b962;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :12345678901
-send hortbot #foobar /delete c3420ced-acdf-4654-bb83-4b4d56b2b962
 send hortbot #foobar [HB] Random, please don't spam long messages - warning
 
 

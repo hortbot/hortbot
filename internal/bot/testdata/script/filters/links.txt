@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -38,8 +39,8 @@ send hortbot #foobar [HB] Link filter is now enabled.
 
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "e47c3f9a-c573-4044-afd1-c7750936b9d2"}
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete e47c3f9a-c573-4044-afd1-c7750936b9d2
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
@@ -47,8 +48,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] random added to ignored users.
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "f59f9545-f301-499c-8053-d8386473033a"}
 handle hortbot @id=f59f9545-f301-499c-8053-d8386473033a;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete f59f9545-f301-499c-8053-d8386473033a
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
@@ -80,8 +81,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca"}
 handle hortbot @id=86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca;room-id=1;user-id=3;display-name=SubMan;subscriber=1 :subman!subman@subman.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete 86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca
 send hortbot #foobar [HB] SubMan, please ask a moderator before posting links - warning
 
 

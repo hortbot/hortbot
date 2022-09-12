@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -34,8 +35,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Emote filter is already enabled.
 
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "f0788780-a2b5-4486-beab-ba2c60c86384"}
 handle hortbot @id=f0788780-a2b5-4486-beab-ba2c60c86384;emotes=1566876:0-6,8-14,16-22/1566875:24-30,32-38;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove coeLove coeLove coeWave coeWave
-send hortbot #foobar /delete f0788780-a2b5-4486-beab-ba2c60c86384
 send hortbot #foobar [HB] Random, please don't spam emotes - warning
 
 
@@ -94,8 +95,8 @@ send hortbot #foobar [HB] Single emote filter is already enabled.
 handle hortbot @id=969e7d72-2ee8-4aca-8ec4-a86ccb554fc6;emotes=1566876:0-6,8-14,16-22/1566875:24-30,32-38;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove coeLove coeLove coeWave coeWave
 no_send
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "97a7e855-31dd-44b3-b5f0-97b16b154cd7"}
 handle hortbot @id=97a7e855-31dd-44b3-b5f0-97b16b154cd7;emotes=1566876:0-6;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove
-send hortbot #foobar /delete 97a7e855-31dd-44b3-b5f0-97b16b154cd7
 send hortbot #foobar [HB] Random, single emote messages are not allowed - warning
 
 handle hortbot @id=__UUID__;emotes=1566876:0-6;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :coeLove hey!

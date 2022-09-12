@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -40,8 +41,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Caps filter is now enabled.
 
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "ed8a6d7d-ec32-45b4-937d-caf93a74b4c0"}
 handle hortbot @id=ed8a6d7d-ec32-45b4-937d-caf93a74b4c0;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHA THIS IS A TEST
-send hortbot #foobar /delete ed8a6d7d-ec32-45b4-937d-caf93a74b4c0
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
@@ -68,8 +69,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] Caps filter percent set to 25%.
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "0ac5097e-c80a-4cdd-bf28-be19ad62a4f9"}
 handle hortbot @id=0ac5097e-c80a-4cdd-bf28-be19ad62a4f9;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHA uh huh ok cool
-send hortbot #foobar /delete 0ac5097e-c80a-4cdd-bf28-be19ad62a4f9
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
@@ -81,8 +82,8 @@ no_send
 
 clock_forward 3h
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "dc38c963-96b5-4d70-9c22-97adf2373f89"}
 handle hortbot @id=dc38c963-96b5-4d70-9c22-97adf2373f89;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHAHAHAHA
-send hortbot #foobar /delete dc38c963-96b5-4d70-9c22-97adf2373f89
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
@@ -106,8 +107,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!rand
 no_send
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "be48ba76-bcba-401b-8be5-45f00ac1f450"}
 handle hortbot @id=be48ba76-bcba-401b-8be5-45f00ac1f450;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHA WoW
-send hortbot #foobar /delete be48ba76-bcba-401b-8be5-45f00ac1f450
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
@@ -127,8 +128,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!rand
 no_send
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "b35fed82-d391-455e-acb3-b5a276bade71"}
 handle hortbot @id=b35fed82-d391-455e-acb3-b5a276bade71;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHAHA HA
-send hortbot #foobar /delete b35fed82-d391-455e-acb3-b5a276bade71
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
@@ -139,8 +140,8 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] random added to ignored users.
 
 clock_forward 3h
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "5b0a0f7d-625b-455c-8aee-0fd91c9ee67e"}
 handle hortbot @id=5b0a0f7d-625b-455c-8aee-0fd91c9ee67e;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :AAAAAAAAAAAAAAAAAAAAAAAAAA
-send hortbot #foobar /delete 5b0a0f7d-625b-455c-8aee-0fd91c9ee67e
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 

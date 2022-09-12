@@ -1,4 +1,6 @@
-join hortbot 2 foobar 1
+join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+twitch_get_user_by_username {"random": {"id": 2, "login": "random"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate true
 send hortbot #foobar [HB] hortbot is already moderating.
@@ -21,8 +23,8 @@ send hortbot #foobar [HB] hortbot will attempt to moderate in this channel.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate
 send hortbot #foobar [HB] shouldModerate is set to true.
 
+twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 0, "reason": "Banned via +b by foobar"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+b random
-send hortbot #foobar /ban random
 send hortbot #foobar [HB] random has been banned.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate what

@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -59,8 +60,8 @@ send hortbot #foobar [HB] Banned phrase added.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
 send hortbot #foobar [HB] There is 1 banned phrase.
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "7f18cc2a-5148-4aa6-98fd-d8828fe14e26"}
 handle hortbot @id=7f18cc2a-5148-4aa6-98fd-d8828fe14e26;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :RuneScape is cool
-send hortbot #foobar /delete 7f18cc2a-5148-4aa6-98fd-d8828fe14e26
 send hortbot #foobar [HB] Random, disallowed word or phrase - warning
 
 
@@ -72,8 +73,8 @@ send hortbot #foobar [HB] Banned phrase added.
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter banphrase list
 send hortbot #foobar [HB] There are 2 banned phrases.
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "ed7e8a24-df5a-4842-b6a1-22871c5af6e9"}
 handle hortbot @id=ed7e8a24-df5a-4842-b6a1-22871c5af6e9;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :1234
-send hortbot #foobar /delete ed7e8a24-df5a-4842-b6a1-22871c5af6e9
 send hortbot #foobar [HB] Random, disallowed word or phrase - warning
 
 

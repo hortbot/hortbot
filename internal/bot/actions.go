@@ -18,6 +18,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
@@ -427,12 +428,12 @@ func actionChannelURL(ctx context.Context, s *session, actionName, value string)
 
 func actionSubmode(ctx context.Context, s *session, actionName, value string) (string, error) {
 	if s.UserLevel.CanAccess(levelModerator) {
-		c := "subscribers"
+		subMode := true
 		if actionName == "SUBMODE_OFF" {
-			c = "subscribersoff"
+			subMode = false
 		}
 
-		return "", s.SendCommand(ctx, c)
+		return "", s.UpdateChatSettings(ctx, &twitch.ChatSettingsPatch{SubscriberMode: &subMode})
 	}
 	return "", nil
 }
@@ -460,7 +461,7 @@ func actionUnhost(ctx context.Context, s *session, actionName, value string) (st
 func actionPurge(ctx context.Context, s *session, actionName, value string) (string, error) {
 	u, d, do := s.UserForModAction()
 	if do && u != "" {
-		return d, s.SendCommand(ctx, "timeout", strings.ToLower(u), "1")
+		return d, s.BanByUsername(ctx, strings.ToLower(u), 1, "Purging chat messages")
 	}
 	return d, nil
 }
@@ -468,7 +469,7 @@ func actionPurge(ctx context.Context, s *session, actionName, value string) (str
 func actionTimeout(ctx context.Context, s *session, actionName, value string) (string, error) {
 	u, d, do := s.UserForModAction()
 	if do && u != "" {
-		return d, s.SendCommand(ctx, "timeout", strings.ToLower(u))
+		return d, s.BanByUsername(ctx, strings.ToLower(u), 600, "Timeout via command action")
 	}
 	return d, nil
 }
@@ -476,7 +477,7 @@ func actionTimeout(ctx context.Context, s *session, actionName, value string) (s
 func actionBan(ctx context.Context, s *session, actionName, value string) (string, error) {
 	u, d, do := s.UserForModAction()
 	if do && u != "" {
-		return d, s.SendCommand(ctx, "ban", strings.ToLower(u))
+		return d, s.BanByUsername(ctx, strings.ToLower(u), 0, "Ban via command action")
 	}
 	return d, nil
 }

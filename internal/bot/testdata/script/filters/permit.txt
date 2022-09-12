@@ -1,4 +1,5 @@
 join hortbot 999 foobar 1
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
 send_any
@@ -27,8 +28,8 @@ no_send
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
 no_send
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "e47c3f9a-c573-4044-afd1-c7750936b9d2"}
 handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete e47c3f9a-c573-4044-afd1-c7750936b9d2
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 clock_forward 3h
@@ -39,8 +40,8 @@ send hortbot #foobar [HB] random may now post one link within 5 minutes.
 
 clock_forward 10m
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "a3ef435b-13b8-4701-9e6e-4fe75241a2dc"}
 handle hortbot @id=a3ef435b-13b8-4701-9e6e-4fe75241a2dc;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete a3ef435b-13b8-4701-9e6e-4fe75241a2dc
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
@@ -52,8 +53,8 @@ clock_forward 30s
 handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar [HB] Link permitted. (Random)
 
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "cdac822c-e6f5-4eda-ac42-e239cb71ab83"}
 handle hortbot @id=cdac822c-e6f5-4eda-ac42-e239cb71ab83;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
-send hortbot #foobar /delete cdac822c-e6f5-4eda-ac42-e239cb71ab83
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random

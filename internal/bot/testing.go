@@ -2,12 +2,10 @@ package bot
 
 import (
 	"fmt"
-	"os"
-	"strings"
 	"sync"
 )
 
-var isTesting = strings.HasSuffix(os.Args[0], ".test")
+var isTesting = false
 
 type testingPanic string
 

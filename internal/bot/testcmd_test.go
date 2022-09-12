@@ -106,7 +106,7 @@ func init() {
 
 	bot.TestingBuiltin("testing_twitch_token",
 		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
-			tok, err := s.TwitchToken(ctx)
+			tok, err := s.ChannelTwitchToken(ctx)
 			if err != nil {
 				return err
 			}

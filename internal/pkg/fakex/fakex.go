@@ -2,6 +2,7 @@
 package fakex
 
 import (
+	"context"
 	"reflect"
 	"strings"
 	"testing"
@@ -42,7 +43,17 @@ func StubNotImplemented(t testing.TB, fake interface{}) {
 
 		fn := reflect.MakeFunc(f.Type, func(args []reflect.Value) (results []reflect.Value) {
 			t.Helper()
-			t.Fatalf("(%s).%s not implemented", fakeName, f.Name)
+			t.Errorf("(%s).%s not implemented", fakeName, f.Name)
+			t.Error("Called with args:")
+			for _, arg := range args {
+				if _, ok := arg.Interface().(context.Context); ok {
+					t.Errorf("\tcontext.Context")
+				} else {
+					t.Errorf("\t%#v", arg)
+				}
+			}
+
+			t.FailNow()
 			return out
 		})
 

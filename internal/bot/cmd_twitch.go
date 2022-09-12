@@ -38,7 +38,7 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func setStatus(ctx context.Context, s *session, status string) (replied bool, err error) {
-	tok, err := s.TwitchToken(ctx)
+	tok, err := s.ChannelTwitchToken(ctx)
 	if err != nil {
 		return true, err
 	}
@@ -55,7 +55,7 @@ func setStatus(ctx context.Context, s *session, status string) (replied bool, er
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
-		if err := s.SetTwitchToken(ctx, newToken); err != nil {
+		if err := s.SetChannelTwitchToken(ctx, newToken); err != nil {
 			return true, err
 		}
 	}
@@ -97,7 +97,7 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 
 // TODO: This is a dupe of the above code.
 func setGameAndStatus(ctx context.Context, s *session, game string, status string) (ok bool, err error) {
-	tok, err := s.TwitchToken(ctx)
+	tok, err := s.ChannelTwitchToken(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -128,7 +128,7 @@ func setGameAndStatus(ctx context.Context, s *session, game string, status strin
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
-		if err := s.SetTwitchToken(ctx, newToken); err != nil {
+		if err := s.SetChannelTwitchToken(ctx, newToken); err != nil {
 			return false, err
 		}
 	}
@@ -147,7 +147,7 @@ func setGameAndStatus(ctx context.Context, s *session, game string, status strin
 }
 
 func setGame(ctx context.Context, s *session, game string) (ok bool, err error) {
-	tok, err := s.TwitchToken(ctx)
+	tok, err := s.ChannelTwitchToken(ctx)
 	if err != nil {
 		return false, err
 	}
@@ -172,7 +172,7 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 
 	// Check this, even if an error occurred.
 	if newToken != nil {
-		if err := s.SetTwitchToken(ctx, newToken); err != nil {
+		if err := s.SetChannelTwitchToken(ctx, newToken); err != nil {
 			return false, err
 		}
 	}

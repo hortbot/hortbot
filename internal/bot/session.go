@@ -19,7 +19,10 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
+	"github.com/volatiletech/null/v8"
+	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
 
@@ -74,6 +77,7 @@ type session struct {
 		links          onced[[]*url.URL]
 		tracks         onced[[]lastfm.Track]
 		tok            onced[*oauth2.Token]
+		botTok         onced[tokenAndUserID]
 		isLive         onced[bool]
 		twitchChannel  onced[*twitch.Channel]
 		twitchStream   onced[*twitch.Stream]
@@ -82,6 +86,11 @@ type session struct {
 		steamGames     onced[[]*steam.Game]
 		gameLinks      onced[[]twitch.GameLink]
 	}
+}
+
+type tokenAndUserID struct {
+	tok *oauth2.Token
+	id  int64
 }
 
 func (s *session) formatResponse(response string) string {
@@ -246,22 +255,9 @@ func (s *session) parseUserLevel() accessLevel {
 
 func (s *session) SendCommand(ctx context.Context, command string, args ...string) error {
 	switch command {
-	case "slow": // TODO: s.Deps.Twitch.UpdateChatSettings
-	case "slowoff": // TODO: s.Deps.Twitch.UpdateChatSettings
-	case "subscribers": // TODO: s.Deps.Twitch.UpdateChatSettings
-	case "subscribersoff": // TODO: s.Deps.Twitch.UpdateChatSettings
-	case "r9kbeta": // TODO: s.Deps.Twitch.UpdateChatSettings
-	case "r9kbetaoff": // TODO: s.Deps.Twitch.UpdateChatSettings
-	case "ban": // TODO: s.Deps.Twitch.Ban
-	case "unban": // TODO: s.Deps.Twitch.Unban
-	case "timeout": // TODO: s.Deps.Twitch.Ban(1)
-	case "untimeout": // TODO: s.Deps.Twitch.Unban
-	case "me": // OK
-	case "delete": // TODO: s.Deps.Twitch.DeleteChatMessage
-	case "clear": // TODO: s.Deps.Twitch.ClearChat
+	case "me": // TODO: remove; unused
 	case "host": // TODO: remove
 	case "unhost": // TODO: remove
-	case "color": // TODO: s.Deps.Twitch.SetChatColor
 	default:
 		panic("attempt to use IRC command " + command)
 	}
@@ -281,7 +277,23 @@ func (s *session) SendCommand(ctx context.Context, command string, args ...strin
 }
 
 func (s *session) DeleteMessage(ctx context.Context) error {
-	return s.SendCommand(ctx, "delete", s.ID)
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.DeleteChatMessage(ctx, s.Channel.TwitchID, botID, tok, s.ID)
+	if err != nil {
+		ctxlog.Error(ctx, "unable to delete message", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
 }
 
 func (s *session) Links(ctx context.Context) []*url.URL {
@@ -308,10 +320,8 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 	})
 }
 
-// TwitchToken returns the twitch token for the user. If not found, the token is nil,
-// which is a valid token to use in the Twitch API client.
-func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
-	ctx, span := trace.StartSpan(ctx, "TwitchToken")
+func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error) {
+	ctx, span := trace.StartSpan(ctx, "ChannelTwitchToken")
 	defer span.End()
 
 	return s.cache.tok.get(func() (*oauth2.Token, error) {
@@ -327,14 +337,183 @@ func (s *session) TwitchToken(ctx context.Context) (*oauth2.Token, error) {
 	})
 }
 
-func (s *session) SetTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
-	ctx, span := trace.StartSpan(ctx, "SetTwitchToken")
+func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
+	ctx, span := trace.StartSpan(ctx, "SetChannelTwitchToken")
 	defer span.End()
 
 	s.cache.tok.set(newToken, nil)
 
 	tt := modelsx.TokenToModel(s.Channel.TwitchID, newToken)
 	return modelsx.UpsertToken(ctx, s.Tx, tt)
+}
+
+func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, error) {
+	ctx, span := trace.StartSpan(ctx, "BotTwitchToken")
+	defer span.End()
+
+	pair, err := s.cache.botTok.get(func() (tokenAndUserID, error) {
+		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(s.Channel.BotName))).One(ctx, s.Tx)
+		switch {
+		case err == sql.ErrNoRows:
+			return tokenAndUserID{}, nil //nolint:nilnil
+		case err != nil:
+			return tokenAndUserID{}, err
+		}
+
+		return tokenAndUserID{
+			tok: modelsx.ModelToToken(tt),
+			id:  tt.TwitchID,
+		}, nil
+	})
+
+	return pair.id, pair.tok, err
+}
+
+func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *oauth2.Token) error {
+	ctx, span := trace.StartSpan(ctx, "SetBotTwitchToken")
+	defer span.End()
+
+	s.cache.botTok.set(tokenAndUserID{tok: newToken, id: botID}, nil)
+
+	tt := modelsx.TokenToModel(botID, newToken)
+	return modelsx.UpsertToken(ctx, s.Tx, tt)
+}
+
+func (s *session) GetUserID(ctx context.Context, username string) (int64, error) {
+	switch username {
+	case s.Channel.Name:
+		return s.Channel.TwitchID, nil
+	case s.User:
+		return s.UserID, nil
+	}
+
+	user, err := s.Deps.Twitch.GetUserByUsername(ctx, username)
+	if err != nil {
+		return 0, err
+	}
+	return user.ID.AsInt64(), nil
+}
+
+func (s *session) BanByUsername(ctx context.Context, username string, duration int64, reason string) error {
+	userID, err := s.GetUserID(ctx, username)
+	if err != nil {
+		return err
+	}
+	return s.BanByID(ctx, userID, duration, reason)
+}
+
+func (s *session) BanByID(ctx context.Context, userID int64, duration int64, reason string) error {
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	req := &twitch.BanRequest{
+		UserID:   twitch.IDStr(userID),
+		Duration: duration,
+		Reason:   reason,
+	}
+
+	newToken, err := s.Deps.Twitch.Ban(ctx, s.Channel.TwitchID, botID, tok, req)
+	if err != nil {
+		ctxlog.Error(ctx, "unable to ban user", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *session) UnbanByUsername(ctx context.Context, username string) error {
+	userID, err := s.GetUserID(ctx, username)
+	if err != nil {
+		return err
+	}
+	return s.UnbanByID(ctx, userID)
+}
+
+func (s *session) UnbanByID(ctx context.Context, userID int64) error {
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.Unban(ctx, s.Channel.TwitchID, botID, tok, userID)
+	if err != nil {
+		ctxlog.Error(ctx, "unable to unban user", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *session) SetBotColor(ctx context.Context, color string) error {
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.SetChatColor(ctx, botID, tok, color)
+	if err != nil {
+		ctxlog.Error(ctx, "unable to set chat color", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *session) ClearChat(ctx context.Context) error {
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.ClearChat(ctx, s.Channel.TwitchID, botID, tok)
+	if err != nil {
+		ctxlog.Error(ctx, "unable to clear chat", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *session) UpdateChatSettings(ctx context.Context, patch *twitch.ChatSettingsPatch) error {
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.UpdateChatSettings(ctx, s.Channel.TwitchID, botID, tok, patch)
+	if err != nil {
+		ctxlog.Error(ctx, "unable to change chat settings", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
 }
 
 func (s *session) IsLive(ctx context.Context) (bool, error) {
