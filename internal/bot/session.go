@@ -93,12 +93,24 @@ type tokenAndUserID struct {
 	id  int64
 }
 
-func (s *session) formatResponse(response string) string {
+func (s *session) formatResponse(response string) (message string, announce bool) {
 	response = strings.TrimSpace(response)
 
 	var builder strings.Builder
 
-	if !strings.HasPrefix(response, "/me ") && !strings.HasPrefix(response, ".me ") {
+	addBullet := true
+
+	if strings.HasPrefix(response, "/me ") || strings.HasPrefix(response, ".me ") {
+		addBullet = false
+	} else if strings.HasPrefix(response, "/announce ") {
+		response = strings.TrimPrefix(response, "/announce ")
+		if s.Type != sessionAutoreply && (s.UserLevel.CanAccess(levelModerator) || s.Type == sessionRepeat) {
+			announce = true
+			addBullet = false
+		}
+	}
+
+	if addBullet {
 		builder.WriteString(s.bullet())
 		builder.WriteByte(' ')
 	}
@@ -108,10 +120,10 @@ func (s *session) formatResponse(response string) string {
 	response = builder.String()
 
 	if len(response) > maxResponseLen {
-		return response[:maxResponseLen]
+		return response[:maxResponseLen], announce
 	}
 
-	return response
+	return response, announce
 }
 
 func (s *session) bullet() string {
@@ -146,7 +158,13 @@ func (s *session) Reply(ctx context.Context, response string) error {
 		return nil
 	}
 
-	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, s.formatResponse(response))
+	response, announce := s.formatResponse(response)
+
+	if announce {
+		return s.Announce(ctx, response)
+	}
+
+	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, response)
 }
 
 func (s *session) Replyf(ctx context.Context, format string, args ...interface{}) error {
@@ -505,6 +523,26 @@ func (s *session) UpdateChatSettings(ctx context.Context, patch *twitch.ChatSett
 	newToken, err := s.Deps.Twitch.UpdateChatSettings(ctx, s.Channel.TwitchID, botID, tok, patch)
 	if err != nil {
 		ctxlog.Error(ctx, "unable to change chat settings", zap.Error(err))
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *session) Announce(ctx context.Context, message string) error {
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.Announce(ctx, s.Channel.TwitchID, botID, tok, message, "")
+	if err != nil {
+		ctxlog.Error(ctx, "unable to make announcement", zap.Error(err))
 	}
 
 	if newToken != nil {
