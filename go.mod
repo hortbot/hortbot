@@ -19,9 +19,9 @@ require (
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gobuffalo/flect v0.3.0
-	github.com/gofrs/uuid v4.2.0+incompatible
+	github.com/gofrs/uuid v4.3.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.15.2
-	github.com/google/go-cmp v0.5.8
+	github.com/google/go-cmp v0.5.9
 	github.com/gorilla/sessions v1.2.1
 	github.com/goware/urlx v0.3.2
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
@@ -43,7 +43,7 @@ require (
 	github.com/rs/xid v1.4.0
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.7.0
-	github.com/vektah/gqlparser/v2 v2.5.0
+	github.com/vektah/gqlparser/v2 v2.5.1
 	github.com/volatiletech/null/v8 v8.1.2
 	github.com/volatiletech/sqlboiler/v4 v4.13.0
 	github.com/volatiletech/strmangle v0.0.4
@@ -53,8 +53,8 @@ require (
 	go.deanishe.net/fuzzy v1.0.0
 	go.opencensus.io v0.23.0
 	go.uber.org/zap v1.23.0
-	golang.org/x/net v0.0.0-20220907135653-1e95f45603a7
-	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591
+	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
 	golang.org/x/sync v0.0.0-20220907140024-f12130a52804
 	golang.org/x/tools v0.1.12
 	gotest.tools/v3 v3.3.0
