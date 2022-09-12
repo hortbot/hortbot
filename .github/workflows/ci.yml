@@ -30,7 +30,11 @@ jobs:
           docker pull nsqio/nsq
 
       - name: Run tests
-        run: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
 
       - name: Run 1x benchmarks
         run: go test -run=- -bench . -benchtime=1x ./...
