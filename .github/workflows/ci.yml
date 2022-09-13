@@ -33,8 +33,9 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 15
-          max_attempts: 3
+          max_attempts: 5
           command: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+          on_retry_command: go clean -testcache
 
       - name: Run 1x benchmarks
         run: go test -run=- -bench . -benchtime=1x ./...

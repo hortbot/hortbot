@@ -37,13 +37,13 @@ runs:
 
     # https://github.com/mvdan/github-actions-golang
     - name: Cache Go modules
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ inputs.cache-name }}-modules-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
 
     - name: Cache go-build
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.cache/go-build
