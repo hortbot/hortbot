@@ -85,6 +85,13 @@ twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_to
 handle hortbot @id=86f5c8a3-08ec-4ee1-9ff1-ef15f63c14ca;room-id=1;user-id=3;display-name=SubMan;subscriber=1 :subman!subman@subman.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
 send hortbot #foobar [HB] SubMan, please ask a moderator before posting links - warning
 
+clock_forward 3h
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add streamelements
+send_any
+
+twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "NO DELETE"}
+handle hortbot @tmi-sent-ts=1663193898013;user-id=100135110;user-type=mod;display-name=StreamElements;flags;badge-info;color=#5B99FF;first-msg=0;returning-chatter=0;badges=moderator/1,partner/1;turbo=0;room-id=1;emotes;id=0a30a7fb-6b13-4985-bcf1-d898576314b8;subscriber=0;mod=1 :streamelements!streamelements@streamelements.tmi.twitch.tv PRIVMSG #foobar :This is a link https://example.org #ad
+no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular add subman
 send_any

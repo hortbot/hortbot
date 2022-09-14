@@ -412,12 +412,9 @@ func handleSession(ctx context.Context, s *session) error {
 
 	_, ignored := stringSliceIndex(channel.Ignored, s.User)
 
-	if ignored {
-		if s.UserLevel.CanAccess(levelBroadcaster) {
-			ignored = false
-		} else {
-			s.UserLevel = levelEveryone
-		}
+	if ignored && s.UserLevel.CanAccess(levelBroadcaster) {
+		// Never ignore the broadcaster themselves.
+		ignored = false
 	}
 
 	if filtered, err := tryFilter(ctx, s); filtered || err != nil {
