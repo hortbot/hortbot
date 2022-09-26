@@ -2,16 +2,18 @@
 package hltb
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"math"
 	"net/http"
-	"net/url"
+	"strconv"
 	"strings"
 
-	"github.com/antchfx/htmlquery"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"golang.org/x/net/html"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -68,114 +70,106 @@ func HTTPClient(cli *http.Client) Option {
 
 var errNotFound = &apiclient.Error{API: "hltb", StatusCode: 404}
 
+type requestBody struct {
+	SearchType    string   `json:"searchType"`
+	SearchTerms   []string `json:"searchTerms"`
+	SearchPage    int      `json:"searchPage"`
+	Size          int      `json:"size"`
+	SearchOptions struct {
+		Games struct {
+			UserID        int    `json:"userId"`
+			Platform      string `json:"platform"`
+			SortCategory  string `json:"sortCategory"`
+			RangeCategory string `json:"rangeCategory"`
+			RangeTime     struct {
+				Min int `json:"min"`
+				Max int `json:"max"`
+			} `json:"rangeTime"`
+			Gameplay struct {
+				Perspective string `json:"perspective"`
+				Flow        string `json:"flow"`
+				Genre       string `json:"genre"`
+			} `json:"gameplay"`
+			Modifier string `json:"modifier"`
+		} `json:"games"`
+		Users struct {
+			SortCategory string `json:"sortCategory"`
+		} `json:"users"`
+		Filter     string `json:"filter"`
+		Sort       int    `json:"sort"`
+		Randomizer int    `json:"randomizer"`
+	} `json:"searchOptions"`
+}
+
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 	extraHeaders := make(http.Header)
 	extraHeaders.Set("origin", "https://howlongtobeat.com")
-	extraHeaders.Set("referer", "https://howlongtobeat.com/")
+	extraHeaders.Set("referer", "https://howlongtobeat.com/?q=")
 
-	resp, err := h.cli.PostForm(ctx, "https://howlongtobeat.com/search_results?page=1", queryForm(query), extraHeaders)
+	requestBody := &requestBody{
+		SearchType:  "games",
+		SearchTerms: strings.Fields(query),
+		SearchPage:  1,
+		Size:        20,
+	}
+	requestBody.SearchOptions.Games.SortCategory = "popular"
+	requestBody.SearchOptions.Games.RangeCategory = "main"
+	requestBody.SearchOptions.Users.SortCategory = "postcount"
+
+	var buf bytes.Buffer
+	if err := json.NewEncoder(&buf).Encode(requestBody); err != nil {
+		return nil, err
+	}
+
+	resp, err := h.cli.Post(ctx, "https://howlongtobeat.com/api/search", "application/json", &buf, extraHeaders)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if !apiclient.IsOK(resp.StatusCode) {
-		fmt.Println(resp.StatusCode)
 		return nil, &apiclient.Error{API: "hltb", StatusCode: resp.StatusCode}
 	}
 
-	page, err := html.Parse(resp.Body)
-	if err != nil {
-		return nil, &apiclient.Error{API: "hltb", Err: err}
+	var body struct {
+		Data []struct {
+			GameName string `json:"game_name"`
+			GameID   int    `json:"game_id"`
+			CompMain int    `json:"comp_main"`
+			CompPlus int    `json:"comp_plus"`
+			Comp100  int    `json:"comp_100"`
+		} `json:"data"`
 	}
 
-	noResults, err := htmlquery.Query(page, "//li[contains(text(), 'No results for')]")
-	if err != nil {
-		return nil, &apiclient.Error{API: "hltb", Err: err}
-	}
-	if noResults != nil {
-		return nil, errNotFound
+	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
+		return nil, &apiclient.Error{API: "hltb", Err: fmt.Errorf("error decoding response: %w", err)}
 	}
 
-	title, err := htmlquery.Query(page, "//div[@class='search_list_details']/*/a")
-	if err != nil {
-		return nil, &apiclient.Error{API: "hltb", Err: err}
-	}
-	if title == nil {
-		return nil, errNotFound
+	if len(body.Data) == 0 {
+		return nil, &apiclient.Error{API: "hltb", StatusCode: 404}
 	}
 
-	var game Game
+	first := body.Data[0]
 
-	path, err := htmlquery.Query(page, "//div[@class='search_list_details']/*/a/@href")
-	if err != nil {
-		return nil, &apiclient.Error{API: "hltb", Err: err}
-	}
-	if p := trimmedInner(path); p != "" {
-		game.URL = "https://howlongtobeat.com/" + p
-	}
-
-	times, err := htmlquery.QueryAll(page, "//div[contains(@class, 'search_list_tidbit')]")
-	if err != nil {
-		return nil, &apiclient.Error{API: "hltb", Err: err}
-	}
-
-Find:
-	for i, node := range times {
-		switch i {
-		case 1:
-			game.MainStory = cleanTime(node)
-		case 3:
-			game.MainPlusExtra = cleanTime(node)
-		case 5:
-			game.Completionist = cleanTime(node)
-			break Find
-		}
-	}
-
-	titleText := trimmedInner(title)
-
-	if titleText == "" || game == (Game{}) {
-		return nil, errNotFound
-	}
-
-	game.Title = titleText
-
-	return &game, nil
+	return &Game{
+		Title:         first.GameName,
+		URL:           fmt.Sprintf("https://howlongtobeat.com/game/%d", first.GameID),
+		MainStory:     timeToString(first.CompMain),
+		MainPlusExtra: timeToString(first.CompPlus),
+		Completionist: timeToString(first.Comp100),
+	}, nil
 }
 
-func trimmedInner(node *html.Node) string {
-	return strings.TrimSpace(htmlquery.InnerText(node))
-}
-
-func cleanTime(node *html.Node) string {
-	s := trimmedInner(node)
-	s = strings.Trim(s, "-")
-	s = strings.ReplaceAll(s, "½", ".5")
-	return strings.ToLower(s)
-}
-
-var formCommon = url.Values{
-	"t":           []string{"games"},
-	"sorthead":    []string{"popular"},
-	"sortd":       []string{"0"},
-	"plat":        []string{""},
-	"length_type": []string{"main"},
-	"length_min":  []string{""},
-	"length_max":  []string{""},
-	"v":           []string{""},
-	"f":           []string{""},
-	"g":           []string{""},
-	"detail":      []string{""},
-	"randomize":   []string{"0"},
-}
-
-func queryForm(query string) url.Values {
-	form := make(url.Values, len(formCommon)+1)
-	for k, v := range formCommon {
-		form[k] = v
+func timeToString(t int) string {
+	if t == 0 {
+		return ""
 	}
-	form["queryString"] = []string{query}
-	return form
+	hours := strconv.FormatFloat(round(float64(t)/3600, 0.5), 'f', 1, 64)
+	hours = strings.TrimRight(hours, ".0")
+	return hours + " hours"
+}
+
+func round(x, to float64) float64 {
+	return math.Round(x/to) * to
 }

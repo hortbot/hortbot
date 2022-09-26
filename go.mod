@@ -7,7 +7,6 @@ require (
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
 	github.com/99designs/gqlgen v0.17.16
 	github.com/alicebob/miniredis/v2 v2.23.0
-	github.com/antchfx/htmlquery v1.2.5
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.2.0
 	github.com/dghubble/trie v0.0.0-20220811160003-18e0eff3ca7b
@@ -72,7 +71,6 @@ require (
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
-	github.com/antchfx/xpath v1.2.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.1.3 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect

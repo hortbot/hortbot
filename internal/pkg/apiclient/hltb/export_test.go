@@ -1,3 +1,3 @@
 package hltb
 
-var FormCommon = formCommon
+type RequestBody = requestBody

@@ -9,6 +9,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
@@ -20,36 +21,57 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(200, `
-				<h3 class='global_padding shadow_box back_blue center'>We Found 1 Games for "Half-Life Alyx"</h3>
-				<ul>
-					<div class="clear"></div>
-					<li class="back_darkish"
-						style="background-image:linear-gradient(rgb(31, 31, 31), rgba(31, 31, 31, 0.9)), url('https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg')">
-						<div class="search_list_image">
-							<a aria-label="HalfLife Alyx" title="HalfLife Alyx" href="game?id=72067">
-								<img alt="Box Art" src="https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg" />
-							</a>
-						</div>
-						<div class="search_list_details">
-							<h3 class="shadow_text">
-								<a class="text_white" title="HalfLife Alyx" href="game?id=72067">Half-Life: Alyx</a>
-							</h3>
-							<div class="search_list_details_block">
-								<div>
-									<div class="search_list_tidbit text_white shadow_text">Main Story</div>
-									<div class="search_list_tidbit center time_100">10 Hours </div>
-									<div class="search_list_tidbit text_white shadow_text">Main + Extra</div>
-									<div class="search_list_tidbit center time_100">12 Hours </div>
-									<div class="search_list_tidbit text_white shadow_text">Completionist</div>
-									<div class="search_list_tidbit center time_40">13&#189; Hours </div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<div class="clear"></div>
-				</ul>`))
+			"https://howlongtobeat.com/api/search",
+			httpmock.NewStringResponder(200, `{
+				"color": "blue",
+				"title": "",
+				"category": "games",
+				"count": 1,
+				"pageCurrent": 1,
+				"pageTotal": 1,
+				"pageSize": 20,
+				"data": [
+					{
+						"count": 1,
+						"game_id": 72067,
+						"game_name": "Half-Life: Alyx",
+						"game_name_date": 0,
+						"game_alias": "",
+						"game_type": "game",
+						"game_image": "72067_Half-Life_Alyx.jpg",
+						"comp_lvl_combine": 0,
+						"comp_lvl_sp": 1,
+						"comp_lvl_co": 0,
+						"comp_lvl_mp": 0,
+						"comp_lvl_spd": 1,
+						"comp_main": 43464,
+						"comp_plus": 50837,
+						"comp_100": 66013,
+						"comp_all": 47867,
+						"comp_main_count": 406,
+						"comp_plus_count": 314,
+						"comp_100_count": 73,
+						"comp_all_count": 793,
+						"invested_co": 0,
+						"invested_mp": 0,
+						"invested_co_count": 0,
+						"invested_mp_count": 0,
+						"count_comp": 1193,
+						"count_speedrun": 0,
+						"count_backlog": 1161,
+						"count_review": 343,
+						"review_score": 95,
+						"count_playing": 67,
+						"count_retired": 34,
+						"profile_dev": "Valve",
+						"profile_popular": 285,
+						"profile_steam": 546560,
+						"profile_platform": "PC",
+						"release_world": 2020
+					}
+				],
+				"displayModifier": null
+			}`))
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
@@ -57,56 +79,10 @@ func TestSearchGame(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, game, &hltb.Game{
 			Title:         "Half-Life: Alyx",
-			URL:           "https://howlongtobeat.com/game?id=72067",
-			MainStory:     "10 hours",
-			MainPlusExtra: "12 hours",
-			Completionist: "13.5 hours",
-		})
-	})
-
-	t.Run("Dashes", func(t *testing.T) {
-		mt := httpmockx.NewMockTransport(t)
-		mt.RegisterResponder(
-			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(200, `
-				<h3 class='global_padding shadow_box back_blue center'>We Found 1 Games for "Half-Life Alyx"</h3>
-				<ul>
-					<div class="clear"></div>
-					<li class="back_darkish"
-						style="background-image:linear-gradient(rgb(31, 31, 31), rgba(31, 31, 31, 0.9)), url('https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg')">
-						<div class="search_list_image">
-							<a aria-label="HalfLife Alyx" title="HalfLife Alyx" href="game?id=72067">
-								<img alt="Box Art" src="https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg" />
-							</a>
-						</div>
-						<div class="search_list_details">
-							<h3 class="shadow_text">
-								<a class="text_white" title="HalfLife Alyx" href="game?id=72067">Half-Life: Alyx</a>
-							</h3>
-							<div class="search_list_details_block">
-								<div>
-									<div class="search_list_tidbit text_white shadow_text">Main Story</div>
-									<div class="search_list_tidbit center time_100">10 Hours </div>
-									<div class="search_list_tidbit text_white shadow_text">Main + Extra</div>
-									<div class="search_list_tidbit center time_100">--</div>
-									<div class="search_list_tidbit text_white shadow_text">Completionist</div>
-									<div class="search_list_tidbit center time_40">--</div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<div class="clear"></div>
-				</ul>`))
-
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
-
-		game, err := h.SearchGame(ctx, "Half-Life Alyx")
-		assert.NilError(t, err)
-		assert.DeepEqual(t, game, &hltb.Game{
-			Title:     "Half-Life: Alyx",
-			URL:       "https://howlongtobeat.com/game?id=72067",
-			MainStory: "10 hours",
+			URL:           "https://howlongtobeat.com/game/72067",
+			MainStory:     "12 hours",
+			MainPlusExtra: "14 hours",
+			Completionist: "18.5 hours",
 		})
 	})
 
@@ -114,36 +90,57 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(200, `
-				<h3 class='global_padding shadow_box back_blue center'>We Found 1 Games for "Half-Life Alyx"</h3>
-				<ul>
-					<div class="clear"></div>
-					<li class="back_darkish"
-						style="background-image:linear-gradient(rgb(31, 31, 31), rgba(31, 31, 31, 0.9)), url('https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg')">
-						<div class="search_list_image">
-							<a aria-label="HalfLife Alyx" title="HalfLife Alyx" href="game?id=72067">
-								<img alt="Box Art" src="https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg" />
-							</a>
-						</div>
-						<div class="search_list_details">
-							<h3 class="shadow_text">
-								<a class="text_white" title="HalfLife Alyx" href="game?id=72067">Half-Life: Alyx</a>
-							</h3>
-							<div class="search_list_details_block">
-								<div>
-									<div class="search_list_tidbit text_white shadow_text">Main Story</div>
-									<div class="search_list_tidbit center time_100">--</div>
-									<div class="search_list_tidbit text_white shadow_text">Main + Extra</div>
-									<div class="search_list_tidbit center time_100">--</div>
-									<div class="search_list_tidbit text_white shadow_text">Completionist</div>
-									<div class="search_list_tidbit center time_40">--</div>
-								</div>
-							</div>
-						</div>
-					</li>
-					<div class="clear"></div>
-				</ul>`))
+			"https://howlongtobeat.com/api/search",
+			httpmock.NewStringResponder(200, `{
+				"color": "blue",
+				"title": "",
+				"category": "games",
+				"count": 1,
+				"pageCurrent": 1,
+				"pageTotal": 1,
+				"pageSize": 20,
+				"data": [
+					{
+						"count": 1,
+						"game_id": 72067,
+						"game_name": "Half-Life: Alyx",
+						"game_name_date": 0,
+						"game_alias": "",
+						"game_type": "game",
+						"game_image": "72067_Half-Life_Alyx.jpg",
+						"comp_lvl_combine": 0,
+						"comp_lvl_sp": 1,
+						"comp_lvl_co": 0,
+						"comp_lvl_mp": 0,
+						"comp_lvl_spd": 1,
+						"comp_main": 0,
+						"comp_plus": 0,
+						"comp_100": 0,
+						"comp_all": 47867,
+						"comp_main_count": 406,
+						"comp_plus_count": 314,
+						"comp_100_count": 73,
+						"comp_all_count": 793,
+						"invested_co": 0,
+						"invested_mp": 0,
+						"invested_co_count": 0,
+						"invested_mp_count": 0,
+						"count_comp": 1193,
+						"count_speedrun": 0,
+						"count_backlog": 1161,
+						"count_review": 343,
+						"review_score": 95,
+						"count_playing": 67,
+						"count_retired": 34,
+						"profile_dev": "Valve",
+						"profile_popular": 285,
+						"profile_steam": 546560,
+						"profile_platform": "PC",
+						"release_world": 2020
+					}
+				],
+				"displayModifier": null
+			}`))
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
@@ -151,7 +148,7 @@ func TestSearchGame(t *testing.T) {
 		assert.NilError(t, err)
 		assert.DeepEqual(t, game, &hltb.Game{
 			Title: "Half-Life: Alyx",
-			URL:   "https://howlongtobeat.com/game?id=72067",
+			URL:   "https://howlongtobeat.com/game/72067",
 		})
 	})
 
@@ -161,15 +158,13 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
+			"https://howlongtobeat.com/api/search",
 			func(r *http.Request) (*http.Response, error) {
+				var body hltb.RequestBody
+				assert.NilError(t, jsonx.DecodeSingle(r.Body, &body))
 				assert.NilError(t, r.ParseForm())
 
-				for k, v := range hltb.FormCommon {
-					assert.DeepEqual(t, r.Form[k], v)
-				}
-
-				assert.Equal(t, r.FormValue("queryString"), query)
+				assert.DeepEqual(t, body.SearchTerms, []string{"Half-Life", "Alyx"})
 				return httpmock.NewStringResponse(200, ""), nil
 			},
 		)
@@ -182,11 +177,8 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(200, `
-			<li class='global_padding back_primary shadow_box'>No results for <strong>This is a fake game ignore me</strong> in
-				<u>games</u>.</li>
-			<div class='clear'></div>`))
+			"https://howlongtobeat.com/api/search",
+			httpmock.NewStringResponder(200, `{"color":"blue","title":"","category":"games","pageCurrent":1,"pageTotal":null,"pageSize":20,"data":[],"displayModifier":null}`))
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
@@ -198,11 +190,8 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(404, `
-			<li class='global_padding back_primary shadow_box'>No results for <strong>This is a fake game ignore me</strong> in
-				<u>games</u>.</li>
-			<div class='clear'></div>`))
+			"https://howlongtobeat.com/api/search",
+			httpmock.NewStringResponder(404, `{"color":"blue","title":"","category":"games","pageCurrent":1,"pageTotal":null,"pageSize":20,"data":[],"displayModifier":null}`))
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
@@ -214,11 +203,8 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(500, `
-			<li class='global_padding back_primary shadow_box'>No results for <strong>This is a fake game ignore me</strong> in
-				<u>games</u>.</li>
-			<div class='clear'></div>`))
+			"https://howlongtobeat.com/api/search",
+			httpmock.NewStringResponder(500, `{}`))
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
@@ -230,47 +216,13 @@ func TestSearchGame(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
+			"https://howlongtobeat.com/api/search",
 			httpmock.NewStringResponder(200, ``))
 
 		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
 
 		_, err := h.SearchGame(ctx, "Half-Life Alyx")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
-	})
-
-	t.Run("Incomplete results", func(t *testing.T) {
-		mt := httpmockx.NewMockTransport(t)
-		mt.RegisterResponder(
-			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
-			httpmock.NewStringResponder(200, `
-				<h3 class='global_padding shadow_box back_blue center'>We Found 1 Games for "Half-Life Alyx"</h3>
-				<ul>
-					<div class="clear"></div>
-					<li class="back_darkish"
-						style="background-image:linear-gradient(rgb(31, 31, 31), rgba(31, 31, 31, 0.9)), url('https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg')">
-						<div class="search_list_image">
-							<a aria-label="HalfLife Alyx" title="HalfLife Alyx" href="game?id=72067">
-								<img alt="Box Art" src="https://howlongtobeat.com/games/72067_Half-Life_Alyx.jpg" />
-							</a>
-						</div>
-						<div class="search_list_details">
-							<h3 class="shadow_text">
-								<a class="text_white" title="HalfLife Alyx" href="">Half-Life: Alyx</a>
-							</h3>
-							<div class="search_list_details_block">
-								<div></div>
-							</div>
-						</div>
-					</li>
-					<div class="clear"></div>
-				</ul>`))
-
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
-
-		_, err := h.SearchGame(ctx, "Half-Life Alyx")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
+		assert.Error(t, err, "hltb: error decoding response: EOF")
 	})
 
 	t.Run("Client error", func(t *testing.T) {
@@ -280,7 +232,7 @@ func TestSearchGame(t *testing.T) {
 
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/search_results?page=1",
+			"https://howlongtobeat.com/api/search",
 			func(_ *http.Request) (*http.Response, error) {
 				return nil, errTest
 			},
