@@ -1159,12 +1159,6 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamaction(qw422016, "SUBMODE_OFF", `Disables submode.`)
 	qw422016.N().S(`
                 `)
-	streamaction(qw422016, "HOST_<CHANNEL>", `Start hosting the specified channel.`)
-	qw422016.N().S(`
-                `)
-	streamaction(qw422016, "UNHOST", `Deactivates host mode.`)
-	qw422016.N().S(`
-                `)
 	streamaction(qw422016, "PURGE", `Purges the messages of the user in the first parameter, or the sender if used in an autoreply.`)
 	qw422016.N().S(`
                 `)

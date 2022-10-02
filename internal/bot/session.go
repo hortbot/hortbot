@@ -270,29 +270,6 @@ func (s *session) parseUserLevel() accessLevel {
 	return levelEveryone
 }
 
-func (s *session) SendCommand(ctx context.Context, command string, args ...string) error {
-	switch command {
-	case "me": // TODO: remove; unused
-	case "host": // TODO: remove
-	case "unhost": // TODO: remove
-	default:
-		panic("attempt to use IRC command " + command)
-	}
-
-	var builder strings.Builder
-	builder.WriteByte('/')
-	builder.WriteString(command)
-
-	for _, arg := range args {
-		builder.WriteByte(' ')
-		builder.WriteString(arg)
-	}
-
-	message := strings.TrimSpace(builder.String())
-
-	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, message)
-}
-
 func (s *session) DeleteMessage(ctx context.Context) error {
 	botID, tok, err := s.BotTwitchToken(ctx)
 	if err != nil {

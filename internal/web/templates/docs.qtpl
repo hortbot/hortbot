@@ -747,8 +747,6 @@ dd {
             <dl>
                 {%= action("SUBMODE_ON", `Enables submode.`) %}
                 {%= action("SUBMODE_OFF", `Disables submode.`) %}
-                {%= action("HOST_<CHANNEL>", `Start hosting the specified channel.`) %}
-                {%= action("UNHOST", `Deactivates host mode.`) %}
                 {%= action("PURGE", `Purges the messages of the user in the first parameter, or the sender if used in an autoreply.`) %}
                 {%= action("BAN", `Bans the user in the first parameter, or the sender if used in an autoreply, and returns the user.`) %}
                 {%= action("TIMEOUT", `Times out the user in the first parameter, or the sender if used in an autoreply, and returns the user.`) %}

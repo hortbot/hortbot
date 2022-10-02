@@ -86,7 +86,6 @@ func init() {
 	addExact("SUBMODE_OFF", actionSubmode)
 	addExact("SILENT", actionSilent)
 	addExact("NUMCHANNELS", actionNumChannels)
-	addExact("UNHOST", actionUnhost)
 	addExact("PURGE", actionPurge)
 	addExact("TIMEOUT", actionTimeout)
 	addExact("BAN", actionBan)
@@ -125,7 +124,6 @@ func init() {
 	addPrefix("UNTILLONG_", actionUntil)
 	addPrefix("UNTILSHORT_", actionUntil)
 	addPrefix("RANDOM_", actionRandom)
-	addPrefix("HOST_", actionHost)
 	addPrefix("VARS_", actionVars)
 	addPrefix("COMMAND_", actionCommand)
 	addPrefix("LIST_", actionList)
@@ -449,13 +447,6 @@ func actionNumChannels(ctx context.Context, s *session, actionName, value string
 		return "", err
 	}
 	return strconv.FormatInt(count, 10), nil
-}
-
-func actionUnhost(ctx context.Context, s *session, actionName, value string) (string, error) {
-	if s.UserLevel.CanAccess(levelModerator) {
-		return "", s.SendCommand(ctx, "unhost")
-	}
-	return "", nil
 }
 
 func actionPurge(ctx context.Context, s *session, actionName, value string) (string, error) {
@@ -790,13 +781,6 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 	}
 
 	return strconv.FormatFloat(x, 'f', 1, 64), nil
-}
-
-func actionHost(ctx context.Context, s *session, actionName, value string) (string, error) {
-	if s.UserLevel.CanAccess(levelModerator) {
-		return "", s.SendCommand(ctx, "host", strings.ToLower(value))
-	}
-	return "", nil
 }
 
 func actionVars(ctx context.Context, s *session, actionName, value string) (string, error) {

@@ -448,25 +448,11 @@ func cmdIsHere(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func cmdHost(ctx context.Context, s *session, cmd string, args string) error {
-	if args == "" {
-		return s.ReplyUsage(ctx, "<username>")
-	}
-
-	username, _ := splitSpace(args)
-
-	if err := s.SendCommand(ctx, "host", strings.ToLower(username)); err != nil {
-		return err
-	}
-
-	return s.Replyf(ctx, "Now hosting: %s", username)
+	return s.Reply(ctx, "Twitch no longer supports host mode.")
 }
 
 func cmdUnhost(ctx context.Context, s *session, cmd string, args string) error {
-	if err := s.SendCommand(ctx, "unhost"); err != nil {
-		return err
-	}
-
-	return s.Reply(ctx, "Exited host mode.")
+	return s.Reply(ctx, "Twitch no longer supports host mode.")
 }
 
 func cmdWinner(ctx context.Context, s *session, cmd string, args string) error {
