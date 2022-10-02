@@ -301,7 +301,7 @@ func (s *session) DeleteMessage(ctx context.Context) error {
 
 	newToken, err := s.Deps.Twitch.DeleteChatMessage(ctx, s.Channel.TwitchID, botID, tok, s.ID)
 	if err != nil {
-		ctxlog.Error(ctx, "unable to delete message", zap.Error(err))
+		logTwitchModerationError(ctx, err, "delete")
 	}
 
 	if newToken != nil {
@@ -433,7 +433,7 @@ func (s *session) BanByID(ctx context.Context, userID int64, duration int64, rea
 
 	newToken, err := s.Deps.Twitch.Ban(ctx, s.Channel.TwitchID, botID, tok, req)
 	if err != nil {
-		ctxlog.Error(ctx, "unable to ban user", zap.Error(err))
+		logTwitchModerationError(ctx, err, "ban")
 	}
 
 	if newToken != nil {
@@ -461,7 +461,7 @@ func (s *session) UnbanByID(ctx context.Context, userID int64) error {
 
 	newToken, err := s.Deps.Twitch.Unban(ctx, s.Channel.TwitchID, botID, tok, userID)
 	if err != nil {
-		ctxlog.Error(ctx, "unable to unban user", zap.Error(err))
+		logTwitchModerationError(ctx, err, "unban")
 	}
 
 	if newToken != nil {
@@ -501,7 +501,7 @@ func (s *session) ClearChat(ctx context.Context) error {
 
 	newToken, err := s.Deps.Twitch.ClearChat(ctx, s.Channel.TwitchID, botID, tok)
 	if err != nil {
-		ctxlog.Error(ctx, "unable to clear chat", zap.Error(err))
+		logTwitchModerationError(ctx, err, "update chat")
 	}
 
 	if newToken != nil {
@@ -521,7 +521,7 @@ func (s *session) UpdateChatSettings(ctx context.Context, patch *twitch.ChatSett
 
 	newToken, err := s.Deps.Twitch.UpdateChatSettings(ctx, s.Channel.TwitchID, botID, tok, patch)
 	if err != nil {
-		ctxlog.Error(ctx, "unable to change chat settings", zap.Error(err))
+		logTwitchModerationError(ctx, err, "update settings")
 	}
 
 	if newToken != nil {
@@ -541,7 +541,7 @@ func (s *session) Announce(ctx context.Context, message string) error {
 
 	newToken, err := s.Deps.Twitch.Announce(ctx, s.Channel.TwitchID, botID, tok, message, "")
 	if err != nil {
-		ctxlog.Error(ctx, "unable to make announcement", zap.Error(err))
+		logTwitchModerationError(ctx, err, "announce")
 	}
 
 	if newToken != nil {
@@ -716,4 +716,13 @@ func (o *onced[T]) set(v T, err error) {
 	o.v = v
 	o.err = err
 	o.valid = true
+}
+
+func logTwitchModerationError(ctx context.Context, err error, operation string) {
+	switch err {
+	case nil:
+	case twitch.ErrNotAuthorized: // Usually indicates that the bot isn't modded.
+	default:
+		ctxlog.Error(ctx, "error in twitch API", zap.Error(err), zap.String("operation", operation))
+	}
 }
