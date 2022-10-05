@@ -49,7 +49,7 @@ func FromContext(ctx context.Context, opts ...Option) *Group {
 type Option func(*Group)
 
 // WithTrace enables OpenCensus tracing propagation from the main context to
-// function with with Go.
+// function with Go.
 func WithTrace() Option {
 	return func(g *Group) {
 		g.trace = true
