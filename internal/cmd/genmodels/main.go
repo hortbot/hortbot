@@ -15,7 +15,7 @@ import (
 	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
-	"github.com/jackc/pgconn"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/volatiletech/sqlboiler/v4/boilingcore"
 	_ "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
 	"github.com/volatiletech/sqlboiler/v4/importers"
