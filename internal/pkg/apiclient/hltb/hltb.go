@@ -68,8 +68,6 @@ func HTTPClient(cli *http.Client) Option {
 	}
 }
 
-var errNotFound = &apiclient.Error{API: "hltb", StatusCode: 404}
-
 type requestBody struct {
 	SearchType    string   `json:"searchType"`
 	SearchTerms   []string `json:"searchTerms"`
