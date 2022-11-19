@@ -32,7 +32,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	github.com/leononame/clock v0.1.6
 	github.com/maxbrunsfeld/counterfeiter/v6 v6.5.0
-	github.com/mroth/weightedrand v1.0.0
+	github.com/mroth/weightedrand/v2 v2.0.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.9.1
 	github.com/patrickmn/go-cache v2.1.0+incompatible

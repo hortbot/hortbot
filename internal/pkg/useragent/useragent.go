@@ -9,7 +9,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/version"
-	"github.com/mroth/weightedrand"
+	"github.com/mroth/weightedrand/v2"
 )
 
 //go:embed user-agents.json.gz
@@ -36,7 +36,7 @@ type entry struct {
 
 const minThreshold = 100
 
-var chooser *weightedrand.Chooser
+var chooser *weightedrand.Chooser[string, int]
 
 func init() {
 	r, err := gzip.NewReader(bytes.NewReader(agents))
@@ -65,13 +65,13 @@ func init() {
 		factor *= 10
 	}
 
-	choices := make([]weightedrand.Choice, 0, len(entries))
+	choices := make([]weightedrand.Choice[string, int], 0, len(entries))
 	for _, e := range entries {
 		if e.DeviceCategory != "desktop" {
 			continue
 		}
 
-		choice := weightedrand.NewChoice(e.UserAgent, uint(factor*e.Weight))
+		choice := weightedrand.NewChoice(e.UserAgent, int(factor*e.Weight))
 		choices = append(choices, choice)
 	}
 
@@ -90,5 +90,5 @@ func Bot() string {
 
 // Browser returns a random browser user agent.
 func Browser() string {
-	return chooser.Pick().(string)
+	return chooser.Pick()
 }
