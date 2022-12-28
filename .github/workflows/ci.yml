@@ -93,6 +93,7 @@ jobs:
     name: Ko
     runs-on: ubuntu-latest
     needs: [test, style, generate]
+    concurrency: ko
 
     steps:
       - uses: actions/checkout@v3
@@ -118,20 +119,13 @@ jobs:
         run: |
           KO_IMAGE=$(ko publish --local --preserve-import-paths .)
           echo $KO_IMAGE
-          echo "::set-output name=image::$KO_IMAGE"
+          echo "image::$KO_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Check version
         run: |
           GOT_HB_VERSION=$(docker run ${{ steps.ko.outputs.image }} version)
           echo $GOT_HB_VERSION
           [[ "$GOT_HB_VERSION" = "$HB_VERSION" ]]
-
-      # This must go before the registry pushes to ensure ordering of the latest tag.
-      - name: Turnstyle
-        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: softprops/turnstyle@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Docker login
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
