@@ -119,7 +119,7 @@ jobs:
         run: |
           KO_IMAGE=$(ko publish --local --preserve-import-paths .)
           echo $KO_IMAGE
-          echo "image::$KO_IMAGE" >> $GITHUB_OUTPUT
+          echo "image=$KO_IMAGE" >> $GITHUB_OUTPUT
 
       - name: Check version
         run: |
