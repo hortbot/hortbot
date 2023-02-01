@@ -2,8 +2,8 @@
 package redisflags
 
 import (
-	goredis "github.com/go-redis/redis/v8"
 	"github.com/hortbot/hortbot/internal/db/redis"
+	goredis "github.com/redis/go-redis/v9"
 )
 
 // Redis contains redis flags.
