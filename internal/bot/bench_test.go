@@ -22,8 +22,6 @@ import (
 )
 
 func BenchmarkHandleNop(b *testing.B) {
-	rand.Seed(0)
-
 	const botName = "hortbot"
 
 	db := pool.FreshDB(b)
@@ -65,8 +63,6 @@ func BenchmarkHandleNop(b *testing.B) {
 }
 
 func BenchmarkHandleNopParallel(b *testing.B) {
-	rand.Seed(0)
-
 	const botName = "hortbot"
 
 	db := pool.FreshDB(b)
@@ -109,8 +105,6 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 }
 
 func BenchmarkHandleCustomCommand(b *testing.B) {
-	rand.Seed(0)
-
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
@@ -153,8 +147,6 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 }
 
 func BenchmarkHandleMixed(b *testing.B) {
-	rand.Seed(0)
-
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
@@ -214,8 +206,6 @@ func BenchmarkHandleMixed(b *testing.B) {
 }
 
 func BenchmarkHandleManyBannedPhrases(b *testing.B) {
-	rand.Seed(0)
-
 	const botName = "hortbot"
 
 	rServer, rClient, rCleanup, err := miniredistest.New()

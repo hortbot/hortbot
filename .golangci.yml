@@ -58,6 +58,7 @@ linters:
     - structcheck # dead
     - nosnakecase # dead
     - interfacebloat # nope
+    - musttag # issues errors in the stdlib
 
     # - staticcheck
 
