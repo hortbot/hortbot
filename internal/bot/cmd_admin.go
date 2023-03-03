@@ -21,14 +21,15 @@ var adminCommands handlerMap
 func init() {
 	// To prevent initialization loop.
 	adminCommands = newHandlerMap(map[string]handlerFunc{
-		"roundtrip": {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
-		"block":     {fn: cmdAdminBlock, minLevel: levelAdmin},
-		"unblock":   {fn: cmdAdminUnblock, minLevel: levelAdmin},
-		"channels":  {fn: cmdAdminChannels, minLevel: levelAdmin},
-		"color":     {fn: cmdAdminColor, minLevel: levelAdmin},
-		"spam":      {fn: cmdAdminSpam, minLevel: levelAdmin},
-		"version":   {fn: cmdAdminVersion, minLevel: levelAdmin},
-		"changebot": {fn: cmdAdminChangeBot, minLevel: levelAdmin},
+		"roundtrip":     {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
+		"block":         {fn: cmdAdminBlock, minLevel: levelAdmin},
+		"unblock":       {fn: cmdAdminUnblock, minLevel: levelAdmin},
+		"channels":      {fn: cmdAdminChannels, minLevel: levelAdmin},
+		"color":         {fn: cmdAdminColor, minLevel: levelAdmin},
+		"spam":          {fn: cmdAdminSpam, minLevel: levelAdmin},
+		"version":       {fn: cmdAdminVersion, minLevel: levelAdmin},
+		"changebot":     {fn: cmdAdminChangeBot, minLevel: levelAdmin},
+		"globalignored": {fn: cmdAdminGlobalIgnored, minLevel: levelAdmin},
 
 		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
 		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
@@ -342,4 +343,12 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 	}
 
 	return s.Replyf(ctx, "Changed %s's bot from %s to %s.", name, oldBotName, botName)
+}
+
+func cmdAdminGlobalIgnored(ctx context.Context, s *session, _ string, args string) error {
+	ignored := make([]string, 0, len(s.Deps.GlobalIgnore))
+	for k := range s.Deps.GlobalIgnore {
+		ignored = append(ignored, k)
+	}
+	return s.Replyf(ctx, "Global ignored: %s", strings.Join(ignored, ", "))
 }
