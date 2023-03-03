@@ -28,7 +28,7 @@ type IRC struct {
 	RateLimitFast   int           `long:"irc-rate-limit-fast" env:"HB_IRC_RATE_LIMIT_FAST" description:"Message allowed per rate limit period (fast)"`
 	RateLimitPeriod time.Duration `long:"irc-rate-limit-period" env:"HB_IRC_RATE_LIMIT_PERIOD" description:"Rate limit period"`
 
-	PriorityChannels []string `long:"irc-priority-channels" env:"HB_IRC_PRIORITY_CHANNELS" description:"An ordered list of channels to prioritize joining"`
+	PriorityChannels []string `long:"irc-priority-channels" env:"HB_IRC_PRIORITY_CHANNELS" env-delim:"," description:"An ordered list of channels to prioritize joining"`
 }
 
 // Default contains the default flags. Make a copy of this, do not reuse.

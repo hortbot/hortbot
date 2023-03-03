@@ -46,11 +46,11 @@ type Bot struct {
 	PublicJoin         bool     `long:"bot-public-join" env:"HB_BOT_PUBLIC_JOIN" description:"Enable public join for all bots"`
 	PublicJoinDisabled []string `long:"bot-public-join-disabled" env:"HB_BOT_PUBLIC_JOIN_DISABLED" env-delim:"," description:"Bots to disable public join on regardless of global public join setting"`
 
-	BetaFeatures []string `long:"bot-beta-features" env:"HB_BOT_BETA_FEATURES" description:"List of channel where beta features are enabled"`
+	BetaFeatures []string `long:"bot-beta-features" env:"HB_BOT_BETA_FEATURES" env-delim:"," description:"List of channel where beta features are enabled"`
 
 	NoSend bool `long:"bot-no-send" env:"HB_BOT_NO_SEND" description:"Log messages instead of sending them"`
 
-	GlobalIgnore []string `long:"bot-global-ignore" env:"HB_BOT_GLOBAL_IGNORE" description:"List of users to ignore globally (e.g. known bots)"`
+	GlobalIgnore []string `long:"bot-global-ignore" env:"HB_BOT_GLOBAL_IGNORE" env-delim:"," description:"List of users to ignore globally (e.g. known bots)"`
 }
 
 // Default contains the default flags. Make a copy of this, do not reuse.
