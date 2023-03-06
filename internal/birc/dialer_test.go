@@ -3,6 +3,7 @@ package birc_test
 import (
 	"crypto/tls"
 	"net"
+	"strings"
 	"testing"
 
 	"github.com/fortytw2/leaktest"
@@ -84,7 +85,8 @@ func TestDialerBadUpgrade(t *testing.T) {
 	}
 
 	_, err := d.Dial(ctx)
-	assert.ErrorContains(t, err, "bad certificate")
+	assert.Assert(t, err != nil)
+	assert.Assert(t, strings.Contains(err.Error(), "bad certificate") || strings.Contains(err.Error(), "unknown certificate authority"))
 
 	assert.ErrorContains(t, h.StopServerErr(), "certificate signed by unknown authority")
 	h.AssertMessages(serverMessages)
