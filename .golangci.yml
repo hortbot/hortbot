@@ -59,6 +59,7 @@ linters:
     - nosnakecase # dead
     - interfacebloat # nope
     - musttag # issues errors in the stdlib
+    - revive # redundant
 
     # - staticcheck
 
