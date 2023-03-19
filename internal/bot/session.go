@@ -74,17 +74,16 @@ type session struct {
 	sendRoundtrip bool
 
 	cache struct {
-		links          onced[[]*url.URL]
-		tracks         onced[[]lastfm.Track]
-		tok            onced[*oauth2.Token]
-		botTok         onced[tokenAndUserID]
-		isLive         onced[bool]
-		twitchChannel  onced[*twitch.Channel]
-		twitchStream   onced[*twitch.Stream]
-		twitchChatters onced[*twitch.Chatters]
-		steamSummary   onced[*steam.Summary]
-		steamGames     onced[[]*steam.Game]
-		gameLinks      onced[[]twitch.GameLink]
+		links         onced[[]*url.URL]
+		tracks        onced[[]lastfm.Track]
+		tok           onced[*oauth2.Token]
+		botTok        onced[tokenAndUserID]
+		isLive        onced[bool]
+		twitchChannel onced[*twitch.Channel]
+		twitchStream  onced[*twitch.Stream]
+		steamSummary  onced[*steam.Summary]
+		steamGames    onced[[]*steam.Game]
+		gameLinks     onced[[]twitch.GameLink]
 	}
 }
 
@@ -562,15 +561,6 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 
 	return s.cache.twitchStream.get(func() (*twitch.Stream, error) {
 		return s.Deps.Twitch.GetStreamByUserID(ctx, s.Channel.TwitchID)
-	})
-}
-
-func (s *session) TwitchChatters(ctx context.Context) (*twitch.Chatters, error) {
-	ctx, span := trace.StartSpan(ctx, "TwitchChatters")
-	defer span.End()
-
-	return s.cache.twitchChatters.get(func() (*twitch.Chatters, error) {
-		return s.Deps.Twitch.GetChatters(ctx, s.Channel.Name)
 	})
 }
 

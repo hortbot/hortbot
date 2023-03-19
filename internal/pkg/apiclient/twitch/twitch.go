@@ -93,9 +93,6 @@ type API interface {
 	ClearChat(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (newToken *oauth2.Token, err error)
 	Announce(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error)
 
-	// TMI
-	GetChatters(ctx context.Context, channel string) (*Chatters, error)
-
 	// IGDB
 	GetGameLinks(ctx context.Context, twitchCategory int64) ([]GameLink, error)
 }

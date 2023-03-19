@@ -54,25 +54,6 @@ func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string, lineN
 	})
 }
 
-func (st *scriptTester) twitchGetChatters(t testing.TB, _, args string, lineNum int) {
-	var call struct {
-		Channel string
-
-		Chatters *twitch.Chatters
-		Err      string
-	}
-
-	err := json.Unmarshal([]byte(args), &call)
-	assert.NilError(t, err, "line %d", lineNum)
-
-	st.addAction(func(ctx context.Context) {
-		st.twitch.GetChattersCalls(func(_ context.Context, channel string) (*twitch.Chatters, error) {
-			assert.Equal(t, channel, call.Channel, "line %d", lineNum)
-			return call.Chatters, twitchErr(t, lineNum, call.Err)
-		})
-	})
-}
-
 func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, lineNum int) {
 	var v map[string]*twitch.User
 

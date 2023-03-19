@@ -324,26 +324,6 @@ func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, erro
 	}
 }
 
-func cmdChatters(ctx context.Context, s *session, cmd string, args string) error {
-	chatters, err := s.TwitchChatters(ctx)
-	switch err {
-	case twitch.ErrServerError, twitch.ErrNotFound:
-		return s.Reply(ctx, twitchServerErrorReply)
-	case nil:
-	default:
-		return err
-	}
-
-	count := chatters.Count
-
-	u := "users"
-	if count == 1 {
-		u = "user"
-	}
-
-	return s.Replyf(ctx, "%d %s currently connected to chat.", count, u)
-}
-
 func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 	name, _ := splitSpace(args)
 	name = strings.ToLower(name)
@@ -410,88 +390,10 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Replyf(ctx, "Yes, %s is live playing %s with %d %s.", name, gameName, viewers, v)
 }
 
-func cmdIsHere(ctx context.Context, s *session, cmd string, args string) error {
-	name, _ := splitSpace(args)
-
-	if name == "" {
-		return s.ReplyUsage(ctx, "<username>")
-	}
-
-	chatters, err := s.TwitchChatters(ctx)
-	switch err {
-	case twitch.ErrServerError, twitch.ErrNotFound:
-		return s.Reply(ctx, twitchServerErrorReply)
-	case nil:
-	default:
-		return err
-	}
-
-	lists := [][]string{
-		chatters.Chatters.Broadcaster,
-		chatters.Chatters.Vips,
-		chatters.Chatters.Moderators,
-		chatters.Chatters.Staff,
-		chatters.Chatters.Admins,
-		chatters.Chatters.GlobalMods,
-		chatters.Chatters.Viewers,
-	}
-
-	nameLower := strings.ToLower(name)
-
-	for _, l := range lists {
-		if _, found := stringSliceIndex(l, nameLower); found {
-			return s.Replyf(ctx, "Yes, %s is connected to chat.", name)
-		}
-	}
-
-	return s.Replyf(ctx, "No, %s is not connected to chat.", name)
-}
-
 func cmdHost(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Reply(ctx, "Twitch no longer supports host mode.")
 }
 
 func cmdUnhost(ctx context.Context, s *session, cmd string, args string) error {
 	return s.Reply(ctx, "Twitch no longer supports host mode.")
-}
-
-func cmdWinner(ctx context.Context, s *session, cmd string, args string) error {
-	chatters, err := s.TwitchChatters(ctx)
-	switch err {
-	case twitch.ErrServerError, twitch.ErrNotFound:
-		return s.Reply(ctx, twitchServerErrorReply)
-	case nil:
-	default:
-		return err
-	}
-
-	lists := [][]string{
-		chatters.Chatters.Vips,
-		chatters.Chatters.Moderators,
-		chatters.Chatters.Staff,
-		chatters.Chatters.Admins,
-		chatters.Chatters.GlobalMods,
-		chatters.Chatters.Viewers,
-	}
-
-	count := 0
-	for _, l := range lists {
-		count += len(l)
-	}
-
-	if count == 0 {
-		return s.Reply(ctx, "Nobody in chat.")
-	}
-
-	i := s.Deps.Rand.Intn(count)
-
-	for _, l := range lists {
-		if i < len(l) {
-			return s.Reply(ctx, "And the winner is... "+l[i]+"!")
-		}
-
-		i -= len(l)
-	}
-
-	panic("unreachable")
 }

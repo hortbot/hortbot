@@ -639,9 +639,6 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	streamcommand(qw422016, "!conch", `Magic 8 ball.`, "subs")
 	qw422016.N().S(`
                 `)
-	streamcommand(qw422016, "!winner", `Picks a random chat member.`, "mods")
-	qw422016.N().S(`
-                `)
 	streamcommand(qw422016, "!xkcd <num>", `Gets the requested XKCD comic.`, "subs")
 	qw422016.N().S(`
                 `)
@@ -801,12 +798,6 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!viewers", `Gets the current viewer count.`, "everyone")
-	qw422016.N().S(`
-                `)
-	streamcommand(qw422016, "!chatters", `Gets the current chatter count.`, "everyone")
-	qw422016.N().S(`
-                `)
-	streamcommand(qw422016, "!ishere <user>", `Checks if a user is in chat.`, "mods")
 	qw422016.N().S(`
                 `)
 	streamcommand(qw422016, "!islive <user>", `Checks if a user is live.`, "mods")

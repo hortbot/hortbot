@@ -97,7 +97,6 @@ func init() {
 	addExact("GAME_CLEAN", actionGame)
 	addExact("STATUS", actionStatus)
 	addExact("VIEWERS", actionViewers)
-	addExact("CHATTERS", actionChatters)
 	addExact("DATE", actionTime("Jan 2, 2006"))
 	addExact("TIME", actionTime("3:04 PM"))
 	addExact("TIME24", actionTime("15:04"))
@@ -581,15 +580,6 @@ func actionViewers(ctx context.Context, s *session, actionName, value string) (s
 		viewers = int64(stream.ViewerCount)
 	}
 	return strconv.FormatInt(viewers, 10), nil
-}
-
-func actionChatters(ctx context.Context, s *session, actionName, value string) (string, error) {
-	chatters, _ := s.TwitchChatters(ctx)
-	var count int64
-	if chatters != nil {
-		count = chatters.Count
-	}
-	return strconv.FormatInt(count, 10), nil
 }
 
 func actionUntil(ctx context.Context, s *session, actionName, value string) (string, error) {

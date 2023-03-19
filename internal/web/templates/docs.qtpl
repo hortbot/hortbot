@@ -461,7 +461,6 @@ dd {
 
             <dl>
                 {%= command("!conch", `Magic 8 ball.`, "subs") %}
-                {%= command("!winner", `Picks a random chat member.`, "mods") %}
                 {%= command("!xkcd <num>", `Gets the requested XKCD comic.`, "subs") %}
                 {%= command("!random coin", `Flips a coin.`, "varies") %}
                 {%= command("!random <integer>", `Picks a random number.`, "varies") %}
@@ -557,8 +556,6 @@ dd {
                 {%= command("!status <new status>", `Sets the current status.`, "mods") %}
                 {%= command("!uptime", `Gets the current uptime.`, "everyone") %}
                 {%= command("!viewers", `Gets the current viewer count.`, "everyone") %}
-                {%= command("!chatters", `Gets the current chatter count.`, "everyone") %}
-                {%= command("!ishere <user>", `Checks if a user is in chat.`, "mods") %}
                 {%= command("!islive <user>", `Checks if a user is live.`, "mods") %}
 
                 {%= command("!statusgame <new status>", `Sets the current game to the current Steam game. and sets the status.`, "mods") %}

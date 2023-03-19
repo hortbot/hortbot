@@ -135,20 +135,6 @@ type FakeAPI struct {
 		result2 *oauth2.Token
 		result3 error
 	}
-	GetChattersStub        func(context.Context, string) (*twitch.Chatters, error)
-	getChattersMutex       sync.RWMutex
-	getChattersArgsForCall []struct {
-		arg1 context.Context
-		arg2 string
-	}
-	getChattersReturns struct {
-		result1 *twitch.Chatters
-		result2 error
-	}
-	getChattersReturnsOnCall map[int]struct {
-		result1 *twitch.Chatters
-		result2 error
-	}
 	GetGameByIDStub        func(context.Context, int64) (*twitch.Category, error)
 	getGameByIDMutex       sync.RWMutex
 	getGameByIDArgsForCall []struct {
@@ -879,71 +865,6 @@ func (fake *FakeAPI) GetChannelModeratorsReturnsOnCall(i int, result1 []*twitch.
 		result2 *oauth2.Token
 		result3 error
 	}{result1, result2, result3}
-}
-
-func (fake *FakeAPI) GetChatters(arg1 context.Context, arg2 string) (*twitch.Chatters, error) {
-	fake.getChattersMutex.Lock()
-	ret, specificReturn := fake.getChattersReturnsOnCall[len(fake.getChattersArgsForCall)]
-	fake.getChattersArgsForCall = append(fake.getChattersArgsForCall, struct {
-		arg1 context.Context
-		arg2 string
-	}{arg1, arg2})
-	stub := fake.GetChattersStub
-	fakeReturns := fake.getChattersReturns
-	fake.recordInvocation("GetChatters", []interface{}{arg1, arg2})
-	fake.getChattersMutex.Unlock()
-	if stub != nil {
-		return stub(arg1, arg2)
-	}
-	if specificReturn {
-		return ret.result1, ret.result2
-	}
-	return fakeReturns.result1, fakeReturns.result2
-}
-
-func (fake *FakeAPI) GetChattersCallCount() int {
-	fake.getChattersMutex.RLock()
-	defer fake.getChattersMutex.RUnlock()
-	return len(fake.getChattersArgsForCall)
-}
-
-func (fake *FakeAPI) GetChattersCalls(stub func(context.Context, string) (*twitch.Chatters, error)) {
-	fake.getChattersMutex.Lock()
-	defer fake.getChattersMutex.Unlock()
-	fake.GetChattersStub = stub
-}
-
-func (fake *FakeAPI) GetChattersArgsForCall(i int) (context.Context, string) {
-	fake.getChattersMutex.RLock()
-	defer fake.getChattersMutex.RUnlock()
-	argsForCall := fake.getChattersArgsForCall[i]
-	return argsForCall.arg1, argsForCall.arg2
-}
-
-func (fake *FakeAPI) GetChattersReturns(result1 *twitch.Chatters, result2 error) {
-	fake.getChattersMutex.Lock()
-	defer fake.getChattersMutex.Unlock()
-	fake.GetChattersStub = nil
-	fake.getChattersReturns = struct {
-		result1 *twitch.Chatters
-		result2 error
-	}{result1, result2}
-}
-
-func (fake *FakeAPI) GetChattersReturnsOnCall(i int, result1 *twitch.Chatters, result2 error) {
-	fake.getChattersMutex.Lock()
-	defer fake.getChattersMutex.Unlock()
-	fake.GetChattersStub = nil
-	if fake.getChattersReturnsOnCall == nil {
-		fake.getChattersReturnsOnCall = make(map[int]struct {
-			result1 *twitch.Chatters
-			result2 error
-		})
-	}
-	fake.getChattersReturnsOnCall[i] = struct {
-		result1 *twitch.Chatters
-		result2 error
-	}{result1, result2}
 }
 
 func (fake *FakeAPI) GetGameByID(arg1 context.Context, arg2 int64) (*twitch.Category, error) {
@@ -1824,8 +1745,6 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.getChannelByIDMutex.RUnlock()
 	fake.getChannelModeratorsMutex.RLock()
 	defer fake.getChannelModeratorsMutex.RUnlock()
-	fake.getChattersMutex.RLock()
-	defer fake.getChattersMutex.RUnlock()
 	fake.getGameByIDMutex.RLock()
 	defer fake.getGameByIDMutex.RUnlock()
 	fake.getGameByNameMutex.RLock()
