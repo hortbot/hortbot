@@ -818,12 +818,6 @@ func (p *DocsPage) StreamPageBody(qw422016 *qt422016.Writer) {
                 `)
 	streamcommand(qw422016, "!steamgame", `Sets the current game to the current Steam game.`, "mods")
 	qw422016.N().S(`
-                `)
-	streamcommand(qw422016, "!host <user>", `Starts hosting the specified user. This may no longer work due to Twitch authentication changes.`, "mods")
-	qw422016.N().S(`
-                `)
-	streamcommand(qw422016, "!unhost", `Stops host mode. This may no longer work due to Twitch authentication changes.`, "mods")
-	qw422016.N().S(`
             </dl>
         </section>
 
