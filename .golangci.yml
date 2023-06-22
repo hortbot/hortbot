@@ -60,6 +60,8 @@ linters:
     - interfacebloat # nope
     - musttag # issues errors in the stdlib
     - revive # redundant
+    - depguard
+    - tagalign
 
     # - staticcheck
 
