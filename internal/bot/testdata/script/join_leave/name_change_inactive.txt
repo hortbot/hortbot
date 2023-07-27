@@ -1,7 +1,8 @@
-insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+bot_config {"WebAddr": "http://localhost:5000"}
+insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": false}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
-send hortbot #hortbot [HB] BarFoo, hortbot will now rejoin your channel with your new username.
+send hortbot #hortbot [HB] BarFoo, hortbot will join your channel soon with prefix '+'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+command add test It works!

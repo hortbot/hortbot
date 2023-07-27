@@ -140,8 +140,10 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 
 	channel.Active = true
 	channel.BotName = botName
+	channel.Name = name
+	channel.DisplayName = displayName
 
-	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active, models.ChannelColumns.BotName)); err != nil {
+	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active, models.ChannelColumns.BotName, models.ChannelColumns.Name, models.ChannelColumns.DisplayName)); err != nil {
 		return err
 	}
 
