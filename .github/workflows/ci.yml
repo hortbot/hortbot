@@ -9,7 +9,7 @@ on:
       - master
 
 env:
-  GOLANGCI_LINT_VERSION: "v1.53.3"
+  GOLANGCI_LINT_VERSION: "v1.54.0"
 
 jobs:
   test:
