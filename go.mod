@@ -27,25 +27,25 @@ require (
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/jakebailey/irc v0.0.0-20230110182717-9144941a856a
-	github.com/jarcoal/httpmock v1.3.0
+	github.com/jarcoal/httpmock v1.3.1
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/jmoiron/sqlx v1.3.5
 	github.com/joho/godotenv v1.5.1
 	github.com/leononame/clock v0.1.6
-	github.com/maxbrunsfeld/counterfeiter/v6 v6.6.2
-	github.com/mroth/weightedrand/v2 v2.0.2
+	github.com/maxbrunsfeld/counterfeiter/v6 v6.7.0
+	github.com/mroth/weightedrand/v2 v2.1.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.16.0
-	github.com/redis/go-redis/v9 v9.0.5
+	github.com/redis/go-redis/v9 v9.1.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.5.0
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/valyala/quicktemplate v1.7.0
 	github.com/vektah/gqlparser/v2 v2.5.8
 	github.com/volatiletech/null/v8 v8.1.2
-	github.com/volatiletech/sqlboiler/v4 v4.14.2
+	github.com/volatiletech/sqlboiler/v4 v4.15.0
 	github.com/volatiletech/strmangle v0.0.5
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
