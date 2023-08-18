@@ -256,7 +256,7 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 
 	err := s.Channel.Quotes(
 		qm.Select(models.QuoteColumns.Num),
-		qm.Where("quote ILIKE ?", pattern),
+		models.QuoteWhere.Quote.ILIKE(pattern),
 	).Bind(ctx, s.Tx, &quotes)
 	if err != nil {
 		return err
