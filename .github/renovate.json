@@ -11,6 +11,16 @@
             ],
             "groupName": "github actions",
             "groupSlug": "github-actions"
+        },
+        {
+            "managers": [
+                "docker-compose"
+            ],
+            "updateTypes": [
+                "pin",
+                "digest"
+            ],
+            "enabled": false
         }
     ]
 }
