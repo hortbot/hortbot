@@ -16,10 +16,6 @@
             "managers": [
                 "docker-compose"
             ],
-            "updateTypes": [
-                "pin",
-                "digest"
-            ],
             "enabled": false
         }
     ]
