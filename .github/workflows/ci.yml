@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -30,7 +30,7 @@ jobs:
           docker pull nsqio/nsq
 
       - name: Run tests
-        uses: nick-fields/retry@v2
+        uses: nick-fields/retry@943e742917ac94714d2f408a0e8320f2d1fcafcd # v2
         with:
           timeout_minutes: 15
           max_attempts: 5
@@ -41,7 +41,7 @@ jobs:
         run: go test -run=- -bench . -benchtime=1x ./...
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3
         with:
           file: ./coverage.txt
           name: ${{ matrix.os }}
@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -72,7 +72,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -96,7 +96,7 @@ jobs:
     concurrency: ko
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
         with:
           fetch-depth: 0
 
@@ -111,7 +111,7 @@ jobs:
         with:
           cache-name: ko
 
-      - uses: imjasonh/setup-ko@v0.6
+      - uses: imjasonh/setup-ko@ace48d793556083a76f1e3e6068850c1f4a369aa # v0.6
 
       # TODO: Let ko push directly to registry? (Need to find a way to omit the hash-based tags.)
       - name: Build image
@@ -129,7 +129,7 @@ jobs:
 
       - name: Docker login
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: docker/login-action@v2
+        uses: docker/login-action@465a07811f14bebb1938fbed4728c6a1ff8901fc # v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
