@@ -45,6 +45,7 @@ require (
 	github.com/valyala/quicktemplate v1.7.0
 	github.com/vektah/gqlparser/v2 v2.5.8
 	github.com/volatiletech/null/v8 v8.1.2
+	github.com/volatiletech/null/v9 v9.0.0
 	github.com/volatiletech/sqlboiler/v4 v4.15.0
 	github.com/volatiletech/strmangle v0.0.5
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
