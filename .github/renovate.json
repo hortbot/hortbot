@@ -17,6 +17,12 @@
                 "docker-compose"
             ],
             "enabled": false
+        },
+        {
+            "managers": [
+                "gomod"
+            ],
+            "enabled": false
         }
     ]
 }
