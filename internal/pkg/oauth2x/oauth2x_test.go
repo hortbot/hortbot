@@ -41,6 +41,14 @@ var (
 	errTest = errors.New("testing error")
 )
 
+func cloneToken(t *oauth2.Token) *oauth2.Token {
+	if t == nil {
+		return nil
+	}
+	t2 := *t
+	return &t2
+}
+
 func TestOverrideEmpty(t *testing.T) {
 	t.Parallel()
 
@@ -84,7 +92,7 @@ func TestOverrideEmpty(t *testing.T) {
 			t.Parallel()
 
 			fake := &oauth2xfakes.FakeTokenSource{}
-			fake.TokenReturns(test.tok, test.err)
+			fake.TokenReturns(cloneToken(test.tok), test.err)
 
 			ts := oauth2x.NewTypeOverride(fake, test.override)
 
@@ -109,9 +117,9 @@ func TestOnNew(t *testing.T) {
 	fake.TokenCalls(func() (*oauth2.Token, error) {
 		if first {
 			first = false
-			return tokExpired, nil
+			return cloneToken(tokExpired), nil
 		}
-		return tokGood, nil
+		return cloneToken(tokGood), nil
 	})
 
 	var results []*oauth2.Token
@@ -151,7 +159,7 @@ func TestOnNewError(t *testing.T) {
 			first = false
 			return nil, errTest
 		}
-		return tokGood, nil
+		return cloneToken(tokGood), nil
 	})
 
 	var results []*oauth2.Token
@@ -197,9 +205,9 @@ func TestOnNewWithInit(t *testing.T) {
 	fake.TokenCalls(func() (*oauth2.Token, error) {
 		if first {
 			first = false
-			return tokExpired2, nil
+			return cloneToken(tokExpired2), nil
 		}
-		return tokGood, nil
+		return cloneToken(tokGood), nil
 	})
 
 	var results []*oauth2.Token
@@ -237,9 +245,9 @@ func TestOnNewNil(t *testing.T) {
 	fake.TokenCalls(func() (*oauth2.Token, error) {
 		if first {
 			first = false
-			return tokExpired, nil
+			return cloneToken(tokExpired), nil
 		}
-		return tokGood, nil
+		return cloneToken(tokGood), nil
 	})
 
 	ts := oauth2x.NewOnNew(fake, nil)
