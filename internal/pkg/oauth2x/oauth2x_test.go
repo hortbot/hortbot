@@ -22,6 +22,8 @@ var (
 		Expiry:       time.Now().Add(time.Hour),
 	}
 
+	tokeGoodOAuth = tokenWithType(tokGood, "OAuth")
+
 	tokExpired = &oauth2.Token{
 		AccessToken:  "access-token-expired",
 		TokenType:    "TYPE",
@@ -63,7 +65,7 @@ func TestOverrideEmpty(t *testing.T) {
 			override:    "OAuth",
 			tok:         tokGood,
 			err:         nil,
-			expectedTok: tokenWithType(tokGood, "OAuth"),
+			expectedTok: tokeGoodOAuth,
 			expectedErr: nil,
 		},
 		{
