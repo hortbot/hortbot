@@ -21,8 +21,8 @@ func NewNoMigrate() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 
 func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr error) {
 	container := &docker.Container{
-		Repository: "zikaeroh/postgres-initialized",
-		Tag:        "latest",
+		Repository: "ghcr.io/zikaeroh/postgres-initialized",
+		Tag:        "12",
 		Cmd:        []string{"-F"},
 		Ready: func(container *docker.Container) error {
 			connStr = "postgres://postgres:mysecretpassword@" + container.GetHostPort("5432/tcp") + "/postgres?sslmode=disable"
