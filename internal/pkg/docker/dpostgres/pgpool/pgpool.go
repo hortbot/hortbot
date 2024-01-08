@@ -37,13 +37,16 @@ func (p *Pool) init(t testing.TB) {
 			var err error
 			p.db, p.connStr, p.cleanup, err = dpostgres.New()
 			if err != nil {
-				return err
+				return fmt.Errorf("creating database: %w", err)
 			}
 
 			// Create another database as a template because keeping the main connection
 			// to the original database open prevents its use as a template.
 			_, err = p.db.Exec(`CREATE DATABASE temp_template WITH TEMPLATE postgres`)
-			return err
+			if err != nil {
+				return fmt.Errorf("creating template database: %w", err)
+			}
+			return nil
 		}()
 	})
 
