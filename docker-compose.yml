@@ -1,7 +1,6 @@
 version: "3.7"
 
-x-golang-image:
-  &golang-image
+x-golang-image: &golang-image
   image: golang:1.21
 
 services:
@@ -113,7 +112,7 @@ services:
       - POSTGRES_PASSWORD=mysecretpassword
 
   redis:
-    image: redis
+    image: redis:7
 
   nsq:
     image: nsqio/nsq

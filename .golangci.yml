@@ -62,6 +62,7 @@ linters:
     - revive # redundant
     - depguard
     - tagalign
+    - inamedparam
 
     # - staticcheck
 

@@ -10,15 +10,11 @@
             "request": "launch",
             "mode": "test",
             "program": "${workspaceFolder}/internal/bot/script_test.go",
-            "args": [
-                "-test.run",
-                "^TestScripts$",
-                "-script_test=${file}"
-            ],
+            "args": ["-test.run", "^TestScripts$", "-script_test=${file}"],
             "env": {
                 "LOG_LEVEL": "debug"
             },
-            "showLog": true,
+            "showLog": true
         }
     ]
 }

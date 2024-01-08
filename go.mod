@@ -7,8 +7,8 @@ toolchain go1.21.0
 require (
 	contrib.go.opencensus.io/exporter/jaeger v0.2.1
 	contrib.go.opencensus.io/integrations/ocsql v0.1.7
-	github.com/99designs/gqlgen v0.17.41
-	github.com/alicebob/miniredis/v2 v2.31.0
+	github.com/99designs/gqlgen v0.17.42
+	github.com/alicebob/miniredis/v2 v2.31.1
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.6.1
 	github.com/dghubble/trie v0.0.0-20230729160116-2bc358f28a8b
@@ -38,7 +38,7 @@ require (
 	github.com/ory/dockertest/v3 v3.10.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/prometheus/client_golang v1.18.0
-	github.com/redis/go-redis/v9 v9.3.1
+	github.com/redis/go-redis/v9 v9.4.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.5.0
 	github.com/tomwright/queryparam/v4 v4.1.0
@@ -46,7 +46,7 @@ require (
 	github.com/vektah/gqlparser/v2 v2.5.10
 	github.com/volatiletech/null/v8 v8.1.2
 	github.com/volatiletech/sqlboiler/v4 v4.15.0
-	github.com/volatiletech/strmangle v0.0.5
+	github.com/volatiletech/strmangle v0.0.6
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/zikaeroh/ctxjoin v0.0.0-20200613235025-e3d47af29310
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
@@ -55,7 +55,7 @@ require (
 	go.uber.org/zap v1.26.0
 	golang.org/x/net v0.19.0
 	golang.org/x/oauth2 v0.15.0
-	golang.org/x/sync v0.5.0
+	golang.org/x/sync v0.6.0
 	golang.org/x/tools v0.16.1
 	gotest.tools/v3 v3.5.1
 	mvdan.cc/xurls/v2 v2.5.0
