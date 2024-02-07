@@ -54,6 +54,7 @@ var fullTokenUpdate = boil.Whitelist(
 	models.TwitchTokenColumns.TokenType,
 	models.TwitchTokenColumns.RefreshToken,
 	models.TwitchTokenColumns.Expiry,
+	models.TwitchTokenColumns.Scopes,
 )
 
 // FullUpsertToken inserts the token into the database, or inserts all columns as written in the model.
