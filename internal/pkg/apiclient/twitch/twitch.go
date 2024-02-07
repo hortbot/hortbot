@@ -40,6 +40,7 @@ var userScopes = []string{
 	"channel:read:subscriptions", // Helix: get broadcaster subscriptions
 	"channel:read:editors",       // Helix: get channel editors
 	"channel:manage:broadcast",   // Helix: modify channel information
+	"channel:bot",                // Chat: This token is a bot in the user's channel.
 }
 
 // BotScopes are scopes which should be granted for the bot's account.
@@ -55,6 +56,9 @@ var BotScopes = []string{
 	"moderator:read:chat_settings",   // Helix: Read chat settings, like emote only, slow mode
 	"moderator:manage:chat_settings", // Helix: Change chat settings, like emote only, slow mode
 	"user:manage:chat_color",         // Helix: Change bot user color
+	"user:bot",                       // Chat: This is a bot
+	"user:read:chat",                 // Chat: Read chat via EventSub
+	"user:write:chat",                // Helix: Send chat messages
 }
 
 var twitchEndpoint = oauth2.Endpoint{
