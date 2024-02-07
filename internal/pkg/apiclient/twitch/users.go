@@ -28,7 +28,7 @@ func (u User) DispName() string {
 //
 // GET https://api.twitch.tv/helix/users
 func (t *Twitch) GetUserByToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error) {
-	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
 	user, err = getUser(ctx, cli, "", 0)
 	return user, newToken, err
 }

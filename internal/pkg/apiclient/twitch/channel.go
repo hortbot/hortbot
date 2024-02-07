@@ -26,7 +26,7 @@ func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *
 			url += "&after=" + cursor
 		}
 
-		cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
+		cli := t.clientForUser(ctx, userToken, setToken(&newToken))
 
 		resp, err := cli.Get(ctx, url)
 		if err != nil {
@@ -94,7 +94,7 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
 	url := helixRoot + "/channels"
 
 	body := &struct {

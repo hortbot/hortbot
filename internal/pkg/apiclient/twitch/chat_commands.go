@@ -28,7 +28,7 @@ func (t *Twitch) Ban(ctx context.Context, broadcasterID int64, modID int64, modT
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, modToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	url := helixRoot +
 		"/moderation/bans?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
 		"&moderator_id=" + strconv.FormatInt(modID, 10)
@@ -60,7 +60,7 @@ func (t *Twitch) Unban(ctx context.Context, broadcasterID int64, modID int64, mo
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, modToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	url := helixRoot +
 		"/moderation/bans?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
 		"&moderator_id=" + strconv.FormatInt(modID, 10) +
@@ -108,7 +108,7 @@ func (t *Twitch) UpdateChatSettings(ctx context.Context, broadcasterID int64, mo
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, modToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	url := helixRoot +
 		"/chat/settings?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
 		"&moderator_id=" + strconv.FormatInt(modID, 10)
@@ -134,7 +134,7 @@ func (t *Twitch) SetChatColor(ctx context.Context, userID int64, userToken *oaut
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, userToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
 	url := helixRoot + "/chat/color?user_id=" + strconv.FormatInt(userID, 10) + "&color=" + url.QueryEscape(color)
 
 	resp, err := cli.Put(ctx, url, nil)
@@ -158,7 +158,7 @@ func (t *Twitch) DeleteChatMessage(ctx context.Context, broadcasterID int64, mod
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, modToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	url := helixRoot +
 		"/moderation/chat?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
 		"&moderator_id=" + strconv.FormatInt(modID, 10) +
@@ -181,7 +181,7 @@ func (t *Twitch) ClearChat(ctx context.Context, broadcasterID int64, modID int64
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, modToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	url := helixRoot +
 		"/moderation/chat?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
 		"&moderator_id=" + strconv.FormatInt(modID, 10)
@@ -207,7 +207,7 @@ func (t *Twitch) Announce(ctx context.Context, broadcasterID int64, modID int64,
 		return nil, ErrNotAuthorized
 	}
 
-	cli := t.helixClientForUser(ctx, modToken, setToken(&newToken))
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	url := helixRoot +
 		"/chat/announcements?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
 		"&moderator_id=" + strconv.FormatInt(modID, 10)

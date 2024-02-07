@@ -157,7 +157,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 	t.helixCli = &httpClient{
 		cli:     t.cli,
 		ts:      oauth2x.NewTypeOverride(clientTS, "Bearer"),
-		headers: t.headers(false),
+		headers: t.headers(),
 	}
 
 	return t
@@ -192,36 +192,22 @@ func (t *Twitch) Exchange(ctx context.Context, code string) (*oauth2.Token, erro
 	return t.forUser.Exchange(ctx, code)
 }
 
-func (t *Twitch) headers(v5 bool) http.Header {
+func (t *Twitch) headers() http.Header {
 	headers := make(http.Header)
 	headers.Set("Client-ID", t.clientID)
 	headers.Set("Content-Type", "application/json")
-
-	if v5 {
-		headers.Set("Accept", "application/vnd.twitchtv.v5+json")
-	}
-
 	return headers
 }
 
-func (t *Twitch) clientForUser(ctx context.Context, v5 bool, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
+func (t *Twitch) clientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
 	ctx = t.cli.AsOAuth2Client(ctx)
 	ts := t.forUser.TokenSource(ctx, tok)
 	ts = oauth2x.NewOnNewWithToken(ts, onNewToken, tok)
-
-	if v5 {
-		ts = oauth2x.NewTypeOverride(ts, "OAuth")
-	} else {
-		ts = oauth2x.NewTypeOverride(ts, "Bearer")
-	}
+	ts = oauth2x.NewTypeOverride(ts, "Bearer")
 
 	return &httpClient{
 		cli:     t.cli,
 		ts:      ts,
-		headers: t.headers(v5),
+		headers: t.headers(),
 	}
-}
-
-func (t *Twitch) helixClientForUser(ctx context.Context, tok *oauth2.Token, onNewToken func(*oauth2.Token, error)) *httpClient {
-	return t.clientForUser(ctx, false, tok, onNewToken)
 }
