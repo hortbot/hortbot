@@ -19,20 +19,22 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/volatiletech/sqlboiler/v4/queries/qmhelper"
+	"github.com/volatiletech/sqlboiler/v4/types"
 	"github.com/volatiletech/strmangle"
 )
 
 // TwitchToken is an object representing the database table.
 type TwitchToken struct {
-	ID           int64       `boil:"id" json:"id" toml:"id" yaml:"id"`
-	CreatedAt    time.Time   `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	UpdatedAt    time.Time   `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
-	TwitchID     int64       `boil:"twitch_id" json:"twitch_id" toml:"twitch_id" yaml:"twitch_id"`
-	BotName      null.String `boil:"bot_name" json:"bot_name,omitempty" toml:"bot_name" yaml:"bot_name,omitempty"`
-	AccessToken  string      `boil:"access_token" json:"access_token" toml:"access_token" yaml:"access_token"`
-	TokenType    string      `boil:"token_type" json:"token_type" toml:"token_type" yaml:"token_type"`
-	RefreshToken string      `boil:"refresh_token" json:"refresh_token" toml:"refresh_token" yaml:"refresh_token"`
-	Expiry       time.Time   `boil:"expiry" json:"expiry" toml:"expiry" yaml:"expiry"`
+	ID           int64             `boil:"id" json:"id" toml:"id" yaml:"id"`
+	CreatedAt    time.Time         `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	UpdatedAt    time.Time         `boil:"updated_at" json:"updated_at" toml:"updated_at" yaml:"updated_at"`
+	TwitchID     int64             `boil:"twitch_id" json:"twitch_id" toml:"twitch_id" yaml:"twitch_id"`
+	BotName      null.String       `boil:"bot_name" json:"bot_name,omitempty" toml:"bot_name" yaml:"bot_name,omitempty"`
+	AccessToken  string            `boil:"access_token" json:"access_token" toml:"access_token" yaml:"access_token"`
+	TokenType    string            `boil:"token_type" json:"token_type" toml:"token_type" yaml:"token_type"`
+	RefreshToken string            `boil:"refresh_token" json:"refresh_token" toml:"refresh_token" yaml:"refresh_token"`
+	Expiry       time.Time         `boil:"expiry" json:"expiry" toml:"expiry" yaml:"expiry"`
+	Scopes       types.StringArray `boil:"scopes" json:"scopes,omitempty" toml:"scopes" yaml:"scopes,omitempty"`
 
 	R *twitchTokenR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L twitchTokenL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -48,6 +50,7 @@ var TwitchTokenColumns = struct {
 	TokenType    string
 	RefreshToken string
 	Expiry       string
+	Scopes       string
 }{
 	ID:           "id",
 	CreatedAt:    "created_at",
@@ -58,6 +61,7 @@ var TwitchTokenColumns = struct {
 	TokenType:    "token_type",
 	RefreshToken: "refresh_token",
 	Expiry:       "expiry",
+	Scopes:       "scopes",
 }
 
 var TwitchTokenTableColumns = struct {
@@ -70,6 +74,7 @@ var TwitchTokenTableColumns = struct {
 	TokenType    string
 	RefreshToken string
 	Expiry       string
+	Scopes       string
 }{
 	ID:           "twitch_tokens.id",
 	CreatedAt:    "twitch_tokens.created_at",
@@ -80,9 +85,15 @@ var TwitchTokenTableColumns = struct {
 	TokenType:    "twitch_tokens.token_type",
 	RefreshToken: "twitch_tokens.refresh_token",
 	Expiry:       "twitch_tokens.expiry",
+	Scopes:       "twitch_tokens.scopes",
 }
 
 // Generated where
+
+func (w whereHelpertypes_StringArray) IsNull() qm.QueryMod { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpertypes_StringArray) IsNotNull() qm.QueryMod {
+	return qmhelper.WhereIsNotNull(w.field)
+}
 
 var TwitchTokenWhere = struct {
 	ID           whereHelperint64
@@ -94,6 +105,7 @@ var TwitchTokenWhere = struct {
 	TokenType    whereHelperstring
 	RefreshToken whereHelperstring
 	Expiry       whereHelpertime_Time
+	Scopes       whereHelpertypes_StringArray
 }{
 	ID:           whereHelperint64{field: "\"twitch_tokens\".\"id\""},
 	CreatedAt:    whereHelpertime_Time{field: "\"twitch_tokens\".\"created_at\""},
@@ -104,6 +116,7 @@ var TwitchTokenWhere = struct {
 	TokenType:    whereHelperstring{field: "\"twitch_tokens\".\"token_type\""},
 	RefreshToken: whereHelperstring{field: "\"twitch_tokens\".\"refresh_token\""},
 	Expiry:       whereHelpertime_Time{field: "\"twitch_tokens\".\"expiry\""},
+	Scopes:       whereHelpertypes_StringArray{field: "\"twitch_tokens\".\"scopes\""},
 }
 
 // TwitchTokenRels is where relationship names are stored.
@@ -123,9 +136,9 @@ func (*twitchTokenR) NewStruct() *twitchTokenR {
 type twitchTokenL struct{}
 
 var (
-	twitchTokenAllColumns            = []string{"id", "created_at", "updated_at", "twitch_id", "bot_name", "access_token", "token_type", "refresh_token", "expiry"}
+	twitchTokenAllColumns            = []string{"id", "created_at", "updated_at", "twitch_id", "bot_name", "access_token", "token_type", "refresh_token", "expiry", "scopes"}
 	twitchTokenColumnsWithoutDefault = []string{"twitch_id", "access_token", "token_type", "refresh_token", "expiry"}
-	twitchTokenColumnsWithDefault    = []string{"id", "created_at", "updated_at", "bot_name"}
+	twitchTokenColumnsWithDefault    = []string{"id", "created_at", "updated_at", "bot_name", "scopes"}
 	twitchTokenPrimaryKeyColumns     = []string{"id"}
 	twitchTokenGeneratedColumns      = []string{}
 )

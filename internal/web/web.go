@@ -313,6 +313,8 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		tt.BotName = null.StringFrom(user.Name)
 	}
 
+	tt.Scopes = strings.Fields(r.FormValue("scope"))
+
 	if err := modelsx.FullUpsertToken(ctx, a.DB, tt); err != nil {
 		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
