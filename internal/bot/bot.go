@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
@@ -70,6 +71,8 @@ type Config struct {
 	BetaFeatures []string
 
 	GlobalIgnore []string
+
+	ValidateTokens bool
 }
 
 // Bot is an IRC bot. It should only be used once.
@@ -81,6 +84,9 @@ type Bot struct {
 	db   *sql.DB
 	deps *sharedDeps
 	rep  *repeat.Repeater
+
+	validateTokensTicker clock.Ticker
+	validateTokensManual chan struct{}
 
 	testingHelper *testingHelper
 
@@ -167,10 +173,17 @@ func New(config *Config) *Bot {
 	}
 
 	b := &Bot{
-		db:       config.DB,
-		deps:     deps,
-		noDedupe: config.NoDedupe,
-		rep:      repeat.New(deps.Clock),
+		db:                   config.DB,
+		deps:                 deps,
+		noDedupe:             config.NoDedupe,
+		rep:                  repeat.New(deps.Clock),
+		validateTokensManual: make(chan struct{}, 1),
+	}
+
+	if config.ValidateTokens {
+		b.validateTokensTicker = deps.Clock.NewTicker(time.Hour)
+	} else {
+		b.validateTokensTicker = noopTicker{}
 	}
 
 	deps.AddRepeat = b.addRepeat
@@ -179,6 +192,7 @@ func New(config *Config) *Bot {
 	deps.RemoveScheduled = b.removeScheduled
 	deps.ReloadRepeats = b.loadRepeats
 	deps.CountRepeats = b.rep.Count
+	deps.TriggerValidateTokens = b.triggerValidateTokensNow
 
 	if isTesting {
 		b.testingHelper = &testingHelper{}
@@ -186,6 +200,14 @@ func New(config *Config) *Bot {
 
 	return b
 }
+
+var _ clock.Ticker = noopTicker{}
+
+type noopTicker struct{}
+
+func (noopTicker) Chan() <-chan time.Time { return nil }
+
+func (noopTicker) Stop() {}
 
 // Init initializes the bot, starting any underlying tasks. It should only be
 // called once.
@@ -195,6 +217,7 @@ func (b *Bot) Init(ctx context.Context) error {
 
 	b.g = errgroupx.FromContext(ctx)
 	b.g.Go(b.rep.Run)
+	b.g.Go(b.runValidateTokens)
 
 	if err := b.loadRepeats(ctx); err != nil {
 		return err
@@ -210,5 +233,6 @@ func (b *Bot) Stop() {
 		if g := b.g; g != nil {
 			g.Stop()
 		}
+		b.validateTokensTicker.Stop()
 	})
 }

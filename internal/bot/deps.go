@@ -49,6 +49,8 @@ type sharedDeps struct {
 	ReloadRepeats   func(ctx context.Context) error
 	CountRepeats    func(ctx context.Context) (repeats, schedules int, err error)
 
+	TriggerValidateTokens func()
+
 	BulletMap map[string]string
 
 	DefaultCooldown int

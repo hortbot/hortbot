@@ -31,11 +31,12 @@ func init() {
 		"changebot":     {fn: cmdAdminChangeBot, minLevel: levelAdmin},
 		"globalignored": {fn: cmdAdminGlobalIgnored, minLevel: levelAdmin},
 
-		"reloadrepeats": {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
-		"deletechannel": {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
-		"sleep":         {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
-		"syncjoined":    {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
-		"imp":           {fn: cmdAdminImp, minLevel: levelSuperAdmin},
+		"reloadrepeats":  {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
+		"deletechannel":  {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
+		"sleep":          {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
+		"syncjoined":     {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
+		"imp":            {fn: cmdAdminImp, minLevel: levelSuperAdmin},
+		"validatetokens": {fn: cmdAdminValidateTwitchTokens, minLevel: levelSuperAdmin},
 	})
 }
 
@@ -351,4 +352,9 @@ func cmdAdminGlobalIgnored(ctx context.Context, s *session, _ string, args strin
 		ignored = append(ignored, k)
 	}
 	return s.Replyf(ctx, "Global ignored: %s", strings.Join(ignored, ", "))
+}
+
+func cmdAdminValidateTwitchTokens(ctx context.Context, s *session, _ string, args string) error {
+	s.Deps.TriggerValidateTokens()
+	return s.Reply(ctx, "Triggered twitch token validation.")
 }

@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
@@ -76,6 +77,7 @@ type API interface {
 	// Auth
 	AuthCodeURL(state string, extraScopes ...string) string
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
+	Validate(ctx context.Context, tok *oauth2.Token) (*Validation, *oauth2.Token, error)
 
 	// Helix
 	GetUserByToken(ctx context.Context, userToken *oauth2.Token) (user *User, newToken *oauth2.Token, err error)
@@ -210,4 +212,36 @@ func (t *Twitch) clientForUser(ctx context.Context, tok *oauth2.Token, onNewToke
 		ts:      ts,
 		headers: t.headers(),
 	}
+}
+
+type Validation struct {
+	UserID IDStr    `json:"user_id"`
+	Name   string   `json:"name"`
+	Scopes []string `json:"scopes"`
+}
+
+func (t *Twitch) Validate(ctx context.Context, tok *oauth2.Token) (*Validation, *oauth2.Token, error) {
+	var newToken *oauth2.Token
+
+	cli := t.clientForUser(ctx, tok, func(tok *oauth2.Token, err error) {
+		newToken = tok
+	})
+
+	resp, err := cli.Get(ctx, "https://id.twitch.tv/oauth2/validate")
+	if err != nil {
+		return nil, newToken, err
+	}
+	defer resp.Body.Close()
+
+	if err := statusToError(resp.StatusCode); err != nil {
+		return nil, newToken, err
+	}
+
+	var validation Validation
+
+	if err := jsonx.DecodeSingle(resp.Body, &validation); err != nil {
+		return nil, nil, ErrServerError
+	}
+
+	return &validation, newToken, nil
 }

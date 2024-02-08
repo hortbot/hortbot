@@ -133,6 +133,34 @@ var (
 		Name:      "scheduled_error_total",
 		Help:      "Total number of scheduled command errors.",
 	})
+
+	metricValidatedTokens = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "validated_tokens_total",
+		Help:      "Total number of validated tokens.",
+	})
+
+	metricDeletedTokens = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "updated_deleted_total",
+		Help:      "Total number of deleted tokens.",
+	})
+
+	metricUpdatedTokens = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "updated_tokens_total",
+		Help:      "Total number of updated tokens.",
+	})
+
+	metricTokenValidationErrors = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "token_validation_errors_total",
+		Help:      "Total number of token validation errors.",
+	})
 )
 
 func setMetricRepeatGauges(ctx context.Context, rep *repeat.Repeater) {

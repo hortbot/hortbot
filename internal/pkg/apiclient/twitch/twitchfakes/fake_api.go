@@ -330,6 +330,22 @@ type FakeAPI struct {
 		result1 *oauth2.Token
 		result2 error
 	}
+	ValidateStub        func(context.Context, *oauth2.Token) (*twitch.Validation, *oauth2.Token, error)
+	validateMutex       sync.RWMutex
+	validateArgsForCall []struct {
+		arg1 context.Context
+		arg2 *oauth2.Token
+	}
+	validateReturns struct {
+		result1 *twitch.Validation
+		result2 *oauth2.Token
+		result3 error
+	}
+	validateReturnsOnCall map[int]struct {
+		result1 *twitch.Validation
+		result2 *oauth2.Token
+		result3 error
+	}
 	invocations      map[string][][]interface{}
 	invocationsMutex sync.RWMutex
 }
@@ -1726,6 +1742,74 @@ func (fake *FakeAPI) UpdateChatSettingsReturnsOnCall(i int, result1 *oauth2.Toke
 	}{result1, result2}
 }
 
+func (fake *FakeAPI) Validate(arg1 context.Context, arg2 *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
+	fake.validateMutex.Lock()
+	ret, specificReturn := fake.validateReturnsOnCall[len(fake.validateArgsForCall)]
+	fake.validateArgsForCall = append(fake.validateArgsForCall, struct {
+		arg1 context.Context
+		arg2 *oauth2.Token
+	}{arg1, arg2})
+	stub := fake.ValidateStub
+	fakeReturns := fake.validateReturns
+	fake.recordInvocation("Validate", []interface{}{arg1, arg2})
+	fake.validateMutex.Unlock()
+	if stub != nil {
+		return stub(arg1, arg2)
+	}
+	if specificReturn {
+		return ret.result1, ret.result2, ret.result3
+	}
+	return fakeReturns.result1, fakeReturns.result2, fakeReturns.result3
+}
+
+func (fake *FakeAPI) ValidateCallCount() int {
+	fake.validateMutex.RLock()
+	defer fake.validateMutex.RUnlock()
+	return len(fake.validateArgsForCall)
+}
+
+func (fake *FakeAPI) ValidateCalls(stub func(context.Context, *oauth2.Token) (*twitch.Validation, *oauth2.Token, error)) {
+	fake.validateMutex.Lock()
+	defer fake.validateMutex.Unlock()
+	fake.ValidateStub = stub
+}
+
+func (fake *FakeAPI) ValidateArgsForCall(i int) (context.Context, *oauth2.Token) {
+	fake.validateMutex.RLock()
+	defer fake.validateMutex.RUnlock()
+	argsForCall := fake.validateArgsForCall[i]
+	return argsForCall.arg1, argsForCall.arg2
+}
+
+func (fake *FakeAPI) ValidateReturns(result1 *twitch.Validation, result2 *oauth2.Token, result3 error) {
+	fake.validateMutex.Lock()
+	defer fake.validateMutex.Unlock()
+	fake.ValidateStub = nil
+	fake.validateReturns = struct {
+		result1 *twitch.Validation
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
+}
+
+func (fake *FakeAPI) ValidateReturnsOnCall(i int, result1 *twitch.Validation, result2 *oauth2.Token, result3 error) {
+	fake.validateMutex.Lock()
+	defer fake.validateMutex.Unlock()
+	fake.ValidateStub = nil
+	if fake.validateReturnsOnCall == nil {
+		fake.validateReturnsOnCall = make(map[int]struct {
+			result1 *twitch.Validation
+			result2 *oauth2.Token
+			result3 error
+		})
+	}
+	fake.validateReturnsOnCall[i] = struct {
+		result1 *twitch.Validation
+		result2 *oauth2.Token
+		result3 error
+	}{result1, result2, result3}
+}
+
 func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
@@ -1771,6 +1855,8 @@ func (fake *FakeAPI) Invocations() map[string][][]interface{} {
 	defer fake.unbanMutex.RUnlock()
 	fake.updateChatSettingsMutex.RLock()
 	defer fake.updateChatSettingsMutex.RUnlock()
+	fake.validateMutex.RLock()
+	defer fake.validateMutex.RUnlock()
 	copiedInvocations := map[string][][]interface{}{}
 	for key, value := range fake.invocations {
 		copiedInvocations[key] = value
