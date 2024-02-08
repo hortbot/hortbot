@@ -12,8 +12,13 @@ import (
 	"go.uber.org/zap"
 )
 
-func (b *Bot) validateTokens(ctx context.Context) error {
-	ctxlog.Debug(ctx, "validating twitch tokens")
+func (b *Bot) validateTokens(ctx context.Context, log bool) error {
+	logFn := ctxlog.Debug
+	if log {
+		logFn = ctxlog.Info
+	}
+
+	logFn(ctx, "validating twitch tokens")
 	start := b.deps.Clock.Now()
 
 	tokens, err := models.TwitchTokens().All(ctx, b.db)
@@ -71,7 +76,7 @@ func (b *Bot) validateTokens(ctx context.Context) error {
 		}
 	}
 
-	ctxlog.Debug(ctx, "validated twitch tokens",
+	logFn(ctx, "validated twitch tokens",
 		zap.Duration("duration", b.deps.Clock.Since(start)),
 		zap.Int("total", len(tokens)),
 		zap.Int("validated", validated),
@@ -83,14 +88,16 @@ func (b *Bot) validateTokens(ctx context.Context) error {
 
 func (b *Bot) runValidateTokens(ctx context.Context) error {
 	for {
+		log := false
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-b.validateTokensTicker.Chan():
 		case <-b.validateTokensManual:
+			log = true
 		}
 
-		if err := b.validateTokens(ctx); err != nil {
+		if err := b.validateTokens(ctx, log); err != nil {
 			ctxlog.Error(ctx, "failed to validate tokens", zap.Error(err))
 		}
 	}
