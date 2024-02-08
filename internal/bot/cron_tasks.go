@@ -33,7 +33,7 @@ func (b *Bot) validateTokens(ctx context.Context) error {
 			token := modelsx.ModelToToken(tt)
 			validation, newToken, err := b.deps.Twitch.Validate(ctx, token)
 			if err != nil {
-				if err == twitch.ErrNotAuthorized || err == twitch.ErrNotFound {
+				if err == twitch.ErrDeadToken || err == twitch.ErrNotAuthorized || err == twitch.ErrNotFound {
 					ctxlog.Info(ctx, "deleting dead token", zap.Error(err))
 					if err := tt.Delete(ctx, b.db); err != nil {
 						return err
