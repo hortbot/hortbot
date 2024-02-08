@@ -2,7 +2,7 @@ package twitch
 
 import (
 	json "encoding/json"
-	"fmt"
+	"errors"
 	"testing"
 
 	"golang.org/x/oauth2"
@@ -33,7 +33,7 @@ func TestSetToken(t *testing.T) {
 	var newToken *oauth2.Token
 	tok := &oauth2.Token{}
 
-	setToken(&newToken)(tok, fmt.Errorf("something bad"))
+	setToken(&newToken)(tok, errors.New("something bad"))
 	assert.Assert(t, newToken == nil)
 
 	setToken(&newToken)(tok, nil)

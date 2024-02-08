@@ -879,7 +879,7 @@ func mustLoadLocation(name string) *time.Location {
 
 func parseUntilTimestamp(timestamp string) (time.Time, error) {
 	if timestamp == "" {
-		return time.Time{}, fmt.Errorf("empty timestamp")
+		return time.Time{}, errors.New("empty timestamp")
 	}
 
 	if x, err := strconv.ParseInt(timestamp, 10, 64); err == nil {

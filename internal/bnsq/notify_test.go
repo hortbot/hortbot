@@ -57,6 +57,7 @@ func TestNotify(t *testing.T) {
 
 	id := xid.New()
 	ctx, span := trace.StartSpan(ctx, "TwitchToken")
+	defer span.End()
 
 	assert.NilError(t, publisher.NotifyChannelUpdates(correlation.WithID(ctx, id), botName))
 	assert.NilError(t, publisher.NotifyChannelUpdates(ctx, "wrong"))

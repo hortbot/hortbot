@@ -1,7 +1,7 @@
 package apiclient_test
 
 import (
-	"fmt"
+	"errors"
 	"strconv"
 	"testing"
 
@@ -23,7 +23,7 @@ func TestError(t *testing.T) {
 			isNotFound: true,
 		},
 		{
-			err:        &apiclient.Error{StatusCode: 404, Err: fmt.Errorf("we couldn't find your info")},
+			err:        &apiclient.Error{StatusCode: 404, Err: errors.New("we couldn't find your info")},
 			m:          "client: we couldn't find your info",
 			isNotFound: true,
 		},
@@ -38,7 +38,7 @@ func TestError(t *testing.T) {
 			isNotPermitted: true,
 		},
 		{
-			err: &apiclient.Error{API: "service", StatusCode: 451, Err: fmt.Errorf("censored")},
+			err: &apiclient.Error{API: "service", StatusCode: 451, Err: errors.New("censored")},
 			m:   "service: censored",
 		},
 		{

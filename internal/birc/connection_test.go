@@ -3,13 +3,13 @@ package birc_test
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"net"
 	"strings"
 	"testing"
 	"time"
 
+	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/birc/fakeirc"
@@ -448,7 +448,7 @@ func TestConnectionCloseAfterFirst(t *testing.T) {
 				select {
 				case _, ok := <-sm:
 					if !ok {
-						stopChan <- fmt.Errorf("channel closed without messages")
+						stopChan <- errors.New("channel closed without messages")
 						return
 					}
 

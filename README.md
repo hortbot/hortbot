@@ -31,7 +31,7 @@ An IRC bot for Twitch.
 
 To build:
 
--   Go 1.21+
+-   Go 1.22+
 
 For development:
 
