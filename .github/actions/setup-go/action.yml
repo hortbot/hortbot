@@ -13,14 +13,14 @@ runs:
   using: composite
   steps:
     - name: Install Go
-      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
       with:
         go-version: ${{ inputs.go-version }}
         check-latest: true
 
     - name: Install Go
       # if: ${{ inputs.go-version }} != 'tip'
-      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5
+      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
       with:
         go-version: ${{ inputs.go-version }}
         check-latest: true
@@ -37,13 +37,13 @@ runs:
 
     # https://github.com/mvdan/github-actions-golang
     - name: Cache Go modules
-      uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4
+      uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
       with:
         path: ~/go/pkg/mod
         key: ${{ runner.os }}-go-${{ inputs.cache-name }}-modules-${{ inputs.go-version }}-${{ hashFiles('**/go.sum') }}
 
     - name: Cache go-build
-      uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4
+      uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
       with:
         path: |
           ~/.cache/go-build
