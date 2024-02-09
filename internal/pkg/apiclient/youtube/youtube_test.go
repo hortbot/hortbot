@@ -42,7 +42,6 @@ func TestVideoTitle(t *testing.T) {
 	ctx := context.Background()
 
 	for _, u := range goodURLs {
-		u := u
 		t.Run(u, func(t *testing.T) {
 			mt := httpmockx.NewMockTransport(t)
 			mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, response))
@@ -63,7 +62,6 @@ func TestVideoTitle(t *testing.T) {
 	}
 
 	for _, u := range badURLs {
-		u := u
 		t.Run(u, func(t *testing.T) {
 			mt := httpmockx.NewMockTransport(t)
 			y := youtube.New(apiKey, youtube.HTTPClient(&http.Client{Transport: mt}))

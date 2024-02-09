@@ -41,7 +41,6 @@ func TestAccessLevelConversion(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.s, func(t *testing.T) {
 			t.Parallel()
 			l := newAccessLevel(test.s)
@@ -122,7 +121,6 @@ func TestAccessLevelCanAccess(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.user.String()+"-"+test.resource.String(), func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, test.user.CanAccess(test.resource), test.ok)

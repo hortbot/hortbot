@@ -97,7 +97,6 @@ func TestHostAndPath(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.pattern+" "+test.link, func(t *testing.T) {
 			u, err := urlx.ParseWithDefaultScheme(test.link, "https")
 			assert.NilError(t, err)
@@ -152,7 +151,6 @@ func TestIsBadPattern(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.pattern, func(t *testing.T) {
 			assert.Equal(t, linkmatch.IsBadPattern(test.pattern), test.want)
 		})

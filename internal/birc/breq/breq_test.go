@@ -37,8 +37,6 @@ func TestSend(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			test := test
-
 			t.Run(test.name, func(t *testing.T) {
 				defer leaktest.Check(t)()
 				done := make(chan struct{})
@@ -73,7 +71,6 @@ func TestSend(t *testing.T) {
 	}
 
 	for _, test := range cancelTests {
-		test := test
 		t.Run(test.name, func(t *testing.T) {
 			defer leaktest.Check(t)()
 			done := make(chan struct{})
@@ -190,8 +187,6 @@ func TestJoinPart(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			test := test
-
 			t.Run(test.name, func(t *testing.T) {
 				defer leaktest.Check(t)()
 				done := make(chan struct{})
@@ -226,7 +221,6 @@ func TestJoinPart(t *testing.T) {
 	}
 
 	for _, test := range cancelTests {
-		test := test
 		t.Run(test.name, func(t *testing.T) {
 			defer leaktest.Check(t)()
 			done := make(chan struct{})
@@ -293,8 +287,6 @@ func TestSyncJoined(t *testing.T) {
 		}
 
 		for _, test := range tests {
-			test := test
-
 			t.Run(test.name, func(t *testing.T) {
 				defer leaktest.Check(t)()
 				done := make(chan struct{})
@@ -332,7 +324,6 @@ func TestSyncJoined(t *testing.T) {
 	}
 
 	for _, test := range cancelTests {
-		test := test
 		t.Run(test.name, func(t *testing.T) {
 			defer leaktest.Check(t)()
 			done := make(chan struct{})

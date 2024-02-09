@@ -126,8 +126,6 @@ func TestClone(t *testing.T) {
 	}
 
 	for _, m := range tests {
-		m := m
-
 		name := "nil"
 		if m != nil {
 			name = m.String()

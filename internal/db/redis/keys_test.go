@@ -27,7 +27,6 @@ func TestBuildKey(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		test := test
 		t.Run(test.want, func(t *testing.T) {
 			got := buildKey(test.input...)
 			assert.Equal(t, test.want, got)

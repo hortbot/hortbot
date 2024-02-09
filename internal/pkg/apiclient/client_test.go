@@ -54,7 +54,6 @@ func TestError(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		test := test
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			assert.Equal(t, test.err.Error(), test.m)
 			assert.Equal(t, test.err.IsNotFound(), test.isNotFound)

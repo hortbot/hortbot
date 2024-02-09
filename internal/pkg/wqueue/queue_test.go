@@ -214,7 +214,6 @@ func testQueueStress(t *testing.T) { //nolint:thelper
 	wg.Add(N + N*M) // N putters, N*M subtasks.
 
 	for i := 0; i < N; i++ {
-		i := i
 		key := string(rune('a' + i))
 		g.Go(func(ctx context.Context) error {
 			defer wg.Done()
@@ -263,7 +262,6 @@ func TestQueueStressCancel(t *testing.T) {
 		key := string(rune('a' + i))
 		g.Go(func(ctx context.Context) error {
 			for j := 0; j < M; j++ {
-				j := j
 				if err := q.Put(ctx, key, func(attach wqueue.Attacher) {
 					if j == M/2 {
 						cancel()
