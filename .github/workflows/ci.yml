@@ -9,6 +9,7 @@ on:
       - master
 
 env:
+  # renovate: datasource=go depName=github.com/golangci/golangci-lint
   GOLANGCI_LINT_VERSION: "v1.56.0"
 
 jobs:
