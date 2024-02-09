@@ -127,7 +127,7 @@ jobs:
         run: |
           GOT_HB_VERSION=$(docker run ${{ steps.ko.outputs.image }} version)
           echo $GOT_HB_VERSION
-          [[ "$GOT_HB_VERSION" = "$HB_VERSION" ]]
+          [[ "$GOT_HB_VERSION" = "${{ steps.version.outputs.version }}" ]]
 
       - name: Docker login
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
