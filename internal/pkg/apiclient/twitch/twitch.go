@@ -12,7 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
-	"golang.org/x/oauth2/twitch"
+	"golang.org/x/oauth2/endpoints"
 )
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
@@ -63,8 +63,8 @@ var BotScopes = []string{
 }
 
 var twitchEndpoint = oauth2.Endpoint{
-	AuthURL:   twitch.Endpoint.AuthURL,
-	TokenURL:  twitch.Endpoint.TokenURL,
+	AuthURL:   endpoints.Twitch.AuthURL,
+	TokenURL:  endpoints.Twitch.TokenURL,
 	AuthStyle: oauth2.AuthStyleInParams,
 }
 
