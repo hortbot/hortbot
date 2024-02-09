@@ -17,6 +17,7 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
         check-latest: true
+        cache: false
 
     - name: Install Go
       # if: ${{ inputs.go-version }} != 'tip'
@@ -24,6 +25,7 @@ runs:
       with:
         go-version: ${{ inputs.go-version }}
         check-latest: true
+        cache: false
 
     # - name: Install Go tip
     #   if: ${{ inputs.go-version }} == 'tip'
