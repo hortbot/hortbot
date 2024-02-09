@@ -158,7 +158,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 
 	t.helixCli = &httpClient{
 		cli:     t.cli,
-		ts:      oauth2x.NewTypeOverride(clientTS, "Bearer"),
+		ts:      clientTS,
 		headers: t.headers(),
 	}
 
@@ -205,7 +205,6 @@ func (t *Twitch) clientForUser(ctx context.Context, tok *oauth2.Token, onNewToke
 	ctx = t.cli.AsOAuth2Client(ctx)
 	ts := t.forUser.TokenSource(ctx, tok)
 	ts = oauth2x.NewOnNewWithToken(ts, onNewToken, tok)
-	ts = oauth2x.NewTypeOverride(ts, "Bearer")
 
 	return &httpClient{
 		cli:     t.cli,

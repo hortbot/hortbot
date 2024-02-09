@@ -49,59 +49,6 @@ func cloneToken(t *oauth2.Token) *oauth2.Token {
 	return &t2
 }
 
-func TestOverrideEmpty(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name        string
-		override    string
-		tok         *oauth2.Token
-		err         error
-		expectedTok *oauth2.Token
-		expectedErr error
-	}{
-		{
-			name:        "Empty",
-			override:    "",
-			tok:         tokGood,
-			err:         nil,
-			expectedTok: tokGood,
-			expectedErr: nil,
-		},
-		{
-			name:        "Modified",
-			override:    "OAuth",
-			tok:         tokGood,
-			err:         nil,
-			expectedTok: tokeGoodOAuth,
-			expectedErr: nil,
-		},
-		{
-			name:        "Error",
-			override:    "OAuth",
-			tok:         nil,
-			err:         errTest,
-			expectedTok: nil,
-			expectedErr: errTest,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			t.Parallel()
-
-			fake := &oauth2xfakes.FakeTokenSource{}
-			fake.TokenReturns(cloneToken(test.tok), test.err)
-
-			ts := oauth2x.NewTypeOverride(fake, test.override)
-
-			tok, err := ts.Token()
-			assert.Equal(t, err, test.expectedErr)
-			assert.DeepEqual(t, tok, test.expectedTok, ignoreUnexportedInToken)
-		})
-	}
-}
-
 func tokenWithType(t *oauth2.Token, typ string) *oauth2.Token {
 	t2 := *t
 	t2.TokenType = typ

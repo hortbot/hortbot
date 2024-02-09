@@ -12,36 +12,6 @@ import (
 
 //counterfeiter:generate golang.org/x/oauth2.TokenSource
 
-type overrideSource struct {
-	ts  oauth2.TokenSource
-	typ string
-}
-
-// NewTypeOverride creates a token source which overrides the tokens returned
-// by ts with a different auth type. If typ is empty, then the original
-// token source is returned.
-func NewTypeOverride(ts oauth2.TokenSource, typ string) oauth2.TokenSource {
-	if typ == "" {
-		return ts
-	}
-
-	return &overrideSource{
-		ts:  ts,
-		typ: typ,
-	}
-}
-
-func (ts *overrideSource) Token() (*oauth2.Token, error) {
-	tok, err := ts.ts.Token()
-	if tok == nil || err != nil {
-		return tok, err
-	}
-
-	tok2 := *tok
-	tok2.TokenType = ts.typ
-	return &tok2, nil
-}
-
 type onNewSource struct {
 	ts    oauth2.TokenSource
 	onNew func(*oauth2.Token, error)
