@@ -45,7 +45,6 @@ jobs:
         uses: codecov/codecov-action@e0b68c6749509c5f83f984dd99a76a1c1a231044 # v4.0.1
         with:
           file: ./coverage.txt
-          name: ${{ matrix.os }}
 
   style:
     name: Style
@@ -102,10 +101,11 @@ jobs:
           fetch-depth: 0
 
       - name: Get version
+        id: version
         run: |
           HB_VERSION="r$(git rev-list --count HEAD).$(git rev-parse --short HEAD)"
           echo Version $HB_VERSION
-          echo HB_VERSION=$HB_VERSION >> $GITHUB_ENV
+          echo "version=$HB_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -118,6 +118,7 @@ jobs:
       - name: Build image
         id: ko
         run: |
+          export HB_VERSION="${{ steps.version.outputs.version }}"
           KO_IMAGE=$(ko publish --local --preserve-import-paths .)
           echo $KO_IMAGE
           echo "image=$KO_IMAGE" >> $GITHUB_OUTPUT
@@ -140,6 +141,6 @@ jobs:
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
         run: |
           docker tag ${{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:latest
-          docker tag ${{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker tag ${{ steps.ko.outputs.image }} ghcr.io/hortbot/hortbot:${{ steps.version.outputs.version }}
           docker push ghcr.io/hortbot/hortbot:latest
-          docker push ghcr.io/hortbot/hortbot:${{ env.HB_VERSION }}
+          docker push ghcr.io/hortbot/hortbot:${{ steps.version.outputs.version }}
