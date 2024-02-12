@@ -52,8 +52,10 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 				return nil
 			}
 
+			botName := tt.BotName
 			if newToken != nil {
 				tt = modelsx.TokenToModel(tt.TwitchID, newToken)
+				tt.BotName = botName
 			}
 			tt.Scopes = validation.Scopes
 
