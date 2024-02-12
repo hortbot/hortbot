@@ -237,12 +237,12 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 		return
 	}
 
-	var extraScopes []string
+	scopes := twitch.UserScopes
 	if bot {
-		extraScopes = twitch.BotScopes
+		scopes = twitch.BotScopes
 	}
 
-	url := a.Twitch.AuthCodeURL(state, extraScopes...)
+	url := a.Twitch.AuthCodeURL(state, scopes)
 	http.Redirect(w, r, url, http.StatusSeeOther)
 }
 

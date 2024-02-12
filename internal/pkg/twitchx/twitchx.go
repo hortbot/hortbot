@@ -28,11 +28,10 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 	}
 
 	tok := modelsx.ModelToToken(token)
-	_, newTok, err := tw.GetUserByToken(ctx, tok)
+	validation, newTok, err := tw.Validate(ctx, tok)
 	if err != nil {
 		return nil, err
 	}
-
 	if newTok == nil {
 		return tok, nil
 	}
@@ -41,7 +40,7 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 	token.TokenType = newTok.TokenType
 	token.RefreshToken = newTok.RefreshToken
 	token.Expiry = newTok.Expiry
-	token.Scopes = twitch.BotScopes
+	token.Scopes = validation.Scopes
 
 	if err := modelsx.FullUpsertToken(ctx, db, token); err != nil {
 		return nil, err

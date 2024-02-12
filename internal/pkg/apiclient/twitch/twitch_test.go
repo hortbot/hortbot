@@ -75,8 +75,8 @@ func TestAuthExchange(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
 
 	assert.Equal(t,
-		tw.AuthCodeURL(state),
-		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=%s&state=%s", clientID, url.QueryEscape(redirectURL), twitch.ExpectedUserScopes, state),
+		tw.AuthCodeURL(state, nil),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&state=%s", clientID, url.QueryEscape(redirectURL), state),
 	)
 
 	code := ft.codeForUser(1234)
@@ -86,7 +86,7 @@ func TestAuthExchange(t *testing.T) {
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
 	assert.Equal(t,
-		tw.AuthCodeURL(state, "user_follows_edit"),
-		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=%s+user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), twitch.ExpectedUserScopes, state),
+		tw.AuthCodeURL(state, []string{"user_follows_edit"}),
+		fmt.Sprintf("https://id.twitch.tv/oauth2/authorize?access_type=offline&client_id=%s&force_verify=true&redirect_uri=%s&response_type=code&scope=user_follows_edit&state=%s", clientID, url.QueryEscape(redirectURL), state),
 	)
 }

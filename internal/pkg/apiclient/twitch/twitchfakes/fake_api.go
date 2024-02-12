@@ -28,7 +28,7 @@ type FakeAPI struct {
 		result1 *oauth2.Token
 		result2 error
 	}
-	AuthCodeURLStub        func(string, ...string) string
+	AuthCodeURLStub        func(string, []string) string
 	authCodeURLMutex       sync.RWMutex
 	authCodeURLArgsForCall []struct {
 		arg1 string
@@ -419,19 +419,24 @@ func (fake *FakeAPI) AnnounceReturnsOnCall(i int, result1 *oauth2.Token, result2
 	}{result1, result2}
 }
 
-func (fake *FakeAPI) AuthCodeURL(arg1 string, arg2 ...string) string {
+func (fake *FakeAPI) AuthCodeURL(arg1 string, arg2 []string) string {
+	var arg2Copy []string
+	if arg2 != nil {
+		arg2Copy = make([]string, len(arg2))
+		copy(arg2Copy, arg2)
+	}
 	fake.authCodeURLMutex.Lock()
 	ret, specificReturn := fake.authCodeURLReturnsOnCall[len(fake.authCodeURLArgsForCall)]
 	fake.authCodeURLArgsForCall = append(fake.authCodeURLArgsForCall, struct {
 		arg1 string
 		arg2 []string
-	}{arg1, arg2})
+	}{arg1, arg2Copy})
 	stub := fake.AuthCodeURLStub
 	fakeReturns := fake.authCodeURLReturns
-	fake.recordInvocation("AuthCodeURL", []interface{}{arg1, arg2})
+	fake.recordInvocation("AuthCodeURL", []interface{}{arg1, arg2Copy})
 	fake.authCodeURLMutex.Unlock()
 	if stub != nil {
-		return stub(arg1, arg2...)
+		return stub(arg1, arg2)
 	}
 	if specificReturn {
 		return ret.result1
@@ -445,7 +450,7 @@ func (fake *FakeAPI) AuthCodeURLCallCount() int {
 	return len(fake.authCodeURLArgsForCall)
 }
 
-func (fake *FakeAPI) AuthCodeURLCalls(stub func(string, ...string) string) {
+func (fake *FakeAPI) AuthCodeURLCalls(stub func(string, []string) string) {
 	fake.authCodeURLMutex.Lock()
 	defer fake.authCodeURLMutex.Unlock()
 	fake.AuthCodeURLStub = stub

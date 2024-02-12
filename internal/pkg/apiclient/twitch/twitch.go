@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"slices"
 
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
@@ -34,8 +35,8 @@ var (
 	ErrDeadToken     = errors.New("twitch: oauth token is dead")
 )
 
-// userScopes should be granted for all users.
-var userScopes = []string{
+// UserScopes should be granted for end users.
+var UserScopes = []string{
 	"moderation:read",            // Helix: get moderator list
 	"user:read:broadcast",        // Helix: read channel info, markers
 	"channel:read:subscriptions", // Helix: get broadcaster subscriptions
@@ -45,7 +46,7 @@ var userScopes = []string{
 }
 
 // BotScopes are scopes which should be granted for the bot's account.
-var BotScopes = []string{
+var BotScopes = slices.Concat(UserScopes, []string{
 	"channel:moderate",               // Chat: run moderator commands (TODO: defunct in Feb 2023)
 	"chat:read",                      // Chat: read messages
 	"chat:edit",                      // Chat: send messages
@@ -60,7 +61,9 @@ var BotScopes = []string{
 	"user:bot",                       // Chat: This is a bot
 	"user:read:chat",                 // Chat: Read chat via EventSub
 	"user:write:chat",                // Helix: Send chat messages
-}
+	"user:read:moderated_channels",   // Helix: Get list of channels the user moderates
+	"user:manage:whispers",           // Helix: Manage whispers
+})
 
 var twitchEndpoint = oauth2.Endpoint{
 	AuthURL:   endpoints.Twitch.AuthURL,
@@ -75,7 +78,7 @@ const helixRoot = "https://api.twitch.tv/helix"
 // API covers the main API methods for Twitch.
 type API interface {
 	// Auth
-	AuthCodeURL(state string, extraScopes ...string) string
+	AuthCodeURL(state string, scopes []string) string
 	Exchange(ctx context.Context, code string) (*oauth2.Token, error)
 	Validate(ctx context.Context, tok *oauth2.Token) (*Validation, *oauth2.Token, error)
 
@@ -135,7 +138,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 			ClientSecret: clientSecret,
 			Endpoint:     twitchEndpoint,
 			RedirectURL:  redirectURL,
-			Scopes:       userScopes,
+			Scopes:       UserScopes,
 		},
 		cli: httpx.Client{
 			Name: "twitch",
@@ -180,10 +183,9 @@ func HTTPClient(cli *http.Client) Option {
 // mapped back through some other lookup.
 //
 // extraScopes can be specified to request more scopes than the defaults.
-func (t *Twitch) AuthCodeURL(state string, extraScopes ...string) string {
+func (t *Twitch) AuthCodeURL(state string, scopes []string) string {
 	c := *t.forUser
-	c.Scopes = append([]string(nil), c.Scopes...)
-	c.Scopes = append(c.Scopes, extraScopes...)
+	c.Scopes = scopes
 	return c.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("force_verify", "true"))
 }
 
