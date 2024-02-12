@@ -1,10 +1,12 @@
 package twitch
 
 import (
+	"context"
 	"encoding/json"
 	"net/http"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/oauth2"
 )
 
@@ -67,4 +69,62 @@ func (v *IDStr) UnmarshalJSON(data []byte) error {
 // AsInt64 returns the ID as an int64.
 func (v IDStr) AsInt64() int64 {
 	return int64(v)
+}
+
+func paginate[T any](ctx context.Context, cli *httpClient, url string, limit int) (items []T, err error) {
+	cursor := ""
+
+	doOne := func() error {
+		url := url
+		if cursor != "" {
+			url += "&after=" + cursor
+		}
+
+		resp, err := cli.Get(ctx, url)
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+
+		if err := statusToError(resp.StatusCode); err != nil {
+			return err
+		}
+
+		var v struct {
+			Data       []T `json:"data"`
+			Pagination struct {
+				Cursor string `json:"cursor"`
+			} `json:"pagination"`
+		}
+
+		if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
+			return ErrServerError
+		}
+
+		items = append(items, v.Data...)
+		cursor = v.Pagination.Cursor
+
+		return nil
+	}
+
+	prevLen := 0
+
+	for {
+		if err := doOne(); err != nil {
+			return nil, err
+		}
+
+		if cursor == "" {
+			break
+		}
+
+		// Sanity checks.
+		if len(items) == prevLen || len(items) >= limit {
+			break
+		}
+
+		prevLen = len(items)
+	}
+
+	return items, nil
 }

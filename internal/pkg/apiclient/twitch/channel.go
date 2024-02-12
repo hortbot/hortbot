@@ -18,63 +18,10 @@ type ChannelModerator struct {
 //
 // GET https://api.twitch.tv/helix/moderation/moderators
 func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error) {
-	cursor := ""
-
-	doOne := func() error {
-		url := helixRoot + "/moderation/moderators?broadcaster_id=" + strconv.FormatInt(id, 10)
-		if cursor != "" {
-			url += "&after=" + cursor
-		}
-
-		cli := t.clientForUser(ctx, userToken, setToken(&newToken))
-
-		resp, err := cli.Get(ctx, url)
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-
-		if err := statusToError(resp.StatusCode); err != nil {
-			return err
-		}
-
-		var v struct {
-			Mods       []*ChannelModerator `json:"data"`
-			Pagination struct {
-				Cursor string `json:"cursor"`
-			} `json:"pagination"`
-		}
-
-		if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
-			return ErrServerError
-		}
-
-		mods = append(mods, v.Mods...)
-		cursor = v.Pagination.Cursor
-
-		return nil
-	}
-
-	prevLen := 0
-
-	for {
-		if err := doOne(); err != nil {
-			return nil, newToken, err
-		}
-
-		if cursor == "" {
-			break
-		}
-
-		// Sanity checks.
-		if len(mods) == prevLen || len(mods) >= 500 {
-			break
-		}
-
-		prevLen = len(mods)
-	}
-
-	return mods, newToken, nil
+	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
+	url := helixRoot + "/moderation/moderators?broadcaster_id=" + strconv.FormatInt(id, 10)
+	mods, err = paginate[*ChannelModerator](ctx, cli, url, 500)
+	return mods, newToken, err
 }
 
 // ModifyChannel modifies a channel. Either or both of the title and game ID must be provided.
