@@ -19,14 +19,15 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 	botNameNull := null.StringFrom(botName)
 
 	token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(botNameNull)).One(ctx, db)
-	switch err {
-	case nil:
-	case sql.ErrNoRows:
-		return nil, nil //nolint:nilnil
-	default:
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil //nolint:nilnil
+		}
 		return nil, err
 	}
 
+	// Validate the token before trying to use it; this is only called for IRC,
+	// which will just fall over when given incorrect credentials.
 	tok := modelsx.ModelToToken(token)
 	validation, newTok, err := tw.Validate(ctx, tok)
 	if err != nil {
@@ -36,13 +37,8 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 		return tok, nil
 	}
 
-	token.AccessToken = newTok.AccessToken
-	token.TokenType = newTok.TokenType
-	token.RefreshToken = newTok.RefreshToken
-	token.Expiry = newTok.Expiry
-	token.Scopes = validation.Scopes
-
-	if err := modelsx.FullUpsertToken(ctx, db, token); err != nil {
+	newToken := modelsx.TokenToModel(newTok, token.TwitchID, botNameNull, validation.Scopes)
+	if err := modelsx.UpsertToken(ctx, db, newToken); err != nil {
 		return nil, err
 	}
 

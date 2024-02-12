@@ -336,8 +336,8 @@ func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.To
 
 	s.cache.tok.set(newToken, nil)
 
-	tt := modelsx.TokenToModel(s.Channel.TwitchID, newToken)
-	return modelsx.UpsertToken(ctx, s.Tx, tt)
+	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, s.Channel.TwitchID)
+	return modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt)
 }
 
 func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, error) {
@@ -368,8 +368,8 @@ func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *
 
 	s.cache.botTok.set(tokenAndUserID{tok: newToken, id: botID}, nil)
 
-	tt := modelsx.TokenToModel(botID, newToken)
-	return modelsx.UpsertToken(ctx, s.Tx, tt)
+	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, botID)
+	return modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt)
 }
 
 func (s *session) GetUserID(ctx context.Context, username string) (int64, error) {

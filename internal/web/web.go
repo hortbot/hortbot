@@ -308,14 +308,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		tok = newToken
 	}
 
-	tt := modelsx.TokenToModel(user.ID.AsInt64(), tok)
+	var botName null.String
 	if stateVal.Bot {
-		tt.BotName = null.StringFrom(user.Name)
+		botName = null.StringFrom(user.Name)
 	}
 
-	tt.Scopes = strings.Fields(r.FormValue("scope"))
+	tt := modelsx.TokenToModel(tok, user.ID.AsInt64(), botName, strings.Fields(r.FormValue("scope")))
 
-	if err := modelsx.FullUpsertToken(ctx, a.DB, tt); err != nil {
+	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
 		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return

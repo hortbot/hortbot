@@ -52,15 +52,14 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 				return nil
 			}
 
-			botName := tt.BotName
 			if newToken != nil {
-				tt = modelsx.TokenToModel(tt.TwitchID, newToken)
-				tt.BotName = botName
+				tt = modelsx.TokenToModel(newToken, tt.TwitchID, tt.BotName, validation.Scopes)
+			} else {
+				tt.Scopes = validation.Scopes
 			}
-			tt.Scopes = validation.Scopes
 
 			ctxlog.Debug(ctx, "token validated", zap.Bool("new_token", newToken != nil), zap.Strings("scopes", tt.Scopes))
-			if err := modelsx.FullUpsertToken(ctx, b.db, tt); err != nil {
+			if err := modelsx.UpsertToken(ctx, b.db, tt); err != nil {
 				return err
 			}
 

@@ -14,14 +14,22 @@ import (
 )
 
 // TokenToModel converts a Twitch user's oauth2 token to a model for insertion.
-func TokenToModel(id int64, tok *oauth2.Token) *models.TwitchToken {
+func TokenToModel(tok *oauth2.Token, id int64, botName null.String, scopes []string) *models.TwitchToken {
 	return &models.TwitchToken{
 		TwitchID:     id,
+		BotName:      botName,
 		AccessToken:  tok.AccessToken,
 		TokenType:    tok.TokenType,
 		RefreshToken: tok.RefreshToken,
 		Expiry:       tok.Expiry,
+		Scopes:       scopes,
 	}
+}
+
+// TokenToModelWithoutPreservedColumns converts a Twitch user's oauth2 token to a model for insertion,
+// without BotName and Scopes.
+func TokenToModelWithoutPreservedColumns(tok *oauth2.Token, id int64) *models.TwitchToken {
+	return TokenToModel(tok, id, null.String{}, nil)
 }
 
 // ModelToToken converts a token model to an oauth2 token for use in an HTTP client.
@@ -34,32 +42,21 @@ func ModelToToken(tt *models.TwitchToken) *oauth2.Token {
 	}
 }
 
-var tokenUpdate = boil.Whitelist(
-	models.TwitchTokenColumns.UpdatedAt,
-	models.TwitchTokenColumns.AccessToken,
-	models.TwitchTokenColumns.TokenType,
-	models.TwitchTokenColumns.RefreshToken,
-	models.TwitchTokenColumns.Expiry,
-)
+var tokenConflictColumns = []string{models.TwitchTokenColumns.TwitchID}
 
-// UpsertToken inserts a token into the database, or updates it if the token has been changed.
+// UpsertToken inserts the token into the database, or inserts all columns as written in the model.
 func UpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
-	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, tokenUpdate, boil.Infer())
+	return tt.Upsert(ctx, exec, true, tokenConflictColumns, boil.Infer(), boil.Infer())
 }
 
-var fullTokenUpdate = boil.Whitelist(
-	models.TwitchTokenColumns.UpdatedAt,
+var withoutPreservedColumns = boil.Blacklist(
 	models.TwitchTokenColumns.BotName,
-	models.TwitchTokenColumns.AccessToken,
-	models.TwitchTokenColumns.TokenType,
-	models.TwitchTokenColumns.RefreshToken,
-	models.TwitchTokenColumns.Expiry,
 	models.TwitchTokenColumns.Scopes,
 )
 
-// FullUpsertToken inserts the token into the database, or inserts all columns as written in the model.
-func FullUpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
-	return tt.Upsert(ctx, exec, true, []string{models.TwitchTokenColumns.TwitchID}, fullTokenUpdate, boil.Infer())
+// UpsertTokenWithoutPreservedColumns upserts a token without BotName and Scopes.
+func UpsertTokenWithoutPreservedColumns(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
+	return tt.Upsert(ctx, exec, true, tokenConflictColumns, withoutPreservedColumns, boil.Infer())
 }
 
 // DeleteCommandInfo deletes all references to a specific command from the database.
