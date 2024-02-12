@@ -377,6 +377,10 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 
 	f.assertEqual(gotID, id)
 
+	first, err := strconv.ParseInt(q.Get("first"), 10, 64)
+	f.assertNilError(err)
+	f.assertEqual(first, int64(100))
+
 	if _, ok := expectedErrors[int(id)]; ok {
 		return httpmock.NewStringResponse(int(id), ""), nil
 	}

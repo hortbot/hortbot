@@ -20,7 +20,7 @@ type ChannelModerator struct {
 func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error) {
 	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
 	url := helixRoot + "/moderation/moderators?broadcaster_id=" + strconv.FormatInt(id, 10)
-	mods, err = paginate[*ChannelModerator](ctx, cli, url, 500)
+	mods, err = paginate[*ChannelModerator](ctx, cli, url, 100, 500)
 	return mods, newToken, err
 }
 

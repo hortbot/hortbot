@@ -71,7 +71,8 @@ func (v IDStr) AsInt64() int64 {
 	return int64(v)
 }
 
-func paginate[T any](ctx context.Context, cli *httpClient, url string, limit int) (items []T, err error) {
+func paginate[T any](ctx context.Context, cli *httpClient, url string, perPage int, limit int) (items []T, err error) {
+	url += "&first=" + strconv.Itoa(perPage)
 	cursor := ""
 
 	doOne := func() error {
