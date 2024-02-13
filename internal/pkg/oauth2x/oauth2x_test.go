@@ -22,8 +22,6 @@ var (
 		Expiry:       time.Now().Add(time.Hour),
 	}
 
-	tokeGoodOAuth = tokenWithType(tokGood, "OAuth")
-
 	tokExpired = &oauth2.Token{
 		AccessToken:  "access-token-expired",
 		TokenType:    "TYPE",
@@ -46,12 +44,6 @@ func cloneToken(t *oauth2.Token) *oauth2.Token {
 		return nil
 	}
 	t2 := *t
-	return &t2
-}
-
-func tokenWithType(t *oauth2.Token, typ string) *oauth2.Token {
-	t2 := *t
-	t2.TokenType = typ
 	return &t2
 }
 
