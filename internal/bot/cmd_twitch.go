@@ -363,7 +363,6 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 			return s.Replyf(ctx, "No, %s isn't live.", name)
 		case twitch.ErrServerError:
 			return s.Reply(ctx, twitchServerErrorReply)
-		case nil:
 		default:
 			return err
 		}
