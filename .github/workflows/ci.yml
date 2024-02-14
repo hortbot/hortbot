@@ -35,7 +35,7 @@ jobs:
         with:
           timeout_minutes: 15
           max_attempts: 5
-          command: go test -race -covermode=atomic -coverprofile=coverage.txt ./...
+          command: GOEXPERIMENT=nocoverageredesign go test -race -covermode=atomic -coverprofile=coverage.txt ./...
           on_retry_command: go clean -testcache
 
       - name: Run 1x benchmarks
