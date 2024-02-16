@@ -47,10 +47,10 @@ func (st *scriptTester) twitchGetChannelByID(t testing.TB, _, args string, lineN
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetChannelByIDCalls(func(_ context.Context, id int64) (*twitch.Channel, error) {
+		st.twitch.GetChannelByIDFunc = func(_ context.Context, id int64) (*twitch.Channel, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 			return call.Channel, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -61,7 +61,7 @@ func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, li
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetUserByUsernameCalls(func(_ context.Context, username string) (*twitch.User, error) {
+		st.twitch.GetUserByUsernameFunc = func(_ context.Context, username string) (*twitch.User, error) {
 			u := v[username]
 			if u == nil {
 				return nil, twitch.ErrNotFound
@@ -69,7 +69,7 @@ func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, li
 
 			assert.Assert(t, u.Name != "")
 			return u, nil
-		})
+		}
 	})
 }
 
@@ -88,14 +88,14 @@ func (st *scriptTester) twitchModifyChannel(t testing.TB, directive, args string
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.ModifyChannelCalls(func(_ context.Context, broadcasterID int64, tok *oauth2.Token, status *string, gameID *int64) (*oauth2.Token, error) {
+		st.twitch.ModifyChannelFunc = func(_ context.Context, broadcasterID int64, tok *oauth2.Token, status *string, gameID *int64) (*oauth2.Token, error) {
 			assert.Equal(t, broadcasterID, call.ID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(tok, call.Tok, tokenCmp), "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(status, call.Status), "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(gameID, call.GameID), "line %d", lineNum)
 
 			return call.NewTok, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -109,12 +109,12 @@ func (st *scriptTester) twitchGetGameByName(t testing.TB, directive, args string
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetGameByNameCalls(func(_ context.Context, name string) (*twitch.Category, error) {
+		st.twitch.GetGameByNameFunc = func(_ context.Context, name string) (*twitch.Category, error) {
 			call, ok := calls[name]
 			assert.Assert(t, ok, `unknown name "%s": line %d`, name, lineNum)
 
 			return call.Category, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -128,12 +128,12 @@ func (st *scriptTester) twitchGetGameByID(t testing.TB, directive, args string, 
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetGameByIDCalls(func(_ context.Context, id int64) (*twitch.Category, error) {
+		st.twitch.GetGameByIDFunc = func(_ context.Context, id int64) (*twitch.Category, error) {
 			call, ok := calls[twitch.IDStr(id)]
 			assert.Assert(t, ok, `unknown id "%v": line %d`, id, lineNum)
 
 			return call.Category, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -147,12 +147,12 @@ func (st *scriptTester) twitchSearchCategories(t testing.TB, directive, args str
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.SearchCategoriesCalls(func(_ context.Context, query string) ([]*twitch.Category, error) {
+		st.twitch.SearchCategoriesFunc = func(_ context.Context, query string) ([]*twitch.Category, error) {
 			call, ok := calls[query]
 			assert.Assert(t, ok, `unknown query "%s": line %d`, query, lineNum)
 
 			return call.Categories, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -168,11 +168,11 @@ func (st *scriptTester) twitchGetStreamByUserID(t testing.TB, _, args string, li
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetStreamByUserIDCalls(func(_ context.Context, id int64) (*twitch.Stream, error) {
+		st.twitch.GetStreamByUserIDFunc = func(_ context.Context, id int64) (*twitch.Stream, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
 			return call.Stream, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 func (st *scriptTester) twitchGetStreamByUsername(t testing.TB, _, args string, lineNum int) {
@@ -187,11 +187,11 @@ func (st *scriptTester) twitchGetStreamByUsername(t testing.TB, _, args string, 
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetStreamByUsernameCalls(func(_ context.Context, username string) (*twitch.Stream, error) {
+		st.twitch.GetStreamByUsernameFunc = func(_ context.Context, username string) (*twitch.Stream, error) {
 			assert.Equal(t, username, call.Username, "line %d", lineNum)
 
 			return call.Stream, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -207,11 +207,11 @@ func (st *scriptTester) twitchGetGameLinks(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.GetGameLinksCalls(func(_ context.Context, id int64) ([]twitch.GameLink, error) {
+		st.twitch.GetGameLinksFunc = func(_ context.Context, id int64) ([]twitch.GameLink, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
 			return call.Links, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -230,7 +230,7 @@ func (st *scriptTester) twitchBan(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.BanCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, req *twitch.BanRequest) (newToken *oauth2.Token, err error) {
+		st.twitch.BanFunc = func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, req *twitch.BanRequest) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
@@ -238,7 +238,7 @@ func (st *scriptTester) twitchBan(t testing.TB, _, args string, lineNum int) {
 			assert.Assert(t, cmp.DeepEqual(req, call.Req), "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -257,7 +257,7 @@ func (st *scriptTester) twitchUnban(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.UnbanCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, userID int64) (newToken *oauth2.Token, err error) {
+		st.twitch.UnbanFunc = func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, userID int64) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
@@ -265,7 +265,7 @@ func (st *scriptTester) twitchUnban(t testing.TB, _, args string, lineNum int) {
 			assert.Equal(t, userID, call.UserID, "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -284,7 +284,7 @@ func (st *scriptTester) twitchUpdateChatSettings(t testing.TB, _, args string, l
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.UpdateChatSettingsCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (newToken *oauth2.Token, err error) {
+		st.twitch.UpdateChatSettingsFunc = func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
@@ -292,7 +292,7 @@ func (st *scriptTester) twitchUpdateChatSettings(t testing.TB, _, args string, l
 			assert.Assert(t, cmp.DeepEqual(patch, call.Patch), "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -310,13 +310,13 @@ func (st *scriptTester) twitchSetChatColor(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.SetChatColorCalls(func(_ context.Context, userID int64, userToken *oauth2.Token, color string) (newToken *oauth2.Token, err error) {
+		st.twitch.SetChatColorFunc = func(_ context.Context, userID int64, userToken *oauth2.Token, color string) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, userID, call.UserID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(userToken, call.Tok, tokenCmp), "line %d", lineNum)
 			assert.Equal(t, color, call.Color, "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -335,7 +335,7 @@ func (st *scriptTester) twitchDeleteChatMessage(t testing.TB, _, args string, li
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.DeleteChatMessageCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (newToken *oauth2.Token, err error) {
+		st.twitch.DeleteChatMessageFunc = func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
@@ -343,7 +343,7 @@ func (st *scriptTester) twitchDeleteChatMessage(t testing.TB, _, args string, li
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -361,14 +361,14 @@ func (st *scriptTester) twitchClearChat(t testing.TB, _, args string, lineNum in
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.ClearChatCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (newToken *oauth2.Token, err error) {
+		st.twitch.ClearChatFunc = func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -388,7 +388,7 @@ func (st *scriptTester) twitchAnnounce(t testing.TB, _, args string, lineNum int
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
-		st.twitch.AnnounceCalls(func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error) {
+		st.twitch.AnnounceFunc = func(_ context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error) {
 			assert.Equal(t, broadcasterID, call.BroadcasterID, "line %d", lineNum)
 			assert.Equal(t, modID, call.ModID, "line %d", lineNum)
 			assert.Assert(t, cmp.DeepEqual(modToken, call.Tok, tokenCmp), "line %d", lineNum)
@@ -397,6 +397,6 @@ func (st *scriptTester) twitchAnnounce(t testing.TB, _, args string, lineNum int
 			assert.Equal(t, color, call.Color, "line %d", lineNum)
 
 			return call.NewToken, twitchErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }

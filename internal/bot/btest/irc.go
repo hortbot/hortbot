@@ -66,13 +66,14 @@ func (st *scriptTester) send(t testing.TB, _, args string, lineNum int) {
 	assert.Assert(t, len(sent) == 3, "line %d", lineNum)
 
 	st.addAction(func(context.Context) {
-		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
-		_, origin, target, message := st.sender.SendMessageArgsForCall(callNum)
+		calls := st.sender.SendMessageCalls()
+		assert.Assert(t, len(calls) > callNum, "SendMessage not called: line %d", lineNum)
+		call := calls[callNum]
 
 		ok := true
-		ok = assert.Check(t, cmp.Equal(origin, sent[0]), "line %d", lineNum) && ok
-		ok = assert.Check(t, cmp.Equal(target, sent[1]), "line %d", lineNum) && ok
-		ok = assert.Check(t, cmp.Equal(message, sent[2]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(call.Origin, sent[0]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(call.Target, sent[1]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(call.Message, sent[2]), "line %d", lineNum) && ok
 		if !ok {
 			t.FailNow()
 		}
@@ -92,13 +93,14 @@ func (st *scriptTester) sendMatch(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err)
 
 	st.addAction(func(context.Context) {
-		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
-		_, origin, target, message := st.sender.SendMessageArgsForCall(callNum)
+		calls := st.sender.SendMessageCalls()
+		assert.Assert(t, len(calls) > callNum, "SendMessage not called: line %d", lineNum)
+		call := calls[callNum]
 
 		ok := true
-		ok = assert.Check(t, cmp.Equal(origin, sent[0]), "line %d", lineNum) && ok
-		ok = assert.Check(t, cmp.Equal(target, sent[1]), "line %d", lineNum) && ok
-		ok = assert.Check(t, pattern.MatchString(message), "pattern=`%s`, message=`%s`: line %d", pattern, message, lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(call.Origin, sent[0]), "line %d", lineNum) && ok
+		ok = assert.Check(t, cmp.Equal(call.Target, sent[1]), "line %d", lineNum) && ok
+		ok = assert.Check(t, pattern.MatchString(call.Message), "pattern=`%s`, message=`%s`: line %d", pattern, call.Message, lineNum) && ok
 		if !ok {
 			t.FailNow()
 		}
@@ -109,11 +111,12 @@ func (st *scriptTester) sendMatch(t testing.TB, _, args string, lineNum int) {
 
 func (st *scriptTester) noSend(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(context.Context) {
-		sentAfter := st.sender.SendMessageCallCount()
+		calls := st.sender.SendMessageCalls()
+		sentAfter := len(calls)
 
 		if st.sentBefore != sentAfter {
-			_, origin, target, message := st.sender.SendMessageArgsForCall(sentAfter - 1)
-			t.Errorf("sent message: origin=%s, target=%s, message=%s: line %d", origin, target, message, lineNum)
+			call := calls[sentAfter-1]
+			t.Errorf("sent message: origin=%s, target=%s, message=%s: line %d", call.Origin, call.Target, call.Message, lineNum)
 			t.FailNow()
 		}
 	})
@@ -126,7 +129,7 @@ func (st *scriptTester) sendAny(t testing.TB, _, _ string, lineNum int) {
 	st.counts["send"]++
 
 	st.addAction(func(context.Context) {
-		assert.Assert(t, st.sender.SendMessageCallCount() > callNum, "SendMessage not called: line %d", lineNum)
+		assert.Assert(t, len(st.sender.SendMessageCalls()) > callNum, "SendMessage not called: line %d", lineNum)
 	})
 
 	st.needNoSend = false
@@ -137,9 +140,10 @@ func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, l
 	st.counts[countNotifyChannelUpdates]++
 
 	st.addAction(func(context.Context) {
-		assert.Assert(t, st.notifier.NotifyChannelUpdatesCallCount() > callNum, "NotifyChannelUpdates not called: line %d", lineNum)
-		_, botName := st.notifier.NotifyChannelUpdatesArgsForCall(callNum)
-		assert.Equal(t, botName, expected, "line %d", lineNum)
+		calls := st.notifier.NotifyChannelUpdatesCalls()
+		assert.Assert(t, len(calls) > callNum, "NotifyChannelUpdates not called: line %d", lineNum)
+		call := calls[callNum]
+		assert.Equal(t, call.BotName, expected, "line %d", lineNum)
 	})
 
 	st.needNoNotifyChannelUpdates = false
@@ -147,11 +151,12 @@ func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, l
 
 func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(context.Context) {
-		notifyAfter := st.notifier.NotifyChannelUpdatesCallCount()
+		calls := st.notifier.NotifyChannelUpdatesCalls()
+		notifyAfter := len(calls)
 
 		if st.notifyChannelUpdatesBefore != notifyAfter {
-			_, botName := st.notifier.NotifyChannelUpdatesArgsForCall(notifyAfter - 1)
-			t.Errorf("notified channel updates for %s: line %d", botName, lineNum)
+			call := calls[notifyAfter-1]
+			t.Errorf("notified channel updates for %s: line %d", call.BotName, lineNum)
 			t.FailNow()
 		}
 	})

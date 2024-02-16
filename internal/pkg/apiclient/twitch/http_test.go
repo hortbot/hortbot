@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xfakes"
+	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xmocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
@@ -31,8 +31,8 @@ func TestHTTPClient(t *testing.T) {
 		testErr := errors.New("testing error")
 
 		c := &httpClient{
-			ts: &oauth2xfakes.FakeTokenSource{
-				TokenStub: func() (*oauth2.Token, error) {
+			ts: &oauth2xmocks.TokenSourceMock{
+				TokenFunc: func() (*oauth2.Token, error) {
 					return nil, testErr
 				},
 			},
@@ -65,8 +65,8 @@ func TestHTTPClient(t *testing.T) {
 		defer cancel()
 
 		c := &httpClient{
-			ts: &oauth2xfakes.FakeTokenSource{
-				TokenStub: func() (*oauth2.Token, error) {
+			ts: &oauth2xmocks.TokenSourceMock{
+				TokenFunc: func() (*oauth2.Token, error) {
 					return &oauth2.Token{}, nil
 				},
 			},
@@ -84,8 +84,8 @@ func TestHTTPClient(t *testing.T) {
 		defer cancel()
 
 		c := &httpClient{
-			ts: &oauth2xfakes.FakeTokenSource{
-				TokenStub: func() (*oauth2.Token, error) {
+			ts: &oauth2xmocks.TokenSourceMock{
+				TokenFunc: func() (*oauth2.Token, error) {
 					return &oauth2.Token{}, nil
 				},
 			},

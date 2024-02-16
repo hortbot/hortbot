@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
-	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xfakes"
+	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xmocks"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
@@ -51,14 +51,15 @@ func TestOnNew(t *testing.T) {
 	t.Parallel()
 
 	first := true
-	fake := &oauth2xfakes.FakeTokenSource{}
-	fake.TokenCalls(func() (*oauth2.Token, error) {
-		if first {
-			first = false
-			return cloneToken(tokExpired), nil
-		}
-		return cloneToken(tokGood), nil
-	})
+	fake := &oauth2xmocks.TokenSourceMock{
+		TokenFunc: func() (*oauth2.Token, error) {
+			if first {
+				first = false
+				return cloneToken(tokExpired), nil
+			}
+			return cloneToken(tokGood), nil
+		},
+	}
 
 	var results []*oauth2.Token
 
@@ -84,21 +85,22 @@ func TestOnNew(t *testing.T) {
 		tokGood,
 	}, ignoreUnexportedInToken)
 
-	assert.Equal(t, fake.TokenCallCount(), 2)
+	assert.Equal(t, len(fake.TokenCalls()), 2)
 }
 
 func TestOnNewError(t *testing.T) {
 	t.Parallel()
 
 	first := true
-	fake := &oauth2xfakes.FakeTokenSource{}
-	fake.TokenCalls(func() (*oauth2.Token, error) {
-		if first {
-			first = false
-			return nil, errTest
-		}
-		return cloneToken(tokGood), nil
-	})
+	fake := &oauth2xmocks.TokenSourceMock{
+		TokenFunc: func() (*oauth2.Token, error) {
+			if first {
+				first = false
+				return nil, errTest
+			}
+			return cloneToken(tokGood), nil
+		},
+	}
 
 	var results []*oauth2.Token
 
@@ -132,21 +134,22 @@ func TestOnNewError(t *testing.T) {
 		tokGood,
 	}, ignoreUnexportedInToken)
 
-	assert.Equal(t, fake.TokenCallCount(), 2)
+	assert.Equal(t, len(fake.TokenCalls()), 2)
 }
 
 func TestOnNewWithInit(t *testing.T) {
 	t.Parallel()
 
 	first := true
-	fake := &oauth2xfakes.FakeTokenSource{}
-	fake.TokenCalls(func() (*oauth2.Token, error) {
-		if first {
-			first = false
-			return cloneToken(tokExpired2), nil
-		}
-		return cloneToken(tokGood), nil
-	})
+	fake := &oauth2xmocks.TokenSourceMock{
+		TokenFunc: func() (*oauth2.Token, error) {
+			if first {
+				first = false
+				return cloneToken(tokExpired2), nil
+			}
+			return cloneToken(tokGood), nil
+		},
+	}
 
 	var results []*oauth2.Token
 
@@ -172,21 +175,22 @@ func TestOnNewWithInit(t *testing.T) {
 		tokGood,
 	}, ignoreUnexportedInToken)
 
-	assert.Equal(t, fake.TokenCallCount(), 2)
+	assert.Equal(t, len(fake.TokenCalls()), 2)
 }
 
 func TestOnNewNil(t *testing.T) {
 	t.Parallel()
 
 	first := true
-	fake := &oauth2xfakes.FakeTokenSource{}
-	fake.TokenCalls(func() (*oauth2.Token, error) {
-		if first {
-			first = false
-			return cloneToken(tokExpired), nil
-		}
-		return cloneToken(tokGood), nil
-	})
+	fake := &oauth2xmocks.TokenSourceMock{
+		TokenFunc: func() (*oauth2.Token, error) {
+			if first {
+				first = false
+				return cloneToken(tokExpired), nil
+			}
+			return cloneToken(tokGood), nil
+		},
+	}
 
 	ts := oauth2x.NewOnNew(fake, nil)
 
@@ -202,7 +206,7 @@ func TestOnNewNil(t *testing.T) {
 	assert.NilError(t, err)
 	assert.DeepEqual(t, tok, tokGood, ignoreUnexportedInToken)
 
-	assert.Equal(t, fake.TokenCallCount(), 2)
+	assert.Equal(t, len(fake.TokenCalls()), 2)
 }
 
 func TestEquals(t *testing.T) {

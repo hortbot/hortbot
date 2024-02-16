@@ -8,9 +8,9 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate go run github.com/matryer/moq -fmt goimports -out oauth2xmocks/mocks.go -pkg oauth2xmocks . TokenSource
 
-//counterfeiter:generate golang.org/x/oauth2.TokenSource
+type TokenSource = oauth2.TokenSource
 
 type onNewSource struct {
 	ts    oauth2.TokenSource

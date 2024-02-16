@@ -16,18 +16,18 @@ import (
 
 	"github.com/alicebob/miniredis/v2"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/bot/botfakes"
+	"github.com/hortbot/hortbot/internal/bot/botmocks"
 	"github.com/hortbot/hortbot/internal/db/redis"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifefakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplefakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam/steamfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl/tinyurlfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban/urbanfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd/xkcdfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube/youtubefakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifemocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplemocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam/steammocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl/tinyurlmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban/urbanmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd/xkcdmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube/youtubemocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
@@ -59,20 +59,20 @@ type scriptTester struct {
 
 	db       *sql.DB
 	redis    *miniredis.Miniredis
-	sender   *botfakes.FakeSender
-	notifier *botfakes.FakeNotifier
+	sender   *botmocks.SenderMock
+	notifier *botmocks.NotifierMock
 	clock    *clock.Mock
 
-	lastFM    *lastfmfakes.FakeAPI
-	youtube   *youtubefakes.FakeAPI
-	xkcd      *xkcdfakes.FakeAPI
-	extraLife *extralifefakes.FakeAPI
-	twitch    *twitchfakes.FakeAPI
-	steam     *steamfakes.FakeAPI
-	tinyURL   *tinyurlfakes.FakeAPI
-	urban     *urbanfakes.FakeAPI
-	simple    *simplefakes.FakeAPI
-	hltb      *hltbfakes.FakeAPI
+	lastFM    *lastfmmocks.APIMock
+	youtube   *youtubemocks.APIMock
+	xkcd      *xkcdmocks.APIMock
+	extraLife *extralifemocks.APIMock
+	twitch    *twitchmocks.APIMock
+	steam     *steammocks.APIMock
+	tinyURL   *tinyurlmocks.APIMock
+	urban     *urbanmocks.APIMock
+	simple    *simplemocks.APIMock
+	hltb      *hltbmocks.APIMock
 
 	bc bot.Config
 	b  *bot.Bot
@@ -111,19 +111,23 @@ func (st *scriptTester) test(t testing.TB) {
 	}()
 
 	st.counts = make(map[string]int)
-	st.sender = &botfakes.FakeSender{}
-	st.notifier = &botfakes.FakeNotifier{}
+	st.sender = &botmocks.SenderMock{
+		SendMessageFunc: func(ctx context.Context, origin, target, message string) error { return nil },
+	}
+	st.notifier = &botmocks.NotifierMock{
+		NotifyChannelUpdatesFunc: func(ctx context.Context, botName string) error { return nil },
+	}
 	st.clock = clock.NewMock()
-	st.lastFM = newFakeLastFM(t)
-	st.youtube = newFakeYouTube(t)
-	st.xkcd = newFakeXKCD(t)
-	st.extraLife = newFakeExtraLife(t)
-	st.twitch = newFakeTwitch(t)
-	st.steam = newFakeSteam(t)
-	st.tinyURL = newFakeTinyURL(t)
-	st.urban = newFakeUrban(t)
-	st.simple = newFakeSimple(t)
-	st.hltb = newFakeHLTB(t)
+	st.lastFM = &lastfmmocks.APIMock{}
+	st.youtube = &youtubemocks.APIMock{}
+	st.xkcd = &xkcdmocks.APIMock{}
+	st.extraLife = &extralifemocks.APIMock{}
+	st.twitch = &twitchmocks.APIMock{}
+	st.steam = &steammocks.APIMock{}
+	st.tinyURL = &tinyurlmocks.APIMock{}
+	st.urban = &urbanmocks.APIMock{}
+	st.simple = &simplemocks.APIMock{}
+	st.hltb = &hltbmocks.APIMock{}
 
 	st.ctx = ctxlog.WithLogger(context.Background(), testutil.Logger(t))
 
@@ -221,8 +225,8 @@ func (st *scriptTester) test(t testing.TB) {
 		}()
 	}
 
-	assert.Equal(t, st.sender.SendMessageCallCount(), st.counts[countSend])
-	assert.Equal(t, st.notifier.NotifyChannelUpdatesCallCount(), st.counts[countNotifyChannelUpdates])
+	assert.Equal(t, len(st.sender.SendMessageCalls()), st.counts[countSend])
+	assert.Equal(t, len(st.notifier.NotifyChannelUpdatesCalls()), st.counts[countNotifyChannelUpdates])
 }
 
 func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
@@ -268,9 +272,9 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 	if bcj.Rand != nil {
 		rng := rand.New(rand.NewSource(int64(*bcj.Rand))) //nolint:gosec
 
-		fakeRand := newFakeRand(t)
-		fakeRand.IntnCalls(rng.Intn)
-		fakeRand.Float64Calls(rng.Float64)
+		fakeRand := &botmocks.RandMock{}
+		fakeRand.IntnFunc = rng.Intn
+		fakeRand.Float64Func = rng.Float64
 
 		st.bc.Rand = fakeRand
 
@@ -285,8 +289,8 @@ func (st *scriptTester) checkpoint(_ testing.TB, _, _ string, _ int) {
 }
 
 func (st *scriptTester) doCheckpoint() {
-	st.sentBefore = st.sender.SendMessageCallCount()
-	st.notifyChannelUpdatesBefore = st.notifier.NotifyChannelUpdatesCallCount()
+	st.sentBefore = len(st.sender.SendMessageCalls())
+	st.notifyChannelUpdatesBefore = len(st.notifier.NotifyChannelUpdatesCalls())
 }
 
 func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {

@@ -16,8 +16,6 @@ import (
 	"golang.org/x/oauth2/endpoints"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
 // Twitch API errors.
 //
 //   - 200 -> nil
@@ -73,7 +71,7 @@ var twitchEndpoint = oauth2.Endpoint{
 
 const helixRoot = "https://api.twitch.tv/helix"
 
-//counterfeiter:generate . API
+//go:generate go run github.com/matryer/moq -fmt goimports -out twitchmocks/mocks.go -pkg twitchmocks . API
 
 // API covers the main API methods for Twitch.
 type API interface {

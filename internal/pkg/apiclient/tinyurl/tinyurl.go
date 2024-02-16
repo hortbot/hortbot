@@ -12,12 +12,10 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
+//go:generate go run github.com/matryer/moq -fmt goimports -out tinyurlmocks/mocks.go -pkg tinyurlmocks . API
 
 // ErrServerError is returned when a shortening request is unsuccessful.
 var ErrServerError = errors.New("tinyurl: server error")
-
-//counterfeiter:generate . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {

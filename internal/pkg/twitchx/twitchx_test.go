@@ -11,7 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/twitchx"
@@ -35,7 +35,7 @@ func TestFindBotTokenNoBot(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
 
-	tw := &twitchfakes.FakeAPI{}
+	tw := &twitchmocks.APIMock{}
 	db := pool.FreshDB(t)
 	defer db.Close()
 
@@ -49,7 +49,13 @@ func TestFindBotToken(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
 
-	tw := &twitchfakes.FakeAPI{}
+	tw := &twitchmocks.APIMock{
+		ValidateFunc: func(context.Context, *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
+			return &twitch.Validation{
+				Scopes: []string{"scope1", "scope2"},
+			}, nil, nil
+		},
+	}
 	db := pool.FreshDB(t)
 	defer db.Close()
 
@@ -77,8 +83,8 @@ func TestFindBotTokenGetError(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
 
-	tw := &twitchfakes.FakeAPI{
-		ValidateStub: func(context.Context, *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
+	tw := &twitchmocks.APIMock{
+		ValidateFunc: func(context.Context, *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
 			return nil, nil, errTest
 		},
 	}
@@ -105,7 +111,7 @@ func TestFindBotTokenDBErr(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
 
-	tw := &twitchfakes.FakeAPI{}
+	tw := &twitchmocks.APIMock{}
 	db := pool.FreshDB(t)
 	defer db.Close()
 
@@ -131,8 +137,8 @@ func TestFindBotTokenNew(t *testing.T) {
 
 	newTok := modelsx.ModelToToken(newT)
 
-	tw := &twitchfakes.FakeAPI{
-		ValidateStub: func(ctx context.Context, tok *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
+	tw := &twitchmocks.APIMock{
+		ValidateFunc: func(ctx context.Context, tok *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
 			return &twitch.Validation{
 				Scopes: []string{"scope1", "scope2"},
 			}, newTok, nil
@@ -181,8 +187,8 @@ func TestFindBotTokenNewDBError(t *testing.T) {
 
 	db := pool.FreshDB(t)
 	defer db.Close()
-	tw := &twitchfakes.FakeAPI{
-		ValidateStub: func(ctx context.Context, tok *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
+	tw := &twitchmocks.APIMock{
+		ValidateFunc: func(ctx context.Context, tok *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
 			breakDB(t, db)
 
 			return &twitch.Validation{

@@ -13,9 +13,9 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/redis"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbfakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplefakes"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchfakes"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplemocks"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
@@ -40,9 +40,9 @@ func BenchmarkHandleNop(b *testing.B) {
 		Redis:      redis.New(rClient),
 		Sender:     nopSender{},
 		Notifier:   nopNotifier{},
-		Twitch:     &twitchfakes.FakeAPI{},
-		Simple:     &simplefakes.FakeAPI{},
-		HLTB:       &hltbfakes.FakeAPI{},
+		Twitch:     &twitchmocks.APIMock{},
+		Simple:     &simplemocks.APIMock{},
+		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
 		PublicJoin: true,
 	}
@@ -81,9 +81,9 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 		Redis:      redis.New(rClient),
 		Sender:     nopSender{},
 		Notifier:   nopNotifier{},
-		Twitch:     &twitchfakes.FakeAPI{},
-		Simple:     &simplefakes.FakeAPI{},
-		HLTB:       &hltbfakes.FakeAPI{},
+		Twitch:     &twitchmocks.APIMock{},
+		Simple:     &simplemocks.APIMock{},
+		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
 		PublicJoin: true,
 	}
@@ -123,9 +123,9 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 		Redis:      redis.New(rClient),
 		Sender:     nopSender{},
 		Notifier:   nopNotifier{},
-		Twitch:     &twitchfakes.FakeAPI{},
-		Simple:     &simplefakes.FakeAPI{},
-		HLTB:       &hltbfakes.FakeAPI{},
+		Twitch:     &twitchmocks.APIMock{},
+		Simple:     &simplemocks.APIMock{},
+		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
 		PublicJoin: true,
 	}
@@ -165,9 +165,9 @@ func BenchmarkHandleMixed(b *testing.B) {
 		Redis:      redis.New(rClient),
 		Sender:     nopSender{},
 		Notifier:   nopNotifier{},
-		Twitch:     &twitchfakes.FakeAPI{},
-		Simple:     &simplefakes.FakeAPI{},
-		HLTB:       &hltbfakes.FakeAPI{},
+		Twitch:     &twitchmocks.APIMock{},
+		Simple:     &simplemocks.APIMock{},
+		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
 		PublicJoin: true,
 	}
@@ -224,9 +224,9 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 		Redis:      redis.New(rClient),
 		Sender:     nopSender{},
 		Notifier:   nopNotifier{},
-		Twitch:     &twitchfakes.FakeAPI{},
-		Simple:     &simplefakes.FakeAPI{},
-		HLTB:       &hltbfakes.FakeAPI{},
+		Twitch:     &twitchmocks.APIMock{},
+		Simple:     &simplemocks.APIMock{},
+		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
 		PublicJoin: true,
 	}

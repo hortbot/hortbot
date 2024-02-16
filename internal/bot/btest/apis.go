@@ -33,7 +33,7 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.lastFM.RecentTracksCalls(func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
+		st.lastFM.RecentTracksFunc = func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
 			if user == "error" {
 				return nil, &apiclient.Error{API: "lastfm", StatusCode: 500}
 			}
@@ -45,7 +45,7 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 			}
 
 			return x, nil
-		})
+		}
 	})
 }
 
@@ -63,9 +63,9 @@ func (st *scriptTester) youtubeVideoTitles(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.youtube.VideoTitleCalls(func(_ context.Context, u *url.URL) string {
+		st.youtube.VideoTitleFunc = func(_ context.Context, u *url.URL) string {
 			return v[u.String()]
-		})
+		}
 	})
 }
 
@@ -83,13 +83,13 @@ func (st *scriptTester) xkcdComics(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.xkcd.GetComicCalls(func(_ context.Context, id int) (*xkcd.Comic, error) {
+		st.xkcd.GetComicFunc = func(_ context.Context, id int) (*xkcd.Comic, error) {
 			c, ok := v[strconv.Itoa(id)]
 			if !ok {
 				return nil, xkcd.ErrNotFound
 			}
 			return c, nil
-		})
+		}
 	})
 }
 
@@ -107,7 +107,7 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.extraLife.GetDonationAmountCalls(func(_ context.Context, id int) (float64, error) {
+		st.extraLife.GetDonationAmountFunc = func(_ context.Context, id int) (float64, error) {
 			if id == 500500 {
 				return 0, &apiclient.Error{API: "extralife", StatusCode: 500}
 			}
@@ -117,7 +117,7 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 				return 0, &apiclient.Error{API: "extralife", StatusCode: 404}
 			}
 			return a, nil
-		})
+		}
 	})
 }
 
@@ -158,11 +158,11 @@ func (st *scriptTester) steamGetPlayerSummary(t testing.TB, _, args string, line
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.steam.GetPlayerSummaryCalls(func(_ context.Context, id string) (*steam.Summary, error) {
+		st.steam.GetPlayerSummaryFunc = func(_ context.Context, id string) (*steam.Summary, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
 			return call.Summary, steamErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -178,11 +178,11 @@ func (st *scriptTester) steamGetOwnedGames(t testing.TB, _, args string, lineNum
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.steam.GetOwnedGamesCalls(func(_ context.Context, id string) ([]*steam.Game, error) {
+		st.steam.GetOwnedGamesFunc = func(_ context.Context, id string) ([]*steam.Game, error) {
 			assert.Equal(t, id, call.ID, "line %d", lineNum)
 
 			return call.Games, steamErr(t, lineNum, call.Err)
-		})
+		}
 	})
 }
 
@@ -205,7 +205,7 @@ func (st *scriptTester) tinyURLShorten(t testing.TB, _, args string, lineNum int
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.tinyURL.ShortenCalls(func(_ context.Context, link string) (string, error) {
+		st.tinyURL.ShortenFunc = func(_ context.Context, link string) (string, error) {
 			assert.Equal(t, link, call.Link, "line %d", lineNum)
 
 			var err error
@@ -218,7 +218,7 @@ func (st *scriptTester) tinyURLShorten(t testing.TB, _, args string, lineNum int
 			}
 
 			return call.Short, err
-		})
+		}
 	})
 }
 
@@ -241,7 +241,7 @@ func (st *scriptTester) urbanDefine(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.urban.DefineCalls(func(_ context.Context, s string) (string, error) {
+		st.urban.DefineFunc = func(_ context.Context, s string) (string, error) {
 			assert.Equal(t, s, call.Phrase, "line %d", lineNum)
 
 			var err error
@@ -258,7 +258,7 @@ func (st *scriptTester) urbanDefine(t testing.TB, _, args string, lineNum int) {
 			}
 
 			return call.Def, err
-		})
+		}
 	})
 }
 
@@ -274,7 +274,7 @@ func (st *scriptTester) simplePlaintext(t testing.TB, _, args string, lineNum in
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.simple.PlaintextCalls(func(_ context.Context, u string) (string, error) {
+		st.simple.PlaintextFunc = func(_ context.Context, u string) (string, error) {
 			assert.Equal(t, u, call.URL, "line %d", lineNum)
 
 			var err error
@@ -289,7 +289,7 @@ func (st *scriptTester) simplePlaintext(t testing.TB, _, args string, lineNum in
 			}
 
 			return call.Body, err
-		})
+		}
 	})
 }
 
@@ -305,7 +305,7 @@ func (st *scriptTester) hltbSearch(t testing.TB, _, args string, lineNum int) {
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(_ context.Context) {
-		st.hltb.SearchGameCalls(func(_ context.Context, query string) (*hltb.Game, error) {
+		st.hltb.SearchGameFunc = func(_ context.Context, query string) (*hltb.Game, error) {
 			assert.Equal(t, query, call.Query, "line %d", lineNum)
 
 			var err error
@@ -320,6 +320,6 @@ func (st *scriptTester) hltbSearch(t testing.TB, _, args string, lineNum int) {
 			}
 
 			return call.Game, err
-		})
+		}
 	})
 }

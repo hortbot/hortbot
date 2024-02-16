@@ -12,8 +12,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
 // Urban Dictionary API errors.
 var (
 	ErrNotFound    = errors.New("urban: not found")
@@ -21,7 +19,7 @@ var (
 	ErrUnknown     = errors.New("urban: unknown error")
 )
 
-//counterfeiter:generate . API
+//go:generate go run github.com/matryer/moq -fmt goimports -out urbanmocks/mocks.go -pkg urbanmocks . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {

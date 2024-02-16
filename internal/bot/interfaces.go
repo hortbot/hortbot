@@ -7,23 +7,17 @@ import (
 	"time"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
-//counterfeiter:generate . Sender
+//go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Sender Notifier Rand
 
 // Sender sends a single message back via an origin (bot name) to the specified target (channel).
 type Sender interface {
 	SendMessage(ctx context.Context, origin, target, message string) error
 }
 
-//counterfeiter:generate . Notifier
-
 // Notifier sends notifications.
 type Notifier interface {
 	NotifyChannelUpdates(ctx context.Context, botName string) error
 }
-
-//counterfeiter:generate . Rand
 
 // Rand provides random number generation.
 type Rand interface {

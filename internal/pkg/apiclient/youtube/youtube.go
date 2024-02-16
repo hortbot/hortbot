@@ -12,9 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
-//go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
-
-//counterfeiter:generate . API
+//go:generate go run github.com/matryer/moq -fmt goimports -out youtubemocks/mocks.go -pkg youtubemocks . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
