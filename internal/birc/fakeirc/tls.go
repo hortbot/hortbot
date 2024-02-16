@@ -101,7 +101,7 @@ var testCert, certPool = setupCerts()
 // The fake IRC server will use this config to authenticate incoming connections
 // when using TLS.
 var TLSConfig = &tls.Config{
-	InsecureSkipVerify:       true,
+	InsecureSkipVerify:       true, //nolint:gosec
 	ClientAuth:               tls.RequireAndVerifyClientCert,
 	Certificates:             []tls.Certificate{testCert},
 	PreferServerCipherSuites: true,
