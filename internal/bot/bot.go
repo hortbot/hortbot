@@ -72,7 +72,8 @@ type Config struct {
 
 	GlobalIgnore []string
 
-	ValidateTokens bool
+	ValidateTokens    bool
+	PassthroughPanics bool
 }
 
 // Bot is an IRC bot. It should only be used once.
@@ -90,7 +91,8 @@ type Bot struct {
 
 	testingHelper *testingHelper
 
-	noDedupe bool
+	noDedupe          bool
+	passthroughPanics bool
 }
 
 // New creates a new Bot with the given config.
@@ -178,6 +180,7 @@ func New(config *Config) *Bot {
 		noDedupe:             config.NoDedupe,
 		rep:                  repeat.New(deps.Clock),
 		validateTokensManual: make(chan struct{}, 1),
+		passthroughPanics:    config.PassthroughPanics,
 	}
 
 	if config.ValidateTokens {

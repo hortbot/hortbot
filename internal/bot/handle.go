@@ -90,7 +90,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 
 	defer func() {
 		if r := recover(); r != nil {
-			if _, ok := r.(testingPanic); ok {
+			if b.passthroughPanics {
 				panic(r)
 			}
 			ctxlog.Error(ctx, "panic during handle", zap.Any("value", r), zap.Stack("stack"))

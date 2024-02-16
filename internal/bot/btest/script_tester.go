@@ -87,6 +87,7 @@ type scriptTester struct {
 
 	notifyChannelUpdatesBefore int
 	needNoNotifyChannelUpdates bool
+	needPanic                  bool
 }
 
 func (st *scriptTester) addAction(fn func(context.Context)) {
@@ -204,7 +205,20 @@ func (st *scriptTester) test(t testing.TB) {
 	}()
 
 	for _, action := range st.actions {
-		action(st.ctx)
+		func() {
+			defer func() {
+				if r := recover(); r != nil {
+					if st.needPanic {
+						st.needPanic = false
+						return
+					}
+
+					panic(r)
+				}
+			}()
+
+			action(st.ctx)
+		}()
 	}
 
 	assert.Equal(t, st.sender.SendMessageCallCount(), st.counts[countSend])
@@ -281,6 +295,12 @@ func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {
 	})
 }
 
+func (st *scriptTester) shouldPanic(t testing.TB, _ string, _ string, lineNum int) {
+	st.addAction(func(ctx context.Context) {
+		st.needPanic = true
+	})
+}
+
 var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, args string, lineNum int){
 	"skip":                          (*scriptTester).skip,
 	"boil_debug":                    (*scriptTester).boilDebug,
@@ -305,6 +325,7 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"clock_set":                     (*scriptTester).clockSet,
 	"sleep":                         (*scriptTester).sleep,
 	"join":                          (*scriptTester).join,
+	"should_panic":                  (*scriptTester).shouldPanic,
 	"no_lastfm":                     (*scriptTester).noLastFM,
 	"lastfm_recent_tracks":          (*scriptTester).lastFMRecentTracks,
 	"no_youtube":                    (*scriptTester).noYouTube,
