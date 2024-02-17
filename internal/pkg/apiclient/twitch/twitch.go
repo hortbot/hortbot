@@ -222,9 +222,7 @@ type Validation struct {
 func (t *Twitch) Validate(ctx context.Context, tok *oauth2.Token) (*Validation, *oauth2.Token, error) {
 	var newToken *oauth2.Token
 
-	cli := t.clientForUser(ctx, tok, func(tok *oauth2.Token, err error) {
-		newToken = tok
-	})
+	cli := t.clientForUser(ctx, tok, setToken(&newToken))
 
 	resp, err := cli.Get(ctx, "https://id.twitch.tv/oauth2/validate")
 	if err != nil {
