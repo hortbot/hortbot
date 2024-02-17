@@ -237,11 +237,10 @@ func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Cat
 
 	gs, err := s.Deps.Twitch.SearchCategories(ctx, name)
 	if err != nil {
+		if err == twitch.ErrNotFound {
+			err = nil
+		}
 		return nil, gameSuggestion{}, err
-	}
-
-	if len(gs) == 0 {
-		return nil, gameSuggestion{}, nil
 	}
 
 	for _, g := range gs {

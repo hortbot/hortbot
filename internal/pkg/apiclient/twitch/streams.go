@@ -4,8 +4,6 @@ import (
 	"context"
 	"strconv"
 	"time"
-
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 type Stream struct {
@@ -34,28 +32,5 @@ func (t *Twitch) GetStreamByUsername(ctx context.Context, username string) (*Str
 func (t *Twitch) getStream(ctx context.Context, query string) (*Stream, error) {
 	cli := t.helixCli
 	url := helixRoot + "/streams?" + query
-
-	resp, err := cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
-	body := &struct {
-		Data []*Stream `json:"data"`
-	}{}
-
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
-	}
-
-	if len(body.Data) == 0 {
-		return nil, ErrNotFound
-	}
-
-	return body.Data[0], nil
+	return fetchFirstFromList[*Stream](ctx, cli, url)
 }

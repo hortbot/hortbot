@@ -129,3 +129,38 @@ func paginate[T any](ctx context.Context, cli *httpClient, url string, perPage i
 
 	return items, nil
 }
+
+func fetchList[T any](ctx context.Context, cli *httpClient, url string) ([]T, error) {
+	resp, err := cli.Get(ctx, url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if err := statusToError(resp.StatusCode); err != nil {
+		return nil, err
+	}
+
+	body := &struct {
+		Data []T `json:"data"`
+	}{}
+
+	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
+		return nil, ErrServerError
+	}
+
+	if len(body.Data) == 0 {
+		return nil, ErrNotFound
+	}
+
+	return body.Data, nil
+}
+
+func fetchFirstFromList[T any](ctx context.Context, cli *httpClient, url string) (T, error) {
+	list, err := fetchList[T](ctx, cli, url)
+	if err != nil {
+		var zero T
+		return zero, err
+	}
+	return list[0], nil
+}

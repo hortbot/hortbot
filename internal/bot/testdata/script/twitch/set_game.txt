@@ -54,7 +54,7 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] A Twitch server error occurred.
 
 twitch_get_game_by_name {"PUBG": {"Err": "ErrNotFound"}}
-twitch_search_categories {"PUBG": {"Categories": []}}
+twitch_search_categories {"PUBG": {"Err": "ErrNotFound"}}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game PUBG
 send hortbot #foobar [HB] Could not find a valid game matching "PUBG".
 

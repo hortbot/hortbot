@@ -4,8 +4,6 @@ import (
 	"context"
 	"net/url"
 	"strconv"
-
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 type Category struct {
@@ -19,29 +17,7 @@ type Category struct {
 func (t *Twitch) SearchCategories(ctx context.Context, query string) ([]*Category, error) {
 	cli := t.helixCli
 	url := helixRoot + "/search/categories?query=" + url.QueryEscape(query)
-
-	resp, err := cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		if err == ErrNotFound {
-			return []*Category{}, nil
-		}
-		return nil, err
-	}
-
-	body := &struct {
-		Data []*Category `json:"data"`
-	}{}
-
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
-	}
-
-	return body.Data, nil
+	return fetchList[*Category](ctx, cli, url)
 }
 
 // GetGameByName queries for a game by name. The name must match exactly.
@@ -61,28 +37,5 @@ func (t *Twitch) GetGameByID(ctx context.Context, id int64) (*Category, error) {
 func (t *Twitch) getGame(ctx context.Context, params string) (*Category, error) {
 	cli := t.helixCli
 	url := helixRoot + "/games?" + params
-
-	resp, err := cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
-	body := &struct {
-		Data []*Category `json:"data"`
-	}{}
-
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
-	}
-
-	if len(body.Data) == 0 {
-		return nil, ErrNotFound
-	}
-
-	return body.Data[0], nil
+	return fetchFirstFromList[*Category](ctx, cli, url)
 }

@@ -5,7 +5,6 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/oauth2"
 )
 
@@ -54,29 +53,5 @@ func getUser(ctx context.Context, cli *httpClient, username string, id int64) (*
 	} else if id != 0 {
 		u += "?id=" + strconv.FormatInt(id, 10)
 	}
-
-	resp, err := cli.Get(ctx, u)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
-	body := &struct {
-		Data []*User `json:"data"`
-	}{}
-
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
-	}
-
-	users := body.Data
-	if len(users) == 0 {
-		return nil, ErrNotFound
-	}
-
-	return users[0], nil
+	return fetchFirstFromList[*User](ctx, cli, u)
 }

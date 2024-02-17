@@ -4,7 +4,6 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"golang.org/x/oauth2"
 )
 
@@ -78,28 +77,5 @@ type Channel struct {
 func (t *Twitch) GetChannelByID(ctx context.Context, id int64) (*Channel, error) {
 	cli := t.helixCli
 	url := helixRoot + "/channels?broadcaster_id=" + strconv.FormatInt(id, 10)
-
-	resp, err := cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
-	body := &struct {
-		Data []*Channel `json:"data"`
-	}{}
-
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
-	}
-
-	if len(body.Data) == 0 {
-		return nil, ErrNotFound
-	}
-
-	return body.Data[0], nil
+	return fetchFirstFromList[*Channel](ctx, cli, url)
 }
