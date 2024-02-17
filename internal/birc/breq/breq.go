@@ -15,7 +15,7 @@ import (
 // TODO: In the far future where Go has generics, drop all of this in favor of a single generic implementation.
 
 var errChanPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return make(chan error, 1)
 	},
 }

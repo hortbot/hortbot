@@ -13,10 +13,10 @@ type TestingT interface {
 
 // Panic checks that a function panics with the given value. An untyped nil
 // panic value represents no panic.
-func Panic(t TestingT, fn func(), want interface{}, msgAndArgs ...interface{}) {
+func Panic(t TestingT, fn func(), want any, msgAndArgs ...any) {
 	t.Helper()
 
-	var got interface{}
+	var got any
 
 	func() {
 		defer func() {

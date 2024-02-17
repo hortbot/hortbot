@@ -124,4 +124,4 @@ func init() {
 
 type noLog struct{}
 
-func (noLog) Print(v ...interface{}) {}
+func (noLog) Print(v ...any) {}

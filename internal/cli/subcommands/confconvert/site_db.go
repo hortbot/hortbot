@@ -22,7 +22,7 @@ func loadSiteDB(ctx context.Context, dir string) {
 	decodeInto(ctx, filepath.Join(dir, "site_vars.json"), &siteVars)
 }
 
-func decodeInto(ctx context.Context, file string, v interface{}) {
+func decodeInto(ctx context.Context, file string, v any) {
 	f, err := os.Open(file)
 	if err != nil {
 		ctxlog.Fatal(ctx, "error opening file", ctxlog.PlainError(err))

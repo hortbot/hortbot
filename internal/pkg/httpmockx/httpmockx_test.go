@@ -12,7 +12,7 @@ import (
 func TestNewMockTransport(t *testing.T) {
 	fake := &assertxmocks.TestingTMock{
 		HelperFunc:  func() {},
-		LogFunc:     func(args ...interface{}) {},
+		LogFunc:     func(args ...any) {},
 		FailNowFunc: func() {},
 	}
 

@@ -11,7 +11,7 @@ import (
 func NewMockTransport(t assertx.TestingT) *httpmock.MockTransport {
 	t.Helper()
 
-	fatal := func(args ...interface{}) {
+	fatal := func(args ...any) {
 		t.Helper()
 		t.Log(args...)
 		t.FailNow()

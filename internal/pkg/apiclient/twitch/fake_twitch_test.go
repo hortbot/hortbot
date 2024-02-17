@@ -266,7 +266,7 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 	if grantType == "client_credentials" {
 		tok := f.nextToken()
 
-		return httpmock.NewJsonResponse(200, map[string]interface{}{
+		return httpmock.NewJsonResponse(200, map[string]any{
 			"access_token": tok.AccessToken,
 			"expires_in":   int(time.Until(tok.Expiry).Seconds()),
 			"token_type":   "bearer",
@@ -277,7 +277,7 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 		code := req.FormValue("code")
 		tok := f.tokenForCode(code)
 
-		return httpmock.NewJsonResponse(200, map[string]interface{}{
+		return httpmock.NewJsonResponse(200, map[string]any{
 			"access_token":  tok.AccessToken,
 			"refresh_token": tok.RefreshToken,
 			"expires_in":    int(time.Until(tok.Expiry).Seconds()),
@@ -290,13 +290,13 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 		refreshToken := req.FormValue("refresh_token")
 		switch refreshToken {
 		case "invalid":
-			return httpmock.NewJsonResponse(400, map[string]interface{}{
+			return httpmock.NewJsonResponse(400, map[string]any{
 				"error":   "Bad Request",
 				"status":  400,
 				"message": "Invalid refresh token",
 			})
 		case "unknown":
-			return httpmock.NewJsonResponse(400, map[string]interface{}{
+			return httpmock.NewJsonResponse(400, map[string]any{
 				"error":   "Bad Request",
 				"status":  400,
 				"message": "huh",
@@ -347,7 +347,7 @@ func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {
 		return httpmock.NewStringResponse(503, ""), nil
 	}
 
-	return httpmock.NewJsonResponse(200, map[string]interface{}{
+	return httpmock.NewJsonResponse(200, map[string]any{
 		"data": []twitch.User{
 			{
 				ID:          c.ID,

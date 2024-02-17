@@ -78,10 +78,10 @@ func ignoreNoChange(err error) error {
 }
 
 // LoggerFunc is a function that will be called with migration logging.
-type LoggerFunc func(format string, v ...interface{})
+type LoggerFunc func(format string, v ...any)
 
 // Printf implements migrate.Logger.
-func (l LoggerFunc) Printf(format string, v ...interface{}) {
+func (l LoggerFunc) Printf(format string, v ...any) {
 	if l != nil {
 		l(format, v...)
 	}

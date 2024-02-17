@@ -112,7 +112,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 }
 
 var sessionPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return &session{}
 	},
 }
@@ -329,7 +329,7 @@ func (b *Bot) dedupe(ctx context.Context, id string) error {
 }
 
 var channelPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		return &models.Channel{}
 	},
 }

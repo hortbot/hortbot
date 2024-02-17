@@ -32,7 +32,7 @@ func (s *session) save(w http.ResponseWriter, r *http.Request) error {
 }
 
 func (s *session) clearValues() {
-	s.s.Values = make(map[interface{}]interface{})
+	s.s.Values = make(map[any]any)
 }
 
 func (s *session) setTwitchID(id int64) {

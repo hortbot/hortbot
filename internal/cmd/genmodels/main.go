@@ -76,7 +76,7 @@ func mainErr() error {
 		Wipe:            true,
 		StructTagCasing: "snake",
 		RelationTag:     "-",
-		DriverConfig: map[string]interface{}{
+		DriverConfig: map[string]any{
 			"dbname":    pgConf.Database,
 			"host":      pgConf.Host,
 			"port":      int(pgConf.Port),
@@ -118,7 +118,7 @@ func mainErr() error {
 	return nil
 }
 
-func migrateLogf(format string, v ...interface{}) {
+func migrateLogf(format string, v ...any) {
 	fmt.Printf("\t"+format, v...)
 }
 

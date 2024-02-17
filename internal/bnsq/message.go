@@ -17,7 +17,7 @@ type message struct {
 	Payload  json.RawMessage `json:"payload"`
 }
 
-func (m *message) payload(v interface{}) error {
+func (m *message) payload(v any) error {
 	return json.Unmarshal(m.Payload, v)
 }
 

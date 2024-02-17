@@ -43,7 +43,7 @@ func TestPanic(t *testing.T) {
 	t.Run("Panic fail", func(t *testing.T) {
 		fake := &assertxmocks.TestingTMock{
 			HelperFunc:  func() {},
-			LogFunc:     func(args ...interface{}) {},
+			LogFunc:     func(args ...any) {},
 			FailNowFunc: func() {},
 		}
 		v := "some panic value"

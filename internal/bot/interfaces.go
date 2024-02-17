@@ -30,7 +30,7 @@ type pooledRand struct{}
 var _ Rand = pooledRand{}
 
 var randPool = sync.Pool{
-	New: func() interface{} {
+	New: func() any {
 		source := rand.NewSource(time.Now().Unix())
 		return rand.New(source) //nolint:gosec
 	},

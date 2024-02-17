@@ -12,7 +12,7 @@ import (
 // HelpLogger is an interface with Helper and Logf functions.
 type HelpLogger interface {
 	Helper()
-	Logf(format string, args ...interface{})
+	Logf(format string, args ...any)
 }
 
 // Logger returns a zap logger which logs to a test.

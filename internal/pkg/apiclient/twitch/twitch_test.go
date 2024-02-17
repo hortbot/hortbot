@@ -32,8 +32,8 @@ const (
 )
 
 func TestNewPanic(t *testing.T) {
-	checkPanic := func(fn func()) interface{} {
-		var recovered interface{}
+	checkPanic := func(fn func()) any {
+		var recovered any
 
 		func() {
 			defer func() {

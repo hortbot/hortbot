@@ -168,7 +168,7 @@ func (cmd *cmd) processFile(ctx context.Context, name, filename, out string) {
 	}
 }
 
-func writeJSON(out string, pretty bool, v interface{}) error {
+func writeJSON(out string, pretty bool, v any) error {
 	f, err := os.Create(out)
 	if err != nil {
 		return errors.Wrap(err, "creating file")

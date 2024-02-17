@@ -165,7 +165,7 @@ func (s *session) Reply(ctx context.Context, response string) error {
 	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, response)
 }
 
-func (s *session) Replyf(ctx context.Context, format string, args ...interface{}) error {
+func (s *session) Replyf(ctx context.Context, format string, args ...any) error {
 	response := fmt.Sprintf(format, args...)
 	return s.Reply(ctx, response)
 }

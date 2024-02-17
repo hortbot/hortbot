@@ -72,7 +72,7 @@ func (h *httpClient) Get(ctx context.Context, url string) (*http.Response, error
 	return h.do(req)
 }
 
-func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url string, v interface{}, body io.Reader) (*http.Response, error) {
+func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url string, v any, body io.Reader) (*http.Response, error) {
 	if body == nil && v != nil {
 		var buf bytes.Buffer
 
@@ -95,11 +95,11 @@ func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url str
 	return h.do(req)
 }
 
-func (h *httpClient) Put(ctx context.Context, url string, v interface{}) (*http.Response, error) {
+func (h *httpClient) Put(ctx context.Context, url string, v any) (*http.Response, error) {
 	return h.makeJSONRequest(ctx, "PUT", url, v, nil)
 }
 
-func (h *httpClient) Post(ctx context.Context, url string, v interface{}) (*http.Response, error) {
+func (h *httpClient) Post(ctx context.Context, url string, v any) (*http.Response, error) {
 	return h.makeJSONRequest(ctx, "POST", url, v, nil)
 }
 
@@ -107,7 +107,7 @@ func (h *httpClient) PostRaw(ctx context.Context, url string, body io.Reader) (*
 	return h.makeJSONRequest(ctx, "POST", url, nil, body)
 }
 
-func (h *httpClient) Patch(ctx context.Context, url string, v interface{}) (*http.Response, error) {
+func (h *httpClient) Patch(ctx context.Context, url string, v any) (*http.Response, error) {
 	return h.makeJSONRequest(ctx, "PATCH", url, v, nil)
 }
 

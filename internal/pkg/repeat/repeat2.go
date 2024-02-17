@@ -307,13 +307,13 @@ func (q queue) Swap(i, j int) {
 	q[j].index = j
 }
 
-func (q *queue) Push(x interface{}) {
+func (q *queue) Push(x any) {
 	item := x.(*item)
 	item.index = len(*q)
 	*q = append(*q, item)
 }
 
-func (q *queue) Pop() interface{} {
+func (q *queue) Pop() any {
 	old := *q
 	n := len(old)
 	item := old[n-1]

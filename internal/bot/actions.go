@@ -134,9 +134,9 @@ func init() {
 }
 
 func findAction(action string) actionTopFunc {
-	var found interface{}
+	var found any
 
-	_ = actionTrie.WalkPath(action, func(key string, value interface{}) error {
+	_ = actionTrie.WalkPath(action, func(key string, value any) error {
 		found = value
 		return nil
 	})

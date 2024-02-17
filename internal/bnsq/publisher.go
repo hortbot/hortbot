@@ -65,7 +65,7 @@ func (p *publisher) run(ctx context.Context) error {
 	return ctx.Err()
 }
 
-func (p *publisher) publish(ctx context.Context, topic string, payload interface{}) error {
+func (p *publisher) publish(ctx context.Context, topic string, payload any) error {
 	ctx, span := trace.StartSpan(ctx, topic)
 	defer span.End()
 
