@@ -10,7 +10,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/subcommands/bot"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confimport"
-	"github.com/hortbot/hortbot/internal/cli/subcommands/graphql"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/irc"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
 	"github.com/hortbot/hortbot/internal/version"
@@ -49,7 +48,6 @@ func main() {
 	addCommand(web.Command())
 	addCommand(confconvert.Command())
 	addCommand(confimport.Command())
-	addCommand(graphql.Command())
 
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Please specify a subcommand.")
