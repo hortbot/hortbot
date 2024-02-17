@@ -175,6 +175,7 @@ func (st *scriptTester) twitchGetStreamByUserID(t testing.TB, _, args string, li
 		}
 	})
 }
+
 func (st *scriptTester) twitchGetStreamByUsername(t testing.TB, _, args string, lineNum int) {
 	var call struct {
 		Username string

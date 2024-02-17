@@ -113,7 +113,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 				return config.Insert(ctx, tx)
 			},
 		)
-
 		if err != nil {
 			ctxlog.Error(ctx, "error inserting into database", ctxlog.PlainError(err))
 		}
