@@ -54,6 +54,9 @@ var _ twitch.API = &APIMock{}
 //			GetGameLinksFunc: func(ctx context.Context, twitchCategory int64) ([]twitch.GameLink, error) {
 //				panic("mock out the GetGameLinks method")
 //			},
+//			GetModeratedChannelsFunc: func(ctx context.Context, modID int64, modToken *oauth2.Token) ([]*twitch.ModeratedChannel, *oauth2.Token, error) {
+//				panic("mock out the GetModeratedChannels method")
+//			},
 //			GetStreamByUserIDFunc: func(ctx context.Context, id int64) (*twitch.Stream, error) {
 //				panic("mock out the GetStreamByUserID method")
 //			},
@@ -126,6 +129,9 @@ type APIMock struct {
 
 	// GetGameLinksFunc mocks the GetGameLinks method.
 	GetGameLinksFunc func(ctx context.Context, twitchCategory int64) ([]twitch.GameLink, error)
+
+	// GetModeratedChannelsFunc mocks the GetModeratedChannels method.
+	GetModeratedChannelsFunc func(ctx context.Context, modID int64, modToken *oauth2.Token) ([]*twitch.ModeratedChannel, *oauth2.Token, error)
 
 	// GetStreamByUserIDFunc mocks the GetStreamByUserID method.
 	GetStreamByUserIDFunc func(ctx context.Context, id int64) (*twitch.Stream, error)
@@ -265,6 +271,15 @@ type APIMock struct {
 			// TwitchCategory is the twitchCategory argument value.
 			TwitchCategory int64
 		}
+		// GetModeratedChannels holds details about calls to the GetModeratedChannels method.
+		GetModeratedChannels []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ModID is the modID argument value.
+			ModID int64
+			// ModToken is the modToken argument value.
+			ModToken *oauth2.Token
+		}
 		// GetStreamByUserID holds details about calls to the GetStreamByUserID method.
 		GetStreamByUserID []struct {
 			// Ctx is the ctx argument value.
@@ -376,6 +391,7 @@ type APIMock struct {
 	lockGetGameByID          sync.RWMutex
 	lockGetGameByName        sync.RWMutex
 	lockGetGameLinks         sync.RWMutex
+	lockGetModeratedChannels sync.RWMutex
 	lockGetStreamByUserID    sync.RWMutex
 	lockGetStreamByUsername  sync.RWMutex
 	lockGetUserByID          sync.RWMutex
@@ -834,6 +850,46 @@ func (mock *APIMock) GetGameLinksCalls() []struct {
 	mock.lockGetGameLinks.RLock()
 	calls = mock.calls.GetGameLinks
 	mock.lockGetGameLinks.RUnlock()
+	return calls
+}
+
+// GetModeratedChannels calls GetModeratedChannelsFunc.
+func (mock *APIMock) GetModeratedChannels(ctx context.Context, modID int64, modToken *oauth2.Token) ([]*twitch.ModeratedChannel, *oauth2.Token, error) {
+	if mock.GetModeratedChannelsFunc == nil {
+		panic("APIMock.GetModeratedChannelsFunc: method is nil but API.GetModeratedChannels was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		ModID    int64
+		ModToken *oauth2.Token
+	}{
+		Ctx:      ctx,
+		ModID:    modID,
+		ModToken: modToken,
+	}
+	mock.lockGetModeratedChannels.Lock()
+	mock.calls.GetModeratedChannels = append(mock.calls.GetModeratedChannels, callInfo)
+	mock.lockGetModeratedChannels.Unlock()
+	return mock.GetModeratedChannelsFunc(ctx, modID, modToken)
+}
+
+// GetModeratedChannelsCalls gets all the calls that were made to GetModeratedChannels.
+// Check the length with:
+//
+//	len(mockedAPI.GetModeratedChannelsCalls())
+func (mock *APIMock) GetModeratedChannelsCalls() []struct {
+	Ctx      context.Context
+	ModID    int64
+	ModToken *oauth2.Token
+} {
+	var calls []struct {
+		Ctx      context.Context
+		ModID    int64
+		ModToken *oauth2.Token
+	}
+	mock.lockGetModeratedChannels.RLock()
+	calls = mock.calls.GetModeratedChannels
+	mock.lockGetModeratedChannels.RUnlock()
 	return calls
 }
 

@@ -39,6 +39,7 @@ type fakeTwitch struct {
 
 	channels   map[int64]*twitch.Channel
 	moderators map[int64][]*twitch.ChannelModerator
+	moderated  map[int64][]*twitch.ModeratedChannel
 }
 
 func newFakeTwitch(t testing.TB) *fakeTwitch {
@@ -51,6 +52,7 @@ func newFakeTwitch(t testing.TB) *fakeTwitch {
 		tokenToID:   make(map[string]int64),
 		channels:    make(map[int64]*twitch.Channel),
 		moderators:  make(map[int64][]*twitch.ChannelModerator),
+		moderated:   make(map[int64][]*twitch.ModeratedChannel),
 	}
 
 	f.route()
@@ -144,6 +146,7 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users?id=1234", httpmock.NewStringResponder(200, `{"data": [{"id": 1234, "login": "foobar", "display_name": "Foobar"}]}`))
 
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/moderators", f.helixModerationModerators)
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/channels", f.helixModerationChannels)
 
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/search/categories?query=pubg", httpmock.NewStringResponder(200, `{"data": [{"id": "287491", "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}, {"id": "58730284", "name": "PUBG MOBILE"}]}`))
 	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/search/categories?query=notfound", httpmock.NewStringResponder(200, `{"data": []}`))
@@ -422,6 +425,79 @@ func (f *fakeTwitch) helixModerationModerators(req *http.Request) (*http.Respons
 		if i < len(mods) {
 			m := mods[i]
 			v.Mods = []*twitch.ChannelModerator{m}
+		}
+	}
+
+	return httpmock.NewJsonResponse(200, &v)
+}
+
+func (f *fakeTwitch) setModerated(id int64, mods []*twitch.ModeratedChannel) {
+	f.moderated[id] = mods
+}
+
+func (f *fakeTwitch) helixModerationChannels(req *http.Request) (*http.Response, error) {
+	f.assertEqual(req.Method, "GET")
+	f.checkHeaders(req)
+
+	const authPrefix = "Bearer "
+
+	auth := req.Header.Get("Authorization")
+	f.assert(strings.HasPrefix(auth, authPrefix))
+
+	id, ok := f.tokenToID[strings.TrimPrefix(auth, authPrefix)]
+	f.assert(ok)
+
+	q := req.URL.Query()
+	gotID, err := strconv.ParseInt(q.Get("user_id"), 10, 64)
+	f.assertNilError(err)
+
+	f.assertEqual(gotID, id)
+
+	first, err := strconv.ParseInt(q.Get("first"), 10, 64)
+	f.assertNilError(err)
+	f.assertEqual(first, int64(100))
+
+	if _, ok := expectedErrors[int(id)]; ok {
+		return httpmock.NewStringResponse(int(id), ""), nil
+	}
+
+	switch id {
+	case 777:
+		return nil, errTestBadRequest
+	case 888:
+		return httpmock.NewStringResponse(200, "{"), nil
+	}
+
+	mods := f.moderated[id]
+	f.assert(mods != nil)
+
+	var v struct {
+		Mods       []*twitch.ModeratedChannel `json:"data"`
+		Pagination struct {
+			Cursor string `json:"cursor"`
+		} `json:"pagination"`
+	}
+
+	if len(mods) != 0 {
+		i := 0
+		if after := q.Get("after"); after != "" {
+			x, err := strconv.Atoi(q.Get("after"))
+			f.assertNilError(err)
+			f.assert(x >= 0)
+			i = x + 1
+		}
+
+		cursor := ""
+		if i != len(mods)-1 || id != 999 {
+			cursor = strconv.Itoa(i)
+		}
+
+		v.Pagination.Cursor = cursor
+
+		// Allow this to go past to handle the 999 case, for testing no-change pagination.
+		if i < len(mods) {
+			m := mods[i]
+			v.Mods = []*twitch.ModeratedChannel{m}
 		}
 	}
 

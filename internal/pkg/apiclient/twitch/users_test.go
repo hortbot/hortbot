@@ -274,3 +274,76 @@ func TestUserDispName(t *testing.T) {
 	u.DisplayName = "SomeName"
 	assert.Equal(t, u.DispName(), u.DisplayName)
 }
+
+func TestGetModeratedChannelsOK(t *testing.T) {
+	ctx, cancel := testContext(t)
+	defer cancel()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	const id = 123
+	tok := tokFor(ctx, t, tw, ft, id)
+
+	mods := []*twitch.ModeratedChannel{
+		{
+			ID:    1234,
+			Name:  "Mod2",
+			Login: "mod2",
+		},
+		{
+			ID:    4141,
+			Name:  "Mod1",
+			Login: "mod1",
+		},
+		{
+			ID:    999,
+			Name:  "mod3",
+			Login: "mod3",
+		},
+	}
+
+	ft.setModerated(id, mods)
+
+	got, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
+	assert.NilError(t, err)
+	assert.Assert(t, newToken == nil)
+	assert.DeepEqual(t, got, mods)
+}
+
+func TestGetModeratedChannelsErrors(t *testing.T) {
+	ctx, cancel := testContext(t)
+	defer cancel()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+
+	id := int64(777)
+	tok := tokFor(ctx, t, tw, ft, id)
+	ft.setModerated(id, []*twitch.ModeratedChannel{})
+
+	_, _, err := tw.GetModeratedChannels(ctx, 777, tok)
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
+
+	for status, expected := range expectedErrors {
+		id := int64(status)
+		tok := tokFor(ctx, t, tw, ft, id)
+		ft.setModerated(id, []*twitch.ModeratedChannel{})
+
+		_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
+		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, newToken == nil)
+	}
+
+	id = 888
+	tok = tokFor(ctx, t, tw, ft, id)
+	ft.setModerated(id, []*twitch.ModeratedChannel{})
+
+	_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
+	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Assert(t, newToken == nil)
+}

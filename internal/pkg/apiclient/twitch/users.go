@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"context"
+	"math"
 	"net/url"
 	"strconv"
 
@@ -54,4 +55,20 @@ func getUser(ctx context.Context, cli *httpClient, username string, id int64) (*
 		u += "?id=" + strconv.FormatInt(id, 10)
 	}
 	return fetchFirstFromList[*User](ctx, cli, u)
+}
+
+type ModeratedChannel struct {
+	ID    IDStr  `json:"broadcaster_id"`
+	Login string `json:"broadcaster_login"`
+	Name  string `json:"broadcaster_name"`
+}
+
+// GetModeratedChannels gets the channels the user moderates.
+//
+// GET https://api.twitch.tv/helix/moderation/channels
+func (t *Twitch) GetModeratedChannels(ctx context.Context, modID int64, modToken *oauth2.Token) (channels []*ModeratedChannel, newToken *oauth2.Token, err error) {
+	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
+	url := helixRoot + "/moderation/channels?user_id=" + strconv.FormatInt(modID, 10)
+	channels, err = paginate[*ModeratedChannel](ctx, cli, url, 100, math.MaxInt)
+	return channels, newToken, err
 }
