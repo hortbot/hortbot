@@ -37,6 +37,8 @@ func TestUp(t *testing.T) {
 	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
 		assert.NilError(t, migrations.Up(connStr, t.Logf))
 		assertTableNames(t, db, allTables()...)
+		assert.NilError(t, migrations.Up(connStr, t.Logf))
+		assertTableNames(t, db, allTables()...)
 	})
 }
 
@@ -45,6 +47,8 @@ func TestUpDown(t *testing.T) {
 
 	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
 		assert.NilError(t, migrations.Up(connStr, t.Logf))
+		assert.NilError(t, migrations.Down(connStr, t.Logf))
+		assertTableNames(t, db, "schema_migrations")
 		assert.NilError(t, migrations.Down(connStr, t.Logf))
 		assertTableNames(t, db, "schema_migrations")
 	})
@@ -58,6 +62,16 @@ func TestReset(t *testing.T) {
 		assertTableNames(t, db, allTables()...)
 		assert.NilError(t, migrations.Reset(connStr, t.Logf))
 		assertTableNames(t, db, allTables()...)
+	})
+}
+
+func TestResetBroken(t *testing.T) {
+	t.Parallel()
+
+	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
+		_, err := db.Exec(`CREATE TABLE "schema_migrations" (bad text)`)
+		assert.NilError(t, err)
+		assert.ErrorContains(t, migrations.Reset(connStr, t.Logf), "schema_migrations")
 	})
 }
 

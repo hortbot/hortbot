@@ -6,22 +6,14 @@ import (
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
-	"github.com/golang-migrate/migrate/v4/source"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 )
 
 //go:embed static
 var static embed.FS
 
-var sourceDriver source.Driver
-
-func init() {
-	var err error
-	sourceDriver, err = iofs.New(static, "static")
-	if err != nil {
-		panic(err)
-	}
-}
+var sourceDriver = must.Must(iofs.New(static, "static"))
 
 // Up brings the database up to date to the latest migration.
 func Up(connStr string, logger LoggerFunc) error {
