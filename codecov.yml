@@ -6,3 +6,7 @@ coverage:
     patch:
       default:
         threshold: 0.5%
+
+ignore:
+  - 'internal/db/models/**/*'
+  - '**/*mocks/**/*'
