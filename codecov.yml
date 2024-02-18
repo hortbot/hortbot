@@ -8,5 +8,5 @@ coverage:
         threshold: 0.5%
 
 ignore:
-  - 'internal/db/models/**/*'
-  - '**/*mocks/**/*'
+  - 'internal/db/models'
+  - '**/*mocks'
