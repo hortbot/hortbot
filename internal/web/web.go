@@ -20,6 +20,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -34,15 +35,7 @@ import (
 //go:embed static
 var static embed.FS
 
-var staticDir fs.FS
-
-func init() {
-	var err error
-	staticDir, err = fs.Sub(static, "static")
-	if err != nil {
-		panic(err)
-	}
-}
+var staticDir = must.Must(fs.Sub(static, "static"))
 
 // App is the HortBot webapp.
 type App struct {
