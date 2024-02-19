@@ -23,10 +23,6 @@ func Find(message string, schemeWhitelist ...string) []*url.URL {
 
 	matches := linkRegex.FindAllString(message, -1)
 
-	if len(matches) == 0 {
-		panic("findlinks: no matches, but precheck matched")
-	}
-
 	urls := make([]*url.URL, 0, len(matches))
 
 	for _, m := range matches {
