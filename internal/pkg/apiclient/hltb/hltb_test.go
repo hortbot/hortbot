@@ -10,6 +10,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/hortbot/hortbot/internal/pkg/useragent"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
@@ -160,6 +161,8 @@ func TestSearchGame(t *testing.T) {
 			"POST",
 			"https://howlongtobeat.com/api/search",
 			func(r *http.Request) (*http.Response, error) {
+				assert.Assert(t, r.UserAgent() != useragent.Bot(), "wrong user agent: "+r.UserAgent())
+
 				var body hltb.RequestBody
 				assert.NilError(t, jsonx.DecodeSingle(r.Body, &body))
 				assert.NilError(t, r.ParseForm())

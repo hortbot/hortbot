@@ -43,7 +43,8 @@ var _ API = &HLTB{}
 func New(opts ...Option) *HLTB {
 	h := &HLTB{
 		cli: httpx.Client{
-			Name: "hltb",
+			Name:      "hltb",
+			AsBrowser: true,
 		},
 	}
 

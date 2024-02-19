@@ -28,13 +28,28 @@ type Client struct {
 }
 
 func (c *Client) client() *http.Client {
+	client := *http.DefaultClient
 	if c.Client != nil {
-		return c.Client
+		client = *c.Client
 	}
-	return http.DefaultClient
+	if client.Transport == nil {
+		client.Transport = http.DefaultTransport
+	}
+	client.Transport = &wrappedTransport{
+		inner:     client.Transport,
+		asBrowser: c.AsBrowser,
+		name:      c.Name,
+	}
+	return &client
 }
 
-func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
+type wrappedTransport struct {
+	inner     http.RoundTripper
+	asBrowser bool
+	name      string
+}
+
+func (w *wrappedTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
 	start := time.Now()
 	defer func() {
 		end := time.Now()
@@ -44,7 +59,7 @@ func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
 			code = resp.StatusCode
 		}
 
-		labels := makeLabels(c.Name, req.Method, code)
+		labels := makeLabels(w.name, req.Method, code)
 
 		metricRequests.With(labels).Inc()
 		if err != nil {
@@ -57,22 +72,24 @@ func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
 	const userAgentHeader = "User-Agent"
 
 	if _, ok := req.Header[userAgentHeader]; !ok {
-		if c.AsBrowser {
+		if w.asBrowser {
 			req.Header.Set(userAgentHeader, useragent.Browser())
 		} else {
 			req.Header.Set(userAgentHeader, useragent.Bot())
 		}
 	}
 
+	return w.inner.RoundTrip(req)
+}
+
+func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
 	resp, err = c.client().Do(req)
 	// If we got an error, and the context has been canceled,
 	// the context's error is probably more useful.
 	if err != nil {
 		ctx := req.Context()
-		select {
-		case <-ctx.Done():
-			err = ctx.Err()
-		default:
+		if ctxErr := ctx.Err(); ctxErr != nil {
+			err = ctxErr
 		}
 	}
 	return resp, err
