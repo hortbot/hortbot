@@ -30,7 +30,7 @@ func SetLocalLockTimeout(timeout time.Duration) func(context.Context, *sql.Tx) e
 // Transact begins a transaction, executes a sequence of functions on that
 // transaction, and commits. If any of the functions returns a non-nil error
 // or panics, execution is halted and the transaction will be rolled back.
-func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql.Tx) error) (err error) {
+func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql.Tx) error) (retErr error) {
 	if len(fns) == 0 {
 		panic("no fns")
 	}
@@ -47,26 +47,18 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 
 	defer func() {
 		if rollback {
-			if rerr := tx.Rollback(); err == nil && rerr != nil {
-				err = rerr
+			if err := tx.Rollback(); retErr == nil && err != nil {
+				retErr = err
 			}
 		}
 	}()
 
-	err = func() error {
-		for _, fn := range fns {
-			if err := fn(ctx, tx); err != nil {
-				return err
-			}
+	for _, fn := range fns {
+		if err := fn(ctx, tx); err != nil {
+			return err
 		}
-		return nil
-	}()
-	rollback = false
-
-	if err != nil {
-		_ = tx.Rollback()
-		return err
 	}
 
+	rollback = false
 	return tx.Commit()
 }
