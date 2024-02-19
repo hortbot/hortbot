@@ -219,24 +219,26 @@ func (s *state[_]) isLimited() bool {
 	return s.size >= s.sizeLimit
 }
 
-func getState2[K comparable](ctx context.Context, a, b chan *state[K]) (state *state[K], err error) {
+func getState2[T any](ctx context.Context, a, b <-chan T) (state T, err error) {
 	select {
 	case state = <-a:
 	case state = <-b:
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		var zero T
+		return zero, ctx.Err()
 	}
 	return state, nil
 }
 
-func getState4[K comparable](ctx context.Context, a, b, c, d chan *state[K]) (state *state[K], err error) {
+func getState4[T any](ctx context.Context, a, b, c, d <-chan T) (state T, err error) {
 	select {
 	case state = <-a:
 	case state = <-b:
 	case state = <-c:
 	case state = <-d:
 	case <-ctx.Done():
-		return nil, ctx.Err()
+		var zero T
+		return zero, ctx.Err()
 	}
 	return state, nil
 }
