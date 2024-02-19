@@ -38,6 +38,17 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 				return fmt.Errorf("pinging database: %w", err)
 			}
 
+			rows, err := db.Query("SELECT * FROM pg_catalog.pg_tables")
+			if err != nil {
+				return fmt.Errorf("querying database: %w", err)
+			}
+			if err := rows.Close(); err != nil {
+				return fmt.Errorf("closing rows: %w", err)
+			}
+			if err := rows.Err(); err != nil {
+				return fmt.Errorf("checking rows: %w", err)
+			}
+
 			return nil
 		},
 		ExpirySecs: 300,
