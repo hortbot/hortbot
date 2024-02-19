@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/fortytw2/leaktest"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/robfig/cron/v3"
 	"gotest.tools/v3/assert"
@@ -274,19 +275,11 @@ func TestImpossibleCron(t *testing.T) {
 }
 
 func mustParseTime(s string) time.Time {
-	t, err := time.Parse(time.RFC3339, s)
-	if err != nil {
-		panic(err)
-	}
-	return t
+	return must.Must(time.Parse(time.RFC3339, s))
 }
 
 func mustParseCron(s string) *repeat.Cron {
-	e, err := repeat.ParseCron(s)
-	if err != nil {
-		panic(err)
-	}
-	return e
+	return must.Must(repeat.ParseCron(s))
 }
 
 //nolint:golint,revive

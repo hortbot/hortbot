@@ -27,3 +27,19 @@ func TestMustPanic(t *testing.T) {
 		must.Must(1234, err)
 	}, err)
 }
+
+func TestNilErrorOK(t *testing.T) {
+	t.Parallel()
+
+	must.NilError(nil)
+}
+
+func TestNilErrorPanic(t *testing.T) {
+	t.Parallel()
+
+	err := errors.New("an error")
+
+	assertx.Panic(t, func() {
+		must.NilError(err)
+	}, err)
+}

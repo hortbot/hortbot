@@ -19,6 +19,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
@@ -867,15 +868,7 @@ func trimSeconds(d string) string {
 	return strings.TrimSuffix(d, "0s")
 }
 
-var easternTime = mustLoadLocation("America/New_York")
-
-func mustLoadLocation(name string) *time.Location {
-	l, err := time.LoadLocation(name)
-	if err != nil {
-		panic(err)
-	}
-	return l
-}
+var easternTime = must.Must(time.LoadLocation("America/New_York"))
 
 func parseUntilTimestamp(timestamp string) (time.Time, error) {
 	if timestamp == "" {

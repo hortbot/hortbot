@@ -8,6 +8,7 @@ import (
 	_ "embed" // For go:embed.
 
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/mroth/weightedrand/v2"
 )
@@ -39,16 +40,11 @@ const minThreshold = 100
 var chooser *weightedrand.Chooser[string, int]
 
 func init() {
-	r, err := gzip.NewReader(bytes.NewReader(agents))
-	if err != nil {
-		panic(err)
-	}
+	r := must.Must(gzip.NewReader(bytes.NewReader(agents)))
 
 	var entries []*entry
 
-	if err := jsonx.DecodeSingle(r, &entries); err != nil {
-		panic(err)
-	}
+	must.NilError(jsonx.DecodeSingle(r, &entries))
 
 	minWeight := entries[0].Weight
 	for _, e := range entries {
@@ -75,10 +71,7 @@ func init() {
 		choices = append(choices, choice)
 	}
 
-	chooser, err = weightedrand.NewChooser(choices...)
-	if err != nil {
-		panic(err)
-	}
+	chooser = must.Must(weightedrand.NewChooser(choices...))
 }
 
 var botUserAgent = "HortBot/" + version.Version()

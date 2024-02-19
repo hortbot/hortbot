@@ -9,6 +9,7 @@ import (
 
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -221,10 +222,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 		return err
 	}
 
-	expr, err := repeat.ParseCron(scheduled.CronExpression)
-	if err != nil {
-		panic(err)
-	}
+	expr := must.Must(repeat.ParseCron(scheduled.CronExpression))
 
 	if enable {
 		err = s.Deps.AddScheduled(ctx, scheduled.ID, expr)

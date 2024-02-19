@@ -3,6 +3,8 @@ package fakeirc
 import (
 	"crypto/tls"
 	"crypto/x509"
+
+	"github.com/hortbot/hortbot/internal/pkg/must"
 )
 
 // From the TLS docs.
@@ -110,10 +112,7 @@ var TLSConfig = &tls.Config{
 } // #nosec G402
 
 func setupCerts() (tls.Certificate, *x509.CertPool) {
-	testCert, err := tls.X509KeyPair([]byte(certPem), []byte(keyPem))
-	if err != nil {
-		panic(err)
-	}
+	testCert := must.Must(tls.X509KeyPair([]byte(certPem), []byte(keyPem)))
 
 	certPool := x509.NewCertPool()
 	certPool.AppendCertsFromPEM([]byte(certPem))

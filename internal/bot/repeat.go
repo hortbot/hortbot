@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
@@ -432,10 +433,7 @@ func updateScheduleds(ctx context.Context, deps *sharedDeps, scheduleds []*model
 			continue
 		}
 
-		expr, err := repeat.ParseCron(scheduled.CronExpression)
-		if err != nil {
-			panic(err)
-		}
+		expr := must.Must(repeat.ParseCron(scheduled.CronExpression))
 
 		if err := deps.AddScheduled(ctx, scheduled.ID, expr); err != nil {
 			return err

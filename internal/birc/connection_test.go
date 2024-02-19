@@ -14,6 +14,7 @@ import (
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/birc/fakeirc"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/jakebailey/irc"
 	"gotest.tools/v3/assert"
 )
@@ -758,8 +759,7 @@ func TestConnectionBadMessage(t *testing.T) {
 			buf.ReadFrom(server) //nolint:errcheck
 		}()
 
-		_, err := server.Write([]byte(":\r\n"))
-		must(err)
+		must.Must(server.Write([]byte(":\r\n")))
 
 		time.Sleep(100 * time.Millisecond)
 		server.Close()
@@ -961,11 +961,5 @@ func readUntilAndClose(r io.ReadCloser, s string) {
 			r.Close()
 			return
 		}
-	}
-}
-
-func must(err error) {
-	if err != nil {
-		panic(err)
 	}
 }
