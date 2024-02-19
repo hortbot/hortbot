@@ -15,7 +15,7 @@ func TestBan(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1
 	const modID = 123
@@ -38,7 +38,7 @@ func TestBanBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1
 	const modID = 123
@@ -84,7 +84,7 @@ func TestBanErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const modID = 123
 	tok := tokFor(ctx, t, tw, ft, modID)
@@ -115,7 +115,7 @@ func TestUnban(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1234
 	const modID = 3141
@@ -134,7 +134,7 @@ func TestUnbanBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1234
 	const modID = 3141
@@ -157,7 +157,7 @@ func TestUnbanErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const modID = 3141
 	tok := tokFor(ctx, t, tw, ft, modID)
@@ -182,7 +182,7 @@ func TestSetChatColor(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const userID = 1234
 	tok := tokFor(ctx, t, tw, ft, userID)
@@ -200,7 +200,7 @@ func TestSetChatColorBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const userID = 1234
 	tok := tokFor(ctx, t, tw, ft, userID)
@@ -222,7 +222,7 @@ func TestSetChatColorErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	tok := tokFor(ctx, t, tw, ft, 777)
 
@@ -246,7 +246,7 @@ func TestDeleteChatMessage(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1234
 	const modID = 3141
@@ -265,7 +265,7 @@ func TestDeleteChatMessageBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1234
 	const modID = 3141
@@ -288,7 +288,7 @@ func TestDeleteChatMessageErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const modID = 3141
 	tok := tokFor(ctx, t, tw, ft, modID)
@@ -313,7 +313,7 @@ func TestClearChat(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1234
 	const modID = 3141
@@ -332,7 +332,7 @@ func TestClearChatBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1234
 	const modID = 3141
@@ -351,7 +351,7 @@ func TestClearChatErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const modID = 3141
 	tok := tokFor(ctx, t, tw, ft, modID)
@@ -380,7 +380,7 @@ func TestUpdateChatSettings(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1
 	const modID = 123
@@ -401,7 +401,7 @@ func TestUpdateChatSettingsBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1
 	const modID = 123
@@ -441,7 +441,7 @@ func TestUpdateChatSettingsErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const modID = 123
 	tok := tokFor(ctx, t, tw, ft, modID)
@@ -470,7 +470,7 @@ func TestAnnounce(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1
 	const modID = 123
@@ -489,7 +489,7 @@ func TestAnnounceBadParameters(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const broadcasterID = 1
 	const modID = 123
@@ -512,7 +512,7 @@ func TestAnnounceErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const modID = 123
 	tok := tokFor(ctx, t, tw, ft, modID)

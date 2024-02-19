@@ -17,30 +17,26 @@ import (
 //
 // This type is similar to ctxhttp's functions, but does not copy requests unnecessarily.
 type Client struct {
-	// Client is the HTTP client that will be used. If nil, http.DefaultClient will be used.
-	Client *http.Client
-
-	// AsBrowser instructs the client to perform the request like a browser.
-	AsBrowser bool
-
-	// Name is the name of the client, for metrics.
-	Name string
+	client *http.Client
 }
 
-func (c *Client) client() *http.Client {
-	client := *http.DefaultClient
-	if c.Client != nil {
-		client = *c.Client
+func NewClient(cli *http.Client, name string, asBrowser bool) Client {
+	if cli == nil {
+		panic("nil http.Client")
 	}
+	client := *cli
 	if client.Transport == nil {
 		client.Transport = http.DefaultTransport
 	}
 	client.Transport = &wrappedTransport{
 		inner:     client.Transport,
-		asBrowser: c.AsBrowser,
-		name:      c.Name,
+		asBrowser: asBrowser,
+		name:      name,
 	}
-	return &client
+
+	return Client{
+		client: &client,
+	}
 }
 
 type wrappedTransport struct {
@@ -83,7 +79,7 @@ func (w *wrappedTransport) RoundTrip(req *http.Request) (resp *http.Response, er
 }
 
 func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
-	resp, err = c.client().Do(req)
+	resp, err = c.client.Do(req)
 	// If we got an error, and the context has been canceled,
 	// the context's error is probably more useful.
 	if err != nil {
@@ -126,5 +122,5 @@ func (c *Client) PostForm(ctx context.Context, url string, data url.Values, extr
 // AsOAuth2Client registers the client as the client to use in the OAuth2 library.
 // The context returned by this function should be used when calling OAuth2 related functions.
 func (c *Client) AsOAuth2Client(ctx context.Context) context.Context {
-	return context.WithValue(ctx, oauth2.HTTPClient, c.client())
+	return context.WithValue(ctx, oauth2.HTTPClient, c.client)
 }

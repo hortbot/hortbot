@@ -29,28 +29,9 @@ type Client struct {
 var _ API = (*Client)(nil)
 
 // New creates a new Urban Dictionary client.
-func New(opts ...Option) *Client {
-	c := &Client{
-		cli: httpx.Client{
-			Name: "simple",
-		},
-	}
-
-	for _, opt := range opts {
-		opt(c)
-	}
-
-	return c
-}
-
-// Option controls client functionality.
-type Option func(*Client)
-
-// HTTPClient sets the Urban client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(c *Client) {
-		c.cli.Client = cli
+func New(cli *http.Client) *Client {
+	return &Client{
+		cli: httpx.NewClient(cli, "simple", false),
 	}
 }
 

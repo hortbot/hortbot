@@ -38,33 +38,14 @@ type LastFM struct {
 var _ API = (*LastFM)(nil)
 
 // New creates a new LastFM client.
-func New(apiKey string, opts ...Option) *LastFM {
+func New(apiKey string, cli *http.Client) *LastFM {
 	if apiKey == "" {
 		panic("empty apiKey")
 	}
 
-	l := &LastFM{
+	return &LastFM{
 		apiKey: apiKey,
-		cli: httpx.Client{
-			Name: "lastfm",
-		},
-	}
-
-	for _, o := range opts {
-		o(l)
-	}
-
-	return l
-}
-
-// Option controls client functionality.
-type Option func(*LastFM)
-
-// HTTPClient sets the LastFM client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(l *LastFM) {
-		l.cli.Client = cli
+		cli:    httpx.NewClient(cli, "lastfm", false),
 	}
 }
 

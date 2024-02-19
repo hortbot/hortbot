@@ -58,7 +58,7 @@ func TestGetComic(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
-		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
+		x := xkcd.New(&http.Client{Transport: mt})
 
 		comic, err := x.GetComic(context.Background(), 1)
 		assert.NilError(t, err)
@@ -70,21 +70,21 @@ func TestGetComic(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
+		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 77777)
 		assert.Equal(t, err, xkcd.ErrNotFound)
 	})
 
 	t.Run("Client error", func(t *testing.T) {
-		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
+		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 99999)
 		assert.ErrorContains(t, err, errTest.Error())
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
-		x := xkcd.New(xkcd.HTTPClient(&http.Client{Transport: mt}))
+		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 88888)
 		assert.ErrorContains(t, err, "unexpected EOF")

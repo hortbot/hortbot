@@ -27,7 +27,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, `{"list": [{"definition": "This is [some] definition. [Wow]."}, {"definition": "This is a [second] definition. [Wow]."}]}`))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		def, err := ti.Define(ctx, phrase)
 		assert.NilError(t, err)
@@ -40,7 +40,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewErrorResponder(testErr))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
 		assert.ErrorContains(t, err, testErr.Error())
@@ -50,7 +50,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(404, ""))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
 		assert.Equal(t, err, urban.ErrNotFound)
@@ -60,7 +60,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, "{}"))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
 		assert.Equal(t, err, urban.ErrNotFound)
@@ -70,7 +70,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(500, ""))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
 		assert.Equal(t, err, urban.ErrServerError)
@@ -80,7 +80,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(418, ""))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
 		assert.Equal(t, err, urban.ErrUnknown)
@@ -90,7 +90,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, "}"))
 
-		ti := urban.New(urban.HTTPClient(&http.Client{Transport: mt}))
+		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
 		assert.Equal(t, err, urban.ErrServerError)

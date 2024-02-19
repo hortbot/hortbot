@@ -17,7 +17,7 @@ func TestGetUserForToken(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	c := &twitch.Channel{
 		ID:    1234,
@@ -48,7 +48,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	c := &twitch.Channel{
 		ID:    503,
@@ -75,7 +75,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	c := &twitch.Channel{
 		ID:   777,
@@ -101,7 +101,7 @@ func TestGetUserForTokenRequestError(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, _, err := tw.GetUserByToken(ctx, &oauth2.Token{AccessToken: "requesterror"})
 	assert.ErrorContains(t, err, errTestBadRequest.Error())
@@ -122,7 +122,7 @@ func TestGetUserForUsername(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	u, err := tw.GetUserByUsername(ctx, "foobar")
 	assert.NilError(t, err)
@@ -148,7 +148,7 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "servererror")
 	assert.Equal(t, err, twitch.ErrServerError)
@@ -169,7 +169,7 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "notfound")
 	assert.Equal(t, err, twitch.ErrNotFound)
@@ -190,7 +190,7 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "notfound2")
 	assert.Equal(t, err, twitch.ErrNotFound)
@@ -211,7 +211,7 @@ func TestGetUserForUsernameDecodeError(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "requesterror")
 	assert.ErrorContains(t, err, errTestBadRequest.Error())
@@ -232,7 +232,7 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "decodeerror")
 	assert.Equal(t, err, twitch.ErrServerError)
@@ -253,7 +253,7 @@ func TestGetUserForID(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	u, err := tw.GetUserByID(ctx, 1234)
 	assert.NilError(t, err)
@@ -282,7 +282,7 @@ func TestGetModeratedChannelsOK(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const id = 123
 	tok := tokFor(ctx, t, tw, ft, id)
@@ -320,7 +320,7 @@ func TestGetModeratedChannelsErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	id := int64(777)
 	tok := tokFor(ctx, t, tw, ft, id)

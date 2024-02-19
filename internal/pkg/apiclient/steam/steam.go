@@ -27,34 +27,15 @@ type Steam struct {
 
 var _ API = (*Steam)(nil)
 
-// Option controls client functionality.
-type Option func(*Steam)
-
 // New creates a new Steam API client.
-func New(apiKey string, opts ...Option) *Steam {
+func New(apiKey string, cli *http.Client) *Steam {
 	if apiKey == "" {
 		panic("empty apiKey")
 	}
 
-	s := &Steam{
+	return &Steam{
 		apiKey: apiKey,
-		cli: httpx.Client{
-			Name: "steam",
-		},
-	}
-
-	for _, opt := range opts {
-		opt(s)
-	}
-
-	return s
-}
-
-// HTTPClient sets the Steam client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(s *Steam) {
-		s.cli.Client = cli
+		cli:    httpx.NewClient(cli, "steam", false),
 	}
 }
 

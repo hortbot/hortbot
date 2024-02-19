@@ -26,29 +26,9 @@ type ExtraLife struct {
 var _ API = &ExtraLife{}
 
 // New creates a new Extra-Life API client.
-func New(opts ...Option) *ExtraLife {
-	e := &ExtraLife{
-		cli: httpx.Client{
-			Name: "extralife",
-		},
-	}
-
-	for _, opt := range opts {
-		opt(e)
-	}
-
-	return e
-}
-
-// Option controls client functionality.
-type Option func(*ExtraLife)
-
-// HTTPClient sets the HTTP client used when making requests to the Extra-Life
-// API. If given a nil client (or not set), the client will use the default
-// HTTP client in net/http.
-func HTTPClient(cli *http.Client) Option {
-	return func(e *ExtraLife) {
-		e.cli.Client = cli
+func New(cli *http.Client) *ExtraLife {
+	return &ExtraLife{
+		cli: httpx.NewClient(cli, "extralife", false),
 	}
 }
 

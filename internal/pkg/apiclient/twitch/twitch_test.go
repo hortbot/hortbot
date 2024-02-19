@@ -2,6 +2,7 @@ package twitch_test
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -47,20 +48,24 @@ func TestNewPanic(t *testing.T) {
 	}
 
 	assert.Equal(t, checkPanic(func() {
-		twitch.New(clientID, clientSecret, redirectURL)
+		twitch.New(clientID, clientSecret, redirectURL, http.DefaultClient)
 	}), nil)
 
 	assert.Equal(t, checkPanic(func() {
-		twitch.New("", clientSecret, redirectURL)
+		twitch.New("", clientSecret, redirectURL, http.DefaultClient)
 	}), "empty clientID")
 
 	assert.Equal(t, checkPanic(func() {
-		twitch.New(clientID, "", redirectURL)
+		twitch.New(clientID, "", redirectURL, http.DefaultClient)
 	}), "empty clientSecret")
 
 	assert.Equal(t, checkPanic(func() {
-		twitch.New(clientID, clientSecret, "")
+		twitch.New(clientID, clientSecret, "", http.DefaultClient)
 	}), "empty redirectURL")
+
+	assert.Equal(t, checkPanic(func() {
+		twitch.New(clientID, clientSecret, redirectURL, nil)
+	}), "nil http.Client")
 }
 
 func TestAuthExchange(t *testing.T) {
@@ -72,7 +77,7 @@ func TestAuthExchange(t *testing.T) {
 
 	const state = "some-state"
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	assert.Equal(t,
 		tw.AuthCodeURL(state, nil),

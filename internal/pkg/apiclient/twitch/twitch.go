@@ -120,7 +120,7 @@ type Option func(*Twitch)
 
 // New creates a new Twitch client. A client ID, client secret, and redirect
 // URL are required; if not provided, New will panic.
-func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
+func New(clientID, clientSecret, redirectURL string, cli *http.Client) *Twitch {
 	switch {
 	case clientID == "":
 		panic("empty clientID")
@@ -139,13 +139,7 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 			RedirectURL:  redirectURL,
 			Scopes:       UserScopes,
 		},
-		cli: httpx.Client{
-			Name: "twitch",
-		},
-	}
-
-	for _, opt := range opts {
-		opt(t)
+		cli: httpx.NewClient(cli, "twitch", false),
 	}
 
 	cconf := &clientcredentials.Config{
@@ -165,14 +159,6 @@ func New(clientID, clientSecret, redirectURL string, opts ...Option) *Twitch {
 	}
 
 	return t
-}
-
-// HTTPClient sets the Twitch client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(t *Twitch) {
-		t.cli.Client = cli
-	}
 }
 
 // AuthCodeURL returns a URL a user can visit to grant permission for the

@@ -18,7 +18,7 @@ func TestGetChannelModeratorsOK(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const id = 123
 	tok := tokFor(ctx, t, tw, ft, id)
@@ -53,7 +53,7 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	id := int64(777)
 	tok := tokFor(ctx, t, tw, ft, id)
@@ -88,7 +88,7 @@ func TestGetChannelModeratorsEsoteric(t *testing.T) {
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	const id = 999
 	tok := tokFor(ctx, t, tw, ft, id)
@@ -213,7 +213,7 @@ func TestGetChannelByID(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	t.Run("Success", func(t *testing.T) {
 		ctx, cancel := testContext(t)

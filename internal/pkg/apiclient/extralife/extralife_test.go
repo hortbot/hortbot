@@ -51,7 +51,7 @@ func TestGetDonationAmount(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
-		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
+		el := extralife.New(&http.Client{Transport: mt})
 
 		amount, err := el.GetDonationAmount(context.Background(), 200)
 		assert.NilError(t, err)
@@ -59,21 +59,21 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
-		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
+		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 404)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "extralife", StatusCode: 404})
 	})
 
 	t.Run("Server error", func(t *testing.T) {
-		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
+		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 500)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "extralife", StatusCode: 500})
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
-		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
+		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 777)
 		e, ok := err.(*apiclient.Error)
@@ -87,7 +87,7 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Client error", func(t *testing.T) {
-		el := extralife.New(extralife.HTTPClient(&http.Client{Transport: mt}))
+		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 999)
 		assert.ErrorContains(t, err, errTest.Error())

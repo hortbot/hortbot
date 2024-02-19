@@ -16,7 +16,7 @@ import (
 
 func TestNew(t *testing.T) {
 	assertx.Panic(t, func() {
-		steam.New("")
+		steam.New("", nil)
 	}, "empty apiKey")
 }
 
@@ -48,7 +48,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, response))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		summary, err := s.GetPlayerSummary(ctx, id)
 		assert.NilError(t, err)
@@ -72,7 +72,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, response))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 404})
@@ -82,7 +82,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "{"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.ErrorContains(t, err, "unexpected EOF")
@@ -92,7 +92,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 404})
@@ -102,7 +102,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 500})
@@ -112,7 +112,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 403})
@@ -122,7 +122,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 418})
@@ -133,7 +133,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
 		assert.ErrorContains(t, err, testErr.Error())
@@ -169,7 +169,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, response))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		games, err := s.GetOwnedGames(ctx, id)
 		assert.NilError(t, err)
@@ -190,7 +190,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "{"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
 		assert.ErrorContains(t, err, "unexpected EOF")
@@ -200,7 +200,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 404})
@@ -210,7 +210,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 500})
@@ -220,7 +220,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 403})
@@ -230,7 +230,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "steam", StatusCode: 418})
@@ -241,7 +241,7 @@ func TestGetOwnedGames(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))
 
-		s := steam.New(apiKey, steam.HTTPClient(&http.Client{Transport: mt}))
+		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
 		assert.ErrorContains(t, err, testErr.Error())

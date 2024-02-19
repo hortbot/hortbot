@@ -74,21 +74,21 @@ func (args *Bot) New(
 ) *bot.Bot {
 	var lastFM lastfm.API
 	if args.LastFMKey != "" {
-		lastFM = lastfm.New(args.LastFMKey, lastfm.HTTPClient(httpClient))
+		lastFM = lastfm.New(args.LastFMKey, httpClient)
 	} else {
 		ctxlog.Warn(ctx, "no LastFM API key provided, functionality will be disabled")
 	}
 
 	var steamAPI steam.API
 	if args.SteamKey != "" {
-		steamAPI = steam.New(args.SteamKey, steam.HTTPClient(httpClient))
+		steamAPI = steam.New(args.SteamKey, httpClient)
 	} else {
 		ctxlog.Warn(ctx, "no Steam API key provided, functionality will be disabled")
 	}
 
 	var youtubeAPI youtube.API
 	if args.YouTubeKey != "" {
-		youtubeAPI = youtube.New(args.YouTubeKey, youtube.HTTPClient(httpClient))
+		youtubeAPI = youtube.New(args.YouTubeKey, httpClient)
 	} else {
 		ctxlog.Warn(ctx, "no YouTube API key provided, functionality will be disabled")
 	}
@@ -104,14 +104,14 @@ func (args *Bot) New(
 		Notifier:           notifier,
 		LastFM:             lastFM,
 		YouTube:            youtubeAPI,
-		XKCD:               xkcd.New(xkcd.HTTPClient(httpClient)),
-		ExtraLife:          extralife.New(extralife.HTTPClient(httpClient)),
+		XKCD:               xkcd.New(httpClient),
+		ExtraLife:          extralife.New(httpClient),
 		Twitch:             twitchAPI,
 		Steam:              steamAPI,
-		TinyURL:            tinyurl.New(tinyurl.HTTPClient(httpClient)),
-		Urban:              urban.New(urban.HTTPClient(httpClient)),
-		Simple:             simple.New(simple.HTTPClient(untrustedClient)),
-		HLTB:               hltb.New(hltb.HTTPClient(untrustedClient)),
+		TinyURL:            tinyurl.New(httpClient),
+		Urban:              urban.New(httpClient),
+		Simple:             simple.New(untrustedClient),
+		HLTB:               hltb.New(untrustedClient),
 		Admins:             args.Admins,
 		SuperAdmins:        args.SuperAdmins,
 		WhitelistEnabled:   args.WhitelistEnabled,

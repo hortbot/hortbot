@@ -23,7 +23,7 @@ func TestGetStream(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	want := &twitch.Stream{
 		ID:          512301723123,

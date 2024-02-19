@@ -74,7 +74,7 @@ func TestSearchGame(t *testing.T) {
 				"displayModifier": null
 			}`))
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 
 		game, err := h.SearchGame(ctx, "Half-Life Alyx")
 		assert.NilError(t, err)
@@ -143,7 +143,7 @@ func TestSearchGame(t *testing.T) {
 				"displayModifier": null
 			}`))
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 
 		game, err := h.SearchGame(ctx, "Half-Life Alyx")
 		assert.NilError(t, err)
@@ -172,7 +172,7 @@ func TestSearchGame(t *testing.T) {
 			},
 		)
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 		_, _ = h.SearchGame(ctx, query)
 	})
 
@@ -183,7 +183,7 @@ func TestSearchGame(t *testing.T) {
 			"https://howlongtobeat.com/api/search",
 			httpmock.NewStringResponder(200, `{"color":"blue","title":"","category":"games","pageCurrent":1,"pageTotal":null,"pageSize":20,"data":[],"displayModifier":null}`))
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
 		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
@@ -196,7 +196,7 @@ func TestSearchGame(t *testing.T) {
 			"https://howlongtobeat.com/api/search",
 			httpmock.NewStringResponder(404, `{"color":"blue","title":"","category":"games","pageCurrent":1,"pageTotal":null,"pageSize":20,"data":[],"displayModifier":null}`))
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
 		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
@@ -209,7 +209,7 @@ func TestSearchGame(t *testing.T) {
 			"https://howlongtobeat.com/api/search",
 			httpmock.NewStringResponder(500, `{}`))
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
 		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 500})
@@ -222,7 +222,7 @@ func TestSearchGame(t *testing.T) {
 			"https://howlongtobeat.com/api/search",
 			httpmock.NewStringResponder(200, ``))
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "Half-Life Alyx")
 		assert.Error(t, err, "hltb: error decoding response: EOF")
@@ -241,7 +241,7 @@ func TestSearchGame(t *testing.T) {
 			},
 		)
 
-		h := hltb.New(hltb.HTTPClient(&http.Client{Transport: mt}))
+		h := hltb.New(&http.Client{Transport: mt})
 		_, err := h.SearchGame(ctx, "Half-Life Alyx")
 		assert.ErrorContains(t, err, errTest.Error())
 	})

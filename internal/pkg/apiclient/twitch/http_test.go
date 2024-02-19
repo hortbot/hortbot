@@ -3,9 +3,11 @@ package twitch
 import (
 	"context"
 	"errors"
+	"net/http"
 	"testing"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x/oauth2xmocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
@@ -84,6 +86,7 @@ func TestHTTPClient(t *testing.T) {
 		defer cancel()
 
 		c := &httpClient{
+			cli: httpx.NewClient(http.DefaultClient, "test", false),
 			ts: &oauth2xmocks.TokenSourceMock{
 				TokenFunc: func() (*oauth2.Token, error) {
 					return &oauth2.Token{}, nil

@@ -22,7 +22,7 @@ func TestSearchCategories(t *testing.T) {
 
 	ft.setClientTokens(tok)
 
-	tw := twitch.New(clientID, clientSecret, redirectURL, twitch.HTTPClient(cli))
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	t.Run("Success", func(t *testing.T) {
 		ctx, cancel := testContext(t)

@@ -28,33 +28,14 @@ type YouTube struct {
 var _ API = &YouTube{}
 
 // New creates a new YouTube client.
-func New(apiKey string, opts ...Option) *YouTube {
+func New(apiKey string, cli *http.Client) *YouTube {
 	if apiKey == "" {
 		panic("empty apiKey")
 	}
 
-	yt := &YouTube{
+	return &YouTube{
 		apiKey: apiKey,
-		cli: httpx.Client{
-			Name: "youtube",
-		},
-	}
-
-	for _, o := range opts {
-		o(yt)
-	}
-
-	return yt
-}
-
-// Option controls client functionality.
-type Option func(*YouTube)
-
-// HTTPClient sets the YouTube client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(y *YouTube) {
-		y.cli.Client = cli
+		cli:    httpx.NewClient(cli, "youtube", false),
 	}
 }
 

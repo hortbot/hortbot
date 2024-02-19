@@ -18,7 +18,7 @@ import (
 
 func TestNew(t *testing.T) {
 	assertx.Panic(t, func() {
-		lastfm.New("")
+		lastfm.New("", nil)
 	}, "empty apiKey")
 }
 
@@ -38,7 +38,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, apiResponse))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		tracks, err := lp.RecentTracks(ctx, user, limit)
 		assert.NilError(t, err)
@@ -64,7 +64,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, api404))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 404})
@@ -74,7 +74,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "<"))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
 		assert.ErrorContains(t, err, "XML syntax error")
@@ -84,7 +84,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 500})
@@ -94,7 +94,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 403})
@@ -104,7 +104,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
 		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 418})
@@ -115,7 +115,7 @@ func TestRecentTracks(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))
 
-		lp := lastfm.New(apiKey, lastfm.HTTPClient(&http.Client{Transport: mt}))
+		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
 		assert.ErrorContains(t, err, testErr.Error())

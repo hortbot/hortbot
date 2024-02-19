@@ -30,28 +30,9 @@ type TinyURL struct {
 var _ API = (*TinyURL)(nil)
 
 // New creates a new TinyURL API client.
-func New(opts ...Option) *TinyURL {
-	t := &TinyURL{
-		cli: httpx.Client{
-			Name: "tinyurl",
-		},
-	}
-
-	for _, opt := range opts {
-		opt(t)
-	}
-
-	return t
-}
-
-// Option controls client functionality.
-type Option func(*TinyURL)
-
-// HTTPClient sets the TinyURL client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(s *TinyURL) {
-		s.cli.Client = cli
+func New(cli *http.Client) *TinyURL {
+	return &TinyURL{
+		cli: httpx.NewClient(cli, "tinyurl", false),
 	}
 }
 

@@ -19,5 +19,5 @@ var Default = Twitch{}
 
 // Client returns a new Twitch API client.
 func (args *Twitch) Client(httpClient *http.Client) *twitch.Twitch {
-	return twitch.New(args.ClientID, args.ClientSecret, args.RedirectURL, twitch.HTTPClient(httpClient))
+	return twitch.New(args.ClientID, args.ClientSecret, args.RedirectURL, httpClient)
 }

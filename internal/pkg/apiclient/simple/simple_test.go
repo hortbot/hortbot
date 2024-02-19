@@ -22,7 +22,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(200, "This is some text."))
 
-		sc := simple.New(simple.HTTPClient(&http.Client{Transport: mt}))
+		sc := simple.New(&http.Client{Transport: mt})
 
 		body, err := sc.Plaintext(ctx, apiURL)
 		assert.NilError(t, err)
@@ -35,7 +35,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewErrorResponder(testErr))
 
-		sc := simple.New(simple.HTTPClient(&http.Client{Transport: mt}))
+		sc := simple.New(&http.Client{Transport: mt})
 
 		_, err := sc.Plaintext(ctx, apiURL)
 		assert.ErrorContains(t, err, testErr.Error())
@@ -45,7 +45,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(404, "not found"))
 
-		sc := simple.New(simple.HTTPClient(&http.Client{Transport: mt}))
+		sc := simple.New(&http.Client{Transport: mt})
 
 		body, err := sc.Plaintext(ctx, apiURL)
 		assert.Equal(t, body, "not found")
@@ -56,7 +56,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(500, "error!"))
 
-		sc := simple.New(simple.HTTPClient(&http.Client{Transport: mt}))
+		sc := simple.New(&http.Client{Transport: mt})
 
 		body, err := sc.Plaintext(ctx, apiURL)
 		assert.Equal(t, body, "error!")
@@ -69,7 +69,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(201, text))
 
-		sc := simple.New(simple.HTTPClient(&http.Client{Transport: mt}))
+		sc := simple.New(&http.Client{Transport: mt})
 
 		body, err := sc.Plaintext(ctx, apiURL)
 		assert.NilError(t, err)
@@ -83,7 +83,7 @@ func TestDefine(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.ResponderFromResponse(response))
 
-		sc := simple.New(simple.HTTPClient(&http.Client{Transport: mt}))
+		sc := simple.New(&http.Client{Transport: mt})
 
 		_, err := sc.Plaintext(ctx, apiURL)
 		assert.Equal(t, err, errBadBody)

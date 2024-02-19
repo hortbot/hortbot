@@ -40,30 +40,9 @@ type HLTB struct {
 var _ API = &HLTB{}
 
 // New creates a new HLTB client.
-func New(opts ...Option) *HLTB {
-	h := &HLTB{
-		cli: httpx.Client{
-			Name:      "hltb",
-			AsBrowser: true,
-		},
-	}
-
-	for _, opt := range opts {
-		opt(h)
-	}
-
-	return h
-}
-
-// Option controls client functionality.
-type Option func(*HLTB)
-
-// HTTPClient sets the HTTP client used when making requests to HLTB.
-// If given a nil client (or not set), the client will use the default
-// HTTP client in net/http.
-func HTTPClient(cli *http.Client) Option {
-	return func(e *HLTB) {
-		e.cli.Client = cli
+func New(cli *http.Client) *HLTB {
+	return &HLTB{
+		cli: httpx.NewClient(cli, "hltb", true),
 	}
 }
 

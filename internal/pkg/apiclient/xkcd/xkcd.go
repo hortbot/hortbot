@@ -35,27 +35,10 @@ type XKCD struct {
 
 var _ API = &XKCD{}
 
-// Option controls client functionality.
-type Option func(*XKCD)
-
 // New creates a new XKCD API client.
-func New(opts ...Option) *XKCD {
-	x := &XKCD{
-		cli: httpx.Client{
-			Name: "xkcd",
-		},
-	}
-	for _, opt := range opts {
-		opt(x)
-	}
-	return x
-}
-
-// HTTPClient sets the XKCD client's underlying http.Client.
-// If nil (or if this option wasn't used), http.DefaultClient will be used.
-func HTTPClient(cli *http.Client) Option {
-	return func(s *XKCD) {
-		s.cli.Client = cli
+func New(cli *http.Client) *XKCD {
+	return &XKCD{
+		cli: httpx.NewClient(cli, "xkcd", false),
 	}
 }
 

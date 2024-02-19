@@ -25,7 +25,7 @@ func TestShorten(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewStringResponder(200, shortURL))
 
-		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
+		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		short, err := tu.Shorten(ctx, longURL)
 		assert.NilError(t, err)
@@ -38,7 +38,7 @@ func TestShorten(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewErrorResponder(testErr))
 
-		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
+		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		_, err := tu.Shorten(ctx, longURL)
 		assert.ErrorContains(t, err, testErr.Error())
@@ -48,7 +48,7 @@ func TestShorten(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewStringResponder(400, ""))
 
-		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
+		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		_, err := tu.Shorten(ctx, longURL)
 		assert.Equal(t, err, tinyurl.ErrServerError)
@@ -61,7 +61,7 @@ func TestShorten(t *testing.T) {
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.ResponderFromResponse(response))
 
-		tu := tinyurl.New(tinyurl.HTTPClient(&http.Client{Transport: mt}))
+		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		_, err := tu.Shorten(ctx, longURL)
 		assert.Equal(t, err, tinyurl.ErrServerError)
