@@ -28,6 +28,7 @@ func allTables() []string {
 		"command_lists",
 		"command_infos",
 		"highlights",
+		"moderated_channels",
 	}
 }
 
