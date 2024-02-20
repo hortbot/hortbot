@@ -24,7 +24,7 @@ func TestSend(t *testing.T) {
 		assert.Assert(t, req.errChan != nil)
 		assert.Assert(t, cap(req.errChan) == 1)
 		assert.Assert(t, len(req.errChan) == 0)
-		assert.Equal(t, m, req.M)
+		assert.Equal(t, m, req.Data)
 	})
 
 	t.Run("Finish", func(t *testing.T) {
@@ -172,8 +172,8 @@ func TestJoinPart(t *testing.T) {
 			assert.Assert(t, req.errChan != nil)
 			assert.Assert(t, cap(req.errChan) == 1)
 			assert.Assert(t, len(req.errChan) == 0)
-			assert.Equal(t, ircx.NormalizeChannel(test.channel), req.Channel)
-			assert.Equal(t, test.join, req.Join)
+			assert.Equal(t, ircx.NormalizeChannel(test.channel), req.Data.Channel)
+			assert.Equal(t, test.join, req.Data.Join)
 		}
 	})
 
@@ -273,7 +273,7 @@ func TestSyncJoined(t *testing.T) {
 			assert.Assert(t, req.errChan != nil)
 			assert.Assert(t, cap(req.errChan) == 1)
 			assert.Assert(t, len(req.errChan) == 0)
-			assert.DeepEqual(t, ircx.NormalizeChannels(test...), req.Channels)
+			assert.DeepEqual(t, ircx.NormalizeChannels(test...), req.Data)
 		}
 	})
 
@@ -303,7 +303,7 @@ func TestSyncJoined(t *testing.T) {
 
 					// Check members; DeepEqual causes a hang.
 					assert.Equal(t, req.errChan, got.errChan)
-					assert.DeepEqual(t, req.Channels, got.Channels)
+					assert.DeepEqual(t, req.Data, got.Data)
 				}()
 
 				err := req.Do(ctx, reqChan, nil, nil)
@@ -342,7 +342,7 @@ func TestSyncJoined(t *testing.T) {
 
 					// Check members; DeepEqual causes a hang.
 					assert.Equal(t, req.errChan, got.errChan)
-					assert.DeepEqual(t, req.Channels, got.Channels)
+					assert.DeepEqual(t, req.Data, got.Data)
 				}
 
 				if test.stop {

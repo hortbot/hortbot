@@ -286,7 +286,7 @@ func (c *Connection) sender(ctx context.Context) error {
 
 		ctx := correlation.WithID(ctx, req.XID)
 
-		err := c.conn.Encode(req.M)
+		err := c.conn.Encode(req.Data)
 		req.Finish(err)
 		metricSent.WithLabelValues(c.config.UserConfig.Nick).Inc()
 
@@ -294,7 +294,7 @@ func (c *Connection) sender(ctx context.Context) error {
 			return errors.Wrap(err, "sending to conn")
 		}
 
-		ctxlog.Debug(ctx, "sent", zap.Any("m", req.M))
+		ctxlog.Debug(ctx, "sent", zap.Any("m", req.Data))
 	}
 }
 

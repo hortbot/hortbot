@@ -274,7 +274,7 @@ func (p *Pool) connManager(ctx context.Context) error {
 // Only return an error if the entire pool should stop.
 func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) {
 	ctx = correlation.WithID(ctx, req.XID)
-	err := p.joinPart(ctx, req.Channel, req.Join)
+	err := p.joinPart(ctx, req.Data.Channel, req.Data.Join)
 	req.Finish(err)
 	p.joinSleep(ctx)
 }
@@ -282,7 +282,7 @@ func (p *Pool) handleJoinPart(ctx context.Context, req breq.JoinPart) {
 // Only return an error if the entire pool should stop.
 func (p *Pool) handleSyncJoined(ctx context.Context, req breq.SyncJoined) {
 	ctx = correlation.WithID(ctx, req.XID)
-	toPart, toJoin := p.joinPartChanges(req.Channels)
+	toPart, toJoin := p.joinPartChanges(req.Data)
 
 	// Part first so the existing connections are freed.
 	for _, ch := range toPart {
