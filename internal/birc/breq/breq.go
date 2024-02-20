@@ -4,25 +4,19 @@ package breq
 
 import (
 	"context"
-	"sync"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
+	"github.com/hortbot/hortbot/internal/pkg/pool"
 	"github.com/jakebailey/irc"
 	"github.com/rs/xid"
 )
 
 // TODO: In the far future where Go has generics, drop all of this in favor of a single generic implementation.
 
-var errChanPool = sync.Pool{
-	New: func() any {
-		return make(chan error, 1)
-	},
-}
-
-func getErrChan() chan error {
-	return errChanPool.Get().(chan error)
-}
+var errChanPool = pool.NewPool(func() chan error {
+	return make(chan error, 1)
+})
 
 // Send is a single send request.
 type Send struct {
@@ -34,7 +28,7 @@ type Send struct {
 // NewSend creates a send request for the given message.
 func NewSend(m *irc.Message) Send {
 	return Send{
-		errChan: getErrChan(),
+		errChan: errChanPool.Get(),
 		M:       m,
 	}
 }
@@ -81,7 +75,7 @@ type JoinPart struct {
 // NewJoinPart creates a new JOIN/PART request.
 func NewJoinPart(channel string, join bool) JoinPart {
 	return JoinPart{
-		errChan: getErrChan(),
+		errChan: errChanPool.Get(),
 		Channel: ircx.NormalizeChannel(channel),
 		Join:    join,
 	}
@@ -128,7 +122,7 @@ type SyncJoined struct {
 // NewSyncJoined creates a new sync-join request.
 func NewSyncJoined(channels []string) SyncJoined {
 	return SyncJoined{
-		errChan:  getErrChan(),
+		errChan:  errChanPool.Get(),
 		Channels: ircx.NormalizeChannels(channels...),
 	}
 }

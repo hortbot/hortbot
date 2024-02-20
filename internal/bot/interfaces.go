@@ -3,8 +3,9 @@ package bot
 import (
 	"context"
 	"math/rand"
-	"sync"
 	"time"
+
+	"github.com/hortbot/hortbot/internal/pkg/pool"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Sender Notifier Rand
@@ -29,21 +30,19 @@ type pooledRand struct{}
 
 var _ Rand = pooledRand{}
 
-var randPool = sync.Pool{
-	New: func() any {
-		source := rand.NewSource(time.Now().Unix())
-		return rand.New(source) //nolint:gosec
-	},
-}
+var randPool = pool.NewPool(func() *rand.Rand {
+	source := rand.NewSource(time.Now().Unix())
+	return rand.New(source) //nolint:gosec
+})
 
 func (pooledRand) Intn(n int) int {
-	rand := randPool.Get().(*rand.Rand)
+	rand := randPool.Get()
 	defer randPool.Put(rand)
 	return rand.Intn(n)
 }
 
 func (pooledRand) Float64() float64 {
-	rand := randPool.Get().(*rand.Rand)
+	rand := randPool.Get()
 	defer randPool.Put(rand)
 	return rand.Float64()
 }

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
@@ -14,6 +13,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
+	"github.com/hortbot/hortbot/internal/pkg/pool"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -111,14 +111,12 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 	}
 }
 
-var sessionPool = sync.Pool{
-	New: func() any {
-		return &session{}
-	},
-}
+var sessionPool = pool.NewPool(func() *session {
+	return &session{}
+})
 
 func getSession() *session {
-	channel := sessionPool.Get().(*session)
+	channel := sessionPool.Get()
 	*channel = session{}
 	return channel
 }
@@ -328,14 +326,12 @@ func (b *Bot) dedupe(ctx context.Context, id string) error {
 	return nil
 }
 
-var channelPool = sync.Pool{
-	New: func() any {
-		return &models.Channel{}
-	},
-}
+var channelPool = pool.NewPool(func() *models.Channel {
+	return &models.Channel{}
+})
 
 func getChannel() *models.Channel {
-	channel := channelPool.Get().(*models.Channel)
+	channel := channelPool.Get()
 	*channel = models.Channel{}
 	return channel
 }
