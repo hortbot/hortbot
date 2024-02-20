@@ -31,12 +31,13 @@ func init() {
 		"changebot":     {fn: cmdAdminChangeBot, minLevel: levelAdmin},
 		"globalignored": {fn: cmdAdminGlobalIgnored, minLevel: levelAdmin},
 
-		"reloadrepeats":  {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
-		"deletechannel":  {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
-		"sleep":          {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
-		"syncjoined":     {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
-		"imp":            {fn: cmdAdminImp, minLevel: levelSuperAdmin},
-		"validatetokens": {fn: cmdAdminValidateTwitchTokens, minLevel: levelSuperAdmin},
+		"reloadrepeats":           {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
+		"deletechannel":           {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
+		"sleep":                   {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
+		"syncjoined":              {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
+		"imp":                     {fn: cmdAdminImp, minLevel: levelSuperAdmin},
+		"validatetokens":          {fn: cmdAdminValidateTwitchTokens, minLevel: levelSuperAdmin},
+		"updatemoderatedchannels": {fn: cmdAdminUpdateModeratedChannels, minLevel: levelSuperAdmin},
 	})
 }
 
@@ -357,4 +358,9 @@ func cmdAdminGlobalIgnored(ctx context.Context, s *session, _ string, args strin
 func cmdAdminValidateTwitchTokens(ctx context.Context, s *session, _ string, args string) error {
 	s.Deps.TriggerValidateTokens()
 	return s.Reply(ctx, "Triggered twitch token validation.")
+}
+
+func cmdAdminUpdateModeratedChannels(ctx context.Context, s *session, _ string, args string) error {
+	s.Deps.UpdateModeratedChannels()
+	return s.Reply(ctx, "Updating moderated channels.")
 }

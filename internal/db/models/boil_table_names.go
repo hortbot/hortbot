@@ -11,6 +11,7 @@ var TableNames = struct {
 	CommandLists      string
 	CustomCommands    string
 	Highlights        string
+	ModeratedChannels string
 	Quotes            string
 	RepeatedCommands  string
 	ScheduledCommands string
@@ -24,6 +25,7 @@ var TableNames = struct {
 	CommandLists:      "command_lists",
 	CustomCommands:    "custom_commands",
 	Highlights:        "highlights",
+	ModeratedChannels: "moderated_channels",
 	Quotes:            "quotes",
 	RepeatedCommands:  "repeated_commands",
 	ScheduledCommands: "scheduled_commands",

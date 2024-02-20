@@ -72,8 +72,14 @@ type Config struct {
 
 	GlobalIgnore []string
 
-	ValidateTokens    bool
+	Cron CronConfig
+
 	PassthroughPanics bool
+}
+
+type CronConfig struct {
+	ValidateTokens          bool
+	UpdateModeratedChannels bool
 }
 
 // Bot is an IRC bot. It should only be used once.
@@ -88,6 +94,9 @@ type Bot struct {
 
 	validateTokensTicker clock.Ticker
 	validateTokensManual chan struct{}
+
+	updateModeratedChannelsTicker clock.Ticker
+	updateModeratedChannelsManual chan struct{}
 
 	testingHelper *testingHelper
 
@@ -175,18 +184,25 @@ func New(config *Config) *Bot {
 	}
 
 	b := &Bot{
-		db:                   config.DB,
-		deps:                 deps,
-		noDedupe:             config.NoDedupe,
-		rep:                  repeat.New(deps.Clock),
-		validateTokensManual: make(chan struct{}, 1),
-		passthroughPanics:    config.PassthroughPanics,
+		db:                            config.DB,
+		deps:                          deps,
+		noDedupe:                      config.NoDedupe,
+		rep:                           repeat.New(deps.Clock),
+		validateTokensManual:          make(chan struct{}, 1),
+		updateModeratedChannelsManual: make(chan struct{}, 1),
+		passthroughPanics:             config.PassthroughPanics,
 	}
 
-	if config.ValidateTokens {
+	if config.Cron.ValidateTokens {
 		b.validateTokensTicker = deps.Clock.NewTicker(time.Hour)
 	} else {
 		b.validateTokensTicker = noopTicker{}
+	}
+
+	if config.Cron.UpdateModeratedChannels {
+		b.updateModeratedChannelsTicker = deps.Clock.NewTicker(time.Hour)
+	} else {
+		b.updateModeratedChannelsTicker = noopTicker{}
 	}
 
 	deps.AddRepeat = b.addRepeat
@@ -196,6 +212,7 @@ func New(config *Config) *Bot {
 	deps.ReloadRepeats = b.loadRepeats
 	deps.CountRepeats = b.rep.Count
 	deps.TriggerValidateTokens = b.triggerValidateTokensNow
+	deps.UpdateModeratedChannels = b.updateModeratedChannelsNow
 
 	if isTesting {
 		b.testingHelper = &testingHelper{}
@@ -221,6 +238,7 @@ func (b *Bot) Init(ctx context.Context) error {
 	b.g = errgroupx.FromContext(ctx)
 	b.g.Go(b.rep.Run)
 	b.g.Go(b.runValidateTokens)
+	b.g.Go(b.runUpdateModeratedChannels)
 
 	if err := b.loadRepeats(ctx); err != nil {
 		return err

@@ -124,7 +124,10 @@ func (args *Bot) New(
 		PublicJoinDisabled: args.PublicJoinDisabled,
 		BetaFeatures:       args.BetaFeatures,
 		GlobalIgnore:       args.GlobalIgnore,
-		ValidateTokens:     true,
+		Cron: bot.CronConfig{
+			ValidateTokens:          true,
+			UpdateModeratedChannels: true,
+		},
 	})
 
 	if err := b.Init(ctx); err != nil {

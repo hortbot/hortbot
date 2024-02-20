@@ -8,6 +8,8 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -107,6 +109,109 @@ func (b *Bot) runValidateTokens(ctx context.Context) error {
 func (b *Bot) triggerValidateTokensNow() {
 	select {
 	case b.validateTokensManual <- struct{}{}:
+	default:
+	}
+}
+
+func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
+	logFn := ctxlog.Debug
+	if log {
+		logFn = ctxlog.Info
+	}
+
+	logFn(ctx, "updating moderated channels")
+	start := b.deps.Clock.Now()
+
+	conflictColumns := []string{
+		models.ModeratedChannelColumns.BotName,
+		models.ModeratedChannelColumns.BroadcasterID,
+	}
+
+	err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+		botTokens, err := models.TwitchTokens(
+			models.TwitchTokenWhere.BotName.IsNotNull(),
+			qm.Where("scopes @> array['user:read:moderated_channels']"),
+		).All(ctx, tx)
+		if err != nil {
+			return err
+		}
+
+		logFn(ctx, "locking moderated_channels table")
+		if _, err := tx.ExecContext(ctx, "LOCK TABLE moderated_channels IN EXCLUSIVE MODE"); err != nil {
+			return err
+		}
+
+		start := b.deps.Clock.Now()
+
+		for _, botToken := range botTokens {
+			botName := botToken.BotName.String
+
+			logFn(ctx, "updating bot", zap.String("bot_name", botName))
+			token := modelsx.ModelToToken(botToken)
+			moderatedChannels, newToken, err := b.deps.Twitch.GetModeratedChannels(ctx, botToken.TwitchID, token)
+			if newToken != nil {
+				botToken := modelsx.TokenToModel(newToken, botToken.TwitchID, botToken.BotName, botToken.Scopes)
+				if err := modelsx.UpsertToken(ctx, tx, botToken); err != nil {
+					return err
+				}
+			}
+			if err != nil {
+				return err
+			}
+
+			for _, channel := range moderatedChannels {
+				m := &models.ModeratedChannel{
+					BotName:          botName,
+					BroadcasterID:    channel.ID.AsInt64(),
+					BroadcasterLogin: channel.Login,
+					BroadcasterName:  channel.Name,
+				}
+
+				if err := m.Upsert(ctx, tx, true, conflictColumns, boil.Infer(), boil.Infer()); err != nil {
+					return err
+				}
+			}
+
+			if err := models.ModeratedChannels(
+				models.ModeratedChannelWhere.BotName.EQ(botName),
+				models.ModeratedChannelWhere.UpdatedAt.LT(start),
+			).DeleteAll(ctx, tx); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	logFn(ctx, "updated moderated channels",
+		zap.Duration("duration", b.deps.Clock.Since(start)),
+	)
+	return nil
+}
+
+func (b *Bot) runUpdateModeratedChannels(ctx context.Context) error {
+	for {
+		log := false
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		// case <-b.updateModeratedChannelsTicker.Chan():
+		case <-b.updateModeratedChannelsManual:
+			log = true
+		}
+
+		if err := b.updateModeratedChannels(ctx, log); err != nil {
+			ctxlog.Error(ctx, "failed to update moderated channels", zap.Error(err))
+		}
+	}
+}
+
+func (b *Bot) updateModeratedChannelsNow() {
+	select {
+	case b.updateModeratedChannelsManual <- struct{}{}:
 	default:
 	}
 }
