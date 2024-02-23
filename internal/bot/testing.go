@@ -3,6 +3,7 @@ package bot
 import (
 	"fmt"
 	"sync"
+	"testing"
 )
 
 type testingHelper struct {
@@ -12,8 +13,8 @@ type testingHelper struct {
 }
 
 func (t *testingHelper) checkUserNameID(name string, id int64) {
-	if t == nil {
-		return
+	if !testing.Testing() {
+		panic("checkUserNameID called outside of test")
 	}
 
 	t.mu.Lock()

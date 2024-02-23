@@ -298,8 +298,10 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 
 	s.IRCChannel = channelName[1:]
 
-	b.testingHelper.checkUserNameID(s.User, s.UserID)
-	b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
+	if testing.Testing() {
+		b.testingHelper.checkUserNameID(s.User, s.UserID)
+		b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
+	}
 
 	return nil
 }
