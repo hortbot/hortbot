@@ -6,6 +6,7 @@ import (
 	"database/sql"
 	"strings"
 	"sync"
+	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/redis"
@@ -214,7 +215,7 @@ func New(config *Config) *Bot {
 	deps.TriggerValidateTokens = b.triggerValidateTokensNow
 	deps.UpdateModeratedChannels = b.updateModeratedChannelsNow
 
-	if isTesting {
+	if testing.Testing() {
 		b.testingHelper = &testingHelper{}
 	}
 

@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 	"unicode"
 
@@ -156,7 +157,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 
 	span.AddAttributes(trace.StringAttribute("action", action))
 
-	if isTesting && testingAction != nil {
+	if testing.Testing() && testingAction != nil {
 		s, err, ok := testingAction(ctx, action)
 		if ok {
 			return s, err

@@ -8,6 +8,7 @@ import (
 	"regexp/syntax"
 	"strconv"
 	"strings"
+	"testing"
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -218,7 +219,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 }
 
 func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) error {
-	if !isTesting {
+	if !testing.Testing() {
 		return s.Replyf(ctx, "You can find the list of autoreplies at: %s/c/%s/autoreplies", s.WebAddr(), s.IRCChannel)
 	}
 

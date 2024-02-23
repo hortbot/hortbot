@@ -5,8 +5,6 @@ import (
 	"sync"
 )
 
-var isTesting = false
-
 type testingPanic string
 
 func (t testingPanic) String() string {

@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -218,7 +219,7 @@ func (s *session) parseUserLevel() accessLevel {
 
 	tags := s.M.Tags
 
-	if isTesting {
+	if testing.Testing() {
 		switch {
 		case tags["testing-super-admin"] != "":
 			return levelSuperAdmin

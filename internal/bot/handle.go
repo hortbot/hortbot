@@ -6,6 +6,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
@@ -69,7 +70,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 	err := b.handle(ctx, origin, m)
 
-	if !isTesting {
+	if !testing.Testing() {
 		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
 	}
 
