@@ -5,12 +5,6 @@ import (
 	"sync"
 )
 
-type testingPanic string
-
-func (t testingPanic) String() string {
-	return string(t)
-}
-
 type testingHelper struct {
 	mu      sync.Mutex
 	userIDs map[string]int64
@@ -34,11 +28,11 @@ func (t *testingHelper) checkUserNameID(name string, id int64) {
 	}
 
 	if expectedID, ok := t.userIDs[name]; ok && id != expectedID {
-		panic(testingPanic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id)))
+		panic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id))
 	}
 
 	if expectedName, ok := t.names[id]; ok && name != expectedName {
-		panic(testingPanic(fmt.Sprintf("%v previously had name %v, now %v", id, expectedName, name)))
+		panic(fmt.Sprintf("%v previously had name %v, now %v", id, expectedName, name))
 	}
 
 	t.userIDs[name] = id

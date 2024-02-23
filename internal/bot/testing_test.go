@@ -18,11 +18,11 @@ func TestTestingHelper(t *testing.T) {
 
 		assertx.Panic(t, func() {
 			helper.checkUserNameID("foo", 2)
-		}, testingPanic("foo previously had id 1, now 2"))
+		}, "foo previously had id 1, now 2")
 
 		assertx.Panic(t, func() {
 			helper.checkUserNameID("bar", 1)
-		}, testingPanic("1 previously had name foo, now bar"))
+		}, "1 previously had name foo, now bar")
 	})
 
 	t.Run("Nil", func(t *testing.T) {
