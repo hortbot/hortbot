@@ -167,7 +167,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 					BroadcasterName:  channel.Name,
 				}
 
-				if err := m.Upsert(ctx, tx, true, conflictColumns, boil.Infer(), boil.Infer()); err != nil {
+				if err := m.Upsert(ctx, tx, true, conflictColumns, boil.Blacklist(models.ModeratedChannelColumns.CreatedAt), boil.Infer()); err != nil {
 					return err
 				}
 			}

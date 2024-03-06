@@ -44,12 +44,15 @@ func ModelToToken(tt *models.TwitchToken) *oauth2.Token {
 
 var tokenConflictColumns = []string{models.TwitchTokenColumns.TwitchID}
 
+var withoutCreatedAt = boil.Blacklist(models.TwitchTokenColumns.CreatedAt)
+
 // UpsertToken inserts the token into the database, or inserts all columns as written in the model.
 func UpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
-	return tt.Upsert(ctx, exec, true, tokenConflictColumns, boil.Infer(), boil.Infer())
+	return tt.Upsert(ctx, exec, true, tokenConflictColumns, withoutCreatedAt, boil.Infer())
 }
 
 var withoutPreservedColumns = boil.Blacklist(
+	models.TwitchTokenColumns.CreatedAt,
 	models.TwitchTokenColumns.BotName,
 	models.TwitchTokenColumns.Scopes,
 )

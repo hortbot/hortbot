@@ -76,7 +76,7 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	bu := &models.BlockedUser{TwitchID: u.ID.AsInt64()}
-	if err := bu.Upsert(ctx, s.Tx, false, []string{models.BlockedUserColumns.TwitchID}, boil.Infer(), boil.Infer()); err != nil {
+	if err := bu.Upsert(ctx, s.Tx, false, []string{models.BlockedUserColumns.TwitchID}, boil.Blacklist(models.BlockedUserColumns.CreatedAt), boil.Infer()); err != nil {
 		return err
 	}
 

@@ -67,7 +67,7 @@ func (s *session) VarSet(ctx context.Context, name, value string) error {
 		Value:     value,
 	}
 
-	return v.Upsert(ctx, s.Tx, true, varConflictCols, boil.Infer(), boil.Infer())
+	return v.Upsert(ctx, s.Tx, true, varConflictCols, boil.Blacklist(models.VariableTableColumns.CreatedAt), boil.Infer())
 }
 
 func (s *session) VarDelete(ctx context.Context, name string) error {
