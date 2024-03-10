@@ -12,6 +12,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplemocks"
@@ -180,7 +181,7 @@ func BenchmarkHandleMixed(b *testing.B) {
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!autoreply add *who_is_zik* Nobody important."))
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, `!autoreply add REGEX:(^|\b)wowee($|\b) Wowee`))
 
-	var ms []*irc.Message
+	var ms []bot.Message
 
 	for i := 0; i < 95; i++ {
 		ms = append(ms, privMSG(name, userID, "someone", 9999999, "nothing interesting"))
@@ -269,8 +270,8 @@ type nopNotifier struct{}
 
 func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
 
-func privMSG(ch string, roomID int64, user string, userID int64, msg string) *irc.Message {
-	return &irc.Message{
+func privMSG(ch string, roomID int64, user string, userID int64, msg string) bot.Message {
+	return irctobot.IRCToMessage(&irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),
 			"room-id": strconv.FormatInt(roomID, 10),
@@ -284,7 +285,7 @@ func privMSG(ch string, roomID int64, user string, userID int64, msg string) *ir
 		Command:  "PRIVMSG",
 		Params:   []string{"#" + ch},
 		Trailing: msg,
-	}
+	})
 }
 
 func randomString(n int) string {
