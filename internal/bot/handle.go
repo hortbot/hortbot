@@ -41,7 +41,6 @@ type Message interface {
 	Message() (message string, me bool)
 }
 
-
 // Handle handles a single IRC message, sent via the specific origin. It always
 // succeeds, but may log information about any internal errors.
 func (b *Bot) Handle(ctx context.Context, origin string, m Message) {
