@@ -88,7 +88,7 @@ services:
       - DATABASE_URL=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
 
   db:
-    image: postgres:12
+    image: postgres:16
     environment:
       - POSTGRES_PASSWORD=mysecretpassword
 
