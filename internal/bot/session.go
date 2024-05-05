@@ -375,8 +375,8 @@ func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *
 
 func (s *session) GetUserID(ctx context.Context, username string) (int64, error) {
 	switch username {
-	case s.Channel.Name:
-		return s.Channel.TwitchID, nil
+	case s.IRCChannel:
+		return s.RoomID, nil
 	case s.User:
 		return s.UserID, nil
 	}
