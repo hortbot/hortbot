@@ -9,12 +9,14 @@ import (
 
 // New creates and starts a new NSQ server.
 func New() (addr string, cleanup func(), retErr error) {
+	const port = "4150/tcp"
 	container := &docker.Container{
 		Repository: "nsqio/nsq",
 		Tag:        "latest",
 		Cmd:        []string{"/nsqd"},
+		Ports:      []string{port},
 		Ready: func(container *docker.Container) error {
-			addr = container.GetHostPort("4150/tcp")
+			addr = container.GetHostPort(port)
 			config := nsq.NewConfig()
 			config.ClientID = uuid.Must(uuid.NewV4()).String()
 

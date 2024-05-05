@@ -2,9 +2,11 @@
 package docker
 
 import (
+	"slices"
 	"time"
 
 	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 )
 
 // Container defines a docker container.
@@ -14,6 +16,7 @@ type Container struct {
 	Cmd        []string
 	Env        []string
 	Mounts     []string
+	Ports      []string
 
 	Ready        func(*Container) error
 	ReadyMaxWait time.Duration
@@ -39,6 +42,25 @@ func (c *Container) Start() (retErr error) {
 		Cmd:        c.Cmd,
 		Env:        c.Env,
 		Mounts:     c.Mounts,
+	}, func(hc *docker.HostConfig) {
+		// There's some sort of bug in dockertest, the docker API, or the docker daemon
+		// where auto-publishing ports leads to some containers sharing the same ports
+		// on the host, mixing up connections. For example:
+		//
+		//     0.0.0.0:33179->5432/tcp, :::33177->5432/tcp   unruffled_agnesi
+		//     0.0.0.0:33181->5432/tcp, :::33179->5432/tcp   determined_bartik
+		//     0.0.0.0:33184->5432/tcp, :::33182->5432/tcp   trusting_heyrovsky
+		//     0.0.0.0:33183->5432/tcp, :::33181->5432/tcp   ecstatic_lehmann
+		//     0.0.0.0:33178->5432/tcp, :::33176->5432/tcp   charming_ptolemy
+		//     0.0.0.0:33180->5432/tcp, :::33178->5432/tcp   xenodochial_sanderson
+		//
+		// It seems to not happen when we manually map things to explicitly 0.0.0.0.
+		hc.PublishAllPorts = false
+		hc.PortBindings = make(map[docker.Port][]docker.PortBinding)
+		for _, port := range c.Ports {
+			p := docker.Port(port)
+			hc.PortBindings[p] = []docker.PortBinding{{HostIP: "0.0.0.0", HostPort: "0/" + p.Proto()}}
+		}
 	})
 	if err != nil {
 		return err
@@ -74,5 +96,8 @@ func (c *Container) Cleanup() {
 // being forwarded. For example, GetHostPort("5432/tcp") could return
 // "localhost:13263".
 func (c *Container) GetHostPort(portID string) string {
+	if !slices.Contains(c.Ports, portID) {
+		panic(portID + " not in Ports")
+	}
 	return c.resource.GetHostPort(portID)
 }

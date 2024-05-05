@@ -4,8 +4,6 @@ package dpostgres
 import (
 	"database/sql"
 	"fmt"
-	"os"
-	"time"
 
 	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/db/migrations"
@@ -23,12 +21,14 @@ func NewNoMigrate() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 }
 
 func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr error) {
+	const port = "5432/tcp"
 	container := &docker.Container{
 		Repository: "ghcr.io/zikaeroh/postgres-initialized",
 		Tag:        "16",
 		Cmd:        []string{"-F"},
+		Ports:      []string{port},
 		Ready: func(container *docker.Container) error {
-			connStr = "postgres://postgres:mysecretpassword@" + container.GetHostPort("5432/tcp") + "/postgres?sslmode=disable"
+			connStr = "postgres://postgres:mysecretpassword@" + container.GetHostPort(port) + "/postgres?sslmode=disable"
 
 			var err error
 			db, err = sql.Open(driver.Name, connStr)
@@ -61,10 +61,6 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 	}
 
 	if doMigrate {
-		if os.Getenv("CI") != "" {
-			time.Sleep(10 * time.Second)
-		}
-
 		if err := migrations.Up(connStr, nil); err != nil {
 			return nil, "", nil, fmt.Errorf("migrating database: %w", err)
 		}

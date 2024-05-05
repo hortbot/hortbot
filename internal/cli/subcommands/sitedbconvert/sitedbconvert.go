@@ -56,13 +56,15 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	)
 
 	var db *sqlx.DB
+	const port = "3306/tcp"
 	container := &docker.Container{
 		Repository: "mariadb",
 		Tag:        "10.1",
 		Env:        []string{"MYSQL_ROOT_PASSWORD=" + password, "MYSQL_DATABASE=" + dbName},
 		Mounts:     []string{c.SiteDumps + ":/docker-entrypoint-initdb.d"},
+		Ports:      []string{port},
 		Ready: func(container *docker.Container) error {
-			connStr := "root:" + password + "@tcp(" + container.GetHostPort("3306/tcp") + ")/" + dbName
+			connStr := "root:" + password + "@tcp(" + container.GetHostPort(port) + ")/" + dbName
 
 			var err error
 			db, err = sqlx.Open("mysql", connStr)
