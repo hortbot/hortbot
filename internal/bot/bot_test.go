@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
@@ -76,6 +75,6 @@ func TestBotNotInit(t *testing.T) {
 	t.Parallel()
 	assertx.Panic(t, func() {
 		b := &bot.Bot{}
-		b.Handle(context.Background(), "asdasd", irctobot.IRCToMessage(&irc.Message{}))
+		b.Handle(context.Background(), "asdasd", &irc.Message{})
 	}, "bot is not initialized")
 }

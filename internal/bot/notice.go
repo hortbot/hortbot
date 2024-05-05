@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
+	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
@@ -15,16 +16,16 @@ import (
 	"go.uber.org/zap"
 )
 
-func (b *Bot) handleNotice(ctx context.Context, origin string, m Message) error {
+func (b *Bot) handleNotice(ctx context.Context, origin string, m *irc.Message) error {
 	ctx, span := trace.StartSpan(ctx, "handleNotice")
 	defer span.End()
 
-	if len(m.Tags()) == 0 || len(m.Params()) == 0 {
+	if len(m.Tags) == 0 || len(m.Params) == 0 {
 		return errInvalidMessage
 	}
 
-	msgID := m.Tags()["msg-id"]
-	ircChannel := strings.TrimLeft(m.Params()[0], "#")
+	msgID := m.Tags["msg-id"]
+	ircChannel := strings.TrimLeft(m.Params[0], "#")
 
 	ctx = ctxlog.With(ctx, zap.String("msg_id", msgID), zap.String("channel", ircChannel))
 

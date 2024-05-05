@@ -19,6 +19,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
+	"github.com/jakebailey/irc"
 	"github.com/volatiletech/null/v8"
 	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
@@ -41,7 +42,7 @@ type session struct {
 	Type sessionType
 
 	Origin string
-	M      Message
+	M      *irc.Message
 
 	Deps *sharedDeps
 	Tx   *sql.Tx
@@ -216,7 +217,7 @@ func (s *session) parseUserLevel() accessLevel {
 
 	// Tags are present, safe to not check for nil
 
-	tags := s.M.Tags()
+	tags := s.M.Tags
 
 	if testing.Testing() {
 		switch {

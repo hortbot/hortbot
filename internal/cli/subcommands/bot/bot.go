@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
-	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
@@ -103,7 +102,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
 			defer span.End()
 
-			b.Handle(ctx, origin, irctobot.IRCToMessage(m))
+			b.Handle(ctx, origin, m)
 		})
 	})
 

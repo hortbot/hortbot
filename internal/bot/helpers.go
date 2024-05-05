@@ -7,6 +7,7 @@ import (
 	"unicode"
 
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
+	"github.com/jakebailey/irc"
 )
 
 func splitSpace(s string) (string, string) {
@@ -60,6 +61,21 @@ func writeBool(b *strings.Builder, v bool) {
 func cleanUsername(user string) string {
 	user = strings.TrimPrefix(user, "@")
 	return strings.ToLower(user)
+}
+
+func readMessage(m *irc.Message) (message string, me bool) {
+	message = m.Trailing
+
+	if c, a, ok := irc.ParseCTCP(message); ok {
+		if c != "ACTION" {
+			return "", false
+		}
+
+		message = a
+		me = true
+	}
+
+	return strings.TrimSpace(message), me
 }
 
 func pluralInt(n int, singular, plural string) string {
