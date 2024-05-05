@@ -64,6 +64,7 @@ linters:
     - tagalign
     - inamedparam
     - sqlclosecheck # incorrect
+    - mnd
 
     # - staticcheck
 

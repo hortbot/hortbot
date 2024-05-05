@@ -80,8 +80,8 @@ type requestBody struct {
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 	extraHeaders := make(http.Header)
-	extraHeaders.Set("origin", "https://howlongtobeat.com")
-	extraHeaders.Set("referer", "https://howlongtobeat.com/?q=")
+	extraHeaders.Set("Origin", "https://howlongtobeat.com")
+	extraHeaders.Set("Referer", "https://howlongtobeat.com/?q=")
 
 	requestBody := &requestBody{
 		SearchType:  "games",

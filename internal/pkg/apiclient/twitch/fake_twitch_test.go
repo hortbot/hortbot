@@ -847,7 +847,7 @@ func (f *fakeTwitch) dumpAndFail(req *http.Request, dumped []byte) (*http.Respon
 func (f *fakeTwitch) checkHeaders(req *http.Request) {
 	f.t.Helper()
 
-	f.assertEqual(req.Header.Get("Client-ID"), clientID)
+	f.assertEqual(req.Header.Get("Client-Id"), clientID)
 	f.assertEqual(req.Header.Get("Content-Type"), "application/json")
 }
 

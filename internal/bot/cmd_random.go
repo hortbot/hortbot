@@ -43,7 +43,7 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 				count = 6
 			}
 
-			for i := 0; i < count; i++ {
+			for i := range count {
 				if i != 0 {
 					builder.WriteString(", ")
 				}

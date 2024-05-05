@@ -42,7 +42,7 @@ func TestCronAdd(t *testing.T) {
 	assert.NilError(t, r.AddCron(ctx, 0, fn, mustParseCron("0 * * * *")))
 	time.Sleep(smallDur)
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		clk.Forward(time.Hour)
 		recv(t, ctx, ch)
 		time.Sleep(smallDur)

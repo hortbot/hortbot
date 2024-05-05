@@ -15,14 +15,14 @@ func TestOrderedSet(t *testing.T) {
 	assert.Equal(t, k, "")
 	assert.Equal(t, v, (*subQueue)(nil))
 
-	var pairs []pair[string, *subQueue]
+	pairs := make([]pair[string, *subQueue], 100)
 
-	for i := 0; i < 100; i++ {
+	for i := range pairs {
 		p := pair[string, *subQueue]{
 			key:   strconv.Itoa(i),
 			value: &subQueue{},
 		}
-		pairs = append(pairs, p)
+		pairs[i] = p
 		set.add(p.key, p.value)
 	}
 

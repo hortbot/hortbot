@@ -25,7 +25,7 @@ func BenchmarkQueueSameName(b *testing.B) {
 			var workerWG sync.WaitGroup
 			workerWG.Add(workers)
 
-			for i := 0; i < workers; i++ {
+			for range workers {
 				go func() {
 					defer workerWG.Done()
 					q.Worker(ctx) //nolint:errcheck
@@ -66,7 +66,7 @@ func BenchmarkQueueManyNames(b *testing.B) {
 			var workerWG sync.WaitGroup
 			workerWG.Add(workers)
 
-			for i := 0; i < workers; i++ {
+			for range workers {
 				go func() {
 					defer workerWG.Done()
 					q.Worker(ctx) //nolint:errcheck

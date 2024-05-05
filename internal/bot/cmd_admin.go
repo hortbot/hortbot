@@ -161,7 +161,7 @@ func cmdAdminSpam(ctx context.Context, s *session, cmd string, args string) erro
 
 	var builder strings.Builder
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		if i != 0 {
 			builder.WriteByte(' ')
 		}

@@ -35,7 +35,7 @@ func (args *SQL) Open(ctx context.Context, driverName string) *sql.DB {
 
 	if err := db.PingContext(ctx); err != nil {
 		var perr error
-		for i := 0; i < 4; i++ {
+		for range 4 {
 			time.Sleep(100 * time.Millisecond)
 
 			if perr = db.PingContext(ctx); perr == nil {

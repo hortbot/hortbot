@@ -180,10 +180,10 @@ func BenchmarkHandleMixed(b *testing.B) {
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!autoreply add *who_is_zik* Nobody important."))
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, `!autoreply add REGEX:(^|\b)wowee($|\b) Wowee`))
 
-	var ms []*irc.Message
+	ms := make([]*irc.Message, 95, 96)
 
-	for i := 0; i < 95; i++ {
-		ms = append(ms, privMSG(name, userID, "someone", 9999999, "nothing interesting"))
+	for i := range ms {
+		ms[i] = privMSG(name, userID, "someone", 9999999, "nothing interesting")
 	}
 
 	ms = append(ms,
@@ -238,7 +238,7 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter on"))
 	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter banphrase on"))
 
-	for i := 0; i < 300; i++ {
+	for range 300 {
 		bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter banphrase add "+randomString(10)))
 	}
 
@@ -293,7 +293,7 @@ func randomString(n int) string {
 	var builder strings.Builder
 	builder.Grow(n)
 
-	for i := 0; i < n; i++ {
+	for range n {
 		x := rand.Intn(len(characters)) //nolint:gosec
 		builder.WriteByte(characters[x])
 	}

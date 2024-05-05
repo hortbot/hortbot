@@ -188,7 +188,7 @@ func TestQueuePanic(t *testing.T) {
 
 func TestQueueStress(t *testing.T) {
 	// Stupid attempt at reducing coverage flakes.
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		testQueueStress(t)
 	}
 }
@@ -201,7 +201,7 @@ func testQueueStress(t *testing.T) { //nolint:thelper
 	defer cancel()
 
 	g := errgroupx.FromContext(ctx)
-	for i := 0; i < runtime.GOMAXPROCS(0); i++ {
+	for range runtime.GOMAXPROCS(0) {
 		g.Go(q.Worker)
 	}
 
@@ -213,12 +213,12 @@ func testQueueStress(t *testing.T) { //nolint:thelper
 	var wg sync.WaitGroup
 	wg.Add(N + N*M) // N putters, N*M subtasks.
 
-	for i := 0; i < N; i++ {
+	for i := range N {
 		key := string(rune('a' + i))
 		g.Go(func(ctx context.Context) error {
 			defer wg.Done()
 
-			for j := 0; j < M; j++ {
+			for range M {
 				if err := q.Put(ctx, key, func(attach wqueue.Attacher) {
 					defer wg.Done()
 					counts[i]++
@@ -249,7 +249,7 @@ func TestQueueStressCancel(t *testing.T) {
 	defer cancel()
 
 	g := errgroupx.FromContext(ctx)
-	for i := 0; i < runtime.GOMAXPROCS(0); i++ {
+	for range runtime.GOMAXPROCS(0) {
 		g.Go(q.Worker)
 	}
 
@@ -258,10 +258,10 @@ func TestQueueStressCancel(t *testing.T) {
 		M = 1000
 	)
 
-	for i := 0; i < N; i++ {
+	for i := range N {
 		key := string(rune('a' + i))
 		g.Go(func(ctx context.Context) error {
-			for j := 0; j < M; j++ {
+			for j := range M {
 				if err := q.Put(ctx, key, func(attach wqueue.Attacher) {
 					if j == M/2 {
 						cancel()

@@ -183,7 +183,7 @@ func (t *Twitch) Exchange(ctx context.Context, code string) (*oauth2.Token, erro
 
 func (t *Twitch) headers() http.Header {
 	headers := make(http.Header)
-	headers.Set("Client-ID", t.clientID)
+	headers.Set("Client-Id", t.clientID)
 	headers.Set("Content-Type", "application/json")
 	return headers
 }
