@@ -4,6 +4,8 @@ package dpostgres
 import (
 	"database/sql"
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/db/migrations"
@@ -59,6 +61,10 @@ func newDB(doMigrate bool) (db *sql.DB, connStr string, cleanupr func(), retErr 
 	}
 
 	if doMigrate {
+		if os.Getenv("CI") != "" {
+			time.Sleep(10 * time.Second)
+		}
+
 		if err := migrations.Up(connStr, nil); err != nil {
 			return nil, "", nil, fmt.Errorf("migrating database: %w", err)
 		}
