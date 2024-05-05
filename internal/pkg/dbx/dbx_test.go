@@ -168,7 +168,7 @@ func TestTransactErrCancel(t *testing.T) {
 			return nil
 		},
 	)
-	assert.ErrorContains(t, err, "already been")
+	assert.Equal(t, err, context.Canceled)
 
 	var count int
 	err = db.QueryRow("SELECT COUNT(*) FROM test").Scan(&count)

@@ -57,6 +57,9 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 		if err := fn(ctx, tx); err != nil {
 			return err
 		}
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 	}
 
 	rollback = false
