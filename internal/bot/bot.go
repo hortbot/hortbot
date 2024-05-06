@@ -36,7 +36,6 @@ const (
 type Config struct {
 	DB       *sql.DB
 	Redis    *redis.DB
-	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock
 	Rand     Rand
@@ -76,6 +75,7 @@ type Config struct {
 	Cron CronConfig
 
 	PassthroughPanics bool
+	NoSend            bool
 }
 
 type CronConfig struct {
@@ -112,8 +112,6 @@ func New(config *Config) *Bot {
 		panic("db is nil")
 	case config.Redis == nil:
 		panic("redis is nil")
-	case config.Sender == nil:
-		panic("sender is nil")
 	case config.Notifier == nil:
 		panic("notifier is nil")
 	case config.Twitch == nil:
@@ -126,7 +124,6 @@ func New(config *Config) *Bot {
 
 	deps := &sharedDeps{
 		Redis:              config.Redis,
-		Sender:             config.Sender,
 		Notifier:           config.Notifier,
 		LastFM:             config.LastFM,
 		BulletMap:          config.BulletMap,
@@ -149,6 +146,7 @@ func New(config *Config) *Bot {
 		PublicJoinDisabled: config.PublicJoinDisabled,
 		BetaFeatures:       config.BetaFeatures,
 		GlobalIgnore:       make(map[string]bool),
+		NoSend:             config.NoSend,
 	}
 
 	if config.Clock != nil {

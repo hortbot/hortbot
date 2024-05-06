@@ -8,12 +8,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/pool"
 )
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Sender Notifier Rand
-
-// Sender sends a single message back via an origin (bot name) to the specified target (channel).
-type Sender interface {
-	SendMessage(ctx context.Context, origin, target, message string) error
-}
+//go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Notifier Rand
 
 // Notifier sends notifications.
 type Notifier interface {

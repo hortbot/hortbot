@@ -21,7 +21,6 @@ func TestBotNewPanics(t *testing.T) {
 	config := &bot.Config{
 		DB:       db,
 		Redis:    &redis.DB{},
-		Sender:   &struct{ bot.Sender }{},
 		Notifier: &struct{ bot.Notifier }{},
 		Twitch:   &struct{ twitch.API }{},
 		Simple:   &struct{ simple.API }{},
@@ -42,11 +41,6 @@ func TestBotNewPanics(t *testing.T) {
 	config.Redis = nil
 	assertx.Panic(t, checkPanic, "redis is nil")
 	config.Redis = oldRedis
-
-	oldSender := config.Sender
-	config.Sender = nil
-	assertx.Panic(t, checkPanic, "sender is nil")
-	config.Sender = oldSender
 
 	oldNotifier := config.Notifier
 	config.Notifier = nil

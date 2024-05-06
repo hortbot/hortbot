@@ -50,9 +50,9 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	if strings.HasPrefix(subcommand, "#") {
+	if target, ok := strings.CutPrefix(subcommand, "#"); ok {
 		if s.UserLevel.CanAccess(levelSuperAdmin) {
-			return s.Deps.Sender.SendMessage(ctx, s.Origin, subcommand, args)
+			return s.SendTwitchChatMessage(ctx, target, args)
 		}
 		return s.Reply(ctx, "Only super admins may directly send messages.")
 	}

@@ -1,3 +1,5 @@
+upsert_twitch_token {"twitch_id": 2, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+
 bot_config {"WebAddr": "http://localhost:5000"}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
@@ -9,14 +11,14 @@ send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with pref
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
-send hortbot #foobar [HB] Prefix changed to +
+send hortbot @1 [HB] Prefix changed to +
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
-send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above.
+send hortbot @1 [HB] Command 'pan' added, restricted to subscribers and above.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
-send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+send hortbot @1 [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
@@ -39,7 +41,7 @@ send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with pref
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
-send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
+send hortbot @1 [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=3 :nobody!nobody@nobody.tmi.twitch.tv PRIVMSG #hortbot :!leave

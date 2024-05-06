@@ -157,6 +157,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				Origin:     channel.BotName,
 				IRCChannel: channel.Name,
 				RoomID:     channel.TwitchID,
+				RoomIDOrig: channel.TwitchID,
 			}
 
 			info := runner.info()

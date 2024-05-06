@@ -61,6 +61,10 @@ func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, li
 	assert.NilError(t, err, "line %d", lineNum)
 
 	st.addAction(func(ctx context.Context) {
+		for n, u := range v {
+			st.idToName[u.ID.AsInt64()] = n
+		}
+
 		st.twitch.GetUserByUsernameFunc = func(_ context.Context, username string) (*twitch.User, error) {
 			u := v[username]
 			if u == nil {

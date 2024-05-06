@@ -8,7 +8,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/birc"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/twitchx"
 	"github.com/zikaeroh/ctxlog"
@@ -24,21 +23,14 @@ type IRC struct {
 	PingDeadline time.Duration `long:"irc-ping-deadline" env:"HB_IRC_PING_DEADLINE" description:"How long to wait for a PONG before disconnecting"`
 	Token        bool          `long:"irc-token" env:"HB_IRC_TOKEN" description:"Use a token from the database if available"`
 
-	RateLimitSlow   int           `long:"irc-rate-limit-slow" env:"HB_IRC_RATE_LIMIT_SLOW" description:"Message allowed per rate limit period (slow)"`
-	RateLimitFast   int           `long:"irc-rate-limit-fast" env:"HB_IRC_RATE_LIMIT_FAST" description:"Message allowed per rate limit period (fast)"`
-	RateLimitPeriod time.Duration `long:"irc-rate-limit-period" env:"HB_IRC_RATE_LIMIT_PERIOD" description:"Rate limit period"`
-
 	PriorityChannels []string `long:"irc-priority-channels" env:"HB_IRC_PRIORITY_CHANNELS" env-delim:"," description:"An ordered list of channels to prioritize joining"`
 }
 
 // Default contains the default flags. Make a copy of this, do not reuse.
 var Default = IRC{
-	Addr:            birc.DefaultDialer.Addr,
-	PingInterval:    5 * time.Minute,
-	PingDeadline:    5 * time.Second,
-	RateLimitSlow:   15,
-	RateLimitFast:   80,
-	RateLimitPeriod: 30 * time.Second,
+	Addr:         birc.DefaultDialer.Addr,
+	PingInterval: 5 * time.Minute,
+	PingDeadline: 5 * time.Second,
 }
 
 // Pool creates a new IRC pool from the configured flags and dependency.
@@ -80,10 +72,4 @@ func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool
 	}
 
 	return birc.NewPool(pc)
-}
-
-// SendMessageAllowed checks if sending a message is allowed under the current
-// rate limit.
-func (args *IRC) SendMessageAllowed(ctx context.Context, rdb *redis.DB, origin, target string) (bool, error) {
-	return rdb.SendMessageAllowed(ctx, origin, target, args.RateLimitSlow, args.RateLimitFast, args.RateLimitPeriod)
 }

@@ -22,7 +22,6 @@ import (
 
 type sharedDeps struct {
 	Redis    *redis.DB
-	Sender   Sender
 	Notifier Notifier
 	Clock    clock.Clock
 	Rand     Rand
@@ -69,6 +68,8 @@ type sharedDeps struct {
 	BetaFeatures []string
 
 	GlobalIgnore map[string]bool
+
+	NoSend bool
 }
 
 func (s *sharedDeps) IsAllowed(name string) bool {

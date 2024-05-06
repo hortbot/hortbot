@@ -18,6 +18,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/jakebailey/irc"
+	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
 
@@ -36,11 +37,14 @@ func BenchmarkHandleNop(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:         db,
-		Redis:      redis.New(rClient),
-		Sender:     nopSender{},
-		Notifier:   nopNotifier{},
-		Twitch:     &twitchmocks.APIMock{},
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Notifier: nopNotifier{},
+		Twitch: &twitchmocks.APIMock{
+			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
+				return nil, nil //nolint:nilnil
+			},
+		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
@@ -77,11 +81,14 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:         db,
-		Redis:      redis.New(rClient),
-		Sender:     nopSender{},
-		Notifier:   nopNotifier{},
-		Twitch:     &twitchmocks.APIMock{},
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Notifier: nopNotifier{},
+		Twitch: &twitchmocks.APIMock{
+			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
+				return nil, nil //nolint:nilnil
+			},
+		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
@@ -119,11 +126,14 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:         db,
-		Redis:      redis.New(rClient),
-		Sender:     nopSender{},
-		Notifier:   nopNotifier{},
-		Twitch:     &twitchmocks.APIMock{},
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Notifier: nopNotifier{},
+		Twitch: &twitchmocks.APIMock{
+			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
+				return nil, nil //nolint:nilnil
+			},
+		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
@@ -161,11 +171,14 @@ func BenchmarkHandleMixed(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:         db,
-		Redis:      redis.New(rClient),
-		Sender:     nopSender{},
-		Notifier:   nopNotifier{},
-		Twitch:     &twitchmocks.APIMock{},
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Notifier: nopNotifier{},
+		Twitch: &twitchmocks.APIMock{
+			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
+				return nil, nil //nolint:nilnil
+			},
+		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
@@ -220,11 +233,14 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:         db,
-		Redis:      redis.New(rClient),
-		Sender:     nopSender{},
-		Notifier:   nopNotifier{},
-		Twitch:     &twitchmocks.APIMock{},
+		DB:       db,
+		Redis:    redis.New(rClient),
+		Notifier: nopNotifier{},
+		Twitch: &twitchmocks.APIMock{
+			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
+				return nil, nil //nolint:nilnil
+			},
+		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
 		NoDedupe:   true,
@@ -260,10 +276,6 @@ func getNextUserID() (int64, string) {
 	id := nextUserID.Add(1)
 	return id, fmt.Sprintf("user%d", id)
 }
-
-type nopSender struct{}
-
-func (nopSender) SendMessage(ctx context.Context, origin, target, message string) error { return nil }
 
 type nopNotifier struct{}
 

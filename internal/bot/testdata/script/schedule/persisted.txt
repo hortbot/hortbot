@@ -1,3 +1,4 @@
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 insert_custom_command {"id": 1, "channel_id": 1, "message": "Hello there! (_MESSAGE_COUNT_)"}
@@ -19,7 +20,7 @@ no_send
 checkpoint
 clock_forward 31m
 sleep 100ms
-send hortbot #foobar [HB] Hello there! 1
+send hortbot @1 [HB] Hello there! 1
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
@@ -28,4 +29,4 @@ no_send
 checkpoint
 clock_forward 1h
 sleep 100ms
-send hortbot #foobar [HB] Hello there! 2
+send hortbot @1 [HB] Hello there! 2

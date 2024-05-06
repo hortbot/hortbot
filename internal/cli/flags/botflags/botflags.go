@@ -66,7 +66,6 @@ func (args *Bot) New(
 	ctx context.Context,
 	db *sql.DB,
 	rdb *redis.DB,
-	sender bot.Sender,
 	notifier bot.Notifier,
 	twitchAPI twitch.API,
 	httpClient *http.Client,
@@ -93,14 +92,9 @@ func (args *Bot) New(
 		ctxlog.Warn(ctx, "no YouTube API key provided, functionality will be disabled")
 	}
 
-	if args.NoSend {
-		sender = logSender{}
-	}
-
 	b := bot.New(&bot.Config{
 		DB:                 db,
 		Redis:              rdb,
-		Sender:             sender,
 		Notifier:           notifier,
 		LastFM:             lastFM,
 		YouTube:            youtubeAPI,
@@ -128,6 +122,7 @@ func (args *Bot) New(
 			ValidateTokens:          true,
 			UpdateModeratedChannels: true,
 		},
+		NoSend: args.NoSend,
 	})
 
 	if err := b.Init(ctx); err != nil {
@@ -135,11 +130,4 @@ func (args *Bot) New(
 	}
 
 	return b
-}
-
-type logSender struct{}
-
-func (logSender) SendMessage(ctx context.Context, origin, target, message string) error {
-	ctxlog.Info(ctx, "not sending", zap.String("origin", origin), zap.String("target", target), zap.String("message", message))
-	return nil
 }

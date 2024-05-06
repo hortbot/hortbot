@@ -1,5 +1,6 @@
 bot_config {"PublicJoin": false}
 
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=2 :otheruser!otheruser@otheruser.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] Public join is disabled for hortbot; please contact an admin if you believe this to be an error.

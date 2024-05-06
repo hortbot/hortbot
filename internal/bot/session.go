@@ -52,6 +52,7 @@ type session struct {
 
 	ID         string
 	RoomID     int64
+	RoomIDOrig int64
 	IRCChannel string // No '#' prefix.
 	Message    string
 	Me         bool
@@ -163,7 +164,7 @@ func (s *session) Reply(ctx context.Context, response string) error {
 		return s.Announce(ctx, response)
 	}
 
-	return s.Deps.Sender.SendMessage(ctx, s.Origin, "#"+s.IRCChannel, response)
+	return s.SendTwitchChatMessage(ctx, s.IRCChannel, response)
 }
 
 func (s *session) Replyf(ctx context.Context, format string, args ...any) error {
@@ -345,8 +346,13 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 	ctx, span := trace.StartSpan(ctx, "BotTwitchToken")
 	defer span.End()
 
+	botName := s.Origin
+	if s.Channel != nil {
+		botName = s.Channel.BotName
+	}
+
 	pair, err := s.cache.botTok.get(func() (tokenAndUserID, error) {
-		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(s.Channel.BotName))).One(ctx, s.Tx)
+		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(botName))).One(ctx, s.Tx)
 		switch {
 		case err == sql.ErrNoRows:
 			return tokenAndUserID{}, nil //nolint:nilnil
@@ -376,7 +382,7 @@ func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *
 func (s *session) GetUserID(ctx context.Context, username string) (int64, error) {
 	switch username {
 	case s.IRCChannel:
-		return s.RoomID, nil
+		return s.RoomIDOrig, nil
 	case s.User:
 		return s.UserID, nil
 	}
@@ -519,6 +525,40 @@ func (s *session) Announce(ctx context.Context, message string) error {
 	newToken, err := s.Deps.Twitch.Announce(ctx, s.Channel.TwitchID, botID, tok, message, "")
 	if err != nil {
 		logTwitchModerationError(ctx, err, "announce")
+	}
+
+	if newToken != nil {
+		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *session) SendTwitchChatMessage(ctx context.Context, target string, message string) error {
+	if s.Deps.NoSend {
+		ctxlog.Info(ctx, "not sending", zap.String("origin", s.Origin), zap.String("target", target), zap.String("message", message))
+		return nil
+	}
+
+	botID, tok, err := s.BotTwitchToken(ctx)
+	if err != nil {
+		return err
+	}
+
+	if tok == nil {
+		return errors.New("bot: bot not authorized")
+	}
+
+	targetID, err := s.GetUserID(ctx, target)
+	if err != nil {
+		return err
+	}
+
+	newToken, err := s.Deps.Twitch.SendChatMessage(ctx, targetID, botID, tok, message)
+	if err != nil {
+		logTwitchModerationError(ctx, err, "send message")
 	}
 
 	if newToken != nil {

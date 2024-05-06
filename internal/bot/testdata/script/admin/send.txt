@@ -1,5 +1,6 @@
 join hortbot 999 foobar 1
 
+twitch_get_user_by_username {"someone": {"id": 2, "login": "someone"}, "who_oo": {"id": 3, "login": "who_oo"}}
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin #someone Hi there!
 send hortbot #foobar [HB] Only super admins may directly send messages.

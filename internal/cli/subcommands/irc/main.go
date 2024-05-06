@@ -3,7 +3,6 @@ package irc
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
@@ -13,7 +12,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -30,7 +28,6 @@ type cmd struct {
 	SQL        sqlflags.SQL
 	Twitch     twitchflags.Twitch
 	IRC        ircflags.IRC
-	Redis      redisflags.Redis
 	NSQ        nsqflags.NSQ
 	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
@@ -44,7 +41,6 @@ func Command() cli.Command {
 		SQL:        sqlflags.Default,
 		Twitch:     twitchflags.Default,
 		IRC:        ircflags.Default,
-		Redis:      redisflags.Default,
 		NSQ:        nsqflags.Default,
 		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
@@ -65,36 +61,10 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
 	db := c.SQL.Open(ctx, driverName)
 
-	rdb := c.Redis.Client()
 	twitchAPI := c.Twitch.Client(c.HTTP.Client())
 	conn := c.IRC.Pool(ctx, db, twitchAPI)
 
 	incomingPub := c.NSQ.NewIncomingPublisher()
-
-	sendSub := c.NSQ.NewSendMessageSubscriber(c.IRC.Nick, 15*time.Second, func(m *bnsq.SendMessage, metadata *bnsq.Metadata) error {
-		ctx := metadata.With(ctx)
-		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnSendMessage", metadata.ParentSpan())
-		defer span.End()
-
-		allowed, err := c.IRC.SendMessageAllowed(ctx, rdb, m.Origin, m.Target)
-		if err != nil {
-			ctxlog.Error(ctx, "error checking rate limit", zap.Error(err))
-			return err
-		}
-
-		if !allowed {
-			metricRateLimited.Inc()
-			ctxlog.Error(ctx, "rate limited, requeueing")
-			return errors.New("rate limited")
-		}
-
-		if err := conn.SendMessage(ctx, m.Target, m.Message); err != nil {
-			ctxlog.Error(ctx, "error sending message", zap.Error(err))
-			return err
-		}
-
-		return nil
-	})
 
 	syncJoined := make(chan struct{}, 1)
 
@@ -138,7 +108,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		}
 	})
 
-	g.Go(sendSub.Run)
 	g.Go(notifySub.Run)
 
 	g.Go(func(ctx context.Context) error {

@@ -1,2 +1,3 @@
+upsert_twitch_token {"twitch_id": 2, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin version
 send_match hortbot #hortbot ^\[HB\] hortbot version devel, built with .+

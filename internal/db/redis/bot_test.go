@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/alicebob/miniredis/v2"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
@@ -176,4 +177,10 @@ func TestUserState(t *testing.T) {
 	fast, err = db.GetUserState(ctx, botName, channel)
 	assert.NilError(t, err)
 	assert.Equal(t, fast, false)
+}
+
+func forward(s *miniredis.Miniredis, clk *clock.Mock, dur time.Duration) {
+	clk.Forward(dur)
+	s.FastForward(dur)
+	s.SetTime(clk.Now())
 }

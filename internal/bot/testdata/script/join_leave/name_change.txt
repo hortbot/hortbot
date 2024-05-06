@@ -1,3 +1,5 @@
+upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+
 insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
@@ -8,4 +10,4 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :barfoo!barfoo@barfoo.tmi.twitch
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+test
-send hortbot #barfoo [HB] It works!
+send hortbot @1 [HB] It works!

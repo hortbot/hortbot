@@ -1,6 +1,7 @@
 package twitch_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
@@ -525,6 +526,92 @@ func TestAnnounceErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Announce(ctx, id, modID, tok, "Some announcement!", "purple")
+		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, newToken == nil)
+	}
+}
+
+func TestSendChatMessage(t *testing.T) {
+	ctx, cancel := testContext(t)
+	defer cancel()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
+
+	const broadcasterID = 1
+	const modID = 123
+	tok := tokFor(ctx, t, tw, ft, modID)
+
+	newToken, err := tw.SendChatMessage(ctx, broadcasterID, modID, tok, "Some announcement!")
+
+	assert.NilError(t, err)
+	assert.Assert(t, newToken == nil)
+}
+
+func TestSendChatMessageTruncate(t *testing.T) {
+	ctx, cancel := testContext(t)
+	defer cancel()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
+
+	const broadcasterID = 1
+	const modID = 124
+	tok := tokFor(ctx, t, tw, ft, modID)
+
+	newToken, err := tw.SendChatMessage(ctx, broadcasterID, modID, tok, strings.Repeat("A", 1000))
+
+	assert.NilError(t, err)
+	assert.Assert(t, newToken == nil)
+}
+
+func TestSendChatMessageBadParameters(t *testing.T) {
+	ctx, cancel := testContext(t)
+	defer cancel()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
+
+	const broadcasterID = 1
+	const modID = 123
+	tok := tokFor(ctx, t, tw, ft, modID)
+
+	_, err := tw.SendChatMessage(ctx, broadcasterID, modID, tok, "")
+	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+
+	_, err = tw.SendChatMessage(ctx, broadcasterID, modID, nil, "Some announcement!")
+	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+
+	_, err = tw.SendChatMessage(ctx, broadcasterID, modID, &oauth2.Token{}, "Some announcement!")
+	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+}
+
+func TestSendChatMessageErrors(t *testing.T) {
+	ctx, cancel := testContext(t)
+	defer cancel()
+
+	ft := newFakeTwitch(t)
+	cli := ft.client()
+
+	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
+
+	const modID = 123
+	tok := tokFor(ctx, t, tw, ft, modID)
+
+	_, err := tw.SendChatMessage(ctx, 777, modID, tok, "Some announcement!")
+	assert.ErrorContains(t, err, errTestBadRequest.Error())
+
+	for status, expected := range expectedErrors {
+		id := int64(status)
+		tok := tokFor(ctx, t, tw, ft, id)
+
+		newToken, err := tw.SendChatMessage(ctx, id, modID, tok, "Some announcement!")
 		assert.Equal(t, err, expected, "%d", status)
 		assert.Assert(t, newToken == nil)
 	}

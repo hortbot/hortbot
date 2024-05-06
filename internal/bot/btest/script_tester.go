@@ -9,6 +9,7 @@ import (
 	"math/rand"
 	"os"
 	"runtime/debug"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -33,6 +34,7 @@ import (
 	"github.com/leononame/clock"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/zikaeroh/ctxlog"
+	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
 
@@ -59,7 +61,7 @@ type scriptTester struct {
 
 	db       *sql.DB
 	redis    *miniredis.Miniredis
-	sender   *botmocks.SenderMock
+	sender   *SenderMock
 	notifier *botmocks.NotifierMock
 	clock    *clock.Mock
 
@@ -77,7 +79,8 @@ type scriptTester struct {
 	bc bot.Config
 	b  *bot.Bot
 
-	counts map[string]int
+	counts   map[string]int
+	idToName map[int64]string
 
 	ctx     context.Context
 	actions []func(context.Context)
@@ -111,7 +114,8 @@ func (st *scriptTester) test(t testing.TB) {
 	}()
 
 	st.counts = make(map[string]int)
-	st.sender = &botmocks.SenderMock{
+	st.idToName = make(map[int64]string)
+	st.sender = &SenderMock{
 		SendMessageFunc: func(ctx context.Context, origin, target, message string) error { return nil },
 	}
 	st.notifier = &botmocks.NotifierMock{
@@ -122,7 +126,24 @@ func (st *scriptTester) test(t testing.TB) {
 	st.youtube = &youtubemocks.APIMock{}
 	st.xkcd = &xkcdmocks.APIMock{}
 	st.extraLife = &extralifemocks.APIMock{}
-	st.twitch = &twitchmocks.APIMock{}
+	st.twitch = &twitchmocks.APIMock{
+		SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
+			if modID == 0 {
+				panic("modID is 0")
+			}
+
+			// Backwards compat hack; make chat message API pretend to be the old API.
+			origin := st.idToName[modID]
+			if origin == "" {
+				origin = "@" + strconv.FormatInt(modID, 10)
+			}
+			target := "#" + st.idToName[broadcasterID]
+			if target == "#" {
+				target = "@" + strconv.FormatInt(broadcasterID, 10)
+			}
+			return nil, st.sender.SendMessage(ctx, origin, target, message)
+		},
+	}
 	st.steam = &steammocks.APIMock{}
 	st.tinyURL = &tinyurlmocks.APIMock{}
 	st.urban = &urbanmocks.APIMock{}
@@ -140,7 +161,6 @@ func (st *scriptTester) test(t testing.TB) {
 	st.bc = bot.Config{
 		DB:         st.db,
 		Redis:      redis.New(rClient),
-		Sender:     st.sender,
 		Notifier:   st.notifier,
 		Clock:      st.clock,
 		LastFM:     st.lastFM,

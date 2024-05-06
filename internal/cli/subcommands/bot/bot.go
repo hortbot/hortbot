@@ -67,10 +67,9 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	db := c.SQL.Open(ctx, driverName)
 	rdb := c.Redis.Client()
 	twitchAPI := c.Twitch.Client(httpClient)
-	sender := c.NSQ.NewSendMessagePublisher()
 	notifier := c.NSQ.NewNotifyPublisher()
 
-	b := c.Bot.New(ctx, db, rdb, sender, notifier, twitchAPI, httpClient, untrustedClient)
+	b := c.Bot.New(ctx, db, rdb, notifier, twitchAPI, httpClient, untrustedClient)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
@@ -106,7 +105,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		})
 	})
 
-	g.Go(sender.Run)
 	g.Go(notifier.Run)
 	g.Go(incomingSub.Run)
 

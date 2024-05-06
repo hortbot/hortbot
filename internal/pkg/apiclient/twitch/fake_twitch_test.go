@@ -211,6 +211,7 @@ func (f *fakeTwitch) route() {
 
 	f.mt.RegisterResponder("PATCH", `=~https://api.twitch.tv/helix/chat/settings$`, f.helixChatSettings)
 	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/announcements$`, f.helixChatAnnouncements)
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/messages$`, f.helixChatMessages)
 
 	f.mt.RegisterResponder("POST", "https://api.igdb.com/v4/games", f.igdbGames)
 
@@ -826,6 +827,44 @@ func (f *fakeTwitch) helixChatAnnouncements(req *http.Request) (*http.Response, 
 	case broadcasterID == 418:
 		return httpmock.NewStringResponse(418, ""), nil
 	case broadcasterID == 500:
+		return httpmock.NewStringResponse(500, ""), nil
+	default:
+		return nil, errTestBadRequest
+	}
+
+	return httpmock.NewStringResponse(200, "{}"), nil
+}
+
+func (f *fakeTwitch) helixChatMessages(req *http.Request) (*http.Response, error) {
+	f.assertEqual(req.Method, "POST")
+	f.checkHeaders(req)
+
+	auth := req.Header.Get("Authorization")
+	f.assert(strings.HasPrefix(auth, "Bearer "))
+
+	bodyBytes, err := io.ReadAll(req.Body)
+	f.assertNilError(err)
+
+	var body struct {
+		BroadcasterID twitch.IDStr `json:"broadcaster_id"`
+		SenderID      twitch.IDStr `json:"sender_id"`
+		Message       string       `json:"message"`
+	}
+
+	f.assertNilError(jsonx.DecodeSingle(bytes.NewReader(bodyBytes), &body))
+
+	switch {
+	case body.BroadcasterID == 1 && body.SenderID == 123:
+		f.assertEqual(body.Message, "Some announcement!")
+	case body.BroadcasterID == 1 && body.SenderID == 124:
+		f.assertEqual(body.Message, strings.Repeat("A", 500))
+	case body.BroadcasterID == 404:
+		return httpmock.NewStringResponse(404, ""), nil
+	case body.BroadcasterID == 401:
+		return httpmock.NewStringResponse(401, ""), nil
+	case body.BroadcasterID == 418:
+		return httpmock.NewStringResponse(418, ""), nil
+	case body.BroadcasterID == 500:
 		return httpmock.NewStringResponse(500, ""), nil
 	default:
 		return nil, errTestBadRequest

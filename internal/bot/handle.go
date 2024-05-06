@@ -200,7 +200,14 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 	metricHandleTimingCommit.Observe(commit.Seconds())
 
 	if s.sendRoundtrip {
-		return s.Replyf(ctx, "fromTwitch=%v, inQueue=%v, begin=%v, handle=%v, commit=%v; total=%v", fromTwitch, inQueue, begin, handle, commit, total)
+		return dbx.Transact(ctx, b.db,
+			dbx.SetLocalLockTimeout(5*time.Second),
+			func(ctx context.Context, tx *sql.Tx) error {
+				s.Tx = tx
+				err := s.Replyf(ctx, "fromTwitch=%v, inQueue=%v, begin=%v, handle=%v, commit=%v; total=%v", fromTwitch, inQueue, begin, handle, commit, total)
+				s.Tx = nil
+				return err
+			})
 	}
 
 	return nil
@@ -261,6 +268,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 		ctxlog.Debug(ctx, "error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
 		return err
 	}
+	s.RoomIDOrig = s.RoomID
 
 	if s.RoomID == 0 {
 		ctxlog.Debug(ctx, "room ID cannot be zero")

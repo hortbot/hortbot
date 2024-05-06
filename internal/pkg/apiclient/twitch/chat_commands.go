@@ -228,3 +228,41 @@ func (t *Twitch) Announce(ctx context.Context, broadcasterID int64, modID int64,
 
 	return newToken, statusToError(resp.StatusCode)
 }
+
+// SendChatMessage sends a chat message as the given user.
+//
+// POST https://api.twitch.tv/helix/chat/messages
+func (t *Twitch) SendChatMessage(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (newToken *oauth2.Token, err error) {
+	if message == "" {
+		return nil, ErrBadRequest
+	}
+
+	if len(message) > 500 {
+		message = message[:500]
+	}
+
+	if senderToken == nil || senderToken.AccessToken == "" {
+		return nil, ErrNotAuthorized
+	}
+
+	cli := t.clientForUser(ctx, senderToken, setToken(&newToken))
+	url := helixRoot + "/chat/messages"
+
+	body := &struct {
+		BroadcasterID IDStr  `json:"broadcaster_id"`
+		SenderID      IDStr  `json:"sender_id"`
+		Message       string `json:"message"`
+	}{
+		BroadcasterID: IDStr(broadcasterID),
+		SenderID:      IDStr(senderID),
+		Message:       message,
+	}
+
+	resp, err := cli.Post(ctx, url, body)
+	if err != nil {
+		return newToken, err
+	}
+	defer resp.Body.Close()
+
+	return newToken, statusToError(resp.StatusCode)
+}

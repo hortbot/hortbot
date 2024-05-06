@@ -35,24 +35,6 @@ func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(*bnsq.Incom
 	}
 }
 
-// NewSendMessagePublisher creates a new SendMessagePublisher.
-func (args *NSQ) NewSendMessagePublisher() *bnsq.SendMessagePublisher {
-	return bnsq.NewSendMessagePublisher(args.Addr)
-}
-
-// NewSendMessageSubscriber creates a new SendMessageSubscriber.
-func (args *NSQ) NewSendMessageSubscriber(origin string, maxAge time.Duration, fn func(*bnsq.SendMessage, *bnsq.Metadata) error) *bnsq.SendMessageSubscriber {
-	return &bnsq.SendMessageSubscriber{
-		Addr:    args.Addr,
-		Origin:  origin,
-		Channel: args.Channel,
-		Opts: []bnsq.SubscriberOption{
-			bnsq.WithMaxAge(maxAge),
-		},
-		OnSendMessage: fn,
-	}
-}
-
 // NewNotifyPublisher creates a new NotifyPublisher.
 func (args *NSQ) NewNotifyPublisher() *bnsq.NotifyPublisher {
 	return bnsq.NewNotifyPublisher(args.Addr)

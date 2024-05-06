@@ -7,9 +7,13 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/jakebailey/irc"
+	"github.com/volatiletech/null/v8"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
@@ -173,6 +177,22 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	n, err := fmt.Sscanf(args, "%s %d %s %d", &botName, &botID, &userName, &userID)
 	assert.NilError(t, err, "line %d", lineNum)
 	assert.Equal(t, n, 4)
+
+	st.idToName[int64(botID)] = botName
+	st.idToName[int64(userID)] = userName
+
+	expiry, err := time.Parse(time.RFC3339, "2050-10-01T03:11:00Z")
+	assert.NilError(t, err, "line %d", lineNum)
+
+	tt := models.TwitchToken{
+		TwitchID:     int64(botID),
+		BotName:      null.StringFrom(botName),
+		AccessToken:  "some-access-token",
+		TokenType:    "bearer",
+		RefreshToken: "some-refresh-token",
+		Expiry:       expiry,
+	}
+	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 
 	m := &irc.Message{
 		Tags: map[string]string{

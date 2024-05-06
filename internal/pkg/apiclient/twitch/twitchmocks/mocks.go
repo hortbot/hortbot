@@ -78,6 +78,9 @@ var _ twitch.API = &APIMock{}
 //			SearchCategoriesFunc: func(ctx context.Context, query string) ([]*twitch.Category, error) {
 //				panic("mock out the SearchCategories method")
 //			},
+//			SendChatMessageFunc: func(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (*oauth2.Token, error) {
+//				panic("mock out the SendChatMessage method")
+//			},
 //			SetChatColorFunc: func(ctx context.Context, userID int64, userToken *oauth2.Token, color string) (*oauth2.Token, error) {
 //				panic("mock out the SetChatColor method")
 //			},
@@ -153,6 +156,9 @@ type APIMock struct {
 
 	// SearchCategoriesFunc mocks the SearchCategories method.
 	SearchCategoriesFunc func(ctx context.Context, query string) ([]*twitch.Category, error)
+
+	// SendChatMessageFunc mocks the SendChatMessage method.
+	SendChatMessageFunc func(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (*oauth2.Token, error)
 
 	// SetChatColorFunc mocks the SetChatColor method.
 	SetChatColorFunc func(ctx context.Context, userID int64, userToken *oauth2.Token, color string) (*oauth2.Token, error)
@@ -335,6 +341,19 @@ type APIMock struct {
 			// Query is the query argument value.
 			Query string
 		}
+		// SendChatMessage holds details about calls to the SendChatMessage method.
+		SendChatMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// BroadcasterID is the broadcasterID argument value.
+			BroadcasterID int64
+			// SenderID is the senderID argument value.
+			SenderID int64
+			// SenderToken is the senderToken argument value.
+			SenderToken *oauth2.Token
+			// Message is the message argument value.
+			Message string
+		}
 		// SetChatColor holds details about calls to the SetChatColor method.
 		SetChatColor []struct {
 			// Ctx is the ctx argument value.
@@ -399,6 +418,7 @@ type APIMock struct {
 	lockGetUserByUsername    sync.RWMutex
 	lockModifyChannel        sync.RWMutex
 	lockSearchCategories     sync.RWMutex
+	lockSendChatMessage      sync.RWMutex
 	lockSetChatColor         sync.RWMutex
 	lockUnban                sync.RWMutex
 	lockUpdateChatSettings   sync.RWMutex
@@ -1154,6 +1174,54 @@ func (mock *APIMock) SearchCategoriesCalls() []struct {
 	mock.lockSearchCategories.RLock()
 	calls = mock.calls.SearchCategories
 	mock.lockSearchCategories.RUnlock()
+	return calls
+}
+
+// SendChatMessage calls SendChatMessageFunc.
+func (mock *APIMock) SendChatMessage(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (*oauth2.Token, error) {
+	if mock.SendChatMessageFunc == nil {
+		panic("APIMock.SendChatMessageFunc: method is nil but API.SendChatMessage was just called")
+	}
+	callInfo := struct {
+		Ctx           context.Context
+		BroadcasterID int64
+		SenderID      int64
+		SenderToken   *oauth2.Token
+		Message       string
+	}{
+		Ctx:           ctx,
+		BroadcasterID: broadcasterID,
+		SenderID:      senderID,
+		SenderToken:   senderToken,
+		Message:       message,
+	}
+	mock.lockSendChatMessage.Lock()
+	mock.calls.SendChatMessage = append(mock.calls.SendChatMessage, callInfo)
+	mock.lockSendChatMessage.Unlock()
+	return mock.SendChatMessageFunc(ctx, broadcasterID, senderID, senderToken, message)
+}
+
+// SendChatMessageCalls gets all the calls that were made to SendChatMessage.
+// Check the length with:
+//
+//	len(mockedAPI.SendChatMessageCalls())
+func (mock *APIMock) SendChatMessageCalls() []struct {
+	Ctx           context.Context
+	BroadcasterID int64
+	SenderID      int64
+	SenderToken   *oauth2.Token
+	Message       string
+} {
+	var calls []struct {
+		Ctx           context.Context
+		BroadcasterID int64
+		SenderID      int64
+		SenderToken   *oauth2.Token
+		Message       string
+	}
+	mock.lockSendChatMessage.RLock()
+	calls = mock.calls.SendChatMessage
+	mock.lockSendChatMessage.RUnlock()
 	return calls
 }
 
