@@ -567,7 +567,13 @@ func (s *session) SendTwitchChatMessage(ctx context.Context, target string, mess
 		}
 	}
 
-	return err
+	if err != nil {
+		metricSentErrors.Inc()
+		return err
+	}
+
+	metricSent.Inc()
+	return nil
 }
 
 func (s *session) IsLive(ctx context.Context) (bool, error) {
