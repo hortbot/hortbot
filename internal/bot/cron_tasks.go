@@ -198,7 +198,7 @@ func (b *Bot) runUpdateModeratedChannels(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		// case <-b.updateModeratedChannelsTicker.Chan():
+		case <-b.updateModeratedChannelsTicker.Chan():
 		case <-b.updateModeratedChannelsManual:
 			log = true
 		}
