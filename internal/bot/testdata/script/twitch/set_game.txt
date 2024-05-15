@@ -14,6 +14,8 @@ send hortbot #foobar [HB] Current game: Garry's Mod
 twitch_get_game_by_name {"Just Chatting": {"Category": {"ID": 473625, "Name": "Just Chatting"}}}
 twitch_search_categories {}
 
+delete_twitch_token 1
+
 twitch_modify_channel {"ID": 1, "GameID": 473625, "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!game Just Chatting
 send hortbot #foobar [HB] The bot wasn't authorized to perform this action. Log in on the website to give permission: http://localhost:5000/login

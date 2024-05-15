@@ -3,6 +3,7 @@ package btest
 import (
 	"context"
 	"encoding/json"
+	"strconv"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -59,6 +60,16 @@ func (st *scriptTester) upsertTwitchToken(t testing.TB, _, args string, lineNum 
 		}
 		ctx = boil.SkipTimestamps(ctx)
 		assert.NilError(t, modelsx.UpsertToken(ctx, st.db, &tt), "line %d", lineNum)
+	})
+}
+
+func (st *scriptTester) deleteTwitchToken(t testing.TB, _, args string, lineNum int) {
+	id, err := strconv.ParseInt(args, 10, 64)
+	assert.NilError(t, err, "line %d", lineNum)
+
+	st.addAction(func(ctx context.Context) {
+		ctx = boil.SkipTimestamps(ctx)
+		assert.NilError(t, models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(id)).DeleteAll(ctx, st.db), "line %d", lineNum)
 	})
 }
 

@@ -54,6 +54,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	botName := strings.TrimLeft(s.Origin, "#")
 
 	isAdmin := s.UserLevel.CanAccess(levelAdmin)
+	adminOverride := false
 
 	if name != "" && isAdmin {
 		u, err := s.Deps.Twitch.GetUserByUsername(ctx, name)
@@ -61,6 +62,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 		}
 
+		adminOverride = true
 		userID = u.ID.AsInt64()
 		displayName = u.DispName()
 	} else {
@@ -101,11 +103,27 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
+	hasAuth, authErr := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(userID)).Exists(ctx, s.Tx)
+	if authErr != nil {
+		return authErr
+	}
+
 	firstJoin := func(ctx context.Context) error {
-		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'. Log in to the website to give the bot permission to access your Twitch account: %s/login", displayName, botName, channel.Prefix, s.WebAddrFor(botName))
+		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'.", displayName, botName, channel.Prefix)
+	}
+
+	noAuth := func(ctx context.Context) error {
+		if adminOverride {
+			return s.Replyf(ctx, "The can no longer join channels without auth.")
+		}
+		return s.Replyf(ctx, "Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at %s/login and return here.", s.WebAddrFor(botName))
 	}
 
 	if err == sql.ErrNoRows {
+		if !hasAuth {
+			return noAuth(ctx)
+		}
+
 		channel = modelsx.NewChannel(userID, name, displayName, botName)
 
 		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -124,6 +142,10 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.", displayName, channel.BotName, channel.Prefix)
 		}
 
+		if !hasAuth {
+			return noAuth(ctx)
+		}
+
 		channel.Name = name
 		channel.DisplayName = displayName
 
@@ -136,6 +158,10 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		}
 
 		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
+	}
+
+	if !hasAuth {
+		return noAuth(ctx)
 	}
 
 	channel.Active = true

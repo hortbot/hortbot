@@ -194,6 +194,15 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	}
 	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 
+	tt = models.TwitchToken{
+		TwitchID:     int64(userID),
+		AccessToken:  "some-access-token",
+		TokenType:    "bearer",
+		RefreshToken: "some-refresh-token",
+		Expiry:       expiry,
+	}
+	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
+
 	m := &irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),

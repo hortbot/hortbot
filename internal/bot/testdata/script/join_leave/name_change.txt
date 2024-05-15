@@ -1,6 +1,14 @@
+bot_config {"WebAddr": "http://localhost:5000"}
+
 upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+
+handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
+send hortbot #hortbot [HB] Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at http://localhost:5000/login and return here.
+no_notify_channel_updates
+
+upsert_twitch_token {"twitch_id": 1,"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] BarFoo, hortbot will now rejoin your channel with your new username.

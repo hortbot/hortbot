@@ -11,6 +11,7 @@ send hortbot #foobar [HB] This is the status!
 handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status
 send hortbot #foobar [HB] This is the status!
 
+delete_twitch_token 1
 
 twitch_modify_channel {"ID": 1, "Status": "This is a new status", "Err": "ErrNotAuthorized"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!status This is a new status

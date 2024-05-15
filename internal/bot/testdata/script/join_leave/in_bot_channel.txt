@@ -5,9 +5,15 @@ bot_config {"WebAddr": "http://localhost:5000"}
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 no_send
 
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send hortbot #hortbot [HB] Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at http://localhost:5000/login and return here.
+no_notify_channel_updates
+
+upsert_twitch_token {"twitch_id": 1,"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
-send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '!'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
+send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '!'.
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
@@ -37,7 +43,7 @@ no_send
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
-send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '+'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
+send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '+'.
 notify_channel_updates hortbot
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
@@ -51,18 +57,5 @@ no_notify_channel_updates
 twitch_get_user_by_username {"someone": {"id": 1234, "login": "someone", "display_name": "Someone"}}
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone
-send hortbot #hortbot [HB] Someone, hortbot will join your channel soon with prefix '!'. Log in to the website to give the bot permission to access your Twitch account: http://localhost:5000/login
-notify_channel_updates hortbot
-
-handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join someone
-send hortbot #hortbot [HB] Someone, hortbot is already active in your channel with prefix '!'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.
-no_notify_channel_updates
-
-handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!part someone
-send hortbot #hortbot [HB] Someone, hortbot will now leave your channel.
-notify_channel_updates hortbot
-
-
-handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join who
-send hortbot #hortbot [HB] Error getting ID from Twitch: twitch: not found
+send hortbot #hortbot [HB] The can no longer join channels without auth.
 no_notify_channel_updates
