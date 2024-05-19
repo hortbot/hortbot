@@ -323,7 +323,7 @@ func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error)
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return nil, nil //nolint:nilnil
+			return nil, nil
 		case err != nil:
 			return nil, err
 		}
@@ -355,7 +355,7 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(botName))).One(ctx, s.Tx)
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return tokenAndUserID{}, nil //nolint:nilnil
+			return tokenAndUserID{}, nil
 		case err != nil:
 			return tokenAndUserID{}, err
 		}

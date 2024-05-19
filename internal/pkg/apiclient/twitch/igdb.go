@@ -37,33 +37,33 @@ type GameLink struct {
 const (
 	_ externalGameType = iota
 	externalGameSteam
-	externalGameGamesDB   //nolint
-	externalGameGiantBomb //nolint
-	externalGameGoOptimuz //nolint
+	externalGameGamesDB
+	externalGameGiantBomb
+	externalGameGoOptimuz
 	externalGameGOG
-	externalGamePushSquare     //nolint
-	externalGameIsThereAnyDeal //nolint
-	externalGameGamersGate     //nolint
+	externalGamePushSquare
+	externalGameIsThereAnyDeal
+	externalGameGamersGate
 	_
-	externalGameYouTube      //nolint
-	externalGameMicrosoft    //nolint
-	externalGameNintendoLife //nolint
-	externalGameApple        //nolint
+	externalGameYouTube
+	externalGameMicrosoft
+	externalGameNintendoLife
+	externalGameApple
 	externalGameTwitch
-	externalGameAndroid     //nolint
-	externalGamePlaystation //nolint
+	externalGameAndroid
+	externalGamePlaystation
 	_
-	externalGameXbox        //nolint
-	externalGameGamersPress //nolint
-	externalGameAmazon      //nolint
-	externalGameNintendo    //nolint
-	externalGamePlayAmazon  //nolint
-	_                       // play.amazon.com
-	externalGamePlayAsia    //nolint
-	externalGameTapTap      //nolint
+	externalGameXbox
+	externalGameGamersPress
+	externalGameAmazon
+	externalGameNintendo
+	externalGamePlayAmazon
+	_ // play.amazon.com
+	externalGamePlayAsia
+	externalGameTapTap
 	externalGameEpic
-	externalGameTouchArcade //nolint
-	externalGameOculus      //nolint
+	externalGameTouchArcade
+	externalGameOculus
 )
 
 func externalGameToLink(g externalGameType) GameLinkType {
@@ -88,23 +88,23 @@ type gameWebsiteType uint8
 const (
 	_ gameWebsiteType = iota
 	gameWebsiteOfficial
-	gameWebsiteFandom    //nolint
-	gameWebsiteWikipedia //nolint
-	gameWebsiteFacebook  //nolint
-	gameWebsiteTwitter   //nolint
-	gameWebsiteTwitch    //nolint
+	gameWebsiteFandom
+	gameWebsiteWikipedia
+	gameWebsiteFacebook
+	gameWebsiteTwitter
+	gameWebsiteTwitch
 	_
-	gameWebsiteInstagram   //nolint
-	gameWebsiteYouTube     //nolint
-	gameWebsiteAppleIPhone //nolint
-	gameWebsiteAppleIPad   //nolint
-	gameWebsiteAndroid     //nolint
+	gameWebsiteInstagram
+	gameWebsiteYouTube
+	gameWebsiteAppleIPhone
+	gameWebsiteAppleIPad
+	gameWebsiteAndroid
 	gameWebsiteSteam
-	gameWebsiteReddit //nolint
+	gameWebsiteReddit
 	gameWebsiteItch
 	gameWebsiteEpic
 	gameWebsiteGOG
-	gameWebsiteDiscord //nolint
+	gameWebsiteDiscord
 )
 
 type gameWebsite struct {

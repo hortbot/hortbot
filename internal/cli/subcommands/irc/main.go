@@ -50,7 +50,6 @@ func (*cmd) Name() string {
 	return "irc"
 }
 
-//nolint:gocyclo
 func (c *cmd) Main(ctx context.Context, _ []string) {
 	defer c.Jaeger.Trace(ctx, c.Name(), c.Debug)()
 	c.Prometheus.Run(ctx)

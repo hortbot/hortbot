@@ -19,7 +19,6 @@ linters:
     - unparam
     - nestif
     - testpackage
-    - nolintlint
     - godot
     - stylecheck
     - unused
