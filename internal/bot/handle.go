@@ -16,7 +16,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/pool"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
-	"github.com/jakebailey/irc"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/zikaeroh/ctxlog"
@@ -33,9 +32,18 @@ var (
 	errDuplicate       = errors.New("bot: duplicate message")
 )
 
+type Message interface {
+	Command() string
+	Tags() map[string]string
+	Params() []string
+	Trailing() string
+	PrefixName() string
+	Message() (message string, me bool)
+}
+
 // Handle handles a single IRC message, sent via the specific origin. It always
 // succeeds, but may log information about any internal errors.
-func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
+func (b *Bot) Handle(ctx context.Context, origin string, m Message) {
 	ctx = correlation.With(ctx)
 
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
@@ -55,17 +63,17 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 
 	defer metricHandled.Inc()
 
-	if m.Command == "PING" {
+	if m.Command() == "PING" {
 		return
 	}
 
-	span.AddAttributes(trace.StringAttribute("irc_command", m.Command))
-	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command))
+	span.AddAttributes(trace.StringAttribute("irc_command", m.Command()))
+	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command()))
 
 	start := b.deps.Clock.Now()
 	defer func() {
 		secs := b.deps.Clock.Since(start).Seconds()
-		metricHandleDuration.WithLabelValues(m.Command).Observe(secs)
+		metricHandleDuration.WithLabelValues(m.Command()).Observe(secs)
 	}()
 
 	err := b.handle(ctx, origin, m)
@@ -87,7 +95,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 	ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 }
 
-func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr error) {
+func (b *Bot) handle(ctx context.Context, origin string, m Message) (retErr error) {
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
 
@@ -103,7 +111,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 		}
 	}()
 
-	switch m.Command {
+	switch m.Command() {
 	case "PRIVMSG":
 		return b.handlePrivMsg(ctx, origin, m)
 	case "NOTICE":
@@ -128,7 +136,7 @@ func putSession(s *session) {
 	sessionPool.Put(s)
 }
 
-func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) error {
+func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m Message) error {
 	ctx, span := trace.StartSpan(ctx, "handlePrivMsg")
 	defer span.End()
 
@@ -215,15 +223,15 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m *irc.Message) 
 	return nil
 }
 
-func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *irc.Message) error {
+func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Message) error {
 	ctx, span := trace.StartSpan(ctx, "buildSession")
 	defer span.End()
 
-	if len(m.Tags) == 0 || len(m.Params) == 0 {
+	if len(m.Tags()) == 0 || len(m.Params()) == 0 {
 		return errInvalidMessage
 	}
 
-	id := m.Tags["id"]
+	id := m.Tags()["id"]
 	if id == "" {
 		return errInvalidMessage
 	}
@@ -232,13 +240,13 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 		return err
 	}
 
-	user := strings.ToLower(m.Prefix.Name)
+	user := strings.ToLower(m.PrefixName())
 
 	if !b.deps.IsAllowed(user) {
 		return errNotAllowed
 	}
 
-	message, me := readMessage(m)
+	message, me := m.Message()
 	if message == "" {
 		return nil
 	}
@@ -252,13 +260,13 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 	s.Message = message
 	s.Me = me
 
-	if displayName := m.Tags["display-name"]; displayName != "" {
+	if displayName := m.Tags()["display-name"]; displayName != "" {
 		s.UserDisplay = displayName
 	} else {
 		s.UserDisplay = s.User
 	}
 
-	roomID := m.Tags["room-id"]
+	roomID := m.Tags()["room-id"]
 	if roomID == "" {
 		ctxlog.Debug(ctx, "no room ID")
 		return errInvalidMessage
@@ -277,7 +285,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 		return errInvalidMessage
 	}
 
-	userID := m.Tags["user-id"]
+	userID := m.Tags()["user-id"]
 	if userID == "" {
 		ctxlog.Debug(ctx, "no user ID")
 		return errInvalidMessage
@@ -294,15 +302,15 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m *ir
 		return errInvalidMessage
 	}
 
-	tmiSentStr := m.Tags["tmi-sent-ts"]
+	tmiSentStr := m.Tags()["tmi-sent-ts"]
 	if tmiSentStr != "" {
 		tmiSent, _ := strconv.ParseInt(tmiSentStr, 10, 64)
 		s.TMISent = time.Unix(tmiSent/1000, 0)
 	}
 
-	channelName := m.Params[0]
+	channelName := m.Params()[0]
 	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
-		ctxlog.Debug(ctx, "bad channel name", zap.Strings("params", m.Params))
+		ctxlog.Debug(ctx, "bad channel name", zap.Strings("params", m.Params()))
 		return errInvalidMessage
 	}
 

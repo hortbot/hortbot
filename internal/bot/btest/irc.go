@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/jakebailey/irc"
@@ -51,10 +53,10 @@ func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, li
 		}
 	}
 
-	st.handleM(t, origin, m)
+	st.handleM(t, origin, irctobot.IRCToMessage(m))
 }
 
-func (st *scriptTester) handleM(t testing.TB, origin string, m *irc.Message) {
+func (st *scriptTester) handleM(t testing.TB, origin string, m bot.Message) {
 	st.addAction(func(ctx context.Context) {
 		st.ensureBot(ctx, t)
 		st.doCheckpoint()
@@ -203,7 +205,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	}
 	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 
-	m := &irc.Message{
+	m := irctobot.IRCToMessage(&irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),
 			"room-id": strconv.Itoa(botID),
@@ -217,7 +219,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 		Command:  "PRIVMSG",
 		Params:   []string{"#" + botName},
 		Trailing: "!join",
-	}
+	})
 
 	st.handleM(t, botName, m)
 	st.sendAny(t, "", "", lineNum)
