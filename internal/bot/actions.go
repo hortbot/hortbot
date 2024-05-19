@@ -591,8 +591,7 @@ func actionUntil(ctx context.Context, s *session, actionName, value string) (str
 	now := s.Deps.Clock.Now()
 
 	dur := t.Sub(now)
-	switch dur {
-	case maxDuration, minDuration:
+	if dur == maxDuration || dur == minDuration {
 		return actionMsgError, nil // TODO: Attempt to handle dates which are further 290+ years apart, for fun.
 	}
 

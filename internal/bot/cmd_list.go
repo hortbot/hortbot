@@ -288,7 +288,6 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 		qm.Load(models.CommandInfoRels.CommandList, qm.For("UPDATE")),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
-
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil, nil

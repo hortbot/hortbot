@@ -12,7 +12,7 @@ const (
 	incomingTopic = "irc.incoming"
 )
 
-// Incoming is an incoming IRC message as sent over NSQ>
+// Incoming is an incoming IRC message as sent over NSQ.
 type Incoming struct {
 	Origin  string       `json:"origin"`
 	Message *irc.Message `json:"message"`

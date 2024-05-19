@@ -66,7 +66,7 @@ func (a accessLevel) CanAccessPG(s string) bool {
 }
 
 func (a accessLevel) PGEnum() string {
-	switch a {
+	switch a { //nolint:exhaustive
 	case levelEveryone:
 		return models.AccessLevelEveryone
 	case levelSubscriber:

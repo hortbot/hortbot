@@ -67,7 +67,7 @@ const (
 )
 
 func externalGameToLink(g externalGameType) GameLinkType {
-	switch g {
+	switch g { //nolint:exhaustive
 	case externalGameSteam:
 		return GameLinkSteam
 	case externalGameGOG:
@@ -113,7 +113,7 @@ type gameWebsite struct {
 }
 
 func websiteToLink(g gameWebsiteType) GameLinkType {
-	switch g {
+	switch g { //nolint:exhaustive
 	case gameWebsiteOfficial:
 		return GameLinkOfficial
 	case gameWebsiteSteam:
