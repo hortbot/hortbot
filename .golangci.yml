@@ -2,64 +2,64 @@ linters:
   enable-all: true
   disable:
     # https://github.com/golangci/golangci-lint/issues/484
-    - govet
-    - maligned
-    - wsl
-    - gomnd
-    - lll
-    - godox
-    - gochecknoglobals
-    - gochecknoinits
-    - funlen
-    - gocognit
-    - goconst
-    - interfacer
+    - containedctx # Silly.
+    - contextcheck # Inaccurate.
+    - cyclop
+    - deadcode # dead
+    - depguard
     - dogsled
     - dupl
-    - unparam
-    - nestif
-    - testpackage
-    - godot
-    - stylecheck
-    - unused
-    - gofumpt
-    - exhaustive # Breaks on enum values exported from test packages.
-    - nlreturn
-    - gci
-    - exhaustivestruct
-    - wrapcheck
-    - paralleltest
-    - forbidigo
-    - thelper # Broken and racy.
-    - ifshort # Inaccurate.
-    - cyclop
     - durationcheck
-    - forcetypeassert
-    - wastedassign # Inaccurate.
-    - scopelint # Deprecated
-    - tagliatelle
-    - golint # Deprecated
-    - varnamelen # Silly.
-    - ireturn # Noisy.
-    - contextcheck # Inaccurate.
-    - containedctx # Silly.
-    - errchkjson # Redundant.
-    - nonamedreturns # No.
-    - exhaustruct # Pass.
-    - varcheck # dead
-    - deadcode # dead
-    - structcheck # dead
-    - nosnakecase # dead
-    - interfacebloat # nope
-    - musttag # issues errors in the stdlib
-    - revive # redundant
-    - depguard
-    - tagalign
-    - inamedparam
-    - sqlclosecheck # incorrect
-    - mnd
     - err113
+    - errchkjson # Redundant.
     - execinquery
+    - exhaustive # Breaks on enum values exported from test packages.
+    - exhaustivestruct
+    - exhaustruct # Pass.
+    - forbidigo
+    - forcetypeassert
+    - funlen
+    - gci
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - godot
+    - godox
+    - gofumpt
+    - golint # Deprecated
+    - gomnd
+    - govet
+    - ifshort # Inaccurate.
+    - inamedparam
+    - interfacebloat # nope
+    - interfacer
+    - ireturn # Noisy.
+    - lll
+    - maligned
+    - mnd
+    - musttag # issues errors in the stdlib
+    - nestif
+    - nlreturn
+    - nonamedreturns # No.
+    - nosnakecase # dead
+    - paralleltest
+    - revive # redundant
+    - scopelint # Deprecated
+    - sqlclosecheck # incorrect
+    - structcheck # dead
+    - stylecheck
+    - tagalign
+    - tagliatelle
+    - testpackage
+    - thelper # Broken and racy.
+    - unparam
+    - unused
+    - varcheck # dead
+    - varnamelen # Silly.
+    - wastedassign # Inaccurate.
+    - wrapcheck
+    - wsl
 
     # - staticcheck
 
