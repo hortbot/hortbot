@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"sort"
 	"strconv"
 	"strings"
@@ -293,7 +294,7 @@ func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil, nil
 	}
 

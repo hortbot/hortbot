@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"time"
 
@@ -107,7 +108,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 		func(ctx context.Context, tx *sql.Tx) error {
 			status, err := runner.status(ctx, tx)
 			if err != nil {
-				if err == sql.ErrNoRows {
+				if errors.Is(err, sql.ErrNoRows) {
 					status = repeatStatus{}
 				} else {
 					return err
@@ -124,7 +125,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 			}
 
 			if err := runner.load(ctx, tx); err != nil {
-				if err == sql.ErrNoRows {
+				if errors.Is(err, sql.ErrNoRows) {
 					readd = false
 					return nil
 				}

@@ -4,6 +4,7 @@ package modelsx
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null/v8"
@@ -66,7 +67,7 @@ func UpsertTokenWithoutPreservedColumns(ctx context.Context, exec boil.ContextEx
 func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *models.CommandInfo) (repeated *models.RepeatedCommand, scheduled *models.ScheduledCommand, err error) {
 	repeated, err = info.RepeatedCommand().One(ctx, exec)
 	if err != nil {
-		if err != sql.ErrNoRows {
+		if !errors.Is(err, sql.ErrNoRows) {
 			return nil, nil, err
 		}
 	} else {
@@ -77,7 +78,7 @@ func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *mod
 
 	scheduled, err = info.ScheduledCommand().One(ctx, exec)
 	if err != nil {
-		if err != sql.ErrNoRows {
+		if !errors.Is(err, sql.ErrNoRows) {
 			return nil, nil, err
 		}
 	} else {
@@ -136,7 +137,7 @@ func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string,
 	// queries to fetch 1:1 relationships rather than joins.
 	err = queries.Raw(query, id, name).Bind(ctx, exec, &infoAndCommand)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, null.String{}, false, nil
 	}
 

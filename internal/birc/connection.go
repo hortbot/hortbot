@@ -12,6 +12,7 @@ import (
 	"github.com/hortbot/hortbot/internal/birc/breq"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/hortbot/hortbot/internal/pkg/ircx"
 	"github.com/jakebailey/irc"
 	"github.com/zikaeroh/ctxlog"
@@ -212,7 +213,7 @@ func (c *Connection) receiver(ctx context.Context) error {
 		err := c.conn.Decode(m)
 		metricReceived.WithLabelValues(c.config.UserConfig.Nick).Inc()
 		if err != nil {
-			if pe, ok := err.(*irc.ParseError); ok {
+			if pe, ok := errorsx.As[*irc.ParseError](err); ok {
 				ctxlog.Warn(ctx, "received bad message from IRC server, ignoring", zap.Error(pe))
 				continue
 			}

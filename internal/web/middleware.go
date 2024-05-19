@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"net/http"
 	"strings"
 
@@ -26,7 +27,7 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 
 			channel, err := models.Channels(models.ChannelWhere.Name.EQ(strings.ToLower(name))).One(ctx, a.DB)
 			if err != nil {
-				if err == sql.ErrNoRows {
+				if errors.Is(err, sql.ErrNoRows) {
 					a.httpError(w, r, http.StatusNotFound)
 				} else {
 					ctxlog.Error(ctx, "error querying channel", zap.Error(err))

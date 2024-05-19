@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"strings"
 	"time"
 
@@ -23,7 +24,7 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 
 	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
-		if err == twitch.ErrServerError {
+		if errors.Is(err, twitch.ErrServerError) {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
 		return err
@@ -61,13 +62,13 @@ func setStatus(ctx context.Context, s *session, status string) (replied bool, er
 	}
 
 	if err != nil {
-		switch err {
-		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
+		if errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
 			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
-		case twitch.ErrServerError:
+		}
+		if errors.Is(err, twitch.ErrServerError) {
 			return true, s.Reply(ctx, twitchServerErrorReply)
 		}
-		return true, err
+		return false, err
 	}
 
 	return false, nil
@@ -81,7 +82,7 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 
 	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
-		if err == twitch.ErrServerError {
+		if errors.Is(err, twitch.ErrServerError) {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
 		return err
@@ -134,10 +135,10 @@ func setGameAndStatus(ctx context.Context, s *session, game string, status strin
 	}
 
 	if err != nil {
-		switch err {
-		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
+		if errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
 			return false, s.Reply(ctx, s.TwitchNotAuthMessage())
-		case twitch.ErrServerError:
+		}
+		if errors.Is(err, twitch.ErrServerError) {
 			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
 		return false, err
@@ -178,10 +179,10 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 	}
 
 	if err != nil {
-		switch err {
-		case twitch.ErrNotAuthorized, twitch.ErrDeadToken: // TODO: Delete dead token.
+		if errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
 			return false, s.Reply(ctx, s.TwitchNotAuthMessage())
-		case twitch.ErrServerError:
+		}
+		if errors.Is(err, twitch.ErrServerError) {
 			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
 		return false, err
@@ -197,7 +198,7 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 func fixGameOrSuggest(ctx context.Context, s *session, game string) (*twitch.Category, error) {
 	exact, suggestions, err := searchGame(ctx, s, game)
 	if err != nil {
-		if err == twitch.ErrServerError {
+		if errors.Is(err, twitch.ErrServerError) {
 			return nil, s.Reply(ctx, twitchServerErrorReply)
 		}
 		return nil, err
@@ -223,12 +224,10 @@ type gameSuggestion [2]*twitch.Category
 func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Category, suggestions gameSuggestion, err error) {
 	{
 		g, err := s.Deps.Twitch.GetGameByName(ctx, name)
-		switch err {
-		case nil:
+		if err == nil {
 			return g, gameSuggestion{}, nil
-		case twitch.ErrNotFound:
-			// Do nothing.
-		default:
+		}
+		if !errors.Is(err, twitch.ErrNotFound) {
 			return nil, gameSuggestion{}, err
 		}
 	}
@@ -237,7 +236,7 @@ func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Cat
 
 	gs, err := s.Deps.Twitch.SearchCategories(ctx, name)
 	if err != nil {
-		if err == twitch.ErrNotFound {
+		if errors.Is(err, twitch.ErrNotFound) {
 			err = nil
 		}
 		return nil, gameSuggestion{}, err
@@ -310,17 +309,17 @@ func cmdViewers(ctx context.Context, s *session, cmd string, args string) error 
 
 func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, error) {
 	stream, err := s.TwitchStream(ctx)
-
-	switch err {
-	case nil:
-		return stream, nil
-	case twitch.ErrNotFound:
-		return nil, s.Reply(ctx, "Stream is not live.")
-	case twitch.ErrServerError:
-		return nil, s.Reply(ctx, twitchServerErrorReply)
-	default:
+	if err != nil {
+		if errors.Is(err, twitch.ErrNotFound) {
+			return nil, s.Reply(ctx, "Stream is not live.")
+		}
+		if errors.Is(err, twitch.ErrServerError) {
+			return nil, s.Reply(ctx, twitchServerErrorReply)
+		}
 		return nil, err
 	}
+
+	return stream, nil
 }
 
 func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
@@ -329,11 +328,10 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 
 	if name == "" {
 		isLive, err := s.IsLive(ctx)
-		switch err {
-		case twitch.ErrServerError:
-			return s.Reply(ctx, twitchServerErrorReply)
-		case nil:
-		default:
+		if err != nil {
+			if errors.Is(err, twitch.ErrServerError) {
+				return s.Reply(ctx, twitchServerErrorReply)
+			}
 			return err
 		}
 
@@ -346,10 +344,10 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 
 	u, err := s.Deps.Twitch.GetUserByUsername(ctx, name)
 	if err != nil {
-		switch err {
-		case twitch.ErrNotFound:
+		if errors.Is(err, twitch.ErrNotFound) {
 			return s.Replyf(ctx, "User %s does not exist.", name)
-		case twitch.ErrServerError:
+		}
+		if errors.Is(err, twitch.ErrServerError) {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
 		return err
@@ -357,14 +355,13 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 
 	stream, err := s.Deps.Twitch.GetStreamByUserID(ctx, u.ID.AsInt64())
 	if err != nil {
-		switch err {
-		case twitch.ErrNotFound:
+		if errors.Is(err, twitch.ErrNotFound) {
 			return s.Replyf(ctx, "No, %s isn't live.", name)
-		case twitch.ErrServerError:
-			return s.Reply(ctx, twitchServerErrorReply)
-		default:
-			return err
 		}
+		if errors.Is(err, twitch.ErrServerError) {
+			return s.Reply(ctx, twitchServerErrorReply)
+		}
+		return err
 	}
 
 	viewers := stream.ViewerCount

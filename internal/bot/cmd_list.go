@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -213,7 +214,7 @@ func cmdListRestrict(ctx context.Context, s *session, cmd string, args string) e
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "List '%s' does not exist.", name)
 		}
 		return err
@@ -247,7 +248,7 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(oldName), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "List '%s' does not exist.", oldName)
 		}
 		return err
@@ -288,14 +289,14 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	switch err {
-	case nil:
-		return info, info.R.CommandList, nil
-	case sql.ErrNoRows:
-		return nil, nil, nil
-	default:
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil, nil
+		}
 		return nil, nil, err
 	}
+
+	return info, info.R.CommandList, nil
 }
 
 func handleList(ctx context.Context, s *session, info *models.CommandInfo, update bool) (bool, error) {

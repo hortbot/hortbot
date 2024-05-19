@@ -3,6 +3,7 @@ package web
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strings"
 	"time"
@@ -26,13 +27,11 @@ func (a *App) apiV1VarsGet(w http.ResponseWriter, r *http.Request) {
 	variable := &models.Variable{}
 
 	err := queries.Raw("SELECT variables.* FROM variables JOIN channels ON variables.channel_id = channels.id WHERE variables.name = $1 AND channels.name = $2", varName, channelName).Bind(ctx, a.DB, variable)
-	switch err {
-	case nil:
-		// Do nothing.
-	case sql.ErrNoRows:
-		v1Error(w, http.StatusNotFound)
-		return
-	default:
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			v1Error(w, http.StatusNotFound)
+			return
+		}
 		ctxlog.Error(ctx, "error querying for variable", zap.Error(err))
 		v1Error(w, http.StatusInternalServerError)
 		return

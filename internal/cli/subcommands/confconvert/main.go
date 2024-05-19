@@ -215,7 +215,7 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (con
 		name = expectedName
 		twitchID, displayName, err = cmd.getChannelByName(ctx, expectedName)
 		if err != nil {
-			if err == twitch.ErrNotFound {
+			if errors.Is(err, twitch.ErrNotFound) {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
 				return nil, false, nil
 			}
@@ -229,7 +229,7 @@ func (cmd *cmd) convert(ctx context.Context, expectedName, filename string) (con
 
 		name, displayName, err = cmd.getChannelByID(ctx, twitchID)
 		if err != nil {
-			if err == twitch.ErrNotFound {
+			if errors.Is(err, twitch.ErrNotFound) {
 				ctxlog.Warn(ctx, "user does not exist on twitch, skipping")
 				return nil, false, nil
 			}

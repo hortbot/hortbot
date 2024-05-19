@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strings"
 
 	"github.com/gobuffalo/flect"
@@ -277,7 +278,7 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Command '%s' does not exist.", name)
 		}
 		return err
@@ -326,7 +327,7 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Command '%s' does not exist.", name)
 		}
 		return err
@@ -373,7 +374,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 
 	info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(oldName), qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Command '%s' does not exist.", oldName)
 		}
 		return err
@@ -464,7 +465,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 
 	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(other)).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Channel %s does not exist.", other)
 		}
 		return err
@@ -525,15 +526,14 @@ func findCustomCommand(ctx context.Context, s *session, name string, forUpdate b
 	}
 
 	info, err := s.Channel.CommandInfos(mods...).One(ctx, s.Tx)
-
-	switch err {
-	case nil:
-		return info, info.R.CustomCommand, nil
-	case sql.ErrNoRows:
-		return nil, nil, nil
-	default:
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil, nil
+		}
 		return nil, nil, err
 	}
+
+	return info, info.R.CustomCommand, nil
 }
 
 func init() {

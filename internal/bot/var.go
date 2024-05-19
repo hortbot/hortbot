@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -17,7 +18,7 @@ func (s *session) VarGet(ctx context.Context, name string) (string, bool, error)
 	defer span.End()
 
 	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return "", false, nil
 	}
 
@@ -41,7 +42,7 @@ func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string,
 		WHERE channels.name = $1 AND variables.name = $2`,
 		strings.ToLower(ch), name).Bind(ctx, s.Tx, &v)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return "", false, nil
 	}
 
@@ -85,7 +86,7 @@ func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n i
 
 	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return inc, false, s.VarSet(ctx, name, strconv.FormatInt(inc, 10))
 	}
 

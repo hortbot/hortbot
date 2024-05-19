@@ -74,13 +74,17 @@ func (b *Bot) Handle(ctx context.Context, origin string, m *irc.Message) {
 		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
 	}
 
-	switch err {
-	case nil, errNotAllowed:
-	case errPanicked, errDuplicate: // Logged below with more info.
-	default:
-		metricHandleError.Inc()
-		ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
+	if err == nil || errors.Is(err, errNotAllowed) {
+		return
 	}
+
+	if errors.Is(err, errPanicked) || errors.Is(err, errDuplicate) {
+		// Logged below with more info.
+		return
+	}
+
+	metricHandleError.Inc()
+	ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 }
 
 func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr error) {
@@ -373,7 +377,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	err := queries.Raw(`SELECT * FROM channels WHERE twitch_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			ctxlog.Debug(ctx, "channel not found in database")
 			return nil
 		}
@@ -442,12 +446,13 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	if ok, err := tryCommand(ctx, s); ok || err != nil {
-		switch err {
-		case errNotAuthorized, errBuiltinDisabled, errInCooldown:
+		switch {
+		case err == nil:
+			metricCommands.Inc()
+			return nil
+		case errors.Is(err, errNotAuthorized) || errors.Is(err, errBuiltinDisabled) || errors.Is(err, errInCooldown):
+			// Do nothing
 		default:
-			if err == nil {
-				metricCommands.Inc()
-			}
 			return err
 		}
 	}
@@ -484,7 +489,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	if s.Channel.ShouldModerate {
 		ok, err := moderationCommands.Run(ctx, s, strings.ToLower(name), params)
 		switch {
-		case err == errNotAuthorized:
+		case errors.Is(err, errNotAuthorized):
 			// Continue.
 		case err != nil:
 			return true, err
@@ -525,7 +530,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		foreignChannel = strings.ToLower(foreignChannel)
 		otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(foreignChannel)).One(ctx, s.Tx)
 		if err != nil {
-			if err == sql.ErrNoRows {
+			if errors.Is(err, sql.ErrNoRows) {
 				return true, s.Replyf(ctx, "Channel %s does not exist.", foreignChannel)
 			}
 			return true, err

@@ -4,6 +4,7 @@ package twitchx
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -20,7 +21,7 @@ func FindBotToken(ctx context.Context, db boil.ContextExecutor, tw twitch.API, b
 
 	token, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(botNameNull)).One(ctx, db)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil //nolint:nilnil
 		}
 		return nil, err

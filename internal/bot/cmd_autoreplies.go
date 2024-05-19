@@ -12,6 +12,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -114,7 +115,7 @@ func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
@@ -155,7 +156,7 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
@@ -199,7 +200,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
@@ -317,7 +318,7 @@ func (s *session) patternToTrigger(pattern string) (string, error) {
 
 func (s *session) replyBadPattern(ctx context.Context, err error) error {
 	var errStr string
-	if reErr, ok := err.(*syntax.Error); ok {
+	if reErr, ok := errorsx.As[*syntax.Error](err); ok {
 		errStr = reErr.Code.String()
 	} else {
 		errStr = err.Error()

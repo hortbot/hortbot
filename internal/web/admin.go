@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -64,7 +65,7 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 
 	config, err := confimport.ExportByName(ctx, a.DB, strings.ToLower(channelName))
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			http.NotFound(w, r)
 		} else {
 			ctxlog.Error(ctx, "error exporting channel", zap.Error(err))

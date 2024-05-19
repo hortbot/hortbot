@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strings"
 	"time"
 
@@ -63,7 +64,7 @@ func (b *Bot) handleNoticeLeaveChannel(ctx context.Context, origin string, ircCh
 				models.ChannelWhere.BotName.EQ(origin),
 			).One(ctx, tx)
 			if err != nil {
-				if err == sql.ErrNoRows {
+				if errors.Is(err, sql.ErrNoRows) {
 					ctxlog.Warn(ctx, "received ban notice for unknown user")
 					return nil
 				}

@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strings"
 	"time"
 
@@ -99,7 +100,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		qm.Load(models.ChannelRels.ScheduledCommands),
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
 
@@ -119,7 +120,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return s.Replyf(ctx, "Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at %s/login and return here.", s.WebAddrFor(botName))
 	}
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		if !hasAuth {
 			return noAuth(ctx)
 		}
@@ -213,7 +214,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		).One(ctx, s.Tx)
 	}
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil
 	}
 

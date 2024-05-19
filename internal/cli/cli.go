@@ -10,6 +10,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/hortbot/hortbot/internal/version"
 	"github.com/jessevdk/go-flags"
 	"github.com/zikaeroh/ctxlog"
@@ -82,7 +83,7 @@ func checkParseError(err error) {
 		return
 	}
 
-	if flagsErr, ok := err.(*flags.Error); ok && flagsErr.Type == flags.ErrHelp {
+	if flagsErr, ok := errorsx.As[*flags.Error](err); ok && flagsErr.Type == flags.ErrHelp {
 		fmt.Fprintln(os.Stdout, err)
 		os.Exit(0)
 	} else {

@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -40,7 +41,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 			token := modelsx.ModelToToken(tt)
 			validation, newToken, err := b.deps.Twitch.Validate(ctx, token)
 			if err != nil {
-				if err == twitch.ErrDeadToken || err == twitch.ErrNotAuthorized || err == twitch.ErrNotFound {
+				if errors.Is(err, twitch.ErrDeadToken) || errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrNotFound) {
 					ctxlog.Info(ctx, "deleting dead token", zap.Error(err))
 					if err := tt.Delete(ctx, b.db); err != nil {
 						return err

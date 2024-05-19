@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"strconv"
 	"strings"
 
@@ -101,7 +102,7 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
@@ -141,7 +142,7 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 		qm.For("UPDATE"),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		exists, err := s.Channel.Quotes(models.QuoteWhere.Num.GT(num)).Exists(ctx, s.Tx)
 		if err != nil {
 			return err
@@ -179,7 +180,7 @@ func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) 
 		models.QuoteWhere.Quote.EQ(args),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Reply(ctx, "Quote not found; make sure your quote is exact.")
 	}
 
@@ -208,7 +209,7 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 		models.QuoteWhere.Num.EQ(num),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
@@ -221,7 +222,7 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 
 func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *models.Channel) (quote *models.Quote, ok bool, err error) {
 	quote, err = channel.Quotes(qm.OrderBy("random()")).One(ctx, cx)
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return nil, false, nil
 	}
 
@@ -310,7 +311,7 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 		models.QuoteWhere.Num.EQ(num),
 	).One(ctx, s.Tx)
 
-	if err == sql.ErrNoRows {
+	if errors.Is(err, sql.ErrNoRows) {
 		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 

@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"runtime"
 	"strconv"
 	"strings"
@@ -81,11 +82,11 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	channel, err := models.Channels(models.ChannelWhere.TwitchID.EQ(u.ID.AsInt64())).One(ctx, s.Tx)
-	if err != nil && err != sql.ErrNoRows {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
 
-	if err != sql.ErrNoRows && channel.Active {
+	if !errors.Is(err, sql.ErrNoRows) && channel.Active {
 		channel.Active = false
 
 		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
@@ -185,7 +186,7 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 
 	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Channel %s does not exist.", name)
 		}
 		return err
@@ -241,7 +242,7 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		models.ChannelWhere.Name.EQ(user),
 	).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "User '%s' does not exist.", user)
 		}
 		return err
@@ -318,7 +319,7 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 
 	channel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
 	if err != nil {
-		if err == sql.ErrNoRows {
+		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "No such user %s.", name)
 		}
 		return err

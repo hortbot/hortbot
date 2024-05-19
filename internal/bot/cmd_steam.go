@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 )
@@ -49,7 +50,7 @@ func cmdSteamGame(ctx context.Context, s *session, cmd string, args string) erro
 }
 
 func steamError(ctx context.Context, s *session, err error) error {
-	if err == errSteamDisabled {
+	if errors.Is(err, errSteamDisabled) {
 		return s.Reply(ctx, "Steam support is disabled.")
 	}
 

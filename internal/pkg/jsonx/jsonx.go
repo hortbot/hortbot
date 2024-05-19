@@ -18,7 +18,7 @@ func DecodeSingle(r io.Reader, v any) error {
 		return err
 	}
 
-	if _, err := d.Token(); err != io.EOF {
+	if _, err := d.Token(); err != io.EOF { //nolint:errorlint
 		return ErrMoreThanOne
 	}
 

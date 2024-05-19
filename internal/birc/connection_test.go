@@ -72,7 +72,7 @@ func TestConnectionBasic(t *testing.T) {
 		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -132,7 +132,7 @@ func TestConnectionJoinQuit(t *testing.T) {
 		assert.DeepEqual(t, []string{"#foobar"}, conn.Joined())
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -201,7 +201,7 @@ func TestConnectionJoinPart(t *testing.T) {
 		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -253,7 +253,7 @@ func TestConnectionEmptyJoinPart(t *testing.T) {
 		assert.NilError(t, conn.Part(ctx, ""))
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -311,7 +311,7 @@ func TestConnectionJoinTwice(t *testing.T) {
 		assert.DeepEqual(t, []string{"#foobar"}, conn.Joined())
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -371,7 +371,7 @@ func TestConnectionInitialChannels(t *testing.T) {
 		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -420,7 +420,7 @@ func TestConnectionCapabilities(t *testing.T) {
 		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -481,7 +481,7 @@ func TestConnectionCloseAfterFirst(t *testing.T) {
 		clientMessages := h.CollectFromChannel(conn.Incoming())
 
 		connErrV := errFromErrChan(ctx, connErr)
-		if connErrV != io.EOF {
+		if connErrV != io.EOF { //nolint:errorlint
 			assert.ErrorContains(t, connErrV, "connection reset")
 		}
 
@@ -564,7 +564,7 @@ func TestConnectionReadOnly(t *testing.T) {
 		assert.Equal(t, birc.ErrReadOnly, conn.SendMessage(ctx, "#foobar", "test"))
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -615,7 +615,7 @@ func TestConnectionPing(t *testing.T) {
 		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 
@@ -724,7 +724,7 @@ func TestConnectionSendFrom(t *testing.T) {
 		h.Sleep()
 
 		quitErr := conn.Quit(ctx)
-		if quitErr != birc.ErrConnectionClosed {
+		if !errors.Is(quitErr, birc.ErrConnectionClosed) {
 			assert.NilError(t, quitErr)
 		}
 

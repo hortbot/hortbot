@@ -173,14 +173,13 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		name = cleanCommandName(name)
 
 		info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).One(ctx, s.Tx)
-		switch err {
-		case nil:
-			return strconv.FormatInt(info.Count, 10), nil
-		case sql.ErrNoRows:
-			return actionMsgError, nil
-		default:
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return actionMsgError, nil
+			}
 			return "", err
 		}
+		return strconv.FormatInt(info.Count, 10), nil
 	}
 
 	return "(_" + action + "_)", nil
@@ -364,7 +363,7 @@ func actionMessageCount(ctx context.Context, s *session, actionName, value strin
 func actionSong(ctx context.Context, s *session, actionName, value string) (string, error) {
 	tracks, err := s.Tracks(ctx)
 	if err != nil {
-		if err == errLastFMDisabled {
+		if errors.Is(err, errLastFMDisabled) {
 			return "(Unknown)", nil
 		}
 
@@ -936,12 +935,14 @@ func actionList(ctx context.Context, s *session, prefix, name string) (string, e
 		models.CommandInfoWhere.Name.EQ(name),
 		qm.Load(models.CommandInfoRels.CommandList),
 	).One(ctx, s.Tx)
-	switch {
-	case err == sql.ErrNoRows:
-		return actionMsgError, nil
-	case err != nil:
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return actionMsgError, nil
+		}
 		return "", err
-	case info.R.CommandList == nil:
+	}
+
+	if info.R.CommandList == nil {
 		return actionMsgError, nil
 	}
 

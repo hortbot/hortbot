@@ -310,7 +310,7 @@ func RecordPings(enable bool) Option {
 func ignoreClose(err error) error {
 	switch {
 	case err == nil:
-	case err == io.EOF:
+	case err == io.EOF: //nolint:errorlint
 	case strings.Contains(err.Error(), "use of closed"):
 	default:
 		return err

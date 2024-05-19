@@ -76,7 +76,7 @@ func TestGetDonationAmount(t *testing.T) {
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 777)
-		e, ok := err.(*apiclient.Error)
+		e, ok := apiclient.AsError(err)
 		if !ok {
 			t.Fatalf("error has type %T", err)
 			return

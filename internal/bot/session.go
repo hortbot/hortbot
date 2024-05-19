@@ -322,7 +322,7 @@ func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error)
 	return s.cache.tok.get(func() (*oauth2.Token, error) {
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
 		switch {
-		case err == sql.ErrNoRows:
+		case errors.Is(err, sql.ErrNoRows):
 			return nil, nil //nolint:nilnil
 		case err != nil:
 			return nil, err
@@ -354,7 +354,7 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 	pair, err := s.cache.botTok.get(func() (tokenAndUserID, error) {
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(botName))).One(ctx, s.Tx)
 		switch {
-		case err == sql.ErrNoRows:
+		case errors.Is(err, sql.ErrNoRows):
 			return tokenAndUserID{}, nil //nolint:nilnil
 		case err != nil:
 			return tokenAndUserID{}, err
@@ -583,7 +583,7 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	return s.cache.isLive.get(func() (bool, error) {
 		stream, err := s.TwitchStream(ctx)
 		if err != nil {
-			if err == twitch.ErrNotFound {
+			if errors.Is(err, twitch.ErrNotFound) {
 				stream = nil
 			} else {
 				return false, err
@@ -733,10 +733,14 @@ func (o *onced[T]) set(v T, err error) {
 }
 
 func logTwitchModerationError(ctx context.Context, err error, operation string) {
-	switch err {
-	case nil:
-	case twitch.ErrNotAuthorized: // Usually indicates that the bot isn't modded.
-	default:
-		ctxlog.Error(ctx, "error in twitch API", zap.Error(err), zap.String("operation", operation))
+	if err == nil {
+		return
 	}
+
+	// Usually indicates that the bot isn't modded.
+	if errors.Is(err, twitch.ErrNotAuthorized) {
+		return
+	}
+
+	ctxlog.Error(ctx, "error in twitch API", zap.Error(err), zap.String("operation", operation))
 }

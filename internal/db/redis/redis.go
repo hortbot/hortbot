@@ -1,7 +1,11 @@
 // Package redis implements a type-safe redis database client.
 package redis
 
-import "github.com/redis/go-redis/v9"
+import (
+	"errors"
+
+	"github.com/redis/go-redis/v9"
+)
 
 // DB is a redis client wrapper, consolidating the common schema in one place.
 type DB struct {
@@ -17,7 +21,7 @@ func New(client *redis.Client) *DB {
 }
 
 func ignoreRedisNil(err error) error {
-	if err == redis.Nil {
+	if errors.Is(err, redis.Nil) {
 		return nil
 	}
 	return err

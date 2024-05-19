@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"time"
 
@@ -44,7 +45,7 @@ func cmdModBan(ctx context.Context, s *session, cmd string, args string) error {
 
 	reason := "Banned via +b by " + s.UserDisplay
 	if err := s.BanByUsername(ctx, user, 0, reason); err != nil {
-		if err == twitch.ErrNotAuthorized {
+		if errors.Is(err, twitch.ErrNotAuthorized) {
 			return s.Reply(ctx, "Unable to ban user; is the bot modded?")
 		}
 		return err
@@ -63,7 +64,7 @@ func cmdModUnban(ctx context.Context, s *session, cmd string, args string) error
 	user = cleanUsername(user)
 
 	if err := s.UnbanByUsername(ctx, user); err != nil {
-		if err == twitch.ErrNotAuthorized {
+		if errors.Is(err, twitch.ErrNotAuthorized) {
 			return s.Reply(ctx, "Unable to unban user; is the bot modded?")
 		}
 		return err
@@ -89,7 +90,7 @@ func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) err
 
 	if seconds == "" {
 		if err := s.BanByUsername(ctx, user, 600, reason); err != nil {
-			if err == twitch.ErrNotAuthorized {
+			if errors.Is(err, twitch.ErrNotAuthorized) {
 				return s.Reply(ctx, "Unable to timeout user; is the bot modded?")
 			}
 			return err
@@ -104,7 +105,7 @@ func cmdModTimeout(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if err := s.BanByUsername(ctx, user, duration, reason); err != nil {
-		if err == twitch.ErrNotAuthorized {
+		if errors.Is(err, twitch.ErrNotAuthorized) {
 			return s.Reply(ctx, "Unable to timeout user; is the bot modded?")
 		}
 		return err
@@ -123,7 +124,7 @@ func cmdModUntimeout(ctx context.Context, s *session, cmd string, args string) e
 	user = cleanUsername(user)
 
 	if err := s.UnbanByUsername(ctx, user); err != nil {
-		if err == twitch.ErrNotAuthorized {
+		if errors.Is(err, twitch.ErrNotAuthorized) {
 			return s.Reply(ctx, "Unable to untimeout user; is the bot modded?")
 		}
 		return err
@@ -154,7 +155,7 @@ func cmdChangeMode(command, message string) func(ctx context.Context, s *session
 		}
 
 		if err := s.UpdateChatSettings(ctx, patch); err != nil {
-			if err == twitch.ErrNotAuthorized {
+			if errors.Is(err, twitch.ErrNotAuthorized) {
 				return s.Reply(ctx, "Unable to update chat settings; is the bot modded?")
 			}
 			return err

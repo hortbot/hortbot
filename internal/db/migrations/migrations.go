@@ -3,6 +3,7 @@ package migrations
 
 import (
 	"embed"
+	"errors"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
@@ -63,7 +64,7 @@ func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
 }
 
 func ignoreNoChange(err error) error {
-	if err == migrate.ErrNoChange {
+	if errors.Is(err, migrate.ErrNoChange) {
 		return nil
 	}
 	return err

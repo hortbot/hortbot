@@ -87,7 +87,7 @@ func (g *Group) Stop() {
 // WaitIgnoreStop works like Wait, but will return nil if the error is ErrStop.
 func (g *Group) WaitIgnoreStop() error {
 	err := g.g.Wait()
-	if err == ErrStop {
+	if errors.Is(err, ErrStop) {
 		return nil
 	}
 	return err
