@@ -36,7 +36,6 @@ type Message interface {
 	Command() string
 	Tags() map[string]string
 	Params() []string
-	Trailing() string
 	PrefixName() string
 	Message() (message string, me bool)
 }

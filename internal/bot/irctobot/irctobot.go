@@ -21,11 +21,10 @@ func IRCToMessage(m *irc.Message) bot.Message {
 func (m *ircMessage) Command() string         { return m.m.Command }
 func (m *ircMessage) Tags() map[string]string { return m.m.Tags }
 func (m *ircMessage) Params() []string        { return m.m.Params }
-func (m *ircMessage) Trailing() string        { return m.m.Trailing }
 func (m *ircMessage) PrefixName() string      { return m.m.Prefix.Name }
 
 func (m *ircMessage) Message() (message string, me bool) {
-	message = m.Trailing()
+	message = m.m.Trailing
 
 	if c, a, ok := irc.ParseCTCP(message); ok {
 		if c != "ACTION" {
