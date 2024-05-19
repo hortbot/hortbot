@@ -15,10 +15,12 @@ func IRCToMessage(m *irc.Message) bot.Message {
 	if m == nil {
 		return nil
 	}
+	if m.Command != "PRIVMSG" {
+		panic("irctobot: " + m.Command + " is not a PRIVMSG command")
+	}
 	return &ircMessage{m: m}
 }
 
-func (m *ircMessage) Command() string         { return m.m.Command }
 func (m *ircMessage) Tags() map[string]string { return m.m.Tags }
 func (m *ircMessage) Params() []string        { return m.m.Params }
 func (m *ircMessage) PrefixName() string      { return m.m.Prefix.Name }

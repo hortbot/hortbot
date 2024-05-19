@@ -21,9 +21,6 @@ no_send
 handle hortbot @id=__UUID__ :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv WHAT #foobar :!pan working command
-no_send
-
 handle hortbot @id=;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
 no_send
 

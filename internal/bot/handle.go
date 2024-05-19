@@ -33,7 +33,6 @@ var (
 )
 
 type Message interface {
-	Command() string
 	Tags() map[string]string
 	Params() []string
 	PrefixName() string
@@ -62,17 +61,10 @@ func (b *Bot) Handle(ctx context.Context, origin string, m Message) {
 
 	defer metricHandled.Inc()
 
-	if m.Command() == "PING" {
-		return
-	}
-
-	span.AddAttributes(trace.StringAttribute("irc_command", m.Command()))
-	ctx = ctxlog.With(ctx, zap.String("irc_command", m.Command()))
-
 	start := b.deps.Clock.Now()
 	defer func() {
 		secs := b.deps.Clock.Since(start).Seconds()
-		metricHandleDuration.WithLabelValues(m.Command()).Observe(secs)
+		metricHandleDuration.WithLabelValues("PRIVMSG").Observe(secs)
 	}()
 
 	err := b.handle(ctx, origin, m)
@@ -110,15 +102,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m Message) (retErr erro
 		}
 	}()
 
-	switch m.Command() {
-	case "PRIVMSG":
-		return b.handlePrivMsg(ctx, origin, m)
-	case "NOTICE":
-		return b.handleNotice(ctx, origin, m)
-	default:
-		ctxlog.Debug(ctx, "unhandled command", zap.Any("message", m))
-		return nil
-	}
+	return b.handlePrivMsg(ctx, origin, m)
 }
 
 var sessionPool = pool.NewPool(func() *session {

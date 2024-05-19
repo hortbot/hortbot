@@ -1,8 +1,0 @@
-handle hortbot @msg-id=do_not_handle :tmi.twitch.tv NOTICE #foobar :What?
-no_send
-
-handle hortbot @msg-id=do_not_handle :tmi.twitch.tv NOTICE :What?
-no_send
-
-handle hortbot :tmi.twitch.tv NOTICE #foobar :What?
-no_send

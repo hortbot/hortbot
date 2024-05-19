@@ -92,6 +92,11 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 		origin := i.Origin
 		m := i.Message
+
+		if m.Command != "PRIVMSG" {
+			return nil
+		}
+
 		key := buildKey(m)
 
 		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
