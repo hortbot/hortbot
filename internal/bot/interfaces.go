@@ -11,8 +11,6 @@ import (
 //go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Notifier Rand
 
 type Message interface {
-	Tags() map[string]string
-
 	ID() string
 	Timestamp() time.Time
 	BroadcasterLogin() string
@@ -22,6 +20,7 @@ type Message interface {
 	UserID() int64
 	Message() (message string, me bool)
 	EmoteCount() int
+	UserAccessLevel() AccessLevel
 }
 
 // Notifier sends notifications.

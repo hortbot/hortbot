@@ -423,7 +423,7 @@ func actionChannelURL(ctx context.Context, s *session, actionName, value string)
 }
 
 func actionSubmode(ctx context.Context, s *session, actionName, value string) (string, error) {
-	if s.UserLevel.CanAccess(levelModerator) {
+	if s.UserLevel.CanAccess(AccessLevelModerator) {
 		subMode := true
 		if actionName == "SUBMODE_OFF" {
 			subMode = false

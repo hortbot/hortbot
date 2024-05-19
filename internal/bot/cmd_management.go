@@ -54,7 +54,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	name = cleanUsername(name)
 	botName := strings.TrimLeft(s.Origin, "#")
 
-	isAdmin := s.UserLevel.CanAccess(levelAdmin)
+	isAdmin := s.UserLevel.CanAccess(AccessLevelAdmin)
 	adminOverride := false
 
 	if name != "" && isAdmin {
@@ -197,7 +197,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 
 	displayName := name
 
-	if name != "" && s.UserLevel.CanAccess(levelAdmin) {
+	if name != "" && s.UserLevel.CanAccess(AccessLevelAdmin) {
 		channel, err = models.Channels(
 			models.ChannelWhere.Name.EQ(name),
 			qm.Load(models.ChannelRels.RepeatedCommands),

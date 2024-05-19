@@ -31,5 +31,5 @@ func TestVerifyHandlerMapEntry(t *testing.T) {
 			fn:       func(ctx context.Context, s *session, cmd, args string) error { return nil },
 			minLevel: -1,
 		})
-	}, "invalid minLevel accessLevel(-1)")
+	}, "invalid minLevel AccessLevel(-1)")
 }

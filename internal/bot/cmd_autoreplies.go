@@ -19,14 +19,14 @@ import (
 )
 
 var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
-	"add":          {fn: cmdAutoreplyAdd, minLevel: levelModerator},
-	"delete":       {fn: cmdAutoreplyDelete, minLevel: levelModerator},
-	"remove":       {fn: cmdAutoreplyDelete, minLevel: levelModerator},
-	"editresponse": {fn: cmdAutoreplyEditResponse, minLevel: levelModerator},
-	"editpattern":  {fn: cmdAutoreplyEditPattern, minLevel: levelModerator},
-	"edittrigger":  {fn: cmdAutoreplyEditPattern, minLevel: levelModerator},
-	"list":         {fn: cmdAutoreplyList, minLevel: levelSubscriber},
-	"compact":      {fn: cmdAutoreplyCompact, minLevel: levelModerator},
+	"add":          {fn: cmdAutoreplyAdd, minLevel: AccessLevelModerator},
+	"delete":       {fn: cmdAutoreplyDelete, minLevel: AccessLevelModerator},
+	"remove":       {fn: cmdAutoreplyDelete, minLevel: AccessLevelModerator},
+	"editresponse": {fn: cmdAutoreplyEditResponse, minLevel: AccessLevelModerator},
+	"editpattern":  {fn: cmdAutoreplyEditPattern, minLevel: AccessLevelModerator},
+	"edittrigger":  {fn: cmdAutoreplyEditPattern, minLevel: AccessLevelModerator},
+	"list":         {fn: cmdAutoreplyList, minLevel: AccessLevelSubscriber},
+	"compact":      {fn: cmdAutoreplyCompact, minLevel: AccessLevelModerator},
 })
 
 func cmdAutoreply(ctx context.Context, s *session, cmd string, args string) error {

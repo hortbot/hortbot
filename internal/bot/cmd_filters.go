@@ -14,19 +14,19 @@ import (
 )
 
 var filterCommands = newHandlerMap(map[string]handlerFunc{
-	"status":        {fn: cmdFilterStatus, minLevel: levelModerator},
-	"on":            {fn: cmdFilterOnOff(true), minLevel: levelModerator},
-	"off":           {fn: cmdFilterOnOff(false), minLevel: levelModerator},
-	"links":         {fn: cmdFilterLinks, minLevel: levelModerator},
-	"pd":            {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
-	"pl":            {fn: cmdFilterPermittedLinks, minLevel: levelModerator},
-	"caps":          {fn: cmdFilterCaps, minLevel: levelModerator},
-	"symbols":       {fn: cmdFilterSymbols, minLevel: levelModerator},
-	"me":            {fn: cmdFilterMe, minLevel: levelModerator},
-	"messagelength": {fn: cmdFilterMessageLength, minLevel: levelModerator},
-	"emotes":        {fn: cmdFilterEmotes, minLevel: levelModerator},
-	"banphrase":     {fn: cmdFilterBanPhrase, minLevel: levelModerator},
-	"exempt":        {fn: cmdFilterExemptLevel, minLevel: levelModerator},
+	"status":        {fn: cmdFilterStatus, minLevel: AccessLevelModerator},
+	"on":            {fn: cmdFilterOnOff(true), minLevel: AccessLevelModerator},
+	"off":           {fn: cmdFilterOnOff(false), minLevel: AccessLevelModerator},
+	"links":         {fn: cmdFilterLinks, minLevel: AccessLevelModerator},
+	"pd":            {fn: cmdFilterPermittedLinks, minLevel: AccessLevelModerator},
+	"pl":            {fn: cmdFilterPermittedLinks, minLevel: AccessLevelModerator},
+	"caps":          {fn: cmdFilterCaps, minLevel: AccessLevelModerator},
+	"symbols":       {fn: cmdFilterSymbols, minLevel: AccessLevelModerator},
+	"me":            {fn: cmdFilterMe, minLevel: AccessLevelModerator},
+	"messagelength": {fn: cmdFilterMessageLength, minLevel: AccessLevelModerator},
+	"emotes":        {fn: cmdFilterEmotes, minLevel: AccessLevelModerator},
+	"banphrase":     {fn: cmdFilterBanPhrase, minLevel: AccessLevelModerator},
+	"exempt":        {fn: cmdFilterExemptLevel, minLevel: AccessLevelModerator},
 })
 
 func cmdFilter(ctx context.Context, s *session, cmd string, args string) error {
@@ -523,7 +523,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 	case "add":
 		var pattern string
 		if strings.HasPrefix(args, "REGEX:") {
-			if !s.UserLevel.CanAccess(levelAdmin) {
+			if !s.UserLevel.CanAccess(AccessLevelAdmin) {
 				return s.Reply(ctx, "Only admins may add regex banned words.")
 			}
 
@@ -602,7 +602,7 @@ func cmdFilterExemptLevel(ctx context.Context, s *session, cmd string, args stri
 	}
 
 	newLevel := parseLevel(args)
-	if newLevel == levelUnknown || !levelModerator.CanAccess(newLevel) {
+	if newLevel == AccessLevelUnknown || !AccessLevelModerator.CanAccess(newLevel) {
 		return s.Reply(ctx, "Invalid level.")
 	}
 

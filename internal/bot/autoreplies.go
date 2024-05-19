@@ -42,7 +42,7 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 		msg := autoreply.Response
 
 		if strings.Contains(msg, "(_REGULARS_ONLY_)") {
-			if !s.UserLevel.CanAccess(levelSubscriber) {
+			if !s.UserLevel.CanAccess(AccessLevelSubscriber) {
 				continue
 			}
 			msg = strings.ReplaceAll(msg, "(_REGULARS_ONLY_)", "")

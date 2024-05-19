@@ -9,7 +9,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -59,7 +58,7 @@ type session struct {
 	User        string
 	UserDisplay string
 	UserID      int64
-	UserLevel   accessLevel
+	UserLevel   AccessLevel
 
 	Channel *models.Channel
 
@@ -104,7 +103,7 @@ func (s *session) formatResponse(response string) (message string, announce bool
 		addBullet = false
 	} else if strings.HasPrefix(response, "/announce ") {
 		response = strings.TrimPrefix(response, "/announce ")
-		if s.Type != sessionAutoreply && (s.UserLevel.CanAccess(levelModerator) || s.Type == sessionRepeat) {
+		if s.Type != sessionAutoreply && (s.UserLevel.CanAccess(AccessLevelModerator) || s.Type == sessionRepeat) {
 			announce = true
 		}
 	}
@@ -206,68 +205,35 @@ func (s *session) SetUserLevel() {
 	s.UserLevel = s.parseUserLevel()
 }
 
-func (s *session) parseUserLevel() accessLevel {
+func (s *session) parseUserLevel() AccessLevel {
 	if s.Deps.SuperAdmins[s.User] {
-		return levelSuperAdmin
+		return AccessLevelSuperAdmin
 	}
 
 	if s.Deps.Admins[s.User] {
-		return levelAdmin
+		return AccessLevelAdmin
 	}
 
-	// Tags are present, safe to not check for nil
-
-	tags := s.M.Tags()
-
-	if testing.Testing() {
-		switch {
-		case tags["testing-super-admin"] != "":
-			return levelSuperAdmin
-		case tags["testing-admin"] != "":
-			return levelAdmin
-		}
-	}
-
-	if s.User == s.IRCChannel {
-		return levelBroadcaster
-	}
-
-	if tags["mod"] == "1" {
-		return levelModerator
-	}
-
-	badges := parseBadges(tags["badges"])
-
-	switch {
-	case badges["broadcaster"] != "":
-		return levelBroadcaster
-	case badges["moderator"] != "":
-		return levelModerator
-	case badges["vip"] != "":
-		return levelVIP
-	case badges["subscriber"] != "", tags["subscriber"] == "1", badges["founder"] != "":
-		return levelSubscriber
-	}
-
-	if tags["user-type"] == "mod" {
-		return levelModerator
+	accessLevel := s.M.UserAccessLevel()
+	if accessLevel != AccessLevelUnknown {
+		return accessLevel
 	}
 
 	if s.Channel != nil {
 		if _, isOwner := stringSliceIndex(s.Channel.CustomOwners, s.User); isOwner {
-			return levelBroadcaster
+			return AccessLevelBroadcaster
 		}
 
 		if _, isMod := stringSliceIndex(s.Channel.CustomMods, s.User); isMod {
-			return levelModerator
+			return AccessLevelModerator
 		}
 
 		if _, isReg := stringSliceIndex(s.Channel.CustomRegulars, s.User); isReg {
-			return levelSubscriber
+			return AccessLevelSubscriber
 		}
 	}
 
-	return levelEveryone
+	return AccessLevelEveryone
 }
 
 func (s *session) DeleteMessage(ctx context.Context) error {
@@ -707,7 +673,7 @@ func (s *session) BetaFeatures() bool {
 	return ok
 }
 
-func (s *session) FilterExemptLevel() accessLevel {
+func (s *session) FilterExemptLevel() AccessLevel {
 	return newAccessLevel(s.Channel.FilterExemptLevel)
 }
 

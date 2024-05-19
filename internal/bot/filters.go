@@ -56,9 +56,9 @@ func filterLinks(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	minLevel := levelModerator
+	minLevel := AccessLevelModerator
 	if s.Channel.SubsMayLink {
-		minLevel = levelSubscriber
+		minLevel = AccessLevelSubscriber
 	}
 
 	if s.UserLevel.CanAccess(minLevel) {

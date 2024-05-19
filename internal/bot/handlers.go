@@ -84,6 +84,6 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 
 type handlerFunc struct {
 	fn           func(ctx context.Context, s *session, cmd string, args string) error
-	minLevel     accessLevel
+	minLevel     AccessLevel
 	skipCooldown bool
 }

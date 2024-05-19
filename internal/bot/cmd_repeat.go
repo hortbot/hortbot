@@ -17,12 +17,12 @@ import (
 )
 
 var repeatCommands = newHandlerMap(map[string]handlerFunc{
-	"add":    {fn: cmdRepeatAdd, minLevel: levelModerator},
-	"delete": {fn: cmdRepeatDelete, minLevel: levelModerator},
-	"remove": {fn: cmdRepeatDelete, minLevel: levelModerator},
-	"on":     {fn: cmdRepeatOnOff, minLevel: levelModerator},
-	"off":    {fn: cmdRepeatOnOff, minLevel: levelModerator},
-	"list":   {fn: cmdRepeatList, minLevel: levelModerator},
+	"add":    {fn: cmdRepeatAdd, minLevel: AccessLevelModerator},
+	"delete": {fn: cmdRepeatDelete, minLevel: AccessLevelModerator},
+	"remove": {fn: cmdRepeatDelete, minLevel: AccessLevelModerator},
+	"on":     {fn: cmdRepeatOnOff, minLevel: AccessLevelModerator},
+	"off":    {fn: cmdRepeatOnOff, minLevel: AccessLevelModerator},
+	"list":   {fn: cmdRepeatList, minLevel: AccessLevelModerator},
 })
 
 func cmdRepeat(ctx context.Context, s *session, cmd string, args string) error {

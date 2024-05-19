@@ -16,40 +16,40 @@ import (
 )
 
 var ccCommands = newHandlerMap(map[string]handlerFunc{
-	"add":             {fn: cmdCommandAddNormal, minLevel: levelModerator},
-	"edit":            {fn: cmdCommandAddNormal, minLevel: levelModerator},
-	"addb":            {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addbroadcaster":  {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addbroadcasters": {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addo":            {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addowner":        {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addowners":       {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addstreamer":     {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addstreamers":    {fn: cmdCommandAddBroadcaster, minLevel: levelModerator},
-	"addm":            {fn: cmdCommandAddModerator, minLevel: levelModerator},
-	"addmod":          {fn: cmdCommandAddModerator, minLevel: levelModerator},
-	"addmods":         {fn: cmdCommandAddModerator, minLevel: levelModerator},
-	"addv":            {fn: cmdCommandAddVIP, minLevel: levelModerator},
-	"addvip":          {fn: cmdCommandAddVIP, minLevel: levelModerator},
-	"addvips":         {fn: cmdCommandAddVIP, minLevel: levelModerator},
-	"adds":            {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
-	"addsub":          {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
-	"addsubs":         {fn: cmdCommandAddSubscriber, minLevel: levelModerator},
-	"adde":            {fn: cmdCommandAddEveryone, minLevel: levelModerator},
-	"adda":            {fn: cmdCommandAddEveryone, minLevel: levelModerator},
-	"addeveryone":     {fn: cmdCommandAddEveryone, minLevel: levelModerator},
-	"addall":          {fn: cmdCommandAddEveryone, minLevel: levelModerator},
-	"delete":          {fn: cmdCommandDelete, minLevel: levelModerator},
-	"remove":          {fn: cmdCommandDelete, minLevel: levelModerator},
-	"rm":              {fn: cmdCommandDelete, minLevel: levelModerator},
-	"restrict":        {fn: cmdCommandRestrict, minLevel: levelModerator},
-	"editor":          {fn: cmdCommandProperty, minLevel: levelModerator},
-	"author":          {fn: cmdCommandProperty, minLevel: levelModerator},
-	"count":           {fn: cmdCommandProperty, minLevel: levelModerator},
-	"rename":          {fn: cmdCommandRename, minLevel: levelModerator},
-	"get":             {fn: cmdCommandGet, minLevel: levelModerator},
-	"clone":           {fn: cmdCommandClone, minLevel: levelModerator},
-	"exec":            {fn: cmdCommandExec, minLevel: levelModerator},
+	"add":             {fn: cmdCommandAddNormal, minLevel: AccessLevelModerator},
+	"edit":            {fn: cmdCommandAddNormal, minLevel: AccessLevelModerator},
+	"addb":            {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addbroadcaster":  {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addbroadcasters": {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addo":            {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addowner":        {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addowners":       {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addstreamer":     {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addstreamers":    {fn: cmdCommandAddBroadcaster, minLevel: AccessLevelModerator},
+	"addm":            {fn: cmdCommandAddModerator, minLevel: AccessLevelModerator},
+	"addmod":          {fn: cmdCommandAddModerator, minLevel: AccessLevelModerator},
+	"addmods":         {fn: cmdCommandAddModerator, minLevel: AccessLevelModerator},
+	"addv":            {fn: cmdCommandAddVIP, minLevel: AccessLevelModerator},
+	"addvip":          {fn: cmdCommandAddVIP, minLevel: AccessLevelModerator},
+	"addvips":         {fn: cmdCommandAddVIP, minLevel: AccessLevelModerator},
+	"adds":            {fn: cmdCommandAddSubscriber, minLevel: AccessLevelModerator},
+	"addsub":          {fn: cmdCommandAddSubscriber, minLevel: AccessLevelModerator},
+	"addsubs":         {fn: cmdCommandAddSubscriber, minLevel: AccessLevelModerator},
+	"adde":            {fn: cmdCommandAddEveryone, minLevel: AccessLevelModerator},
+	"adda":            {fn: cmdCommandAddEveryone, minLevel: AccessLevelModerator},
+	"addeveryone":     {fn: cmdCommandAddEveryone, minLevel: AccessLevelModerator},
+	"addall":          {fn: cmdCommandAddEveryone, minLevel: AccessLevelModerator},
+	"delete":          {fn: cmdCommandDelete, minLevel: AccessLevelModerator},
+	"remove":          {fn: cmdCommandDelete, minLevel: AccessLevelModerator},
+	"rm":              {fn: cmdCommandDelete, minLevel: AccessLevelModerator},
+	"restrict":        {fn: cmdCommandRestrict, minLevel: AccessLevelModerator},
+	"editor":          {fn: cmdCommandProperty, minLevel: AccessLevelModerator},
+	"author":          {fn: cmdCommandProperty, minLevel: AccessLevelModerator},
+	"count":           {fn: cmdCommandProperty, minLevel: AccessLevelModerator},
+	"rename":          {fn: cmdCommandRename, minLevel: AccessLevelModerator},
+	"get":             {fn: cmdCommandGet, minLevel: AccessLevelModerator},
+	"clone":           {fn: cmdCommandClone, minLevel: AccessLevelModerator},
+	"exec":            {fn: cmdCommandExec, minLevel: AccessLevelModerator},
 })
 
 func cmdCommand(ctx context.Context, s *session, cmd string, args string) error {
@@ -69,30 +69,30 @@ func cmdCommand(ctx context.Context, s *session, cmd string, args string) error 
 }
 
 func cmdCommandAddNormal(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdCommandAdd(ctx, s, args, levelSubscriber, false)
+	return cmdCommandAdd(ctx, s, args, AccessLevelSubscriber, false)
 }
 
 func cmdCommandAddBroadcaster(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdCommandAdd(ctx, s, args, levelBroadcaster, true)
+	return cmdCommandAdd(ctx, s, args, AccessLevelBroadcaster, true)
 }
 
 func cmdCommandAddModerator(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdCommandAdd(ctx, s, args, levelModerator, true)
+	return cmdCommandAdd(ctx, s, args, AccessLevelModerator, true)
 }
 
 func cmdCommandAddVIP(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdCommandAdd(ctx, s, args, levelVIP, true)
+	return cmdCommandAdd(ctx, s, args, AccessLevelVIP, true)
 }
 
 func cmdCommandAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdCommandAdd(ctx, s, args, levelSubscriber, true)
+	return cmdCommandAdd(ctx, s, args, AccessLevelSubscriber, true)
 }
 
 func cmdCommandAddEveryone(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdCommandAdd(ctx, s, args, levelEveryone, true)
+	return cmdCommandAdd(ctx, s, args, AccessLevelEveryone, true)
 }
 
-func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLevel, forceLevel bool) error {
+func cmdCommandAdd(ctx context.Context, s *session, args string, level AccessLevel, forceLevel bool) error {
 	usage := func() error {
 		return s.ReplyUsage(ctx, "<name> <text>")
 	}
@@ -141,7 +141,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level accessLev
 
 	if !forceLevel {
 		orig := level
-		level = levelModerator
+		level = AccessLevelModerator
 
 		switch {
 		case strings.Contains(text, "(_PURGE_)"):

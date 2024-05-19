@@ -17,12 +17,12 @@ import (
 )
 
 var scheduleCommands = newHandlerMap(map[string]handlerFunc{
-	"add":    {fn: cmdScheduleAdd, minLevel: levelModerator},
-	"delete": {fn: cmdScheduleDelete, minLevel: levelModerator},
-	"remove": {fn: cmdScheduleDelete, minLevel: levelModerator},
-	"on":     {fn: cmdScheduleOnOff, minLevel: levelModerator},
-	"off":    {fn: cmdScheduleOnOff, minLevel: levelModerator},
-	"list":   {fn: cmdScheduleList, minLevel: levelModerator},
+	"add":    {fn: cmdScheduleAdd, minLevel: AccessLevelModerator},
+	"delete": {fn: cmdScheduleDelete, minLevel: AccessLevelModerator},
+	"remove": {fn: cmdScheduleDelete, minLevel: AccessLevelModerator},
+	"on":     {fn: cmdScheduleOnOff, minLevel: AccessLevelModerator},
+	"off":    {fn: cmdScheduleOnOff, minLevel: AccessLevelModerator},
+	"list":   {fn: cmdScheduleList, minLevel: AccessLevelModerator},
 })
 
 func cmdSchedule(ctx context.Context, s *session, cmd string, args string) error {

@@ -15,24 +15,24 @@ import (
 )
 
 var settingCommands = newHandlerMap(map[string]handlerFunc{
-	"filter":             {fn: cmdFilter, minLevel: levelModerator},
-	"prefix":             {fn: cmdSettingPrefix, minLevel: levelBroadcaster},
-	"bullet":             {fn: cmdSettingBullet, minLevel: levelBroadcaster},
-	"cooldown":           {fn: cmdSettingCooldown, minLevel: levelModerator},
-	"shouldmoderate":     {fn: cmdSettingShouldModerate, minLevel: levelModerator},
-	"lastfm":             {fn: cmdSettingLastFM, minLevel: levelModerator},
-	"parseyoutube":       {fn: cmdSettingParseYoutube, minLevel: levelModerator},
-	"enablewarnings":     {fn: cmdSettingEnableWarnings, minLevel: levelModerator},
-	"displaywarnings":    {fn: cmdSettingDisplayWarnings, minLevel: levelModerator},
-	"timeoutduration":    {fn: cmdSettingTimeoutDuration, minLevel: levelModerator},
-	"extralifeid":        {fn: cmdSettingExtraLifeID, minLevel: levelModerator},
-	"subsmaylink":        {fn: cmdSettingSubsMayLink, minLevel: levelModerator},
-	"subsregsminuslinks": {fn: cmdSettingSubsRegsMinusLinks, minLevel: levelModerator},
-	"mode":               {fn: cmdSettingMode, minLevel: levelModerator},
-	"roll":               {fn: cmdSettingsRoll, minLevel: levelModerator},
-	"steam":              {fn: cmdSettingsSteam, minLevel: levelModerator},
-	"urban":              {fn: cmdSettingUrban, minLevel: levelModerator},
-	"tweet":              {fn: cmdSettingTweet, minLevel: levelModerator},
+	"filter":             {fn: cmdFilter, minLevel: AccessLevelModerator},
+	"prefix":             {fn: cmdSettingPrefix, minLevel: AccessLevelBroadcaster},
+	"bullet":             {fn: cmdSettingBullet, minLevel: AccessLevelBroadcaster},
+	"cooldown":           {fn: cmdSettingCooldown, minLevel: AccessLevelModerator},
+	"shouldmoderate":     {fn: cmdSettingShouldModerate, minLevel: AccessLevelModerator},
+	"lastfm":             {fn: cmdSettingLastFM, minLevel: AccessLevelModerator},
+	"parseyoutube":       {fn: cmdSettingParseYoutube, minLevel: AccessLevelModerator},
+	"enablewarnings":     {fn: cmdSettingEnableWarnings, minLevel: AccessLevelModerator},
+	"displaywarnings":    {fn: cmdSettingDisplayWarnings, minLevel: AccessLevelModerator},
+	"timeoutduration":    {fn: cmdSettingTimeoutDuration, minLevel: AccessLevelModerator},
+	"extralifeid":        {fn: cmdSettingExtraLifeID, minLevel: AccessLevelModerator},
+	"subsmaylink":        {fn: cmdSettingSubsMayLink, minLevel: AccessLevelModerator},
+	"subsregsminuslinks": {fn: cmdSettingSubsRegsMinusLinks, minLevel: AccessLevelModerator},
+	"mode":               {fn: cmdSettingMode, minLevel: AccessLevelModerator},
+	"roll":               {fn: cmdSettingsRoll, minLevel: AccessLevelModerator},
+	"steam":              {fn: cmdSettingsSteam, minLevel: AccessLevelModerator},
+	"urban":              {fn: cmdSettingUrban, minLevel: AccessLevelModerator},
+	"tweet":              {fn: cmdSettingTweet, minLevel: AccessLevelModerator},
 })
 
 func cmdSettings(ctx context.Context, s *session, cmd string, args string) error {
@@ -323,17 +323,17 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 		return s.Replyf(ctx, "Mode is set to %s.", s.Channel.Mode)
 	}
 
-	var newMode accessLevel
+	var newMode AccessLevel
 
 	switch args {
 	case "0", "owner", "broadcaster":
-		newMode = levelBroadcaster
+		newMode = AccessLevelBroadcaster
 	case "1", "mod", "mods", "moderators":
-		newMode = levelModerator
+		newMode = AccessLevelModerator
 	case "2", "everyone", "all":
-		newMode = levelEveryone
+		newMode = AccessLevelEveryone
 	case "3", "subs", "subscribers", "regs", "regulars":
-		newMode = levelSubscriber
+		newMode = AccessLevelSubscriber
 	default:
 		return s.Replyf(ctx, "%s is not a valid mode.", args)
 	}

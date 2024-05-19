@@ -7,12 +7,12 @@ import (
 )
 
 var varCommands = newHandlerMap(map[string]handlerFunc{
-	"set":       {fn: cmdVarSet, minLevel: levelModerator},
-	"get":       {fn: cmdVarGet, minLevel: levelModerator},
-	"delete":    {fn: cmdVarDelete, minLevel: levelModerator},
-	"remove":    {fn: cmdVarDelete, minLevel: levelModerator},
-	"increment": {fn: cmdVarIncrement, minLevel: levelModerator},
-	"decrement": {fn: cmdVarIncrement, minLevel: levelModerator},
+	"set":       {fn: cmdVarSet, minLevel: AccessLevelModerator},
+	"get":       {fn: cmdVarGet, minLevel: AccessLevelModerator},
+	"delete":    {fn: cmdVarDelete, minLevel: AccessLevelModerator},
+	"remove":    {fn: cmdVarDelete, minLevel: AccessLevelModerator},
+	"increment": {fn: cmdVarIncrement, minLevel: AccessLevelModerator},
+	"decrement": {fn: cmdVarIncrement, minLevel: AccessLevelModerator},
 })
 
 func cmdVar(ctx context.Context, s *session, cmd string, args string) error {

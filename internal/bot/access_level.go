@@ -6,51 +6,51 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 )
 
-//go:generate go run golang.org/x/tools/cmd/stringer -type=accessLevel -trimprefix=level
+//go:generate go run golang.org/x/tools/cmd/stringer -type=AccessLevel -trimprefix=AccessLevel
 
-type accessLevel int
+type AccessLevel int
 
 const (
-	levelUnknown accessLevel = iota
-	levelEveryone
-	levelSubscriber
-	levelVIP
-	levelModerator
-	levelBroadcaster
-	levelAdmin
-	levelSuperAdmin
+	AccessLevelUnknown AccessLevel = iota
+	AccessLevelEveryone
+	AccessLevelSubscriber
+	AccessLevelVIP
+	AccessLevelModerator
+	AccessLevelBroadcaster
+	AccessLevelAdmin
+	AccessLevelSuperAdmin
 )
 
 const (
-	levelMinValid = levelEveryone
-	levelMaxValid = levelSuperAdmin
+	levelMinValid = AccessLevelEveryone
+	levelMaxValid = AccessLevelSuperAdmin
 )
 
-func newAccessLevel(s string) accessLevel {
+func newAccessLevel(s string) AccessLevel {
 	switch s {
 	case models.AccessLevelEveryone:
-		return levelEveryone
+		return AccessLevelEveryone
 	case models.AccessLevelSubscriber:
-		return levelSubscriber
+		return AccessLevelSubscriber
 	case models.AccessLevelVip:
-		return levelVIP
+		return AccessLevelVIP
 	case models.AccessLevelModerator:
-		return levelModerator
+		return AccessLevelModerator
 	case models.AccessLevelBroadcaster:
-		return levelBroadcaster
+		return AccessLevelBroadcaster
 	case models.AccessLevelAdmin:
-		return levelAdmin
+		return AccessLevelAdmin
 	default:
-		return levelUnknown
+		return AccessLevelUnknown
 	}
 }
 
-func (a accessLevel) Valid() bool {
+func (a AccessLevel) Valid() bool {
 	return a >= levelMinValid && a <= levelMaxValid
 }
 
-func (a accessLevel) CanAccess(resource accessLevel) bool {
-	if a == levelSuperAdmin {
+func (a AccessLevel) CanAccess(resource AccessLevel) bool {
+	if a == AccessLevelSuperAdmin {
 		return true
 	}
 
@@ -61,51 +61,51 @@ func (a accessLevel) CanAccess(resource accessLevel) bool {
 	return a >= resource
 }
 
-func (a accessLevel) CanAccessPG(s string) bool {
+func (a AccessLevel) CanAccessPG(s string) bool {
 	return a.CanAccess(newAccessLevel(s))
 }
 
-func (a accessLevel) PGEnum() string {
+func (a AccessLevel) PGEnum() string {
 	switch a { //nolint:exhaustive
-	case levelEveryone:
+	case AccessLevelEveryone:
 		return models.AccessLevelEveryone
-	case levelSubscriber:
+	case AccessLevelSubscriber:
 		return models.AccessLevelSubscriber
-	case levelVIP:
+	case AccessLevelVIP:
 		return models.AccessLevelVip
-	case levelModerator:
+	case AccessLevelModerator:
 		return models.AccessLevelModerator
-	case levelBroadcaster:
+	case AccessLevelBroadcaster:
 		return models.AccessLevelBroadcaster
-	case levelAdmin:
+	case AccessLevelAdmin:
 		return models.AccessLevelAdmin
 	default:
 		panic(fmt.Sprintf("cannot convert %v to enum value", a))
 	}
 }
 
-func parseLevel(s string) accessLevel {
+func parseLevel(s string) AccessLevel {
 	switch s {
 	case "everyone", "all", "everybody", "normal":
-		return levelEveryone
+		return AccessLevelEveryone
 	case "sub", "subs", "subscriber", "subscribers", "regular", "regulars", "reg", "regs":
-		return levelSubscriber
+		return AccessLevelSubscriber
 	case "vip", "vips":
-		return levelVIP
+		return AccessLevelVIP
 	case "mod", "mods", "moderator", "moderators":
-		return levelModerator
+		return AccessLevelModerator
 	case "broadcaster", "broadcasters", "owner", "owners", "streamer", "streamers":
-		return levelBroadcaster
+		return AccessLevelBroadcaster
 	case "admin", "admins":
-		return levelAdmin
+		return AccessLevelAdmin
 	default:
-		return levelUnknown
+		return AccessLevelUnknown
 	}
 }
 
 func parseLevelPG(s string) string {
 	l := parseLevel(s)
-	if l == levelUnknown {
+	if l == AccessLevelUnknown {
 		return ""
 	}
 	return l.PGEnum()

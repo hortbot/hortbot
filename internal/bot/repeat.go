@@ -153,7 +153,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				Deps:       b.deps,
 				Tx:         tx,
 				Start:      start,
-				UserLevel:  levelEveryone,
+				UserLevel:  AccessLevelEveryone,
 				Channel:    channel,
 				Origin:     channel.BotName,
 				IRCChannel: channel.Name,

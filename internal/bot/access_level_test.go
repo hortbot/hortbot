@@ -12,31 +12,31 @@ func TestAccessLevelConversion(t *testing.T) {
 
 	tests := []struct {
 		s string
-		l accessLevel
+		l AccessLevel
 	}{
 		{
 			s: models.AccessLevelEveryone,
-			l: levelEveryone,
+			l: AccessLevelEveryone,
 		},
 		{
 			s: models.AccessLevelSubscriber,
-			l: levelSubscriber,
+			l: AccessLevelSubscriber,
 		},
 		{
 			s: models.AccessLevelModerator,
-			l: levelModerator,
+			l: AccessLevelModerator,
 		},
 		{
 			s: models.AccessLevelVip,
-			l: levelVIP,
+			l: AccessLevelVIP,
 		},
 		{
 			s: models.AccessLevelBroadcaster,
-			l: levelBroadcaster,
+			l: AccessLevelBroadcaster,
 		},
 		{
 			s: models.AccessLevelAdmin,
-			l: levelAdmin,
+			l: AccessLevelAdmin,
 		},
 	}
 
@@ -50,7 +50,7 @@ func TestAccessLevelConversion(t *testing.T) {
 	}
 
 	unknown := newAccessLevel("what")
-	assert.Equal(t, unknown, levelUnknown)
+	assert.Equal(t, unknown, AccessLevelUnknown)
 
 	panicked := false
 
@@ -69,53 +69,53 @@ func TestAccessLevelConversion(t *testing.T) {
 func TestAccessLevelCanAccess(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
-		user     accessLevel
-		resource accessLevel
+		user     AccessLevel
+		resource AccessLevel
 		ok       bool
 	}{
 		{
-			user:     levelUnknown,
-			resource: levelUnknown,
+			user:     AccessLevelUnknown,
+			resource: AccessLevelUnknown,
 			ok:       false,
 		},
 		{
-			user:     levelSuperAdmin,
-			resource: levelUnknown,
+			user:     AccessLevelSuperAdmin,
+			resource: AccessLevelUnknown,
 			ok:       true,
 		},
 		{
-			user:     levelUnknown,
-			resource: levelEveryone,
+			user:     AccessLevelUnknown,
+			resource: AccessLevelEveryone,
 			ok:       false,
 		},
 		{
-			user:     levelEveryone,
-			resource: levelEveryone,
+			user:     AccessLevelEveryone,
+			resource: AccessLevelEveryone,
 			ok:       true,
 		},
 		{
-			user:     levelEveryone,
-			resource: levelSubscriber,
+			user:     AccessLevelEveryone,
+			resource: AccessLevelSubscriber,
 			ok:       false,
 		},
 		{
-			user:     levelAdmin,
-			resource: levelModerator,
+			user:     AccessLevelAdmin,
+			resource: AccessLevelModerator,
 			ok:       true,
 		},
 		{
-			user:     levelSuperAdmin,
-			resource: levelAdmin,
+			user:     AccessLevelSuperAdmin,
+			resource: AccessLevelAdmin,
 			ok:       true,
 		},
 		{
-			user:     levelAdmin,
-			resource: levelSuperAdmin,
+			user:     AccessLevelAdmin,
+			resource: AccessLevelSuperAdmin,
 			ok:       false,
 		},
 		{
-			user:     levelAdmin + 100, // Hypothetical
-			resource: levelModerator,
+			user:     AccessLevelAdmin + 100, // Hypothetical
+			resource: AccessLevelModerator,
 			ok:       false,
 		},
 	}

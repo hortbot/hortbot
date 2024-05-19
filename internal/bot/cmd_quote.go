@@ -14,16 +14,16 @@ import (
 )
 
 var quoteCommands = newHandlerMap(map[string]handlerFunc{
-	"add":      {fn: cmdQuoteAdd, minLevel: levelModerator},
-	"delete":   {fn: cmdQuoteDelete, minLevel: levelModerator},
-	"remove":   {fn: cmdQuoteDelete, minLevel: levelModerator},
-	"edit":     {fn: cmdQuoteEdit, minLevel: levelModerator},
-	"getindex": {fn: cmdQuoteGetIndex, minLevel: levelSubscriber},
-	"get":      {fn: cmdQuoteGet, minLevel: levelSubscriber},
-	"random":   {fn: cmdQuoteRandom, minLevel: levelSubscriber},
-	"search":   {fn: cmdQuoteSearch, minLevel: levelModerator},
-	"editor":   {fn: cmdQuoteEditor, minLevel: levelSubscriber},
-	"compact":  {fn: cmdQuoteCompact, minLevel: levelModerator},
+	"add":      {fn: cmdQuoteAdd, minLevel: AccessLevelModerator},
+	"delete":   {fn: cmdQuoteDelete, minLevel: AccessLevelModerator},
+	"remove":   {fn: cmdQuoteDelete, minLevel: AccessLevelModerator},
+	"edit":     {fn: cmdQuoteEdit, minLevel: AccessLevelModerator},
+	"getindex": {fn: cmdQuoteGetIndex, minLevel: AccessLevelSubscriber},
+	"get":      {fn: cmdQuoteGet, minLevel: AccessLevelSubscriber},
+	"random":   {fn: cmdQuoteRandom, minLevel: AccessLevelSubscriber},
+	"search":   {fn: cmdQuoteSearch, minLevel: AccessLevelModerator},
+	"editor":   {fn: cmdQuoteEditor, minLevel: AccessLevelSubscriber},
+	"compact":  {fn: cmdQuoteCompact, minLevel: AccessLevelModerator},
 })
 
 func cmdQuote(ctx context.Context, s *session, cmd string, args string) error {

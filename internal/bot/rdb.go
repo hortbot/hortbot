@@ -57,7 +57,7 @@ func (s *session) tryCooldown(ctx context.Context, key string, seconds int, allo
 
 	dur := time.Duration(seconds) * time.Second
 
-	if allowMods && s.UserLevel.CanAccess(levelModerator) {
+	if allowMods && s.UserLevel.CanAccess(AccessLevelModerator) {
 		return s.Deps.Redis.MarkCooldown(ctx, s.RoomIDStr(), key, dur)
 	}
 

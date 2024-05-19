@@ -22,23 +22,23 @@ var adminCommands handlerMap
 func init() {
 	// To prevent initialization loop.
 	adminCommands = newHandlerMap(map[string]handlerFunc{
-		"roundtrip":     {fn: cmdAdminRoundtrip, minLevel: levelAdmin},
-		"block":         {fn: cmdAdminBlock, minLevel: levelAdmin},
-		"unblock":       {fn: cmdAdminUnblock, minLevel: levelAdmin},
-		"channels":      {fn: cmdAdminChannels, minLevel: levelAdmin},
-		"color":         {fn: cmdAdminColor, minLevel: levelAdmin},
-		"spam":          {fn: cmdAdminSpam, minLevel: levelAdmin},
-		"version":       {fn: cmdAdminVersion, minLevel: levelAdmin},
-		"changebot":     {fn: cmdAdminChangeBot, minLevel: levelAdmin},
-		"globalignored": {fn: cmdAdminGlobalIgnored, minLevel: levelAdmin},
+		"roundtrip":     {fn: cmdAdminRoundtrip, minLevel: AccessLevelAdmin},
+		"block":         {fn: cmdAdminBlock, minLevel: AccessLevelAdmin},
+		"unblock":       {fn: cmdAdminUnblock, minLevel: AccessLevelAdmin},
+		"channels":      {fn: cmdAdminChannels, minLevel: AccessLevelAdmin},
+		"color":         {fn: cmdAdminColor, minLevel: AccessLevelAdmin},
+		"spam":          {fn: cmdAdminSpam, minLevel: AccessLevelAdmin},
+		"version":       {fn: cmdAdminVersion, minLevel: AccessLevelAdmin},
+		"changebot":     {fn: cmdAdminChangeBot, minLevel: AccessLevelAdmin},
+		"globalignored": {fn: cmdAdminGlobalIgnored, minLevel: AccessLevelAdmin},
 
-		"reloadrepeats":           {fn: cmdAdminReloadRepeats, minLevel: levelSuperAdmin},
-		"deletechannel":           {fn: cmdAdminDeleteChannel, minLevel: levelSuperAdmin},
-		"sleep":                   {fn: cmdAdminSleep, minLevel: levelSuperAdmin},
-		"syncjoined":              {fn: cmdAdminSyncJoined, minLevel: levelSuperAdmin},
-		"imp":                     {fn: cmdAdminImp, minLevel: levelSuperAdmin},
-		"validatetokens":          {fn: cmdAdminValidateTwitchTokens, minLevel: levelSuperAdmin},
-		"updatemoderatedchannels": {fn: cmdAdminUpdateModeratedChannels, minLevel: levelSuperAdmin},
+		"reloadrepeats":           {fn: cmdAdminReloadRepeats, minLevel: AccessLevelSuperAdmin},
+		"deletechannel":           {fn: cmdAdminDeleteChannel, minLevel: AccessLevelSuperAdmin},
+		"sleep":                   {fn: cmdAdminSleep, minLevel: AccessLevelSuperAdmin},
+		"syncjoined":              {fn: cmdAdminSyncJoined, minLevel: AccessLevelSuperAdmin},
+		"imp":                     {fn: cmdAdminImp, minLevel: AccessLevelSuperAdmin},
+		"validatetokens":          {fn: cmdAdminValidateTwitchTokens, minLevel: AccessLevelSuperAdmin},
+		"updatemoderatedchannels": {fn: cmdAdminUpdateModeratedChannels, minLevel: AccessLevelSuperAdmin},
 	})
 }
 
@@ -52,7 +52,7 @@ func cmdAdmin(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if target, ok := strings.CutPrefix(subcommand, "#"); ok {
-		if s.UserLevel.CanAccess(levelSuperAdmin) {
+		if s.UserLevel.CanAccess(AccessLevelSuperAdmin) {
 			return s.SendTwitchChatMessage(ctx, target, args)
 		}
 		return s.Reply(ctx, "Only super admins may directly send messages.")

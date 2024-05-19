@@ -11,17 +11,17 @@ import (
 )
 
 var moderationCommands = newHandlerMap(map[string]handlerFunc{
-	"+b":   {fn: cmdModBan, minLevel: levelModerator},
-	"-b":   {fn: cmdModUnban, minLevel: levelModerator},
-	"+t":   {fn: cmdModTimeout, minLevel: levelModerator},
-	"-t":   {fn: cmdModUntimeout, minLevel: levelModerator},
-	"+p":   {fn: cmdModPurge, minLevel: levelModerator},
-	"+m":   {fn: cmdChangeMode("slow", "Chat is now in slow mode."), minLevel: levelModerator},
-	"-m":   {fn: cmdChangeMode("slowoff", "Chat is no longer in slow mode."), minLevel: levelModerator},
-	"+s":   {fn: cmdChangeMode("subscribers", "Chat is now in subscribers only mode."), minLevel: levelModerator},
-	"-s":   {fn: cmdChangeMode("subscribersoff", "Chat is no longer in subscribers only mode."), minLevel: levelModerator},
-	"+r9k": {fn: cmdChangeMode("r9kbeta", "Chat is now in r9k mode."), minLevel: levelModerator},
-	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: levelModerator},
+	"+b":   {fn: cmdModBan, minLevel: AccessLevelModerator},
+	"-b":   {fn: cmdModUnban, minLevel: AccessLevelModerator},
+	"+t":   {fn: cmdModTimeout, minLevel: AccessLevelModerator},
+	"-t":   {fn: cmdModUntimeout, minLevel: AccessLevelModerator},
+	"+p":   {fn: cmdModPurge, minLevel: AccessLevelModerator},
+	"+m":   {fn: cmdChangeMode("slow", "Chat is now in slow mode."), minLevel: AccessLevelModerator},
+	"-m":   {fn: cmdChangeMode("slowoff", "Chat is no longer in slow mode."), minLevel: AccessLevelModerator},
+	"+s":   {fn: cmdChangeMode("subscribers", "Chat is now in subscribers only mode."), minLevel: AccessLevelModerator},
+	"-s":   {fn: cmdChangeMode("subscribersoff", "Chat is no longer in subscribers only mode."), minLevel: AccessLevelModerator},
+	"+r9k": {fn: cmdChangeMode("r9kbeta", "Chat is now in r9k mode."), minLevel: AccessLevelModerator},
+	"-r9k": {fn: cmdChangeMode("r9kbetaoff", "Chat is no longer in r9k mode."), minLevel: AccessLevelModerator},
 })
 
 func isModerationCommand(prefix, name string) (prefixAndName string, ok bool) {

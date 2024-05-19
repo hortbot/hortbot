@@ -7,17 +7,16 @@ import "context"
 var ErrBuiltinDisabled = errBuiltinDisabled
 
 type (
-	Session     = session
-	AccessLevel = accessLevel
+	Session = session
 )
 
 const (
-	LevelUnknown     = levelUnknown
-	LevelEveryone    = levelEveryone
-	LevelSubscriber  = levelSubscriber
-	LevelModerator   = levelModerator
-	LevelBroadcaster = levelBroadcaster
-	LevelAdmin       = levelAdmin
+	LevelUnknown     = AccessLevelUnknown
+	LevelEveryone    = AccessLevelEveryone
+	LevelSubscriber  = AccessLevelSubscriber
+	LevelModerator   = AccessLevelModerator
+	LevelBroadcaster = AccessLevelBroadcaster
+	LevelAdmin       = AccessLevelAdmin
 )
 
 func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd string, args string) error, minLevel AccessLevel) {
@@ -29,7 +28,7 @@ func TestingBuiltin(name string, fn func(ctx context.Context, s *Session, cmd st
 		panic("nil function")
 	}
 
-	if minLevel <= levelUnknown {
+	if minLevel <= AccessLevelUnknown {
 		panic("unknown level for added builtin " + name)
 	}
 

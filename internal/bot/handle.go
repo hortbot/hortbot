@@ -360,7 +360,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	_, ignored := stringSliceIndex(channel.Ignored, s.User)
 
-	if ignored && s.UserLevel.CanAccess(levelBroadcaster) {
+	if ignored && s.UserLevel.CanAccess(AccessLevelBroadcaster) {
 		// Never ignore the broadcaster themselves.
 		ignored = false
 	}
@@ -435,7 +435,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 		}
 	}
 
-	if name == "+whatprefix" && s.UserLevel.CanAccess(levelAdmin) {
+	if name == "+whatprefix" && s.UserLevel.CanAccess(AccessLevelAdmin) {
 		return true, s.Reply(ctx, "The prefix for this channel is: "+prefix)
 	}
 
@@ -446,7 +446,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 	name = name[len(prefix):]
 
 	var foreignChannel string
-	if strings.HasPrefix(name, "#") && s.UserLevel.CanAccess(levelBroadcaster) {
+	if strings.HasPrefix(name, "#") && s.UserLevel.CanAccess(AccessLevelBroadcaster) {
 		foreignChannel, name = stringsx.SplitByte(name[1:], '/')
 	}
 

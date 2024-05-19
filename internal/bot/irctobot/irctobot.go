@@ -3,9 +3,11 @@ package irctobot
 import (
 	"strconv"
 	"strings"
+	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/jakebailey/irc"
 )
 
@@ -22,8 +24,6 @@ func IRCToMessage(m *irc.Message) bot.Message {
 	}
 	return &ircMessage{m: m}
 }
-
-func (m *ircMessage) Tags() map[string]string { return m.m.Tags }
 
 func (m *ircMessage) ID() string { return m.m.Tags["id"] }
 
@@ -96,4 +96,57 @@ func (m *ircMessage) Timestamp() time.Time {
 		return time.Unix(tmiSent/1000, 0)
 	}
 	return time.Time{}
+}
+
+func (m *ircMessage) UserAccessLevel() bot.AccessLevel {
+	tags := m.m.Tags
+
+	if testing.Testing() {
+		switch {
+		case tags["testing-super-admin"] != "":
+			return bot.AccessLevelSuperAdmin
+		case tags["testing-admin"] != "":
+			return bot.AccessLevelAdmin
+		}
+	}
+
+	if m.BroadcasterID() == m.UserID() {
+		return bot.AccessLevelBroadcaster
+	}
+
+	if tags["mod"] == "1" {
+		return bot.AccessLevelModerator
+	}
+
+	badges := parseBadges(tags["badges"])
+
+	switch {
+	case badges["broadcaster"] != "":
+		return bot.AccessLevelBroadcaster
+	case badges["moderator"] != "":
+		return bot.AccessLevelModerator
+	case badges["vip"] != "":
+		return bot.AccessLevelVIP
+	case badges["subscriber"] != "", tags["subscriber"] == "1", badges["founder"] != "":
+		return bot.AccessLevelSubscriber
+	}
+
+	if tags["user-type"] == "mod" {
+		return bot.AccessLevelModerator
+	}
+
+	return bot.AccessLevelUnknown
+}
+
+func parseBadges(badgeTag string) map[string]string {
+	badges := strings.FieldsFunc(badgeTag, func(r rune) bool { return r == ',' })
+
+	d := make(map[string]string, len(badges))
+
+	for _, badge := range badges {
+		k, v := stringsx.SplitByte(badge, '/')
+		d[k] = v
+	}
+
+	return d
 }

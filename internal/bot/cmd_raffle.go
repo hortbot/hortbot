@@ -11,11 +11,11 @@ import (
 )
 
 var raffleCommands = newHandlerMap(map[string]handlerFunc{
-	"enable":  {fn: cmdRaffleEnableDisable, minLevel: levelModerator},
-	"disable": {fn: cmdRaffleEnableDisable, minLevel: levelModerator},
-	"count":   {fn: cmdRaffleCount, minLevel: levelModerator},
-	"winner":  {fn: cmdRaffleWinner, minLevel: levelModerator},
-	"reset":   {fn: cmdRaffleReset, minLevel: levelModerator},
+	"enable":  {fn: cmdRaffleEnableDisable, minLevel: AccessLevelModerator},
+	"disable": {fn: cmdRaffleEnableDisable, minLevel: AccessLevelModerator},
+	"count":   {fn: cmdRaffleCount, minLevel: AccessLevelModerator},
+	"winner":  {fn: cmdRaffleWinner, minLevel: AccessLevelModerator},
+	"reset":   {fn: cmdRaffleReset, minLevel: AccessLevelModerator},
 })
 
 func cmdRaffle(ctx context.Context, s *session, cmd string, args string) error {

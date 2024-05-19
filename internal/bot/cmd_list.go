@@ -20,30 +20,30 @@ import (
 // TODO: Merge the code between custom commands and lists; they are identical other than some wordings.
 
 var listCommands = newHandlerMap(map[string]handlerFunc{
-	"add":             {fn: cmdListAddSubscriber, minLevel: levelModerator},
-	"addb":            {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addbroadcaster":  {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addbroadcasters": {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addo":            {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addowner":        {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addowners":       {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addstreamer":     {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addstreamers":    {fn: cmdListAddBroadcaster, minLevel: levelModerator},
-	"addm":            {fn: cmdListAddModerator, minLevel: levelModerator},
-	"addmod":          {fn: cmdListAddModerator, minLevel: levelModerator},
-	"addmods":         {fn: cmdListAddModerator, minLevel: levelModerator},
-	"adds":            {fn: cmdListAddSubscriber, minLevel: levelModerator},
-	"addsub":          {fn: cmdListAddSubscriber, minLevel: levelModerator},
-	"addsubs":         {fn: cmdListAddSubscriber, minLevel: levelModerator},
-	"adde":            {fn: cmdListAddEveryone, minLevel: levelModerator},
-	"adda":            {fn: cmdListAddEveryone, minLevel: levelModerator},
-	"addeveryone":     {fn: cmdListAddEveryone, minLevel: levelModerator},
-	"addall":          {fn: cmdListAddEveryone, minLevel: levelModerator},
-	"delete":          {fn: cmdListDelete, minLevel: levelModerator},
-	"remove":          {fn: cmdListDelete, minLevel: levelModerator},
-	"rm":              {fn: cmdListDelete, minLevel: levelModerator},
-	"restrict":        {fn: cmdListRestrict, minLevel: levelModerator},
-	"rename":          {fn: cmdListRename, minLevel: levelModerator},
+	"add":             {fn: cmdListAddSubscriber, minLevel: AccessLevelModerator},
+	"addb":            {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addbroadcaster":  {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addbroadcasters": {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addo":            {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addowner":        {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addowners":       {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addstreamer":     {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addstreamers":    {fn: cmdListAddBroadcaster, minLevel: AccessLevelModerator},
+	"addm":            {fn: cmdListAddModerator, minLevel: AccessLevelModerator},
+	"addmod":          {fn: cmdListAddModerator, minLevel: AccessLevelModerator},
+	"addmods":         {fn: cmdListAddModerator, minLevel: AccessLevelModerator},
+	"adds":            {fn: cmdListAddSubscriber, minLevel: AccessLevelModerator},
+	"addsub":          {fn: cmdListAddSubscriber, minLevel: AccessLevelModerator},
+	"addsubs":         {fn: cmdListAddSubscriber, minLevel: AccessLevelModerator},
+	"adde":            {fn: cmdListAddEveryone, minLevel: AccessLevelModerator},
+	"adda":            {fn: cmdListAddEveryone, minLevel: AccessLevelModerator},
+	"addeveryone":     {fn: cmdListAddEveryone, minLevel: AccessLevelModerator},
+	"addall":          {fn: cmdListAddEveryone, minLevel: AccessLevelModerator},
+	"delete":          {fn: cmdListDelete, minLevel: AccessLevelModerator},
+	"remove":          {fn: cmdListDelete, minLevel: AccessLevelModerator},
+	"rm":              {fn: cmdListDelete, minLevel: AccessLevelModerator},
+	"restrict":        {fn: cmdListRestrict, minLevel: AccessLevelModerator},
+	"rename":          {fn: cmdListRename, minLevel: AccessLevelModerator},
 })
 
 func cmdList(ctx context.Context, s *session, cmd string, args string) error {
@@ -63,22 +63,22 @@ func cmdList(ctx context.Context, s *session, cmd string, args string) error {
 }
 
 func cmdListAddBroadcaster(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdListAdd(ctx, s, args, levelBroadcaster)
+	return cmdListAdd(ctx, s, args, AccessLevelBroadcaster)
 }
 
 func cmdListAddModerator(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdListAdd(ctx, s, args, levelModerator)
+	return cmdListAdd(ctx, s, args, AccessLevelModerator)
 }
 
 func cmdListAddSubscriber(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdListAdd(ctx, s, args, levelSubscriber)
+	return cmdListAdd(ctx, s, args, AccessLevelSubscriber)
 }
 
 func cmdListAddEveryone(ctx context.Context, s *session, cmd string, args string) error {
-	return cmdListAdd(ctx, s, args, levelEveryone)
+	return cmdListAdd(ctx, s, args, AccessLevelEveryone)
 }
 
-func cmdListAdd(ctx context.Context, s *session, args string, level accessLevel) error {
+func cmdListAdd(ctx context.Context, s *session, args string, level AccessLevel) error {
 	usage := func() error {
 		return s.ReplyUsage(ctx, "<name>")
 	}
@@ -308,7 +308,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 
 	switch cmd {
 	case "add", "delete", "remove", "rm", "restrict":
-		if !s.UserLevel.CanAccess(levelModerator) {
+		if !s.UserLevel.CanAccess(AccessLevelModerator) {
 			return true, errNotAuthorized
 		}
 

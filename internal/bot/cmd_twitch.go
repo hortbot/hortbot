@@ -14,7 +14,7 @@ import (
 const twitchServerErrorReply = "A Twitch server error occurred."
 
 func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
-	if args != "" && s.UserLevel.CanAccess(levelModerator) {
+	if args != "" && s.UserLevel.CanAccess(AccessLevelModerator) {
 		replied, err := setStatus(ctx, s, args)
 		if replied || err != nil {
 			return err
@@ -75,7 +75,7 @@ func setStatus(ctx context.Context, s *session, status string) (replied bool, er
 }
 
 func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
-	if args != "" && s.UserLevel.CanAccess(levelModerator) {
+	if args != "" && s.UserLevel.CanAccess(AccessLevelModerator) {
 		_, err := setGame(ctx, s, args)
 		return err
 	}

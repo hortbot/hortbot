@@ -14,19 +14,6 @@ func splitSpace(s string) (string, string) {
 	return a, strings.TrimSpace(b)
 }
 
-func parseBadges(badgeTag string) map[string]string {
-	badges := strings.FieldsFunc(badgeTag, func(r rune) bool { return r == ',' })
-
-	d := make(map[string]string, len(badges))
-
-	for _, badge := range badges {
-		k, v := stringsx.SplitByte(badge, '/')
-		d[k] = v
-	}
-
-	return d
-}
-
 func stringSliceIndex(strs []string, s string) (int, bool) {
 	for i, v := range strs {
 		if s == v {
