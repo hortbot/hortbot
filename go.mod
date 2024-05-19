@@ -10,6 +10,7 @@ require (
 	github.com/alicebob/miniredis/v2 v2.32.1
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.6.1
+	github.com/carlmjohnson/requests v0.23.5
 	github.com/dghubble/trie v0.1.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/felixge/httpsnoop v1.0.4

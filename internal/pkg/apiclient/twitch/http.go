@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -29,8 +29,7 @@ func (h *httpClient) newRequest(ctx context.Context, method string, url string, 
 
 	tok, err := h.ts.Token()
 	if err != nil {
-		var oauthErr *oauth2.RetrieveError
-		if errors.As(err, &oauthErr) {
+		if oauthErr, ok := errorsx.As[*oauth2.RetrieveError](err); ok {
 			var body struct {
 				Error   string `json:"error"`
 				Status  int    `json:"status"`

@@ -37,33 +37,25 @@ func New(cli *http.Client) *Client {
 
 // Plaintext gets the specified URL as text.
 func (c *Client) Plaintext(ctx context.Context, u string) (body string, err error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, u, nil)
-	if err != nil {
-		return "", err
-	}
+	var s string
 
-	resp, err := c.cli.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	lr := &io.LimitedReader{
-		R: resp.Body,
-		N: plaintextLimit,
-	}
-
-	b, err := io.ReadAll(lr)
-	if err != nil {
-		return "", err
-	}
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		err = &apiclient.Error{
-			API:        "simple",
-			StatusCode: resp.StatusCode,
+	req := c.cli.NewRequest(u).AddValidator(nil).Handle(func(r *http.Response) error {
+		lr := &io.LimitedReader{
+			R: r.Body,
+			N: plaintextLimit,
 		}
+
+		b, err := io.ReadAll(lr)
+		if err != nil {
+			return err
+		}
+
+		s = string(b)
+		return nil
+	})
+	if err := req.Fetch(ctx); err != nil {
+		return "", apiclient.WrapRequestErr("simple", err)
 	}
 
-	return string(b), err
+	return s, nil
 }

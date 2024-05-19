@@ -5,8 +5,7 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 )
 
 var conchResponses = [...]string{
@@ -59,8 +58,7 @@ func cmdXKCD(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	c, err := s.Deps.XKCD.GetComic(ctx, id)
-
-	if err == xkcd.ErrNotFound {
+	if apiErr, ok := apiclient.AsError(err); ok && apiErr.IsNotFound() {
 		return s.Replyf(ctx, "XKCD comic #%d not found.", id)
 	}
 
@@ -106,13 +104,15 @@ func cmdUrban(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	def, err := s.Deps.Urban.Define(ctx, args)
-	switch err {
-	case nil:
-	case urban.ErrNotFound:
-		return s.Reply(ctx, "Definition not found.")
-	case urban.ErrServerError:
-		return s.Reply(ctx, "An Urban Dictionary server error has occurred.")
-	default:
+	if err != nil {
+		if apiErr, ok := apiclient.AsError(err); ok {
+			if apiErr.IsNotFound() {
+				return s.Reply(ctx, "Definition not found.")
+			}
+			if apiErr.IsServerError() {
+				return s.Reply(ctx, "An Urban Dictionary server error has occurred.")
+			}
+		}
 		return err
 	}
 

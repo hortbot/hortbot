@@ -7,14 +7,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
 	"gotest.tools/v3/assert"
 )
 
-func TestDefine(t *testing.T) {
+func TestPlaintext(t *testing.T) {
 	ctx := context.Background()
 	const apiURL = "https://example.com/something"
 
@@ -49,7 +48,7 @@ func TestDefine(t *testing.T) {
 
 		body, err := sc.Plaintext(ctx, apiURL)
 		assert.Equal(t, body, "not found")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "simple", StatusCode: 404})
+		assert.NilError(t, err)
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -60,7 +59,7 @@ func TestDefine(t *testing.T) {
 
 		body, err := sc.Plaintext(ctx, apiURL)
 		assert.Equal(t, body, "error!")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "simple", StatusCode: 500})
+		assert.NilError(t, err)
 	})
 
 	t.Run("Limit", func(t *testing.T) {
@@ -86,7 +85,7 @@ func TestDefine(t *testing.T) {
 		sc := simple.New(&http.Client{Transport: mt})
 
 		_, err := sc.Plaintext(ctx, apiURL)
-		assert.Equal(t, err, errBadBody)
+		assert.ErrorIs(t, err, errBadBody)
 	})
 }
 

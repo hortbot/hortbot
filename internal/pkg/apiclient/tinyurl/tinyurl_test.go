@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
@@ -51,7 +52,7 @@ func TestShorten(t *testing.T) {
 		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		_, err := tu.Shorten(ctx, longURL)
-		assert.Equal(t, err, tinyurl.ErrServerError)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("tinyurl", 400))
 	})
 
 	t.Run("ReadAll error", func(t *testing.T) {
@@ -64,7 +65,7 @@ func TestShorten(t *testing.T) {
 		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		_, err := tu.Shorten(ctx, longURL)
-		assert.Equal(t, err, tinyurl.ErrServerError)
+		assert.Error(t, err, "tinyurl: ErrHandler: bad body")
 	})
 }
 

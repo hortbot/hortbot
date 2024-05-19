@@ -67,7 +67,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 404})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 404))
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
@@ -87,7 +87,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 500})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 500))
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -97,7 +97,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 403})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 403))
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -107,7 +107,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, &apiclient.Error{API: "lastfm", StatusCode: 418})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 418))
 	})
 
 	t.Run("Request error", func(t *testing.T) {

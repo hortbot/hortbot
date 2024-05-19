@@ -2,9 +2,7 @@
 package hltb
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"math"
 	"net/http"
@@ -13,7 +11,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out hltbmocks/mocks.go -pkg hltbmocks . API
@@ -79,10 +76,6 @@ type requestBody struct {
 
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
-	extraHeaders := make(http.Header)
-	extraHeaders.Set("Origin", "https://howlongtobeat.com")
-	extraHeaders.Set("Referer", "https://howlongtobeat.com/?q=")
-
 	requestBody := &requestBody{
 		SearchType:  "games",
 		SearchTerms: strings.Fields(query),
@@ -92,21 +85,6 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 	requestBody.SearchOptions.Games.SortCategory = "popular"
 	requestBody.SearchOptions.Games.RangeCategory = "main"
 	requestBody.SearchOptions.Users.SortCategory = "postcount"
-
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(requestBody); err != nil {
-		return nil, err
-	}
-
-	resp, err := h.cli.Post(ctx, "https://howlongtobeat.com/api/search", "application/json", &buf, extraHeaders)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if !apiclient.IsOK(resp.StatusCode) {
-		return nil, &apiclient.Error{API: "hltb", StatusCode: resp.StatusCode}
-	}
 
 	var body struct {
 		Data []struct {
@@ -118,12 +96,18 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 		} `json:"data"`
 	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return nil, &apiclient.Error{API: "hltb", Err: fmt.Errorf("error decoding response: %w", err)}
+	req := h.cli.NewRequestToJSON("https://howlongtobeat.com/api/search", &body).
+		Header("Origin", "https://howlongtobeat.com").
+		Header("Referer", "https://howlongtobeat.com/?q=").
+		BodyJSON(requestBody).
+		Post()
+
+	if err := req.Fetch(ctx); err != nil {
+		return nil, apiclient.WrapRequestErr("hltb", err)
 	}
 
 	if len(body.Data) == 0 {
-		return nil, &apiclient.Error{API: "hltb", StatusCode: 404}
+		return nil, apiclient.NewStatusError("hltb", 404)
 	}
 
 	first := body.Data[0]

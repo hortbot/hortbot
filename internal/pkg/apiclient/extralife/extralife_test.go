@@ -62,14 +62,14 @@ func TestGetDonationAmount(t *testing.T) {
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 404)
-		assert.DeepEqual(t, err, &apiclient.Error{API: "extralife", StatusCode: 404})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("extralife", 404))
 	})
 
 	t.Run("Server error", func(t *testing.T) {
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 500)
-		assert.DeepEqual(t, err, &apiclient.Error{API: "extralife", StatusCode: 500})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("extralife", 500))
 	})
 
 	t.Run("Decode error", func(t *testing.T) {

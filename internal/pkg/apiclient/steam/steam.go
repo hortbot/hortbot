@@ -4,11 +4,9 @@ package steam
 import (
 	"context"
 	"net/http"
-	"net/url"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out steammocks/mocks.go -pkg steammocks . API
@@ -52,32 +50,25 @@ type Summary struct {
 //
 // GET https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/
 func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, error) {
-	url := "https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=" + url.QueryEscape(s.apiKey) + "&format=json&steamids=" + url.QueryEscape(id)
-
-	resp, err := s.cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if !apiclient.IsOK(resp.StatusCode) {
-		return nil, &apiclient.Error{API: "steam", StatusCode: resp.StatusCode}
-	}
-
-	body := struct {
+	var body struct {
 		Response struct {
 			Players []*Summary `json:"players"`
 		} `json:"response"`
-	}{}
+	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return nil, &apiclient.Error{API: "steam", Err: err}
+	req := s.cli.NewRequestToJSON("https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/", &body).
+		Param("key", s.apiKey).
+		Param("format", "json").
+		Param("steamids", id)
+
+	if err := req.Fetch(ctx); err != nil {
+		return nil, apiclient.WrapRequestErr("steam", err)
 	}
 
 	p := body.Response.Players
 
 	if len(p) == 0 {
-		return nil, &apiclient.Error{API: "steam", StatusCode: http.StatusNotFound}
+		return nil, apiclient.NewStatusError("steam", 404)
 	}
 
 	return p[0], nil
@@ -93,26 +84,20 @@ type Game struct {
 //
 // GET https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/
 func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
-	url := "https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=" + s.apiKey + "&format=json&steamid=" + url.QueryEscape(id) + "&include_appinfo=1"
-
-	resp, err := s.cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if !apiclient.IsOK(resp.StatusCode) {
-		return nil, &apiclient.Error{API: "steam", StatusCode: resp.StatusCode}
-	}
-
-	body := struct {
+	var body struct {
 		Response struct {
 			Games []*Game `json:"games"`
 		} `json:"response"`
-	}{}
+	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return nil, &apiclient.Error{API: "steam", Err: err}
+	req := s.cli.NewRequestToJSON("https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/", &body).
+		Param("key", s.apiKey).
+		Param("format", "json").
+		Param("steamid", id).
+		Param("include_appinfo", "1")
+
+	if err := req.Fetch(ctx); err != nil {
+		return nil, apiclient.WrapRequestErr("steam", err)
 	}
 
 	return body.Response.Games, nil

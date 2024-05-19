@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out youtubemocks/mocks.go -pkg youtubemocks . API
@@ -47,14 +46,6 @@ func (y *YouTube) VideoTitle(ctx context.Context, u *url.URL) string {
 		return ""
 	}
 
-	url := "https://www.googleapis.com/youtube/v3/videos?part=snippet&key=" + url.QueryEscape(y.apiKey) + "&id=" + url.QueryEscape(id)
-
-	resp, err := y.cli.Get(ctx, url)
-	if err != nil {
-		return ""
-	}
-	defer resp.Body.Close()
-
 	var body struct {
 		Items []struct {
 			Snippet struct {
@@ -63,7 +54,12 @@ func (y *YouTube) VideoTitle(ctx context.Context, u *url.URL) string {
 		} `json:"items"`
 	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
+	req := y.cli.NewRequestToJSON("https://www.googleapis.com/youtube/v3/videos", &body).
+		Param("part", "snippet").
+		Param("key", y.apiKey).
+		Param("id", id)
+
+	if err := req.Fetch(ctx); err != nil {
 		return ""
 	}
 

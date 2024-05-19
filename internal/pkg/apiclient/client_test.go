@@ -62,12 +62,3 @@ func TestError(t *testing.T) {
 		})
 	}
 }
-
-func TestIsOK(t *testing.T) {
-	assert.Assert(t, apiclient.IsOK(200))
-	assert.Assert(t, apiclient.IsOK(204))
-	assert.Assert(t, !apiclient.IsOK(100))
-	assert.Assert(t, !apiclient.IsOK(404))
-	assert.Assert(t, !apiclient.IsOK(451))
-	assert.Assert(t, !apiclient.IsOK(500))
-}

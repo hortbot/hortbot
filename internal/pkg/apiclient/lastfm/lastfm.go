@@ -5,7 +5,6 @@ import (
 	"context"
 	"encoding/xml"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -52,18 +51,6 @@ func New(apiKey string, cli *http.Client) *LastFM {
 // RecentTracks gets the most recently played tracks for the user, limited to
 // the n most recent tracks.
 func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track, error) {
-	url := "https://ws.audioscrobbler.com/2.0/?api_key=" + url.QueryEscape(l.apiKey) + "&limit=" + strconv.Itoa(n) + "&method=user.getRecentTracks&user=" + url.QueryEscape(user)
-
-	resp, err := l.cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if !apiclient.IsOK(resp.StatusCode) {
-		return nil, &apiclient.Error{API: "lastfm", StatusCode: resp.StatusCode}
-	}
-
 	var body struct {
 		XMLName      xml.Name `xml:"lfm"`
 		RecentTracks struct {
@@ -79,8 +66,17 @@ func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track,
 		} `xml:"recenttracks"`
 	}
 
-	if err := xml.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return nil, &apiclient.Error{API: "lastfm", Err: err}
+	req := l.cli.NewRequest("https://ws.audioscrobbler.com/2.0/").
+		Param("api_key", l.apiKey).
+		Param("limit", strconv.Itoa(n)).
+		Param("method", "user.getRecentTracks").
+		Param("user", user).
+		Handle(func(r *http.Response) error {
+			return xml.NewDecoder(r.Body).Decode(&body)
+		})
+
+	if err := req.Fetch(ctx); err != nil {
+		return nil, apiclient.WrapRequestErr("lastfm", err)
 	}
 
 	tracks := body.RecentTracks.Tracks

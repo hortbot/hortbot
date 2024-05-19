@@ -13,8 +13,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"gotest.tools/v3/assert"
 )
@@ -35,7 +33,7 @@ func (st *scriptTester) lastFMRecentTracks(t testing.TB, _, args string, lineNum
 	st.addAction(func(_ context.Context) {
 		st.lastFM.RecentTracksFunc = func(_ context.Context, user string, n int) ([]lastfm.Track, error) {
 			if user == "error" {
-				return nil, &apiclient.Error{API: "lastfm", StatusCode: 500}
+				return nil, apiclient.NewStatusError("lastfm", 500)
 			}
 
 			x := v[user]
@@ -86,7 +84,7 @@ func (st *scriptTester) xkcdComics(t testing.TB, _, args string, lineNum int) {
 		st.xkcd.GetComicFunc = func(_ context.Context, id int) (*xkcd.Comic, error) {
 			c, ok := v[strconv.Itoa(id)]
 			if !ok {
-				return nil, xkcd.ErrNotFound
+				return nil, apiclient.NewStatusError("xkcd", 404)
 			}
 			return c, nil
 		}
@@ -109,12 +107,12 @@ func (st *scriptTester) extraLifeAmounts(t testing.TB, _, args string, lineNum i
 	st.addAction(func(_ context.Context) {
 		st.extraLife.GetDonationAmountFunc = func(_ context.Context, id int) (float64, error) {
 			if id == 500500 {
-				return 0, &apiclient.Error{API: "extralife", StatusCode: 500}
+				return 0, apiclient.NewStatusError("extralife", 500)
 			}
 
 			a, ok := v[strconv.Itoa(id)]
 			if !ok {
-				return 0, &apiclient.Error{API: "extralife", StatusCode: 404}
+				return 0, apiclient.NewStatusError("extralife", 404)
 			}
 			return a, nil
 		}
@@ -133,13 +131,13 @@ func steamErr(t testing.TB, lineNum int, e string) error {
 	case "":
 		return nil
 	case "ErrNotFound":
-		return &apiclient.Error{API: "steam", StatusCode: http.StatusNotFound}
+		return apiclient.NewStatusError("steam", http.StatusNotFound)
 	case "ErrNotAuthorized":
-		return &apiclient.Error{API: "steam", StatusCode: http.StatusUnauthorized}
+		return apiclient.NewStatusError("steam", http.StatusUnauthorized)
 	case "ErrServerError":
-		return &apiclient.Error{API: "steam", StatusCode: http.StatusInternalServerError}
+		return apiclient.NewStatusError("steam", http.StatusInternalServerError)
 	case "ErrUnknown":
-		return &apiclient.Error{API: "steam", StatusCode: 418}
+		return apiclient.NewStatusError("steam", 418)
 	default:
 		t.Fatalf("unknown error type %s: line %d", e, lineNum)
 		return nil
@@ -211,7 +209,7 @@ func (st *scriptTester) tinyURLShorten(t testing.TB, _, args string, lineNum int
 			var err error
 			switch call.Err {
 			case "ErrServerError":
-				err = tinyurl.ErrServerError
+				err = apiclient.NewStatusError("tinyurl", http.StatusInternalServerError)
 			case "":
 			default:
 				t.Fatalf("unknown error type %s: line %d", call.Err, lineNum)
@@ -247,11 +245,11 @@ func (st *scriptTester) urbanDefine(t testing.TB, _, args string, lineNum int) {
 			var err error
 			switch call.Err {
 			case "ErrNotFound":
-				err = urban.ErrNotFound
+				err = apiclient.NewStatusError("urban", 404)
 			case "ErrServerError":
-				err = urban.ErrServerError
+				err = apiclient.NewStatusError("urban", 500)
 			case "ErrUnknown":
-				err = urban.ErrUnknown
+				err = apiclient.NewStatusError("urban", 418)
 			case "":
 			default:
 				t.Fatalf("unknown error type %s: line %d", call.Err, lineNum)
@@ -281,11 +279,6 @@ func (st *scriptTester) simplePlaintext(t testing.TB, _, args string, lineNum in
 
 			if call.StatusCode == 777 {
 				err = errors.New("testing error")
-			} else if !apiclient.IsOK(call.StatusCode) {
-				err = &apiclient.Error{
-					API:        "simple",
-					StatusCode: call.StatusCode,
-				}
 			}
 
 			return call.Body, err
@@ -312,11 +305,8 @@ func (st *scriptTester) hltbSearch(t testing.TB, _, args string, lineNum int) {
 
 			if call.StatusCode == 777 {
 				err = errors.New("testing error")
-			} else if !apiclient.IsOK(call.StatusCode) {
-				err = &apiclient.Error{
-					API:        "hltb",
-					StatusCode: call.StatusCode,
-				}
+			} else if call.StatusCode != http.StatusOK {
+				err = apiclient.NewStatusError("hltb", call.StatusCode)
 			}
 
 			return call.Game, err

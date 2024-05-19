@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"errors"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 )
@@ -54,10 +53,8 @@ func steamError(ctx context.Context, s *session, err error) error {
 		return s.Reply(ctx, "Steam support is disabled.")
 	}
 
-	var apiErr *apiclient.Error
-	if errors.As(err, &apiErr) {
+	if _, ok := apiclient.AsError(err); ok {
 		return s.Reply(ctx, "A Steam API error occurred.")
 	}
-
 	return err
 }

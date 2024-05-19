@@ -14,9 +14,9 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/jakebailey/irc"
@@ -666,7 +666,7 @@ func (s *session) ShortenLink(ctx context.Context, link string) (string, error) 
 	}
 
 	short, err := s.Deps.TinyURL.Shorten(ctx, link)
-	if err == tinyurl.ErrServerError {
+	if apiErr, ok := apiclient.AsError(err); ok && apiErr.IsServerError() {
 		return link, nil
 	}
 	return short, err

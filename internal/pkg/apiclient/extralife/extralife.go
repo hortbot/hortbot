@@ -8,7 +8,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out extralifemocks/mocks.go -pkg extralifemocks . API
@@ -37,22 +36,12 @@ func New(cli *http.Client) *ExtraLife {
 func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (float64, error) {
 	url := fmt.Sprintf("https://www.extra-life.org/api/participants/%d", participantID)
 
-	resp, err := e.cli.Get(ctx, url)
-	if err != nil {
-		return 0, err
-	}
-	defer resp.Body.Close()
-
-	if !apiclient.IsOK(resp.StatusCode) {
-		return 0, &apiclient.Error{API: "extralife", StatusCode: resp.StatusCode}
-	}
-
 	var v struct {
 		SumDonations float64 `json:"sumDonations"`
 	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
-		return 0, &apiclient.Error{API: "extralife", Err: err}
+	if err := e.cli.NewRequestToJSON(url, &v).Fetch(ctx); err != nil {
+		return 0, apiclient.WrapRequestErr("extralife", err)
 	}
 
 	return v.SumDonations, nil

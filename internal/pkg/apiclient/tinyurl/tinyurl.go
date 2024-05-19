@@ -3,19 +3,14 @@ package tinyurl
 
 import (
 	"context"
-	"errors"
-	"io"
 	"net/http"
-	"net/url"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out tinyurlmocks/mocks.go -pkg tinyurlmocks . API
-
-// ErrServerError is returned when a shortening request is unsuccessful.
-var ErrServerError = errors.New("tinyurl: server error")
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {
@@ -38,22 +33,12 @@ func New(cli *http.Client) *TinyURL {
 
 // Shorten shortens the given URL using TinyURL.
 func (t *TinyURL) Shorten(ctx context.Context, u string) (shortened string, err error) {
-	u = "https://tinyurl.com/api-create.php?url=" + url.QueryEscape(u)
+	var body string
 
-	resp, err := t.cli.Get(ctx, u)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		return "", ErrServerError
+	req := t.cli.NewRequest("https://tinyurl.com/api-create.php").Param("url", u).ToString(&body)
+	if err := req.Fetch(ctx); err != nil {
+		return "", apiclient.WrapRequestErr("tinyurl", err)
 	}
 
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", ErrServerError
-	}
-
-	return strings.TrimSpace(string(body)), nil
+	return strings.TrimSpace(body), nil
 }

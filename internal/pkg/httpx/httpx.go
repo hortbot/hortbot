@@ -3,12 +3,11 @@ package httpx
 
 import (
 	"context"
-	"io"
 	"net/http"
-	"net/url"
-	"strings"
 	"time"
 
+	"github.com/carlmjohnson/requests"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/useragent"
 	"golang.org/x/oauth2"
 )
@@ -91,32 +90,19 @@ func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
 	return resp, err
 }
 
-func (c *Client) DoWithContext(ctx context.Context, req *http.Request) (*http.Response, error) {
-	return c.Do(req.WithContext(ctx))
+func (c *Client) NewRequest(url string) *requests.Builder {
+	return requests.URL(url).Client(c.client)
 }
 
-func (c *Client) Get(ctx context.Context, url string) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.Do(req)
+func (c *Client) NewRequestToJSON(url string, v any) *requests.Builder {
+	return requests.URL(url).Client(c.client).Handle(toJSON(v)) //nolint:bodyclose
 }
 
-func (c *Client) Post(ctx context.Context, url string, bodyType string, body io.Reader, extraHeaders http.Header) (*http.Response, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, body)
-	if err != nil {
-		return nil, err
+// ToJSON is like [requests.ToJSON] but verifies that only a single value is decoded.
+func toJSON(v any) requests.ResponseHandler {
+	return func(r *http.Response) error {
+		return jsonx.DecodeSingle(r.Body, v)
 	}
-	req.Header.Set("Content-Type", bodyType)
-	for k, v := range extraHeaders {
-		req.Header[k] = v
-	}
-	return c.Do(req)
-}
-
-func (c *Client) PostForm(ctx context.Context, url string, data url.Values, extraHeaders http.Header) (*http.Response, error) {
-	return c.Post(ctx, url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()), extraHeaders)
 }
 
 // AsOAuth2Client registers the client as the client to use in the OAuth2 library.

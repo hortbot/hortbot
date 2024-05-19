@@ -3,20 +3,11 @@ package urban
 
 import (
 	"context"
-	"errors"
 	"net/http"
-	"net/url"
 	"strings"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
-)
-
-// Urban Dictionary API errors.
-var (
-	ErrNotFound    = errors.New("urban: not found")
-	ErrServerError = errors.New("urban: server error")
-	ErrUnknown     = errors.New("urban: unknown error")
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out urbanmocks/mocks.go -pkg urbanmocks . API
@@ -43,30 +34,21 @@ func New(cli *http.Client) *Urban {
 // Define queries Urban Dictionary for the top definition for a term. The
 // returned definition will be stripped of cross-linking square brackets.
 func (u *Urban) Define(ctx context.Context, term string) (string, error) {
-	ur := "https://api.urbandictionary.com/v0/define?term=" + url.QueryEscape(term)
-
-	resp, err := u.cli.Get(ctx, ur)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return "", err
-	}
-
-	body := struct {
+	var body struct {
 		List []struct {
 			Definition string `json:"definition"`
 		} `json:"list"`
-	}{}
+	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return "", ErrServerError
+	req := u.cli.NewRequestToJSON("https://api.urbandictionary.com/v0/define", &body).
+		Param("term", term)
+
+	if err := req.Fetch(ctx); err != nil {
+		return "", apiclient.WrapRequestErr("urban", err)
 	}
 
 	if len(body.List) == 0 {
-		return "", ErrNotFound
+		return "", apiclient.NewStatusError("urban", 404)
 	}
 
 	// Urban only uses square brackets for cross linking; they will never appear
@@ -81,20 +63,4 @@ func (u *Urban) Define(ctx context.Context, term string) (string, error) {
 	}, body.List[0].Definition)
 
 	return def, nil
-}
-
-func statusToError(code int) error {
-	if code >= 200 && code < 300 {
-		return nil
-	}
-
-	if code == http.StatusNotFound {
-		return ErrNotFound
-	}
-
-	if code >= 500 {
-		return ErrServerError
-	}
-
-	return ErrUnknown
 }

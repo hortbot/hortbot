@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
@@ -29,8 +28,7 @@ func cmdHLTB(ctx context.Context, s *session, _ string, args string) error {
 
 	game, err := s.Deps.HLTB.SearchGame(ctx, query)
 	if err != nil {
-		var apiErr *apiclient.Error
-		if errors.As(err, &apiErr) {
+		if apiErr, ok := apiclient.AsError(err); ok {
 			if apiErr.IsNotFound() {
 				return s.Replyf(ctx, "%s not found on HowLongToBeat.", query)
 			}

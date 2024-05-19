@@ -4,6 +4,9 @@ package apiclient
 import (
 	"fmt"
 	"net/http"
+
+	"github.com/carlmjohnson/requests"
+	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 )
 
 // Error is an HTTP error response type, returned by an API.
@@ -26,6 +29,10 @@ func (e *Error) Error() string {
 	return fmt.Sprintf("%s: %s", api, e.Err)
 }
 
+func (e *Error) Unwrap() error {
+	return e.Err
+}
+
 // IsNotFound returns true if the error is a not found.
 func (e *Error) IsNotFound() bool {
 	return e.StatusCode == http.StatusNotFound
@@ -41,7 +48,24 @@ func (e *Error) IsNotPermitted() bool {
 	return e.StatusCode == http.StatusUnauthorized || e.StatusCode == http.StatusForbidden
 }
 
-// IsOK return true if the provided status code is okay (2xx).
-func IsOK(code int) bool {
-	return code >= 200 && code < 300
+func WrapRequestErr(apiName string, err error) error {
+	if err == nil {
+		return nil
+	}
+	if re, ok := errorsx.As[*requests.ResponseError](err); ok {
+		return NewStatusError(apiName, re.StatusCode)
+	}
+	return &Error{API: apiName, Err: err}
+}
+
+func NewStatusError(apiName string, code int) error {
+	return &Error{API: apiName, StatusCode: code}
+}
+
+func NewNonStatusError(apiName string, err error) error {
+	return &Error{API: apiName, Err: err}
+}
+
+func AsError(err error) (*Error, bool) {
+	return errorsx.As[*Error](err)
 }

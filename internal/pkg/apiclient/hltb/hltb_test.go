@@ -186,7 +186,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("hltb", 404))
 	})
 
 	t.Run("404 code", func(t *testing.T) {
@@ -199,7 +199,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 404})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("hltb", 404))
 	})
 
 	t.Run("500 code", func(t *testing.T) {
@@ -212,7 +212,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.DeepEqual(t, err, &apiclient.Error{API: "hltb", StatusCode: 500})
+		assert.DeepEqual(t, err, apiclient.NewStatusError("hltb", 500))
 	})
 
 	t.Run("Empty response", func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "Half-Life Alyx")
-		assert.Error(t, err, "hltb: error decoding response: EOF")
+		assert.Error(t, err, "hltb: ErrHandler: EOF")
 	})
 
 	t.Run("Client error", func(t *testing.T) {

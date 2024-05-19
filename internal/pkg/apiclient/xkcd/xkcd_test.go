@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
@@ -73,7 +74,7 @@ func TestGetComic(t *testing.T) {
 		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 77777)
-		assert.Equal(t, err, xkcd.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("xkcd", 404))
 	})
 
 	t.Run("Client error", func(t *testing.T) {

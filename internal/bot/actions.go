@@ -368,12 +368,10 @@ func actionSong(ctx context.Context, s *session, actionName, value string) (stri
 			return "(Unknown)", nil
 		}
 
-		var apiErr *apiclient.Error
-		if !errors.As(err, &apiErr) {
-			return "", err
+		if _, ok := apiclient.AsError(err); ok {
+			return actionMsgError, nil
 		}
-
-		return actionMsgError, nil
+		return "", err
 	}
 
 	url := false
@@ -495,8 +493,7 @@ func actionExtraLifeAmount(ctx context.Context, s *session, actionName, value st
 		return fmt.Sprintf("$%.2f", amount), nil
 	}
 
-	var apiErr *apiclient.Error
-	if errors.As(err, &apiErr) {
+	if apiErr, ok := apiclient.AsError(err); ok {
 		if apiErr.IsNotFound() {
 			return "Bad Extra Life participant ID", nil
 		}
@@ -966,13 +963,9 @@ func actionTextAPI(ctx context.Context, s *session, prefix, u string) (string, e
 
 	body, err := s.Deps.Simple.Plaintext(ctx, u)
 	if err != nil {
-		var apiErr *apiclient.Error
-		if !errors.As(err, &apiErr) {
-			// This usually indicates an error with the bot.
-			ctxlog.Error(ctx, "error fetching API", ctxlog.PlainError(err))
-			return actionMsgError, nil
-		}
-		// If it's an API error (i.e. 404, 500, etc), then just use the body below.
+		// Plaintext will never return an error for a status code.
+		ctxlog.Error(ctx, "error fetching API", ctxlog.PlainError(err))
+		return actionMsgError, nil
 	}
 
 	body = strings.Map(func(r rune) rune {

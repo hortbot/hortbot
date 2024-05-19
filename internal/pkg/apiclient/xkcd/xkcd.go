@@ -3,16 +3,12 @@ package xkcd
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 )
-
-// ErrNotFound is returned when the requested comic cannot be found.
-var ErrNotFound = errors.New("xkcd: not found")
 
 // Comic is an XKCD comic.
 type Comic struct {
@@ -46,20 +42,10 @@ func New(cli *http.Client) *XKCD {
 func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
 	url := "https://xkcd.com/" + strconv.Itoa(id) + "/info.0.json"
 
-	resp, err := x.cli.Get(ctx, url)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= http.StatusBadRequest {
-		return nil, ErrNotFound
-	}
-
 	c := &Comic{}
 
-	if err := jsonx.DecodeSingle(resp.Body, c); err != nil {
-		return nil, err
+	if err := x.cli.NewRequestToJSON(url, c).Fetch(ctx); err != nil {
+		return nil, apiclient.WrapRequestErr("xkcd", err)
 	}
 
 	return c, nil
