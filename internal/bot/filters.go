@@ -247,7 +247,7 @@ func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 	}
 
 	// TODO: BTTV/FFZ emotes.
-	count := strings.Count(s.M.Tags()["emotes"], "-")
+	count := s.M.EmoteCount()
 
 	if count > s.Channel.FilterEmotesMax {
 		return true, filterDoPunish(ctx, s, "emotes", "please don't spam emotes")

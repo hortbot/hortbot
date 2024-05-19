@@ -10,6 +10,20 @@ import (
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Notifier Rand
 
+type Message interface {
+	Tags() map[string]string
+
+	ID() string
+	Timestamp() time.Time
+	BroadcasterLogin() string
+	BroadcasterID() int64
+	UserLogin() string
+	UserDisplay() string
+	UserID() int64
+	Message() (message string, me bool)
+	EmoteCount() int
+}
+
 // Notifier sends notifications.
 type Notifier interface {
 	NotifyChannelUpdates(ctx context.Context, botName string) error

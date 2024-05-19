@@ -2,6 +2,7 @@ package irctobot_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/irctobot"
@@ -24,8 +25,13 @@ func TestIRCToMessageNotPrivmsg(t *testing.T) {
 
 func TestIRCToMessage(t *testing.T) {
 	m := &irc.Message{
-		Command:  "PRIVMSG",
-		Tags:     map[string]string{"tag": "value"},
+		Command: "PRIVMSG",
+		Tags: map[string]string{
+			"tag":          "value",
+			"room-id":      "123",
+			"user-id":      "456",
+			"display-name": "display",
+		},
 		Prefix:   irc.Prefix{Name: "prefix"},
 		Params:   []string{"#channel"},
 		Trailing: "message",
@@ -33,9 +39,12 @@ func TestIRCToMessage(t *testing.T) {
 
 	msg := irctobot.IRCToMessage(m)
 
-	assert.DeepEqual(t, msg.Tags(), map[string]string{"tag": "value"})
 	assert.Equal(t, msg.BroadcasterLogin(), "channel")
 	assert.Equal(t, msg.UserLogin(), "prefix")
+	assert.Equal(t, msg.UserDisplay(), "display")
+	assert.Equal(t, msg.BroadcasterID(), int64(123))
+	assert.Equal(t, msg.UserID(), int64(456))
+	assert.Equal(t, msg.Timestamp(), time.Time{})
 	message, me := msg.Message()
 	assert.Equal(t, message, "message")
 	assert.Equal(t, me, false)
@@ -52,9 +61,8 @@ func TestIRCToMessageAction(t *testing.T) {
 
 	msg := irctobot.IRCToMessage(m)
 
-	assert.DeepEqual(t, msg.Tags(), map[string]string{"tag": "value"})
-	assert.Equal(t, msg.BroadcasterLogin(), "channel")
-	assert.Equal(t, msg.UserLogin(), "prefix")
+	assert.Equal(t, msg.UserDisplay(), "prefix")
+
 	message, me := msg.Message()
 	assert.Equal(t, message, "message")
 	assert.Equal(t, me, true)
@@ -102,4 +110,112 @@ func TestMessageNonActionCTCP(t *testing.T) {
 	message, me := msg.Message()
 	assert.Equal(t, message, "")
 	assert.Equal(t, me, false)
+}
+
+func TestNoBroadcasterID(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assertx.Panic(t, func() {
+		msg.BroadcasterID()
+	}, "irctobot: no room-id")
+}
+
+func TestBadBroadcasterID(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value", "room-id": "notanint"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assertx.Panic(t, func() {
+		msg.BroadcasterID()
+	}, "irctobot: invalid room-id")
+}
+
+func TestNoUserID(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assertx.Panic(t, func() {
+		msg.UserID()
+	}, "irctobot: no user-id")
+}
+
+func TestBadUserID(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value", "user-id": "notanint"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assertx.Panic(t, func() {
+		msg.UserID()
+	}, "irctobot: invalid user-id")
+}
+
+func TestEmoteCountEmpty(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assert.Equal(t, msg.EmoteCount(), 0)
+}
+
+func TestEmoteCount(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value", "emotes": "0:1-2"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assert.Equal(t, msg.EmoteCount(), 1)
+}
+
+func TestTimestamp(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value", "tmi-sent-ts": "123456789"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assert.Equal(t, msg.Timestamp().Unix(), int64(123456))
+}
+
+func TestTimestampEmpty(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assert.Equal(t, msg.Timestamp(), time.Time{})
+}
+
+func TestIDEmpty(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assert.Equal(t, msg.ID(), "")
+}
+
+func TestID(t *testing.T) {
+	m := &irc.Message{
+		Command: "PRIVMSG",
+		Tags:    map[string]string{"tag": "value", "id": "123"},
+	}
+
+	msg := irctobot.IRCToMessage(m)
+	assert.Equal(t, msg.ID(), "123")
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -31,13 +30,6 @@ var (
 	errPanicked        = errors.New("bot: handler panicked")
 	errDuplicate       = errors.New("bot: duplicate message")
 )
-
-type Message interface {
-	Tags() map[string]string
-	BroadcasterLogin() string
-	UserLogin() string
-	Message() (message string, me bool)
-}
 
 // Handle handles a single IRC message, sent via the specific origin. It always
 // succeeds, but may log information about any internal errors.
@@ -210,11 +202,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Mes
 	ctx, span := trace.StartSpan(ctx, "buildSession")
 	defer span.End()
 
-	if len(m.Tags()) == 0 {
-		return errInvalidMessage
-	}
-
-	id := m.Tags()["id"]
+	id := m.ID()
 	if id == "" {
 		return errInvalidMessage
 	}
@@ -242,56 +230,22 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Mes
 	s.User = user
 	s.Message = message
 	s.Me = me
-
-	if displayName := m.Tags()["display-name"]; displayName != "" {
-		s.UserDisplay = displayName
-	} else {
-		s.UserDisplay = s.User
-	}
-
-	roomID := m.Tags()["room-id"]
-	if roomID == "" {
-		ctxlog.Debug(ctx, "no room ID")
-		return errInvalidMessage
-	}
-
-	var err error
-	s.RoomID, err = strconv.ParseInt(roomID, 10, 64)
-	if err != nil {
-		ctxlog.Debug(ctx, "error parsing room ID", zap.String("parsed", roomID), zap.Error(err))
-		return err
-	}
+	s.UserDisplay = m.UserDisplay()
+	s.RoomID = m.BroadcasterID()
 	s.RoomIDOrig = s.RoomID
+	s.UserID = m.UserID()
+	s.TMISent = m.Timestamp()
+	s.IRCChannel = m.BroadcasterLogin()
 
 	if s.RoomID == 0 {
 		ctxlog.Debug(ctx, "room ID cannot be zero")
 		return errInvalidMessage
 	}
 
-	userID := m.Tags()["user-id"]
-	if userID == "" {
-		ctxlog.Debug(ctx, "no user ID")
-		return errInvalidMessage
-	}
-
-	s.UserID, err = strconv.ParseInt(userID, 10, 64)
-	if err != nil {
-		ctxlog.Debug(ctx, "error parsing user ID", zap.String("parsed", userID), zap.Error(err))
-		return err
-	}
-
 	if s.UserID == 0 {
 		ctxlog.Debug(ctx, "user ID cannot be zero")
 		return errInvalidMessage
 	}
-
-	tmiSentStr := m.Tags()["tmi-sent-ts"]
-	if tmiSentStr != "" {
-		tmiSent, _ := strconv.ParseInt(tmiSentStr, 10, 64)
-		s.TMISent = time.Unix(tmiSent/1000, 0)
-	}
-
-	s.IRCChannel = m.BroadcasterLogin()
 
 	if testing.Testing() {
 		b.testingHelper.checkUserNameID(s.User, s.UserID)
