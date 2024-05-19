@@ -1,7 +1,6 @@
 linters:
   enable-all: true
   disable:
-    # https://github.com/golangci/golangci-lint/issues/484
     - containedctx # Silly.
     - contextcheck # Inaccurate.
     - cyclop
