@@ -22,8 +22,22 @@ func IRCToMessage(m *irc.Message) bot.Message {
 }
 
 func (m *ircMessage) Tags() map[string]string { return m.m.Tags }
-func (m *ircMessage) Params() []string        { return m.m.Params }
-func (m *ircMessage) PrefixName() string      { return m.m.Prefix.Name }
+
+func (m *ircMessage) BroadcasterLogin() string {
+	if len(m.m.Params) == 0 {
+		panic("irctobot: no params")
+	}
+
+	channel := m.m.Params[0]
+	name, ok := strings.CutPrefix(channel, "#")
+	if !ok {
+		panic("irctobot: no channel")
+	}
+
+	return strings.ToLower(name)
+}
+
+func (m *ircMessage) UserLogin() string { return strings.ToLower(m.m.Prefix.Name) }
 
 func (m *ircMessage) Message() (message string, me bool) {
 	message = m.m.Trailing

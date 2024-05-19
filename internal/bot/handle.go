@@ -34,8 +34,8 @@ var (
 
 type Message interface {
 	Tags() map[string]string
-	Params() []string
-	PrefixName() string
+	BroadcasterLogin() string
+	UserLogin() string
 	Message() (message string, me bool)
 }
 
@@ -210,7 +210,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Mes
 	ctx, span := trace.StartSpan(ctx, "buildSession")
 	defer span.End()
 
-	if len(m.Tags()) == 0 || len(m.Params()) == 0 {
+	if len(m.Tags()) == 0 {
 		return errInvalidMessage
 	}
 
@@ -223,7 +223,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Mes
 		return err
 	}
 
-	user := strings.ToLower(m.PrefixName())
+	user := m.UserLogin()
 
 	if !b.deps.IsAllowed(user) {
 		return errNotAllowed
@@ -291,13 +291,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Mes
 		s.TMISent = time.Unix(tmiSent/1000, 0)
 	}
 
-	channelName := m.Params()[0]
-	if channelName == "" || channelName[0] != '#' || len(channelName) == 1 {
-		ctxlog.Debug(ctx, "bad channel name", zap.Strings("params", m.Params()))
-		return errInvalidMessage
-	}
-
-	s.IRCChannel = channelName[1:]
+	s.IRCChannel = m.BroadcasterLogin()
 
 	if testing.Testing() {
 		b.testingHelper.checkUserNameID(s.User, s.UserID)
