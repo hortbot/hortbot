@@ -106,8 +106,6 @@ func (b *Bot) handle(ctx context.Context, origin string, m *irc.Message) (retErr
 	switch m.Command {
 	case "PRIVMSG":
 		return b.handlePrivMsg(ctx, origin, m)
-	case "USERSTATE":
-		return b.handleUserState(ctx, origin, m)
 	case "NOTICE":
 		return b.handleNotice(ctx, origin, m)
 	default:

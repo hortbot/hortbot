@@ -19,7 +19,6 @@ const (
 	keyFilterWarned     = keyStr("filter_warning")
 	keyRaffle           = keyStr("raffle")
 	keyCooldown         = keyStr("cooldown")
-	keyUserState        = keyStr("user_state")
 	keyFilter           = keyStr("filter")
 	keyBotName          = keyStr("bot_name")
 )
@@ -193,36 +192,4 @@ func (db *DB) CheckAndMarkCooldown(ctx context.Context, channel, key string, exp
 
 	rkey := cooldownKey(channel, key)
 	return checkAndMark(ctx, db.client, rkey, expiry)
-}
-
-func userStateKey(botName, target string) string {
-	return buildKey(
-		keyBotName.is(botName),
-		keyUserState.is(target),
-	)
-}
-
-// SetUserState sets the current bot user state as either fast or slow for a
-// given IRC channel.
-func (db *DB) SetUserState(ctx context.Context, botName, ircChannel string, fast bool, expiry time.Duration) error {
-	ctx, span := trace.StartSpan(ctx, "SetUserState")
-	defer span.End()
-
-	v := "0"
-	if fast {
-		v = "1"
-	}
-
-	key := userStateKey(botName, ircChannel)
-	return db.client.Set(ctx, key, v, expiry).Err()
-}
-
-// GetUserState returns the current user state of the bot in the given IRC channel.
-func (db *DB) GetUserState(ctx context.Context, botName, ircChannel string) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "GetUserState")
-	defer span.End()
-
-	key := userStateKey(botName, ircChannel)
-	r, err := db.client.Get(ctx, key).Result()
-	return r == "1", ignoreRedisNil(err)
 }
