@@ -14,6 +14,7 @@ import (
 	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/jakebailey/irc"
 	"github.com/volatiletech/null/v8"
 	"gotest.tools/v3/assert"
@@ -193,6 +194,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 		TokenType:    "bearer",
 		RefreshToken: "some-refresh-token",
 		Expiry:       expiry,
+		Scopes:       twitch.BotScopes,
 	}
 	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 
@@ -202,6 +204,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 		TokenType:    "bearer",
 		RefreshToken: "some-refresh-token",
 		Expiry:       expiry,
+		Scopes:       twitch.UserScopes,
 	}
 	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 

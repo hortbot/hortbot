@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"slices"
 	"strings"
 	"time"
 
@@ -104,10 +105,15 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	hasAuth, authErr := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(userID)).Exists(ctx, s.Tx)
+	hasToken := true
+	tt, authErr := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(userID)).One(ctx, s.Tx)
 	if authErr != nil {
-		return authErr
+		if !errors.Is(authErr, sql.ErrNoRows) {
+			return authErr
+		}
+		hasToken = false
 	}
+	hasBotScope := hasToken && slices.Contains(tt.Scopes, "channel:bot")
 
 	firstJoin := func(ctx context.Context) error {
 		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'.", displayName, botName, channel.Prefix)
@@ -117,11 +123,12 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		if adminOverride {
 			return s.Replyf(ctx, "The can no longer join channels without auth.")
 		}
+
 		return s.Replyf(ctx, "Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at %s/login and return here.", s.WebAddrFor(botName))
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		if !hasAuth {
+		if !hasBotScope {
 			return noAuth(ctx)
 		}
 
@@ -143,7 +150,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.", displayName, channel.BotName, channel.Prefix)
 		}
 
-		if !hasAuth {
+		if !hasBotScope {
 			return noAuth(ctx)
 		}
 
@@ -161,7 +168,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
 	}
 
-	if !hasAuth {
+	if !hasBotScope {
 		return noAuth(ctx)
 	}
 

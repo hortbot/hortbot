@@ -1,7 +1,7 @@
 bot_config {"WhitelistEnabled": true, "Whitelist": ["whitelisted", "admin", "superadmin"], "Admins": ["admin"], "SuperAdmins": ["superadmin"]}
 
 upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
-upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z", "scopes": ["channel:bot"]}
 
 twitch_get_user_by_username {"foobar": {"id": 1, "login": "foobar"}}
 
