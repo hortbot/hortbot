@@ -12,18 +12,24 @@ import (
 )
 
 type ircMessage struct {
-	m *irc.Message
+	origin string
+	m      *irc.Message
 }
 
-func IRCToMessage(m *irc.Message) bot.Message {
+func IRCToMessage(origin string, m *irc.Message) bot.Message {
 	if m == nil {
 		return nil
 	}
 	if m.Command != "PRIVMSG" {
 		panic("irctobot: " + m.Command + " is not a PRIVMSG command")
 	}
-	return &ircMessage{m: m}
+	return &ircMessage{
+		origin: origin,
+		m:      m,
+	}
 }
+
+func (m *ircMessage) Origin() string { return m.origin }
 
 func (m *ircMessage) ID() string { return m.m.Tags["id"] }
 

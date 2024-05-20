@@ -107,7 +107,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
 			defer span.End()
 
-			b.Handle(ctx, origin, irctobot.IRCToMessage(m))
+			b.Handle(ctx, irctobot.IRCToMessage(origin, m))
 		})
 	})
 

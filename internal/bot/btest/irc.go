@@ -53,14 +53,14 @@ func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, li
 		}
 	}
 
-	st.handleM(t, origin, irctobot.IRCToMessage(m))
+	st.handleM(t, irctobot.IRCToMessage(origin, m))
 }
 
-func (st *scriptTester) handleM(t testing.TB, origin string, m bot.Message) {
+func (st *scriptTester) handleM(t testing.TB, m bot.Message) {
 	st.addAction(func(ctx context.Context) {
 		st.ensureBot(ctx, t)
 		st.doCheckpoint()
-		st.b.Handle(ctx, origin, m)
+		st.b.Handle(ctx, m)
 	})
 }
 
@@ -205,7 +205,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	}
 	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 
-	m := irctobot.IRCToMessage(&irc.Message{
+	m := irctobot.IRCToMessage(botName, &irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),
 			"room-id": strconv.Itoa(botID),
@@ -221,7 +221,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 		Trailing: "!join",
 	})
 
-	st.handleM(t, botName, m)
+	st.handleM(t, m)
 	st.sendAny(t, "", "", lineNum)
 	st.notifyChannelUpdates(t, "", botName, lineNum)
 }

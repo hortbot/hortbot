@@ -33,7 +33,7 @@ var (
 
 // Handle handles a single IRC message, sent via the specific origin. It always
 // succeeds, but may log information about any internal errors.
-func (b *Bot) Handle(ctx context.Context, origin string, m Message) {
+func (b *Bot) Handle(ctx context.Context, m Message) {
 	ctx = correlation.With(ctx)
 
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
@@ -59,7 +59,7 @@ func (b *Bot) Handle(ctx context.Context, origin string, m Message) {
 		metricHandleDuration.WithLabelValues("PRIVMSG").Observe(secs)
 	}()
 
-	err := b.handle(ctx, origin, m)
+	err := b.handle(ctx, m)
 
 	if !testing.Testing() {
 		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
@@ -78,11 +78,11 @@ func (b *Bot) Handle(ctx context.Context, origin string, m Message) {
 	ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
 }
 
-func (b *Bot) handle(ctx context.Context, origin string, m Message) (retErr error) {
+func (b *Bot) handle(ctx context.Context, m Message) (retErr error) {
 	ctx, span := trace.StartSpan(ctx, "handle")
 	defer span.End()
 
-	ctx = ctxlog.With(ctx, zap.String("origin", origin))
+	ctx = ctxlog.With(ctx, zap.String("origin", m.Origin()))
 
 	defer func() {
 		if r := recover(); r != nil {
@@ -94,7 +94,7 @@ func (b *Bot) handle(ctx context.Context, origin string, m Message) (retErr erro
 		}
 	}()
 
-	return b.handlePrivMsg(ctx, origin, m)
+	return b.handlePrivMsg(ctx, m)
 }
 
 var sessionPool = pool.NewPool(func() *session {
@@ -111,7 +111,7 @@ func putSession(s *session) {
 	sessionPool.Put(s)
 }
 
-func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m Message) error {
+func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 	ctx, span := trace.StartSpan(ctx, "handlePrivMsg")
 	defer span.End()
 
@@ -120,7 +120,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m Message) error
 	s := getSession()
 	defer putSession(s)
 
-	if err := b.buildSession(ctx, s, origin, m); err != nil {
+	if err := b.buildSession(ctx, s, m); err != nil {
 		return err
 	}
 
@@ -198,7 +198,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, origin string, m Message) error
 	return nil
 }
 
-func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Message) error {
+func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 	ctx, span := trace.StartSpan(ctx, "buildSession")
 	defer span.End()
 
@@ -223,7 +223,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, origin string, m Mes
 	}
 
 	s.Type = sessionNormal
-	s.Origin = origin
+	s.Origin = m.Origin()
 	s.M = m
 	s.Deps = b.deps
 	s.ID = id

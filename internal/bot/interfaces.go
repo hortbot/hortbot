@@ -11,6 +11,7 @@ import (
 //go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Notifier Rand
 
 type Message interface {
+	Origin() string
 	ID() string
 	Timestamp() time.Time
 	BroadcasterLogin() string

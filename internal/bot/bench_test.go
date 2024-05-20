@@ -55,13 +55,13 @@ func BenchmarkHandleNop(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
 
-	m := privMSG(name, userID, name, userID, "test")
+	m := privMSG(botName, name, userID, name, userID, "test")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bb.Handle(ctx, botName, m)
+		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
@@ -99,14 +99,14 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
 
-	m := privMSG(name, userID, name, userID, "test")
+	m := privMSG(botName, name, userID, name, userID, "test")
 
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			bb.Handle(ctx, botName, m)
+			bb.Handle(ctx, m)
 		}
 	})
 	b.StopTimer()
@@ -144,14 +144,14 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
-	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
+	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
 
-	m := privMSG(name, userID, name, userID, "!pan working command")
+	m := privMSG(botName, name, userID, name, userID, "!pan working command")
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bb.Handle(ctx, botName, m)
+		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
@@ -189,23 +189,23 @@ func BenchmarkHandleMixed(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
-	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
-	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!autoreply add *who_is_zik* Nobody important."))
-	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, `!autoreply add REGEX:(^|\b)wowee($|\b) Wowee`))
+	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
+	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!autoreply add *who_is_zik* Nobody important."))
+	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, `!autoreply add REGEX:(^|\b)wowee($|\b) Wowee`))
 
 	ms := make([]bot.Message, 95, 96)
 
 	for i := range ms {
-		ms[i] = privMSG(name, userID, "someone", 9999999, "nothing interesting")
+		ms[i] = privMSG(botName, name, userID, "someone", 9999999, "nothing interesting")
 	}
 
 	ms = append(ms,
-		privMSG(name, userID, name, userID, "!pan working command"),
-		privMSG(name, userID, name, userID, "who is zik"),
-		privMSG(name, userID, name, userID, "!who knows"),
-		privMSG(name, userID, name, userID, "!admin"),
-		privMSG(name, userID, name, userID, "!set prefix"),
+		privMSG(botName, name, userID, name, userID, "!pan working command"),
+		privMSG(botName, name, userID, name, userID, "who is zik"),
+		privMSG(botName, name, userID, name, userID, "!who knows"),
+		privMSG(botName, name, userID, name, userID, "!admin"),
+		privMSG(botName, name, userID, name, userID, "!set prefix"),
 	)
 
 	l := len(ms)
@@ -213,7 +213,7 @@ func BenchmarkHandleMixed(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		m := ms[i%l]
-		bb.Handle(ctx, botName, m)
+		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
@@ -251,17 +251,17 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, botName, privMSG(botName, 1, name, userID, "!join"))
-	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter on"))
-	bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter banphrase on"))
+	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter on"))
+	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter banphrase on"))
 
 	for range 300 {
-		bb.Handle(ctx, botName, privMSG(name, userID, name, userID, "!filter banphrase add "+randomString(10)))
+		bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter banphrase add "+randomString(10)))
 	}
 
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		bb.Handle(ctx, botName, privMSG(name, userID, "someone", 9999999, "nothing interesting"))
+		bb.Handle(ctx, privMSG(botName, name, userID, "someone", 9999999, "nothing interesting"))
 		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
@@ -282,8 +282,8 @@ type nopNotifier struct{}
 
 func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
 
-func privMSG(ch string, roomID int64, user string, userID int64, msg string) bot.Message {
-	return irctobot.IRCToMessage(&irc.Message{
+func privMSG(origin string, ch string, roomID int64, user string, userID int64, msg string) bot.Message {
+	return irctobot.IRCToMessage(origin, &irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),
 			"room-id": strconv.FormatInt(roomID, 10),
