@@ -55,15 +55,7 @@ func (v *IDStr) UnmarshalJSON(data []byte) error {
 	if len(data) >= 2 && data[0] == '"' && data[len(data)-1] == '"' {
 		data = data[1 : len(data)-1]
 	}
-
-	var tmp int64
-	err := json.Unmarshal(data, &tmp)
-	if err != nil {
-		return err
-	}
-
-	*v = IDStr(tmp)
-	return nil
+	return json.Unmarshal(data, (*int64)(v))
 }
 
 // AsInt64 returns the ID as an int64.
