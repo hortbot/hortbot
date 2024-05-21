@@ -306,7 +306,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		botName = null.StringFrom(user.Name)
 	}
 
-	tt := modelsx.TokenToModel(tok, user.ID.AsInt64(), botName, strings.Fields(r.FormValue("scope")))
+	tt := modelsx.TokenToModel(tok, int64(user.ID), botName, strings.Fields(r.FormValue("scope")))
 
 	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
 		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
@@ -316,7 +316,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	session := a.getSession(r)
 	session.clearValues()
-	session.setTwitchID(user.ID.AsInt64())
+	session.setTwitchID(int64(user.ID))
 	session.setUsername(user.Name)
 
 	if err := session.save(w, r); err != nil {
@@ -333,7 +333,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	page := &templates.LoginSuccessPage{
 		BasePage: a.basePage(r),
 		Name:     user.Name,
-		ID:       user.ID.AsInt64(),
+		ID:       int64(user.ID),
 		Bot:      stateVal.Bot,
 	}
 

@@ -62,7 +62,7 @@ func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, li
 
 	st.addAction(func(ctx context.Context) {
 		for n, u := range v {
-			st.idToName[u.ID.AsInt64()] = n
+			st.idToName[int64(u.ID)] = n
 		}
 
 		st.twitch.GetUserByUsernameFunc = func(_ context.Context, username string) (*twitch.User, error) {

@@ -163,7 +163,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 			for _, channel := range moderatedChannels {
 				m := &models.ModeratedChannel{
 					BotName:          botName,
-					BroadcasterID:    channel.ID.AsInt64(),
+					BroadcasterID:    int64(channel.ID),
 					BroadcasterLogin: channel.Login,
 					BroadcasterName:  channel.Name,
 				}

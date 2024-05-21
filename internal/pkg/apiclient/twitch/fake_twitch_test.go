@@ -315,7 +315,7 @@ func (f *fakeTwitch) oauth2Token(req *http.Request) (*http.Response, error) {
 }
 
 func (f *fakeTwitch) setChannel(c *twitch.Channel) {
-	f.channels[c.ID.AsInt64()] = c
+	f.channels[int64(c.ID)] = c
 }
 
 func (f *fakeTwitch) helixUsers(req *http.Request) (*http.Response, error) {
@@ -737,7 +737,7 @@ func (f *fakeTwitch) helixModerationBans(req *http.Request) (*http.Response, err
 
 	switch {
 	case broadcasterID == 1 && moderatorID == 123:
-		f.assertEqual(body.Data.UserID.AsInt64(), int64(666))
+		f.assertEqual(body.Data.UserID, twitch.IDStr(666))
 		f.assertEqual(body.Data.Duration, int64(30))
 		f.assertEqual(body.Data.Reason, "Broke a rule.")
 	case broadcasterID == 404:

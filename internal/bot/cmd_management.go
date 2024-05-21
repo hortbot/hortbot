@@ -65,7 +65,7 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		}
 
 		adminOverride = true
-		userID = u.ID.AsInt64()
+		userID = int64(u.ID)
 		displayName = u.DispName()
 	} else {
 		if !isAdmin {

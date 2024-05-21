@@ -58,11 +58,6 @@ func (v *IDStr) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, (*int64)(v))
 }
 
-// AsInt64 returns the ID as an int64.
-func (v IDStr) AsInt64() int64 {
-	return int64(v)
-}
-
 func paginate[T any](ctx context.Context, cli *httpClient, url string, perPage int, limit int) (items []T, err error) {
 	url += "&first=" + strconv.Itoa(perPage)
 	cursor := ""

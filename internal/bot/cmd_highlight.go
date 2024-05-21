@@ -26,7 +26,7 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 	var gameName string
 
 	if stream.GameID != 0 {
-		game, err := s.Deps.Twitch.GetGameByID(ctx, stream.GameID.AsInt64())
+		game, err := s.Deps.Twitch.GetGameByID(ctx, int64(stream.GameID))
 		if err != nil {
 			return err
 		}

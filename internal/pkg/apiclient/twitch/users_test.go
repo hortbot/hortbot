@@ -28,7 +28,7 @@ func TestGetUserForToken(t *testing.T) {
 
 	ft.setChannel(c)
 
-	code := ft.codeForUser(c.ID.AsInt64())
+	code := ft.codeForUser(int64(c.ID))
 
 	tok, err := tw.Exchange(ctx, code)
 	assert.NilError(t, err)
@@ -58,7 +58,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 
 	ft.setChannel(c)
 
-	code := ft.codeForUser(c.ID.AsInt64())
+	code := ft.codeForUser(int64(c.ID))
 
 	tok, err := tw.Exchange(ctx, code)
 	assert.NilError(t, err)
@@ -84,7 +84,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 
 	ft.setChannel(c)
 
-	code := ft.codeForUser(c.ID.AsInt64())
+	code := ft.codeForUser(int64(c.ID))
 
 	tok, err := tw.Exchange(ctx, code)
 	assert.NilError(t, err)

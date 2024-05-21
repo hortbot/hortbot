@@ -33,7 +33,7 @@ func (cmd *cmd) getChannelByName(ctx context.Context, name string) (id int64, di
 	if err != nil {
 		return 0, "", err
 	}
-	return ch.ID.AsInt64(), ch.DisplayName, nil
+	return int64(ch.ID), ch.DisplayName, nil
 }
 
 func (cmd *cmd) twitchThrottle(ctx context.Context) error {

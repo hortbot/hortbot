@@ -122,7 +122,7 @@ func setGameAndStatus(ctx context.Context, s *session, game string, status strin
 		if err != nil || found == nil {
 			return false, err
 		}
-		gameID = found.ID.AsInt64()
+		gameID = int64(found.ID)
 	}
 
 	newToken, err := s.Deps.Twitch.ModifyChannel(ctx, s.Channel.TwitchID, tok, &status, &gameID)
@@ -165,7 +165,7 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 		if err != nil || found == nil {
 			return false, err
 		}
-		gameID = found.ID.AsInt64()
+		gameID = int64(found.ID)
 		gameName = found.Name
 	}
 
@@ -353,7 +353,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	stream, err := s.Deps.Twitch.GetStreamByUserID(ctx, u.ID.AsInt64())
+	stream, err := s.Deps.Twitch.GetStreamByUserID(ctx, int64(u.ID))
 	if err != nil {
 		if errors.Is(err, twitch.ErrNotFound) {
 			return s.Replyf(ctx, "No, %s isn't live.", name)
@@ -375,7 +375,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 	if stream.GameID == 0 {
 		gameName = "(Not set)"
 	} else {
-		game, err := s.Deps.Twitch.GetGameByID(ctx, stream.GameID.AsInt64())
+		game, err := s.Deps.Twitch.GetGameByID(ctx, int64(stream.GameID))
 		if err != nil {
 			return err
 		}

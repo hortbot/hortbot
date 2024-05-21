@@ -356,7 +356,7 @@ func (s *session) GetUserID(ctx context.Context, username string) (int64, error)
 	if err != nil {
 		return 0, err
 	}
-	return user.ID.AsInt64(), nil
+	return int64(user.ID), nil
 }
 
 func (s *session) BanByUsername(ctx context.Context, username string, duration int64, reason string) error {
@@ -612,7 +612,7 @@ func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
 			return nil, err
 		}
 
-		links, err := s.Deps.Twitch.GetGameLinks(ctx, ch.GameID.AsInt64())
+		links, err := s.Deps.Twitch.GetGameLinks(ctx, int64(ch.GameID))
 		if err != nil {
 			return nil, err
 		}
