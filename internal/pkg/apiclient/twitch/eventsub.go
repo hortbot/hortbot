@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"context"
+	"net/url"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
@@ -92,7 +93,7 @@ const helixEventsubSubscriptions = helixRoot + "/eventsub/subscriptions"
 
 func (t *Twitch) GetSubscriptions(ctx context.Context) ([]*eventsub.Subscription, error) {
 	cli := t.helixCli
-	return paginate[*eventsub.Subscription](ctx, cli, helixEventsubSubscriptions, 0, 10000)
+	return paginate[*eventsub.Subscription](ctx, cli, helixEventsubSubscriptions, url.Values{}, 0, 10000)
 }
 
 func (t *Twitch) DeleteSubscription(ctx context.Context, id string) error {

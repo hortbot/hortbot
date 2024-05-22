@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"context"
+	"net/url"
 	"strconv"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
@@ -19,8 +20,10 @@ type ChannelModerator struct {
 // GET https://api.twitch.tv/helix/moderation/moderators
 func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error) {
 	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
-	url := helixRoot + "/moderation/moderators?broadcaster_id=" + strconv.FormatInt(id, 10)
-	mods, err = paginate[*ChannelModerator](ctx, cli, url, 100, 500)
+	u := helixRoot + "/moderation/moderators"
+	urlValues := url.Values{}
+	urlValues.Set("broadcaster_id", strconv.FormatInt(id, 10))
+	mods, err = paginate[*ChannelModerator](ctx, cli, u, urlValues, 100, 500)
 	return mods, newToken, err
 }
 

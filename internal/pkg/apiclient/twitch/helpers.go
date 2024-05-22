@@ -3,7 +3,9 @@ package twitch
 import (
 	"context"
 	"fmt"
+	"maps"
 	"net/http"
+	"net/url"
 	"strconv"
 
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
@@ -39,19 +41,20 @@ func setToken(newToken **oauth2.Token) func(tok *oauth2.Token, err error) {
 	}
 }
 
-func paginate[T any](ctx context.Context, cli *httpClient, url string, perPage int, limit int) (items []T, err error) {
+func paginate[T any](ctx context.Context, cli *httpClient, url string, urlValues url.Values, perPage int, limit int) (items []T, err error) {
 	if perPage > 0 {
-		url += "&first=" + strconv.Itoa(perPage)
+		urlValues.Set("first", strconv.Itoa(perPage))
 	}
 	cursor := ""
 
 	doOne := func() error {
-		url := url
+		urlValues := urlValues
 		if cursor != "" {
-			url += "&after=" + cursor
+			urlValues = maps.Clone(urlValues)
+			urlValues.Set("after", cursor)
 		}
 
-		resp, err := cli.Get(ctx, url)
+		resp, err := cli.Get(ctx, url+"?"+urlValues.Encode())
 		if err != nil {
 			return fmt.Errorf("paginate: %w", err)
 		}

@@ -69,7 +69,9 @@ type ModeratedChannel struct {
 // GET https://api.twitch.tv/helix/moderation/channels
 func (t *Twitch) GetModeratedChannels(ctx context.Context, modID int64, modToken *oauth2.Token) (channels []*ModeratedChannel, newToken *oauth2.Token, err error) {
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot + "/moderation/channels?user_id=" + strconv.FormatInt(modID, 10)
-	channels, err = paginate[*ModeratedChannel](ctx, cli, url, 100, math.MaxInt)
+	u := helixRoot + "/moderation/channels"
+	urlValues := url.Values{}
+	urlValues.Set("user_id", strconv.FormatInt(modID, 10))
+	channels, err = paginate[*ModeratedChannel](ctx, cli, u, urlValues, 100, math.MaxInt)
 	return channels, newToken, err
 }
