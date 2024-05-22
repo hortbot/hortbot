@@ -53,12 +53,12 @@ func paginate[T any](ctx context.Context, cli *httpClient, url string, perPage i
 
 		resp, err := cli.Get(ctx, url)
 		if err != nil {
-			return err
+			return fmt.Errorf("paginate: %w", err)
 		}
 		defer resp.Body.Close()
 
 		if err := statusToError(resp.StatusCode); err != nil {
-			return err
+			return fmt.Errorf("paginate status %d: %w", resp.StatusCode, err)
 		}
 
 		var v struct {

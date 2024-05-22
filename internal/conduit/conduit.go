@@ -245,6 +245,10 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 		return fmt.Errorf("get subscriptions: %w", err)
 	}
 
+	if len(allSubscriptions) == 0 {
+		ctxlog.Warn(ctx, "no subscriptions found")
+	}
+
 	metricSubscriptions.Set(float64(len(allSubscriptions)))
 
 	statuses := make(map[string]int, len(allSubscriptions))
