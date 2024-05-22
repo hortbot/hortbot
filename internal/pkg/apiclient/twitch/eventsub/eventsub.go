@@ -215,9 +215,9 @@ type ChatMessageEventMessageFragmentMention struct {
 }
 
 type ChatMessageEventBadge struct {
-	SetID string      `json:"set_id"`
-	ID    idstr.IDStr `json:"id"`
-	Info  string      `json:"info"`
+	SetID string `json:"set_id"`
+	ID    string `json:"id"`
+	Info  string `json:"info"`
 }
 
 type ChatMessageEventCheer struct {
