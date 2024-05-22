@@ -17,6 +17,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/volatiletech/null/v8"
 	"github.com/zikaeroh/ctxlog"
@@ -374,7 +375,7 @@ func (s *session) BanByID(ctx context.Context, userID int64, duration int64, rea
 	}
 
 	req := &twitch.BanRequest{
-		UserID:   twitch.IDStr(userID),
+		UserID:   idstr.IDStr(userID),
 		Duration: duration,
 		Reason:   reason,
 	}

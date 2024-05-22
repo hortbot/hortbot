@@ -48,7 +48,7 @@ func handleManagement(ctx context.Context, s *session) error {
 	return nil
 }
 
-func handleJoin(ctx context.Context, s *session, name string) error {
+func handleJoin(ctx context.Context, s *session, name string) error { //nolint:gocyclo
 	displayName := s.UserDisplay
 	userID := s.UserID
 
@@ -115,11 +115,20 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	}
 	hasBotScope := hasToken && slices.Contains(tt.Scopes, "channel:bot")
 
+	noAuth := !hasBotScope
+	if noAuth {
+		isModerator, err := models.ModeratedChannels(models.ModeratedChannelWhere.BroadcasterID.EQ(userID), models.ModeratedChannelWhere.BotName.EQ(botName)).Exists(ctx, s.Tx)
+		if err != nil {
+			return err
+		}
+		noAuth = !isModerator
+	}
+
 	firstJoin := func(ctx context.Context) error {
 		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'.", displayName, botName, channel.Prefix)
 	}
 
-	noAuth := func(ctx context.Context) error {
+	replyNoAuth := func(ctx context.Context) error {
 		if adminOverride {
 			return s.Replyf(ctx, "The can no longer join channels without auth.")
 		}
@@ -128,8 +137,8 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
-		if !hasBotScope {
-			return noAuth(ctx)
+		if noAuth {
+			return replyNoAuth(ctx)
 		}
 
 		channel = modelsx.NewChannel(userID, name, displayName, botName)
@@ -138,7 +147,11 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return err
 		}
 
-		if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+			return err
+		}
+
+		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 			return err
 		}
 
@@ -150,8 +163,8 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.", displayName, channel.BotName, channel.Prefix)
 		}
 
-		if !hasBotScope {
-			return noAuth(ctx)
+		if noAuth {
+			return replyNoAuth(ctx)
 		}
 
 		channel.Name = name
@@ -161,15 +174,19 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 			return err
 		}
 
-		if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+			return err
+		}
+
+		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 			return err
 		}
 
 		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
 	}
 
-	if !hasBotScope {
-		return noAuth(ctx)
+	if noAuth {
+		return replyNoAuth(ctx)
 	}
 
 	channel.Active = true
@@ -181,7 +198,11 @@ func handleJoin(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		return err
+	}
+
+	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 
@@ -243,7 +264,11 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		return err
+	}
+
+	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 
@@ -278,7 +303,11 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, s.Channel.BotName); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, s.Channel.BotName); err != nil {
+		return err
+	}
+
+	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 

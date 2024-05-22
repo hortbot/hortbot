@@ -35,7 +35,7 @@ var Default = IRC{
 
 // Pool creates a new IRC pool from the configured flags and dependency.
 func (args *IRC) Pool(ctx context.Context, db *sql.DB, tw twitch.API) *birc.Pool {
-	channels, err := modelsx.ListActiveChannels(ctx, db, args.Nick)
+	channels, err := modelsx.ListActiveIRCChannels(ctx, db, args.Nick)
 	if err != nil {
 		ctxlog.Fatal(ctx, "error listing initial channels", zap.Error(err))
 	}

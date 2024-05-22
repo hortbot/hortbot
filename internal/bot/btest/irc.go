@@ -54,7 +54,7 @@ func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, li
 		}
 	}
 
-	st.handleM(t, irctobot.IRCToMessage(origin, m))
+	st.handleM(t, irctobot.ToMessage(origin, m))
 }
 
 func (st *scriptTester) handleM(t testing.TB, m bot.Message) {
@@ -147,7 +147,7 @@ func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, l
 	st.counts[countNotifyChannelUpdates]++
 
 	st.addAction(func(context.Context) {
-		calls := st.notifier.NotifyChannelUpdatesCalls()
+		calls := st.channelUpdateNotifier.NotifyChannelUpdatesCalls()
 		assert.Assert(t, len(calls) > callNum, "NotifyChannelUpdates not called: line %d", lineNum)
 		call := calls[callNum]
 		assert.Equal(t, call.BotName, expected, "line %d", lineNum)
@@ -158,7 +158,7 @@ func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, l
 
 func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(context.Context) {
-		calls := st.notifier.NotifyChannelUpdatesCalls()
+		calls := st.channelUpdateNotifier.NotifyChannelUpdatesCalls()
 		notifyAfter := len(calls)
 
 		if st.notifyChannelUpdatesBefore != notifyAfter {
@@ -208,7 +208,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	}
 	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
 
-	m := irctobot.IRCToMessage(botName, &irc.Message{
+	m := irctobot.ToMessage(botName, &irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),
 			"room-id": strconv.Itoa(botID),

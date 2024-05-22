@@ -10,26 +10,26 @@ import (
 	"github.com/hortbot/hortbot/internal/bot"
 )
 
-// Ensure, that NotifierMock does implement bot.Notifier.
+// Ensure, that ChannelUpdateNotifierMock does implement bot.ChannelUpdateNotifier.
 // If this is not the case, regenerate this file with moq.
-var _ bot.Notifier = &NotifierMock{}
+var _ bot.ChannelUpdateNotifier = &ChannelUpdateNotifierMock{}
 
-// NotifierMock is a mock implementation of bot.Notifier.
+// ChannelUpdateNotifierMock is a mock implementation of bot.ChannelUpdateNotifier.
 //
-//	func TestSomethingThatUsesNotifier(t *testing.T) {
+//	func TestSomethingThatUsesChannelUpdateNotifier(t *testing.T) {
 //
-//		// make and configure a mocked bot.Notifier
-//		mockedNotifier := &NotifierMock{
+//		// make and configure a mocked bot.ChannelUpdateNotifier
+//		mockedChannelUpdateNotifier := &ChannelUpdateNotifierMock{
 //			NotifyChannelUpdatesFunc: func(ctx context.Context, botName string) error {
 //				panic("mock out the NotifyChannelUpdates method")
 //			},
 //		}
 //
-//		// use mockedNotifier in code that requires bot.Notifier
+//		// use mockedChannelUpdateNotifier in code that requires bot.ChannelUpdateNotifier
 //		// and then make assertions.
 //
 //	}
-type NotifierMock struct {
+type ChannelUpdateNotifierMock struct {
 	// NotifyChannelUpdatesFunc mocks the NotifyChannelUpdates method.
 	NotifyChannelUpdatesFunc func(ctx context.Context, botName string) error
 
@@ -47,9 +47,9 @@ type NotifierMock struct {
 }
 
 // NotifyChannelUpdates calls NotifyChannelUpdatesFunc.
-func (mock *NotifierMock) NotifyChannelUpdates(ctx context.Context, botName string) error {
+func (mock *ChannelUpdateNotifierMock) NotifyChannelUpdates(ctx context.Context, botName string) error {
 	if mock.NotifyChannelUpdatesFunc == nil {
-		panic("NotifierMock.NotifyChannelUpdatesFunc: method is nil but Notifier.NotifyChannelUpdates was just called")
+		panic("ChannelUpdateNotifierMock.NotifyChannelUpdatesFunc: method is nil but ChannelUpdateNotifier.NotifyChannelUpdates was just called")
 	}
 	callInfo := struct {
 		Ctx     context.Context
@@ -67,8 +67,8 @@ func (mock *NotifierMock) NotifyChannelUpdates(ctx context.Context, botName stri
 // NotifyChannelUpdatesCalls gets all the calls that were made to NotifyChannelUpdates.
 // Check the length with:
 //
-//	len(mockedNotifier.NotifyChannelUpdatesCalls())
-func (mock *NotifierMock) NotifyChannelUpdatesCalls() []struct {
+//	len(mockedChannelUpdateNotifier.NotifyChannelUpdatesCalls())
+func (mock *ChannelUpdateNotifierMock) NotifyChannelUpdatesCalls() []struct {
 	Ctx     context.Context
 	BotName string
 } {
@@ -182,5 +182,71 @@ func (mock *RandMock) IntnCalls() []struct {
 	mock.lockIntn.RLock()
 	calls = mock.calls.Intn
 	mock.lockIntn.RUnlock()
+	return calls
+}
+
+// Ensure, that EventsubUpdateNotifierMock does implement bot.EventsubUpdateNotifier.
+// If this is not the case, regenerate this file with moq.
+var _ bot.EventsubUpdateNotifier = &EventsubUpdateNotifierMock{}
+
+// EventsubUpdateNotifierMock is a mock implementation of bot.EventsubUpdateNotifier.
+//
+//	func TestSomethingThatUsesEventsubUpdateNotifier(t *testing.T) {
+//
+//		// make and configure a mocked bot.EventsubUpdateNotifier
+//		mockedEventsubUpdateNotifier := &EventsubUpdateNotifierMock{
+//			NotifyEventsubUpdatesFunc: func(ctx context.Context) error {
+//				panic("mock out the NotifyEventsubUpdates method")
+//			},
+//		}
+//
+//		// use mockedEventsubUpdateNotifier in code that requires bot.EventsubUpdateNotifier
+//		// and then make assertions.
+//
+//	}
+type EventsubUpdateNotifierMock struct {
+	// NotifyEventsubUpdatesFunc mocks the NotifyEventsubUpdates method.
+	NotifyEventsubUpdatesFunc func(ctx context.Context) error
+
+	// calls tracks calls to the methods.
+	calls struct {
+		// NotifyEventsubUpdates holds details about calls to the NotifyEventsubUpdates method.
+		NotifyEventsubUpdates []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
+	}
+	lockNotifyEventsubUpdates sync.RWMutex
+}
+
+// NotifyEventsubUpdates calls NotifyEventsubUpdatesFunc.
+func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Context) error {
+	if mock.NotifyEventsubUpdatesFunc == nil {
+		panic("EventsubUpdateNotifierMock.NotifyEventsubUpdatesFunc: method is nil but EventsubUpdateNotifier.NotifyEventsubUpdates was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockNotifyEventsubUpdates.Lock()
+	mock.calls.NotifyEventsubUpdates = append(mock.calls.NotifyEventsubUpdates, callInfo)
+	mock.lockNotifyEventsubUpdates.Unlock()
+	return mock.NotifyEventsubUpdatesFunc(ctx)
+}
+
+// NotifyEventsubUpdatesCalls gets all the calls that were made to NotifyEventsubUpdates.
+// Check the length with:
+//
+//	len(mockedEventsubUpdateNotifier.NotifyEventsubUpdatesCalls())
+func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdatesCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockNotifyEventsubUpdates.RLock()
+	calls = mock.calls.NotifyEventsubUpdates
+	mock.lockNotifyEventsubUpdates.RUnlock()
 	return calls
 }

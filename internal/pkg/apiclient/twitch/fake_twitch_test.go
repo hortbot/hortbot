@@ -14,6 +14,7 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/jarcoal/httpmock"
@@ -518,9 +519,9 @@ func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, erro
 	f.assert(ok)
 
 	body := &struct {
-		BroadcasterID twitch.IDStr  `json:"broadcaster_id"`
-		Title         *string       `json:"title,omitempty"`
-		GameID        *twitch.IDStr `json:"game_id,omitempty"`
+		BroadcasterID idstr.IDStr  `json:"broadcaster_id"`
+		Title         *string      `json:"title,omitempty"`
+		GameID        *idstr.IDStr `json:"game_id,omitempty"`
 	}{}
 
 	f.assertNilError(jsonx.DecodeSingle(req.Body, &body))
@@ -530,7 +531,7 @@ func (f *fakeTwitch) helixChannelsPatch(req *http.Request) (*http.Response, erro
 	switch id {
 	case 1234:
 		f.assertEqual(*body.Title, "some new title")
-		f.assertEqual(body.GameID, (*twitch.IDStr)(nil))
+		f.assertEqual(body.GameID, (*idstr.IDStr)(nil))
 		return httpmock.NewStringResponse(204, ""), nil
 	case 5678:
 		f.assertEqual(body.Title, (*string)(nil))
@@ -737,7 +738,7 @@ func (f *fakeTwitch) helixModerationBans(req *http.Request) (*http.Response, err
 
 	switch {
 	case broadcasterID == 1 && moderatorID == 123:
-		f.assertEqual(body.Data.UserID, twitch.IDStr(666))
+		f.assertEqual(body.Data.UserID, idstr.IDStr(666))
 		f.assertEqual(body.Data.Duration, int64(30))
 		f.assertEqual(body.Data.Reason, "Broke a rule.")
 	case broadcasterID == 404:
@@ -846,9 +847,9 @@ func (f *fakeTwitch) helixChatMessages(req *http.Request) (*http.Response, error
 	f.assertNilError(err)
 
 	var body struct {
-		BroadcasterID twitch.IDStr `json:"broadcaster_id"`
-		SenderID      twitch.IDStr `json:"sender_id"`
-		Message       string       `json:"message"`
+		BroadcasterID idstr.IDStr `json:"broadcaster_id"`
+		SenderID      idstr.IDStr `json:"sender_id"`
+		Message       string      `json:"message"`
 	}
 
 	f.assertNilError(jsonx.DecodeSingle(bytes.NewReader(bodyBytes), &body))

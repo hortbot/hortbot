@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"slices"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
@@ -101,6 +103,14 @@ type API interface {
 	Announce(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error)
 	GetModeratedChannels(ctx context.Context, modID int64, modToken *oauth2.Token) (channels []*ModeratedChannel, newToken *oauth2.Token, err error)
 	SendChatMessage(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (newToken *oauth2.Token, err error)
+	GetConduits(ctx context.Context) ([]*Conduit, error)
+	CreateConduit(ctx context.Context, shardCount int) (*Conduit, error)
+	UpdateConduit(ctx context.Context, id string, shardCount int) error
+	DeleteConduit(ctx context.Context, id string) error
+	UpdateShards(ctx context.Context, conduitID string, shards []*Shard) error
+	GetSubscriptions(ctx context.Context) ([]*eventsub.Subscription, error)
+	DeleteSubscription(ctx context.Context, id string) error
+	CreateChatSubscription(ctx context.Context, conduitID string, broadcasterID int64, botID int64) error
 
 	// IGDB
 	GetGameLinks(ctx context.Context, twitchCategory int64) ([]GameLink, error)
@@ -202,9 +212,9 @@ func (t *Twitch) clientForUser(ctx context.Context, tok *oauth2.Token, onNewToke
 }
 
 type Validation struct {
-	UserID IDStr    `json:"user_id"`
-	Name   string   `json:"name"`
-	Scopes []string `json:"scopes"`
+	UserID idstr.IDStr `json:"user_id"`
+	Name   string      `json:"name"`
+	Scopes []string    `json:"scopes"`
 }
 
 func (t *Twitch) Validate(ctx context.Context, tok *oauth2.Token) (*Validation, *oauth2.Token, error) {

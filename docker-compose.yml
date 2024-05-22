@@ -1,5 +1,3 @@
-version: "3.7"
-
 x-golang-image: &golang-image
   image: golang:1.22
 
@@ -77,6 +75,30 @@ services:
       - HB_NSQ_ADDR=nsq:4150
       - HB_JAEGER_AGENT=jaeger:6831
       - HB_WEB_ADMIN_AUTH=admin:admin
+
+  conduit:
+    <<: *golang-image
+    volumes:
+      - .:/app:ro
+      - gopath:/go
+      - go-build:/root/.cache/go-build
+    working_dir: /app
+    command: go run -mod=readonly . conduit
+    depends_on:
+      - db
+      - redis
+      - nsq
+      - jaeger
+    env_file:
+      - config/conduit.env
+      - config/twitch.env
+    environment:
+      - HB_DEBUG=true
+      - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
+      - HB_DB_MIGRATE_UP=true
+      - HB_REDIS_ADDR=redis:6379
+      - HB_NSQ_ADDR=nsq:4150
+      - HB_JAEGER_AGENT=jaeger:6831
 
   pgweb:
     image: sosedoff/pgweb

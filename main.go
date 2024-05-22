@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/bot"
+	"github.com/hortbot/hortbot/internal/cli/subcommands/conduit"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confconvert"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/confimport"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/irc"
@@ -48,6 +49,7 @@ func main() {
 	addCommand(web.Command())
 	addCommand(confconvert.Command())
 	addCommand(confimport.Command())
+	addCommand(conduit.Command())
 
 	if len(args) == 0 {
 		fmt.Fprintln(os.Stderr, "Please specify a subcommand.")

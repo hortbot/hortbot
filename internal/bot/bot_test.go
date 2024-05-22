@@ -18,12 +18,13 @@ func TestBotNewPanics(t *testing.T) {
 	defer db.Close()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    &redis.DB{},
-		Notifier: &struct{ bot.Notifier }{},
-		Twitch:   &struct{ twitch.API }{},
-		Simple:   &struct{ simple.API }{},
-		HLTB:     &struct{ hltb.API }{},
+		DB:                     db,
+		Redis:                  &redis.DB{},
+		ChannelUpdateNotifier:  &struct{ bot.ChannelUpdateNotifier }{},
+		EventsubUpdateNotifier: &struct{ bot.EventsubUpdateNotifier }{},
+		Twitch:                 &struct{ twitch.API }{},
+		Simple:                 &struct{ simple.API }{},
+		HLTB:                   &struct{ hltb.API }{},
 	}
 
 	checkPanic := func() {
@@ -41,10 +42,15 @@ func TestBotNewPanics(t *testing.T) {
 	assertx.Panic(t, checkPanic, "redis is nil")
 	config.Redis = oldRedis
 
-	oldNotifier := config.Notifier
-	config.Notifier = nil
+	oldNotifier := config.ChannelUpdateNotifier
+	config.ChannelUpdateNotifier = nil
 	assertx.Panic(t, checkPanic, "notifier is nil")
-	config.Notifier = oldNotifier
+	config.ChannelUpdateNotifier = oldNotifier
+
+	oldEventsub := config.EventsubUpdateNotifier
+	config.EventsubUpdateNotifier = nil
+	assertx.Panic(t, checkPanic, "eventsub is nil")
+	config.EventsubUpdateNotifier = oldEventsub
 
 	oldTwitch := config.Twitch
 	config.Twitch = nil

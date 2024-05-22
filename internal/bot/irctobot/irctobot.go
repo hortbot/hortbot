@@ -16,7 +16,7 @@ type ircMessage struct {
 	m      *irc.Message
 }
 
-func IRCToMessage(origin string, m *irc.Message) bot.Message {
+func ToMessage(origin string, m *irc.Message) bot.Message {
 	if m == nil {
 		return nil
 	}

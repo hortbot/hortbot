@@ -4,15 +4,17 @@ import (
 	"context"
 	"strconv"
 	"time"
+
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 )
 
 type Stream struct {
-	ID          IDStr     `json:"id"`
-	GameID      IDStr     `json:"game_id"`
-	Title       string    `json:"title"`
-	StartedAt   time.Time `json:"started_at"`
-	ViewerCount int       `json:"viewer_count"`
-	UserID      IDStr     `json:"user_id"`
+	ID          idstr.IDStr `json:"id"`
+	GameID      idstr.IDStr `json:"game_id"`
+	Title       string      `json:"title"`
+	StartedAt   time.Time   `json:"started_at"`
+	ViewerCount int         `json:"viewer_count"`
+	UserID      idstr.IDStr `json:"user_id"`
 }
 
 // GetStreamByUserID gets the current stream by user ID.

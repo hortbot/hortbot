@@ -7,6 +7,7 @@ import (
 
 	gocmp "github.com/google/go-cmp/cmp"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -123,7 +124,7 @@ func (st *scriptTester) twitchGetGameByName(t testing.TB, directive, args string
 }
 
 func (st *scriptTester) twitchGetGameByID(t testing.TB, directive, args string, lineNum int) {
-	var calls map[twitch.IDStr]struct {
+	var calls map[idstr.IDStr]struct {
 		Category *twitch.Category
 		Err      string
 	}
@@ -133,7 +134,7 @@ func (st *scriptTester) twitchGetGameByID(t testing.TB, directive, args string, 
 
 	st.addAction(func(ctx context.Context) {
 		st.twitch.GetGameByIDFunc = func(_ context.Context, id int64) (*twitch.Category, error) {
-			call, ok := calls[twitch.IDStr(id)]
+			call, ok := calls[idstr.IDStr(id)]
 			assert.Assert(t, ok, `unknown id "%v": line %d`, id, lineNum)
 
 			return call.Category, twitchErr(t, lineNum, call.Err)

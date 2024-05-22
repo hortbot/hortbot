@@ -38,9 +38,10 @@ func BenchmarkHandleNop(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Notifier: nopNotifier{},
+		DB:                     db,
+		Redis:                  redis.New(rClient),
+		ChannelUpdateNotifier:  nopNotifier{},
+		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
 				return nil, nil //nolint:nilnil
@@ -82,9 +83,10 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Notifier: nopNotifier{},
+		DB:                     db,
+		Redis:                  redis.New(rClient),
+		ChannelUpdateNotifier:  nopNotifier{},
+		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
 				return nil, nil //nolint:nilnil
@@ -127,9 +129,10 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Notifier: nopNotifier{},
+		DB:                     db,
+		Redis:                  redis.New(rClient),
+		ChannelUpdateNotifier:  nopNotifier{},
+		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
 				return nil, nil //nolint:nilnil
@@ -172,9 +175,10 @@ func BenchmarkHandleMixed(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Notifier: nopNotifier{},
+		DB:                     db,
+		Redis:                  redis.New(rClient),
+		ChannelUpdateNotifier:  nopNotifier{},
+		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
 				return nil, nil //nolint:nilnil
@@ -234,9 +238,10 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
-		DB:       db,
-		Redis:    redis.New(rClient),
-		Notifier: nopNotifier{},
+		DB:                     db,
+		Redis:                  redis.New(rClient),
+		ChannelUpdateNotifier:  nopNotifier{},
+		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
 				return nil, nil //nolint:nilnil
@@ -281,9 +286,10 @@ func getNextUserID() (int64, string) {
 type nopNotifier struct{}
 
 func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
+func (nopNotifier) NotifyEventsubUpdates(ctx context.Context) error                { return nil }
 
 func privMSG(origin string, ch string, roomID int64, user string, userID int64, msg string) bot.Message {
-	return irctobot.IRCToMessage(origin, &irc.Message{
+	return irctobot.ToMessage(origin, &irc.Message{
 		Tags: map[string]string{
 			"id":      uuid.Must(uuid.NewV4()).String(),
 			"room-id": strconv.FormatInt(roomID, 10),

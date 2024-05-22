@@ -8,7 +8,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/pool"
 )
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Notifier Rand
+//go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . ChannelUpdateNotifier Rand EventsubUpdateNotifier
 
 type Message interface {
 	Origin() string
@@ -24,9 +24,14 @@ type Message interface {
 	UserAccessLevel() AccessLevel
 }
 
-// Notifier sends notifications.
-type Notifier interface {
+// ChannelUpdateNotifier sends notifications.
+type ChannelUpdateNotifier interface {
 	NotifyChannelUpdates(ctx context.Context, botName string) error
+}
+
+// EventsubUpdateNotifier sends notifications.
+type EventsubUpdateNotifier interface {
+	NotifyEventsubUpdates(ctx context.Context) error
 }
 
 // Rand provides random number generation.

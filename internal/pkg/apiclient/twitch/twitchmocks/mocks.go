@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"golang.org/x/oauth2"
 )
 
@@ -33,8 +34,20 @@ var _ twitch.API = &APIMock{}
 //			ClearChatFunc: func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (*oauth2.Token, error) {
 //				panic("mock out the ClearChat method")
 //			},
+//			CreateChatSubscriptionFunc: func(ctx context.Context, conduitID string, broadcasterID int64, botID int64) error {
+//				panic("mock out the CreateChatSubscription method")
+//			},
+//			CreateConduitFunc: func(ctx context.Context, shardCount int) (*twitch.Conduit, error) {
+//				panic("mock out the CreateConduit method")
+//			},
 //			DeleteChatMessageFunc: func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (*oauth2.Token, error) {
 //				panic("mock out the DeleteChatMessage method")
+//			},
+//			DeleteConduitFunc: func(ctx context.Context, id string) error {
+//				panic("mock out the DeleteConduit method")
+//			},
+//			DeleteSubscriptionFunc: func(ctx context.Context, id string) error {
+//				panic("mock out the DeleteSubscription method")
 //			},
 //			ExchangeFunc: func(ctx context.Context, code string) (*oauth2.Token, error) {
 //				panic("mock out the Exchange method")
@@ -44,6 +57,9 @@ var _ twitch.API = &APIMock{}
 //			},
 //			GetChannelModeratorsFunc: func(ctx context.Context, id int64, userToken *oauth2.Token) ([]*twitch.ChannelModerator, *oauth2.Token, error) {
 //				panic("mock out the GetChannelModerators method")
+//			},
+//			GetConduitsFunc: func(ctx context.Context) ([]*twitch.Conduit, error) {
+//				panic("mock out the GetConduits method")
 //			},
 //			GetGameByIDFunc: func(ctx context.Context, id int64) (*twitch.Category, error) {
 //				panic("mock out the GetGameByID method")
@@ -62,6 +78,9 @@ var _ twitch.API = &APIMock{}
 //			},
 //			GetStreamByUsernameFunc: func(ctx context.Context, username string) (*twitch.Stream, error) {
 //				panic("mock out the GetStreamByUsername method")
+//			},
+//			GetSubscriptionsFunc: func(ctx context.Context) ([]*eventsub.Subscription, error) {
+//				panic("mock out the GetSubscriptions method")
 //			},
 //			GetUserByIDFunc: func(ctx context.Context, id int64) (*twitch.User, error) {
 //				panic("mock out the GetUserByID method")
@@ -90,6 +109,12 @@ var _ twitch.API = &APIMock{}
 //			UpdateChatSettingsFunc: func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (*oauth2.Token, error) {
 //				panic("mock out the UpdateChatSettings method")
 //			},
+//			UpdateConduitFunc: func(ctx context.Context, id string, shardCount int) error {
+//				panic("mock out the UpdateConduit method")
+//			},
+//			UpdateShardsFunc: func(ctx context.Context, conduitID string, shards []*twitch.Shard) error {
+//				panic("mock out the UpdateShards method")
+//			},
 //			ValidateFunc: func(ctx context.Context, tok *oauth2.Token) (*twitch.Validation, *oauth2.Token, error) {
 //				panic("mock out the Validate method")
 //			},
@@ -112,8 +137,20 @@ type APIMock struct {
 	// ClearChatFunc mocks the ClearChat method.
 	ClearChatFunc func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (*oauth2.Token, error)
 
+	// CreateChatSubscriptionFunc mocks the CreateChatSubscription method.
+	CreateChatSubscriptionFunc func(ctx context.Context, conduitID string, broadcasterID int64, botID int64) error
+
+	// CreateConduitFunc mocks the CreateConduit method.
+	CreateConduitFunc func(ctx context.Context, shardCount int) (*twitch.Conduit, error)
+
 	// DeleteChatMessageFunc mocks the DeleteChatMessage method.
 	DeleteChatMessageFunc func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (*oauth2.Token, error)
+
+	// DeleteConduitFunc mocks the DeleteConduit method.
+	DeleteConduitFunc func(ctx context.Context, id string) error
+
+	// DeleteSubscriptionFunc mocks the DeleteSubscription method.
+	DeleteSubscriptionFunc func(ctx context.Context, id string) error
 
 	// ExchangeFunc mocks the Exchange method.
 	ExchangeFunc func(ctx context.Context, code string) (*oauth2.Token, error)
@@ -123,6 +160,9 @@ type APIMock struct {
 
 	// GetChannelModeratorsFunc mocks the GetChannelModerators method.
 	GetChannelModeratorsFunc func(ctx context.Context, id int64, userToken *oauth2.Token) ([]*twitch.ChannelModerator, *oauth2.Token, error)
+
+	// GetConduitsFunc mocks the GetConduits method.
+	GetConduitsFunc func(ctx context.Context) ([]*twitch.Conduit, error)
 
 	// GetGameByIDFunc mocks the GetGameByID method.
 	GetGameByIDFunc func(ctx context.Context, id int64) (*twitch.Category, error)
@@ -141,6 +181,9 @@ type APIMock struct {
 
 	// GetStreamByUsernameFunc mocks the GetStreamByUsername method.
 	GetStreamByUsernameFunc func(ctx context.Context, username string) (*twitch.Stream, error)
+
+	// GetSubscriptionsFunc mocks the GetSubscriptions method.
+	GetSubscriptionsFunc func(ctx context.Context) ([]*eventsub.Subscription, error)
 
 	// GetUserByIDFunc mocks the GetUserByID method.
 	GetUserByIDFunc func(ctx context.Context, id int64) (*twitch.User, error)
@@ -168,6 +211,12 @@ type APIMock struct {
 
 	// UpdateChatSettingsFunc mocks the UpdateChatSettings method.
 	UpdateChatSettingsFunc func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (*oauth2.Token, error)
+
+	// UpdateConduitFunc mocks the UpdateConduit method.
+	UpdateConduitFunc func(ctx context.Context, id string, shardCount int) error
+
+	// UpdateShardsFunc mocks the UpdateShards method.
+	UpdateShardsFunc func(ctx context.Context, conduitID string, shards []*twitch.Shard) error
 
 	// ValidateFunc mocks the Validate method.
 	ValidateFunc func(ctx context.Context, tok *oauth2.Token) (*twitch.Validation, *oauth2.Token, error)
@@ -220,6 +269,24 @@ type APIMock struct {
 			// ModToken is the modToken argument value.
 			ModToken *oauth2.Token
 		}
+		// CreateChatSubscription holds details about calls to the CreateChatSubscription method.
+		CreateChatSubscription []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ConduitID is the conduitID argument value.
+			ConduitID string
+			// BroadcasterID is the broadcasterID argument value.
+			BroadcasterID int64
+			// BotID is the botID argument value.
+			BotID int64
+		}
+		// CreateConduit holds details about calls to the CreateConduit method.
+		CreateConduit []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ShardCount is the shardCount argument value.
+			ShardCount int
+		}
 		// DeleteChatMessage holds details about calls to the DeleteChatMessage method.
 		DeleteChatMessage []struct {
 			// Ctx is the ctx argument value.
@@ -230,6 +297,20 @@ type APIMock struct {
 			ModID int64
 			// ModToken is the modToken argument value.
 			ModToken *oauth2.Token
+			// ID is the id argument value.
+			ID string
+		}
+		// DeleteConduit holds details about calls to the DeleteConduit method.
+		DeleteConduit []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID string
+		}
+		// DeleteSubscription holds details about calls to the DeleteSubscription method.
+		DeleteSubscription []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
 			// ID is the id argument value.
 			ID string
 		}
@@ -255,6 +336,11 @@ type APIMock struct {
 			ID int64
 			// UserToken is the userToken argument value.
 			UserToken *oauth2.Token
+		}
+		// GetConduits holds details about calls to the GetConduits method.
+		GetConduits []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
 		}
 		// GetGameByID holds details about calls to the GetGameByID method.
 		GetGameByID []struct {
@@ -299,6 +385,11 @@ type APIMock struct {
 			Ctx context.Context
 			// Username is the username argument value.
 			Username string
+		}
+		// GetSubscriptions holds details about calls to the GetSubscriptions method.
+		GetSubscriptions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
 		}
 		// GetUserByID holds details about calls to the GetUserByID method.
 		GetUserByID []struct {
@@ -391,6 +482,24 @@ type APIMock struct {
 			// Patch is the patch argument value.
 			Patch *twitch.ChatSettingsPatch
 		}
+		// UpdateConduit holds details about calls to the UpdateConduit method.
+		UpdateConduit []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID string
+			// ShardCount is the shardCount argument value.
+			ShardCount int
+		}
+		// UpdateShards holds details about calls to the UpdateShards method.
+		UpdateShards []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ConduitID is the conduitID argument value.
+			ConduitID string
+			// Shards is the shards argument value.
+			Shards []*twitch.Shard
+		}
 		// Validate holds details about calls to the Validate method.
 		Validate []struct {
 			// Ctx is the ctx argument value.
@@ -399,30 +508,38 @@ type APIMock struct {
 			Tok *oauth2.Token
 		}
 	}
-	lockAnnounce             sync.RWMutex
-	lockAuthCodeURL          sync.RWMutex
-	lockBan                  sync.RWMutex
-	lockClearChat            sync.RWMutex
-	lockDeleteChatMessage    sync.RWMutex
-	lockExchange             sync.RWMutex
-	lockGetChannelByID       sync.RWMutex
-	lockGetChannelModerators sync.RWMutex
-	lockGetGameByID          sync.RWMutex
-	lockGetGameByName        sync.RWMutex
-	lockGetGameLinks         sync.RWMutex
-	lockGetModeratedChannels sync.RWMutex
-	lockGetStreamByUserID    sync.RWMutex
-	lockGetStreamByUsername  sync.RWMutex
-	lockGetUserByID          sync.RWMutex
-	lockGetUserByToken       sync.RWMutex
-	lockGetUserByUsername    sync.RWMutex
-	lockModifyChannel        sync.RWMutex
-	lockSearchCategories     sync.RWMutex
-	lockSendChatMessage      sync.RWMutex
-	lockSetChatColor         sync.RWMutex
-	lockUnban                sync.RWMutex
-	lockUpdateChatSettings   sync.RWMutex
-	lockValidate             sync.RWMutex
+	lockAnnounce               sync.RWMutex
+	lockAuthCodeURL            sync.RWMutex
+	lockBan                    sync.RWMutex
+	lockClearChat              sync.RWMutex
+	lockCreateChatSubscription sync.RWMutex
+	lockCreateConduit          sync.RWMutex
+	lockDeleteChatMessage      sync.RWMutex
+	lockDeleteConduit          sync.RWMutex
+	lockDeleteSubscription     sync.RWMutex
+	lockExchange               sync.RWMutex
+	lockGetChannelByID         sync.RWMutex
+	lockGetChannelModerators   sync.RWMutex
+	lockGetConduits            sync.RWMutex
+	lockGetGameByID            sync.RWMutex
+	lockGetGameByName          sync.RWMutex
+	lockGetGameLinks           sync.RWMutex
+	lockGetModeratedChannels   sync.RWMutex
+	lockGetStreamByUserID      sync.RWMutex
+	lockGetStreamByUsername    sync.RWMutex
+	lockGetSubscriptions       sync.RWMutex
+	lockGetUserByID            sync.RWMutex
+	lockGetUserByToken         sync.RWMutex
+	lockGetUserByUsername      sync.RWMutex
+	lockModifyChannel          sync.RWMutex
+	lockSearchCategories       sync.RWMutex
+	lockSendChatMessage        sync.RWMutex
+	lockSetChatColor           sync.RWMutex
+	lockUnban                  sync.RWMutex
+	lockUpdateChatSettings     sync.RWMutex
+	lockUpdateConduit          sync.RWMutex
+	lockUpdateShards           sync.RWMutex
+	lockValidate               sync.RWMutex
 }
 
 // Announce calls AnnounceFunc.
@@ -605,6 +722,86 @@ func (mock *APIMock) ClearChatCalls() []struct {
 	return calls
 }
 
+// CreateChatSubscription calls CreateChatSubscriptionFunc.
+func (mock *APIMock) CreateChatSubscription(ctx context.Context, conduitID string, broadcasterID int64, botID int64) error {
+	if mock.CreateChatSubscriptionFunc == nil {
+		panic("APIMock.CreateChatSubscriptionFunc: method is nil but API.CreateChatSubscription was just called")
+	}
+	callInfo := struct {
+		Ctx           context.Context
+		ConduitID     string
+		BroadcasterID int64
+		BotID         int64
+	}{
+		Ctx:           ctx,
+		ConduitID:     conduitID,
+		BroadcasterID: broadcasterID,
+		BotID:         botID,
+	}
+	mock.lockCreateChatSubscription.Lock()
+	mock.calls.CreateChatSubscription = append(mock.calls.CreateChatSubscription, callInfo)
+	mock.lockCreateChatSubscription.Unlock()
+	return mock.CreateChatSubscriptionFunc(ctx, conduitID, broadcasterID, botID)
+}
+
+// CreateChatSubscriptionCalls gets all the calls that were made to CreateChatSubscription.
+// Check the length with:
+//
+//	len(mockedAPI.CreateChatSubscriptionCalls())
+func (mock *APIMock) CreateChatSubscriptionCalls() []struct {
+	Ctx           context.Context
+	ConduitID     string
+	BroadcasterID int64
+	BotID         int64
+} {
+	var calls []struct {
+		Ctx           context.Context
+		ConduitID     string
+		BroadcasterID int64
+		BotID         int64
+	}
+	mock.lockCreateChatSubscription.RLock()
+	calls = mock.calls.CreateChatSubscription
+	mock.lockCreateChatSubscription.RUnlock()
+	return calls
+}
+
+// CreateConduit calls CreateConduitFunc.
+func (mock *APIMock) CreateConduit(ctx context.Context, shardCount int) (*twitch.Conduit, error) {
+	if mock.CreateConduitFunc == nil {
+		panic("APIMock.CreateConduitFunc: method is nil but API.CreateConduit was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ShardCount int
+	}{
+		Ctx:        ctx,
+		ShardCount: shardCount,
+	}
+	mock.lockCreateConduit.Lock()
+	mock.calls.CreateConduit = append(mock.calls.CreateConduit, callInfo)
+	mock.lockCreateConduit.Unlock()
+	return mock.CreateConduitFunc(ctx, shardCount)
+}
+
+// CreateConduitCalls gets all the calls that were made to CreateConduit.
+// Check the length with:
+//
+//	len(mockedAPI.CreateConduitCalls())
+func (mock *APIMock) CreateConduitCalls() []struct {
+	Ctx        context.Context
+	ShardCount int
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ShardCount int
+	}
+	mock.lockCreateConduit.RLock()
+	calls = mock.calls.CreateConduit
+	mock.lockCreateConduit.RUnlock()
+	return calls
+}
+
 // DeleteChatMessage calls DeleteChatMessageFunc.
 func (mock *APIMock) DeleteChatMessage(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (*oauth2.Token, error) {
 	if mock.DeleteChatMessageFunc == nil {
@@ -650,6 +847,78 @@ func (mock *APIMock) DeleteChatMessageCalls() []struct {
 	mock.lockDeleteChatMessage.RLock()
 	calls = mock.calls.DeleteChatMessage
 	mock.lockDeleteChatMessage.RUnlock()
+	return calls
+}
+
+// DeleteConduit calls DeleteConduitFunc.
+func (mock *APIMock) DeleteConduit(ctx context.Context, id string) error {
+	if mock.DeleteConduitFunc == nil {
+		panic("APIMock.DeleteConduitFunc: method is nil but API.DeleteConduit was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  string
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteConduit.Lock()
+	mock.calls.DeleteConduit = append(mock.calls.DeleteConduit, callInfo)
+	mock.lockDeleteConduit.Unlock()
+	return mock.DeleteConduitFunc(ctx, id)
+}
+
+// DeleteConduitCalls gets all the calls that were made to DeleteConduit.
+// Check the length with:
+//
+//	len(mockedAPI.DeleteConduitCalls())
+func (mock *APIMock) DeleteConduitCalls() []struct {
+	Ctx context.Context
+	ID  string
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  string
+	}
+	mock.lockDeleteConduit.RLock()
+	calls = mock.calls.DeleteConduit
+	mock.lockDeleteConduit.RUnlock()
+	return calls
+}
+
+// DeleteSubscription calls DeleteSubscriptionFunc.
+func (mock *APIMock) DeleteSubscription(ctx context.Context, id string) error {
+	if mock.DeleteSubscriptionFunc == nil {
+		panic("APIMock.DeleteSubscriptionFunc: method is nil but API.DeleteSubscription was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  string
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteSubscription.Lock()
+	mock.calls.DeleteSubscription = append(mock.calls.DeleteSubscription, callInfo)
+	mock.lockDeleteSubscription.Unlock()
+	return mock.DeleteSubscriptionFunc(ctx, id)
+}
+
+// DeleteSubscriptionCalls gets all the calls that were made to DeleteSubscription.
+// Check the length with:
+//
+//	len(mockedAPI.DeleteSubscriptionCalls())
+func (mock *APIMock) DeleteSubscriptionCalls() []struct {
+	Ctx context.Context
+	ID  string
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  string
+	}
+	mock.lockDeleteSubscription.RLock()
+	calls = mock.calls.DeleteSubscription
+	mock.lockDeleteSubscription.RUnlock()
 	return calls
 }
 
@@ -762,6 +1031,38 @@ func (mock *APIMock) GetChannelModeratorsCalls() []struct {
 	mock.lockGetChannelModerators.RLock()
 	calls = mock.calls.GetChannelModerators
 	mock.lockGetChannelModerators.RUnlock()
+	return calls
+}
+
+// GetConduits calls GetConduitsFunc.
+func (mock *APIMock) GetConduits(ctx context.Context) ([]*twitch.Conduit, error) {
+	if mock.GetConduitsFunc == nil {
+		panic("APIMock.GetConduitsFunc: method is nil but API.GetConduits was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetConduits.Lock()
+	mock.calls.GetConduits = append(mock.calls.GetConduits, callInfo)
+	mock.lockGetConduits.Unlock()
+	return mock.GetConduitsFunc(ctx)
+}
+
+// GetConduitsCalls gets all the calls that were made to GetConduits.
+// Check the length with:
+//
+//	len(mockedAPI.GetConduitsCalls())
+func (mock *APIMock) GetConduitsCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetConduits.RLock()
+	calls = mock.calls.GetConduits
+	mock.lockGetConduits.RUnlock()
 	return calls
 }
 
@@ -982,6 +1283,38 @@ func (mock *APIMock) GetStreamByUsernameCalls() []struct {
 	mock.lockGetStreamByUsername.RLock()
 	calls = mock.calls.GetStreamByUsername
 	mock.lockGetStreamByUsername.RUnlock()
+	return calls
+}
+
+// GetSubscriptions calls GetSubscriptionsFunc.
+func (mock *APIMock) GetSubscriptions(ctx context.Context) ([]*eventsub.Subscription, error) {
+	if mock.GetSubscriptionsFunc == nil {
+		panic("APIMock.GetSubscriptionsFunc: method is nil but API.GetSubscriptions was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetSubscriptions.Lock()
+	mock.calls.GetSubscriptions = append(mock.calls.GetSubscriptions, callInfo)
+	mock.lockGetSubscriptions.Unlock()
+	return mock.GetSubscriptionsFunc(ctx)
+}
+
+// GetSubscriptionsCalls gets all the calls that were made to GetSubscriptions.
+// Check the length with:
+//
+//	len(mockedAPI.GetSubscriptionsCalls())
+func (mock *APIMock) GetSubscriptionsCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetSubscriptions.RLock()
+	calls = mock.calls.GetSubscriptions
+	mock.lockGetSubscriptions.RUnlock()
 	return calls
 }
 
@@ -1362,6 +1695,86 @@ func (mock *APIMock) UpdateChatSettingsCalls() []struct {
 	mock.lockUpdateChatSettings.RLock()
 	calls = mock.calls.UpdateChatSettings
 	mock.lockUpdateChatSettings.RUnlock()
+	return calls
+}
+
+// UpdateConduit calls UpdateConduitFunc.
+func (mock *APIMock) UpdateConduit(ctx context.Context, id string, shardCount int) error {
+	if mock.UpdateConduitFunc == nil {
+		panic("APIMock.UpdateConduitFunc: method is nil but API.UpdateConduit was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ID         string
+		ShardCount int
+	}{
+		Ctx:        ctx,
+		ID:         id,
+		ShardCount: shardCount,
+	}
+	mock.lockUpdateConduit.Lock()
+	mock.calls.UpdateConduit = append(mock.calls.UpdateConduit, callInfo)
+	mock.lockUpdateConduit.Unlock()
+	return mock.UpdateConduitFunc(ctx, id, shardCount)
+}
+
+// UpdateConduitCalls gets all the calls that were made to UpdateConduit.
+// Check the length with:
+//
+//	len(mockedAPI.UpdateConduitCalls())
+func (mock *APIMock) UpdateConduitCalls() []struct {
+	Ctx        context.Context
+	ID         string
+	ShardCount int
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ID         string
+		ShardCount int
+	}
+	mock.lockUpdateConduit.RLock()
+	calls = mock.calls.UpdateConduit
+	mock.lockUpdateConduit.RUnlock()
+	return calls
+}
+
+// UpdateShards calls UpdateShardsFunc.
+func (mock *APIMock) UpdateShards(ctx context.Context, conduitID string, shards []*twitch.Shard) error {
+	if mock.UpdateShardsFunc == nil {
+		panic("APIMock.UpdateShardsFunc: method is nil but API.UpdateShards was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		ConduitID string
+		Shards    []*twitch.Shard
+	}{
+		Ctx:       ctx,
+		ConduitID: conduitID,
+		Shards:    shards,
+	}
+	mock.lockUpdateShards.Lock()
+	mock.calls.UpdateShards = append(mock.calls.UpdateShards, callInfo)
+	mock.lockUpdateShards.Unlock()
+	return mock.UpdateShardsFunc(ctx, conduitID, shards)
+}
+
+// UpdateShardsCalls gets all the calls that were made to UpdateShards.
+// Check the length with:
+//
+//	len(mockedAPI.UpdateShardsCalls())
+func (mock *APIMock) UpdateShardsCalls() []struct {
+	Ctx       context.Context
+	ConduitID string
+	Shards    []*twitch.Shard
+} {
+	var calls []struct {
+		Ctx       context.Context
+		ConduitID string
+		Shards    []*twitch.Shard
+	}
+	mock.lockUpdateShards.RLock()
+	calls = mock.calls.UpdateShards
+	mock.lockUpdateShards.RUnlock()
 	return calls
 }
 

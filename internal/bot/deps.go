@@ -21,10 +21,11 @@ import (
 )
 
 type sharedDeps struct {
-	Redis    *redis.DB
-	Notifier Notifier
-	Clock    clock.Clock
-	Rand     Rand
+	Redis                  *redis.DB
+	ChannelUpdateNotifier  ChannelUpdateNotifier
+	EventsubUpdateNotifier EventsubUpdateNotifier
+	Clock                  clock.Clock
+	Rand                   Rand
 
 	LastFM    lastfm.API
 	YouTube   youtube.API

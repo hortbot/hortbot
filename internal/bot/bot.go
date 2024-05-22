@@ -34,11 +34,12 @@ const (
 
 // Config configures the bot.
 type Config struct {
-	DB       *sql.DB
-	Redis    *redis.DB
-	Notifier Notifier
-	Clock    clock.Clock
-	Rand     Rand
+	DB                     *sql.DB
+	Redis                  *redis.DB
+	ChannelUpdateNotifier  ChannelUpdateNotifier
+	EventsubUpdateNotifier EventsubUpdateNotifier
+	Clock                  clock.Clock
+	Rand                   Rand
 
 	LastFM    lastfm.API
 	YouTube   youtube.API
@@ -112,8 +113,10 @@ func New(config *Config) *Bot {
 		panic("db is nil")
 	case config.Redis == nil:
 		panic("redis is nil")
-	case config.Notifier == nil:
+	case config.ChannelUpdateNotifier == nil:
 		panic("notifier is nil")
+	case config.EventsubUpdateNotifier == nil:
+		panic("eventsub is nil")
 	case config.Twitch == nil:
 		panic("twitch is nil")
 	case config.Simple == nil:
@@ -123,30 +126,31 @@ func New(config *Config) *Bot {
 	}
 
 	deps := &sharedDeps{
-		Redis:              config.Redis,
-		Notifier:           config.Notifier,
-		LastFM:             config.LastFM,
-		BulletMap:          config.BulletMap,
-		DefaultCooldown:    config.Cooldown,
-		YouTube:            config.YouTube,
-		XKCD:               config.XKCD,
-		ExtraLife:          config.ExtraLife,
-		Twitch:             config.Twitch,
-		Steam:              config.Steam,
-		TinyURL:            config.TinyURL,
-		Urban:              config.Urban,
-		Simple:             config.Simple,
-		HLTB:               config.HLTB,
-		ReCache:            recache.New(),
-		Admins:             make(map[string]bool),
-		SuperAdmins:        make(map[string]bool),
-		WebAddr:            config.WebAddr,
-		WebAddrMap:         config.WebAddrMap,
-		PublicJoin:         config.PublicJoin,
-		PublicJoinDisabled: config.PublicJoinDisabled,
-		BetaFeatures:       config.BetaFeatures,
-		GlobalIgnore:       make(map[string]bool),
-		NoSend:             config.NoSend,
+		Redis:                  config.Redis,
+		ChannelUpdateNotifier:  config.ChannelUpdateNotifier,
+		EventsubUpdateNotifier: config.EventsubUpdateNotifier,
+		LastFM:                 config.LastFM,
+		BulletMap:              config.BulletMap,
+		DefaultCooldown:        config.Cooldown,
+		YouTube:                config.YouTube,
+		XKCD:                   config.XKCD,
+		ExtraLife:              config.ExtraLife,
+		Twitch:                 config.Twitch,
+		Steam:                  config.Steam,
+		TinyURL:                config.TinyURL,
+		Urban:                  config.Urban,
+		Simple:                 config.Simple,
+		HLTB:                   config.HLTB,
+		ReCache:                recache.New(),
+		Admins:                 make(map[string]bool),
+		SuperAdmins:            make(map[string]bool),
+		WebAddr:                config.WebAddr,
+		WebAddrMap:             config.WebAddrMap,
+		PublicJoin:             config.PublicJoin,
+		PublicJoinDisabled:     config.PublicJoinDisabled,
+		BetaFeatures:           config.BetaFeatures,
+		GlobalIgnore:           make(map[string]bool),
+		NoSend:                 config.NoSend,
 	}
 
 	if config.Clock != nil {

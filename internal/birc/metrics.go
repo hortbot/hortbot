@@ -45,6 +45,6 @@ var (
 		Namespace: "hortbot",
 		Subsystem: "birc",
 		Name:      "subconns",
-		Help:      "Number of disconnects.",
+		Help:      "Number of subconns.",
 	}, []string{"nick"})
 )

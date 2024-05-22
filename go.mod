@@ -58,6 +58,7 @@ require (
 	golang.org/x/tools v0.20.0
 	gotest.tools/v3 v3.5.1
 	mvdan.cc/xurls/v2 v2.5.0
+	nhooyr.io/websocket v1.8.11
 )
 
 require (

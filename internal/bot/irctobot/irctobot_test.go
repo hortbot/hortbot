@@ -12,14 +12,14 @@ import (
 )
 
 func TestIRCToMessageNil(t *testing.T) {
-	msg := irctobot.IRCToMessage("origin", nil)
+	msg := irctobot.ToMessage("origin", nil)
 	assert.Equal(t, msg, bot.Message(nil))
 }
 
 func TestIRCToMessageNotPrivmsg(t *testing.T) {
 	m := &irc.Message{Command: "NOTPRIVMSG"}
 	assertx.Panic(t, func() {
-		irctobot.IRCToMessage("origin", m)
+		irctobot.ToMessage("origin", m)
 	}, "irctobot: NOTPRIVMSG is not a PRIVMSG command")
 }
 
@@ -37,7 +37,7 @@ func TestIRCToMessage(t *testing.T) {
 		Trailing: "message",
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 
 	assert.Equal(t, msg.Origin(), "origin")
 	assert.Equal(t, msg.BroadcasterLogin(), "channel")
@@ -60,7 +60,7 @@ func TestIRCToMessageAction(t *testing.T) {
 		Trailing: "\x01ACTION message\x01",
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 
 	assert.Equal(t, msg.UserDisplay(), "prefix")
 
@@ -77,7 +77,7 @@ func TestBroadcasterLoginNoParams(t *testing.T) {
 		Trailing: "\x01ACTION message\x01",
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assertx.Panic(t, func() {
 		msg.BroadcasterLogin()
 	}, "irctobot: no params")
@@ -92,7 +92,7 @@ func TestBroadcasterLoginNoChannel(t *testing.T) {
 		Trailing: "\x01ACTION message\x01",
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assertx.Panic(t, func() {
 		msg.BroadcasterLogin()
 	}, "irctobot: no channel")
@@ -107,7 +107,7 @@ func TestMessageNonActionCTCP(t *testing.T) {
 		Trailing: "\x01NOTACTION message\x01",
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	message, me := msg.Message()
 	assert.Equal(t, message, "")
 	assert.Equal(t, me, false)
@@ -119,7 +119,7 @@ func TestNoBroadcasterID(t *testing.T) {
 		Tags:    map[string]string{"tag": "value"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assertx.Panic(t, func() {
 		msg.BroadcasterID()
 	}, "irctobot: no room-id")
@@ -131,7 +131,7 @@ func TestBadBroadcasterID(t *testing.T) {
 		Tags:    map[string]string{"tag": "value", "room-id": "notanint"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assertx.Panic(t, func() {
 		msg.BroadcasterID()
 	}, "irctobot: invalid room-id")
@@ -143,7 +143,7 @@ func TestNoUserID(t *testing.T) {
 		Tags:    map[string]string{"tag": "value"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assertx.Panic(t, func() {
 		msg.UserID()
 	}, "irctobot: no user-id")
@@ -155,7 +155,7 @@ func TestBadUserID(t *testing.T) {
 		Tags:    map[string]string{"tag": "value", "user-id": "notanint"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assertx.Panic(t, func() {
 		msg.UserID()
 	}, "irctobot: invalid user-id")
@@ -167,7 +167,7 @@ func TestEmoteCountEmpty(t *testing.T) {
 		Tags:    map[string]string{"tag": "value"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assert.Equal(t, msg.EmoteCount(), 0)
 }
 
@@ -177,7 +177,7 @@ func TestEmoteCount(t *testing.T) {
 		Tags:    map[string]string{"tag": "value", "emotes": "0:1-2"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assert.Equal(t, msg.EmoteCount(), 1)
 }
 
@@ -187,7 +187,7 @@ func TestTimestamp(t *testing.T) {
 		Tags:    map[string]string{"tag": "value", "tmi-sent-ts": "123456789"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assert.Equal(t, msg.Timestamp().Unix(), int64(123456))
 }
 
@@ -197,7 +197,7 @@ func TestTimestampEmpty(t *testing.T) {
 		Tags:    map[string]string{"tag": "value"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assert.Equal(t, msg.Timestamp(), time.Time{})
 }
 
@@ -207,7 +207,7 @@ func TestIDEmpty(t *testing.T) {
 		Tags:    map[string]string{"tag": "value"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assert.Equal(t, msg.ID(), "")
 }
 
@@ -217,6 +217,6 @@ func TestID(t *testing.T) {
 		Tags:    map[string]string{"tag": "value", "id": "123"},
 	}
 
-	msg := irctobot.IRCToMessage("origin", m)
+	msg := irctobot.ToMessage("origin", m)
 	assert.Equal(t, msg.ID(), "123")
 }

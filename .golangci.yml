@@ -47,6 +47,12 @@ linters:
 
     # - staticcheck
 
+# linters-settings:
+#   wrapcheck:
+#     ignorePackageGlobs:
+#       - context
+#       - github.com/hortbot/hortbot/internal/pkg/errgroupx
+
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0

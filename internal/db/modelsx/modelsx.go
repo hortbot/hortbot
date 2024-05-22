@@ -10,7 +10,6 @@ import (
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"golang.org/x/oauth2"
 )
 
@@ -148,30 +147,101 @@ func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string,
 	return &infoAndCommand.CommandInfo, infoAndCommand.Message, true, nil
 }
 
-// ListActiveChannels returns a list of active IRC channels (with # prefix) for the specified bot.
-func ListActiveChannels(ctx context.Context, exec boil.Executor, botName string) ([]string, error) {
-	var channels []struct {
-		Name string
+func GetBots(ctx context.Context, exec boil.ContextExecutor) (map[string]int64, map[int64]string, error) {
+	bots, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.IsNotNull()).All(ctx, exec)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	err := models.Channels(
-		qm.Select(models.ChannelColumns.Name),
-		models.ChannelWhere.Active.EQ(true),
-		models.ChannelWhere.BotName.EQ(botName),
-	).Bind(ctx, exec, &channels)
+	botNameToID := make(map[string]int64, len(bots))
+	botIDToName := make(map[int64]string, len(bots))
+	for _, bot := range bots {
+		botNameToID[bot.BotName.String] = bot.TwitchID
+		botIDToName[bot.TwitchID] = bot.BotName.String
+	}
+
+	return botNameToID, botIDToName, nil
+}
+
+type activeChannels struct {
+	// IRC maps bot names to IRC channel names.
+	IRC map[string][]string
+
+	// EventSub maps bot user IDs to broadcaster IDs.
+	EventSub map[int64][]int64
+}
+
+const listActiveChannelsQuery = `
+SELECT c.twitch_id, c.name, c.bot_name, 'channel:bot' = ANY(tt.scopes) as has_auth, m.id IS NOT NULL as has_mod
+FROM channels c
+LEFT OUTER JOIN twitch_tokens tt ON tt.twitch_id = c.twitch_id
+LEFT OUTER JOIN moderated_channels m ON m.broadcaster_id = c.twitch_id AND m.bot_name = c.bot_name
+WHERE c.active
+`
+
+const useEventSub = true
+
+func listActiveChannels(ctx context.Context, exec boil.ContextExecutor) (*activeChannels, error) {
+	botNameToID, _, err := GetBots(ctx, exec)
 	if err != nil {
 		return nil, err
 	}
 
-	out := make([]string, len(channels), len(channels)+1)
-
-	for i, c := range channels {
-		out[i] = "#" + c.Name
+	var rows []*struct {
+		TwitchID int64     `boil:"twitch_id"`
+		Name     string    `boil:"name"`
+		BotName  string    `boil:"bot_name"`
+		HasAuth  null.Bool `boil:"has_auth"`
+		HasMod   null.Bool `boil:"has_mod"`
 	}
 
-	out = append(out, "#"+botName)
+	if err := queries.Raw(listActiveChannelsQuery).Bind(ctx, exec, &rows); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &activeChannels{}, nil
+		}
+		return nil, err
+	}
 
-	return out, nil
+	irc := make(map[string][]string, len(rows))
+	eventSub := make(map[int64][]int64, len(rows))
+
+	for botName, botID := range botNameToID {
+		irc[botName] = []string{"#" + botName}
+		eventSub[botID] = []int64{botID}
+	}
+
+	for _, row := range rows {
+		botName := row.BotName
+		if row.HasAuth.Bool || row.HasMod.Bool {
+			if useEventSub {
+				botID := botNameToID[botName]
+				eventSub[botID] = append(eventSub[botID], row.TwitchID)
+				continue
+			}
+			irc[botName] = append(irc[botName], "#"+row.Name)
+		}
+	}
+
+	return &activeChannels{
+		IRC:      irc,
+		EventSub: eventSub,
+	}, nil
+}
+
+func ListActiveIRCChannels(ctx context.Context, exec boil.ContextExecutor, botName string) ([]string, error) {
+	active, err := listActiveChannels(ctx, exec)
+	if err != nil {
+		return nil, err
+	}
+	return active.IRC[botName], nil
+}
+
+func ListActiveEventSubChannels(ctx context.Context, exec boil.ContextExecutor) (map[int64][]int64, error) {
+	active, err := listActiveChannels(ctx, exec)
+	if err != nil {
+		return nil, err
+	}
+	return active.EventSub, nil
 }
 
 // DeleteChannel deletes a channel and every row in every table which

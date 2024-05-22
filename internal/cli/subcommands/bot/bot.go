@@ -4,10 +4,12 @@ package bot
 import (
 	"context"
 	"runtime"
-	"strings"
+	"sync"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
+	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/bot/eventsubtobot"
 	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
@@ -18,9 +20,9 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/wqueue"
-	"github.com/jakebailey/irc"
 	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/trace"
 	"go.uber.org/zap"
@@ -69,8 +71,9 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	rdb := c.Redis.Client()
 	twitchAPI := c.Twitch.Client(httpClient)
 	notifier := c.NSQ.NewNotifyPublisher()
+	evensubNotifier := c.NSQ.NewEventsubNotifyPublisher()
 
-	b := c.Bot.New(ctx, db, rdb, notifier, twitchAPI, httpClient, untrustedClient)
+	b := c.Bot.New(ctx, db, rdb, notifier, evensubNotifier, twitchAPI, httpClient, untrustedClient)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
@@ -86,6 +89,39 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		g.Go(queue.Worker)
 	}
 
+	put := func(subCtx context.Context, span *trace.Span, metadata *bnsq.Metadata, mm bot.Message) error {
+		key := mm.BroadcasterLogin()
+		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
+			ctx, cancel := attach(ctx)
+			defer cancel()
+
+			ctx = metadata.With(ctx)
+			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
+			defer span.End()
+
+			b.Handle(ctx, mm)
+		})
+	}
+
+	// For now, the bot needs the login name of the bot for the "origin".
+	// Periodically get that mapping and use it when constructing messages.
+	// TODO: remove concept of "origin" once IRC is gone?
+	var mu sync.Mutex
+	var originMap map[int64]string
+	var originMapTimestamp time.Time
+	getOriginMap := func(ctx context.Context) (map[int64]string, error) {
+		mu.Lock()
+		defer mu.Unlock()
+
+		if originMap != nil || time.Since(originMapTimestamp) < 5*time.Minute {
+			return originMap, nil
+		}
+
+		var err error
+		_, originMap, err = modelsx.GetBots(ctx, db)
+		return originMap, err
+	}
+
 	incomingSub := c.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, metadata *bnsq.Metadata) error {
 		subCtx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", metadata.ParentSpan())
 		defer span.End()
@@ -97,42 +133,29 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 			return nil
 		}
 
-		key := buildKey(m)
+		mm := irctobot.ToMessage(origin, m)
+		return put(subCtx, span, metadata, mm)
+	})
 
-		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
-			ctx, cancel := attach(ctx)
-			defer cancel()
+	eventsubSub := c.NSQ.NewIncomingWebsocketMessageSubscriber(15*time.Second, func(i *bnsq.IncomingWebsocketMessage, metadata *bnsq.Metadata) error {
+		subCtx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncomingWebsocketMessage", metadata.ParentSpan())
+		defer span.End()
 
-			ctx = metadata.With(ctx)
-			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
-			defer span.End()
+		originMap, err := getOriginMap(subCtx)
+		if err != nil {
+			return err
+		}
 
-			b.Handle(ctx, irctobot.IRCToMessage(origin, m))
-		})
+		mm := eventsubtobot.ToMessage(originMap, i.Message)
+		return put(subCtx, span, metadata, mm)
 	})
 
 	g.Go(notifier.Run)
+	g.Go(evensubNotifier.Run)
 	g.Go(incomingSub.Run)
+	g.Go(eventsubSub.Run)
 
 	if err := g.WaitIgnoreStop(); err != nil {
 		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
-}
-
-func buildKey(m *irc.Message) string {
-	var keyBuilder strings.Builder
-
-	size := len(m.Command)
-	for _, p := range m.Params {
-		size += len(p) + 1
-	}
-	keyBuilder.Grow(size)
-
-	keyBuilder.WriteString(m.Command)
-	for _, p := range m.Params {
-		keyBuilder.WriteByte(' ')
-		keyBuilder.WriteString(p)
-	}
-
-	return keyBuilder.String()
 }

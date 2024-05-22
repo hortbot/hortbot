@@ -5,15 +5,16 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"golang.org/x/oauth2"
 )
 
 // This file contains API calls which previously were implemented as IRC commands.
 
 type BanRequest struct {
-	UserID   IDStr  `json:"user_id"`
-	Duration int64  `json:"duration,omitempty"`
-	Reason   string `json:"reason"`
+	UserID   idstr.IDStr `json:"user_id"`
+	Duration int64       `json:"duration,omitempty"`
+	Reason   string      `json:"reason"`
 }
 
 // Ban bans a user in a channel as a particular moderator. A duration of zero will cause a permanent ban.
@@ -249,12 +250,12 @@ func (t *Twitch) SendChatMessage(ctx context.Context, broadcasterID int64, sende
 	url := helixRoot + "/chat/messages"
 
 	body := &struct {
-		BroadcasterID IDStr  `json:"broadcaster_id"`
-		SenderID      IDStr  `json:"sender_id"`
-		Message       string `json:"message"`
+		BroadcasterID idstr.IDStr `json:"broadcaster_id"`
+		SenderID      idstr.IDStr `json:"sender_id"`
+		Message       string      `json:"message"`
 	}{
-		BroadcasterID: IDStr(broadcasterID),
-		SenderID:      IDStr(senderID),
+		BroadcasterID: idstr.IDStr(broadcasterID),
+		SenderID:      idstr.IDStr(senderID),
 		Message:       message,
 	}
 

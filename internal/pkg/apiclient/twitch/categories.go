@@ -4,11 +4,13 @@ import (
 	"context"
 	"net/url"
 	"strconv"
+
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 )
 
 type Category struct {
-	ID   IDStr  `json:"id"`
-	Name string `json:"name"`
+	ID   idstr.IDStr `json:"id"`
+	Name string      `json:"name"`
 }
 
 // SearchCategories searches for categories that match the specified query.

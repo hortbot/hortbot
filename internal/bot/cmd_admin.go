@@ -93,7 +93,10 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 			return err
 		}
 
-		if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+			return err
+		}
+		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 			return err
 		}
 	}
@@ -261,7 +264,10 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
+		return err
+	}
+	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 
@@ -299,7 +305,10 @@ func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) 
 		botName = s.Origin
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
+		return err
+	}
+	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 
@@ -337,11 +346,15 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, strings.ToLower(oldBotName)); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, strings.ToLower(oldBotName)); err != nil {
 		return err
 	}
 
-	if err := s.Deps.Notifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
+	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
+		return err
+	}
+
+	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 

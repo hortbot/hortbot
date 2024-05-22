@@ -59,11 +59,12 @@ const (
 type scriptTester struct {
 	filename string
 
-	db       *sql.DB
-	redis    *miniredis.Miniredis
-	sender   *SenderMock
-	notifier *botmocks.NotifierMock
-	clock    *clock.Mock
+	db                     *sql.DB
+	redis                  *miniredis.Miniredis
+	sender                 *SenderMock
+	channelUpdateNotifier  *botmocks.ChannelUpdateNotifierMock
+	eventsubUpdateNotifier *botmocks.EventsubUpdateNotifierMock
+	clock                  *clock.Mock
 
 	lastFM    *lastfmmocks.APIMock
 	youtube   *youtubemocks.APIMock
@@ -118,8 +119,11 @@ func (st *scriptTester) test(t testing.TB) {
 	st.sender = &SenderMock{
 		SendMessageFunc: func(ctx context.Context, origin, target, message string) error { return nil },
 	}
-	st.notifier = &botmocks.NotifierMock{
+	st.channelUpdateNotifier = &botmocks.ChannelUpdateNotifierMock{
 		NotifyChannelUpdatesFunc: func(ctx context.Context, botName string) error { return nil },
+	}
+	st.eventsubUpdateNotifier = &botmocks.EventsubUpdateNotifierMock{
+		NotifyEventsubUpdatesFunc: func(ctx context.Context) error { return nil },
 	}
 	st.clock = clock.NewMock()
 	st.lastFM = &lastfmmocks.APIMock{}
@@ -159,22 +163,23 @@ func (st *scriptTester) test(t testing.TB) {
 	st.redis = rServer
 
 	st.bc = bot.Config{
-		DB:         st.db,
-		Redis:      redis.New(rClient),
-		Notifier:   st.notifier,
-		Clock:      st.clock,
-		LastFM:     st.lastFM,
-		YouTube:    st.youtube,
-		XKCD:       st.xkcd,
-		ExtraLife:  st.extraLife,
-		Twitch:     st.twitch,
-		Steam:      st.steam,
-		TinyURL:    st.tinyURL,
-		Urban:      st.urban,
-		Simple:     st.simple,
-		HLTB:       st.hltb,
-		NoDedupe:   true,
-		PublicJoin: true,
+		DB:                     st.db,
+		Redis:                  redis.New(rClient),
+		ChannelUpdateNotifier:  st.channelUpdateNotifier,
+		EventsubUpdateNotifier: st.eventsubUpdateNotifier,
+		Clock:                  st.clock,
+		LastFM:                 st.lastFM,
+		YouTube:                st.youtube,
+		XKCD:                   st.xkcd,
+		ExtraLife:              st.extraLife,
+		Twitch:                 st.twitch,
+		Steam:                  st.steam,
+		TinyURL:                st.tinyURL,
+		Urban:                  st.urban,
+		Simple:                 st.simple,
+		HLTB:                   st.hltb,
+		NoDedupe:               true,
+		PublicJoin:             true,
 	}
 
 	st.clock.Set(time.Now())
@@ -246,7 +251,8 @@ func (st *scriptTester) test(t testing.TB) {
 	}
 
 	assert.Equal(t, len(st.sender.SendMessageCalls()), st.counts[countSend])
-	assert.Equal(t, len(st.notifier.NotifyChannelUpdatesCalls()), st.counts[countNotifyChannelUpdates])
+	assert.Equal(t, len(st.channelUpdateNotifier.NotifyChannelUpdatesCalls()), st.counts[countNotifyChannelUpdates])
+	// TODO: eventsub
 }
 
 func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
@@ -310,7 +316,7 @@ func (st *scriptTester) checkpoint(_ testing.TB, _, _ string, _ int) {
 
 func (st *scriptTester) doCheckpoint() {
 	st.sentBefore = len(st.sender.SendMessageCalls())
-	st.notifyChannelUpdatesBefore = len(st.notifier.NotifyChannelUpdatesCalls())
+	st.notifyChannelUpdatesBefore = len(st.channelUpdateNotifier.NotifyChannelUpdatesCalls())
 }
 
 func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {

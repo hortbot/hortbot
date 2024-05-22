@@ -6,14 +6,15 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"golang.org/x/oauth2"
 )
 
 // User is a Twitch user.
 type User struct {
-	ID          IDStr  `json:"id"`
-	Name        string `json:"login"`
-	DisplayName string `json:"display_name,omitempty"`
+	ID          idstr.IDStr `json:"id"`
+	Name        string      `json:"login"`
+	DisplayName string      `json:"display_name,omitempty"`
 }
 
 // DispName returns the display name for the user if provided, otherwise the username.
@@ -58,9 +59,9 @@ func getUser(ctx context.Context, cli *httpClient, username string, id int64) (*
 }
 
 type ModeratedChannel struct {
-	ID    IDStr  `json:"broadcaster_id"`
-	Login string `json:"broadcaster_login"`
-	Name  string `json:"broadcaster_name"`
+	ID    idstr.IDStr `json:"broadcaster_id"`
+	Login string      `json:"broadcaster_login"`
+	Name  string      `json:"broadcaster_name"`
 }
 
 // GetModeratedChannels gets the channels the user moderates.

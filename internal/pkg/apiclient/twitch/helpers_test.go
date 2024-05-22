@@ -5,6 +5,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
@@ -44,7 +45,7 @@ func TestSetToken(t *testing.T) {
 }
 
 func TestIDStrUnmarshalError(t *testing.T) {
-	var id IDStr
+	var id idstr.IDStr
 	err := json.Unmarshal([]byte("true"), &id)
 	assert.ErrorContains(t, err, "cannot unmarshal")
 }

@@ -4,13 +4,14 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"golang.org/x/oauth2"
 )
 
 // ChannelModerator is a channel's moderator.
 type ChannelModerator struct {
-	ID   IDStr  `json:"user_id"`
-	Name string `json:"user_name"`
+	ID   idstr.IDStr `json:"user_id"`
+	Name string      `json:"user_name"`
 }
 
 // GetChannelModerators gets the channel's moderators.
@@ -44,13 +45,13 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 	url := helixRoot + "/channels"
 
 	body := &struct {
-		BroadcasterID IDStr   `json:"broadcaster_id"`
-		Title         *string `json:"title,omitempty"`
-		GameID        *IDStr  `json:"game_id,omitempty"`
+		BroadcasterID idstr.IDStr  `json:"broadcaster_id"`
+		Title         *string      `json:"title,omitempty"`
+		GameID        *idstr.IDStr `json:"game_id,omitempty"`
 	}{
-		BroadcasterID: IDStr(broadcasterID),
+		BroadcasterID: idstr.IDStr(broadcasterID),
 		Title:         title,
-		GameID:        (*IDStr)(gameID),
+		GameID:        (*idstr.IDStr)(gameID),
 	}
 
 	resp, err := cli.Patch(ctx, url, body)
@@ -64,11 +65,11 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 
 // Channel is a channel as exposed by the Helix API.
 type Channel struct {
-	ID     IDStr  `json:"broadcaster_id"`
-	Name   string `json:"broadcaster_name"`
-	Game   string `json:"game_name"`
-	GameID IDStr  `json:"game_id"`
-	Title  string `json:"title"`
+	ID     idstr.IDStr `json:"broadcaster_id"`
+	Name   string      `json:"broadcaster_name"`
+	Game   string      `json:"game_name"`
+	GameID idstr.IDStr `json:"game_id"`
+	Title  string      `json:"title"`
 }
 
 // GetChannelByID gets a channel using the client's token.
