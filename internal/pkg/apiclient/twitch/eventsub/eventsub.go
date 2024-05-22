@@ -203,7 +203,7 @@ type ChatMessageEventMessageFragmentCheermote struct {
 
 type ChatMessageEventMessageFragmentEmote struct {
 	ID         string      `json:"id"`
-	EmoteSetID idstr.IDStr `json:"emote_set_id"`
+	EmoteSetID string      `json:"emote_set_id"`
 	OwnerID    idstr.IDStr `json:"owner_id"`
 	Format     []string    `json:"format"`
 }
