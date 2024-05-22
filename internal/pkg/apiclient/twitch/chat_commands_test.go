@@ -1,6 +1,7 @@
 package twitch_test
 
 import (
+	"errors"
 	"strings"
 	"testing"
 
@@ -104,7 +105,7 @@ func TestBanErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Ban(ctx, id, modID, tok, banRequest)
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -171,7 +172,7 @@ func TestUnbanErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Unban(ctx, id, modID, tok, 666)
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -235,7 +236,7 @@ func TestSetChatColorErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.SetChatColor(ctx, id, tok, "#9146FF")
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -302,7 +303,7 @@ func TestDeleteChatMessageErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.DeleteChatMessage(ctx, id, modID, tok, "somemessage")
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -365,7 +366,7 @@ func TestClearChatErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.ClearChat(ctx, id, modID, tok)
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -459,7 +460,7 @@ func TestUpdateChatSettingsErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.UpdateChatSettings(ctx, id, modID, tok, banRequest)
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -526,7 +527,7 @@ func TestAnnounceErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Announce(ctx, id, modID, tok, "Some announcement!", "purple")
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -612,7 +613,7 @@ func TestSendChatMessageErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.SendChatMessage(ctx, id, modID, tok, "Some announcement!")
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 }

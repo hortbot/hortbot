@@ -152,7 +152,7 @@ readLoop:
 				value = ue.Value
 			}
 			metricDecodeErrors.WithLabelValues(field, value).Inc()
-			ctxlog.Warn(ctx, "websocket unmarshal error", zap.Error(err))
+			ctxlog.Warn(ctx, "websocket unmarshal error", zap.Error(err), zap.ByteString("raw", raw))
 			continue
 		}
 
@@ -292,7 +292,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	toCreate := wanted
 	toDelete := actual
 
-	ctxlog.Debug(ctx, "synchronizing subscriptions",
+	ctxlog.Info(ctx, "synchronizing subscriptions",
 		zap.Int("subscriptions", len(allSubscriptions)),
 		zap.Int("add_count", len(toCreate)),
 		zap.Int("remove_count", len(toDelete)),
@@ -304,6 +304,11 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	metricDeletedSubscriptions.Add(float64(len(toDelete)))
 
 	for sub := range toCreate {
+		if sub.BotID == 0 {
+			ctxlog.Error(ctx, "subscription has no bot ID", zap.Any("subscription", sub))
+			continue
+		}
+
 		if err := s.twitch.CreateChatSubscription(ctx, s.conduitID, sub.BroadcasterID, sub.BotID); err != nil {
 			ctxlog.Warn(ctx, "create subscription error", zap.Error(err), zap.Any("subscription", sub))
 		}

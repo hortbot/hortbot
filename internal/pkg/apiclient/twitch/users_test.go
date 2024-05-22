@@ -1,6 +1,7 @@
 package twitch_test
 
 import (
+	"errors"
 	"testing"
 	"time"
 
@@ -335,7 +336,7 @@ func TestGetModeratedChannelsErrors(t *testing.T) {
 		ft.setModerated(id, []*twitch.ModeratedChannel{})
 
 		_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 

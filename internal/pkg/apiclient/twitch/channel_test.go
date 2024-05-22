@@ -2,6 +2,7 @@ package twitch_test
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
@@ -68,7 +69,7 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 		ft.setMods(id, []*twitch.ChannelModerator{})
 
 		_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
-		assert.Equal(t, err, expected, "%d", status)
+		assert.Assert(t, errors.Is(err, expected), "%d", status)
 		assert.Assert(t, newToken == nil)
 	}
 

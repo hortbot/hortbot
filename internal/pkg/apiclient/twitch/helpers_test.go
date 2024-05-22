@@ -26,7 +26,8 @@ func TestStatusToError(t *testing.T) {
 
 	for code, expected := range tests {
 		err := statusToError(code)
-		assert.Equal(t, err, expected)
+
+		assert.Assert(t, errors.Is(err, expected))
 	}
 }
 

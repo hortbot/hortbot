@@ -2,6 +2,7 @@ package twitch
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -27,7 +28,7 @@ func statusToError(code int) error {
 		return ErrServerError
 	}
 
-	return ErrUnknown
+	return fmt.Errorf("unknown status %d: %w", code, ErrUnknown)
 }
 
 func setToken(newToken **oauth2.Token) func(tok *oauth2.Token, err error) {

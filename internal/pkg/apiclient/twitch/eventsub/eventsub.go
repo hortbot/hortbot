@@ -198,7 +198,7 @@ type ChatMessageEventMessageFragment struct {
 type ChatMessageEventMessageFragmentCheermote struct {
 	Prefix string `json:"prefix"`
 	Bits   int    `json:"bits"`
-	Tier   string `json:"tier"`
+	Tier   int    `json:"tier"`
 }
 
 type ChatMessageEventMessageFragmentEmote struct {
