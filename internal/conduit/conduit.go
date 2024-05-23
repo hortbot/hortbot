@@ -63,7 +63,9 @@ func (s *Service) Run(ctx context.Context) error {
 
 	ctxlog.Info(ctx, "conduit created", zap.String("id", s.conduitID))
 
-	s.g.Go(s.runWebsocket)
+	s.g.Go(func(ctx context.Context) error {
+		return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", func() { close(s.started) })
+	})
 
 	return s.g.WaitIgnoreStop()
 }
@@ -102,11 +104,13 @@ func (s *Service) setConduitShardSession(ctx context.Context, sessionID string) 
 	return nil
 }
 
-func (s *Service) runWebsocket(ctx context.Context) error {
-	onWelcome := func() { close(s.started) }
-
+func (s *Service) runWebsocket(ctx context.Context, url string, onWelcome func()) error {
 	for ctx.Err() == nil {
 		if err := s.runOneWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", onWelcome); err != nil {
+			if errors.Is(err, errWebsocketClosedForReconnect) {
+				ctxlog.Info(ctx, "websocket closed for reconnect")
+				return nil
+			}
 			ctxlog.Error(ctx, "websocket error, restarting", zap.Error(err))
 		}
 		onWelcome = nil
@@ -122,6 +126,8 @@ func (s *Service) runWebsocket(ctx context.Context) error {
 	return ctx.Err()
 }
 
+var errWebsocketClosedForReconnect = errors.New("websocket closed")
+
 func (s *Service) runOneWebsocket(ctx context.Context, url string, onWelcome func()) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -134,6 +140,8 @@ func (s *Service) runOneWebsocket(ctx context.Context, url string, onWelcome fun
 		return fmt.Errorf("dial websocket: %w", err)
 	}
 	defer c.CloseNow() //nolint:errcheck
+
+	var retErr error
 
 readLoop:
 	for ctx.Err() == nil {
@@ -168,8 +176,10 @@ readLoop:
 				onWelcome = nil
 			}
 		case *eventsub.SessionReconnectPayload:
+			metricReconnects.Inc()
+			retErr = errWebsocketClosedForReconnect
 			s.g.Go(func(ctx context.Context) error {
-				return s.runOneWebsocket(ctx, *payload.Session.ReconnectURL, cancel)
+				return s.runWebsocket(ctx, *payload.Session.ReconnectURL, cancel)
 			})
 		case *eventsub.NotificationPayload:
 			select {
@@ -183,7 +193,7 @@ readLoop:
 	if err := c.Close(websocket.StatusNormalClosure, ""); err != nil {
 		ctxlog.Debug(ctx, "websocket close error", zap.Error(err))
 	}
-	return nil
+	return retErr
 }
 
 var possibleStatuses = []string{
@@ -296,7 +306,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	toCreate := wanted
 	toDelete := actual
 
-	ctxlog.Info(ctx, "synchronizing subscriptions",
+	ctxlog.Debug(ctx, "synchronizing subscriptions",
 		zap.Int("subscriptions", len(allSubscriptions)),
 		zap.Int("add_count", len(toCreate)),
 		zap.Int("remove_count", len(toDelete)),

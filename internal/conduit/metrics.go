@@ -20,6 +20,13 @@ var (
 		Help:      "Total number of erroring message decodes.",
 	}, []string{"field", "value"})
 
+metricReconnects = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "reconnects_total",
+		Help:      "Total number of reconnects.",
+	})
+
 	metricDisconnects = promauto.NewCounter(prometheus.CounterOpts{
 		Namespace: "hortbot",
 		Subsystem: "conduit",
