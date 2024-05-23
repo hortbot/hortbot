@@ -49,6 +49,8 @@ func (s *Service) Incoming() <-chan *eventsub.WebsocketMessage {
 	return s.incoming
 }
 
+const shardCount = 1
+
 func (s *Service) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -61,11 +63,13 @@ func (s *Service) Run(ctx context.Context) error {
 	}
 	s.conduitID = conduit.ID
 
-	ctxlog.Info(ctx, "conduit created", zap.String("id", s.conduitID))
+	ctxlog.Info(ctx, "using conduit", zap.String("id", s.conduitID))
 
-	s.g.Go(func(ctx context.Context) error {
-		return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", func() { close(s.started) })
-	})
+	for i := range shardCount {
+		s.g.Go(func(ctx context.Context) error {
+			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, func() { close(s.started) })
+		})
+	}
 
 	return s.g.WaitIgnoreStop()
 }
@@ -78,21 +82,32 @@ func (s *Service) getOrCreateConduit(ctx context.Context) (*twitch.Conduit, erro
 
 	if len(conduits) == 0 {
 		ctxlog.Info(ctx, "creating conduit")
-		conduit, err := s.twitch.CreateConduit(ctx, 1)
+		conduit, err := s.twitch.CreateConduit(ctx, shardCount)
 		if err != nil {
 			return nil, fmt.Errorf("create conduit: %w", err)
 		}
 		return conduit, nil
 	}
 
-	return conduits[0], nil
+	conduit := conduits[0]
+	if conduit.ShardCount != shardCount {
+		ctxlog.Info(ctx, "reusing conduit but updating shard count", zap.Int("shardCount", shardCount))
+		conduit, err := s.twitch.UpdateConduit(ctx, conduit.ID, shardCount)
+		if err != nil {
+			return nil, fmt.Errorf("update conduit: %w", err)
+		}
+		return conduit, nil
+	}
+
+	ctxlog.Info(ctx, "reusing conduit")
+	return conduit, nil
 }
 
-func (s *Service) setConduitShardSession(ctx context.Context, sessionID string) error {
+func (s *Service) setConduitShardSession(ctx context.Context, shard int, sessionID string) error {
 	ctxlog.Info(ctx, "setting conduit shard session", zap.String("sessionID", sessionID))
 	if err := s.twitch.UpdateShards(ctx, s.conduitID, []*twitch.Shard{
 		{
-			ID: idstr.IDStr(0),
+			ID: idstr.IDStr(shard),
 			Transport: eventsub.Transport{
 				Method:    "websocket",
 				SessionID: sessionID,
@@ -104,9 +119,9 @@ func (s *Service) setConduitShardSession(ctx context.Context, sessionID string) 
 	return nil
 }
 
-func (s *Service) runWebsocket(ctx context.Context, url string, onWelcome func()) error {
+func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWelcome func()) error {
 	for ctx.Err() == nil {
-		if err := s.runOneWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", onWelcome); err != nil {
+		if err := s.runOneWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", shard, onWelcome); err != nil {
 			if errors.Is(err, errWebsocketClosedForReconnect) {
 				ctxlog.Info(ctx, "websocket closed for reconnect")
 				return nil
@@ -128,7 +143,7 @@ func (s *Service) runWebsocket(ctx context.Context, url string, onWelcome func()
 
 var errWebsocketClosedForReconnect = errors.New("websocket closed")
 
-func (s *Service) runOneWebsocket(ctx context.Context, url string, onWelcome func()) error {
+func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, onWelcome func()) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -168,7 +183,7 @@ readLoop:
 
 		switch payload := msg.Payload.(type) {
 		case *eventsub.SessionWelcomePayload:
-			if err := s.setConduitShardSession(ctx, payload.Session.ID); err != nil {
+			if err := s.setConduitShardSession(ctx, shard, payload.Session.ID); err != nil {
 				return err
 			}
 			if onWelcome != nil {
@@ -179,7 +194,7 @@ readLoop:
 			metricReconnects.Inc()
 			retErr = errWebsocketClosedForReconnect
 			s.g.Go(func(ctx context.Context) error {
-				return s.runWebsocket(ctx, *payload.Session.ReconnectURL, cancel)
+				return s.runWebsocket(ctx, *payload.Session.ReconnectURL, shard, cancel)
 			})
 		case *eventsub.NotificationPayload:
 			select {

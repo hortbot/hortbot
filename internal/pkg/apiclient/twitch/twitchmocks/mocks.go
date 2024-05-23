@@ -109,7 +109,7 @@ var _ twitch.API = &APIMock{}
 //			UpdateChatSettingsFunc: func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (*oauth2.Token, error) {
 //				panic("mock out the UpdateChatSettings method")
 //			},
-//			UpdateConduitFunc: func(ctx context.Context, id string, shardCount int) error {
+//			UpdateConduitFunc: func(ctx context.Context, id string, shardCount int) (*twitch.Conduit, error) {
 //				panic("mock out the UpdateConduit method")
 //			},
 //			UpdateShardsFunc: func(ctx context.Context, conduitID string, shards []*twitch.Shard) error {
@@ -213,7 +213,7 @@ type APIMock struct {
 	UpdateChatSettingsFunc func(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, patch *twitch.ChatSettingsPatch) (*oauth2.Token, error)
 
 	// UpdateConduitFunc mocks the UpdateConduit method.
-	UpdateConduitFunc func(ctx context.Context, id string, shardCount int) error
+	UpdateConduitFunc func(ctx context.Context, id string, shardCount int) (*twitch.Conduit, error)
 
 	// UpdateShardsFunc mocks the UpdateShards method.
 	UpdateShardsFunc func(ctx context.Context, conduitID string, shards []*twitch.Shard) error
@@ -1699,7 +1699,7 @@ func (mock *APIMock) UpdateChatSettingsCalls() []struct {
 }
 
 // UpdateConduit calls UpdateConduitFunc.
-func (mock *APIMock) UpdateConduit(ctx context.Context, id string, shardCount int) error {
+func (mock *APIMock) UpdateConduit(ctx context.Context, id string, shardCount int) (*twitch.Conduit, error) {
 	if mock.UpdateConduitFunc == nil {
 		panic("APIMock.UpdateConduitFunc: method is nil but API.UpdateConduit was just called")
 	}

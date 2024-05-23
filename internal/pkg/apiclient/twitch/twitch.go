@@ -105,7 +105,7 @@ type API interface {
 	SendChatMessage(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (newToken *oauth2.Token, err error)
 	GetConduits(ctx context.Context) ([]*Conduit, error)
 	CreateConduit(ctx context.Context, shardCount int) (*Conduit, error)
-	UpdateConduit(ctx context.Context, id string, shardCount int) error
+	UpdateConduit(ctx context.Context, id string, shardCount int) (*Conduit, error)
 	DeleteConduit(ctx context.Context, id string) error
 	UpdateShards(ctx context.Context, conduitID string, shards []*Shard) error
 	GetSubscriptions(ctx context.Context) ([]*eventsub.Subscription, error)

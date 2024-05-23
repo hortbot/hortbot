@@ -35,7 +35,7 @@ func (t *Twitch) CreateConduit(ctx context.Context, shardCount int) (*Conduit, e
 	return conduit, nil
 }
 
-func (t *Twitch) UpdateConduit(ctx context.Context, id string, shardCount int) error {
+func (t *Twitch) UpdateConduit(ctx context.Context, id string, shardCount int) (*Conduit, error) {
 	cli := t.helixCli
 	body := &struct {
 		ID         string `json:"id"`
@@ -45,12 +45,11 @@ func (t *Twitch) UpdateConduit(ctx context.Context, id string, shardCount int) e
 		ShardCount: shardCount,
 	}
 
-	resp, err := cli.Patch(ctx, helixEventsubConduit, body)
+	conduit, err := patchAndDecodeFirstFromList[*Conduit](ctx, cli, helixEventsubConduit, body)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer resp.Body.Close()
-	return statusToError(resp.StatusCode)
+	return conduit, nil
 }
 
 func (t *Twitch) DeleteConduit(ctx context.Context, id string) error {

@@ -103,8 +103,7 @@ func paginate[T any](ctx context.Context, cli *httpClient, url string, urlValues
 	return items, nil
 }
 
-func fetchList[T any](ctx context.Context, cli *httpClient, url string) ([]T, error) {
-	resp, err := cli.Get(ctx, url)
+func decodeResponseBodyList[T any](resp *http.Response, err error) ([]T, error) {
 	if err != nil {
 		return nil, err
 	}
@@ -129,30 +128,16 @@ func fetchList[T any](ctx context.Context, cli *httpClient, url string) ([]T, er
 	return body.Data, nil
 }
 
+func fetchList[T any](ctx context.Context, cli *httpClient, url string) ([]T, error) {
+	return decodeResponseBodyList[T](cli.Get(ctx, url)) //nolint:bodyclose
+}
+
 func postAndDecodeList[T any](ctx context.Context, cli *httpClient, url string, v any) ([]T, error) {
-	resp, err := cli.Post(ctx, url, v)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+	return decodeResponseBodyList[T](cli.Post(ctx, url, v)) //nolint:bodyclose
+}
 
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
-	body := &struct {
-		Data []T `json:"data"`
-	}{}
-
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
-	}
-
-	if len(body.Data) == 0 {
-		return nil, ErrNotFound
-	}
-
-	return body.Data, nil
+func patchAndDecodeList[T any](ctx context.Context, cli *httpClient, url string, v any) ([]T, error) {
+	return decodeResponseBodyList[T](cli.Patch(ctx, url, v)) //nolint:bodyclose
 }
 
 func fetchFirstFromList[T any](ctx context.Context, cli *httpClient, url string) (T, error) {
@@ -166,6 +151,15 @@ func fetchFirstFromList[T any](ctx context.Context, cli *httpClient, url string)
 
 func postAndDecodeFirstFromList[T any](ctx context.Context, cli *httpClient, url string, v any) (T, error) {
 	list, err := postAndDecodeList[T](ctx, cli, url, v)
+	if err != nil {
+		var zero T
+		return zero, err
+	}
+	return list[0], nil
+}
+
+func patchAndDecodeFirstFromList[T any](ctx context.Context, cli *httpClient, url string, v any) (T, error) {
+	list, err := patchAndDecodeList[T](ctx, cli, url, v)
 	if err != nil {
 		var zero T
 		return zero, err
