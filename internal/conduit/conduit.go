@@ -121,7 +121,7 @@ func (s *Service) setConduitShardSession(ctx context.Context, shard int, session
 
 func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWelcome func()) error {
 	for ctx.Err() == nil {
-		if err := s.runOneWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", shard, onWelcome); err != nil {
+		if err := s.runOneWebsocket(ctx, url, shard, onWelcome); err != nil {
 			if errors.Is(err, errWebsocketClosedForReconnect) {
 				ctxlog.Info(ctx, "websocket closed for reconnect")
 				return nil
