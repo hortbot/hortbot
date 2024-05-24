@@ -76,4 +76,12 @@ var (
 		Help:      "Duration of sync handling.",
 		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
 	})
+
+	metricWebsocketReadDuration = promauto.NewHistogram(prometheus.HistogramOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "websocket_read_duration_seconds",
+		Help:      "Duration of websocket message reading.",
+		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10, 25, 50},
+	})
 )

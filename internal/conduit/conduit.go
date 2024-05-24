@@ -131,8 +131,11 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 		onWelcome = nil
 		metricDisconnects.Inc()
 
+		const wait = 5 * time.Second
+		ctxlog.Info(ctx, "waiting before reconnect", zap.Duration("wait", wait))
+
 		select {
-		case <-time.After(5 * time.Second):
+		case <-time.After(wait):
 		case <-ctx.Done():
 			return ctx.Err()
 		}
@@ -144,6 +147,8 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 var errWebsocketClosedForReconnect = errors.New("websocket closed")
 
 func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, onWelcome func()) error {
+	ctxlog.Info(ctx, "creating websocket")
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -160,11 +165,13 @@ func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, on
 
 readLoop:
 	for ctx.Err() == nil {
+		beforeRead := time.Now()
 		var raw json.RawMessage
 		if err := wsjson.Read(ctx, c, &raw); err != nil {
 			ctxlog.Warn(ctx, "websocket read error", zap.Error(err))
 			break readLoop
 		}
+		metricWebsocketReadDuration.Observe(time.Since(beforeRead).Seconds())
 
 		var msg eventsub.WebsocketMessage
 		if err := json.Unmarshal(raw, &msg); err != nil {
