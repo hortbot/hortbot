@@ -22,7 +22,6 @@ import (
 
 type sharedDeps struct {
 	Redis                  *redis.DB
-	ChannelUpdateNotifier  ChannelUpdateNotifier
 	EventsubUpdateNotifier EventsubUpdateNotifier
 	Clock                  clock.Clock
 	Rand                   Rand

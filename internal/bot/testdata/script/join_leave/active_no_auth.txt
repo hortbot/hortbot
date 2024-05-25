@@ -5,4 +5,4 @@ bot_config {"WebAddr": "http://localhost:5000"}
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] Due to Twitch policy changes, you must explicitly allow the bot to rejoin your chat. Please login at http://localhost:5000/login and return here.
-no_notify_channel_updates
+no_notify_eventsub_updates

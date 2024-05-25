@@ -26,12 +26,12 @@ func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, li
 		st.noSend(t, "", "", lineNum)
 	}
 
-	if st.needNoNotifyChannelUpdates {
-		st.noNotifyChannelUpdates(t, "", "", lineNum)
+	if st.needNoNotifyEventsubUpdatesCalls {
+		st.noNotifyEventsubUpdatesCalls(t, "", "", lineNum)
 	}
 
 	st.needNoSend = true
-	st.needNoNotifyChannelUpdates = true
+	st.needNoNotifyEventsubUpdatesCalls = true
 
 	args := strings.SplitN(directiveArgs, " ", 2)
 	assert.Assert(t, len(args) == 2, "line %d", lineNum)
@@ -142,33 +142,30 @@ func (st *scriptTester) sendAny(t testing.TB, _, _ string, lineNum int) {
 	st.needNoSend = false
 }
 
-func (st *scriptTester) notifyChannelUpdates(t testing.TB, _, expected string, lineNum int) {
-	callNum := st.counts[countNotifyChannelUpdates]
-	st.counts[countNotifyChannelUpdates]++
+func (st *scriptTester) notifyEventsubUpdatesCalls(t testing.TB, _, expected string, lineNum int) {
+	callNum := st.counts[countNotifyEventsubUpdates]
+	st.counts[countNotifyEventsubUpdates]++
 
 	st.addAction(func(context.Context) {
-		calls := st.channelUpdateNotifier.NotifyChannelUpdatesCalls()
-		assert.Assert(t, len(calls) > callNum, "NotifyChannelUpdates not called: line %d", lineNum)
-		call := calls[callNum]
-		assert.Equal(t, call.BotName, expected, "line %d", lineNum)
+		calls := st.eventsubUpdateNotifier.NotifyEventsubUpdatesCalls()
+		assert.Assert(t, len(calls) > callNum, "NotifyEventsubUpdatesCalls not called: line %d", lineNum)
 	})
 
-	st.needNoNotifyChannelUpdates = false
+	st.needNoNotifyEventsubUpdatesCalls = false
 }
 
-func (st *scriptTester) noNotifyChannelUpdates(t testing.TB, _, _ string, lineNum int) {
+func (st *scriptTester) noNotifyEventsubUpdatesCalls(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(context.Context) {
-		calls := st.channelUpdateNotifier.NotifyChannelUpdatesCalls()
+		calls := st.eventsubUpdateNotifier.NotifyEventsubUpdatesCalls()
 		notifyAfter := len(calls)
 
-		if st.notifyChannelUpdatesBefore != notifyAfter {
-			call := calls[notifyAfter-1]
-			t.Errorf("notified channel updates for %s: line %d", call.BotName, lineNum)
+		if st.notifyEventsubUpdatesCallsBefore != notifyAfter {
+			t.Errorf("notified eventsub updates: line %d", lineNum)
 			t.FailNow()
 		}
 	})
 
-	st.needNoNotifyChannelUpdates = false
+	st.needNoNotifyEventsubUpdatesCalls = false
 }
 
 func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
@@ -226,5 +223,5 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 
 	st.handleM(t, m)
 	st.sendAny(t, "", "", lineNum)
-	st.notifyChannelUpdates(t, "", botName, lineNum)
+	st.notifyEventsubUpdatesCalls(t, "", botName, lineNum)
 }

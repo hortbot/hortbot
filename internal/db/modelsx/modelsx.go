@@ -163,85 +163,95 @@ func GetBots(ctx context.Context, exec boil.ContextExecutor) (map[string]int64, 
 	return botNameToID, botIDToName, nil
 }
 
-type activeChannels struct {
-	// IRC maps bot names to IRC channel names.
-	IRC map[string][]string
-
-	// EventSub maps bot user IDs to broadcaster IDs.
-	EventSub map[int64][]int64
-}
-
-const listActiveChannelsQuery = `
-SELECT c.twitch_id, c.name, c.bot_name, 'channel:bot' = ANY(tt.scopes) as has_auth, m.id IS NOT NULL as has_mod
+const activeChannelsQuerySuffix = `
 FROM channels c
 LEFT OUTER JOIN twitch_tokens tt ON tt.twitch_id = c.twitch_id
 LEFT OUTER JOIN moderated_channels m ON m.broadcaster_id = c.twitch_id AND m.bot_name = c.bot_name
-WHERE c.active
+WHERE c.active AND ('channel:bot' = ANY(tt.scopes) OR m.id IS NOT NULL)
 `
 
-const useEventSub = true
+const listActiveChannelsQuery = `SELECT c.twitch_id, c.name, c.bot_name` + activeChannelsQuerySuffix
 
-func listActiveChannels(ctx context.Context, exec boil.ContextExecutor) (*activeChannels, error) {
+func ListActiveChannels(ctx context.Context, exec boil.ContextExecutor) (botToChannels map[int64][]int64, err error) {
 	botNameToID, _, err := GetBots(ctx, exec)
 	if err != nil {
 		return nil, err
 	}
 
 	var rows []*struct {
-		TwitchID int64     `boil:"twitch_id"`
-		Name     string    `boil:"name"`
-		BotName  string    `boil:"bot_name"`
-		HasAuth  null.Bool `boil:"has_auth"`
-		HasMod   null.Bool `boil:"has_mod"`
+		TwitchID int64  `boil:"twitch_id"`
+		Name     string `boil:"name"`
+		BotName  string `boil:"bot_name"`
 	}
 
 	if err := queries.Raw(listActiveChannelsQuery).Bind(ctx, exec, &rows); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &activeChannels{}, nil
+			return nil, nil //nolint:nilnil
 		}
 		return nil, err
 	}
 
-	irc := make(map[string][]string, len(rows))
-	eventSub := make(map[int64][]int64, len(rows))
+	botToChannels = make(map[int64][]int64, len(rows))
 
-	for botName, botID := range botNameToID {
-		irc[botName] = []string{"#" + botName}
-		eventSub[botID] = []int64{botID}
+	for _, botID := range botNameToID {
+		botToChannels[botID] = []int64{botID}
 	}
 
 	for _, row := range rows {
-		botName := row.BotName
-		if row.HasAuth.Bool || row.HasMod.Bool {
-			if useEventSub {
-				botID := botNameToID[botName]
-				eventSub[botID] = append(eventSub[botID], row.TwitchID)
-				continue
-			}
-			irc[botName] = append(irc[botName], "#"+row.Name)
-		}
+		botID := botNameToID[row.BotName]
+		botToChannels[botID] = append(botToChannels[botID], row.TwitchID)
 	}
 
-	return &activeChannels{
-		IRC:      irc,
-		EventSub: eventSub,
-	}, nil
+	return botToChannels, nil
 }
 
-func ListActiveIRCChannels(ctx context.Context, exec boil.ContextExecutor, botName string) ([]string, error) {
-	active, err := listActiveChannels(ctx, exec)
-	if err != nil {
-		return nil, err
+const countActiveChannelsQuery = `SELECT COUNT(*) as channel_count, COUNT(DISTINCT c.bot_name) as bot_count` + activeChannelsQuerySuffix
+
+func CountActiveChannels(ctx context.Context, exec boil.ContextExecutor) (channelCount int, botCount int, err error) {
+	var row struct {
+		ChannelCount int `boil:"channel_count"`
+		BotCount     int `boil:"bot_count"`
 	}
-	return active.IRC[botName], nil
+
+	if err := queries.Raw(countActiveChannelsQuery).Bind(ctx, exec, &row); err != nil {
+		return 0, 0, err
+	}
+
+	return row.ChannelCount, row.BotCount, nil
 }
 
-func ListActiveEventSubChannels(ctx context.Context, exec boil.ContextExecutor) (map[int64][]int64, error) {
-	active, err := listActiveChannels(ctx, exec)
-	if err != nil {
+const getActiveRepeatedCommandsQuery = `
+SELECT r.*
+FROM repeated_commands r
+JOIN channels c ON r.channel_id = c.id
+LEFT OUTER JOIN twitch_tokens tt ON tt.twitch_id = c.twitch_id
+LEFT OUTER JOIN moderated_channels m ON m.broadcaster_id = c.twitch_id AND m.bot_name = c.bot_name
+WHERE r.enabled AND c.active AND ('channel:bot' = ANY(tt.scopes) OR m.id IS NOT NULL)
+`
+
+func GetActiveRepeatedCommands(ctx context.Context, exec boil.ContextExecutor) (models.RepeatedCommandSlice, error) {
+	var repeats models.RepeatedCommandSlice
+	if err := queries.Raw(getActiveRepeatedCommandsQuery).Bind(ctx, exec, &repeats); err != nil {
 		return nil, err
 	}
-	return active.EventSub, nil
+	return repeats, nil
+}
+
+const getActiveScheduledCommandsQuery = `
+SELECT s.*
+FROM scheduled_commands s
+JOIN channels c ON s.channel_id = c.id
+LEFT OUTER JOIN twitch_tokens tt ON tt.twitch_id = c.twitch_id
+LEFT OUTER JOIN moderated_channels m ON m.broadcaster_id = c.twitch_id AND m.bot_name = c.bot_name
+WHERE s.enabled AND c.active AND ('channel:bot' = ANY(tt.scopes) OR m.id IS NOT NULL)
+`
+
+func GetActiveScheduledCommands(ctx context.Context, exec boil.ContextExecutor) (models.ScheduledCommandSlice, error) {
+	var scheduled models.ScheduledCommandSlice
+	if err := queries.Raw(getActiveScheduledCommandsQuery).Bind(ctx, exec, &scheduled); err != nil {
+		return nil, err
+	}
+	return scheduled, nil
 }
 
 // DeleteChannel deletes a channel and every row in every table which

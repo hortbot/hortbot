@@ -251,7 +251,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 
 	ctxlog.Debug(ctx, "synchronizing subscriptions")
 
-	channels, err := modelsx.ListActiveEventSubChannels(ctx, s.db)
+	channels, err := modelsx.ListActiveChannels(ctx, s.db)
 	if err != nil {
 		return fmt.Errorf("list active eventsub channels: %w", err)
 	}

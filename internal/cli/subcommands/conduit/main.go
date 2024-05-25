@@ -32,7 +32,7 @@ type cmd struct {
 	SyncInterval time.Duration `long:"conduit-sync-interval" env:"HB_CONDUIT_SYNC_INTERVAL" description:"How often to synchronize subscriptions"`
 }
 
-// Command returns a fresh irc command.
+// Command returns a fresh conduit command.
 func Command() cli.Command {
 	return &cmd{
 		Common:       cli.Default,

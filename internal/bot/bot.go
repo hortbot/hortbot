@@ -1,4 +1,4 @@
-// Package bot implements the core HortBot IRC message handling logic.
+// Package bot implements the core HortBot message handling logic.
 package bot
 
 import (
@@ -36,7 +36,6 @@ const (
 type Config struct {
 	DB                     *sql.DB
 	Redis                  *redis.DB
-	ChannelUpdateNotifier  ChannelUpdateNotifier
 	EventsubUpdateNotifier EventsubUpdateNotifier
 	Clock                  clock.Clock
 	Rand                   Rand
@@ -84,7 +83,7 @@ type CronConfig struct {
 	UpdateModeratedChannels bool
 }
 
-// Bot is an IRC bot. It should only be used once.
+// Bot is the chat bot. It should only be used once.
 type Bot struct {
 	initialized bool
 	stopOnce    sync.Once
@@ -113,8 +112,6 @@ func New(config *Config) *Bot {
 		panic("db is nil")
 	case config.Redis == nil:
 		panic("redis is nil")
-	case config.ChannelUpdateNotifier == nil:
-		panic("notifier is nil")
 	case config.EventsubUpdateNotifier == nil:
 		panic("eventsub is nil")
 	case config.Twitch == nil:
@@ -127,7 +124,6 @@ func New(config *Config) *Bot {
 
 	deps := &sharedDeps{
 		Redis:                  config.Redis,
-		ChannelUpdateNotifier:  config.ChannelUpdateNotifier,
 		EventsubUpdateNotifier: config.EventsubUpdateNotifier,
 		LastFM:                 config.LastFM,
 		BulletMap:              config.BulletMap,

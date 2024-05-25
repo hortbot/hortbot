@@ -12,7 +12,7 @@ const (
 	IncomingWebsocketMessageTopic = "eventsub.incoming"
 )
 
-// IncomingWebsocketMessage is an IncomingWebsocketMessage IRC message as sent over NSQ.
+// IncomingWebsocketMessage is an IncomingWebsocketMessage message as sent over NSQ.
 type IncomingWebsocketMessage struct {
 	Message *eventsub.WebsocketMessage `json:"message"`
 }

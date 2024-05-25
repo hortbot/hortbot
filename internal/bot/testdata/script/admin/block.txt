@@ -16,7 +16,7 @@ send hortbot #hortbot [HB] Error getting ID from Twitch: twitch: not found
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block foobar
 send hortbot #hortbot [HB] foobar (1) has been blocked.
-no_notify_channel_updates
+no_notify_eventsub_updates
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command
 no_send
@@ -36,7 +36,7 @@ send_any
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block someone
 send hortbot #hortbot [HB] Someone (1234) has been blocked.
-notify_channel_updates hortbot
+notify_eventsub_updates
 
 handle hortbot @id=__UUID__;room-id=1234;user-id=1234 :someone!someone@someone.tmi.twitch.tv PRIVMSG #someone :!command
 no_send
@@ -44,7 +44,7 @@ no_send
 
 handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock someone
 send hortbot #hortbot [HB] Someone (1234) has been unblocked.
-no_notify_channel_updates
+no_notify_eventsub_updates
 
 join hortbot 2 someone 1234
 

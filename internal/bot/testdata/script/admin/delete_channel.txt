@@ -25,7 +25,7 @@ clock_forward 1s
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel foobar
 send hortbot #hortbot [HB] User 'foobar' has been deleted.
-notify_channel_updates hortbot
+notify_eventsub_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!admin deletechannel foobar
 send hortbot #hortbot [HB] User 'foobar' does not exist.

@@ -31,7 +31,7 @@ var (
 	errDuplicate       = errors.New("bot: duplicate message")
 )
 
-// Handle handles a single IRC message, sent via the specific origin. It always
+// Handle handles a single message, sent via the specific origin. It always
 // succeeds, but may log information about any internal errors.
 func (b *Bot) Handle(ctx context.Context, m Message) {
 	ctx = correlation.With(ctx)
@@ -132,9 +132,9 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 
 	span.AddAttributes(
 		trace.Int64Attribute("roomID", s.RoomID),
-		trace.StringAttribute("channel", s.IRCChannel),
+		trace.StringAttribute("channel", s.ChannelName),
 	)
-	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
+	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.ChannelName))
 
 	var (
 		beforeHandle time.Time
@@ -235,7 +235,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 	s.RoomIDOrig = s.RoomID
 	s.UserID = m.UserID()
 	s.TMISent = m.Timestamp()
-	s.IRCChannel = m.BroadcasterLogin()
+	s.ChannelName = m.BroadcasterLogin()
 
 	if s.RoomID == 0 {
 		ctxlog.Debug(ctx, "room ID cannot be zero")
@@ -249,7 +249,7 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 
 	if testing.Testing() {
 		b.testingHelper.checkUserNameID(s.User, s.UserID)
-		b.testingHelper.checkUserNameID(s.IRCChannel, s.RoomID)
+		b.testingHelper.checkUserNameID(s.ChannelName, s.RoomID)
 	}
 
 	return nil
@@ -304,7 +304,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	s.SetUserLevel()
 
-	if s.Origin == s.IRCChannel {
+	if s.Origin == s.ChannelName {
 		return handleManagement(ctx, s)
 	}
 
@@ -321,7 +321,7 @@ func handleSession(ctx context.Context, s *session) error {
 		return err
 	}
 
-	if s.IRCChannel == s.User && channel.DisplayName != s.UserDisplay {
+	if s.ChannelName == s.User && channel.DisplayName != s.UserDisplay {
 		channel.DisplayName = s.UserDisplay
 		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.DisplayName)); err != nil {
 			return err
@@ -334,9 +334,9 @@ func handleSession(ctx context.Context, s *session) error {
 			return nil
 		}
 
-		if channel.Name != s.IRCChannel {
+		if channel.Name != s.ChannelName {
 			ctxlog.Warn(ctx, "channel name mismatch",
-				zap.String("fromMessage", s.IRCChannel),
+				zap.String("fromMessage", s.ChannelName),
 				zap.String("fromDB", channel.Name),
 			)
 			return nil

@@ -40,7 +40,6 @@ func BenchmarkHandleNop(b *testing.B) {
 	config := &bot.Config{
 		DB:                     db,
 		Redis:                  redis.New(rClient),
-		ChannelUpdateNotifier:  nopNotifier{},
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -85,7 +84,6 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	config := &bot.Config{
 		DB:                     db,
 		Redis:                  redis.New(rClient),
-		ChannelUpdateNotifier:  nopNotifier{},
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -131,7 +129,6 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	config := &bot.Config{
 		DB:                     db,
 		Redis:                  redis.New(rClient),
-		ChannelUpdateNotifier:  nopNotifier{},
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -177,7 +174,6 @@ func BenchmarkHandleMixed(b *testing.B) {
 	config := &bot.Config{
 		DB:                     db,
 		Redis:                  redis.New(rClient),
-		ChannelUpdateNotifier:  nopNotifier{},
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -240,7 +236,6 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	config := &bot.Config{
 		DB:                     db,
 		Redis:                  redis.New(rClient),
-		ChannelUpdateNotifier:  nopNotifier{},
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {

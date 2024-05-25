@@ -66,7 +66,6 @@ func (args *Bot) New(
 	ctx context.Context,
 	db *sql.DB,
 	rdb *redis.DB,
-	channelUpdateNotifier bot.ChannelUpdateNotifier,
 	eventsubUpdateNotifier bot.EventsubUpdateNotifier,
 	twitchAPI twitch.API,
 	httpClient *http.Client,
@@ -96,7 +95,6 @@ func (args *Bot) New(
 	b := bot.New(&bot.Config{
 		DB:                     db,
 		Redis:                  rdb,
-		ChannelUpdateNotifier:  channelUpdateNotifier,
 		EventsubUpdateNotifier: eventsubUpdateNotifier,
 		LastFM:                 lastFM,
 		YouTube:                youtubeAPI,

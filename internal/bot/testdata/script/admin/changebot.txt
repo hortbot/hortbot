@@ -25,8 +25,7 @@ handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@a
 send hortbot #hortbot [HB] foobar is already using hortbot.
 
 handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar otherbot
-notify_channel_updates hortbot
-notify_channel_updates otherbot
+notify_eventsub_updates
 send hortbot #hortbot [HB] Changed foobar's bot from hortbot to otherbot.
 
 

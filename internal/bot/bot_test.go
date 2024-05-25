@@ -20,7 +20,6 @@ func TestBotNewPanics(t *testing.T) {
 	config := &bot.Config{
 		DB:                     db,
 		Redis:                  &redis.DB{},
-		ChannelUpdateNotifier:  &struct{ bot.ChannelUpdateNotifier }{},
 		EventsubUpdateNotifier: &struct{ bot.EventsubUpdateNotifier }{},
 		Twitch:                 &struct{ twitch.API }{},
 		Simple:                 &struct{ simple.API }{},
@@ -41,11 +40,6 @@ func TestBotNewPanics(t *testing.T) {
 	config.Redis = nil
 	assertx.Panic(t, checkPanic, "redis is nil")
 	config.Redis = oldRedis
-
-	oldNotifier := config.ChannelUpdateNotifier
-	config.ChannelUpdateNotifier = nil
-	assertx.Panic(t, checkPanic, "notifier is nil")
-	config.ChannelUpdateNotifier = oldNotifier
 
 	oldEventsub := config.EventsubUpdateNotifier
 	config.EventsubUpdateNotifier = nil

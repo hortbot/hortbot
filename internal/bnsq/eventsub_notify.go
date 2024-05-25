@@ -11,7 +11,7 @@ const (
 	EventsubNotifyTopic = "eventsub.notify"
 )
 
-// EventsubNotify is an EventsubNotify IRC message as sent over NSQ.
+// EventsubNotify is an EventsubNotify message as sent over NSQ.
 type EventsubNotify struct{}
 
 // EventsubNotifyPublisher publishes EventsubNotify messages to NSQ.

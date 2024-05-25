@@ -93,9 +93,6 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 			return err
 		}
 
-		if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
-			return err
-		}
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 			return err
 		}
@@ -236,7 +233,7 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		return s.ReplyUsage(ctx, "<user>")
 	}
 
-	if s.IRCChannel == user {
+	if s.ChannelName == user {
 		return s.Replyf(ctx, "'%s' may not be deleted from their own channel. Run this command in another channel.", user)
 	}
 
@@ -264,9 +261,6 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		return err
 	}
 
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
-		return err
-	}
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
@@ -305,14 +299,11 @@ func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) 
 		botName = s.Origin
 	}
 
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
-		return err
-	}
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
 
-	return s.Replyf(ctx, "Triggered IRC channel sync for %s.", botName)
+	return s.Replyf(ctx, "Triggered channel sync for %s.", botName)
 }
 
 func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) error {
@@ -343,14 +334,6 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 	channel.BotName = botName
 
 	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.BotName)); err != nil {
-		return err
-	}
-
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, strings.ToLower(oldBotName)); err != nil {
-		return err
-	}
-
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, strings.ToLower(botName)); err != nil {
 		return err
 	}
 

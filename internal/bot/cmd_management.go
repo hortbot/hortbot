@@ -147,10 +147,6 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 			return err
 		}
 
-		if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
-			return err
-		}
-
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 			return err
 		}
@@ -170,10 +166,6 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 			return err
 		}
 
-		if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
-			return err
-		}
-
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 			return err
 		}
@@ -187,10 +179,6 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 	channel.DisplayName = displayName
 
 	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active, models.ChannelColumns.BotName, models.ChannelColumns.Name, models.ChannelColumns.DisplayName)); err != nil {
-		return err
-	}
-
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
 		return err
 	}
 
@@ -256,10 +244,6 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return err
 	}
 
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, channel.BotName); err != nil {
-		return err
-	}
-
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
 		return err
 	}
@@ -292,10 +276,6 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	s.Channel.Active = false
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
-		return err
-	}
-
-	if err := s.Deps.ChannelUpdateNotifier.NotifyChannelUpdates(ctx, s.Channel.BotName); err != nil {
 		return err
 	}
 

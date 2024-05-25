@@ -25,9 +25,9 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@f
 no_send
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined
-notify_channel_updates hortbot
-send hortbot #foobar [HB] Triggered IRC channel sync for hortbot.
+notify_eventsub_updates
+send hortbot #foobar [HB] Triggered channel sync for hortbot.
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined SomeBot
-notify_channel_updates somebot
-send hortbot #foobar [HB] Triggered IRC channel sync for SomeBot.
+notify_eventsub_updates
+send hortbot #foobar [HB] Triggered channel sync for SomeBot.

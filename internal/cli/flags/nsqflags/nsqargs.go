@@ -18,41 +18,6 @@ var Default = NSQ{
 	Channel: "queue",
 }
 
-// NewIncomingPublisher creates a new IncomingPublisher.
-func (args *NSQ) NewIncomingPublisher() *bnsq.IncomingPublisher {
-	return bnsq.NewIncomingPublisher(args.Addr)
-}
-
-// NewIncomingSubscriber creates a new IncomingSubscriber.
-func (args *NSQ) NewIncomingSubscriber(maxAge time.Duration, fn func(*bnsq.Incoming, *bnsq.Metadata) error) *bnsq.IncomingSubscriber {
-	return &bnsq.IncomingSubscriber{
-		Addr:    args.Addr,
-		Channel: args.Channel,
-		Opts: []bnsq.SubscriberOption{
-			bnsq.WithMaxAge(maxAge),
-		},
-		OnIncoming: fn,
-	}
-}
-
-// NewNotifyPublisher creates a new NotifyPublisher.
-func (args *NSQ) NewNotifyPublisher() *bnsq.NotifyPublisher {
-	return bnsq.NewNotifyPublisher(args.Addr)
-}
-
-// NewNotifySubscriber creates a new NotifySubscriber.
-func (args *NSQ) NewNotifySubscriber(botName string, maxAge time.Duration, fn func(*bnsq.ChannelUpdatesNotification, *bnsq.Metadata) error) *bnsq.NotifySubscriber {
-	return &bnsq.NotifySubscriber{
-		Addr:    args.Addr,
-		BotName: botName,
-		Channel: args.Channel,
-		Opts: []bnsq.SubscriberOption{
-			bnsq.WithMaxAge(maxAge),
-		},
-		OnNotifyChannelUpdates: fn,
-	}
-}
-
 // NewIncomingWebsocketMessagePublisher creates a new IncomingWebsocketMessagePublisher.
 func (args *NSQ) NewIncomingWebsocketMessagePublisher() *bnsq.IncomingWebsocketMessagePublisher {
 	return bnsq.NewIncomingWebsocketMessagePublisher(args.Addr)

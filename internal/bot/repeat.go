@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
@@ -149,16 +150,16 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 			}
 
 			s := &session{
-				Type:       sessionRepeat,
-				Deps:       b.deps,
-				Tx:         tx,
-				Start:      start,
-				UserLevel:  AccessLevelEveryone,
-				Channel:    channel,
-				Origin:     channel.BotName,
-				IRCChannel: channel.Name,
-				RoomID:     channel.TwitchID,
-				RoomIDOrig: channel.TwitchID,
+				Type:        sessionRepeat,
+				Deps:        b.deps,
+				Tx:          tx,
+				Start:       start,
+				UserLevel:   AccessLevelEveryone,
+				Channel:     channel,
+				Origin:      channel.BotName,
+				ChannelName: channel.Name,
+				RoomID:      channel.TwitchID,
+				RoomIDOrig:  channel.TwitchID,
 			}
 
 			info := runner.info()
@@ -169,7 +170,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				return err
 			}
 
-			ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.IRCChannel))
+			ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.ChannelName))
 
 			var message string
 
@@ -385,8 +386,8 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 		return err
 	}
 
-	var repeats models.RepeatedCommandSlice
-	if err := queries.Raw("SELECT r.* FROM repeated_commands r JOIN channels c ON r.channel_id = c.id WHERE r.enabled AND c.active").Bind(ctx, b.db, &repeats); err != nil {
+	repeats, err := modelsx.GetActiveRepeatedCommands(ctx, b.db)
+	if err != nil {
 		return err
 	}
 
@@ -394,8 +395,8 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 		return err
 	}
 
-	var scheduleds models.ScheduledCommandSlice
-	if err := queries.Raw("SELECT s.* FROM scheduled_commands s JOIN channels c ON s.channel_id = c.id WHERE s.enabled AND c.active").Bind(ctx, b.db, &scheduleds); err != nil {
+	scheduleds, err := modelsx.GetActiveScheduledCommands(ctx, b.db)
+	if err != nil {
 		return err
 	}
 

@@ -26,7 +26,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tomwright/queryparam/v4"
 	"github.com/volatiletech/null/v8"
-	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -343,21 +342,17 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	var row struct {
-		ChannelCount int64 `boil:"channel_count"`
-		BotCount     int64 `boil:"bot_count"`
-	}
-
-	if err := queries.Raw("SELECT COUNT(*) AS channel_count, COUNT(DISTINCT bot_name) AS bot_count FROM channels WHERE active").Bind(ctx, a.DB, &row); err != nil {
-		ctxlog.Error(ctx, "error querying bot names", zap.Error(err))
+	channelCount, botCount, err := modelsx.CountActiveChannels(ctx, a.DB)
+	if err != nil {
+		ctxlog.Error(ctx, "error counting channels", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
 	page := &templates.IndexPage{
 		BasePage:     a.basePage(r),
-		ChannelCount: row.ChannelCount,
-		BotCount:     row.BotCount,
+		ChannelCount: int64(channelCount),
+		BotCount:     int64(botCount),
 	}
 
 	templates.WritePageTemplate(w, page)

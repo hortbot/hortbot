@@ -6,19 +6,19 @@ insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_n
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] Due to Twitch policy changes, you must explicitly allow the bot to rejoin your chat. Please login at http://localhost:5000/login and return here.
-no_notify_channel_updates
+no_notify_eventsub_updates
 
 upsert_twitch_token {"twitch_id": 1,"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] Due to Twitch policy changes, you must explicitly allow the bot to rejoin your chat. Please login at http://localhost:5000/login and return here.
-no_notify_channel_updates
+no_notify_eventsub_updates
 
 upsert_twitch_token {"twitch_id": 1,"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z", "scopes": ["channel:bot"]}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #hortbot :!join
 send hortbot #hortbot [HB] BarFoo, hortbot will now rejoin your channel with your new username.
-notify_channel_updates hortbot
+notify_eventsub_updates
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+command add test It works!
 send_any

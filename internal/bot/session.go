@@ -49,12 +49,12 @@ type session struct {
 	Start   time.Time
 	TMISent time.Time
 
-	ID         string
-	RoomID     int64
-	RoomIDOrig int64
-	IRCChannel string // No '#' prefix.
-	Message    string
-	Me         bool
+	ID          string
+	RoomID      int64
+	RoomIDOrig  int64
+	ChannelName string
+	Message     string
+	Me          bool
 
 	User        string
 	UserDisplay string
@@ -163,7 +163,7 @@ func (s *session) Reply(ctx context.Context, response string) error {
 		return s.Announce(ctx, response)
 	}
 
-	return s.SendTwitchChatMessage(ctx, s.IRCChannel, response)
+	return s.SendTwitchChatMessage(ctx, s.ChannelName, response)
 }
 
 func (s *session) Replyf(ctx context.Context, format string, args ...any) error {
@@ -347,7 +347,7 @@ func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *
 
 func (s *session) GetUserID(ctx context.Context, username string) (int64, error) {
 	switch username {
-	case s.IRCChannel:
+	case s.ChannelName:
 		return s.RoomIDOrig, nil
 	case s.User:
 		return s.UserID, nil
@@ -670,7 +670,7 @@ func (s *session) RoomIDStr() string {
 }
 
 func (s *session) BetaFeatures() bool {
-	_, ok := stringSliceIndex(s.Deps.BetaFeatures, s.IRCChannel)
+	_, ok := stringSliceIndex(s.Deps.BetaFeatures, s.ChannelName)
 	return ok
 }
 

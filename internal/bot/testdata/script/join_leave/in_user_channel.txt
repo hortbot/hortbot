@@ -30,7 +30,7 @@ clock_forward 2s
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!part
 send hortbot #foobar [HB] FooBar, hortbot will now leave your channel.
-notify_channel_updates hortbot
+notify_eventsub_updates
 
 clock_forward 2s
 

@@ -52,8 +52,8 @@ func RunScript(t testing.TB, filename string, freshDB func(t testing.TB) *sql.DB
 }
 
 const (
-	countSend                 = "send"
-	countNotifyChannelUpdates = "notify_channel_updates"
+	countSend                  = "send"
+	countNotifyEventsubUpdates = "notify_eventsub_updates"
 )
 
 type scriptTester struct {
@@ -62,7 +62,6 @@ type scriptTester struct {
 	db                     *sql.DB
 	redis                  *miniredis.Miniredis
 	sender                 *SenderMock
-	channelUpdateNotifier  *botmocks.ChannelUpdateNotifierMock
 	eventsubUpdateNotifier *botmocks.EventsubUpdateNotifierMock
 	clock                  *clock.Mock
 
@@ -89,9 +88,9 @@ type scriptTester struct {
 	sentBefore int
 	needNoSend bool
 
-	notifyChannelUpdatesBefore int
-	needNoNotifyChannelUpdates bool
-	needPanic                  bool
+	notifyEventsubUpdatesCallsBefore int
+	needNoNotifyEventsubUpdatesCalls bool
+	needPanic                        bool
 }
 
 func (st *scriptTester) addAction(fn func(context.Context)) {
@@ -118,9 +117,6 @@ func (st *scriptTester) test(t testing.TB) {
 	st.idToName = make(map[int64]string)
 	st.sender = &SenderMock{
 		SendMessageFunc: func(ctx context.Context, origin, target, message string) error { return nil },
-	}
-	st.channelUpdateNotifier = &botmocks.ChannelUpdateNotifierMock{
-		NotifyChannelUpdatesFunc: func(ctx context.Context, botName string) error { return nil },
 	}
 	st.eventsubUpdateNotifier = &botmocks.EventsubUpdateNotifierMock{
 		NotifyEventsubUpdatesFunc: func(ctx context.Context) error { return nil },
@@ -165,7 +161,6 @@ func (st *scriptTester) test(t testing.TB) {
 	st.bc = bot.Config{
 		DB:                     st.db,
 		Redis:                  redis.New(rClient),
-		ChannelUpdateNotifier:  st.channelUpdateNotifier,
 		EventsubUpdateNotifier: st.eventsubUpdateNotifier,
 		Clock:                  st.clock,
 		LastFM:                 st.lastFM,
@@ -251,8 +246,7 @@ func (st *scriptTester) test(t testing.TB) {
 	}
 
 	assert.Equal(t, len(st.sender.SendMessageCalls()), st.counts[countSend])
-	assert.Equal(t, len(st.channelUpdateNotifier.NotifyChannelUpdatesCalls()), st.counts[countNotifyChannelUpdates])
-	// TODO: eventsub
+	assert.Equal(t, len(st.eventsubUpdateNotifier.NotifyEventsubUpdatesCalls()), st.counts[countNotifyEventsubUpdates])
 }
 
 func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
@@ -316,7 +310,7 @@ func (st *scriptTester) checkpoint(_ testing.TB, _, _ string, _ int) {
 
 func (st *scriptTester) doCheckpoint() {
 	st.sentBefore = len(st.sender.SendMessageCalls())
-	st.notifyChannelUpdatesBefore = len(st.channelUpdateNotifier.NotifyChannelUpdatesCalls())
+	st.notifyEventsubUpdatesCallsBefore = len(st.eventsubUpdateNotifier.NotifyEventsubUpdatesCalls())
 }
 
 func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {
@@ -350,8 +344,8 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"send_match":                    (*scriptTester).sendMatch,
 	"send_any":                      (*scriptTester).sendAny,
 	"no_send":                       (*scriptTester).noSend,
-	"notify_channel_updates":        (*scriptTester).notifyChannelUpdates,
-	"no_notify_channel_updates":     (*scriptTester).noNotifyChannelUpdates,
+	"notify_eventsub_updates":       (*scriptTester).notifyEventsubUpdatesCalls,
+	"no_notify_eventsub_updates":    (*scriptTester).noNotifyEventsubUpdatesCalls,
 	"clock_forward":                 (*scriptTester).clockForward,
 	"clock_set":                     (*scriptTester).clockSet,
 	"sleep":                         (*scriptTester).sleep,

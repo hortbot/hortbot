@@ -1,10 +1,5 @@
 package bnsq
 
-const (
-	IncomingTopic             = incomingTopic
-	NotifyChannelUpdatesTopic = notifyChannelUpdatesTopic
-)
-
 type Message = message
 
 var (

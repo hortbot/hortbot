@@ -10,7 +10,6 @@ import (
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/eventsubtobot"
-	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
@@ -70,10 +69,9 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	db := c.SQL.Open(ctx, driverName)
 	rdb := c.Redis.Client()
 	twitchAPI := c.Twitch.Client(httpClient)
-	notifier := c.NSQ.NewNotifyPublisher()
-	evensubNotifier := c.NSQ.NewEventsubNotifyPublisher()
+	eventsubNotifier := c.NSQ.NewEventsubNotifyPublisher()
 
-	b := c.Bot.New(ctx, db, rdb, notifier, evensubNotifier, twitchAPI, httpClient, untrustedClient)
+	b := c.Bot.New(ctx, db, rdb, eventsubNotifier, twitchAPI, httpClient, untrustedClient)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
@@ -122,21 +120,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		return originMap, err
 	}
 
-	incomingSub := c.NSQ.NewIncomingSubscriber(15*time.Second, func(i *bnsq.Incoming, metadata *bnsq.Metadata) error {
-		subCtx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncoming", metadata.ParentSpan())
-		defer span.End()
-
-		origin := i.Origin
-		m := i.Message
-
-		if m.Command != "PRIVMSG" {
-			return nil
-		}
-
-		mm := irctobot.ToMessage(origin, m)
-		return put(subCtx, span, metadata, mm)
-	})
-
 	eventsubSub := c.NSQ.NewIncomingWebsocketMessageSubscriber(15*time.Second, func(i *bnsq.IncomingWebsocketMessage, metadata *bnsq.Metadata) error {
 		subCtx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncomingWebsocketMessage", metadata.ParentSpan())
 		defer span.End()
@@ -150,9 +133,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		return put(subCtx, span, metadata, mm)
 	})
 
-	g.Go(notifier.Run)
-	g.Go(evensubNotifier.Run)
-	g.Go(incomingSub.Run)
+	g.Go(eventsubNotifier.Run)
 	g.Go(eventsubSub.Run)
 
 	if err := g.WaitIgnoreStop(); err != nil {

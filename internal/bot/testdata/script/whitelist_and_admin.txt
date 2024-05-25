@@ -7,7 +7,7 @@ twitch_get_user_by_username {"foobar": {"id": 1, "login": "foobar"}}
 
 handle hortbot @id=__UUID__;room-id=999;user-id=3;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!join foobar
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '!'.
-notify_channel_updates hortbot
+notify_eventsub_updates
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
 no_send

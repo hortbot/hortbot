@@ -221,7 +221,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 
 func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) error {
 	if !testing.Testing() {
-		return s.Replyf(ctx, "You can find the list of autoreplies at: %s/c/%s/autoreplies", s.WebAddr(), s.IRCChannel)
+		return s.Replyf(ctx, "You can find the list of autoreplies at: %s/c/%s/autoreplies", s.WebAddr(), s.ChannelName)
 	}
 
 	autoreplies, err := s.Channel.Autoreplies(

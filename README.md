@@ -3,7 +3,7 @@
 [![](https://github.com/hortbot/hortbot/workflows/CI/badge.svg?branch=master)](https://github.com/hortbot/hortbot/actions?query=workflow%3ACI+branch%3Amaster)
 [![codecov](https://codecov.io/gh/hortbot/hortbot/branch/master/graph/badge.svg)](https://codecov.io/gh/hortbot/hortbot)
 
-An IRC bot for Twitch.
+A chat bot for Twitch.
 
 ## Features
 

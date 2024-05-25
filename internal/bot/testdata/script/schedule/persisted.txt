@@ -1,4 +1,5 @@
 upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z", "scopes": ["channel:bot"]}
 
 insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 insert_custom_command {"id": 1, "channel_id": 1, "message": "Hello there! (_MESSAGE_COUNT_)"}

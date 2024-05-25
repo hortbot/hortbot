@@ -2,30 +2,6 @@ x-golang-image: &golang-image
   image: golang:1.22
 
 services:
-  irc:
-    <<: *golang-image
-    volumes:
-      - .:/app:ro
-      - gopath:/go
-      - go-build:/root/.cache/go-build
-    working_dir: /app
-    command: go run -mod=readonly . irc
-    depends_on:
-      - db
-      - redis
-      - nsq
-      - jaeger
-    env_file:
-      - config/irc.env
-      - config/twitch.env
-    environment:
-      - HB_DEBUG=true
-      - HB_DB=postgres://postgres:mysecretpassword@db:5432/postgres?sslmode=disable
-      - HB_DB_MIGRATE_UP=true
-      - HB_REDIS_ADDR=redis:6379
-      - HB_NSQ_ADDR=nsq:4150
-      - HB_JAEGER_AGENT=jaeger:6831
-
   bot:
     <<: *golang-image
     volumes:
