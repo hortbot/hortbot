@@ -124,23 +124,23 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		noAuth = !isModerator
 	}
 
-	firstJoin := func(ctx context.Context) error {
-		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'.", displayName, botName, channel.Prefix)
-	}
-
-	replyNoAuth := func(ctx context.Context) error {
+	if noAuth {
 		if adminOverride {
 			return s.Replyf(ctx, "The can no longer join channels without auth.")
+		}
+
+		if channel != nil && channel.Active {
+			return s.Replyf(ctx, "Due to Twitch policy changes, you must explicitly allow the bot to rejoin your chat. Please login at %s/login and return here.", s.WebAddrFor(botName))
 		}
 
 		return s.Replyf(ctx, "Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at %s/login and return here.", s.WebAddrFor(botName))
 	}
 
-	if errors.Is(err, sql.ErrNoRows) {
-		if noAuth {
-			return replyNoAuth(ctx)
-		}
+	firstJoin := func(ctx context.Context) error {
+		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'.", displayName, botName, channel.Prefix)
+	}
 
+	if errors.Is(err, sql.ErrNoRows) {
 		channel = modelsx.NewChannel(userID, name, displayName, botName)
 
 		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {
@@ -163,10 +163,6 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.", displayName, channel.BotName, channel.Prefix)
 		}
 
-		if noAuth {
-			return replyNoAuth(ctx)
-		}
-
 		channel.Name = name
 		channel.DisplayName = displayName
 
@@ -183,10 +179,6 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		}
 
 		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
-	}
-
-	if noAuth {
-		return replyNoAuth(ctx)
 	}
 
 	channel.Active = true

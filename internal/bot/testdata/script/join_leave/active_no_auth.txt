@@ -1,0 +1,8 @@
+upsert_twitch_token {"twitch_id": 2, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
+insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot", "active": true}
+
+bot_config {"WebAddr": "http://localhost:5000"}
+
+handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+send hortbot #hortbot [HB] Due to Twitch policy changes, you must explicitly allow the bot to rejoin your chat. Please login at http://localhost:5000/login and return here.
+no_notify_channel_updates
