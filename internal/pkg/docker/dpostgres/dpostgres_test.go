@@ -3,9 +3,7 @@ package dpostgres_test
 import (
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
-	"github.com/jmoiron/sqlx"
 	"gotest.tools/v3/assert"
 )
 
@@ -17,11 +15,13 @@ func TestNew(t *testing.T) {
 	assert.Assert(t, connStr != "", "got connStr: %s", connStr)
 	assert.Assert(t, db != nil)
 
-	dbx := sqlx.NewDb(db, driver.Name)
+	rows, err := db.Query("SELECT count(*) FROM schema_migrations")
+	assert.NilError(t, err)
 
 	var count int
-	err = dbx.Get(&count, "SELECT count(*) FROM schema_migrations")
-	assert.NilError(t, err)
+	assert.Assert(t, rows.Next())
+	assert.NilError(t, rows.Scan(&count))
+	assert.NilError(t, rows.Close())
 	assert.Equal(t, count, 1)
 }
 
@@ -33,12 +33,8 @@ func TestNoMigrate(t *testing.T) {
 	assert.Assert(t, connStr != "", "got connStr: %s", connStr)
 	assert.Assert(t, db != nil)
 
-	dbx := sqlx.NewDb(db, driver.Name)
-
-	var count int
-	err = dbx.Get(&count, "SELECT count(*) FROM schema_migrations")
+	_, err = db.Query("SELECT count(*) FROM schema_migrations")
 	assert.ErrorContains(t, err, "does not exist")
-	assert.Equal(t, count, 0)
 }
 
 func TestNewBadDocker(t *testing.T) {

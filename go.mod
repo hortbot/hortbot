@@ -28,7 +28,6 @@ require (
 	github.com/jakebailey/irc v0.0.0-20230110182717-9144941a856a
 	github.com/jarcoal/httpmock v1.3.1
 	github.com/jessevdk/go-flags v1.5.0
-	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/leononame/clock v0.1.6
 	github.com/matryer/moq v0.3.4
