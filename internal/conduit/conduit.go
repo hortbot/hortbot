@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -25,6 +26,7 @@ type Service struct {
 	db           *sql.DB
 	twitch       twitch.API
 	syncInterval time.Duration
+	shards       int
 
 	g *errgroupx.Group
 
@@ -33,13 +35,15 @@ type Service struct {
 
 	conduitID      string
 	websocketCount atomic.Int64
+	shardMu        sync.Mutex
 }
 
-func New(db *sql.DB, twitch twitch.API, syncInterval time.Duration) *Service {
+func New(db *sql.DB, twitch twitch.API, syncInterval time.Duration, shards int) *Service {
 	return &Service{
 		db:           db,
 		twitch:       twitch,
 		syncInterval: syncInterval,
+		shards:       shards,
 		started:      make(chan struct{}),
 		incoming:     make(chan *eventsub.WebsocketMessage, 10),
 	}
@@ -48,8 +52,6 @@ func New(db *sql.DB, twitch twitch.API, syncInterval time.Duration) *Service {
 func (s *Service) Incoming() <-chan *eventsub.WebsocketMessage {
 	return s.incoming
 }
-
-const shardCount = 1
 
 func (s *Service) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
@@ -65,7 +67,7 @@ func (s *Service) Run(ctx context.Context) error {
 
 	ctxlog.Info(ctx, "using conduit", zap.String("id", s.conduitID))
 
-	for i := range shardCount {
+	for i := range s.shards {
 		s.g.Go(func(ctx context.Context) error {
 			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, func() { close(s.started) })
 		})
@@ -82,7 +84,7 @@ func (s *Service) getOrCreateConduit(ctx context.Context) (*twitch.Conduit, erro
 
 	if len(conduits) == 0 {
 		ctxlog.Info(ctx, "creating conduit")
-		conduit, err := s.twitch.CreateConduit(ctx, shardCount)
+		conduit, err := s.twitch.CreateConduit(ctx, s.shards)
 		if err != nil {
 			return nil, fmt.Errorf("create conduit: %w", err)
 		}
@@ -90,9 +92,9 @@ func (s *Service) getOrCreateConduit(ctx context.Context) (*twitch.Conduit, erro
 	}
 
 	conduit := conduits[0]
-	if conduit.ShardCount != shardCount {
-		ctxlog.Info(ctx, "reusing conduit but updating shard count", zap.Int("shardCount", shardCount))
-		conduit, err := s.twitch.UpdateConduit(ctx, conduit.ID, shardCount)
+	if conduit.ShardCount != s.shards {
+		ctxlog.Info(ctx, "reusing conduit but updating shard count", zap.Int("shardCount", s.shards))
+		conduit, err := s.twitch.UpdateConduit(ctx, conduit.ID, s.shards)
 		if err != nil {
 			return nil, fmt.Errorf("update conduit: %w", err)
 		}
@@ -104,6 +106,9 @@ func (s *Service) getOrCreateConduit(ctx context.Context) (*twitch.Conduit, erro
 }
 
 func (s *Service) setConduitShardSession(ctx context.Context, shard int, sessionID string) error {
+	s.shardMu.Lock()
+	defer s.shardMu.Unlock()
+
 	ctxlog.Info(ctx, "setting conduit shard session", zap.String("sessionID", sessionID))
 	if err := s.twitch.UpdateShards(ctx, s.conduitID, []*twitch.Shard{
 		{

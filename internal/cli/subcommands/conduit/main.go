@@ -30,6 +30,7 @@ type cmd struct {
 	HTTP       httpflags.HTTP
 
 	SyncInterval time.Duration `long:"conduit-sync-interval" env:"HB_CONDUIT_SYNC_INTERVAL" description:"How often to synchronize subscriptions"`
+	Shards       int           `long:"conduit-shards" env:"HB_CONDUIT_SHARDS" description:"Number of shards"`
 }
 
 // Command returns a fresh conduit command.
@@ -43,6 +44,7 @@ func Command() cli.Command {
 		Prometheus:   promflags.Default,
 		HTTP:         httpflags.Default,
 		SyncInterval: 5 * time.Minute,
+		Shards:       1,
 	}
 }
 
@@ -64,7 +66,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 	g := errgroupx.FromContext(ctx)
 
-	s := conduit.New(db, twitchAPI, c.SyncInterval)
+	s := conduit.New(db, twitchAPI, c.SyncInterval, c.Shards)
 
 	g.Go(s.Run)
 
