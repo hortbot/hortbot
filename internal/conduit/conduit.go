@@ -30,8 +30,9 @@ type Service struct {
 
 	g *errgroupx.Group
 
-	started  chan struct{}
-	incoming chan *eventsub.WebsocketMessage
+	started     chan struct{}
+	startedOnce sync.Once
+	incoming    chan *eventsub.WebsocketMessage
 
 	conduitID      string
 	websocketCount atomic.Int64
@@ -69,7 +70,9 @@ func (s *Service) Run(ctx context.Context) error {
 
 	for i := range s.shards {
 		s.g.Go(func(ctx context.Context) error {
-			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, func() { close(s.started) })
+			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, func() {
+				s.startedOnce.Do(func() { close(s.started) })
+			})
 		})
 	}
 
