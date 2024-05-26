@@ -112,7 +112,7 @@ func (s *Service) setConduitShardSession(ctx context.Context, shard int, session
 	s.shardMu.Lock()
 	defer s.shardMu.Unlock()
 
-	ctxlog.Info(ctx, "setting conduit shard session", zap.String("sessionID", sessionID))
+	ctxlog.Info(ctx, "setting conduit shard session", zap.Int("shard_id", shard), zap.String("sessionID", sessionID))
 	if err := s.twitch.UpdateShards(ctx, s.conduitID, []*twitch.Shard{
 		{
 			ID: idstr.IDStr(shard),
@@ -155,7 +155,7 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 var errWebsocketClosedForReconnect = errors.New("websocket closed")
 
 func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, onWelcome func()) error {
-	ctxlog.Info(ctx, "creating websocket")
+	ctxlog.Info(ctx, "creating websocket", zap.Int("shard_id", shard))
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
