@@ -28,7 +28,7 @@ type choice struct {
 }
 
 const (
-	userAgentsURL = "https://unpkg.com/user-agents@1.1.216/src/user-agents.json"
+	userAgentsURL = "https://unpkg.com/user-agents@1.1.216/src/user-agents.json.gz"
 	minThreshold  = 1000
 )
 
@@ -36,6 +36,10 @@ func getEntries() []*entry {
 	resp, err := http.Get(userAgentsURL)
 	must.NilError(err)
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		must.NilError(fmt.Errorf("unexpected status code: %d", resp.StatusCode))
+	}
 
 	r := must.Must(gzip.NewReader(resp.Body))
 
@@ -70,7 +74,10 @@ func main() {
 
 	// weightedrand does this already, but make startup faster by pre-sorting.
 	slices.SortFunc(choices, func(i, j choice) int {
-		return cmp.Compare(i.weight, j.weight)
+		return cmp.Or(
+			cmp.Compare(i.weight, j.weight),
+			cmp.Compare(i.item, j.item),
+		)
 	})
 
 	f, err := os.OpenFile("./useragent_generated.go", os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0o644)
