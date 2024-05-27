@@ -417,7 +417,7 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 
 	repeats, err := modelsx.GetActiveRepeatedCommands(ctx, b.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting active repeated commands: %w", err)
 	}
 
 	if err := updateRepeating(ctx, b.deps, repeats, true); err != nil {
@@ -426,7 +426,7 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 
 	scheduleds, err := modelsx.GetActiveScheduledCommands(ctx, b.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting active scheduled commands: %w", err)
 	}
 
 	return updateScheduleds(ctx, b.deps, scheduleds, true)

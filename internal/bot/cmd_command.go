@@ -239,7 +239,7 @@ func cmdCommandDelete(ctx context.Context, s *session, cmd string, args string) 
 
 	repeated, scheduled, err := modelsx.DeleteCommandInfo(ctx, s.Tx, info)
 	if err != nil {
-		return err
+		return fmt.Errorf("deleting command info: %w", err)
 	}
 
 	deletedRepeat := false
@@ -474,7 +474,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 
 	oldInfo, commandMessage, found, err := modelsx.FindCommand(ctx, s.Tx, otherChannel.ID, name, false)
 	if err != nil {
-		return err
+		return fmt.Errorf("finding command: %w", err)
 	}
 
 	if !found {

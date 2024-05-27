@@ -309,7 +309,10 @@ func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.To
 	s.cache.tok.set(newToken, nil)
 
 	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, s.Channel.TwitchID)
-	return modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt)
+	if err := modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt); err != nil {
+		return fmt.Errorf("upserting token: %w", err)
+	}
+	return nil
 }
 
 func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, error) {
@@ -346,7 +349,10 @@ func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *
 	s.cache.botTok.set(tokenAndUserID{tok: newToken, id: botID}, nil)
 
 	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, botID)
-	return modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt)
+	if err := modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt); err != nil {
+		return fmt.Errorf("upserting token: %w", err)
+	}
+	return nil
 }
 
 func (s *session) GetUserID(ctx context.Context, username string) (int64, error) {

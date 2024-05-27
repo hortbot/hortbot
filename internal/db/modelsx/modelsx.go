@@ -281,7 +281,7 @@ func DeleteChannel(ctx context.Context, exec boil.ContextExecutor, id int64) err
 
 	for _, q := range queries {
 		if err := q.DeleteAll(ctx, exec); err != nil {
-			return err
+			return fmt.Errorf("deleting: %w", err)
 		}
 	}
 

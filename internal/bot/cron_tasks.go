@@ -64,7 +64,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 
 			ctxlog.Debug(ctx, "token validated", zap.Bool("new_token", newToken != nil), zap.Strings("scopes", tt.Scopes))
 			if err := modelsx.UpsertToken(ctx, b.db, tt); err != nil {
-				return err
+				return fmt.Errorf("upserting token: %w", err)
 			}
 
 			validated++
@@ -154,7 +154,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 			if newToken != nil {
 				botToken := modelsx.TokenToModel(newToken, botToken.TwitchID, botToken.BotName, botToken.Scopes)
 				if err := modelsx.UpsertToken(ctx, tx, botToken); err != nil {
-					return err
+					return fmt.Errorf("upserting new token: %w", err)
 				}
 			}
 			if err != nil {
