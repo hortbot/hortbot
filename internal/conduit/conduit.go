@@ -58,25 +58,28 @@ func (s *Service) Run(ctx context.Context) error {
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	s.g = errgroupx.FromContext(ctx)
-
 	conduit, err := s.getOrCreateConduit(ctx)
 	if err != nil {
 		return err
 	}
 	s.conduitID = conduit.ID
 
-	ctxlog.Info(ctx, "using conduit", zap.String("id", s.conduitID))
+	ctx = ctxlog.With(ctx, zap.String("conduit_id", s.conduitID))
+	ctxlog.Info(ctx, "spinning up shards")
+
+	s.g = errgroupx.FromContext(ctx)
 
 	for i := range s.shards {
 		s.g.Go(func(ctx context.Context) error {
-			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, func() {
-				s.startedOnce.Do(func() { close(s.started) })
-			})
+			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, s.onStart)
 		})
 	}
 
 	return s.g.WaitIgnoreStop()
+}
+
+func (s *Service) onStart() {
+	s.startedOnce.Do(func() { close(s.started) })
 }
 
 func (s *Service) getOrCreateConduit(ctx context.Context) (*twitch.Conduit, error) {
@@ -112,7 +115,7 @@ func (s *Service) setConduitShardSession(ctx context.Context, shard int, session
 	s.shardMu.Lock()
 	defer s.shardMu.Unlock()
 
-	ctxlog.Info(ctx, "setting conduit shard session", zap.Int("shard_id", shard), zap.String("sessionID", sessionID))
+	ctxlog.Info(ctx, "setting conduit shard session", zap.String("sessionID", sessionID))
 	if err := s.twitch.UpdateShards(ctx, s.conduitID, []*twitch.Shard{
 		{
 			ID: idstr.IDStr(shard),
@@ -155,7 +158,9 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 var errWebsocketClosedForReconnect = errors.New("websocket closed")
 
 func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, onWelcome func()) error {
-	ctxlog.Info(ctx, "creating websocket", zap.Int("shard_id", shard))
+	ctx = ctxlog.With(ctx, zap.Int("shard_id", shard))
+
+	ctxlog.Info(ctx, "creating websocket")
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
