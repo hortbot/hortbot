@@ -2,6 +2,7 @@ package confimport
 
 import (
 	"context"
+	"fmt"
 	"sort"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -31,7 +32,7 @@ func export(ctx context.Context, exec boil.ContextExecutor, mod qm.QueryMod) (*C
 		qm.Load(models.ChannelRels.Variables),
 	).One(ctx, exec)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getting channels: %w", err)
 	}
 
 	infos := channel.R.CommandInfos

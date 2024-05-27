@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -109,7 +110,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		)
 
 		if err := repeat.Update(ctx, s.Tx, columns); err != nil {
-			return err
+			return fmt.Errorf("updating repeated command: %w", err)
 		}
 	} else {
 		repeat = &models.RepeatedCommand{
@@ -124,7 +125,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		}
 
 		if err := repeat.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-			return err
+			return fmt.Errorf("inserting repeated command: %w", err)
 		}
 	}
 
@@ -167,7 +168,7 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := repeat.Delete(ctx, s.Tx); err != nil {
-		return err
+		return fmt.Errorf("deleting repeated command: %w", err)
 	}
 
 	if err := s.Deps.RemoveRepeat(ctx, repeat.ID); err != nil {
@@ -226,7 +227,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	)
 
 	if err := repeat.Update(ctx, s.Tx, columns); err != nil {
-		return err
+		return fmt.Errorf("updating repeated command: %w", err)
 	}
 
 	if enable {
@@ -251,7 +252,7 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 		qm.Load(models.RepeatedCommandRels.CommandInfo),
 	).All(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting repeated commands: %w", err)
 	}
 
 	if len(repeats) == 0 {
@@ -299,7 +300,7 @@ func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.
 	}
 
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("getting command info: %w", err)
 	}
 
 	return info, info.R.RepeatedCommand, nil

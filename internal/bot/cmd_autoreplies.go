@@ -91,7 +91,7 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := autoreply.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting autoreply: %w", err)
 	}
 
 	return s.Replyf(ctx, "Autoreply #%d added.%s", autoreply.Num, warning)
@@ -121,11 +121,11 @@ func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting autoreply: %w", err)
 	}
 
 	if err := autoreply.Delete(ctx, s.Tx); err != nil {
-		return err
+		return fmt.Errorf("deleting autoreply: %w", err)
 	}
 
 	return s.Replyf(ctx, "Autoreply #%d has been deleted.", num)
@@ -162,14 +162,14 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting autoreply: %w", err)
 	}
 
 	autoreply.Response = response
 	autoreply.Editor = s.User
 
 	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Response, models.AutoreplyColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating autoreply: %w", err)
 	}
 
 	return s.Replyf(ctx, "Autoreply #%d's response has been edited.%s", num, warning)
@@ -206,7 +206,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting autoreply: %w", err)
 	}
 
 	autoreply.Trigger = trigger
@@ -214,7 +214,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 	autoreply.Editor = s.User
 
 	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Trigger, models.AutoreplyColumns.OrigPattern, models.AutoreplyColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating autoreply: %w", err)
 	}
 
 	return s.Replyf(ctx, "Autoreply #%d's pattern has been edited.", num)
@@ -229,7 +229,7 @@ func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) 
 		qm.OrderBy(models.AutoreplyColumns.Num),
 	).All(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting autoreplies: %w", err)
 	}
 
 	if len(autoreplies) == 0 {

@@ -168,7 +168,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 			info.Count++
 
 			if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
-				return err
+				return fmt.Errorf("updating command info: %w", err)
 			}
 
 			ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.ChannelName))
@@ -271,7 +271,10 @@ func (runner *repeatedCommandRunner) load(ctx context.Context, exec boil.Context
 	).One(ctx, exec)
 
 	runner.repeat = repeat
-	return err
+	if err != nil {
+		return fmt.Errorf("loading repeat: %w", err)
+	}
+	return nil
 }
 
 func (runner *repeatedCommandRunner) channel() *models.Channel {
@@ -284,7 +287,11 @@ func (runner *repeatedCommandRunner) updateCount(ctx context.Context, exec boil.
 
 	repeat := runner.repeat
 	repeat.LastCount = runner.channel().MessageCount
-	return repeat.Update(ctx, exec, boil.Whitelist(models.RepeatedCommandColumns.LastCount))
+
+	if err := repeat.Update(ctx, exec, boil.Whitelist(models.RepeatedCommandColumns.LastCount)); err != nil {
+		return fmt.Errorf("updating count: %w", err)
+	}
+	return nil
 }
 
 func (runner *repeatedCommandRunner) info() *models.CommandInfo {
@@ -370,7 +377,12 @@ func (runner *scheduledCommandRunner) load(ctx context.Context, exec boil.Contex
 	).One(ctx, exec)
 
 	runner.scheduled = scheduled
-	return err
+
+	if err != nil {
+		return fmt.Errorf("loading scheduled: %w", err)
+	}
+
+	return nil
 }
 
 func (runner *scheduledCommandRunner) channel() *models.Channel {
@@ -383,7 +395,11 @@ func (runner *scheduledCommandRunner) updateCount(ctx context.Context, exec boil
 
 	scheduled := runner.scheduled
 	scheduled.LastCount = runner.channel().MessageCount
-	return scheduled.Update(ctx, exec, boil.Whitelist(models.ScheduledCommandColumns.LastCount))
+
+	if err := scheduled.Update(ctx, exec, boil.Whitelist(models.ScheduledCommandColumns.LastCount)); err != nil {
+		return fmt.Errorf("updating count: %w", err)
+	}
+	return nil
 }
 
 func (runner *scheduledCommandRunner) info() *models.CommandInfo {

@@ -357,7 +357,7 @@ func handleSession(ctx context.Context, s *session) error {
 		if len(fixup) > 0 {
 			fixup = append(fixup, models.ChannelColumns.UpdatedAt)
 			if err := channel.Update(ctx, s.Tx, boil.Whitelist(fixup...)); err != nil {
-				return err
+				return fmt.Errorf("updating channel: %w:", err)
 			}
 		}
 
@@ -398,7 +398,7 @@ func handleSession(ctx context.Context, s *session) error {
 	s.Channel.LastSeen = s.Deps.Clock.Now()
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount, models.ChannelColumns.LastSeen)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	if ok, err := tryCommand(ctx, s); ok || err != nil {
@@ -489,7 +489,7 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 			if errors.Is(err, sql.ErrNoRows) {
 				return true, s.Replyf(ctx, "Channel %s does not exist.", foreignChannel)
 			}
-			return true, err
+			return true, fmt.Errorf("finding channel: %w", err)
 		}
 		channelID = otherChannel.ID
 	}

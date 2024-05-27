@@ -66,7 +66,6 @@ linters-settings:
       - context
       - github.com/hortbot/hortbot/internal/birc/breq
       - github.com/hortbot/hortbot/internal/pkg/errgroupx
-      - github.com/hortbot/hortbot/internal/db/models # TODO
       - github.com/hortbot/hortbot/internal/db/modelsx # TODO
       - github.com/hortbot/hortbot/internal/pkg/wqueue
       - github.com/hortbot/hortbot/internal/pkg/repeat

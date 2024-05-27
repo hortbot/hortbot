@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/cbp"
@@ -43,7 +44,11 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 	info.Count++
 	info.LastUsed = null.TimeFrom(s.Deps.Clock.Now())
 
-	return info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count, models.CommandInfoColumns.LastUsed))
+	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count, models.CommandInfoColumns.LastUsed)); err != nil {
+		return fmt.Errorf("update command info: %w", err)
+	}
+
+	return nil
 }
 
 func processCommand(ctx context.Context, s *session, msg string) (string, error) {

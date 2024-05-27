@@ -79,19 +79,19 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 
 	bu := &models.BlockedUser{TwitchID: int64(u.ID)}
 	if err := bu.Upsert(ctx, s.Tx, false, []string{models.BlockedUserColumns.TwitchID}, boil.Blacklist(models.BlockedUserColumns.CreatedAt), boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("upsert blocked user: %w", err)
 	}
 
 	channel, err := models.Channels(models.ChannelWhere.TwitchID.EQ(int64(u.ID))).One(ctx, s.Tx)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		return err
+		return fmt.Errorf("get channel: %w", err)
 	}
 
 	if !errors.Is(err, sql.ErrNoRows) && channel.Active {
 		channel.Active = false
 
 		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
-			return err
+			return fmt.Errorf("update channel: %w", err)
 		}
 
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
@@ -113,7 +113,7 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(int64(u.ID))).DeleteAll(ctx, s.Tx); err != nil {
-		return err
+		return fmt.Errorf("delete blocked user: %w", err)
 	}
 
 	return s.Replyf(ctx, "%s (%d) has been unblocked.", u.DispName(), u.ID)
@@ -122,7 +122,7 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) error {
 	count, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("count channels: %w", err)
 	}
 
 	ch := pluralInt64(count, "channel", "channels")
@@ -190,7 +190,7 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Channel %s does not exist.", name)
 		}
-		return err
+		return fmt.Errorf("get channel: %w", err)
 	}
 
 	s.RoomID = otherChannel.TwitchID
@@ -246,7 +246,7 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "User '%s' does not exist.", user)
 		}
-		return err
+		return fmt.Errorf("get channel: %w", err)
 	}
 
 	confirmed, err := s.Confirm(ctx, s.User, "delete/"+user, deleteChannelConfirmDur)
@@ -323,7 +323,7 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "No such user %s.", name)
 		}
-		return err
+		return fmt.Errorf("get channel: %w", err)
 	}
 
 	oldBotName := channel.BotName
@@ -335,7 +335,7 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 	channel.BotName = botName
 
 	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.BotName)); err != nil {
-		return err
+		return fmt.Errorf("update channel: %w", err)
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {

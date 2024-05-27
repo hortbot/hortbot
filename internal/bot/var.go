@@ -24,7 +24,7 @@ func (s *session) VarGet(ctx context.Context, name string) (string, bool, error)
 	}
 
 	if err != nil {
-		return "", false, err
+		return "", false, fmt.Errorf("getting variable: %w", err)
 	}
 
 	return v.Value, true, nil
@@ -69,14 +69,22 @@ func (s *session) VarSet(ctx context.Context, name, value string) error {
 		Value:     value,
 	}
 
-	return v.Upsert(ctx, s.Tx, true, varConflictCols, boil.Blacklist(models.VariableTableColumns.CreatedAt), boil.Infer())
+	if err := v.Upsert(ctx, s.Tx, true, varConflictCols, boil.Blacklist(models.VariableTableColumns.CreatedAt), boil.Infer()); err != nil {
+		return fmt.Errorf("upserting variable: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) VarDelete(ctx context.Context, name string) error {
 	ctx, span := trace.StartSpan(ctx, "VarDelete")
 	defer span.End()
 
-	return s.Channel.Variables(models.VariableWhere.Name.EQ(name)).DeleteAll(ctx, s.Tx)
+	if err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).DeleteAll(ctx, s.Tx); err != nil {
+		return fmt.Errorf("deleting variable: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n int64, badVar bool, err error) {
@@ -92,7 +100,7 @@ func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n i
 	}
 
 	if err != nil {
-		return 0, false, err
+		return 0, false, fmt.Errorf("getting variable: %w", err)
 	}
 
 	vInt, err := strconv.ParseInt(v.Value, 10, 64)
@@ -105,7 +113,7 @@ func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n i
 	v.Value = strconv.FormatInt(vInt, 10)
 
 	if err := v.Update(ctx, s.Tx, boil.Whitelist(models.VariableColumns.UpdatedAt, models.VariableColumns.Value)); err != nil {
-		return 0, false, err
+		return 0, false, fmt.Errorf("updating variable: %w", err)
 	}
 
 	return vInt, false, nil

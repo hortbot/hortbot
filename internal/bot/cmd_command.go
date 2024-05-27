@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/gobuffalo/flect"
@@ -164,7 +165,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level AccessLev
 		command.Message = text
 
 		if err := command.Update(ctx, s.Tx, boil.Whitelist(models.CustomCommandColumns.UpdatedAt, models.CustomCommandColumns.Message)); err != nil {
-			return err
+			return fmt.Errorf("updating custom command: %w", err)
 		}
 
 		info.Editor = s.User
@@ -174,7 +175,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level AccessLev
 		}
 
 		if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.AccessLevel, models.CommandInfoColumns.Editor)); err != nil {
-			return err
+			return fmt.Errorf("updating command info: %w", err)
 		}
 
 		al := flect.Pluralize(info.AccessLevel)
@@ -187,7 +188,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level AccessLev
 	}
 
 	if err := command.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting custom command: %w", err)
 	}
 
 	info = &models.CommandInfo{
@@ -200,7 +201,7 @@ func cmdCommandAdd(ctx context.Context, s *session, args string, level AccessLev
 	}
 
 	if err := info.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting command info: %w", err)
 	}
 
 	al := flect.Pluralize(info.AccessLevel)
@@ -281,7 +282,7 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Command '%s' does not exist.", name)
 		}
-		return err
+		return fmt.Errorf("getting command info: %w", err)
 	}
 
 	if !info.CustomCommandID.Valid {
@@ -311,7 +312,7 @@ func cmdCommandRestrict(ctx context.Context, s *session, cmd string, args string
 	info.Editor = s.User
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.AccessLevel, models.CommandInfoColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating command info: %w", err)
 	}
 
 	return s.Replyf(ctx, "Command '%s' restricted to %s and above.", name, flect.Pluralize(info.AccessLevel))
@@ -330,7 +331,7 @@ func cmdCommandProperty(ctx context.Context, s *session, prop string, args strin
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Command '%s' does not exist.", name)
 		}
-		return err
+		return fmt.Errorf("getting command info: %w", err)
 	}
 
 	if !info.CustomCommandID.Valid {
@@ -377,7 +378,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Command '%s' does not exist.", oldName)
 		}
-		return err
+		return fmt.Errorf("getting command info: %w", err)
 	}
 
 	if !info.CustomCommandID.Valid {
@@ -391,7 +392,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 
 	exists, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(newName)).Exists(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("checking command exists: %w", err)
 	}
 
 	if exists {
@@ -402,7 +403,7 @@ func cmdCommandRename(ctx context.Context, s *session, cmd string, args string) 
 	info.Editor = s.User
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.Name, models.CommandInfoColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating command info: %w", err)
 	}
 
 	return s.Replyf(ctx, "Command '%s' has been renamed to '%s'.", oldName, newName)
@@ -457,7 +458,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 
 	exists, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).Exists(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("checking command exists: %w", err)
 	}
 	if exists {
 		return s.Replyf(ctx, "A command or list with name '%s' already exists.", name)
@@ -468,7 +469,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "Channel %s does not exist.", other)
 		}
-		return err
+		return fmt.Errorf("getting channel: %w", err)
 	}
 
 	oldInfo, commandMessage, found, err := modelsx.FindCommand(ctx, s.Tx, otherChannel.ID, name, false)
@@ -490,7 +491,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := command.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting custom command: %w", err)
 	}
 
 	info := &models.CommandInfo{
@@ -503,7 +504,7 @@ func cmdCommandClone(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := info.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting command info: %w", err)
 	}
 
 	return s.Replyf(ctx, "Command '%s' has been cloned from channel %s.", name, other)
@@ -530,7 +531,7 @@ func findCustomCommand(ctx context.Context, s *session, name string, forUpdate b
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil, nil
 		}
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("getting command info: %w", err)
 	}
 
 	return info, info.R.CustomCommand, nil

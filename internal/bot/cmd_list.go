@@ -123,7 +123,7 @@ func cmdListAdd(ctx context.Context, s *session, args string, level AccessLevel)
 	}
 
 	if err := list.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting list: %w", err)
 	}
 
 	info = &models.CommandInfo{
@@ -136,7 +136,7 @@ func cmdListAdd(ctx context.Context, s *session, args string, level AccessLevel)
 	}
 
 	if err := info.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting command info: %w", err)
 	}
 
 	al := flect.Pluralize(info.AccessLevel)
@@ -218,7 +218,7 @@ func cmdListRestrict(ctx context.Context, s *session, cmd string, args string) e
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "List '%s' does not exist.", name)
 		}
-		return err
+		return fmt.Errorf("getting command info: %w", err)
 	}
 
 	if !info.CommandListID.Valid {
@@ -252,7 +252,7 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 		if errors.Is(err, sql.ErrNoRows) {
 			return s.Replyf(ctx, "List '%s' does not exist.", oldName)
 		}
-		return err
+		return fmt.Errorf("getting command info: %w", err)
 	}
 
 	if !info.CommandListID.Valid {
@@ -266,7 +266,7 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 
 	exists, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(newName)).Exists(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("checking command info exists: %w", err)
 	}
 
 	if exists {
@@ -277,7 +277,7 @@ func cmdListRename(ctx context.Context, s *session, cmd string, args string) err
 	info.Editor = s.User
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.Name, models.CommandInfoColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating command info: %w", err)
 	}
 
 	return s.Replyf(ctx, "List '%s' has been renamed to '%s'.", oldName, newName)
@@ -293,7 +293,7 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil, nil
 		}
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("getting command info: %w", err)
 	}
 
 	return info, info.R.CommandList, nil
@@ -359,7 +359,7 @@ func handleList(ctx context.Context, s *session, info *models.CommandInfo, updat
 
 	list, err := info.CommandList().One(ctx, s.Tx)
 	if err != nil {
-		return true, err
+		return true, fmt.Errorf("getting command list: %w", err)
 	}
 
 	if len(list.Items) == 0 {
@@ -406,7 +406,7 @@ func handleListRestrict(ctx context.Context, s *session, info *models.CommandInf
 	info.Editor = s.User
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.AccessLevel, models.CommandInfoColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating command info: %w", err)
 	}
 
 	return s.Replyf(ctx, "List '%s' restricted to %s and above.", info.Name, flect.Pluralize(info.AccessLevel))
@@ -419,7 +419,7 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 
 	list, err := info.CommandList(qm.For("UPDATE")).One(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting command list: %w", err)
 	}
 
 	_, exists := stringSliceIndex(list.Items, args)
@@ -435,13 +435,13 @@ func handleListAdd(ctx context.Context, s *session, info *models.CommandInfo, ar
 	list.Items = append(list.Items, args)
 
 	if err := list.Update(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("updating command list: %w", err)
 	}
 
 	info.Editor = s.User
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating command info: %w", err)
 	}
 
 	return s.Replyf(ctx, `"%s" has been added to the list as item #%d.%s`, args, len(list.Items), warning)
@@ -466,7 +466,7 @@ func handleListDelete(ctx context.Context, s *session, info *models.CommandInfo,
 
 	list, err := info.CommandList().One(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting command list: %w", err)
 	}
 
 	if i >= len(list.Items) {
@@ -477,13 +477,13 @@ func handleListDelete(ctx context.Context, s *session, info *models.CommandInfo,
 	list.Items = append(list.Items[:i], list.Items[i+1:]...)
 
 	if err := list.Update(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("updating command list: %w", err)
 	}
 
 	info.Editor = s.User
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.UpdatedAt, models.CommandInfoColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating command info: %w", err)
 	}
 
 	return s.Replyf(ctx, `"%s" has been removed.`, removed)

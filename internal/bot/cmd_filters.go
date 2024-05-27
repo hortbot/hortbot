@@ -98,7 +98,7 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *session, cmd strin
 		s.Channel.EnableFilters = enable
 
 		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.EnableFilters)); err != nil {
-			return err
+			return fmt.Errorf("updating channel: %w", err)
 		}
 
 		if enable {
@@ -130,7 +130,7 @@ func cmdFilterLinks(ctx context.Context, s *session, cmd string, args string) er
 	s.Channel.FilterLinks = enable
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterLinks)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if enable {
@@ -188,7 +188,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 		s.Channel.PermittedLinks = append(s.Channel.PermittedLinks, pd)
 
 		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.PermittedLinks)); err != nil {
-			return err
+			return fmt.Errorf("updating channel: %w", err)
 		}
 
 		n := len(s.Channel.PermittedLinks)
@@ -212,7 +212,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 		s.Channel.PermittedLinks = append(old[:i], old[i+1:]...) //nolint:gocritic
 
 		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.PermittedLinks)); err != nil {
-			return err
+			return fmt.Errorf("updating channel: %w:", err)
 		}
 
 		return s.Replyf(ctx, "Permitted link pattern #%d deleted; was '%s'.", n, oldP)
@@ -290,7 +290,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	return s.Reply(ctx, response)
@@ -353,7 +353,7 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	return s.Reply(ctx, response)
@@ -381,7 +381,7 @@ func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error
 	s.Channel.FilterMe = enable
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterMe)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	if enable {
@@ -403,7 +403,7 @@ func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args st
 	s.Channel.FilterMaxLength = n
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterMaxLength)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	return s.Replyf(ctx, "Max message length set to %d.", n)
@@ -484,7 +484,7 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	return s.Reply(ctx, response)
@@ -590,7 +590,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	return s.Reply(ctx, response)
@@ -615,7 +615,7 @@ func cmdFilterExemptLevel(ctx context.Context, s *session, cmd string, args stri
 	s.Channel.FilterExemptLevel = newLevelPG
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterExemptLevel)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w:", err)
 	}
 
 	return s.Replyf(ctx, "Filter exempt level set to %s.", flect.Pluralize(newLevelPG))

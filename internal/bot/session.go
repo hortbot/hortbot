@@ -291,11 +291,11 @@ func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error)
 
 	return s.cache.tok.get(func() (*oauth2.Token, error) {
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return nil, nil
-		case err != nil:
-			return nil, err
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, nil
+			}
+			return nil, fmt.Errorf("getting token: %w", err)
 		}
 
 		return modelsx.ModelToToken(tt), nil
@@ -323,11 +323,11 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 
 	pair, err := s.cache.botTok.get(func() (tokenAndUserID, error) {
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(botName))).One(ctx, s.Tx)
-		switch {
-		case errors.Is(err, sql.ErrNoRows):
-			return tokenAndUserID{}, nil
-		case err != nil:
-			return tokenAndUserID{}, err
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return tokenAndUserID{}, nil
+			}
+			return tokenAndUserID{}, fmt.Errorf("getting token: %w", err)
 		}
 
 		return tokenAndUserID{

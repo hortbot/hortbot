@@ -49,7 +49,7 @@ var withoutCreatedAt = boil.Blacklist(models.TwitchTokenColumns.CreatedAt)
 
 // UpsertToken inserts the token into the database, or inserts all columns as written in the model.
 func UpsertToken(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
-	return tt.Upsert(ctx, exec, true, tokenConflictColumns, withoutCreatedAt, boil.Infer())
+	return tt.Upsert(ctx, exec, true, tokenConflictColumns, withoutCreatedAt, boil.Infer()) //nolint:wrapcheck
 }
 
 var withoutPreservedColumns = boil.Blacklist(
@@ -60,7 +60,7 @@ var withoutPreservedColumns = boil.Blacklist(
 
 // UpsertTokenWithoutPreservedColumns upserts a token without BotName and Scopes.
 func UpsertTokenWithoutPreservedColumns(ctx context.Context, exec boil.ContextExecutor, tt *models.TwitchToken) error {
-	return tt.Upsert(ctx, exec, true, tokenConflictColumns, withoutPreservedColumns, boil.Infer())
+	return tt.Upsert(ctx, exec, true, tokenConflictColumns, withoutPreservedColumns, boil.Infer()) //nolint:wrapcheck
 }
 
 // DeleteCommandInfo deletes all references to a specific command from the database.
@@ -68,38 +68,38 @@ func DeleteCommandInfo(ctx context.Context, exec boil.ContextExecutor, info *mod
 	repeated, err = info.RepeatedCommand().One(ctx, exec)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("getting repeated command: %w", err)
 		}
 	} else {
 		if err := repeated.Delete(ctx, exec); err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("deleting repeated command: %w", err)
 		}
 	}
 
 	scheduled, err = info.ScheduledCommand().One(ctx, exec)
 	if err != nil {
 		if !errors.Is(err, sql.ErrNoRows) {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("getting scheduled command: %w", err)
 		}
 	} else {
 		if err := scheduled.Delete(ctx, exec); err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("deleting scheduled command: %w", err)
 		}
 	}
 
 	if err := info.Delete(ctx, exec); err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("deleting command info: %w", err)
 	}
 
 	if command := info.R.CustomCommand; command != nil {
 		if err := command.Delete(ctx, exec); err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("deleting custom command: %w", err)
 		}
 	}
 
 	if list := info.R.CommandList; list != nil {
 		if err := list.Delete(ctx, exec); err != nil {
-			return nil, nil, err
+			return nil, nil, fmt.Errorf("deleting command list: %w", err)
 		}
 	}
 
@@ -151,7 +151,7 @@ func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string,
 func GetBots(ctx context.Context, exec boil.ContextExecutor) (map[string]int64, map[int64]string, error) {
 	bots, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.IsNotNull()).All(ctx, exec)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("getting bot tokens: %w", err)
 	}
 
 	botNameToID := make(map[string]int64, len(bots))

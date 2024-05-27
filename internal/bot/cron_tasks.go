@@ -27,7 +27,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 
 	tokens, err := models.TwitchTokens().All(ctx, b.db)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting tokens: %w", err)
 	}
 
 	validated := 0
@@ -45,7 +45,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 				if errors.Is(err, twitch.ErrDeadToken) || errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrNotFound) {
 					ctxlog.Info(ctx, "deleting dead token", zap.Error(err))
 					if err := tt.Delete(ctx, b.db); err != nil {
-						return err
+						return fmt.Errorf("deleting dead token: %w", err)
 					}
 					metricDeletedTokens.Inc()
 					deleted++
@@ -135,7 +135,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 			qm.Where("scopes @> array['user:read:moderated_channels']"),
 		).All(ctx, tx)
 		if err != nil {
-			return err
+			return fmt.Errorf("getting bot tokens: %w", err)
 		}
 
 		logFn(ctx, "locking moderated_channels table")
@@ -170,7 +170,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 				}
 
 				if err := m.Upsert(ctx, tx, true, conflictColumns, boil.Blacklist(models.ModeratedChannelColumns.CreatedAt), boil.Infer()); err != nil {
-					return err
+					return fmt.Errorf("upserting moderated channel: %w", err)
 				}
 			}
 
@@ -178,7 +178,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 				models.ModeratedChannelWhere.BotName.EQ(botName),
 				models.ModeratedChannelWhere.UpdatedAt.LT(start),
 			).DeleteAll(ctx, tx); err != nil {
-				return err
+				return fmt.Errorf("deleting old moderated channels: %w", err)
 			}
 		}
 

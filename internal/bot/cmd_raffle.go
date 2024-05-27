@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -66,7 +67,7 @@ func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args st
 	s.Channel.RaffleEnabled = enable
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.RaffleEnabled)); err != nil {
-		return err
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if enable {

@@ -78,7 +78,7 @@ func insertQuote(ctx context.Context, s *session, num int, newQuote string) erro
 	}
 
 	if err := quote.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-		return err
+		return fmt.Errorf("inserting quote: %w", err)
 	}
 
 	return s.Replyf(ctx, "%s added as quote #%d.", newQuote, num)
@@ -108,11 +108,11 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting quote: %w", err)
 	}
 
 	if err := quote.Delete(ctx, s.Tx); err != nil {
-		return err
+		return fmt.Errorf("deleting quote: %w", err)
 	}
 
 	return s.Replyf(ctx, "Quote #%d has been deleted.", quote.Num)
@@ -146,7 +146,7 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 	if errors.Is(err, sql.ErrNoRows) {
 		exists, err := s.Channel.Quotes(models.QuoteWhere.Num.GT(num)).Exists(ctx, s.Tx)
 		if err != nil {
-			return err
+			return fmt.Errorf("checking for quotes after index: %w", err)
 		}
 
 		// No quotes after the index; don't allow arbitrary edits.
@@ -159,14 +159,14 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting quote: %w", err)
 	}
 
 	quote.Quote = newQuote
 	quote.Editor = s.User
 
 	if err := quote.Update(ctx, s.Tx, boil.Whitelist(models.QuoteColumns.UpdatedAt, models.QuoteColumns.Quote, models.QuoteColumns.Editor)); err != nil {
-		return err
+		return fmt.Errorf("updating quote: %w", err)
 	}
 
 	return s.Replyf(ctx, "Quote #%d edited.", num)
@@ -186,7 +186,7 @@ func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting quote: %w", err)
 	}
 
 	return s.Replyf(ctx, "That's quote #%d.", quote.Num)
@@ -215,7 +215,7 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting quote: %w", err)
 	}
 
 	return s.Replyf(ctx, "Quote #%d: %s", quote.Num, quote.Quote)
@@ -226,8 +226,10 @@ func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *model
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, false, nil
 	}
-
-	return quote, true, err
+	if err != nil {
+		return nil, false, fmt.Errorf("getting random quote: %w", err)
+	}
+	return quote, true, nil
 }
 
 func cmdQuoteRandom(ctx context.Context, s *session, cmd string, args string) error {
@@ -317,7 +319,7 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("getting quote: %w", err)
 	}
 
 	return s.Replyf(ctx, "Quote #%d was last edited by %s.", quote.Num, quote.Editor)

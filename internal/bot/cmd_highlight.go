@@ -45,5 +45,9 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 		Game:          gameName,
 	}
 
-	return highlight.Insert(ctx, s.Tx, boil.Infer())
+	if err := highlight.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+		return fmt.Errorf("insert highlight: %w", err)
+	}
+
+	return nil
 }

@@ -128,7 +128,7 @@ func init() {
 		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
 			highlights, err := s.Channel.Highlights(qm.OrderBy(models.HighlightColumns.CreatedAt)).All(ctx, s.Tx)
 			if err != nil {
-				return err
+				return fmt.Errorf("getting highlights: %w", err)
 			}
 
 			if len(highlights) == 0 {

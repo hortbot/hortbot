@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -105,7 +106,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		)
 
 		if err := scheduled.Update(ctx, s.Tx, columns); err != nil {
-			return err
+			return fmt.Errorf("updating scheduled command: %w", err)
 		}
 	} else {
 		scheduled = &models.ScheduledCommand{
@@ -120,7 +121,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		}
 
 		if err := scheduled.Insert(ctx, s.Tx, boil.Infer()); err != nil {
-			return err
+			return fmt.Errorf("inserting scheduled command: %w", err)
 		}
 	}
 
@@ -163,7 +164,7 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 	}
 
 	if err := scheduled.Delete(ctx, s.Tx); err != nil {
-		return err
+		return fmt.Errorf("deleting scheduled command: %w", err)
 	}
 
 	if err := s.Deps.RemoveScheduled(ctx, scheduled.ID); err != nil {
@@ -220,7 +221,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	)
 
 	if err := scheduled.Update(ctx, s.Tx, columns); err != nil {
-		return err
+		return fmt.Errorf("updating scheduled command: %w", err)
 	}
 
 	expr := must.Must(repeat.ParseCron(scheduled.CronExpression))
@@ -247,7 +248,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 		qm.Load(models.ScheduledCommandRels.CommandInfo),
 	).All(ctx, s.Tx)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting scheduled commands: %w", err)
 	}
 
 	if len(scheduleds) == 0 {
@@ -295,7 +296,7 @@ func findScheduledCommand(ctx context.Context, name string, s *session) (*models
 	}
 
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("getting command info: %w", err)
 	}
 
 	return info, info.R.ScheduledCommand, nil
