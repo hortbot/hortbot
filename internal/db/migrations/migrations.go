@@ -4,6 +4,7 @@ package migrations
 import (
 	"embed"
 	"errors"
+	"fmt"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
@@ -56,7 +57,7 @@ func Reset(connStr string, logger LoggerFunc) error {
 func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
 	m, err := migrate.NewWithSourceInstance("iofs", sourceDriver, connStr)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("creating migrate instance: %w", err)
 	}
 	m.Log = logger
 

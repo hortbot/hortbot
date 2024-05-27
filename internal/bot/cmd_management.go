@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -148,7 +149,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		}
 
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-			return err
+			return fmt.Errorf("notify eventsub updates: %w", err)
 		}
 
 		return firstJoin(ctx)
@@ -167,7 +168,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		}
 
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-			return err
+			return fmt.Errorf("notify eventsub updates: %w", err)
 		}
 
 		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
@@ -183,7 +184,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return err
+		return fmt.Errorf("notify eventsub updates: %w", err)
 	}
 
 	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, true); err != nil {
@@ -245,7 +246,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return err
+		return fmt.Errorf("notify eventsub updates: %w", err)
 	}
 
 	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, false); err != nil {
@@ -280,7 +281,7 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return err
+		return fmt.Errorf("notify eventsub updates: %w", err)
 	}
 
 	repeated, err := s.Channel.RepeatedCommands().All(ctx, s.Tx)

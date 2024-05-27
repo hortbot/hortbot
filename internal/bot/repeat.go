@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -112,7 +113,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				if errors.Is(err, sql.ErrNoRows) {
 					status = repeatStatus{}
 				} else {
-					return err
+					return fmt.Errorf("getting status: %w", err)
 				}
 			}
 
@@ -130,7 +131,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 					readd = false
 					return nil
 				}
-				return err
+				return fmt.Errorf("loading repeat: %w", err)
 			}
 
 			channel := runner.channel()
@@ -142,11 +143,11 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 			found, allowed, err := runner.allowed(ctx)
 			readd = readd && found
 			if !allowed || err != nil {
-				return err
+				return fmt.Errorf("checking if allowed: %w", err)
 			}
 
 			if err := runner.updateCount(ctx, tx); err != nil {
-				return err
+				return fmt.Errorf("updating count: %w", err)
 			}
 
 			s := &session{
@@ -224,7 +225,10 @@ JOIN
 WHERE
 	r.id = $1
 `, runner.id).Bind(ctx, exec, &status)
-	return status, err
+	if err != nil {
+		return repeatStatus{}, fmt.Errorf("getting status: %w", err)
+	}
+	return status, nil
 }
 
 func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
@@ -315,7 +319,10 @@ JOIN
 WHERE
 	s.id = $1
 `, runner.id).Bind(ctx, exec, &status)
-	return status, err
+	if err != nil {
+		return repeatStatus{}, fmt.Errorf("getting status: %w", err)
+	}
+	return status, nil
 }
 
 func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {

@@ -254,7 +254,11 @@ func (s *session) DeleteMessage(ctx context.Context) error {
 		}
 	}
 
-	return err
+	if err != nil {
+		return fmt.Errorf("deleting message: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) Links(ctx context.Context) []*url.URL {
@@ -355,7 +359,7 @@ func (s *session) GetUserID(ctx context.Context, username string) (int64, error)
 
 	user, err := s.Deps.Twitch.GetUserByUsername(ctx, username)
 	if err != nil {
-		return 0, err
+		return 0, fmt.Errorf("getting user ID: %w", err)
 	}
 	return int64(user.ID), nil
 }
@@ -381,17 +385,18 @@ func (s *session) BanByID(ctx context.Context, userID int64, duration int64, rea
 	}
 
 	newToken, err := s.Deps.Twitch.Ban(ctx, s.Channel.TwitchID, botID, tok, req)
-	if err != nil {
-		logTwitchModerationError(ctx, err, "ban")
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
 		}
 	}
 
-	return err
+	if err != nil {
+		logTwitchModerationError(ctx, err, "ban")
+		return fmt.Errorf("banning user: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) UnbanByUsername(ctx context.Context, username string) error {
@@ -409,17 +414,18 @@ func (s *session) UnbanByID(ctx context.Context, userID int64) error {
 	}
 
 	newToken, err := s.Deps.Twitch.Unban(ctx, s.Channel.TwitchID, botID, tok, userID)
-	if err != nil {
-		logTwitchModerationError(ctx, err, "unban")
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
 		}
 	}
 
-	return err
+	if err != nil {
+		logTwitchModerationError(ctx, err, "unban")
+		return fmt.Errorf("unbanning user: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) SetBotColor(ctx context.Context, color string) error {
@@ -429,17 +435,18 @@ func (s *session) SetBotColor(ctx context.Context, color string) error {
 	}
 
 	newToken, err := s.Deps.Twitch.SetChatColor(ctx, botID, tok, color)
-	if err != nil {
-		ctxlog.Error(ctx, "unable to set chat color", zap.Error(err))
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
 		}
 	}
 
-	return err
+	if err != nil {
+		ctxlog.Error(ctx, "unable to set chat color", zap.Error(err))
+		return fmt.Errorf("setting chat color: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) ClearChat(ctx context.Context) error {
@@ -449,17 +456,18 @@ func (s *session) ClearChat(ctx context.Context) error {
 	}
 
 	newToken, err := s.Deps.Twitch.ClearChat(ctx, s.Channel.TwitchID, botID, tok)
-	if err != nil {
-		logTwitchModerationError(ctx, err, "update chat")
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
 		}
 	}
 
-	return err
+	if err != nil {
+		logTwitchModerationError(ctx, err, "update chat")
+		return fmt.Errorf("clearing chat: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) UpdateChatSettings(ctx context.Context, patch *twitch.ChatSettingsPatch) error {
@@ -469,17 +477,18 @@ func (s *session) UpdateChatSettings(ctx context.Context, patch *twitch.ChatSett
 	}
 
 	newToken, err := s.Deps.Twitch.UpdateChatSettings(ctx, s.Channel.TwitchID, botID, tok, patch)
-	if err != nil {
-		logTwitchModerationError(ctx, err, "update settings")
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
 		}
 	}
 
-	return err
+	if err != nil {
+		logTwitchModerationError(ctx, err, "update settings")
+		return fmt.Errorf("updating chat settings: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) Announce(ctx context.Context, message string) error {
@@ -489,17 +498,18 @@ func (s *session) Announce(ctx context.Context, message string) error {
 	}
 
 	newToken, err := s.Deps.Twitch.Announce(ctx, s.Channel.TwitchID, botID, tok, message, "")
-	if err != nil {
-		logTwitchModerationError(ctx, err, "announce")
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
 		}
 	}
 
-	return err
+	if err != nil {
+		logTwitchModerationError(ctx, err, "announce")
+		return fmt.Errorf("announcing: %w", err)
+	}
+
+	return nil
 }
 
 func (s *session) SendTwitchChatMessage(ctx context.Context, target string, message string) error {
@@ -523,10 +533,6 @@ func (s *session) SendTwitchChatMessage(ctx context.Context, target string, mess
 	}
 
 	newToken, err := s.Deps.Twitch.SendChatMessage(ctx, targetID, botID, tok, message)
-	if err != nil {
-		logTwitchModerationError(ctx, err, "send message")
-	}
-
 	if newToken != nil {
 		if err := s.SetBotTwitchToken(ctx, botID, newToken); err != nil {
 			return err
@@ -534,8 +540,9 @@ func (s *session) SendTwitchChatMessage(ctx context.Context, target string, mess
 	}
 
 	if err != nil {
+		logTwitchModerationError(ctx, err, "send message")
 		metricSentErrors.Inc()
-		return err
+		return fmt.Errorf("sending message: %w", err)
 	}
 
 	metricSent.Inc()
@@ -615,7 +622,7 @@ func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
 
 		links, err := s.Deps.Twitch.GetGameLinks(ctx, int64(ch.GameID))
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("getting game links: %w", err)
 		}
 
 		sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })
@@ -635,7 +642,10 @@ func (s *session) ShortenLink(ctx context.Context, link string) (string, error) 
 	if apiErr, ok := apiclient.AsError(err); ok && apiErr.IsServerError() {
 		return link, nil
 	}
-	return short, err
+	if err != nil {
+		return "", fmt.Errorf("shortening link: %w", err)
+	}
+	return short, nil
 }
 
 func (s *session) WebAddr() string {

@@ -47,7 +47,7 @@ func (c *Client) Plaintext(ctx context.Context, u string) (body string, err erro
 
 		b, err := io.ReadAll(lr)
 		if err != nil {
-			return err
+			return err //nolint:wrapcheck
 		}
 
 		s = string(b)

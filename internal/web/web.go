@@ -164,7 +164,7 @@ func (a *App) Run(ctx context.Context) error {
 
 	ctxlog.Info(ctx, "web server listening", zap.String("addr", srv.Addr))
 
-	return srv.ListenAndServe()
+	return srv.ListenAndServe() //nolint:wrapcheck
 }
 
 func (a *App) getBrand(r *http.Request) string {

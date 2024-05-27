@@ -83,11 +83,11 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 
 			tcpAddr, err := net.ResolveTCPAddr("tcp", addr)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("resolving TCP address: %w", err)
 			}
 
 			if err := filtertransport.DefaultFilter(*tcpAddr); err != nil {
-				return nil, err
+				return nil, fmt.Errorf("filtered address: %w", err)
 			}
 
 			return u, nil

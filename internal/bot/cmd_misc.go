@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
@@ -34,7 +35,7 @@ func cmdHLTB(ctx context.Context, s *session, _ string, args string) error {
 			}
 			return s.Reply(ctx, "A HowLongToBeat API error occurred.")
 		}
-		return err
+		return fmt.Errorf("searching HowLongToBeat: %w", err)
 	}
 
 	var b strings.Builder

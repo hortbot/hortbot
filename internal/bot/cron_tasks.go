@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -139,7 +140,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 
 		logFn(ctx, "locking moderated_channels table")
 		if _, err := tx.ExecContext(ctx, "LOCK TABLE moderated_channels IN EXCLUSIVE MODE"); err != nil {
-			return err
+			return fmt.Errorf("locking moderated_channels: %w", err)
 		}
 
 		start := b.deps.Clock.Now()
@@ -157,7 +158,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 				}
 			}
 			if err != nil {
-				return err
+				return fmt.Errorf("getting moderated channels: %w", err)
 			}
 
 			for _, channel := range moderatedChannels {

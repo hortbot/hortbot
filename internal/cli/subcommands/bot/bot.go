@@ -3,6 +3,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 	"sync"
 	"time"
@@ -117,7 +118,10 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 		var err error
 		_, originMap, err = modelsx.GetBots(ctx, db)
-		return originMap, err
+		if err != nil {
+			return nil, fmt.Errorf("get bots: %w", err)
+		}
+		return originMap, nil
 	}
 
 	eventsubSub := c.NSQ.NewIncomingWebsocketMessageSubscriber(15*time.Second, func(i *bnsq.IncomingWebsocketMessage, metadata *bnsq.Metadata) error {

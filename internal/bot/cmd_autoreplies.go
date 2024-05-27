@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"regexp"
 	"regexp/syntax"
 	"strconv"
@@ -74,7 +75,7 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 		qm.Select("max("+models.AutoreplyColumns.Num+") as max_num"),
 	).Bind(ctx, s.Tx, &row)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting max autoreply num: %w", err)
 	}
 
 	nextNum := row.MaxNum.Int + 1
@@ -313,7 +314,7 @@ func (s *session) patternToTrigger(pattern string) (string, error) {
 	}
 
 	_, err := s.Deps.ReCache.Compile(trigger)
-	return trigger, err
+	return trigger, err //nolint:wrapcheck
 }
 
 func (s *session) replyBadPattern(ctx context.Context, err error) error {
@@ -355,12 +356,12 @@ func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args strin
 
 	result, err := s.Tx.Exec(autoreplyCompactQuery, s.Channel.ID, num)
 	if err != nil {
-		return err
+		return fmt.Errorf("compacting autoreplies: %w", err)
 	}
 
 	affected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return fmt.Errorf("getting rows affected: %w", err)
 	}
 
 	return s.Replyf(ctx, "Compacted autoreplies %d and above (%d affected).", num, affected)

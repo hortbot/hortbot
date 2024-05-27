@@ -3,6 +3,7 @@ package conduit
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
@@ -118,7 +119,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		for {
 			// Start with a synchronize, then wait for the interval.
 			if err := s.SynchronizeSubscriptions(ctx); err != nil {
-				return err
+				return fmt.Errorf("initial synchronize: %w", err)
 			}
 
 			select {

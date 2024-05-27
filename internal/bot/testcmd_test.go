@@ -101,7 +101,7 @@ func init() {
 		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
 			tok, err := s.ChannelTwitchToken(ctx)
 			if err != nil {
-				return err
+				return fmt.Errorf("getting twitch token: %w", err)
 			}
 
 			// pgx converts times back to the client timezone; convert to UTC for testing.
@@ -109,7 +109,7 @@ func init() {
 
 			j, err := json.Marshal(tok)
 			if err != nil {
-				return err
+				return fmt.Errorf("marshalling token: %w", err)
 			}
 
 			return s.Replyf(ctx, "%s", j)

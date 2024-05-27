@@ -25,7 +25,7 @@ func idnaASCII(v string) (string, error) {
 	if isASCII(v) {
 		return v, nil
 	}
-	return idna.Lookup.ToASCII(v)
+	return idna.Lookup.ToASCII(v) //nolint:wrapcheck
 }
 
 func isASCII(s string) bool {

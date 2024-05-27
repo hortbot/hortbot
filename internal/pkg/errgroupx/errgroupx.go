@@ -74,7 +74,7 @@ func (g *Group) Go(f func(context.Context) error) {
 // Wait blocks until all function calls from the Go method have returned, then
 // returns the first non-nil error (if any) from them.
 func (g *Group) Wait() error {
-	return g.g.Wait()
+	return g.g.Wait() //nolint:wrapcheck
 }
 
 // Stop stops the group by running a function on it that returns ErrStop.
@@ -90,5 +90,5 @@ func (g *Group) WaitIgnoreStop() error {
 	if errors.Is(err, ErrStop) {
 		return nil
 	}
-	return err
+	return err //nolint:wrapcheck
 }

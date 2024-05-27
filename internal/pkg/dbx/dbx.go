@@ -4,6 +4,7 @@ package dbx
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -22,8 +23,10 @@ func SetLocalLockTimeout(timeout time.Duration) func(context.Context, *sql.Tx) e
 	query := "SET LOCAL lock_timeout = " + strconv.FormatInt(ms, 10)
 
 	return func(ctx context.Context, tx *sql.Tx) error {
-		_, err := tx.ExecContext(ctx, query)
-		return err
+		if _, err := tx.ExecContext(ctx, query); err != nil {
+			return fmt.Errorf("set lock timeout: %w", err)
+		}
+		return nil
 	}
 }
 
@@ -40,7 +43,7 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		return err
+		return fmt.Errorf("begin tx: %w", err)
 	}
 
 	rollback := true
@@ -48,7 +51,7 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 	defer func() {
 		if rollback {
 			if err := tx.Rollback(); retErr == nil && err != nil {
-				retErr = err
+				retErr = fmt.Errorf("rollback: %w", err)
 			}
 		}
 	}()
@@ -63,5 +66,8 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 	}
 
 	rollback = false
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("commit: %w", err)
+	}
+	return nil
 }

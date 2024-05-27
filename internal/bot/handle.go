@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -185,7 +186,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 	metricHandleTimingCommit.Observe(commit.Seconds())
 
 	if s.sendRoundtrip {
-		return dbx.Transact(ctx, b.db,
+		err := dbx.Transact(ctx, b.db,
 			dbx.SetLocalLockTimeout(5*time.Second),
 			func(ctx context.Context, tx *sql.Tx) error {
 				s.Tx = tx
@@ -193,6 +194,9 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 				s.Tx = nil
 				return err
 			})
+		if err != nil {
+			return fmt.Errorf("sending roundtrip message: %w", err)
+		}
 	}
 
 	return nil
@@ -266,7 +270,7 @@ func (b *Bot) dedupe(ctx context.Context, id string) error {
 	seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
 	if err != nil {
 		ctxlog.Error(ctx, "error checking for duplicate", zap.Error(err), zap.String("id", id))
-		return err
+		return fmt.Errorf("dedupe check: %w", err)
 	}
 
 	if seen {
@@ -318,7 +322,7 @@ func handleSession(ctx context.Context, s *session) error {
 			ctxlog.Debug(ctx, "channel not found in database")
 			return nil
 		}
-		return err
+		return fmt.Errorf("select channel: %w", err)
 	}
 
 	if !s.Imp {

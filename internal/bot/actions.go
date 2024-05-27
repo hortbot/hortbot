@@ -54,7 +54,7 @@ func init() {
 			}
 
 			if err := s.Deps.Redis.IncrementActionUsageStat(ctx, action); err != nil {
-				return "", err
+				return "", fmt.Errorf("incrementing action usage stat: %w", err)
 			}
 
 			return fn(ctx, s, name, "")
@@ -64,7 +64,7 @@ func init() {
 	addPrefix := func(prefix string, fn actionFunc) {
 		add(prefix, func(ctx context.Context, s *session, action string) (string, error) {
 			if err := s.Deps.Redis.IncrementActionUsageStat(ctx, prefix); err != nil {
-				return "", err
+				return "", fmt.Errorf("incrementing action usage stat: %w", err)
 			}
 
 			value := strings.TrimPrefix(action, prefix)
@@ -177,7 +177,7 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 			if errors.Is(err, sql.ErrNoRows) {
 				return actionMsgError, nil
 			}
-			return "", err
+			return "", fmt.Errorf("finding command info: %w", err)
 		}
 		return strconv.FormatInt(info.Count, 10), nil
 	}
@@ -442,7 +442,7 @@ func actionSilent(ctx context.Context, s *session, actionName, value string) (st
 func actionNumChannels(ctx context.Context, s *session, actionName, value string) (string, error) {
 	count, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, s.Tx)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("finding channel count: %w", err)
 	}
 	return strconv.FormatInt(count, 10), nil
 }
@@ -499,7 +499,7 @@ func actionExtraLifeAmount(ctx context.Context, s *session, actionName, value st
 		return "Extra Life server error", nil
 	}
 
-	return "", err
+	return "", fmt.Errorf("getting Extra Life donation amount: %w", err)
 }
 
 func actionOnlineCheck(ctx context.Context, s *session, actionName, value string) (string, error) {
@@ -882,7 +882,7 @@ func parseUntilTimestamp(timestamp string) (time.Time, error) {
 
 	// CoeBot would parse using a not-quite RFC3339 string in the host system's timezone.
 	// Do that here, assuming an Eastern time zone.
-	return dateparse.ParseIn(timestamp, easternTime)
+	return dateparse.ParseIn(timestamp, easternTime) //nolint:wrapcheck
 }
 
 type commandGuard string
@@ -905,8 +905,11 @@ func actionCommand(ctx context.Context, s *session, prefix, name string) (string
 	ctx = withCommandGuard(ctx, name)
 
 	_, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name, false)
-	if err != nil || !found {
-		return "", err
+	if err != nil {
+		return "", fmt.Errorf("finding command: %w", err)
+	}
+	if !found {
+		return "", nil
 	}
 
 	if commandMsg.Valid {
@@ -938,7 +941,7 @@ func actionList(ctx context.Context, s *session, prefix, name string) (string, e
 		if errors.Is(err, sql.ErrNoRows) {
 			return actionMsgError, nil
 		}
-		return "", err
+		return "", fmt.Errorf("finding command info: %w", err)
 	}
 
 	if info.R.CommandList == nil {

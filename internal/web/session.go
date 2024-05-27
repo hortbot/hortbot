@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -24,11 +25,17 @@ func (a *App) getSession(r *http.Request) *session {
 func (a *App) clearSession(w http.ResponseWriter, r *http.Request) error {
 	s, _ := a.store.Get(r, sessionName)
 	s.Options.MaxAge = -1
-	return s.Save(r, w)
+	if err := s.Save(r, w); err != nil {
+		return fmt.Errorf("saving session: %w", err)
+	}
+	return nil
 }
 
 func (s *session) save(w http.ResponseWriter, r *http.Request) error {
-	return s.s.Save(r, w)
+	if err := s.s.Save(r, w); err != nil {
+		return fmt.Errorf("saving session: %w", err)
+	}
+	return nil
 }
 
 func (s *session) clearValues() {

@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -25,7 +26,7 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 		ORDER BY autoreplies.num ASC
 		`, s.Channel.ID).Bind(ctx, s.Tx, &autoreplies)
 	if err != nil {
-		return true, err
+		return true, fmt.Errorf("querying for autoreplies: %w", err)
 	}
 
 	for _, autoreply := range autoreplies {
@@ -60,7 +61,7 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 
 		autoreply.Count++
 		if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.Count)); err != nil {
-			return true, err
+			return true, fmt.Errorf("updating autoreply count: %w", err)
 		}
 
 		oldType := s.Type

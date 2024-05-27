@@ -3,6 +3,7 @@ package bnsq
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/leononame/clock"
@@ -46,7 +47,7 @@ func (p *publisher) run(ctx context.Context) error {
 	producer, err := nsq.NewProducer(p.addr, p.config)
 	if err != nil {
 		ctxlog.Error(ctx, "error creating producer", zap.Error(err))
-		return err
+		return fmt.Errorf("creating producer: %w", err)
 	}
 	defer producer.Stop()
 
@@ -56,7 +57,7 @@ func (p *publisher) run(ctx context.Context) error {
 
 	if err := producer.Ping(); err != nil {
 		ctxlog.Error(ctx, "error pinging server", zap.Error(err))
-		return err
+		return fmt.Errorf("pinging server: %w", err)
 	}
 
 	close(p.ready)
@@ -78,7 +79,7 @@ func (p *publisher) publish(ctx context.Context, topic string, payload any) erro
 
 	pl, err := json.Marshal(payload)
 	if err != nil {
-		return err
+		return fmt.Errorf("marshaling payload: %w", err)
 	}
 
 	m := &message{
@@ -92,13 +93,13 @@ func (p *publisher) publish(ctx context.Context, topic string, payload any) erro
 
 	body, err := json.Marshal(m)
 	if err != nil {
-		return err
+		return fmt.Errorf("marshaling message: %w", err)
 	}
 
 	doneChan := make(chan *nsq.ProducerTransaction, 1)
 
 	if err := p.producer.PublishAsync(topic, body, doneChan); err != nil {
-		return err
+		return fmt.Errorf("publishing message: %w", err)
 	}
 
 	select {

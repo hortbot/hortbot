@@ -74,7 +74,7 @@ func (w *wrappedTransport) RoundTrip(req *http.Request) (resp *http.Response, er
 		}
 	}
 
-	return w.inner.RoundTrip(req)
+	return w.inner.RoundTrip(req) //nolint:wrapcheck
 }
 
 func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {

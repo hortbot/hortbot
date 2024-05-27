@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
@@ -28,7 +29,7 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 	if stream.GameID != 0 {
 		game, err := s.Deps.Twitch.GetGameByID(ctx, int64(stream.GameID))
 		if err != nil {
-			return err
+			return fmt.Errorf("get game by ID: %w", err)
 		}
 		gameName = game.Name
 	}

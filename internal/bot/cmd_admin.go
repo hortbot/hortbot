@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"runtime"
 	"strconv"
 	"strings"
@@ -94,7 +95,7 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 		}
 
 		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-			return err
+			return fmt.Errorf("notify eventsub updates: %w", err)
 		}
 	}
 
@@ -258,11 +259,11 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 	}
 
 	if err := modelsx.DeleteChannel(ctx, s.Tx, channel.ID); err != nil {
-		return err
+		return fmt.Errorf("delete channel: %w", err)
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return err
+		return fmt.Errorf("notify eventsub updates: %w", err)
 	}
 
 	return s.Replyf(ctx, "User '%s' has been deleted.", user)
@@ -300,7 +301,7 @@ func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) 
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return err
+		return fmt.Errorf("notify eventsub updates: %w", err)
 	}
 
 	return s.Replyf(ctx, "Triggered channel sync for %s.", botName)
@@ -338,7 +339,7 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return err
+		return fmt.Errorf("notify eventsub updates: %w", err)
 	}
 
 	return s.Replyf(ctx, "Changed %s's bot from %s to %s.", name, oldBotName, botName)

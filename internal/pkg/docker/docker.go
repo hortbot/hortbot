@@ -2,6 +2,7 @@
 package docker
 
 import (
+	"fmt"
 	"slices"
 	"time"
 
@@ -31,7 +32,7 @@ type Container struct {
 func (c *Container) Start() (retErr error) {
 	pool, err := dockertest.NewPool("")
 	if err != nil {
-		return err
+		return fmt.Errorf("creating dockertest pool: %w", err)
 	}
 	c.pool = pool
 	c.pool.MaxWait = c.ReadyMaxWait
@@ -63,7 +64,7 @@ func (c *Container) Start() (retErr error) {
 		}
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("starting container: %w", err)
 	}
 	c.resource = resource
 
@@ -76,13 +77,17 @@ func (c *Container) Start() (retErr error) {
 
 	if c.ExpirySecs != 0 {
 		if err := resource.Expire(c.ExpirySecs); err != nil {
-			return err
+			return fmt.Errorf("setting container expiry: %w", err)
 		}
 	}
 
-	return pool.Retry(func() error {
+	if err := pool.Retry(func() error {
 		return c.Ready(c)
-	})
+	}); err != nil {
+		return fmt.Errorf("waiting for container to be ready: %w", err)
+	}
+
+	return nil
 }
 
 // Cleanup cleans up the docker container, stopping and removing it.

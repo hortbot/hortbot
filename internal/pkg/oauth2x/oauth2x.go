@@ -59,7 +59,7 @@ func (ts *onNewSource) Token() (*oauth2.Token, error) {
 	ts.onNew(tok, err)
 	ts.tok = tok
 
-	return tok, err
+	return tok, err //nolint:wrapcheck
 }
 
 // Equals checks that two tokens are equal by the following rules:

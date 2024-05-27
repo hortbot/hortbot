@@ -189,7 +189,7 @@ func (t *Twitch) AuthCodeURL(state string, scopes []string) string {
 // for an OAuth token for the user who provided the code.
 func (t *Twitch) Exchange(ctx context.Context, code string) (*oauth2.Token, error) {
 	ctx = t.cli.AsOAuth2Client(ctx)
-	return t.forUser.Exchange(ctx, code)
+	return t.forUser.Exchange(ctx, code) //nolint:wrapcheck
 }
 
 func (t *Twitch) headers() http.Header {

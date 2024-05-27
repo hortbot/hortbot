@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"fmt"
 	"net/url"
 	"strconv"
 
@@ -63,7 +64,7 @@ func cmdXKCD(ctx context.Context, s *session, cmd string, args string) error {
 	}
 
 	if err != nil {
-		return err
+		return fmt.Errorf("get XKCD comic: %w", err)
 	}
 
 	return s.Replyf(ctx, "XKCD Comic #%d Title: %s; Image: %s ; Alt-Text: %s", id, c.Title, c.Img, c.Alt)
@@ -113,7 +114,7 @@ func cmdUrban(ctx context.Context, s *session, cmd string, args string) error {
 				return s.Reply(ctx, "An Urban Dictionary server error has occurred.")
 			}
 		}
-		return err
+		return fmt.Errorf("define: %w", err)
 	}
 
 	return s.Replyf(ctx, `"%s"`, def)

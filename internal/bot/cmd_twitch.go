@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -68,7 +69,7 @@ func setStatus(ctx context.Context, s *session, status string) (replied bool, er
 		if errors.Is(err, twitch.ErrServerError) {
 			return true, s.Reply(ctx, twitchServerErrorReply)
 		}
-		return false, err
+		return false, fmt.Errorf("setting status: %w", err)
 	}
 
 	return false, nil
@@ -141,7 +142,7 @@ func setGameAndStatus(ctx context.Context, s *session, game string, status strin
 		if errors.Is(err, twitch.ErrServerError) {
 			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
-		return false, err
+		return false, fmt.Errorf("setting status: %w", err)
 	}
 
 	return true, nil
@@ -185,7 +186,7 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 		if errors.Is(err, twitch.ErrServerError) {
 			return false, s.Reply(ctx, twitchServerErrorReply)
 		}
-		return false, err
+		return false, fmt.Errorf("setting game: %w", err)
 	}
 
 	if game == "" {
@@ -228,7 +229,7 @@ func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Cat
 			return g, gameSuggestion{}, nil
 		}
 		if !errors.Is(err, twitch.ErrNotFound) {
-			return nil, gameSuggestion{}, err
+			return nil, gameSuggestion{}, fmt.Errorf("searching for game: %w", err)
 		}
 	}
 
@@ -350,7 +351,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		if errors.Is(err, twitch.ErrServerError) {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
-		return err
+		return fmt.Errorf("getting user: %w", err)
 	}
 
 	stream, err := s.Deps.Twitch.GetStreamByUserID(ctx, int64(u.ID))
@@ -361,7 +362,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 		if errors.Is(err, twitch.ErrServerError) {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
-		return err
+		return fmt.Errorf("getting stream: %w", err)
 	}
 
 	viewers := stream.ViewerCount
@@ -377,7 +378,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 	} else {
 		game, err := s.Deps.Twitch.GetGameByID(ctx, int64(stream.GameID))
 		if err != nil {
-			return err
+			return fmt.Errorf("getting game: %w", err)
 		}
 		gameName = game.Name
 	}

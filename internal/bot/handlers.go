@@ -73,7 +73,7 @@ func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string
 
 	if h.isBuiltins {
 		if err := s.Deps.Redis.IncrementBuiltinUsageStat(ctx, cmd); err != nil {
-			return false, err
+			return false, fmt.Errorf("incrementing builtin usage stat: %w", err)
 		}
 	}
 

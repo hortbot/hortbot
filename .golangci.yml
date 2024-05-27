@@ -44,16 +44,36 @@ linters:
     - thelper # Broken and racy.
     - unparam
     - varnamelen # Silly.
-    - wrapcheck
     - wsl
 
     # - staticcheck
 
-# linters-settings:
-#   wrapcheck:
-#     ignorePackageGlobs:
-#       - context
-#       - github.com/hortbot/hortbot/internal/pkg/errgroupx
+linters-settings:
+  wrapcheck:
+    ignoreSigs:
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - errors.Join(
+      - .Wrap(
+      - .Wrapf(
+      - .WithMessage(
+      - .WithMessagef(
+      - .WithStack(
+      - github.com/hortbot/hortbot/internal/pkg/apiclient.NewStatusError(
+      - github.com/hortbot/hortbot/internal/pkg/apiclient.WrapRequestErr(
+    ignorePackageGlobs:
+      - context
+      - github.com/hortbot/hortbot/internal/birc/breq
+      - github.com/hortbot/hortbot/internal/pkg/errgroupx
+      - github.com/hortbot/hortbot/internal/db/models # TODO
+      - github.com/hortbot/hortbot/internal/db/modelsx # TODO
+      - github.com/hortbot/hortbot/internal/db/redis # TODO
+      - github.com/hortbot/hortbot/internal/pkg/wqueue
+      - github.com/hortbot/hortbot/internal/pkg/repeat
+      - github.com/hortbot/hortbot/internal/pkg/dbx
+      - github.com/jarcoal/httpmock
+      - github.com/redis/go-redis/v9 # TODO
 
 issues:
   max-issues-per-linter: 0

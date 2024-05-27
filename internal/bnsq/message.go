@@ -18,7 +18,7 @@ type message struct {
 }
 
 func (m *message) payload(v any) error {
-	return json.Unmarshal(m.Payload, v)
+	return json.Unmarshal(m.Payload, v) //nolint:wrapcheck
 }
 
 // Metadata contains metadata that will be sent with every NSQ message.

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -174,7 +175,7 @@ func cmdListDelete(ctx context.Context, s *session, cmd string, args string) err
 
 	repeated, scheduled, err := modelsx.DeleteCommandInfo(ctx, s.Tx, info)
 	if err != nil {
-		return err
+		return fmt.Errorf("deleting command info: %w", err)
 	}
 
 	deletedRepeat := false

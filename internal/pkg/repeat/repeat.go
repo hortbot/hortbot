@@ -68,7 +68,7 @@ type Cron struct {
 func ParseCron(s string) (*Cron, error) {
 	expr, err := cronParser.Parse(s)
 	if err != nil {
-		return nil, err
+		return nil, err //nolint:wrapcheck
 	}
 
 	return &Cron{

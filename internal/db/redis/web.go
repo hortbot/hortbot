@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"go.opencensus.io/trace"
@@ -17,7 +18,7 @@ func (db *DB) SetAuthState(ctx context.Context, key string, value any, expiry ti
 
 	b, err := json.Marshal(value)
 	if err != nil {
-		return err
+		return fmt.Errorf("marshaling auth state: %w", err)
 	}
 
 	rkey := buildKey(keyAuthState.is(key))
@@ -41,5 +42,9 @@ func (db *DB) GetAuthState(ctx context.Context, key string, v any) (bool, error)
 		return false, ignoreRedisNil(err)
 	}
 
-	return true, json.Unmarshal(b, v)
+	if err := json.Unmarshal(b, v); err != nil {
+		return false, fmt.Errorf("unmarshaling auth state: %w", err)
+	}
+
+	return true, nil
 }

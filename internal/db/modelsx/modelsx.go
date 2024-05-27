@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null/v8"
@@ -141,7 +142,7 @@ func FindCommand(ctx context.Context, exec boil.Executor, id int64, name string,
 	}
 
 	if err != nil {
-		return nil, null.String{}, false, err
+		return nil, null.String{}, false, fmt.Errorf("finding command: %w", err)
 	}
 
 	return &infoAndCommand.CommandInfo, infoAndCommand.Message, true, nil
@@ -188,7 +189,7 @@ func ListActiveChannels(ctx context.Context, exec boil.ContextExecutor) (botToCh
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, nil //nolint:nilnil
 		}
-		return nil, err
+		return nil, fmt.Errorf("listing active channels: %w", err)
 	}
 
 	botToChannels = make(map[int64][]int64, len(rows))
@@ -214,7 +215,7 @@ func CountActiveChannels(ctx context.Context, exec boil.ContextExecutor) (channe
 	}
 
 	if err := queries.Raw(countActiveChannelsQuery).Bind(ctx, exec, &row); err != nil {
-		return 0, 0, err
+		return 0, 0, fmt.Errorf("counting active channels: %w", err)
 	}
 
 	return row.ChannelCount, row.BotCount, nil
@@ -232,7 +233,7 @@ WHERE r.enabled AND c.active AND ('channel:bot' = ANY(tt.scopes) OR m.id IS NOT 
 func GetActiveRepeatedCommands(ctx context.Context, exec boil.ContextExecutor) (models.RepeatedCommandSlice, error) {
 	var repeats models.RepeatedCommandSlice
 	if err := queries.Raw(getActiveRepeatedCommandsQuery).Bind(ctx, exec, &repeats); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getting active repeated commands: %w", err)
 	}
 	return repeats, nil
 }
@@ -249,7 +250,7 @@ WHERE s.enabled AND c.active AND ('channel:bot' = ANY(tt.scopes) OR m.id IS NOT 
 func GetActiveScheduledCommands(ctx context.Context, exec boil.ContextExecutor) (models.ScheduledCommandSlice, error) {
 	var scheduled models.ScheduledCommandSlice
 	if err := queries.Raw(getActiveScheduledCommandsQuery).Bind(ctx, exec, &scheduled); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("getting active scheduled commands: %w", err)
 	}
 	return scheduled, nil
 }

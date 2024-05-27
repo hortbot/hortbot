@@ -65,7 +65,7 @@ func pluralInt64(n int64, singular, plural string) string {
 
 func pgLock(ctx context.Context, tx *sql.Tx, twitchID int64) error {
 	_, err := tx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", twitchID)
-	return err
+	return err //nolint:wrapcheck
 }
 
 func ptrTo[T any](v T) *T {

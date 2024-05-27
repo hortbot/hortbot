@@ -28,7 +28,7 @@ func (w *WebsocketMessage) UnmarshalJSON(data []byte) error {
 		Payload  json.RawMessage           `json:"payload"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshal raw metadata: %w", err)
 	}
 
 	w.Metadata = raw.Metadata
@@ -49,7 +49,7 @@ var payloadFuncs = map[string]func([]byte, *any) error{
 func unmarshallPointerToAny[T any](data []byte, target *any) error {
 	var v T
 	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+		return fmt.Errorf("unmarshal %T: %w", (*T)(nil), err)
 	}
 	*target = &v
 	return nil
@@ -100,7 +100,7 @@ func (s *Subscription) UnmarshalJSON(data []byte) error {
 		Transport *Transport      `json:"transport"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshal raw subscription: %w", err)
 	}
 
 	s.ID = raw.ID
@@ -149,7 +149,7 @@ func (n *NotificationPayload) UnmarshalJSON(data []byte) error {
 		Event        json.RawMessage `json:"event"`
 	}
 	if err := json.Unmarshal(data, &raw); err != nil {
-		return err
+		return fmt.Errorf("unmarshal raw notification: %w", err)
 	}
 
 	n.Subscription = raw.Subscription

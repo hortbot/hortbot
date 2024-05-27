@@ -10,7 +10,7 @@ import (
 func New() (s *miniredis.Miniredis, c *redis.Client, cleanup func(), retErr error) {
 	s, err := miniredis.Run()
 	if err != nil {
-		return nil, nil, func() {}, err
+		return nil, nil, func() {}, err //nolint:wrapcheck
 	}
 
 	defer func() {

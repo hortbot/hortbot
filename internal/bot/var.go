@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -47,7 +48,7 @@ func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string,
 	}
 
 	if err != nil {
-		return "", false, err
+		return "", false, fmt.Errorf("getting variable: %w", err)
 	}
 
 	return v.Value, true, nil

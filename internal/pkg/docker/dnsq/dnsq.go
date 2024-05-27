@@ -2,6 +2,8 @@
 package dnsq
 
 import (
+	"fmt"
+
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/docker"
 	"github.com/nsqio/go-nsq"
@@ -25,14 +27,16 @@ func New() (addr string, cleanup func(), retErr error) {
 			defer conn.Close()
 
 			// Connect sends IDENTIFY, so works as a ping.
-			_, err := conn.Connect()
-			return err
+			if _, err := conn.Connect(); err != nil {
+				return fmt.Errorf("connect: %w", err)
+			}
+			return nil
 		},
 		ExpirySecs: 300,
 	}
 
 	if err := container.Start(); err != nil {
-		return "", nil, err
+		return "", nil, fmt.Errorf("start container: %w", err)
 	}
 
 	return addr, container.Cleanup, nil

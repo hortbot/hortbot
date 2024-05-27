@@ -15,7 +15,7 @@ var ErrMoreThanOne = errors.New("jsonx: more than one value")
 func DecodeSingle(r io.Reader, v any) error {
 	d := json.NewDecoder(r)
 	if err := d.Decode(v); err != nil {
-		return err
+		return err //nolint:wrapcheck
 	}
 
 	if _, err := d.Token(); err != io.EOF { //nolint:errorlint

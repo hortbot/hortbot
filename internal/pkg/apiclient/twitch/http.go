@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -24,7 +25,7 @@ type httpClient struct {
 func (h *httpClient) newRequest(ctx context.Context, method string, url string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
-		return nil, err
+		return nil, err //nolint:wrapcheck
 	}
 
 	tok, err := h.ts.Token()
@@ -48,7 +49,7 @@ func (h *httpClient) newRequest(ctx context.Context, method string, url string, 
 
 			return nil, ErrDeadToken
 		}
-		return nil, err
+		return nil, fmt.Errorf("getting token: %w", err)
 	}
 
 	if h.headers == nil {
@@ -76,7 +77,7 @@ func (h *httpClient) makeJSONRequest(ctx context.Context, method string, url str
 		var buf bytes.Buffer
 
 		if err := json.NewEncoder(&buf).Encode(v); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("encoding JSON: %w", err)
 		}
 
 		body = &buf
@@ -125,7 +126,7 @@ func (h *httpClient) do(req *http.Request) (*http.Response, error) {
 
 	resp, err := h.cli.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, err //nolint:wrapcheck
 	}
 
 	// y, _ := httputil.DumpResponse(resp, true)

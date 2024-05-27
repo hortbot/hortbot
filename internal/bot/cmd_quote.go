@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -59,7 +60,7 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 		qm.Select("max("+models.QuoteColumns.Num+") as max_num"),
 	).Bind(ctx, s.Tx, &row)
 	if err != nil {
-		return err
+		return fmt.Errorf("getting max quote num: %w", err)
 	}
 
 	nextNum := row.MaxNum.Int + 1
@@ -260,7 +261,7 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 		models.QuoteWhere.Quote.ILIKE(pattern),
 	).Bind(ctx, s.Tx, &quotes)
 	if err != nil {
-		return err
+		return fmt.Errorf("finding quote: %w", err)
 	}
 
 	switch len(quotes) {
@@ -350,12 +351,12 @@ func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) e
 
 	result, err := s.Tx.Exec(quoteCompactQuery, s.Channel.ID, num)
 	if err != nil {
-		return err
+		return fmt.Errorf("compacting quotes: %w", err)
 	}
 
 	affected, err := result.RowsAffected()
 	if err != nil {
-		return err
+		return fmt.Errorf("getting rows affected: %w", err)
 	}
 
 	return s.Replyf(ctx, "Compacted quotes %d and above (%d affected).", num, affected)

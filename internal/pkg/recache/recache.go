@@ -49,5 +49,5 @@ func (r *RegexpCache) Compile(pattern string) (*regexp.Regexp, error) {
 
 	r.c.SetDefault(pattern, v)
 
-	return re, err
+	return re, err //nolint:wrapcheck
 }
