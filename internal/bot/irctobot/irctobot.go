@@ -47,6 +47,16 @@ func (m *ircMessage) BroadcasterLogin() string {
 	return strings.ToLower(name)
 }
 
+func (m *ircMessage) BroadcasterDisplay() string {
+	if testing.Testing() {
+		// This tag doesn't actually exist, but it's used in local testing which still uses IRC.
+		if displayName := m.m.Tags["room-display-name"]; displayName != "" {
+			return displayName
+		}
+	}
+	return m.BroadcasterLogin()
+}
+
 func (m *ircMessage) parseID(tag string) int64 {
 	idStr := m.m.Tags[tag]
 	if idStr == "" {

@@ -1,9 +1,12 @@
 package bot
 
 import (
-	"fmt"
+	"context"
 	"sync"
 	"testing"
+
+	"github.com/zikaeroh/ctxlog"
+	"go.uber.org/zap"
 )
 
 type testingHelper struct {
@@ -12,7 +15,7 @@ type testingHelper struct {
 	names   map[int64]string
 }
 
-func (t *testingHelper) checkUserNameID(name string, id int64) {
+func (t *testingHelper) checkUserNameID(ctx context.Context, name string, id int64) {
 	if !testing.Testing() {
 		panic("checkUserNameID called outside of test")
 	}
@@ -29,11 +32,11 @@ func (t *testingHelper) checkUserNameID(name string, id int64) {
 	}
 
 	if expectedID, ok := t.userIDs[name]; ok && id != expectedID {
-		panic(fmt.Sprintf("%v previously had id %v, now %v", name, expectedID, id))
+		ctxlog.Warn(ctx, "user ID changed", zap.String("name", name), zap.Int64("expected", expectedID), zap.Int64("actual", id))
 	}
 
 	if expectedName, ok := t.names[id]; ok && name != expectedName {
-		panic(fmt.Sprintf("%v previously had name %v, now %v", id, expectedName, name))
+		ctxlog.Warn(ctx, "user name changed", zap.Int64("id", id), zap.String("expected", expectedName), zap.String("actual", name))
 	}
 
 	t.userIDs[name] = id

@@ -38,13 +38,14 @@ func ToMessage(originMap map[int64]string, m *eventsub.WebsocketMessage) bot.Mes
 
 func (m *eventMessage) Origin() string { return m.origin }
 
-func (m *eventMessage) ID() string               { return m.event.MessageID }
-func (m *eventMessage) Timestamp() time.Time     { return m.metadata.MessageTimestamp }
-func (m *eventMessage) BroadcasterLogin() string { return m.event.BroadcasterUserLogin }
-func (m *eventMessage) BroadcasterID() int64     { return int64(m.event.BroadcasterUserID) }
-func (m *eventMessage) UserLogin() string        { return m.event.ChatterUserLogin }
-func (m *eventMessage) UserDisplay() string      { return m.event.ChatterUserName }
-func (m *eventMessage) UserID() int64            { return int64(m.event.ChatterUserID) }
+func (m *eventMessage) ID() string                 { return m.event.MessageID }
+func (m *eventMessage) Timestamp() time.Time       { return m.metadata.MessageTimestamp }
+func (m *eventMessage) BroadcasterLogin() string   { return m.event.BroadcasterUserLogin }
+func (m *eventMessage) BroadcasterDisplay() string { return m.event.BroadcasterUserName }
+func (m *eventMessage) BroadcasterID() int64       { return int64(m.event.BroadcasterUserID) }
+func (m *eventMessage) UserLogin() string          { return m.event.ChatterUserLogin }
+func (m *eventMessage) UserDisplay() string        { return m.event.ChatterUserName }
+func (m *eventMessage) UserID() int64              { return int64(m.event.ChatterUserID) }
 
 func (m *eventMessage) Message() (message string, me bool) {
 	message = m.event.Message.Text

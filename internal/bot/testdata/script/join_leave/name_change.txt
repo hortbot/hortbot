@@ -20,8 +20,8 @@ handle hortbot @id=__UUID__;room-id=999;user-id=1;display-name=BarFoo :barfoo!ba
 send hortbot #hortbot [HB] BarFoo, hortbot will now rejoin your channel with your new username.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+command add test It works!
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+command add test It works!
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+test
+handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=BarFoo :barfoo!barfoo@barfoo.tmi.twitch.tv PRIVMSG #barfoo :+test
 send hortbot @1 [HB] It works!

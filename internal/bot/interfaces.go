@@ -15,6 +15,7 @@ type Message interface {
 	ID() string
 	Timestamp() time.Time
 	BroadcasterLogin() string
+	BroadcasterDisplay() string
 	BroadcasterID() int64
 	UserLogin() string
 	UserDisplay() string

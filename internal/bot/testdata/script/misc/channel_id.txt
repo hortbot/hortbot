@@ -1,7 +1,12 @@
 join hortbot 999 foobar 1234
 
-handle hortbot @id=__UUID__;room-id=1234;user-id=1234;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot @id=__UUID__;room-id=1234;room-display-name=FooBar;user-id=1234;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
 no_send
 
-handle hortbot @id=__UUID__;room-id=1234;user-id=7564 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!channelid
+handle hortbot @id=__UUID__;room-id=1234;room-display-name=FooBar;user-id=7564 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!channelid
 send hortbot #foobar [HB] FooBar's ID: 1234, your ID: 7564
+
+twitch_get_user_by_username {"newfoobar": {"id": 1234, "login": "newfoobar"}}
+
+handle hortbot @id=__UUID__;room-id=1234;room-display-name=NewFooBar;user-id=7564 :random!random@random.tmi.twitch.tv PRIVMSG #newfoobar :!channelid
+send hortbot #newfoobar [HB] NewFooBar's ID: 1234, your ID: 7564

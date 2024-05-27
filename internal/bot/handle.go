@@ -248,8 +248,8 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 	}
 
 	if testing.Testing() {
-		b.testingHelper.checkUserNameID(s.User, s.UserID)
-		b.testingHelper.checkUserNameID(s.ChannelName, s.RoomID)
+		b.testingHelper.checkUserNameID(ctx, s.User, s.UserID)
+		b.testingHelper.checkUserNameID(ctx, s.ChannelName, s.RoomID)
 	}
 
 	return nil
@@ -321,25 +321,40 @@ func handleSession(ctx context.Context, s *session) error {
 		return err
 	}
 
-	if s.ChannelName == s.User && channel.DisplayName != s.UserDisplay {
-		channel.DisplayName = s.UserDisplay
-		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.DisplayName)); err != nil {
-			return err
-		}
-	}
-
 	if !s.Imp {
 		if !channel.Active {
 			ctxlog.Warn(ctx, "channel is not active")
 			return nil
 		}
 
-		if channel.Name != s.ChannelName {
-			ctxlog.Warn(ctx, "channel name mismatch",
-				zap.String("fromMessage", s.ChannelName),
-				zap.String("fromDB", channel.Name),
-			)
-			return nil
+		fixup := make([]string, 0, 3)
+
+		if channel.Name != s.M.BroadcasterLogin() {
+			old := channel.Name
+			fixup = append(fixup, models.ChannelColumns.Name)
+			channel.Name = s.M.BroadcasterLogin()
+			ctxlog.Warn(ctx, "channel name changed", zap.String("old", old), zap.String("new", channel.Name))
+		}
+
+		if s.ChannelName == s.User {
+			if channel.DisplayName != s.UserDisplay {
+				old := channel.DisplayName
+				fixup = append(fixup, models.ChannelColumns.DisplayName)
+				channel.DisplayName = s.UserDisplay
+				ctxlog.Warn(ctx, "channel display name changed", zap.String("old", old), zap.String("new", channel.DisplayName))
+			}
+		} else if channel.DisplayName != s.M.BroadcasterDisplay() {
+			old := channel.DisplayName
+			fixup = append(fixup, models.ChannelColumns.DisplayName)
+			channel.DisplayName = s.M.BroadcasterDisplay()
+			ctxlog.Warn(ctx, "channel display name changed", zap.String("old", old), zap.String("new", channel.DisplayName))
+		}
+
+		if len(fixup) > 0 {
+			fixup = append(fixup, models.ChannelColumns.UpdatedAt)
+			if err := channel.Update(ctx, s.Tx, boil.Whitelist(fixup...)); err != nil {
+				return err
+			}
 		}
 
 		if channel.BotName != s.Origin {

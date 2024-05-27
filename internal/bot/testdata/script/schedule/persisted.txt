@@ -1,7 +1,7 @@
 upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z", "scopes": ["channel:bot"]}
 
-insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "prefix": "+", "bot_name": "hortbot"}
+insert_channel {"id": 1, "twitch_id": 1, "name": "foobar", "display_name": "foobar", "prefix": "+", "bot_name": "hortbot"}
 insert_custom_command {"id": 1, "channel_id": 1, "message": "Hello there! (_MESSAGE_COUNT_)"}
 insert_command_info {"id": 1, "channel_id": 1, "name": "repeatme", "access_level": "everyone", "custom_command_id": 1}
 insert_scheduled_command {"id": 1, "created_at": "2019-07-01T00:00:00.000Z", "updated_at": "2019-07-01T00:00:00.000Z", "channel_id": 1, "command_info_id": 1, "enabled": true, "cron_expression": "0 * * * *", "message_diff": 1, "last_count": 0}
