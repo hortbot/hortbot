@@ -143,7 +143,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 			found, allowed, err := runner.allowed(ctx)
 			readd = readd && found
 			if !allowed || err != nil {
-				return fmt.Errorf("checking if allowed: %w", err)
+				return err //nolint:wrapcheck
 			}
 
 			if err := runner.updateCount(ctx, tx); err != nil {
@@ -250,7 +250,10 @@ func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, a
 	expiry := time.Duration(repeat.Delay-1) * time.Second
 
 	allowed, err = runner.deps.Redis.RepeatAllowed(ctx, roomIDStr, runner.id, expiry)
-	return true, allowed, err
+	if err != nil {
+		return true, false, fmt.Errorf("checking if allowed: %w", err)
+	}
+	return true, allowed, nil
 }
 
 func (runner *repeatedCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
@@ -346,7 +349,10 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, 
 	// 30 seconds.
 	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
 	allowed, err = runner.deps.Redis.ScheduledAllowed(ctx, roomIDStr, runner.id, 29*time.Second)
-	return true, allowed, err
+	if err != nil {
+		return true, false, fmt.Errorf("checking if allowed: %w", err)
+	}
+	return true, allowed, nil
 }
 
 func (runner *scheduledCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
