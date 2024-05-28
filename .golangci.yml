@@ -14,7 +14,6 @@ linters:
     - errchkjson # Redundant.
     - execinquery
     - exhaustruct # Pass.
-    - forbidigo
     - forcetypeassert
     - funlen
     - gci
@@ -61,6 +60,7 @@ linters-settings:
       - .WithMessagef(
       - .WithStack(
       - github.com/hortbot/hortbot/internal/pkg/apiclient.NewStatusError(
+      - github.com/hortbot/hortbot/internal/pkg/apiclient.NewNonStatusError(
       - github.com/hortbot/hortbot/internal/pkg/apiclient.WrapRequestErr(
     ignorePackageGlobs:
       - context
@@ -71,6 +71,17 @@ linters-settings:
       - github.com/hortbot/hortbot/internal/pkg/wqueue
       - github.com/jarcoal/httpmock
       - github.com/redis/go-redis/v9
+
+  forbidigo:
+    forbid:
+      - ^http\.NewRequest$
+      - ^http\.NewRequestWithContext$
+      - ^http\.(Client\.)?Do$
+      - ^http\.(Client\.)?Get$
+      - ^http\.(Client\.)?Head$
+      - ^http\.(Client\.)?Post$
+      - ^http\.(Client\.)?PostForm$
+    analyze-types: true
 
 issues:
   max-issues-per-linter: 0

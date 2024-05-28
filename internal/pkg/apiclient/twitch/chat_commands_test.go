@@ -4,6 +4,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -51,7 +52,7 @@ func TestBanBadParameters(t *testing.T) {
 		Reason:   "Broke a rule.",
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.Ban(ctx, broadcasterID, modID, tok, &twitch.BanRequest{
 		UserID:   666,
@@ -59,7 +60,7 @@ func TestBanBadParameters(t *testing.T) {
 		Reason:   "",
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.Ban(ctx, broadcasterID, modID, nil, &twitch.BanRequest{
 		UserID:   666,
@@ -67,7 +68,7 @@ func TestBanBadParameters(t *testing.T) {
 		Reason:   "Broke a rule.",
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.Ban(ctx, broadcasterID, modID, &oauth2.Token{}, &twitch.BanRequest{
 		UserID:   666,
@@ -75,7 +76,7 @@ func TestBanBadParameters(t *testing.T) {
 		Reason:   "Broke a rule.",
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestBanErrors(t *testing.T) {
@@ -104,7 +105,7 @@ func TestBanErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Ban(ctx, id, modID, tok, banRequest)
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -142,13 +143,13 @@ func TestUnbanBadParameters(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, modID)
 
 	_, err := tw.Unban(ctx, broadcasterID, modID, tok, 0)
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.Unban(ctx, broadcasterID, modID, nil, 666)
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.Unban(ctx, broadcasterID, modID, &oauth2.Token{}, 666)
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestUnbanErrors(t *testing.T) {
@@ -171,7 +172,7 @@ func TestUnbanErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Unban(ctx, id, modID, tok, 666)
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -207,13 +208,13 @@ func TestSetChatColorBadParameters(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, userID)
 
 	_, err := tw.SetChatColor(ctx, userID, tok, "")
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.SetChatColor(ctx, userID, nil, "#9146FF")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.SetChatColor(ctx, userID, &oauth2.Token{}, "#9146FF")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestSetChatColorErrors(t *testing.T) {
@@ -235,7 +236,7 @@ func TestSetChatColorErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.SetChatColor(ctx, id, tok, "#9146FF")
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -273,13 +274,13 @@ func TestDeleteChatMessageBadParameters(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, modID)
 
 	_, err := tw.DeleteChatMessage(ctx, broadcasterID, modID, tok, "")
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.DeleteChatMessage(ctx, broadcasterID, modID, nil, "somemessage")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.DeleteChatMessage(ctx, broadcasterID, modID, &oauth2.Token{}, "somemessage")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestDeleteChatMessageErrors(t *testing.T) {
@@ -302,7 +303,7 @@ func TestDeleteChatMessageErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.DeleteChatMessage(ctx, id, modID, tok, "somemessage")
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -339,10 +340,10 @@ func TestClearChatBadParameters(t *testing.T) {
 	const modID = 3141
 
 	_, err := tw.ClearChat(ctx, broadcasterID, modID, nil)
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.ClearChat(ctx, broadcasterID, modID, &oauth2.Token{})
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestClearChatErrors(t *testing.T) {
@@ -365,7 +366,7 @@ func TestClearChatErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.ClearChat(ctx, id, modID, tok)
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -410,29 +411,29 @@ func TestUpdateChatSettingsBadParameters(t *testing.T) {
 
 	_, err := tw.UpdateChatSettings(ctx, broadcasterID, modID, tok, nil)
 
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, tok, &twitch.ChatSettingsPatch{})
 
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, tok, &twitch.ChatSettingsPatch{
 		FollowerModeDuration: ptrTo(int64(30)),
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, nil, &twitch.ChatSettingsPatch{
 		EmoteMode: ptrTo(true),
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, &oauth2.Token{}, &twitch.ChatSettingsPatch{
 		EmoteMode: ptrTo(true),
 	})
 
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestUpdateChatSettingsErrors(t *testing.T) {
@@ -459,7 +460,7 @@ func TestUpdateChatSettingsErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.UpdateChatSettings(ctx, id, modID, tok, banRequest)
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -497,13 +498,13 @@ func TestAnnounceBadParameters(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, modID)
 
 	_, err := tw.Announce(ctx, broadcasterID, modID, tok, "", "purple")
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.Announce(ctx, broadcasterID, modID, nil, "Some announcement!", "purple")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.Announce(ctx, broadcasterID, modID, &oauth2.Token{}, "Some announcement!", "purple")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestAnnounceErrors(t *testing.T) {
@@ -526,7 +527,7 @@ func TestAnnounceErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.Announce(ctx, id, modID, tok, "Some announcement!", "purple")
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }
@@ -583,13 +584,13 @@ func TestSendChatMessageBadParameters(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, modID)
 
 	_, err := tw.SendChatMessage(ctx, broadcasterID, modID, tok, "")
-	assert.ErrorIs(t, err, twitch.ErrBadRequest)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 	_, err = tw.SendChatMessage(ctx, broadcasterID, modID, nil, "Some announcement!")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 
 	_, err = tw.SendChatMessage(ctx, broadcasterID, modID, &oauth2.Token{}, "Some announcement!")
-	assert.ErrorIs(t, err, twitch.ErrNotAuthorized)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 }
 
 func TestSendChatMessageErrors(t *testing.T) {
@@ -612,7 +613,7 @@ func TestSendChatMessageErrors(t *testing.T) {
 		tok := tokFor(ctx, t, tw, ft, id)
 
 		newToken, err := tw.SendChatMessage(ctx, id, modID, tok, "Some announcement!")
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 }

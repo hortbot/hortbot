@@ -562,7 +562,7 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 	return s.cache.isLive.get(func() (bool, error) {
 		stream, err := s.TwitchStream(ctx)
 		if err != nil {
-			if errors.Is(err, twitch.ErrNotFound) {
+			if ae, ok := apiclient.AsError(err); ok && ae.IsNotFound() {
 				stream = nil
 			} else {
 				return false, err
@@ -720,7 +720,7 @@ func logTwitchModerationError(ctx context.Context, err error, operation string) 
 	}
 
 	// Usually indicates that the bot isn't modded.
-	if errors.Is(err, twitch.ErrNotAuthorized) {
+	if ae, ok := apiclient.AsError(err); ok && ae.IsNotPermitted() {
 		return
 	}
 

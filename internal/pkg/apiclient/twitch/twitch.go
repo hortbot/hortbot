@@ -8,32 +8,17 @@ import (
 	"net/http"
 	"slices"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 	"golang.org/x/oauth2/endpoints"
 )
 
-// Twitch API errors.
-//
-//   - 200 -> nil
-//   - 400 -> ErrBadRequest
-//   - 404 -> ErrNotFound
-//   - 401 or 403 -> ErrNotAuthorized
-//   - 5xx -> ErrServerError
-//   - Otherwise -> ErrUnknown
-var (
-	ErrNotFound      = errors.New("twitch: not found")
-	ErrNotAuthorized = errors.New("twitch: not authorized")
-	ErrBadRequest    = errors.New("twitch: bad request")
-	ErrServerError   = errors.New("twitch: server error")
-	ErrUnknown       = errors.New("twitch: unknown error")
-	ErrDeadToken     = errors.New("twitch: oauth token is dead")
-)
+var ErrDeadToken = errors.New("twitch: dead token")
 
 // UserScopes should be granted for end users.
 var UserScopes = []string{
@@ -222,20 +207,14 @@ func (t *Twitch) Validate(ctx context.Context, tok *oauth2.Token) (*Validation, 
 
 	cli := t.clientForUser(ctx, tok, setToken(&newToken))
 
-	resp, err := cli.Get(ctx, "https://id.twitch.tv/oauth2/validate")
+	var validation Validation
+	req, err := cli.NewRequestToJSON(ctx, "https://id.twitch.tv/oauth2/validate", &validation)
 	if err != nil {
 		return nil, newToken, err
 	}
-	defer resp.Body.Close()
 
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, newToken, err
-	}
-
-	var validation Validation
-
-	if err := jsonx.DecodeSingle(resp.Body, &validation); err != nil {
-		return nil, nil, ErrServerError
+	if err := req.Fetch(ctx); err != nil {
+		return nil, newToken, apiclient.WrapRequestErr("twitch", err)
 	}
 
 	return &validation, newToken, nil

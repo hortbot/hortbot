@@ -21,18 +21,22 @@ type Stream struct {
 //
 // GET https://api.twitch.tv/helix/streams?user_id=<id>
 func (t *Twitch) GetStreamByUserID(ctx context.Context, id int64) (*Stream, error) {
-	return t.getStream(ctx, "user_id="+strconv.FormatInt(id, 10))
+	req, err := t.helixCli.NewRequest(ctx, helixRoot+"/streams")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("user_id", strconv.FormatInt(id, 10))
+	return fetchFirstFromList[*Stream](ctx, req)
 }
 
 // GetStreamByUsername gets the current stream by username.
 //
 // GET https://api.twitch.tv/helix/streams?user_login=<username>
 func (t *Twitch) GetStreamByUsername(ctx context.Context, username string) (*Stream, error) {
-	return t.getStream(ctx, "user_login="+username)
-}
-
-func (t *Twitch) getStream(ctx context.Context, query string) (*Stream, error) {
-	cli := t.helixCli
-	url := helixRoot + "/streams?" + query
-	return fetchFirstFromList[*Stream](ctx, cli, url)
+	req, err := t.helixCli.NewRequest(ctx, helixRoot+"/streams")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("user_login", username)
+	return fetchFirstFromList[*Stream](ctx, req)
 }

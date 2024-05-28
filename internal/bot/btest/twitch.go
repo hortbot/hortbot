@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	gocmp "github.com/google/go-cmp/cmp"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
@@ -23,13 +24,13 @@ func twitchErr(t testing.TB, lineNum int, e string) error {
 	case "":
 		return nil
 	case "ErrNotFound":
-		return twitch.ErrNotFound
+		return apiclient.NewStatusError("twitch", 404)
 	case "ErrNotAuthorized":
-		return twitch.ErrNotAuthorized
+		return apiclient.NewStatusError("twitch", 401)
 	case "ErrServerError":
-		return twitch.ErrServerError
+		return apiclient.NewStatusError("twitch", 500)
 	case "ErrUnknown":
-		return twitch.ErrUnknown
+		return apiclient.NewStatusError("twitch", 418)
 	default:
 		t.Fatalf("unknown error type %s: line %d", e, lineNum)
 		return nil
@@ -69,7 +70,7 @@ func (st *scriptTester) twitchGetUserByUsername(t testing.TB, _, args string, li
 		st.twitch.GetUserByUsernameFunc = func(_ context.Context, username string) (*twitch.User, error) {
 			u := v[username]
 			if u == nil {
-				return nil, twitch.ErrNotFound
+				return nil, apiclient.NewStatusError("twitch", 404)
 			}
 
 			assert.Assert(t, u.Name != "")

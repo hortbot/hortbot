@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
@@ -84,8 +85,10 @@ func (s *Service) onStart() {
 
 func (s *Service) getOrCreateConduit(ctx context.Context) (*twitch.Conduit, error) {
 	conduits, err := s.twitch.GetConduits(ctx)
-	if err != nil && !errors.Is(err, twitch.ErrNotFound) {
-		return nil, fmt.Errorf("get conduits: %w", err)
+	if err != nil {
+		if ae, ok := apiclient.AsError(err); !ok || !ae.IsNotFound() {
+			return nil, fmt.Errorf("get conduits: %w", err)
+		}
 	}
 
 	if len(conduits) == 0 {
@@ -286,8 +289,10 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	}
 
 	allSubscriptions, err := s.twitch.GetSubscriptions(ctx)
-	if err != nil && !errors.Is(err, twitch.ErrNotFound) {
-		return fmt.Errorf("get subscriptions: %w", err)
+	if err != nil {
+		if ae, ok := apiclient.AsError(err); !ok || !ae.IsNotFound() {
+			return fmt.Errorf("get subscriptions: %w", err)
+		}
 	}
 
 	if len(allSubscriptions) == 0 {

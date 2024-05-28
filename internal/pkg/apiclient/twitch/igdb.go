@@ -3,10 +3,10 @@ package twitch
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"sort"
-	"strings"
 
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 )
 
 type externalGameType uint8
@@ -139,27 +139,22 @@ const gameLinkQuery = `fields websites.category, websites.url, external_games.ca
 func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]GameLink, error) {
 	query := fmt.Sprintf(gameLinkQuery, externalGameTwitch, twitchCategory)
 
-	resp, err := t.helixCli.PostRaw(ctx, `https://api.igdb.com/v4/games`, strings.NewReader(query))
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
 	var body []struct {
 		Websites      []gameWebsite  `json:"websites"`
 		ExternalGames []externalGame `json:"external_games"`
 	}
 
-	if err := jsonx.DecodeSingle(resp.Body, &body); err != nil {
-		return nil, ErrServerError
+	req, err := t.helixCli.NewRequestToJSON(ctx, "https://api.igdb.com/v4/games", &body)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := req.BodyBytes([]byte(query)).Fetch(ctx); err != nil {
+		return nil, apiclient.WrapRequestErr("twitch", err)
 	}
 
 	if len(body) == 0 {
-		return nil, ErrNotFound
+		return nil, apiclient.NewStatusError("twitch", http.StatusNotFound)
 	}
 
 	linkMap := make(map[GameLinkType]string)
@@ -192,7 +187,7 @@ func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]Game
 	}
 
 	if len(links) == 0 {
-		return nil, ErrNotFound
+		return nil, apiclient.NewStatusError("twitch", http.StatusNotFound)
 	}
 
 	sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })

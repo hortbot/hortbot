@@ -2,36 +2,14 @@ package twitch
 
 import (
 	"context"
-	"fmt"
-	"maps"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/hortbot/hortbot/internal/pkg/jsonx"
+	"github.com/carlmjohnson/requests"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"golang.org/x/oauth2"
 )
-
-func statusToError(code int) error {
-	if code >= 200 && code < 300 {
-		return nil
-	}
-
-	switch code {
-	case http.StatusBadRequest:
-		return ErrBadRequest
-	case http.StatusNotFound:
-		return ErrNotFound
-	case http.StatusUnauthorized, http.StatusForbidden:
-		return ErrNotAuthorized
-	}
-
-	if code >= 500 {
-		return ErrServerError
-	}
-
-	return fmt.Errorf("unknown status %d: %w", code, ErrUnknown)
-}
 
 func setToken(newToken **oauth2.Token) func(tok *oauth2.Token, err error) {
 	return func(tok *oauth2.Token, err error) {
@@ -41,27 +19,17 @@ func setToken(newToken **oauth2.Token) func(tok *oauth2.Token, err error) {
 	}
 }
 
-func paginate[T any](ctx context.Context, cli *httpClient, url string, urlValues url.Values, perPage int, limit int) (items []T, err error) {
+func paginate[T any](ctx context.Context, req *requests.Builder, perPage int, limit int) (items []T, err error) {
 	if perPage > 0 {
-		urlValues.Set("first", strconv.Itoa(perPage))
+		req.Param("first", strconv.Itoa(perPage))
 	}
 	cursor := ""
 
 	doOne := func() error {
-		urlValues := urlValues
+		req := req.Clone()
+
 		if cursor != "" {
-			urlValues = maps.Clone(urlValues)
-			urlValues.Set("after", cursor)
-		}
-
-		resp, err := cli.Get(ctx, url+"?"+urlValues.Encode())
-		if err != nil {
-			return fmt.Errorf("paginate: %w", err)
-		}
-		defer resp.Body.Close()
-
-		if err := statusToError(resp.StatusCode); err != nil {
-			return fmt.Errorf("paginate status %d: %w", resp.StatusCode, err)
+			req.Param("after", cursor)
 		}
 
 		var v struct {
@@ -71,8 +39,8 @@ func paginate[T any](ctx context.Context, cli *httpClient, url string, urlValues
 			} `json:"pagination"`
 		}
 
-		if err := jsonx.DecodeSingle(resp.Body, &v); err != nil {
-			return ErrServerError
+		if err := req.Handle(httpx.ToJSON(&v)).Fetch(ctx); err != nil { //nolint:bodyclose
+			return apiclient.WrapRequestErr("twitch", err)
 		}
 
 		items = append(items, v.Data...)
@@ -103,63 +71,24 @@ func paginate[T any](ctx context.Context, cli *httpClient, url string, urlValues
 	return items, nil
 }
 
-func decodeResponseBodyList[T any](resp *http.Response, err error) ([]T, error) {
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if err := statusToError(resp.StatusCode); err != nil {
-		return nil, err
-	}
-
+func fetchList[T any](ctx context.Context, req *requests.Builder) ([]T, error) {
 	body := &struct {
 		Data []T `json:"data"`
 	}{}
 
-	if err := jsonx.DecodeSingle(resp.Body, body); err != nil {
-		return nil, ErrServerError
+	if err := req.Handle(httpx.ToJSON(body)).Fetch(ctx); err != nil { //nolint:bodyclose
+		return nil, apiclient.WrapRequestErr("twitch", err)
 	}
 
 	if len(body.Data) == 0 {
-		return nil, ErrNotFound
+		return nil, apiclient.NewStatusError("twitch", http.StatusNotFound)
 	}
 
 	return body.Data, nil
 }
 
-func fetchList[T any](ctx context.Context, cli *httpClient, url string) ([]T, error) {
-	return decodeResponseBodyList[T](cli.Get(ctx, url)) //nolint:bodyclose
-}
-
-func postAndDecodeList[T any](ctx context.Context, cli *httpClient, url string, v any) ([]T, error) {
-	return decodeResponseBodyList[T](cli.Post(ctx, url, v)) //nolint:bodyclose
-}
-
-func patchAndDecodeList[T any](ctx context.Context, cli *httpClient, url string, v any) ([]T, error) {
-	return decodeResponseBodyList[T](cli.Patch(ctx, url, v)) //nolint:bodyclose
-}
-
-func fetchFirstFromList[T any](ctx context.Context, cli *httpClient, url string) (T, error) {
-	list, err := fetchList[T](ctx, cli, url)
-	if err != nil {
-		var zero T
-		return zero, err
-	}
-	return list[0], nil
-}
-
-func postAndDecodeFirstFromList[T any](ctx context.Context, cli *httpClient, url string, v any) (T, error) {
-	list, err := postAndDecodeList[T](ctx, cli, url, v)
-	if err != nil {
-		var zero T
-		return zero, err
-	}
-	return list[0], nil
-}
-
-func patchAndDecodeFirstFromList[T any](ctx context.Context, cli *httpClient, url string, v any) (T, error) {
-	list, err := patchAndDecodeList[T](ctx, cli, url, v)
+func fetchFirstFromList[T any](ctx context.Context, req *requests.Builder) (T, error) {
+	list, err := fetchList[T](ctx, req)
 	if err != nil {
 		var zero T
 		return zero, err

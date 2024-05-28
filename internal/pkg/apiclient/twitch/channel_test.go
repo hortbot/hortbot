@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -68,7 +69,7 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 		ft.setMods(id, []*twitch.ChannelModerator{})
 
 		_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 
@@ -77,7 +78,7 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 	ft.setMods(id, []*twitch.ChannelModerator{})
 
 	_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
-	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Error(t, err, "twitch: ErrHandler: unexpected EOF")
 	assert.Assert(t, newToken == nil)
 }
 
@@ -150,7 +151,7 @@ func TestModifyChannel(t *testing.T) {
 		const id = 500
 		tok := tokFor(ctx, t, tw, ft, id)
 		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
 	})
 
 	t.Run("Request error", func(t *testing.T) {
@@ -171,7 +172,7 @@ func TestModifyChannel(t *testing.T) {
 		_, tw := createTester(t)
 		const id = 900
 		_, err := tw.ModifyChannel(ctx, id, nil, strPtr("some new title"), nil)
-		assert.Equal(t, err, twitch.ErrNotAuthorized)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
 	})
 
 	t.Run("Bad request", func(t *testing.T) {
@@ -182,10 +183,10 @@ func TestModifyChannel(t *testing.T) {
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)
 		_, err := tw.ModifyChannel(ctx, id, tok, nil, nil)
-		assert.Equal(t, err, twitch.ErrBadRequest)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 
 		_, err = tw.ModifyChannel(ctx, id, tok, strPtr(""), nil)
-		assert.Equal(t, err, twitch.ErrBadRequest)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
 	})
 }
 
@@ -236,7 +237,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 444)
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -244,7 +245,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 404)
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -252,7 +253,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 500)
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
@@ -260,7 +261,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 900)
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

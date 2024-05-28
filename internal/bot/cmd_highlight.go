@@ -2,11 +2,10 @@ package bot
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
@@ -18,7 +17,7 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 
 	stream, err := s.TwitchStream(ctx)
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotFound) {
+		if ae, ok := apiclient.AsError(err); ok && ae.IsNotFound() {
 			return nil
 		}
 		return err

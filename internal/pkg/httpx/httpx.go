@@ -77,29 +77,16 @@ func (w *wrappedTransport) RoundTrip(req *http.Request) (resp *http.Response, er
 	return w.inner.RoundTrip(req) //nolint:wrapcheck
 }
 
-func (c *Client) Do(req *http.Request) (resp *http.Response, err error) {
-	resp, err = c.client.Do(req)
-	// If we got an error, and the context has been canceled,
-	// the context's error is probably more useful.
-	if err != nil {
-		ctx := req.Context()
-		if ctxErr := ctx.Err(); ctxErr != nil {
-			err = ctxErr
-		}
-	}
-	return resp, err
-}
-
 func (c *Client) NewRequest(url string) *requests.Builder {
 	return requests.URL(url).Client(c.client)
 }
 
 func (c *Client) NewRequestToJSON(url string, v any) *requests.Builder {
-	return requests.URL(url).Client(c.client).Handle(toJSON(v)) //nolint:bodyclose
+	return requests.URL(url).Client(c.client).Handle(ToJSON(v)) //nolint:bodyclose
 }
 
 // ToJSON is like [requests.ToJSON] but verifies that only a single value is decoded.
-func toJSON(v any) requests.ResponseHandler {
+func ToJSON(v any) requests.ResponseHandler {
 	return func(r *http.Response) error {
 		return jsonx.DecodeSingle(r.Body, v)
 	}

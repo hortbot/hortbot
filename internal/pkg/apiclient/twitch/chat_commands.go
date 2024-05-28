@@ -2,9 +2,10 @@ package twitch
 
 import (
 	"context"
-	"net/url"
+	"net/http"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"golang.org/x/oauth2"
 )
@@ -20,33 +21,35 @@ type BanRequest struct {
 // Ban bans a user in a channel as a particular moderator. A duration of zero will cause a permanent ban.
 //
 // POST https://api.twitch.tv/helix/moderation/bans
-func (t *Twitch) Ban(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, req *BanRequest) (newToken *oauth2.Token, err error) {
-	if req.UserID == 0 || req.Reason == "" {
-		return nil, ErrBadRequest
+func (t *Twitch) Ban(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, ban *BanRequest) (newToken *oauth2.Token, err error) {
+	if ban.UserID == 0 || ban.Reason == "" {
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if modToken == nil || modToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot +
-		"/moderation/bans?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
-		"&moderator_id=" + strconv.FormatInt(modID, 10)
+
+	req, err := cli.NewRequest(ctx, helixRoot+"/moderation/bans")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("broadcaster_id", strconv.FormatInt(broadcasterID, 10))
+	req.Param("moderator_id", strconv.FormatInt(modID, 10))
 
 	body := &struct {
 		Data *BanRequest `json:"data"`
 	}{
-		Data: req,
+		Data: ban,
 	}
 
-	resp, err := cli.Post(ctx, url, body)
-	if err != nil {
-		return newToken, err
+	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
 	}
-	defer resp.Body.Close()
 
-	return newToken, statusToError(resp.StatusCode)
+	return newToken, nil
 }
 
 // Unban unbans a user from a channel.
@@ -54,26 +57,28 @@ func (t *Twitch) Ban(ctx context.Context, broadcasterID int64, modID int64, modT
 // DELETE https://api.twitch.tv/helix/moderation/bans
 func (t *Twitch) Unban(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, userID int64) (newToken *oauth2.Token, err error) {
 	if userID == 0 {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if modToken == nil || modToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot +
-		"/moderation/bans?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
-		"&moderator_id=" + strconv.FormatInt(modID, 10) +
-		"&user_id=" + strconv.FormatInt(userID, 10)
 
-	resp, err := cli.Delete(ctx, url)
+	req, err := cli.NewRequest(ctx, helixRoot+"/moderation/bans")
 	if err != nil {
-		return newToken, err
+		return nil, err
 	}
-	defer resp.Body.Close()
+	req.Param("broadcaster_id", strconv.FormatInt(broadcasterID, 10))
+	req.Param("moderator_id", strconv.FormatInt(modID, 10))
+	req.Param("user_id", strconv.FormatInt(userID, 10))
 
-	return newToken, statusToError(resp.StatusCode)
+	if err := req.Delete().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
+	}
+
+	return newToken, nil
 }
 
 type ChatSettingsPatch struct {
@@ -102,25 +107,27 @@ func (t *Twitch) UpdateChatSettings(ctx context.Context, broadcasterID int64, mo
 		patch.FollowerModeDuration != nil && patch.FollowerMode == nil ||
 		patch.NonModeratorChatDelayDuration != nil && patch.NonModeratorChatDelay == nil ||
 		patch.SlowModeWaitTime != nil && patch.SlowMode == nil {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if modToken == nil || modToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot +
-		"/chat/settings?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
-		"&moderator_id=" + strconv.FormatInt(modID, 10)
 
-	resp, err := cli.Patch(ctx, url, patch)
+	req, err := cli.NewRequest(ctx, helixRoot+"/chat/settings")
 	if err != nil {
-		return newToken, err
+		return nil, err
 	}
-	defer resp.Body.Close()
+	req.Param("broadcaster_id", strconv.FormatInt(broadcasterID, 10))
+	req.Param("moderator_id", strconv.FormatInt(modID, 10))
 
-	return newToken, statusToError(resp.StatusCode)
+	if err := req.BodyJSON(patch).Patch().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
+	}
+
+	return newToken, nil
 }
 
 // SetChatColor sets the chat color for a user.
@@ -128,23 +135,27 @@ func (t *Twitch) UpdateChatSettings(ctx context.Context, broadcasterID int64, mo
 // PUT https://api.twitch.tv/helix/chat/color
 func (t *Twitch) SetChatColor(ctx context.Context, userID int64, userToken *oauth2.Token, color string) (newToken *oauth2.Token, err error) {
 	if color == "" {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if userToken == nil || userToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
-	url := helixRoot + "/chat/color?user_id=" + strconv.FormatInt(userID, 10) + "&color=" + url.QueryEscape(color)
 
-	resp, err := cli.Put(ctx, url, nil)
+	req, err := cli.NewRequest(ctx, helixRoot+"/chat/color")
 	if err != nil {
-		return newToken, err
+		return nil, err
 	}
-	defer resp.Body.Close()
+	req.Param("user_id", strconv.FormatInt(userID, 10))
+	req.Param("color", color)
 
-	return newToken, statusToError(resp.StatusCode)
+	if err := req.Put().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
+	}
+
+	return newToken, nil
 }
 
 // DeleteChatMessage deletes a message from chat.
@@ -152,26 +163,28 @@ func (t *Twitch) SetChatColor(ctx context.Context, userID int64, userToken *oaut
 // DELETE https://api.twitch.tv/helix/moderation/chat
 func (t *Twitch) DeleteChatMessage(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, id string) (newToken *oauth2.Token, err error) {
 	if id == "" {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if modToken == nil || modToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot +
-		"/moderation/chat?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
-		"&moderator_id=" + strconv.FormatInt(modID, 10) +
-		"&message_id=" + url.QueryEscape(id)
 
-	resp, err := cli.Delete(ctx, url)
+	req, err := cli.NewRequest(ctx, helixRoot+"/moderation/chat")
 	if err != nil {
-		return newToken, err
+		return nil, err
 	}
-	defer resp.Body.Close()
+	req.Param("broadcaster_id", strconv.FormatInt(broadcasterID, 10))
+	req.Param("moderator_id", strconv.FormatInt(modID, 10))
+	req.Param("message_id", id)
 
-	return newToken, statusToError(resp.StatusCode)
+	if err := req.Delete().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
+	}
+
+	return newToken, nil
 }
 
 // ClearChat deletes all messages in chat.
@@ -179,21 +192,23 @@ func (t *Twitch) DeleteChatMessage(ctx context.Context, broadcasterID int64, mod
 // DELETE https://api.twitch.tv/helix/moderation/chat
 func (t *Twitch) ClearChat(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token) (newToken *oauth2.Token, err error) {
 	if modToken == nil || modToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot +
-		"/moderation/chat?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
-		"&moderator_id=" + strconv.FormatInt(modID, 10)
 
-	resp, err := cli.Delete(ctx, url)
+	req, err := cli.NewRequest(ctx, helixRoot+"/moderation/chat")
 	if err != nil {
-		return newToken, err
+		return nil, err
 	}
-	defer resp.Body.Close()
+	req.Param("broadcaster_id", strconv.FormatInt(broadcasterID, 10))
+	req.Param("moderator_id", strconv.FormatInt(modID, 10))
 
-	return newToken, statusToError(resp.StatusCode)
+	if err := req.Delete().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
+	}
+
+	return newToken, nil
 }
 
 // Announce makes an announcement in chat.
@@ -201,17 +216,21 @@ func (t *Twitch) ClearChat(ctx context.Context, broadcasterID int64, modID int64
 // POST https://api.twitch.tv/helix/chat/announcements
 func (t *Twitch) Announce(ctx context.Context, broadcasterID int64, modID int64, modToken *oauth2.Token, message string, color string) (newToken *oauth2.Token, err error) {
 	if message == "" {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if modToken == nil || modToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
-	url := helixRoot +
-		"/chat/announcements?broadcaster_id=" + strconv.FormatInt(broadcasterID, 10) +
-		"&moderator_id=" + strconv.FormatInt(modID, 10)
+
+	req, err := cli.NewRequest(ctx, helixRoot+"/chat/announcements")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("broadcaster_id", strconv.FormatInt(broadcasterID, 10))
+	req.Param("moderator_id", strconv.FormatInt(modID, 10))
 
 	body := &struct {
 		Message string `json:"message"`
@@ -221,13 +240,11 @@ func (t *Twitch) Announce(ctx context.Context, broadcasterID int64, modID int64,
 		Color:   color,
 	}
 
-	resp, err := cli.Post(ctx, url, body)
-	if err != nil {
-		return newToken, err
+	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
 	}
-	defer resp.Body.Close()
 
-	return newToken, statusToError(resp.StatusCode)
+	return newToken, nil
 }
 
 // SendChatMessage sends a chat message as the given user.
@@ -235,7 +252,7 @@ func (t *Twitch) Announce(ctx context.Context, broadcasterID int64, modID int64,
 // POST https://api.twitch.tv/helix/chat/messages
 func (t *Twitch) SendChatMessage(ctx context.Context, broadcasterID int64, senderID int64, senderToken *oauth2.Token, message string) (newToken *oauth2.Token, err error) {
 	if message == "" {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if len(message) > 500 {
@@ -243,11 +260,15 @@ func (t *Twitch) SendChatMessage(ctx context.Context, broadcasterID int64, sende
 	}
 
 	if senderToken == nil || senderToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, senderToken, setToken(&newToken))
-	url := helixRoot + "/chat/messages"
+
+	req, err := cli.NewRequest(ctx, helixRoot+"/chat/messages")
+	if err != nil {
+		return nil, err
+	}
 
 	body := &struct {
 		BroadcasterID idstr.IDStr `json:"broadcaster_id"`
@@ -259,11 +280,9 @@ func (t *Twitch) SendChatMessage(ctx context.Context, broadcasterID int64, sende
 		Message:       message,
 	}
 
-	resp, err := cli.Post(ctx, url, body)
-	if err != nil {
-		return newToken, err
+	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
 	}
-	defer resp.Body.Close()
 
-	return newToken, statusToError(resp.StatusCode)
+	return newToken, nil
 }

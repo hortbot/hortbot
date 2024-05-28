@@ -2,7 +2,6 @@ package twitch
 
 import (
 	"context"
-	"net/url"
 	"strconv"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
@@ -17,27 +16,34 @@ type Category struct {
 //
 // GET https://api.twitch.tv/helix/search/categories?query=<query>
 func (t *Twitch) SearchCategories(ctx context.Context, query string) ([]*Category, error) {
-	cli := t.helixCli
-	url := helixRoot + "/search/categories?query=" + url.QueryEscape(query)
-	return fetchList[*Category](ctx, cli, url)
+	req, err := t.helixCli.NewRequest(ctx, helixRoot+"/search/categories")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("query", query)
+	return fetchList[*Category](ctx, req)
 }
 
 // GetGameByName queries for a game by name. The name must match exactly.
 //
 // GET https://api.twitch.tv/helix/games?name=<name>
 func (t *Twitch) GetGameByName(ctx context.Context, name string) (*Category, error) {
-	return t.getGame(ctx, "name="+url.QueryEscape(name))
+	req, err := t.helixCli.NewRequest(ctx, helixRoot+"/games")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("name", name)
+	return fetchFirstFromList[*Category](ctx, req)
 }
 
 // GetGameByID queries for a game by ID.
 //
 // GET https://api.twitch.tv/helix/games?id=<id>
 func (t *Twitch) GetGameByID(ctx context.Context, id int64) (*Category, error) {
-	return t.getGame(ctx, "id="+strconv.FormatInt(id, 10))
-}
-
-func (t *Twitch) getGame(ctx context.Context, params string) (*Category, error) {
-	cli := t.helixCli
-	url := helixRoot + "/games?" + params
-	return fetchFirstFromList[*Category](ctx, cli, url)
+	req, err := t.helixCli.NewRequest(ctx, helixRoot+"/games")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("id", strconv.FormatInt(id, 10))
+	return fetchFirstFromList[*Category](ctx, req)
 }

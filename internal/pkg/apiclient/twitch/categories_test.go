@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -42,7 +43,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "notfound")
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -50,7 +51,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "notfound2")
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -58,7 +59,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "servererror")
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
@@ -66,7 +67,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "decodeerror")
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {
@@ -119,7 +120,7 @@ func TestGetGame(t *testing.T) {
 		ft.setClientTokens(tok)
 
 		_, err := tw.GetGameByName(ctx, "notfound")
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -130,7 +131,7 @@ func TestGetGame(t *testing.T) {
 		ft.setClientTokens(tok)
 
 		_, err := tw.GetGameByName(ctx, "servererror")
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
@@ -141,7 +142,7 @@ func TestGetGame(t *testing.T) {
 		ft.setClientTokens(tok)
 
 		_, err := tw.GetGameByName(ctx, "decodeerror")
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

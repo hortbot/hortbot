@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/oauth2x"
 	"golang.org/x/oauth2"
@@ -19,10 +20,10 @@ var (
 	})
 
 	expectedErrors = map[int]error{
-		401: twitch.ErrNotAuthorized,
-		404: twitch.ErrNotFound,
-		418: twitch.ErrUnknown,
-		500: twitch.ErrServerError,
+		401: apiclient.NewStatusError("twitch", 401),
+		404: apiclient.NewStatusError("twitch", 404),
+		418: apiclient.NewStatusError("twitch", 418),
+		500: apiclient.NewStatusError("twitch", 500),
 	}
 )
 

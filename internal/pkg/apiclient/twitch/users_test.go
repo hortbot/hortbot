@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -65,7 +66,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
 	_, _, err = tw.GetUserByToken(ctx, tok)
-	assert.Equal(t, err, twitch.ErrServerError)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 503))
 }
 
 func TestGetUserForTokenDecodeError(t *testing.T) {
@@ -91,7 +92,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
 	_, _, err = tw.GetUserByToken(ctx, tok)
-	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
 }
 
 func TestGetUserForTokenRequestError(t *testing.T) {
@@ -151,7 +152,7 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "servererror")
-	assert.Equal(t, err, twitch.ErrServerError)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
 }
 
 func TestGetUserForUsernameNotFound(t *testing.T) {
@@ -172,7 +173,7 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "notfound")
-	assert.Equal(t, err, twitch.ErrNotFound)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 }
 
 func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
@@ -193,7 +194,7 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "notfound2")
-	assert.Equal(t, err, twitch.ErrNotFound)
+	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 }
 
 func TestGetUserForUsernameDecodeError(t *testing.T) {
@@ -235,7 +236,7 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "decodeerror")
-	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
 }
 
 func TestGetUserForID(t *testing.T) {
@@ -335,7 +336,7 @@ func TestGetModeratedChannelsErrors(t *testing.T) {
 		ft.setModerated(id, []*twitch.ModeratedChannel{})
 
 		_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
-		assert.ErrorIs(t, err, expected, "%d", status)
+		assert.DeepEqual(t, err, expected)
 		assert.Assert(t, newToken == nil)
 	}
 
@@ -344,6 +345,6 @@ func TestGetModeratedChannelsErrors(t *testing.T) {
 	ft.setModerated(id, []*twitch.ModeratedChannel{})
 
 	_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
-	assert.Equal(t, err, twitch.ErrServerError)
+	assert.Error(t, err, "twitch: ErrHandler: unexpected EOF")
 	assert.Assert(t, newToken == nil)
 }

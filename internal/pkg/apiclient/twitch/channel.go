@@ -2,9 +2,10 @@ package twitch
 
 import (
 	"context"
-	"net/url"
+	"net/http"
 	"strconv"
 
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"golang.org/x/oauth2"
 )
@@ -20,10 +21,12 @@ type ChannelModerator struct {
 // GET https://api.twitch.tv/helix/moderation/moderators
 func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *oauth2.Token) (mods []*ChannelModerator, newToken *oauth2.Token, err error) {
 	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
-	u := helixRoot + "/moderation/moderators"
-	urlValues := url.Values{}
-	urlValues.Set("broadcaster_id", strconv.FormatInt(id, 10))
-	mods, err = paginate[*ChannelModerator](ctx, cli, u, urlValues, 100, 500)
+	req, err := cli.NewRequest(ctx, helixRoot+"/moderation/moderators")
+	if err != nil {
+		return nil, newToken, err
+	}
+	req.Param("broadcaster_id", strconv.FormatInt(id, 10))
+	mods, err = paginate[*ChannelModerator](ctx, req, 100, 500)
 	return mods, newToken, err
 }
 
@@ -33,15 +36,15 @@ func (t *Twitch) GetChannelModerators(ctx context.Context, id int64, userToken *
 // PATCH https://api.twitch.tv/helix/channels
 func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userToken *oauth2.Token, title *string, gameID *int64) (newToken *oauth2.Token, err error) {
 	if title == nil && gameID == nil {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if title != nil && *title == "" {
-		return nil, ErrBadRequest
+		return nil, apiclient.NewStatusError("twitch", http.StatusBadRequest)
 	}
 
 	if userToken == nil || userToken.AccessToken == "" {
-		return nil, ErrNotAuthorized
+		return nil, apiclient.NewStatusError("twitch", http.StatusUnauthorized)
 	}
 
 	cli := t.clientForUser(ctx, userToken, setToken(&newToken))
@@ -57,13 +60,16 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 		GameID:        (*idstr.IDStr)(gameID),
 	}
 
-	resp, err := cli.Patch(ctx, url, body)
+	req, err := cli.NewRequest(ctx, url)
 	if err != nil {
 		return newToken, err
 	}
-	defer resp.Body.Close()
 
-	return newToken, statusToError(resp.StatusCode)
+	if err := req.BodyJSON(body).Patch().Fetch(ctx); err != nil {
+		return newToken, apiclient.WrapRequestErr("twitch", err)
+	}
+
+	return newToken, nil
 }
 
 // Channel is a channel as exposed by the Helix API.
@@ -79,7 +85,10 @@ type Channel struct {
 //
 // GET https://api.twitch.tv/helix/channels?broadcaster_id<id>
 func (t *Twitch) GetChannelByID(ctx context.Context, id int64) (*Channel, error) {
-	cli := t.helixCli
-	url := helixRoot + "/channels?broadcaster_id=" + strconv.FormatInt(id, 10)
-	return fetchFirstFromList[*Channel](ctx, cli, url)
+	req, err := t.helixCli.NewRequest(ctx, helixRoot+"/channels")
+	if err != nil {
+		return nil, err
+	}
+	req.Param("broadcaster_id", strconv.FormatInt(id, 10))
+	return fetchFirstFromList[*Channel](ctx, req)
 }

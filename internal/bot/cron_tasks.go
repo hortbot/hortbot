@@ -8,6 +8,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -42,15 +43,18 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 			token := modelsx.ModelToToken(tt)
 			validation, newToken, err := b.deps.Twitch.Validate(ctx, token)
 			if err != nil {
-				if errors.Is(err, twitch.ErrDeadToken) || errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrNotFound) {
-					ctxlog.Info(ctx, "deleting dead token", zap.Error(err), zap.Int64("twitch_id", tt.TwitchID), zap.Stringp("bot_name", tt.BotName.Ptr()))
-					if err := tt.Delete(ctx, b.db); err != nil {
-						return fmt.Errorf("deleting dead token: %w", err)
+				if te, ok := apiclient.AsError(err); ok {
+					if errors.Is(err, twitch.ErrDeadToken) || te.IsNotPermitted() || te.IsNotFound() {
+						ctxlog.Info(ctx, "deleting dead token", zap.Error(err), zap.Int64("twitch_id", tt.TwitchID), zap.Stringp("bot_name", tt.BotName.Ptr()))
+						if err := tt.Delete(ctx, b.db); err != nil {
+							return fmt.Errorf("deleting dead token: %w", err)
+						}
+						metricDeletedTokens.Inc()
+						deleted++
+						return nil
 					}
-					metricDeletedTokens.Inc()
-					deleted++
-					return nil
 				}
+
 				ctxlog.Error(ctx, "failed to validate token", zap.Error(err))
 				metricTokenValidationErrors.Inc()
 				return nil

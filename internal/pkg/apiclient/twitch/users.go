@@ -3,7 +3,6 @@ package twitch
 import (
 	"context"
 	"math"
-	"net/url"
 	"strconv"
 
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
@@ -50,12 +49,16 @@ func (t *Twitch) GetUserByID(ctx context.Context, id int64) (*User, error) {
 
 func getUser(ctx context.Context, cli *httpClient, username string, id int64) (*User, error) {
 	u := helixRoot + "/users"
-	if username != "" {
-		u += "?login=" + url.QueryEscape(username)
-	} else if id != 0 {
-		u += "?id=" + strconv.FormatInt(id, 10)
+	req, err := cli.NewRequest(ctx, u)
+	if err != nil {
+		return nil, err
 	}
-	return fetchFirstFromList[*User](ctx, cli, u)
+	if username != "" {
+		req.Param("login", username)
+	} else if id != 0 {
+		req.Param("id", strconv.FormatInt(id, 10))
+	}
+	return fetchFirstFromList[*User](ctx, req)
 }
 
 type ModeratedChannel struct {
@@ -70,8 +73,11 @@ type ModeratedChannel struct {
 func (t *Twitch) GetModeratedChannels(ctx context.Context, modID int64, modToken *oauth2.Token) (channels []*ModeratedChannel, newToken *oauth2.Token, err error) {
 	cli := t.clientForUser(ctx, modToken, setToken(&newToken))
 	u := helixRoot + "/moderation/channels"
-	urlValues := url.Values{}
-	urlValues.Set("user_id", strconv.FormatInt(modID, 10))
-	channels, err = paginate[*ModeratedChannel](ctx, cli, u, urlValues, 100, math.MaxInt)
+	req, err := cli.NewRequest(ctx, u)
+	if err != nil {
+		return nil, newToken, err
+	}
+	req.Param("user_id", strconv.FormatInt(modID, 10))
+	channels, err = paginate[*ModeratedChannel](ctx, req, 100, math.MaxInt)
 	return channels, newToken, err
 }

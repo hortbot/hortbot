@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -60,7 +61,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "notfound")
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -68,7 +69,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "notfound2")
-		assert.Equal(t, err, twitch.ErrNotFound)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -76,7 +77,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "servererror")
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
@@ -84,7 +85,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "decodeerror")
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

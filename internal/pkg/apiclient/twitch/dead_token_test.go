@@ -24,7 +24,7 @@ func TestDeadToken(t *testing.T) {
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "invalid")
 		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
-		assert.Equal(t, err, twitch.ErrDeadToken)
+		assert.ErrorIs(t, err, twitch.ErrDeadToken)
 	})
 
 	t.Run("Unknown message", func(t *testing.T) {
@@ -38,7 +38,7 @@ func TestDeadToken(t *testing.T) {
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "unknown")
 		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
-		assert.Equal(t, err, twitch.ErrDeadToken)
+		assert.ErrorIs(t, err, twitch.ErrDeadToken)
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
@@ -52,7 +52,7 @@ func TestDeadToken(t *testing.T) {
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "decodeerror")
 		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
-		assert.Equal(t, err, twitch.ErrServerError)
+		assert.Error(t, err, "twitch: invalid character '}' looking for beginning of value")
 	})
 }
 

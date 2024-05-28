@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/hako/durafmt"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"go.deanishe.net/fuzzy"
 )
@@ -25,7 +26,7 @@ func cmdStatus(ctx context.Context, s *session, cmd string, args string) error {
 
 	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
-		if errors.Is(err, twitch.ErrServerError) {
+		if ae, ok := apiclient.AsError(err); ok && ae.IsServerError() {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
 		return err
@@ -63,11 +64,13 @@ func setStatus(ctx context.Context, s *session, status string) (replied bool, er
 	}
 
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
-			return true, s.Reply(ctx, s.TwitchNotAuthMessage())
-		}
-		if errors.Is(err, twitch.ErrServerError) {
-			return true, s.Reply(ctx, twitchServerErrorReply)
+		if ae, ok := apiclient.AsError(err); ok {
+			if ae.IsNotPermitted() || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
+				return true, s.Reply(ctx, s.TwitchNotAuthMessage())
+			}
+			if ae.IsServerError() {
+				return true, s.Reply(ctx, twitchServerErrorReply)
+			}
 		}
 		return false, fmt.Errorf("setting status: %w", err)
 	}
@@ -83,7 +86,7 @@ func cmdGame(ctx context.Context, s *session, cmd string, args string) error {
 
 	ch, err := s.TwitchChannel(ctx)
 	if err != nil {
-		if errors.Is(err, twitch.ErrServerError) {
+		if ae, ok := apiclient.AsError(err); ok && ae.IsServerError() {
 			return s.Reply(ctx, twitchServerErrorReply)
 		}
 		return err
@@ -136,11 +139,13 @@ func setGameAndStatus(ctx context.Context, s *session, game string, status strin
 	}
 
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
-			return false, s.Reply(ctx, s.TwitchNotAuthMessage())
-		}
-		if errors.Is(err, twitch.ErrServerError) {
-			return false, s.Reply(ctx, twitchServerErrorReply)
+		if ae, ok := apiclient.AsError(err); ok {
+			if ae.IsNotPermitted() || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
+				return false, s.Reply(ctx, s.TwitchNotAuthMessage())
+			}
+			if ae.IsServerError() {
+				return false, s.Reply(ctx, twitchServerErrorReply)
+			}
 		}
 		return false, fmt.Errorf("setting status: %w", err)
 	}
@@ -180,11 +185,13 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 	}
 
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotAuthorized) || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
-			return false, s.Reply(ctx, s.TwitchNotAuthMessage())
-		}
-		if errors.Is(err, twitch.ErrServerError) {
-			return false, s.Reply(ctx, twitchServerErrorReply)
+		if ae, ok := apiclient.AsError(err); ok {
+			if ae.IsNotPermitted() || errors.Is(err, twitch.ErrDeadToken) { // TODO: Delete dead token.
+				return false, s.Reply(ctx, s.TwitchNotAuthMessage())
+			}
+			if ae.IsServerError() {
+				return false, s.Reply(ctx, twitchServerErrorReply)
+			}
 		}
 		return false, fmt.Errorf("setting game: %w", err)
 	}
@@ -199,7 +206,7 @@ func setGame(ctx context.Context, s *session, game string) (ok bool, err error) 
 func fixGameOrSuggest(ctx context.Context, s *session, game string) (*twitch.Category, error) {
 	exact, suggestions, err := searchGame(ctx, s, game)
 	if err != nil {
-		if errors.Is(err, twitch.ErrServerError) {
+		if ae, ok := apiclient.AsError(err); ok && ae.IsServerError() {
 			return nil, s.Reply(ctx, twitchServerErrorReply)
 		}
 		return nil, err
@@ -228,7 +235,7 @@ func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Cat
 		if err == nil {
 			return g, gameSuggestion{}, nil
 		}
-		if !errors.Is(err, twitch.ErrNotFound) {
+		if ae, ok := apiclient.AsError(err); !ok || !ae.IsNotFound() {
 			return nil, gameSuggestion{}, fmt.Errorf("searching for game: %w", err)
 		}
 	}
@@ -237,7 +244,7 @@ func searchGame(ctx context.Context, s *session, name string) (exact *twitch.Cat
 
 	gs, err := s.Deps.Twitch.SearchCategories(ctx, name)
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotFound) {
+		if ae, ok := apiclient.AsError(err); ok && ae.IsNotFound() {
 			err = nil
 		}
 		return nil, gameSuggestion{}, err
@@ -311,11 +318,13 @@ func cmdViewers(ctx context.Context, s *session, cmd string, args string) error 
 func streamOrReplyNotLive(ctx context.Context, s *session) (*twitch.Stream, error) {
 	stream, err := s.TwitchStream(ctx)
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotFound) {
-			return nil, s.Reply(ctx, "Stream is not live.")
-		}
-		if errors.Is(err, twitch.ErrServerError) {
-			return nil, s.Reply(ctx, twitchServerErrorReply)
+		if ae, ok := apiclient.AsError(err); ok {
+			if ae.IsNotFound() {
+				return nil, s.Reply(ctx, "Stream is not live.")
+			}
+			if ae.IsServerError() {
+				return nil, s.Reply(ctx, twitchServerErrorReply)
+			}
 		}
 		return nil, err
 	}
@@ -330,7 +339,7 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 	if name == "" {
 		isLive, err := s.IsLive(ctx)
 		if err != nil {
-			if errors.Is(err, twitch.ErrServerError) {
+			if ae, ok := apiclient.AsError(err); ok && ae.IsServerError() {
 				return s.Reply(ctx, twitchServerErrorReply)
 			}
 			return err
@@ -345,22 +354,26 @@ func cmdIsLive(ctx context.Context, s *session, cmd string, args string) error {
 
 	u, err := s.Deps.Twitch.GetUserByUsername(ctx, name)
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotFound) {
-			return s.Replyf(ctx, "User %s does not exist.", name)
-		}
-		if errors.Is(err, twitch.ErrServerError) {
-			return s.Reply(ctx, twitchServerErrorReply)
+		if ae, ok := apiclient.AsError(err); ok {
+			if ae.IsNotFound() {
+				return s.Replyf(ctx, "User %s does not exist.", name)
+			}
+			if ae.IsServerError() {
+				return s.Reply(ctx, twitchServerErrorReply)
+			}
 		}
 		return fmt.Errorf("getting user: %w", err)
 	}
 
 	stream, err := s.Deps.Twitch.GetStreamByUserID(ctx, int64(u.ID))
 	if err != nil {
-		if errors.Is(err, twitch.ErrNotFound) {
-			return s.Replyf(ctx, "No, %s isn't live.", name)
-		}
-		if errors.Is(err, twitch.ErrServerError) {
-			return s.Reply(ctx, twitchServerErrorReply)
+		if ae, ok := apiclient.AsError(err); ok {
+			if ae.IsNotFound() {
+				return s.Replyf(ctx, "No, %s isn't live.", name)
+			}
+			if ae.IsServerError() {
+				return s.Reply(ctx, twitchServerErrorReply)
+			}
 		}
 		return fmt.Errorf("getting stream: %w", err)
 	}
