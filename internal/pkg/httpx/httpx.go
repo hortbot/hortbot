@@ -24,11 +24,12 @@ func NewClient(cli *http.Client, name string, asBrowser bool) Client {
 		panic("nil http.Client")
 	}
 	client := *cli
-	if client.Transport == nil {
-		client.Transport = http.DefaultTransport
+	transport := client.Transport
+	if transport == nil {
+		transport = http.DefaultTransport
 	}
 	client.Transport = &wrappedTransport{
-		inner:     client.Transport,
+		inner:     transport,
 		asBrowser: asBrowser,
 		name:      name,
 	}
