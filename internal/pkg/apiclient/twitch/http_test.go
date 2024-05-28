@@ -41,7 +41,7 @@ func TestHTTPClient(t *testing.T) {
 		}
 
 		_, err := c.newRequest(ctx, "GET", "http://localhost", nil)
-		assert.Assert(t, errors.Is(err, testErr))
+		assert.ErrorIs(t, err, testErr)
 	})
 
 	t.Run("BadURL", func(t *testing.T) {

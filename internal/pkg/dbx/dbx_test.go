@@ -201,7 +201,7 @@ func TestTransactErrCancelStart(t *testing.T) {
 			return nil
 		},
 	)
-	assert.Assert(t, errors.Is(err, context.Canceled))
+	assert.ErrorIs(t, err, context.Canceled)
 
 	var count int
 	err = db.QueryRow("SELECT COUNT(*) FROM test").Scan(&count)
