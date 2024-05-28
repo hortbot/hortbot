@@ -691,7 +691,7 @@ func actionSteamStore(ctx context.Context, s *session, actionName, value string)
 func actionTweet(ctx context.Context, s *session, actionName, value string) (string, error) {
 	const tweetGuard = "?tweet"
 
-	if ctx.Value(commandGuard(tweetGuard)) != nil {
+	if isCommandGuarded(ctx, tweetGuard) {
 		return "", nil
 	}
 

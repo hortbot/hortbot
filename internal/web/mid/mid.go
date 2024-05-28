@@ -2,17 +2,17 @@
 package mid
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/felixge/httpsnoop"
+	"github.com/hortbot/hortbot/internal/pkg/ctxkey"
 	"github.com/rs/xid"
 	"github.com/zikaeroh/ctxlog"
 	"go.opencensus.io/plugin/ochttp"
 	"go.uber.org/zap"
 )
 
-type requestIDKey struct{}
+var requestIDKey = ctxkey.NewContextKey("requestID", xid.NilID())
 
 const requestIDHeader = "X-Request-ID"
 
@@ -52,7 +52,7 @@ func RequestID(next http.Handler) http.Handler {
 		}
 
 		w.Header().Set(requestIDHeader, requestID)
-		ctx = context.WithValue(ctx, requestIDKey{}, id)
+		ctx = requestIDKey.WithValue(ctx, id)
 		ctx = ctxlog.With(ctx, zap.String("requestID", requestID))
 
 		r = r.WithContext(ctx)
@@ -62,8 +62,7 @@ func RequestID(next http.Handler) http.Handler {
 
 // GetRequestID gets the request ID for a given request.
 func GetRequestID(r *http.Request) xid.ID {
-	requestID, _ := r.Context().Value(requestIDKey{}).(xid.ID)
-	return requestID
+	return requestIDKey.Value(r.Context())
 }
 
 // RequestLogger logs information about the request, including the method,

@@ -9,15 +9,12 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/pkg/ctxkey"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 
-type contextKey int
-
-const (
-	channelKey contextKey = iota
-)
+var channelKey = ctxkey.NewContextKey("channel", (*models.Channel)(nil))
 
 func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -36,7 +33,7 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 				return
 			}
 
-			ctx = context.WithValue(ctx, channelKey, channel)
+			ctx = channelKey.WithValue(ctx, channel)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
@@ -45,5 +42,5 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 }
 
 func getChannel(ctx context.Context) *models.Channel {
-	return ctx.Value(channelKey).(*models.Channel)
+	return channelKey.Value(ctx)
 }

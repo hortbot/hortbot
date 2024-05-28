@@ -4,6 +4,7 @@ package correlation
 import (
 	"context"
 
+	"github.com/hortbot/hortbot/internal/pkg/ctxkey"
 	"github.com/rs/xid"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -11,9 +12,7 @@ import (
 
 const zapName = "xid"
 
-type contextKey int
-
-const idKey contextKey = iota
+var contextKey = ctxkey.NewContextKey("correlation", xid.NilID())
 
 // With adds a new correlation ID to the context if one has not already been
 // added.
@@ -32,13 +31,12 @@ func WithID(ctx context.Context, id xid.ID) context.Context {
 		id = xid.New()
 	}
 
-	ctx = context.WithValue(ctx, idKey, id)
+	ctx = contextKey.WithValue(ctx, id)
 	return ctxlog.With(ctx, zap.String(zapName, id.String()))
 }
 
 // FromContext fetches the correlation ID from the context, or returns a nil
 // ID if not found.
 func FromContext(ctx context.Context) xid.ID {
-	id, _ := ctx.Value(idKey).(xid.ID)
-	return id
+	return contextKey.Value(ctx)
 }
