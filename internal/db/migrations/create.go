@@ -8,8 +8,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"time"
-
-	"github.com/friendsofgo/errors"
 )
 
 func currentDir() string {
@@ -42,22 +40,22 @@ func mainErr() error {
 
 	upFile, err := os.Create(upPath)
 	if err != nil {
-		return errors.Wrap(err, "creating up migration")
+		return fmt.Errorf("creating up migration: %w", err)
 	}
 	defer upFile.Close()
 
 	downFile, err := os.Create(downPath)
 	if err != nil {
-		return errors.Wrap(err, "creating down migration")
+		return fmt.Errorf("creating down migration: %w", err)
 	}
 	defer downFile.Close()
 
 	if _, err = fmt.Fprintf(upFile, migrationTemplate, "Up migration"); err != nil {
-		return errors.Wrap(err, "writing up migration")
+		return fmt.Errorf("writing up migration: %w", err)
 	}
 
 	if _, err = fmt.Fprintf(downFile, migrationTemplate, "Down migration"); err != nil {
-		return errors.Wrap(err, "writing down migration")
+		return fmt.Errorf("writing down migration: %w", err)
 	}
 
 	fmt.Println("Created migrations:")

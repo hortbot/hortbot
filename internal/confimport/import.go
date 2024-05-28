@@ -3,8 +3,8 @@ package confimport
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -38,14 +38,14 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 	c.Channel.ID = 0
 
 	if err := c.Channel.Insert(ctx, exec, boil.Infer()); err != nil {
-		return errors.Wrap(err, "inserting channel")
+		return fmt.Errorf("inserting channel: %w", err)
 	}
 
 	for _, quote := range c.Quotes {
 		quote.ChannelID = c.Channel.ID
 
 		if err := quote.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "inserting quote")
+			return fmt.Errorf("inserting quote: %w", err)
 		}
 	}
 
@@ -58,7 +58,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 			cc.ChannelID = c.Channel.ID
 
 			if err := cc.Insert(ctx, exec, boil.Infer()); err != nil {
-				return errors.Wrap(err, "inserting custom command")
+				return fmt.Errorf("inserting custom command: %w", err)
 			}
 
 			command.Info.CustomCommandID = null.Int64From(cc.ID)
@@ -69,14 +69,14 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 			cl.ChannelID = c.Channel.ID
 
 			if err := cl.Insert(ctx, exec, boil.Infer()); err != nil {
-				return errors.Wrap(err, "inserting command list")
+				return fmt.Errorf("inserting command list: %w", err)
 			}
 
 			command.Info.CommandListID = null.Int64From(cl.ID)
 		}
 
 		if err := command.Info.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "inserting command info")
+			return fmt.Errorf("inserting command info: %w", err)
 		}
 
 		if r := command.Repeat; r != nil {
@@ -85,7 +85,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 			r.CommandInfoID = command.Info.ID
 
 			if err := r.Insert(ctx, exec, boil.Infer()); err != nil {
-				return errors.Wrap(err, "inserting repeated command")
+				return fmt.Errorf("inserting repeated command: %w", err)
 			}
 		}
 
@@ -95,7 +95,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 			s.CommandInfoID = command.Info.ID
 
 			if err := s.Insert(ctx, exec, boil.Infer()); err != nil {
-				return errors.Wrap(err, "inserting scheduled command")
+				return fmt.Errorf("inserting scheduled command: %w", err)
 			}
 		}
 	}
@@ -105,7 +105,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 		autoreply.ChannelID = c.Channel.ID
 
 		if err := autoreply.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "inserting autoreply")
+			return fmt.Errorf("inserting autoreply: %w", err)
 		}
 	}
 
@@ -114,7 +114,7 @@ func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
 		variable.ChannelID = c.Channel.ID
 
 		if err := variable.Insert(ctx, exec, boil.Infer()); err != nil {
-			return errors.Wrap(err, "inserting variable")
+			return fmt.Errorf("inserting variable: %w", err)
 		}
 	}
 

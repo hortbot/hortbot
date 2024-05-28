@@ -12,7 +12,6 @@ import (
 	"path/filepath"
 	"runtime/debug"
 
-	"github.com/friendsofgo/errors"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -32,27 +31,27 @@ func mainErr() error {
 	fmt.Println("Creating postgres database")
 	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
 	if err != nil {
-		return errors.Wrap(err, "creating database")
+		return fmt.Errorf("creating database: %w", err)
 	}
 	defer cleanup()
 
 	if err := db.Close(); err != nil {
-		return errors.Wrap(err, "closing initial database connection")
+		return fmt.Errorf("closing initial database connection: %w", err)
 	}
 
 	fmt.Println("Migrating database up")
 	if err := migrations.Up(connStr, migrateLogf); err != nil {
-		return errors.Wrap(err, "migrating database")
+		return fmt.Errorf("migrating database: %w", err)
 	}
 
 	pgConf, err := pgconn.ParseConfig(connStr)
 	if err != nil {
-		return errors.Wrap(err, "parsing database config")
+		return fmt.Errorf("parsing database config: %w", err)
 	}
 
 	wd, err := os.Getwd()
 	if err != nil {
-		return errors.Wrap(err, "getting working directory")
+		return fmt.Errorf("getting working directory: %w", err)
 	}
 
 	dbPath := filepath.Join(wd, "internal", "db")
@@ -60,7 +59,7 @@ func mainErr() error {
 		if os.IsNotExist(err) {
 			return fmt.Errorf("%s does not exist", dbPath)
 		}
-		return errors.Wrap(err, "stat-ing db path")
+		return fmt.Errorf("stat-ing db path: %w", err)
 	}
 
 	modelsPath := filepath.Join(dbPath, "models")
@@ -91,28 +90,28 @@ func mainErr() error {
 
 	state, err := boilingcore.New(bConf)
 	if err != nil {
-		return errors.Wrap(err, "processing sqlboiler config")
+		return fmt.Errorf("processing sqlboiler config: %w", err)
 	}
 
 	if err := state.Run(); err != nil {
-		return errors.Wrap(err, "running sqlboiler")
+		return fmt.Errorf("running sqlboiler: %w", err)
 	}
 
 	if err := state.Cleanup(); err != nil {
-		return errors.Wrap(err, "cleaning up sqlboiler")
+		return fmt.Errorf("cleaning up sqlboiler: %w", err)
 	}
 
 	// Create is fine, since the above code wipes the models directory.
 	docFile, err := os.Create(filepath.Join(modelsPath, "doc.go"))
 	if err != nil {
-		return errors.Wrap(err, "creating doc.go")
+		return fmt.Errorf("creating doc.go: %w", err)
 	}
 
 	fmt.Fprintln(docFile, "// Package models implements an ORM generated from the HortBot Postgres database.")
 	fmt.Fprintln(docFile, "package", bConf.PkgName)
 
 	if err := docFile.Close(); err != nil {
-		return errors.Wrap(err, "closing doc.go")
+		return fmt.Errorf("closing doc.go: %w", err)
 	}
 
 	return nil
