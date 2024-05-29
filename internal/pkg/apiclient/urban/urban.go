@@ -44,7 +44,7 @@ func (u *Urban) Define(ctx context.Context, term string) (string, error) {
 		Param("term", term)
 
 	if err := req.Fetch(ctx); err != nil {
-		return "", apiclient.WrapRequestErr("urban", err)
+		return "", apiclient.WrapRequestErr("urban", err, nil)
 	}
 
 	if len(body.List) == 0 {

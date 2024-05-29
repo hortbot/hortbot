@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -61,7 +60,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "notfound")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/streams?user_login=notfound: unexpected status: 404")
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -69,7 +68,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "notfound2")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -77,7 +76,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "servererror")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/streams?user_login=servererror: unexpected status: 500")
 	})
 
 	t.Run("Decode error", func(t *testing.T) {

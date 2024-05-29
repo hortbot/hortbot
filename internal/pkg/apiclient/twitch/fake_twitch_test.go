@@ -15,6 +15,7 @@ import (
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
+	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/jarcoal/httpmock"
@@ -132,11 +133,11 @@ func (f *fakeTwitch) tokenForCode(code string) *oauth2.Token {
 
 func (f *fakeTwitch) route() {
 	f.mt.RegisterNoResponder(f.notFound)
-	f.mt.RegisterResponder("POST", "https://id.twitch.tv/oauth2/token", f.oauth2Token)
+	f.mt.RegisterResponder("POST", "https://id.twitch.tv/oauth2/token", httpmockx.ResponderFunc(f.oauth2Token))
 
 	// Helix API
 
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users", f.helixUsers)
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/users", httpmockx.ResponderFunc(f.helixUsers))
 
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/users", "login=foobar", httpmock.NewStringResponder(200, `{"data": [{"id": 1234, "login": "foobar", "display_name": "Foobar"}]}`))
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/users", "login=notfound", httpmock.NewStringResponder(404, ""))
@@ -146,8 +147,8 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/users", "login=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/users", "id=1234", httpmock.NewStringResponder(200, `{"data": [{"id": 1234, "login": "foobar", "display_name": "Foobar"}]}`))
 
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/moderators", f.helixModerationModerators)
-	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/channels", f.helixModerationChannels)
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/moderators", httpmockx.ResponderFunc(f.helixModerationModerators))
+	f.mt.RegisterResponder("GET", "https://api.twitch.tv/helix/moderation/channels", httpmockx.ResponderFunc(f.helixModerationChannels))
 
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/search/categories", "query=pubg", httpmock.NewStringResponder(200, `{"data": [{"id": "287491", "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}, {"id": "58730284", "name": "PUBG MOBILE"}]}`))
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/search/categories", "query=notfound", httpmock.NewStringResponder(200, `{"data": []}`))
@@ -163,7 +164,7 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/games", "name=decodeerror", httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/games", "name=requesterror", httpmock.NewErrorResponder(errTestBadRequest))
 
-	f.mt.RegisterResponder("PATCH", "https://api.twitch.tv/helix/channels", f.helixChannelsPatch)
+	f.mt.RegisterResponder("PATCH", "https://api.twitch.tv/helix/channels", httpmockx.ResponderFunc(f.helixChannelsPatch))
 
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/streams", "user_id=1234", httpmock.NewStringResponder(200, `{"data": [{"id": "512301723123", "user_id": "1234", "user_name": "FooBar", "game_id": "847362", "title": "This is the title.", "viewer_count": 4321, "started_at": "2017-08-14T16:08:32Z"}]}`))
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/streams", "user_login=foobar", httpmock.NewStringResponder(200, `{"data": [{"id": "512301723123", "user_id": "1234", "user_name": "FooBar", "game_id": "847362", "title": "This is the title.", "viewer_count": 4321, "started_at": "2017-08-14T16:08:32Z"}]}`))
@@ -180,7 +181,7 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/channels", "broadcaster_id=900", httpmock.NewStringResponder(200, "}"))
 	f.mt.RegisterResponderWithQuery("GET", "https://api.twitch.tv/helix/channels", "broadcaster_id=901", httpmock.NewErrorResponder(errTestBadRequest))
 
-	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/moderation/bans$`, f.helixModerationBans)
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/moderation/bans$`, httpmockx.ResponderFunc(f.helixModerationBans))
 
 	f.mt.RegisterResponderWithQuery("DELETE", "https://api.twitch.tv/helix/moderation/bans", "broadcaster_id=1234&moderator_id=3141&user_id=666", httpmock.NewStringResponder(200, ``))
 	f.mt.RegisterResponderWithQuery("DELETE", "https://api.twitch.tv/helix/moderation/bans", "broadcaster_id=401&moderator_id=3141&user_id=666", httpmock.NewStringResponder(401, ``))
@@ -210,11 +211,11 @@ func (f *fakeTwitch) route() {
 	f.mt.RegisterResponderWithQuery("DELETE", "https://api.twitch.tv/helix/moderation/chat", "broadcaster_id=500&moderator_id=3141", httpmock.NewStringResponder(500, ""))
 	f.mt.RegisterResponderWithQuery("DELETE", "https://api.twitch.tv/helix/moderation/chat", "broadcaster_id=777&moderator_id=3141", httpmock.NewErrorResponder(errTestBadRequest))
 
-	f.mt.RegisterResponder("PATCH", `=~https://api.twitch.tv/helix/chat/settings$`, f.helixChatSettings)
-	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/announcements$`, f.helixChatAnnouncements)
-	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/messages$`, f.helixChatMessages)
+	f.mt.RegisterResponder("PATCH", `=~https://api.twitch.tv/helix/chat/settings$`, httpmockx.ResponderFunc(f.helixChatSettings))
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/announcements$`, httpmockx.ResponderFunc(f.helixChatAnnouncements))
+	f.mt.RegisterResponder("POST", `=~https://api.twitch.tv/helix/chat/messages$`, httpmockx.ResponderFunc(f.helixChatMessages))
 
-	f.mt.RegisterResponder("POST", "https://api.igdb.com/v4/games", f.igdbGames)
+	f.mt.RegisterResponder("POST", "https://api.igdb.com/v4/games", httpmockx.ResponderFunc(f.igdbGames))
 
 	// TMI API
 

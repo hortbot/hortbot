@@ -45,7 +45,7 @@ func (x *XKCD) GetComic(ctx context.Context, id int) (*Comic, error) {
 	c := &Comic{}
 
 	if err := x.cli.NewRequestToJSON(url, c).Fetch(ctx); err != nil {
-		return nil, apiclient.WrapRequestErr("xkcd", err)
+		return nil, apiclient.WrapRequestErr("xkcd", err, nil)
 	}
 
 	return c, nil

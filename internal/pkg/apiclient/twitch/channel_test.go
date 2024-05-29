@@ -2,11 +2,11 @@ package twitch_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -63,13 +63,13 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 	_, _, err := tw.GetChannelModerators(ctx, 777, tok)
 	assert.ErrorContains(t, err, errTestBadRequest.Error())
 
-	for status, expected := range expectedErrors {
+	for status := range expectedErrors {
 		id := int64(status)
 		tok := tokFor(ctx, t, tw, ft, id)
 		ft.setMods(id, []*twitch.ChannelModerator{})
 
 		_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
-		assert.DeepEqual(t, err, expected)
+		assert.ErrorContains(t, err, fmt.Sprintf("status: %d", status))
 		assert.Assert(t, newToken == nil)
 	}
 
@@ -151,7 +151,7 @@ func TestModifyChannel(t *testing.T) {
 		const id = 500
 		tok := tokFor(ctx, t, tw, ft, id)
 		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/channels: unexpected status: 500")
 	})
 
 	t.Run("Request error", func(t *testing.T) {
@@ -172,7 +172,7 @@ func TestModifyChannel(t *testing.T) {
 		_, tw := createTester(t)
 		const id = 900
 		_, err := tw.ModifyChannel(ctx, id, nil, strPtr("some new title"), nil)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 401))
+		assert.Error(t, err, "twitch: unexpected status: 401")
 	})
 
 	t.Run("Bad request", func(t *testing.T) {
@@ -183,10 +183,10 @@ func TestModifyChannel(t *testing.T) {
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)
 		_, err := tw.ModifyChannel(ctx, id, tok, nil, nil)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
+		assert.Error(t, err, "twitch: unexpected status: 400")
 
 		_, err = tw.ModifyChannel(ctx, id, tok, strPtr(""), nil)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 400))
+		assert.Error(t, err, "twitch: unexpected status: 400")
 	})
 }
 
@@ -237,7 +237,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 444)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -245,7 +245,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 404)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/channels?broadcaster_id=404: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -253,7 +253,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 500)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/channels?broadcaster_id=500: unexpected status: 500")
 	})
 
 	t.Run("Decode error", func(t *testing.T) {

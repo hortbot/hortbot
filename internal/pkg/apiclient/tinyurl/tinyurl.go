@@ -37,7 +37,7 @@ func (t *TinyURL) Shorten(ctx context.Context, u string) (shortened string, err 
 
 	req := t.cli.NewRequest("https://tinyurl.com/api-create.php").Param("url", u).ToString(&body)
 	if err := req.Fetch(ctx); err != nil {
-		return "", apiclient.WrapRequestErr("tinyurl", err)
+		return "", apiclient.WrapRequestErr("tinyurl", err, nil)
 	}
 
 	return strings.TrimSpace(body), nil

@@ -66,7 +66,7 @@ func (t *Twitch) ModifyChannel(ctx context.Context, broadcasterID int64, userTok
 	}
 
 	if err := req.BodyJSON(body).Patch().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil

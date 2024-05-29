@@ -46,7 +46,7 @@ func (t *Twitch) Ban(ctx context.Context, broadcasterID int64, modID int64, modT
 	}
 
 	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -75,7 +75,7 @@ func (t *Twitch) Unban(ctx context.Context, broadcasterID int64, modID int64, mo
 	req.Param("user_id", strconv.FormatInt(userID, 10))
 
 	if err := req.Delete().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -124,7 +124,7 @@ func (t *Twitch) UpdateChatSettings(ctx context.Context, broadcasterID int64, mo
 	req.Param("moderator_id", strconv.FormatInt(modID, 10))
 
 	if err := req.BodyJSON(patch).Patch().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -152,7 +152,7 @@ func (t *Twitch) SetChatColor(ctx context.Context, userID int64, userToken *oaut
 	req.Param("color", color)
 
 	if err := req.Put().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -181,7 +181,7 @@ func (t *Twitch) DeleteChatMessage(ctx context.Context, broadcasterID int64, mod
 	req.Param("message_id", id)
 
 	if err := req.Delete().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -205,7 +205,7 @@ func (t *Twitch) ClearChat(ctx context.Context, broadcasterID int64, modID int64
 	req.Param("moderator_id", strconv.FormatInt(modID, 10))
 
 	if err := req.Delete().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -241,7 +241,7 @@ func (t *Twitch) Announce(ctx context.Context, broadcasterID int64, modID int64,
 	}
 
 	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil
@@ -281,7 +281,7 @@ func (t *Twitch) SendChatMessage(ctx context.Context, broadcasterID int64, sende
 	}
 
 	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
-		return newToken, apiclient.WrapRequestErr("twitch", err)
+		return newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return newToken, nil

@@ -2,6 +2,8 @@
 package httpmockx
 
 import (
+	"net/http"
+
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/jarcoal/httpmock"
 )
@@ -20,4 +22,14 @@ func NewMockTransport(t assertx.TestingT) *httpmock.MockTransport {
 	mt := httpmock.NewMockTransport()
 	mt.RegisterNoResponder(httpmock.NewNotFoundResponder(fatal))
 	return mt
+}
+
+func ResponderFunc(f func(req *http.Request) (*http.Response, error)) httpmock.Responder {
+	return func(r *http.Request) (*http.Response, error) {
+		resp, err := f(r)
+		if resp != nil {
+			resp.Request = r
+		}
+		return resp, err
+	}
 }

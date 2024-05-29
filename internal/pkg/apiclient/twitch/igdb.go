@@ -150,7 +150,7 @@ func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]Game
 	}
 
 	if err := req.BodyBytes([]byte(query)).Fetch(ctx); err != nil {
-		return nil, apiclient.WrapRequestErr("twitch", err)
+		return nil, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	if len(body) == 0 {

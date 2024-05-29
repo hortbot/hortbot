@@ -4,6 +4,8 @@ package apiclient
 import (
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/carlmjohnson/requests"
 	"github.com/hortbot/hortbot/internal/pkg/errorsx"
@@ -14,6 +16,7 @@ type Error struct {
 	API        string
 	StatusCode int
 	Err        error
+	secrets    []string
 }
 
 func (e *Error) Error() string {
@@ -23,10 +26,17 @@ func (e *Error) Error() string {
 	}
 
 	if e.Err == nil {
-		return fmt.Sprintf("%s: status code %d", api, e.StatusCode)
+		return fmt.Sprintf("%s: unexpected status: %d", api, e.StatusCode)
 	}
 
-	return fmt.Sprintf("%s: %s", api, e.Err)
+	s := fmt.Sprintf("%s: %s", api, e.Err.Error())
+	for i, secret := range e.secrets {
+		replacement := fmt.Sprintf("REDACTED%d", i)
+		s = strings.ReplaceAll(s, secret, replacement)
+		s = strings.ReplaceAll(s, url.QueryEscape(secret), replacement)
+	}
+
+	return s
 }
 
 func (e *Error) Unwrap() error {
@@ -48,14 +58,14 @@ func (e *Error) IsNotPermitted() bool {
 	return e.StatusCode == http.StatusUnauthorized || e.StatusCode == http.StatusForbidden
 }
 
-func WrapRequestErr(apiName string, err error) error {
+func WrapRequestErr(apiName string, err error, secrets []string) error {
 	if err == nil {
 		return nil
 	}
 	if re, ok := errorsx.As[*requests.ResponseError](err); ok {
-		return NewStatusError(apiName, re.StatusCode)
+		return &Error{API: apiName, Err: err, StatusCode: re.StatusCode, secrets: secrets}
 	}
-	return &Error{API: apiName, Err: err}
+	return &Error{API: apiName, Err: err, secrets: secrets}
 }
 
 func NewStatusError(apiName string, code int) error {

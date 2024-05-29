@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
@@ -54,7 +53,7 @@ func TestDefine(t *testing.T) {
 		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("urban", 404))
+		assert.Error(t, err, "urban: ErrValidator: response error for https://api.urbandictionary.com/v0/define?term=something: unexpected status: 404")
 	})
 
 	t.Run("Empty", func(t *testing.T) {
@@ -64,7 +63,7 @@ func TestDefine(t *testing.T) {
 		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("urban", 404))
+		assert.Error(t, err, "urban: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -74,7 +73,7 @@ func TestDefine(t *testing.T) {
 		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("urban", 500))
+		assert.Error(t, err, "urban: ErrValidator: response error for https://api.urbandictionary.com/v0/define?term=something: unexpected status: 500")
 	})
 
 	t.Run("Unknown error", func(t *testing.T) {
@@ -84,7 +83,7 @@ func TestDefine(t *testing.T) {
 		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("urban", 418))
+		assert.Error(t, err, "urban: ErrValidator: response error for https://api.urbandictionary.com/v0/define?term=something: unexpected status: 418")
 	})
 
 	t.Run("Bad JSON", func(t *testing.T) {

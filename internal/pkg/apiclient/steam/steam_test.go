@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
@@ -75,7 +74,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 404))
+		assert.Error(t, err, "steam: unexpected status: 404")
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
@@ -95,7 +94,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 404))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?format=json&key=REDACTED0&steamids=12730127017230123: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -105,7 +104,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 500))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?format=json&key=REDACTED0&steamids=12730127017230123: unexpected status: 500")
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -115,7 +114,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 403))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?format=json&key=REDACTED0&steamids=12730127017230123: unexpected status: 403")
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -125,7 +124,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetPlayerSummary(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 418))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?format=json&key=REDACTED0&steamids=12730127017230123: unexpected status: 418")
 	})
 
 	t.Run("Request error", func(t *testing.T) {
@@ -203,7 +202,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 404))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?format=json&include_appinfo=1&key=REDACTED0&steamid=12730127017230123: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -213,7 +212,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 500))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?format=json&include_appinfo=1&key=REDACTED0&steamid=12730127017230123: unexpected status: 500")
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -223,7 +222,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 403))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?format=json&include_appinfo=1&key=REDACTED0&steamid=12730127017230123: unexpected status: 403")
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -233,7 +232,7 @@ func TestGetOwnedGames(t *testing.T) {
 		s := steam.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := s.GetOwnedGames(ctx, id)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("steam", 418))
+		assert.Error(t, err, "steam: ErrValidator: response error for https://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?format=json&include_appinfo=1&key=REDACTED0&steamid=12730127017230123: unexpected status: 418")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

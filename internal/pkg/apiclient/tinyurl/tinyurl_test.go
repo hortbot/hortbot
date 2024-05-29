@@ -7,7 +7,6 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/tinyurl"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
@@ -52,7 +51,7 @@ func TestShorten(t *testing.T) {
 		tu := tinyurl.New(&http.Client{Transport: mt})
 
 		_, err := tu.Shorten(ctx, longURL)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("tinyurl", 400))
+		assert.Error(t, err, "tinyurl: ErrValidator: response error for https://tinyurl.com/api-create.php?url=https%3A%2F%2Fgithub.com%2Fhortbot%2Fhortbot: unexpected status: 400")
 	})
 
 	t.Run("ReadAll error", func(t *testing.T) {

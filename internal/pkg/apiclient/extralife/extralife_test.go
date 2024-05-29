@@ -45,9 +45,9 @@ func TestGetDonationAmount(t *testing.T) {
 	mt.RegisterResponder(
 		"GET",
 		"https://www.extra-life.org/api/participants/999",
-		func(_ *http.Request) (*http.Response, error) {
+		httpmockx.ResponderFunc(func(_ *http.Request) (*http.Response, error) {
 			return nil, errTest
-		},
+		}),
 	)
 
 	t.Run("OK", func(t *testing.T) {
@@ -62,14 +62,14 @@ func TestGetDonationAmount(t *testing.T) {
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 404)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("extralife", 404))
+		assert.Error(t, err, "extralife: ErrValidator: response error for https://www.extra-life.org/api/participants/404: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 500)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("extralife", 500))
+		assert.Error(t, err, "extralife: ErrValidator: response error for https://www.extra-life.org/api/participants/500: unexpected status: 500")
 	})
 
 	t.Run("Decode error", func(t *testing.T) {

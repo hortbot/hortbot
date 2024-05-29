@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
@@ -160,7 +159,7 @@ func TestSearchGame(t *testing.T) {
 		mt.RegisterResponder(
 			"POST",
 			"https://howlongtobeat.com/api/search",
-			func(r *http.Request) (*http.Response, error) {
+			httpmockx.ResponderFunc(func(r *http.Request) (*http.Response, error) {
 				assert.Assert(t, r.UserAgent() != useragent.Bot(), "wrong user agent: "+r.UserAgent())
 
 				var body hltb.RequestBody
@@ -169,7 +168,7 @@ func TestSearchGame(t *testing.T) {
 
 				assert.DeepEqual(t, body.SearchTerms, []string{"Half-Life", "Alyx"})
 				return httpmock.NewStringResponse(200, ""), nil
-			},
+			}),
 		)
 
 		h := hltb.New(&http.Client{Transport: mt})
@@ -186,7 +185,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("hltb", 404))
+		assert.Error(t, err, "hltb: unexpected status: 404")
 	})
 
 	t.Run("404 code", func(t *testing.T) {
@@ -199,7 +198,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("hltb", 404))
+		assert.Error(t, err, "hltb: ErrValidator: response error for https://howlongtobeat.com/api/search: unexpected status: 404")
 	})
 
 	t.Run("500 code", func(t *testing.T) {
@@ -212,7 +211,7 @@ func TestSearchGame(t *testing.T) {
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("hltb", 500))
+		assert.Error(t, err, "hltb: ErrValidator: response error for https://howlongtobeat.com/api/search: unexpected status: 500")
 	})
 
 	t.Run("Empty response", func(t *testing.T) {
@@ -236,9 +235,9 @@ func TestSearchGame(t *testing.T) {
 		mt.RegisterResponder(
 			"POST",
 			"https://howlongtobeat.com/api/search",
-			func(_ *http.Request) (*http.Response, error) {
+			httpmockx.ResponderFunc(func(_ *http.Request) (*http.Response, error) {
 				return nil, errTest
-			},
+			}),
 		)
 
 		h := hltb.New(&http.Client{Transport: mt})

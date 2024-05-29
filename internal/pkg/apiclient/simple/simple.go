@@ -54,7 +54,7 @@ func (c *Client) Plaintext(ctx context.Context, u string) (body string, err erro
 		return nil
 	})
 	if err := req.Fetch(ctx); err != nil {
-		return "", apiclient.WrapRequestErr("simple", err)
+		return "", apiclient.WrapRequestErr("simple", err, nil)
 	}
 
 	return s, nil

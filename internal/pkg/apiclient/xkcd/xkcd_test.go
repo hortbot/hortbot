@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
 	"github.com/jarcoal/httpmock"
@@ -53,9 +52,9 @@ func TestGetComic(t *testing.T) {
 	mt.RegisterResponder(
 		"GET",
 		"https://xkcd.com/99999/info.0.json",
-		func(_ *http.Request) (*http.Response, error) {
+		httpmockx.ResponderFunc(func(_ *http.Request) (*http.Response, error) {
 			return nil, errTest
-		},
+		}),
 	)
 
 	t.Run("OK", func(t *testing.T) {
@@ -74,7 +73,7 @@ func TestGetComic(t *testing.T) {
 		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 77777)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("xkcd", 404))
+		assert.Error(t, err, "xkcd: ErrValidator: response error for https://xkcd.com/77777/info.0.json: unexpected status: 404")
 	})
 
 	t.Run("Client error", func(t *testing.T) {

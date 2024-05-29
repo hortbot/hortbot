@@ -40,7 +40,7 @@ func paginate[T any](ctx context.Context, req *requests.Builder, perPage int, li
 		}
 
 		if err := req.Handle(httpx.ToJSON(&v)).Fetch(ctx); err != nil { //nolint:bodyclose
-			return apiclient.WrapRequestErr("twitch", err)
+			return apiclient.WrapRequestErr("twitch", err, nil)
 		}
 
 		items = append(items, v.Data...)
@@ -77,7 +77,7 @@ func fetchList[T any](ctx context.Context, req *requests.Builder) ([]T, error) {
 	}{}
 
 	if err := req.Handle(httpx.ToJSON(body)).Fetch(ctx); err != nil { //nolint:bodyclose
-		return nil, apiclient.WrapRequestErr("twitch", err)
+		return nil, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	if len(body.Data) == 0 {

@@ -103,7 +103,7 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 		Post()
 
 	if err := req.Fetch(ctx); err != nil {
-		return nil, apiclient.WrapRequestErr("hltb", err)
+		return nil, apiclient.WrapRequestErr("hltb", err, nil)
 	}
 
 	if len(body.Data) == 0 {

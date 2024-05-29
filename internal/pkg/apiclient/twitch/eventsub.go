@@ -63,7 +63,7 @@ func (t *Twitch) DeleteConduit(ctx context.Context, id string) error {
 		return err
 	}
 	if err := req.Param("id", id).Delete().Fetch(ctx); err != nil {
-		return apiclient.WrapRequestErr("twitch", err)
+		return apiclient.WrapRequestErr("twitch", err, nil)
 	}
 	return nil
 }
@@ -90,7 +90,7 @@ func (t *Twitch) UpdateShards(ctx context.Context, conduitID string, shards []*S
 	}
 
 	if err := req.BodyJSON(body).Patch().Fetch(ctx); err != nil {
-		return apiclient.WrapRequestErr("twitch", err)
+		return apiclient.WrapRequestErr("twitch", err, nil)
 	}
 	return nil
 }
@@ -111,7 +111,7 @@ func (t *Twitch) DeleteSubscription(ctx context.Context, id string) error {
 		return err
 	}
 	if err := req.Param("id", id).Delete().Fetch(ctx); err != nil {
-		return apiclient.WrapRequestErr("twitch", err)
+		return apiclient.WrapRequestErr("twitch", err, nil)
 	}
 	return nil
 }
@@ -140,7 +140,7 @@ func (t *Twitch) CreateChatSubscription(ctx context.Context, conduitID string, b
 		return err
 	}
 	if err := req.BodyJSON(body).Post().Fetch(ctx); err != nil {
-		return apiclient.WrapRequestErr("twitch", err)
+		return apiclient.WrapRequestErr("twitch", err, nil)
 	}
 	return nil
 }

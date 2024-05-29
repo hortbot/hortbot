@@ -41,7 +41,7 @@ func (e *ExtraLife) GetDonationAmount(ctx context.Context, participantID int) (f
 	}
 
 	if err := e.cli.NewRequestToJSON(url, &v).Fetch(ctx); err != nil {
-		return 0, apiclient.WrapRequestErr("extralife", err)
+		return 0, apiclient.WrapRequestErr("extralife", err, nil)
 	}
 
 	return v.SumDonations, nil

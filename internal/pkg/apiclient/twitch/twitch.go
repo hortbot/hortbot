@@ -214,7 +214,7 @@ func (t *Twitch) Validate(ctx context.Context, tok *oauth2.Token) (*Validation, 
 	}
 
 	if err := req.Fetch(ctx); err != nil {
-		return nil, newToken, apiclient.WrapRequestErr("twitch", err)
+		return nil, newToken, apiclient.WrapRequestErr("twitch", err, nil)
 	}
 
 	return &validation, newToken, nil

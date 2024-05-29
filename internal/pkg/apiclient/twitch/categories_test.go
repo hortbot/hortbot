@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -43,7 +42,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "notfound")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -51,7 +50,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "notfound2")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/search/categories?query=notfound2: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -59,7 +58,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "servererror")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/search/categories?query=servererror: unexpected status: 500")
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
@@ -120,7 +119,7 @@ func TestGetGame(t *testing.T) {
 		ft.setClientTokens(tok)
 
 		_, err := tw.GetGameByName(ctx, "notfound")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -131,7 +130,7 @@ func TestGetGame(t *testing.T) {
 		ft.setClientTokens(tok)
 
 		_, err := tw.GetGameByName(ctx, "servererror")
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/games?name=servererror: unexpected status: 500")
 	})
 
 	t.Run("Decode error", func(t *testing.T) {

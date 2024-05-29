@@ -62,7 +62,7 @@ func (s *Steam) GetPlayerSummary(ctx context.Context, id string) (*Summary, erro
 		Param("steamids", id)
 
 	if err := req.Fetch(ctx); err != nil {
-		return nil, apiclient.WrapRequestErr("steam", err)
+		return nil, apiclient.WrapRequestErr("steam", err, []string{s.apiKey})
 	}
 
 	p := body.Response.Players
@@ -97,7 +97,7 @@ func (s *Steam) GetOwnedGames(ctx context.Context, id string) ([]*Game, error) {
 		Param("include_appinfo", "1")
 
 	if err := req.Fetch(ctx); err != nil {
-		return nil, apiclient.WrapRequestErr("steam", err)
+		return nil, apiclient.WrapRequestErr("steam", err, []string{s.apiKey})
 	}
 
 	return body.Response.Games, nil

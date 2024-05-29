@@ -19,7 +19,7 @@ func TestError(t *testing.T) {
 	}{
 		{
 			err:        &apiclient.Error{StatusCode: 404},
-			m:          "client: status code 404",
+			m:          "client: unexpected status: 404",
 			isNotFound: true,
 		},
 		{
@@ -29,12 +29,12 @@ func TestError(t *testing.T) {
 		},
 		{
 			err:            &apiclient.Error{API: "service", StatusCode: 401},
-			m:              "service: status code 401",
+			m:              "service: unexpected status: 401",
 			isNotPermitted: true,
 		},
 		{
 			err:            &apiclient.Error{API: "service", StatusCode: 403},
-			m:              "service: status code 403",
+			m:              "service: unexpected status: 403",
 			isNotPermitted: true,
 		},
 		{
@@ -43,12 +43,12 @@ func TestError(t *testing.T) {
 		},
 		{
 			err:           &apiclient.Error{API: "service", StatusCode: 500},
-			m:             "service: status code 500",
+			m:             "service: unexpected status: 500",
 			isServerError: true,
 		},
 		{
 			err:           &apiclient.Error{API: "service", StatusCode: 501},
-			m:             "service: status code 501",
+			m:             "service: unexpected status: 501",
 			isServerError: true,
 		},
 	}

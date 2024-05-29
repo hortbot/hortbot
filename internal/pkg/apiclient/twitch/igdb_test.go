@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -47,7 +46,7 @@ func TestGetGameLinks(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetGameLinks(ctx, 4040)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
@@ -55,15 +54,15 @@ func TestGetGameLinks(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetGameLinks(ctx, 404)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.igdb.com/v4/games: unexpected status: 404")
 	})
 
-	t.Run("Empty 404 2", func(t *testing.T) {
+	t.Run("Empty 404 1", func(t *testing.T) {
 		ctx, cancel := testContext(t)
 		defer cancel()
 
 		_, err := tw.GetGameLinks(ctx, 4041)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Empty 404 2", func(t *testing.T) {
@@ -71,7 +70,7 @@ func TestGetGameLinks(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetGameLinks(ctx, 777)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+		assert.Error(t, err, "twitch: unexpected status: 404")
 	})
 
 	t.Run("Server error", func(t *testing.T) {
@@ -79,7 +78,7 @@ func TestGetGameLinks(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetGameLinks(ctx, 500)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.igdb.com/v4/games: unexpected status: 500")
 	})
 
 	t.Run("Decode error", func(t *testing.T) {

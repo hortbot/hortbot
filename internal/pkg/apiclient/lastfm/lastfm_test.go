@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
@@ -67,7 +66,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 404))
+		assert.Error(t, err, "lastfm: ErrValidator: response error for https://ws.audioscrobbler.com/2.0/?api_key=REDACTED0&limit=2&method=user.getRecentTracks&user=1: unexpected status: 404")
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
@@ -87,7 +86,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 500))
+		assert.Error(t, err, "lastfm: ErrValidator: response error for https://ws.audioscrobbler.com/2.0/?api_key=REDACTED0&limit=2&method=user.getRecentTracks&user=1: unexpected status: 500")
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
@@ -97,7 +96,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 403))
+		assert.Error(t, err, "lastfm: ErrValidator: response error for https://ws.audioscrobbler.com/2.0/?api_key=REDACTED0&limit=2&method=user.getRecentTracks&user=1: unexpected status: 403")
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
@@ -107,7 +106,7 @@ func TestRecentTracks(t *testing.T) {
 		lp := lastfm.New(apiKey, &http.Client{Transport: mt})
 
 		_, err := lp.RecentTracks(ctx, user, limit)
-		assert.DeepEqual(t, err, apiclient.NewStatusError("lastfm", 418))
+		assert.Error(t, err, "lastfm: ErrValidator: response error for https://ws.audioscrobbler.com/2.0/?api_key=REDACTED0&limit=2&method=user.getRecentTracks&user=1: unexpected status: 418")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

@@ -1,11 +1,11 @@
 package twitch_test
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/gofrs/uuid"
-	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -66,7 +66,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
 	_, _, err = tw.GetUserByToken(ctx, tok)
-	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 503))
+	assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/users: unexpected status: 503")
 }
 
 func TestGetUserForTokenDecodeError(t *testing.T) {
@@ -152,7 +152,7 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "servererror")
-	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 500))
+	assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/users?login=servererror: unexpected status: 500")
 }
 
 func TestGetUserForUsernameNotFound(t *testing.T) {
@@ -173,7 +173,7 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "notfound")
-	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+	assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/users?login=notfound: unexpected status: 404")
 }
 
 func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
@@ -194,7 +194,7 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "notfound2")
-	assert.DeepEqual(t, err, apiclient.NewStatusError("twitch", 404))
+	assert.Error(t, err, "twitch: unexpected status: 404")
 }
 
 func TestGetUserForUsernameDecodeError(t *testing.T) {
@@ -330,13 +330,13 @@ func TestGetModeratedChannelsErrors(t *testing.T) {
 	_, _, err := tw.GetModeratedChannels(ctx, 777, tok)
 	assert.ErrorContains(t, err, errTestBadRequest.Error())
 
-	for status, expected := range expectedErrors {
+	for status := range expectedErrors {
 		id := int64(status)
 		tok := tokFor(ctx, t, tw, ft, id)
 		ft.setModerated(id, []*twitch.ModeratedChannel{})
 
 		_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
-		assert.DeepEqual(t, err, expected)
+		assert.ErrorContains(t, err, fmt.Sprintf("status: %d", status))
 		assert.Assert(t, newToken == nil)
 	}
 

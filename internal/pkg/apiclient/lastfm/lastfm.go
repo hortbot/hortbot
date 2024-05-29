@@ -76,7 +76,7 @@ func (l *LastFM) RecentTracks(ctx context.Context, user string, n int) ([]Track,
 		})
 
 	if err := req.Fetch(ctx); err != nil {
-		return nil, apiclient.WrapRequestErr("lastfm", err)
+		return nil, apiclient.WrapRequestErr("lastfm", err, []string{l.apiKey})
 	}
 
 	tracks := body.RecentTracks.Tracks
