@@ -11,6 +11,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
+	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -50,7 +51,25 @@ func (h *httpClient) finishRequest(ctx context.Context, req *requests.Builder) (
 	req.Headers(h.headers)
 	req.Header("Authorization", tok.Type()+" "+tok.AccessToken)
 
-	// TODO: Use ErrorJson to improve error handling?
+	req.AddValidator(func(r *http.Response) error {
+		reqErr := requests.DefaultValidator(r)
+		if reqErr == nil {
+			return nil
+		}
+
+		if r.StatusCode == http.StatusNotFound {
+			// 404 is often just an empty array, so don't collect an error.
+			return reqErr //nolint:wrapcheck
+		}
+
+		// Status code was an error; try and read the body as JSON
+		var body json.RawMessage
+		if err := jsonx.DecodeSingle(r.Body, &body); err != nil {
+			return reqErr //nolint:wrapcheck
+		}
+
+		return fmt.Errorf("%w: %s", reqErr, body)
+	})
 
 	return req, nil
 }
