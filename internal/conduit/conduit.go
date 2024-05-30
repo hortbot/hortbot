@@ -23,6 +23,8 @@ import (
 	"nhooyr.io/websocket/wsjson"
 )
 
+const initialWebsocketURL = "wss://eventsub.wss.twitch.tv/ws"
+
 type Service struct {
 	db           *sql.DB
 	twitch       twitch.API
@@ -72,7 +74,7 @@ func (s *Service) Run(ctx context.Context) error {
 
 	for i := range s.shards {
 		s.g.Go(func(ctx context.Context) error {
-			return s.runWebsocket(ctx, "wss://eventsub.wss.twitch.tv/ws", i, s.onStart)
+			return s.runWebsocket(ctx, initialWebsocketURL, i, s.onStart)
 		})
 	}
 
@@ -141,6 +143,8 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 				return nil
 			}
 			ctxlog.Error(ctx, "websocket error, restarting", zap.Error(err))
+			// Reset the URL; the reconnect URL is not going to work.
+			url = initialWebsocketURL
 		}
 		onWelcome = nil
 		metricDisconnects.Inc()
