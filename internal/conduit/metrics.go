@@ -41,6 +41,13 @@ var (
 		Help:      "Total number of created subscriptions.",
 	})
 
+	metricCreateSubscriptionErrors = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "create_subscription_errors_total",
+		Help:      "Total number of subscription create.",
+	})
+
 	metricDeletedSubscriptions = promauto.NewCounter(prometheus.CounterOpts{
 		Namespace: "hortbot",
 		Subsystem: "conduit",

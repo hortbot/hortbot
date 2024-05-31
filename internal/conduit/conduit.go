@@ -369,6 +369,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 
 		if err := s.twitch.CreateChatSubscription(ctx, s.conduitID, sub.BroadcasterID, sub.BotID); err != nil {
 			ctxlog.Warn(ctx, "create subscription error", zap.Error(err), zap.Any("subscription", sub))
+			metricCreateSubscriptionErrors.Inc()
 		}
 		if ctx.Err() != nil {
 			return ctx.Err()
