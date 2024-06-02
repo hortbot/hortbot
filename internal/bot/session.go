@@ -642,11 +642,6 @@ func (s *session) RoomIDStr() string {
 	return strconv.FormatInt(s.RoomID, 10)
 }
 
-func (s *session) BetaFeatures() bool {
-	_, ok := stringSliceIndex(s.Deps.BetaFeatures, s.ChannelName)
-	return ok
-}
-
 func (s *session) FilterExemptLevel() AccessLevel {
 	return newAccessLevel(s.Channel.FilterExemptLevel)
 }

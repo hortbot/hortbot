@@ -67,8 +67,6 @@ type Config struct {
 	PublicJoin         bool
 	PublicJoinDisabled []string
 
-	BetaFeatures []string
-
 	GlobalIgnore []string
 
 	Cron CronConfig
@@ -143,7 +141,6 @@ func New(config *Config) *Bot {
 		WebAddrMap:             config.WebAddrMap,
 		PublicJoin:             config.PublicJoin,
 		PublicJoinDisabled:     config.PublicJoinDisabled,
-		BetaFeatures:           config.BetaFeatures,
 		GlobalIgnore:           make(map[string]bool),
 		NoSend:                 config.NoSend,
 	}

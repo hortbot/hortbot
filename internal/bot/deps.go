@@ -65,8 +65,6 @@ type sharedDeps struct {
 	PublicJoin         bool
 	PublicJoinDisabled []string
 
-	BetaFeatures []string
-
 	GlobalIgnore map[string]bool
 
 	NoSend bool
