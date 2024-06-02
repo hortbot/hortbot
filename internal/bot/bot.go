@@ -72,7 +72,6 @@ type Config struct {
 	Cron CronConfig
 
 	PassthroughPanics bool
-	NoSend            bool
 }
 
 type CronConfig struct {
@@ -142,7 +141,6 @@ func New(config *Config) *Bot {
 		PublicJoin:             config.PublicJoin,
 		PublicJoinDisabled:     config.PublicJoinDisabled,
 		GlobalIgnore:           make(map[string]bool),
-		NoSend:                 config.NoSend,
 	}
 
 	if config.Clock != nil {

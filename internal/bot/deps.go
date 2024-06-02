@@ -66,8 +66,6 @@ type sharedDeps struct {
 	PublicJoinDisabled []string
 
 	GlobalIgnore map[string]bool
-
-	NoSend bool
 }
 
 func (s *sharedDeps) IsAllowed(name string) bool {

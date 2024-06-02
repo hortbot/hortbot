@@ -497,11 +497,6 @@ func (s *session) Announce(ctx context.Context, message string) error {
 }
 
 func (s *session) SendTwitchChatMessage(ctx context.Context, target string, message string) error {
-	if s.Deps.NoSend {
-		ctxlog.Info(ctx, "not sending", zap.String("origin", s.Origin), zap.String("target", target), zap.String("message", message))
-		return nil
-	}
-
 	botID, tok, err := s.BotTwitchToken(ctx)
 	if err != nil {
 		return err
