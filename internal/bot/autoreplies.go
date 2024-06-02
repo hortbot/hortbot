@@ -10,14 +10,10 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "tryAutoreplies")
-	defer span.End()
-
 	var autoreplies models.AutoreplySlice
 	err := queries.Raw(`
 		SELECT autoreplies.id, autoreplies.trigger, autoreplies.response, autoreplies.count

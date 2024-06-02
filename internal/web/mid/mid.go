@@ -8,7 +8,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/ctxkey"
 	"github.com/rs/xid"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/plugin/ochttp"
 	"go.uber.org/zap"
 )
 
@@ -97,11 +96,4 @@ func Recoverer(next http.Handler) http.Handler {
 
 		next.ServeHTTP(w, r)
 	})
-}
-
-// Tracer traces the handler with an OpenCensus HTTP tracer.
-func Tracer(next http.Handler) http.Handler {
-	return &ochttp.Handler{
-		Handler: next,
-	}
 }

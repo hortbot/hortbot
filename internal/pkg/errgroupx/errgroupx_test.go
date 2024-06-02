@@ -8,7 +8,6 @@ import (
 
 	"github.com/fortytw2/leaktest"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"go.opencensus.io/trace"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
@@ -91,49 +90,4 @@ func TestWaitIgnoreWithError(t *testing.T) {
 	})
 
 	assert.Check(t, cmp.Equal(g.WaitIgnoreStop(), testErr))
-}
-
-func TestTrace(t *testing.T) {
-	defer leaktest.Check(t)()
-
-	ctx := context.Background()
-
-	ctx, parent := trace.StartSpan(ctx, "func")
-	defer parent.End()
-
-	g := errgroupx.FromContext(ctx, errgroupx.WithTrace())
-
-	var span *trace.Span
-	done := make(chan struct{})
-
-	g.Go(func(ctx context.Context) error {
-		defer close(done)
-		span = trace.FromContext(ctx)
-		return nil
-	})
-
-	<-done
-
-	assert.Assert(t, span != nil)
-}
-
-func TestNoTrace(t *testing.T) {
-	defer leaktest.Check(t)()
-
-	ctx := context.Background()
-
-	g := errgroupx.FromContext(ctx)
-
-	var span *trace.Span
-	done := make(chan struct{})
-
-	g.Go(func(ctx context.Context) error {
-		defer close(done)
-		span = trace.FromContext(ctx)
-		return nil
-	})
-
-	<-done
-
-	assert.Assert(t, span == nil)
 }

@@ -6,7 +6,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
@@ -22,7 +21,6 @@ type cmd struct {
 	Twitch     twitchflags.Twitch
 	Redis      redisflags.Redis
 	Web        webflags.Web
-	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
 	HTTP       httpflags.HTTP
 }
@@ -35,7 +33,6 @@ func Command() cli.Command {
 		Twitch:     twitchflags.Default,
 		Redis:      redisflags.Default,
 		Web:        webflags.Default,
-		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
 		HTTP:       httpflags.Default,
 	}
@@ -46,11 +43,9 @@ func (*cmd) Name() string {
 }
 
 func (c *cmd) Main(ctx context.Context, _ []string) {
-	defer c.Jaeger.Trace(ctx, c.Name(), c.Debug)()
 	c.Prometheus.Run(ctx)
 
 	driverName := c.SQL.DriverName()
-	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
 	db := c.SQL.Open(ctx, driverName)
 
 	rdb := c.Redis.Client()

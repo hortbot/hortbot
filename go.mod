@@ -5,8 +5,6 @@ go 1.22
 toolchain go1.22.0
 
 require (
-	contrib.go.opencensus.io/exporter/jaeger v0.2.1
-	contrib.go.opencensus.io/integrations/ocsql v0.1.7
 	github.com/alicebob/miniredis/v2 v2.32.1
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.6.1
@@ -48,7 +46,6 @@ require (
 	github.com/zikaeroh/ctxjoin v0.0.0-20240505042038-e54b3fa07c64
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
 	go.deanishe.net/fuzzy v1.0.0
-	go.opencensus.io v0.24.0
 	go.uber.org/zap v1.27.0
 	golang.org/x/net v0.25.0
 	golang.org/x/oauth2 v0.20.0
@@ -81,7 +78,6 @@ require (
 	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -110,7 +106,6 @@ require (
 	github.com/sirupsen/logrus v1.9.2 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
-	github.com/uber/jaeger-client-go v2.25.0+incompatible // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/volatiletech/inflect v0.0.1 // indirect
 	github.com/volatiletech/randomize v0.0.1 // indirect
@@ -125,7 +120,6 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
-	google.golang.org/api v0.150.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

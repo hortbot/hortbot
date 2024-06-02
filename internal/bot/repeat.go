@@ -17,7 +17,6 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
@@ -32,9 +31,6 @@ func (b *Bot) removeRepeat(ctx context.Context, id int64) error {
 }
 
 func (b *Bot) runRepeatedCommand(ctx context.Context, id int64) (readd bool) {
-	ctx, span := trace.StartSpan(ctx, "Bot.runRepeatedCommand")
-	defer span.End()
-
 	runner := &repeatedCommandRunner{
 		id:   id,
 		deps: b.deps,
@@ -61,9 +57,6 @@ func (b *Bot) removeScheduled(ctx context.Context, id int64) error {
 }
 
 func (b *Bot) runScheduledCommand(ctx context.Context, id int64) (readd bool) {
-	ctx, span := trace.StartSpan(ctx, "Bot.runScheduledCommand")
-	defer span.End()
-
 	runner := &scheduledCommandRunner{
 		id:   id,
 		deps: b.deps,
@@ -98,8 +91,6 @@ type repeatStatus struct {
 func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, err error) {
 	readd = true
 
-	ctx, span := trace.StartSpan(ctx, "Bot.runRepeat")
-	defer span.End()
 	defer setMetricRepeatGauges(ctx, b.rep)
 
 	ctx = runner.withLog(ctx)
@@ -203,16 +194,10 @@ type repeatedCommandRunner struct {
 var _ repeatRunner = (*repeatedCommandRunner)(nil)
 
 func (runner *repeatedCommandRunner) withLog(ctx context.Context) context.Context {
-	trace.FromContext(ctx).AddAttributes(
-		trace.Int64Attribute("repeatedCommand", runner.id),
-	)
 	return ctxlog.With(ctx, zap.Int64("repeatedCommand", runner.id))
 }
 
 func (runner *repeatedCommandRunner) status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error) {
-	ctx, span := trace.StartSpan(ctx, "repeatedCommandRunner.status")
-	defer span.End()
-
 	err = queries.Raw(`
 SELECT
 	r.enabled AS enabled,
@@ -232,9 +217,6 @@ WHERE
 }
 
 func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
-	ctx, span := trace.StartSpan(ctx, "repeatedCommandRunner.allowed")
-	defer span.End()
-
 	channel := runner.channel()
 	repeat := runner.repeat
 
@@ -257,9 +239,6 @@ func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, a
 }
 
 func (runner *repeatedCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
-	ctx, span := trace.StartSpan(ctx, "repeatedCommandRunner.load")
-	defer span.End()
-
 	repeat, err := models.RepeatedCommands(
 		models.RepeatedCommandWhere.ID.EQ(runner.id),
 		models.RepeatedCommandWhere.Enabled.EQ(true),
@@ -282,9 +261,6 @@ func (runner *repeatedCommandRunner) channel() *models.Channel {
 }
 
 func (runner *repeatedCommandRunner) updateCount(ctx context.Context, exec boil.ContextExecutor) error {
-	ctx, span := trace.StartSpan(ctx, "repeatedCommandRunner.updateCount")
-	defer span.End()
-
 	repeat := runner.repeat
 	repeat.LastCount = runner.channel().MessageCount
 
@@ -307,16 +283,10 @@ type scheduledCommandRunner struct {
 var _ repeatRunner = (*scheduledCommandRunner)(nil)
 
 func (runner *scheduledCommandRunner) withLog(ctx context.Context) context.Context {
-	trace.FromContext(ctx).AddAttributes(
-		trace.Int64Attribute("scheduledCommand", runner.id),
-	)
 	return ctxlog.With(ctx, zap.Int64("scheduledCommand", runner.id))
 }
 
 func (runner *scheduledCommandRunner) status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error) {
-	ctx, span := trace.StartSpan(ctx, "scheduledCommandRunner.status")
-	defer span.End()
-
 	err = queries.Raw(`
 SELECT
 	s.enabled AS enabled,
@@ -336,9 +306,6 @@ WHERE
 }
 
 func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
-	ctx, span := trace.StartSpan(ctx, "scheduledCommandRunner.allowed")
-	defer span.End()
-
 	channel := runner.channel()
 	scheduled := runner.scheduled
 
@@ -363,9 +330,6 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, 
 }
 
 func (runner *scheduledCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
-	ctx, span := trace.StartSpan(ctx, "scheduledCommandRunner.load")
-	defer span.End()
-
 	scheduled, err := models.ScheduledCommands(
 		models.ScheduledCommandWhere.ID.EQ(runner.id),
 		models.ScheduledCommandWhere.Enabled.EQ(true),
@@ -390,9 +354,6 @@ func (runner *scheduledCommandRunner) channel() *models.Channel {
 }
 
 func (runner *scheduledCommandRunner) updateCount(ctx context.Context, exec boil.ContextExecutor) error {
-	ctx, span := trace.StartSpan(ctx, "scheduledCommandRunner.updateCount")
-	defer span.End()
-
 	scheduled := runner.scheduled
 	scheduled.LastCount = runner.channel().MessageCount
 
@@ -407,8 +368,6 @@ func (runner *scheduledCommandRunner) info() *models.CommandInfo {
 }
 
 func (b *Bot) loadRepeats(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "Bot.loadRepeats")
-	defer span.End()
 	defer setMetricRepeatGauges(ctx, b.rep)
 
 	if err := b.rep.Reset(ctx); err != nil {

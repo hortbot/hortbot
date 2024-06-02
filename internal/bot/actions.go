@@ -24,7 +24,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 )
 
 var testingAction func(ctx context.Context, action string) (string, error, bool)
@@ -151,11 +150,6 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 	if action == "" {
 		panic("doAction with an empty action")
 	}
-
-	ctx, span := trace.StartSpan(ctx, "doAction")
-	defer span.End()
-
-	span.AddAttributes(trace.StringAttribute("action", action))
 
 	if testing.Testing() && testingAction != nil {
 		s, err, ok := testingAction(ctx, action)

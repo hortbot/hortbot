@@ -9,7 +9,6 @@ import (
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
@@ -17,7 +16,6 @@ import (
 	"github.com/hortbot/hortbot/internal/conduit"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
@@ -26,7 +24,6 @@ type cmd struct {
 	SQL        sqlflags.SQL
 	Twitch     twitchflags.Twitch
 	NSQ        nsqflags.NSQ
-	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
 	HTTP       httpflags.HTTP
 
@@ -41,7 +38,6 @@ func Command() cli.Command {
 		SQL:          sqlflags.Default,
 		Twitch:       twitchflags.Default,
 		NSQ:          nsqflags.Default,
-		Jaeger:       jaegerflags.Default,
 		Prometheus:   promflags.Default,
 		HTTP:         httpflags.Default,
 		SyncInterval: 5 * time.Minute,
@@ -54,11 +50,9 @@ func (*cmd) Name() string {
 }
 
 func (c *cmd) Main(ctx context.Context, _ []string) {
-	defer c.Jaeger.Trace(ctx, c.Name(), c.Debug)()
 	c.Prometheus.Run(ctx)
 
 	driverName := c.SQL.DriverName()
-	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
 	db := c.SQL.Open(ctx, driverName)
 
 	twitchAPI := c.Twitch.Client(c.HTTP.Client())
@@ -96,9 +90,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 	notifySub := c.NSQ.NewEventsubNotifySubscriber(time.Minute, func(n *bnsq.EventsubNotify, metadata *bnsq.Metadata) error {
 		ctx := metadata.With(ctx)
-		ctx, span := trace.StartSpanWithRemoteParent(ctx, "OnNotifyChannelUpdates", metadata.ParentSpan())
-		defer span.End()
-
 		select {
 		case syncJoined <- struct{}{}:
 		case <-ctx.Done():

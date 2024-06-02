@@ -7,8 +7,6 @@ import (
 	"fmt"
 	"strconv"
 	"time"
-
-	"go.opencensus.io/trace"
 )
 
 // SetLocalLockTimeout returns a transaction option which will set the lock
@@ -37,9 +35,6 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 	if len(fns) == 0 {
 		panic("no fns")
 	}
-
-	ctx, span := trace.StartSpan(ctx, "dbx.Transact")
-	defer span.End()
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {

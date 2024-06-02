@@ -9,8 +9,6 @@ import (
 	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
-	"go.opencensus.io/trace/propagation"
 	"go.uber.org/zap"
 )
 
@@ -67,9 +65,6 @@ func (p *publisher) run(ctx context.Context) error {
 }
 
 func (p *publisher) publish(ctx context.Context, topic string, payload any) error {
-	ctx, span := trace.StartSpan(ctx, topic)
-	defer span.End()
-
 	select {
 	case <-p.ready:
 	case <-ctx.Done():
@@ -85,7 +80,6 @@ func (p *publisher) publish(ctx context.Context, topic string, payload any) erro
 	m := &message{
 		Metadata: Metadata{
 			Timestamp:   p.clk.Now(),
-			TraceSpan:   propagation.Binary(span.SpanContext()),
 			Correlation: correlation.FromContext(ctx),
 		},
 		Payload: pl,

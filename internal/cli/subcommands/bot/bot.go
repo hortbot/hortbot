@@ -14,7 +14,6 @@ import (
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/jaegerflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
@@ -24,7 +23,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/wqueue"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
@@ -35,7 +33,6 @@ type cmd struct {
 	Redis      redisflags.Redis
 	Bot        botflags.Bot
 	NSQ        nsqflags.NSQ
-	Jaeger     jaegerflags.Jaeger
 	Prometheus promflags.Prometheus
 	HTTP       httpflags.HTTP
 }
@@ -49,7 +46,6 @@ func Command() cli.Command {
 		Redis:      redisflags.Default,
 		Bot:        botflags.Default,
 		NSQ:        nsqflags.Default,
-		Jaeger:     jaegerflags.Default,
 		Prometheus: promflags.Default,
 		HTTP:       httpflags.Default,
 	}
@@ -60,13 +56,11 @@ func (*cmd) Name() string {
 }
 
 func (c *cmd) Main(ctx context.Context, _ []string) {
-	defer c.Jaeger.Trace(ctx, c.Name(), c.Debug)()
 	c.Prometheus.Run(ctx)
 
 	httpClient := c.HTTP.Client()
 	untrustedClient := c.HTTP.UntrustedClient(ctx)
 	driverName := c.SQL.DriverName()
-	driverName = c.Jaeger.DriverName(ctx, driverName, c.Debug)
 	db := c.SQL.Open(ctx, driverName)
 	rdb := c.Redis.Client()
 	twitchAPI := c.Twitch.Client(httpClient)
@@ -88,16 +82,13 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		g.Go(queue.Worker)
 	}
 
-	put := func(subCtx context.Context, span *trace.Span, metadata *bnsq.Metadata, mm bot.Message) error {
+	put := func(subCtx context.Context, metadata *bnsq.Metadata, mm bot.Message) error {
 		key := mm.BroadcasterLogin()
 		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
 			ctx, cancel := attach(ctx)
 			defer cancel()
 
 			ctx = metadata.With(ctx)
-			ctx, span := trace.StartSpanWithRemoteParent(ctx, "Worker", span.SpanContext())
-			defer span.End()
-
 			b.Handle(ctx, mm)
 		})
 	}
@@ -125,16 +116,13 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	}
 
 	eventsubSub := c.NSQ.NewIncomingWebsocketMessageSubscriber(15*time.Second, func(i *bnsq.IncomingWebsocketMessage, metadata *bnsq.Metadata) error {
-		subCtx, span := trace.StartSpanWithRemoteParent(ctx, "OnIncomingWebsocketMessage", metadata.ParentSpan())
-		defer span.End()
-
-		originMap, err := getOriginMap(subCtx)
+		originMap, err := getOriginMap(ctx)
 		if err != nil {
 			return err
 		}
 
 		mm := eventsubtobot.ToMessage(originMap, i.Message)
-		return put(subCtx, span, metadata, mm)
+		return put(ctx, metadata, mm)
 	})
 
 	g.Go(eventsubNotifier.Run)

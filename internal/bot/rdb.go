@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"time"
-
-	"go.opencensus.io/trace"
 )
 
 func (s *session) LinkPermit(ctx context.Context, user string, expiry time.Duration) error {
@@ -115,9 +113,6 @@ func (s *session) tryCooldown(ctx context.Context, key string, seconds int, allo
 }
 
 func (s *session) TryCooldown(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "TryCooldown")
-	defer span.End()
-
 	cooldown := s.Deps.DefaultCooldown
 
 	if s.Channel.Cooldown.Valid {
@@ -128,13 +123,9 @@ func (s *session) TryCooldown(ctx context.Context) error {
 }
 
 func (s *session) TryRollCooldown(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "TryRollCooldown")
-	defer span.End()
 	return s.tryCooldown(ctx, "roll_cooldown", s.Channel.RollCooldown, true)
 }
 
 func (s *session) TryHighlightCooldown(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "TryHighlightCooldown")
-	defer span.End()
 	return s.tryCooldown(ctx, "ht_cooldown", 60, false)
 }

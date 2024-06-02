@@ -8,7 +8,6 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"go.opencensus.io/trace"
 )
 
 // Config is a channel's full configuration, serialized.
@@ -32,9 +31,6 @@ type Command struct {
 // Insert inserts a config into the database. All IDs will be zero'd before
 // inserting, to ensure all inserted rows have new IDs.
 func (c *Config) Insert(ctx context.Context, exec boil.ContextExecutor) error {
-	ctx, span := trace.StartSpan(ctx, "confimport.Insert")
-	defer span.End()
-
 	c.Channel.ID = 0
 
 	if err := c.Channel.Insert(ctx, exec, boil.Infer()); err != nil {

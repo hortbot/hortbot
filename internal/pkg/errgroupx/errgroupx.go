@@ -10,7 +10,6 @@ import (
 	"context"
 	"errors"
 
-	"go.opencensus.io/trace"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -20,9 +19,8 @@ var ErrStop = errors.New("errgroupx: stop")
 // Group wraps errgroup's Group, keeping the derived context to pass to
 // functions called via Go.
 type Group struct {
-	ctx   context.Context
-	g     *errgroup.Group
-	trace bool
+	ctx context.Context
+	g   *errgroup.Group
 }
 
 // FromContext returns a new Group derived from ctx.
@@ -48,23 +46,12 @@ func FromContext(ctx context.Context, opts ...Option) *Group {
 // Option configures a Group.
 type Option func(*Group)
 
-// WithTrace enables OpenCensus tracing propagation from the main context to
-// function with Go.
-func WithTrace() Option {
-	return func(g *Group) {
-		g.trace = true
-	}
-}
-
 // Go calls the given function in a new goroutine.
 //
 // The first call to return a non-nil error cancels the group; its error will be
 // returned by Wait.
 func (g *Group) Go(f func(context.Context) error) {
 	ctx := g.ctx
-	if !g.trace {
-		ctx = trace.NewContext(g.ctx, nil)
-	}
 
 	g.g.Go(func() error {
 		return f(ctx)

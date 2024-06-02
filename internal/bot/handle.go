@@ -19,7 +19,6 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
@@ -39,9 +38,6 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
-
-	ctx, span := trace.StartSpan(ctx, "Handle")
-	defer span.End()
 
 	if !b.initialized {
 		panic("bot is not initialized")
@@ -80,9 +76,6 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 }
 
 func (b *Bot) handle(ctx context.Context, m Message) (retErr error) {
-	ctx, span := trace.StartSpan(ctx, "handle")
-	defer span.End()
-
 	ctx = ctxlog.With(ctx, zap.String("origin", m.Origin()))
 
 	defer func() {
@@ -113,9 +106,6 @@ func putSession(s *session) {
 }
 
 func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
-	ctx, span := trace.StartSpan(ctx, "handlePrivMsg")
-	defer span.End()
-
 	start := b.deps.Clock.Now()
 
 	s := getSession()
@@ -131,10 +121,6 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 
 	s.Start = start
 
-	span.AddAttributes(
-		trace.Int64Attribute("roomID", s.RoomID),
-		trace.StringAttribute("channel", s.ChannelName),
-	)
 	ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.ChannelName))
 
 	var (
@@ -203,9 +189,6 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 }
 
 func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
-	ctx, span := trace.StartSpan(ctx, "buildSession")
-	defer span.End()
-
 	id := m.ID()
 	if id == "" {
 		return errInvalidMessage
@@ -260,9 +243,6 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 }
 
 func (b *Bot) dedupe(ctx context.Context, id string) error {
-	ctx, span := trace.StartSpan(ctx, "maybeDedupe")
-	defer span.End()
-
 	if b.noDedupe {
 		return nil
 	}
@@ -298,9 +278,6 @@ func putChannel(channel *models.Channel) {
 
 //nolint:gocyclo
 func handleSession(ctx context.Context, s *session) error {
-	ctx, span := trace.StartSpan(ctx, "handleSession")
-	defer span.End()
-
 	// TODO: Remove if possible thanks to top-level wqueue.
 	if err := pgLock(ctx, s.Tx, s.RoomID); err != nil {
 		return err
@@ -430,9 +407,6 @@ func handleSession(ctx context.Context, s *session) error {
 }
 
 func tryCommand(ctx context.Context, s *session) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "tryCommand")
-	defer span.End()
-
 	if s.Me {
 		return false, nil
 	}
@@ -516,9 +490,6 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 }
 
 func tryBuiltinCommand(ctx context.Context, s *session, cmd string, args string) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "tryBuiltinCommand")
-	defer span.End()
-
 	if cmd == "builtin" {
 		cmd, args = splitSpace(args)
 		cmd = cleanCommandName(cmd)

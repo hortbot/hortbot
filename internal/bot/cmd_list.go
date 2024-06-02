@@ -15,7 +15,6 @@ import (
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"go.opencensus.io/trace"
 )
 
 // TODO: Merge the code between custom commands and lists; they are identical other than some wordings.
@@ -300,9 +299,6 @@ func findCommandList(ctx context.Context, s *session, name string) (*models.Comm
 }
 
 func handleList(ctx context.Context, s *session, info *models.CommandInfo, update bool) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "handleList")
-	defer span.End()
-
 	args := s.CommandParams
 	cmd, args := splitSpace(args)
 	cmd = strings.ToLower(cmd)

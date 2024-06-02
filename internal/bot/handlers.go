@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-
-	"go.opencensus.io/trace"
 )
 
 type handlerMap struct {
@@ -50,11 +48,6 @@ func (h handlerMap) RunWithCooldown(ctx context.Context, s *session, cmd string,
 
 func (h handlerMap) run(ctx context.Context, s *session, cmd string, args string, checkCooldown bool) (bool, error) {
 	cmd = strings.ToLower(cmd)
-
-	ctx, span := trace.StartSpan(ctx, "handlerMap.run")
-	defer span.End()
-
-	span.AddAttributes(trace.StringAttribute("cmd", cmd))
 
 	bc, ok := h.m[cmd]
 	if !ok {

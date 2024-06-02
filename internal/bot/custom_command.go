@@ -9,13 +9,9 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	"go.opencensus.io/trace"
 )
 
 func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "handleCustomCommand")
-	defer span.End()
-
 	if err := s.TryCooldown(ctx); err != nil {
 		return false, err
 	}
@@ -23,9 +19,6 @@ func handleCustomCommand(ctx context.Context, s *session, info *models.CommandIn
 }
 
 func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) error {
-	ctx, span := trace.StartSpan(ctx, "runCommandAndCount")
-	defer span.End()
-
 	ctx = withCommandGuard(ctx, info.Name)
 
 	reply, err := processCommand(ctx, s, message)
@@ -52,9 +45,6 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 }
 
 func processCommand(ctx context.Context, s *session, msg string) (string, error) {
-	ctx, span := trace.StartSpan(ctx, "processCommand")
-	defer span.End()
-
 	if strings.Contains(msg, "(_ONLINE_CHECK_)") {
 		isLive, err := s.IsLive(ctx)
 		if err != nil || !isLive {

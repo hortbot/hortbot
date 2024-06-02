@@ -15,14 +15,10 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 )
 
 func handleManagement(ctx context.Context, s *session) error {
-	ctx, span := trace.StartSpan(ctx, "handleManagement")
-	defer span.End()
-
 	prefix := s.Message[0]
 	switch prefix {
 	case '!', '+':

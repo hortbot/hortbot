@@ -81,7 +81,6 @@ func (a *App) Run(ctx context.Context) error {
 	})
 
 	r.Use(mid.RequestLogger)
-	r.Use(mid.Tracer)
 	r.Use(mid.Recoverer)
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		a.httpError(w, r, http.StatusNotFound)

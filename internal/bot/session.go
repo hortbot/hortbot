@@ -21,7 +21,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
 	"github.com/volatiletech/null/v8"
 	"github.com/zikaeroh/ctxlog"
-	"go.opencensus.io/trace"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
@@ -144,9 +143,6 @@ func (s *session) defaultBullet() string {
 }
 
 func (s *session) Reply(ctx context.Context, response string) error {
-	ctx, span := trace.StartSpan(ctx, "Reply")
-	defer span.End()
-
 	if s.Silent {
 		return nil
 	}
@@ -262,9 +258,6 @@ func (s *session) DeleteMessage(ctx context.Context) error {
 }
 
 func (s *session) Links(ctx context.Context) []*url.URL {
-	_, span := trace.StartSpan(ctx, "Links")
-	defer span.End()
-
 	links, _ := s.cache.links.get(func() ([]*url.URL, error) {
 		return findlinks.Find(s.Message, "http", "https", "ftp"), nil
 	})
@@ -274,9 +267,6 @@ func (s *session) Links(ctx context.Context) []*url.URL {
 var errLastFMDisabled = errors.New("bot: LastFM disabled")
 
 func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
-	_, span := trace.StartSpan(ctx, "Tracks")
-	defer span.End()
-
 	return s.cache.tracks.get(func() ([]lastfm.Track, error) {
 		if s.Deps.LastFM == nil || s.Channel.LastFM == "" {
 			return nil, errLastFMDisabled
@@ -286,9 +276,6 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 }
 
 func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error) {
-	ctx, span := trace.StartSpan(ctx, "ChannelTwitchToken")
-	defer span.End()
-
 	return s.cache.tok.get(func() (*oauth2.Token, error) {
 		tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
 		if err != nil {
@@ -303,9 +290,6 @@ func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error)
 }
 
 func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
-	ctx, span := trace.StartSpan(ctx, "SetChannelTwitchToken")
-	defer span.End()
-
 	s.cache.tok.set(newToken, nil)
 
 	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, s.Channel.TwitchID)
@@ -316,9 +300,6 @@ func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.To
 }
 
 func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, error) {
-	ctx, span := trace.StartSpan(ctx, "BotTwitchToken")
-	defer span.End()
-
 	botName := s.Origin
 	if s.Channel != nil {
 		botName = s.Channel.BotName
@@ -343,9 +324,6 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 }
 
 func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *oauth2.Token) error {
-	ctx, span := trace.StartSpan(ctx, "SetBotTwitchToken")
-	defer span.End()
-
 	s.cache.botTok.set(tokenAndUserID{tok: newToken, id: botID}, nil)
 
 	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, botID)
@@ -556,9 +534,6 @@ func (s *session) SendTwitchChatMessage(ctx context.Context, target string, mess
 }
 
 func (s *session) IsLive(ctx context.Context) (bool, error) {
-	ctx, span := trace.StartSpan(ctx, "IsLive")
-	defer span.End()
-
 	return s.cache.isLive.get(func() (bool, error) {
 		stream, err := s.TwitchStream(ctx)
 		if err != nil {
@@ -573,18 +548,12 @@ func (s *session) IsLive(ctx context.Context) (bool, error) {
 }
 
 func (s *session) TwitchChannel(ctx context.Context) (*twitch.Channel, error) {
-	ctx, span := trace.StartSpan(ctx, "TwitchChannel")
-	defer span.End()
-
 	return s.cache.twitchChannel.get(func() (*twitch.Channel, error) {
 		return s.Deps.Twitch.GetChannelByID(ctx, s.Channel.TwitchID)
 	})
 }
 
 func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
-	ctx, span := trace.StartSpan(ctx, "TwitchStream")
-	defer span.End()
-
 	return s.cache.twitchStream.get(func() (*twitch.Stream, error) {
 		return s.Deps.Twitch.GetStreamByUserID(ctx, s.Channel.TwitchID)
 	})
@@ -593,9 +562,6 @@ func (s *session) TwitchStream(ctx context.Context) (*twitch.Stream, error) {
 var errSteamDisabled = errors.New("bot: steam disabled")
 
 func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
-	ctx, span := trace.StartSpan(ctx, "SteamSummary")
-	defer span.End()
-
 	return s.cache.steamSummary.get(func() (*steam.Summary, error) {
 		if s.Deps.Steam == nil || s.Channel.SteamID == "" {
 			return nil, errSteamDisabled
@@ -605,9 +571,6 @@ func (s *session) SteamSummary(ctx context.Context) (*steam.Summary, error) {
 }
 
 func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
-	ctx, span := trace.StartSpan(ctx, "SteamGames")
-	defer span.End()
-
 	return s.cache.steamGames.get(func() ([]*steam.Game, error) {
 		if s.Deps.Steam == nil || s.Channel.SteamID == "" {
 			return nil, errSteamDisabled
@@ -617,9 +580,6 @@ func (s *session) SteamGames(ctx context.Context) ([]*steam.Game, error) {
 }
 
 func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
-	ctx, span := trace.StartSpan(ctx, "GameLinks")
-	defer span.End()
-
 	return s.cache.gameLinks.get(func() ([]twitch.GameLink, error) {
 		ch, err := s.TwitchChannel(ctx)
 		if err != nil {
@@ -637,9 +597,6 @@ func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
 }
 
 func (s *session) ShortenLink(ctx context.Context, link string) (string, error) {
-	ctx, span := trace.StartSpan(ctx, "ShortenLink")
-	defer span.End()
-
 	if s.Deps.TinyURL == nil {
 		return link, nil
 	}

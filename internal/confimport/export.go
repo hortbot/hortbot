@@ -8,7 +8,6 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
-	"go.opencensus.io/trace"
 )
 
 // ExportByName exports a channel's full configuration, keyed on channel name.
@@ -17,9 +16,6 @@ func ExportByName(ctx context.Context, exec boil.ContextExecutor, name string) (
 }
 
 func export(ctx context.Context, exec boil.ContextExecutor, mod qm.QueryMod) (*Config, error) {
-	ctx, span := trace.StartSpan(ctx, "confimport.export")
-	defer span.End()
-
 	channel, err := models.Channels(
 		mod,
 		qm.Load(models.ChannelRels.Autoreplies),

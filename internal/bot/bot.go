@@ -24,7 +24,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
 	"github.com/leononame/clock"
-	"go.opencensus.io/trace"
 )
 
 const (
@@ -231,9 +230,6 @@ func (noopTicker) Stop() {}
 // Init initializes the bot, starting any underlying tasks. It should only be
 // called once.
 func (b *Bot) Init(ctx context.Context) error {
-	ctx, span := trace.StartSpan(ctx, "Init")
-	defer span.End()
-
 	b.g = errgroupx.FromContext(ctx)
 	b.g.Go(b.rep.Run)
 	b.g.Go(b.runValidateTokens)
