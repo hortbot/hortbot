@@ -3,7 +3,7 @@ package bot_test
 import (
 	"context"
 	"fmt"
-	"math/rand"
+	"math/rand/v2"
 	"strconv"
 	"strings"
 	"sync/atomic"
@@ -308,7 +308,7 @@ func randomString(n int) string {
 	builder.Grow(n)
 
 	for range n {
-		x := rand.Intn(len(characters)) //nolint:gosec
+		x := rand.N(len(characters)) //nolint:gosec
 		builder.WriteByte(characters[x])
 	}
 

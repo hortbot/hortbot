@@ -2,10 +2,8 @@ package bot
 
 import (
 	"context"
-	"math/rand"
+	"math/rand/v2"
 	"time"
-
-	"github.com/hortbot/hortbot/internal/pkg/pool"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Rand EventsubUpdateNotifier
@@ -36,23 +34,14 @@ type Rand interface {
 	Float64() float64
 }
 
-type pooledRand struct{}
+type defaultRand struct{}
 
-var _ Rand = pooledRand{}
+var _ Rand = defaultRand{}
 
-var randPool = pool.NewPool(func() *rand.Rand {
-	source := rand.NewSource(time.Now().Unix())
-	return rand.New(source) //nolint:gosec
-})
-
-func (pooledRand) Intn(n int) int {
-	rand := randPool.Get()
-	defer randPool.Put(rand)
-	return rand.Intn(n)
+func (defaultRand) Intn(n int) int {
+	return rand.N(n) //nolint:gosec
 }
 
-func (pooledRand) Float64() float64 {
-	rand := randPool.Get()
-	defer randPool.Put(rand)
-	return rand.Float64()
+func (defaultRand) Float64() float64 {
+	return rand.Float64() //nolint:gosec
 }
