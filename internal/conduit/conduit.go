@@ -189,6 +189,9 @@ readLoop:
 		var raw json.RawMessage
 		if err := wsjson.Read(ctx, c, &raw); err != nil {
 			ctxlog.Warn(ctx, "websocket read error", zap.Error(err))
+			if retErr == nil {
+				retErr = err
+			}
 			break readLoop
 		}
 		metricWebsocketReadDuration.Observe(time.Since(beforeRead).Seconds())
