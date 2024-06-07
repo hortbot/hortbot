@@ -27,7 +27,7 @@ var _ API = (*TinyURL)(nil)
 // New creates a new TinyURL API client.
 func New(cli *http.Client) *TinyURL {
 	return &TinyURL{
-		cli: httpx.NewClient(cli, "tinyurl", false),
+		cli: httpx.NewClient(cli, "tinyurl"),
 	}
 }
 

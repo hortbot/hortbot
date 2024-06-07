@@ -39,7 +39,7 @@ var _ API = &HLTB{}
 // New creates a new HLTB client.
 func New(cli *http.Client) *HLTB {
 	return &HLTB{
-		cli: httpx.NewClient(cli, "hltb", true),
+		cli: httpx.NewClient(cli, "hltb", httpx.WithBrowserUserAgent()),
 	}
 }
 

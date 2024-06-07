@@ -27,7 +27,7 @@ var _ API = &ExtraLife{}
 // New creates a new Extra-Life API client.
 func New(cli *http.Client) *ExtraLife {
 	return &ExtraLife{
-		cli: httpx.NewClient(cli, "extralife", false),
+		cli: httpx.NewClient(cli, "extralife"),
 	}
 }
 

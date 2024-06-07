@@ -16,26 +16,43 @@ import (
 //
 // This type is similar to ctxhttp's functions, but does not copy requests unnecessarily.
 type Client struct {
-	client *http.Client
+	client    *http.Client
+	asBrowser bool
 }
 
-func NewClient(cli *http.Client, name string, asBrowser bool) Client {
+func NewClient(cli *http.Client, name string, opts ...Option) Client {
 	if cli == nil {
 		panic("nil http.Client")
 	}
+
 	client := *cli
+
+	c := Client{
+		client: &client,
+	}
+
+	for _, opt := range opts {
+		opt(&c)
+	}
+
 	transport := client.Transport
 	if transport == nil {
 		transport = http.DefaultTransport
 	}
 	client.Transport = &wrappedTransport{
 		inner:     transport,
-		asBrowser: asBrowser,
+		asBrowser: c.asBrowser,
 		name:      name,
 	}
 
-	return Client{
-		client: &client,
+	return c
+}
+
+type Option func(*Client)
+
+func WithBrowserUserAgent() Option {
+	return func(c *Client) {
+		c.asBrowser = true
 	}
 }
 

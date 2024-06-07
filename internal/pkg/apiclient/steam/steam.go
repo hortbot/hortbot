@@ -33,7 +33,7 @@ func New(apiKey string, cli *http.Client) *Steam {
 
 	return &Steam{
 		apiKey: apiKey,
-		cli:    httpx.NewClient(cli, "steam", false),
+		cli:    httpx.NewClient(cli, "steam"),
 	}
 }
 

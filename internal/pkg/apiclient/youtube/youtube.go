@@ -34,7 +34,7 @@ func New(apiKey string, cli *http.Client) *YouTube {
 
 	return &YouTube{
 		apiKey: apiKey,
-		cli:    httpx.NewClient(cli, "youtube", false),
+		cli:    httpx.NewClient(cli, "youtube"),
 	}
 }
 

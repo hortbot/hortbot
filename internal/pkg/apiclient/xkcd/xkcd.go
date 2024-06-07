@@ -34,7 +34,7 @@ var _ API = &XKCD{}
 // New creates a new XKCD API client.
 func New(cli *http.Client) *XKCD {
 	return &XKCD{
-		cli: httpx.NewClient(cli, "xkcd", false),
+		cli: httpx.NewClient(cli, "xkcd"),
 	}
 }
 

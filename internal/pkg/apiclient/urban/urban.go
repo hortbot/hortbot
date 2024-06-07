@@ -27,7 +27,7 @@ var _ API = (*Urban)(nil)
 // New creates a new Urban Dictionary client.
 func New(cli *http.Client) *Urban {
 	return &Urban{
-		cli: httpx.NewClient(cli, "urban", false),
+		cli: httpx.NewClient(cli, "urban"),
 	}
 }
 

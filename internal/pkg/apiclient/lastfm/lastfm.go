@@ -44,7 +44,7 @@ func New(apiKey string, cli *http.Client) *LastFM {
 
 	return &LastFM{
 		apiKey: apiKey,
-		cli:    httpx.NewClient(cli, "lastfm", false),
+		cli:    httpx.NewClient(cli, "lastfm"),
 	}
 }
 
