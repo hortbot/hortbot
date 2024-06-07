@@ -11,6 +11,7 @@ import (
 )
 
 func TestBan(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -34,6 +35,7 @@ func TestBan(t *testing.T) {
 }
 
 func TestBanBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -80,6 +82,7 @@ func TestBanBadParameters(t *testing.T) {
 }
 
 func TestBanErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -111,6 +114,7 @@ func TestBanErrors(t *testing.T) {
 }
 
 func TestUnban(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -130,6 +134,7 @@ func TestUnban(t *testing.T) {
 }
 
 func TestUnbanBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -153,6 +158,7 @@ func TestUnbanBadParameters(t *testing.T) {
 }
 
 func TestUnbanErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -178,6 +184,7 @@ func TestUnbanErrors(t *testing.T) {
 }
 
 func TestSetChatColor(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -196,6 +203,7 @@ func TestSetChatColor(t *testing.T) {
 }
 
 func TestSetChatColorBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -218,6 +226,7 @@ func TestSetChatColorBadParameters(t *testing.T) {
 }
 
 func TestSetChatColorErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -242,6 +251,7 @@ func TestSetChatColorErrors(t *testing.T) {
 }
 
 func TestDeleteChatMessage(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -261,6 +271,7 @@ func TestDeleteChatMessage(t *testing.T) {
 }
 
 func TestDeleteChatMessageBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -284,6 +295,7 @@ func TestDeleteChatMessageBadParameters(t *testing.T) {
 }
 
 func TestDeleteChatMessageErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -309,6 +321,7 @@ func TestDeleteChatMessageErrors(t *testing.T) {
 }
 
 func TestClearChat(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -328,6 +341,7 @@ func TestClearChat(t *testing.T) {
 }
 
 func TestClearChatBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -347,6 +361,7 @@ func TestClearChatBadParameters(t *testing.T) {
 }
 
 func TestClearChatErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -376,6 +391,7 @@ func ptrTo[T any](v T) *T {
 }
 
 func TestUpdateChatSettings(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -397,6 +413,7 @@ func TestUpdateChatSettings(t *testing.T) {
 }
 
 func TestUpdateChatSettingsBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -437,6 +454,7 @@ func TestUpdateChatSettingsBadParameters(t *testing.T) {
 }
 
 func TestUpdateChatSettingsErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -466,6 +484,7 @@ func TestUpdateChatSettingsErrors(t *testing.T) {
 }
 
 func TestAnnounce(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -485,6 +504,7 @@ func TestAnnounce(t *testing.T) {
 }
 
 func TestAnnounceBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -508,6 +528,7 @@ func TestAnnounceBadParameters(t *testing.T) {
 }
 
 func TestAnnounceErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -533,6 +554,7 @@ func TestAnnounceErrors(t *testing.T) {
 }
 
 func TestSendChatMessage(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -552,6 +574,7 @@ func TestSendChatMessage(t *testing.T) {
 }
 
 func TestSendChatMessageTruncate(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -571,6 +594,7 @@ func TestSendChatMessageTruncate(t *testing.T) {
 }
 
 func TestSendChatMessageBadParameters(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -594,6 +618,7 @@ func TestSendChatMessageBadParameters(t *testing.T) {
 }
 
 func TestSendChatMessageErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 

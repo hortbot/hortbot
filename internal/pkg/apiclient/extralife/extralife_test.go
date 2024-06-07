@@ -14,6 +14,7 @@ import (
 )
 
 func TestGetDonationAmount(t *testing.T) {
+	t.Parallel()
 	mt := httpmockx.NewMockTransport(t)
 
 	errTest := errors.New("test error")
@@ -51,6 +52,7 @@ func TestGetDonationAmount(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
+		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
 		amount, err := el.GetDonationAmount(context.Background(), 200)
@@ -59,6 +61,7 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 404)
@@ -66,6 +69,7 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 500)
@@ -73,6 +77,7 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 777)
@@ -87,6 +92,7 @@ func TestGetDonationAmount(t *testing.T) {
 	})
 
 	t.Run("Client error", func(t *testing.T) {
+		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
 		_, err := el.GetDonationAmount(context.Background(), 999)

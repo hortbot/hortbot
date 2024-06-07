@@ -10,6 +10,7 @@ import (
 )
 
 func TestPool(t *testing.T) {
+	t.Parallel()
 	var pool pgpool.Pool
 	defer pool.Cleanup()
 
@@ -23,6 +24,7 @@ func TestPool(t *testing.T) {
 }
 
 func TestPoolNoUse(t *testing.T) {
+	t.Parallel()
 	var pool pgpool.Pool
 	pool.Cleanup()
 }

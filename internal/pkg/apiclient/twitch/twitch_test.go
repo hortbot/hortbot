@@ -34,6 +34,7 @@ const (
 )
 
 func TestNewPanic(t *testing.T) {
+	t.Parallel()
 	checkPanic := func(fn func()) any {
 		var recovered any
 
@@ -70,6 +71,7 @@ func TestNewPanic(t *testing.T) {
 }
 
 func TestAuthExchange(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 

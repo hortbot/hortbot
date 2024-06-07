@@ -10,6 +10,7 @@ import (
 )
 
 func TestError(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		err            *apiclient.Error
 		m              string
@@ -55,6 +56,7 @@ func TestError(t *testing.T) {
 
 	for i, test := range tests {
 		t.Run(strconv.Itoa(i), func(t *testing.T) {
+			t.Parallel()
 			assert.Equal(t, test.err.Error(), test.m)
 			assert.Equal(t, test.err.IsNotFound(), test.isNotFound)
 			assert.Equal(t, test.err.IsServerError(), test.isServerError)

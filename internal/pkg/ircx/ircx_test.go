@@ -8,6 +8,7 @@ import (
 )
 
 func TestMessages(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		want *irc.Message
 		got  *irc.Message

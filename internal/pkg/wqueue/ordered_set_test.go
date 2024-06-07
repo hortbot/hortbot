@@ -9,6 +9,7 @@ import (
 )
 
 func TestOrderedSet(t *testing.T) {
+	t.Parallel()
 	set := newOrderedSet[string, *subQueue]()
 
 	k, v := set.next()

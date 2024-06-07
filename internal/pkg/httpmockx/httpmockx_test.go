@@ -10,6 +10,7 @@ import (
 )
 
 func TestNewMockTransport(t *testing.T) {
+	t.Parallel()
 	fake := &assertxmocks.TestingTMock{
 		HelperFunc:  func() {},
 		LogFunc:     func(args ...any) {},

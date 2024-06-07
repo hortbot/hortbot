@@ -8,6 +8,7 @@ import (
 )
 
 func TestBuildKey(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		input []keyPair
 		want  string
@@ -28,6 +29,7 @@ func TestBuildKey(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.want, func(t *testing.T) {
+			t.Parallel()
 			got := buildKey(test.input...)
 			assert.Equal(t, test.want, got)
 		})
@@ -35,6 +37,7 @@ func TestBuildKey(t *testing.T) {
 }
 
 func TestBuildKeyPanic(t *testing.T) {
+	t.Parallel()
 	assertx.Panic(t, func() {
 		buildKey()
 	}, "no key specified")

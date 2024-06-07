@@ -27,6 +27,7 @@ const comic1 = `{
 }`
 
 func TestGetComic(t *testing.T) {
+	t.Parallel()
 	mt := httpmockx.NewMockTransport(t)
 
 	errTest := errors.New("test error")
@@ -58,6 +59,7 @@ func TestGetComic(t *testing.T) {
 	)
 
 	t.Run("OK", func(t *testing.T) {
+		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
 		comic, err := x.GetComic(context.Background(), 1)
@@ -70,6 +72,7 @@ func TestGetComic(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 77777)
@@ -77,6 +80,7 @@ func TestGetComic(t *testing.T) {
 	})
 
 	t.Run("Client error", func(t *testing.T) {
+		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 99999)
@@ -84,6 +88,7 @@ func TestGetComic(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
 		_, err := x.GetComic(context.Background(), 88888)

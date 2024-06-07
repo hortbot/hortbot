@@ -8,6 +8,7 @@ import (
 )
 
 func TestVerifyHandlerMapEntry(t *testing.T) {
+	t.Parallel()
 	assertx.Panic(t, func() {
 		verifyHandlerMapEntry("", handlerFunc{})
 	}, "empty name")

@@ -13,6 +13,7 @@ import (
 )
 
 func TestGetChannelModeratorsOK(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -48,6 +49,7 @@ func TestGetChannelModeratorsOK(t *testing.T) {
 }
 
 func TestGetChannelModeratorsErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -83,6 +85,7 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 }
 
 func TestGetChannelModeratorsEsoteric(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -118,7 +121,9 @@ func TestGetChannelModeratorsEsoteric(t *testing.T) {
 }
 
 func TestModifyChannel(t *testing.T) {
+	t.Parallel()
 	t.Run("Success title", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -132,6 +137,7 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Success game", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -144,6 +150,7 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -155,6 +162,7 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -166,6 +174,7 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Nil token", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -176,6 +185,7 @@ func TestModifyChannel(t *testing.T) {
 	})
 
 	t.Run("Bad request", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -203,6 +213,7 @@ func tokFor(ctx context.Context, t *testing.T, tw *twitch.Twitch, ft *fakeTwitch
 }
 
 func TestGetChannelByID(t *testing.T) {
+	t.Parallel()
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
@@ -217,6 +228,7 @@ func TestGetChannelByID(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	t.Run("Success", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -233,6 +245,7 @@ func TestGetChannelByID(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -241,6 +254,7 @@ func TestGetChannelByID(t *testing.T) {
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -249,6 +263,7 @@ func TestGetChannelByID(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -257,6 +272,7 @@ func TestGetChannelByID(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -265,6 +281,7 @@ func TestGetChannelByID(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 

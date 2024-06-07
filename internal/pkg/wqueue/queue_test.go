@@ -69,6 +69,8 @@ func TestQueueHitLimit(t *testing.T) {
 }
 
 func TestQueueNilWork(t *testing.T) {
+	t.Parallel()
+
 	q := wqueue.NewQueue[string](2)
 	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	defer cancel()
@@ -78,7 +80,7 @@ func TestQueueNilWork(t *testing.T) {
 	}, "nil WorkFunc")
 }
 
-func TestQueue(t *testing.T) {
+func TestQueue(t *testing.T) { //nolint:paralleltest
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](10)
@@ -146,7 +148,7 @@ func TestQueue(t *testing.T) {
 	_ = g.Wait()
 }
 
-func TestQueuePanic(t *testing.T) {
+func TestQueuePanic(t *testing.T) { //nolint:paralleltest
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](10)
@@ -186,7 +188,7 @@ func TestQueuePanic(t *testing.T) {
 	_ = g.Wait()
 }
 
-func TestQueueStress(t *testing.T) {
+func TestQueueStress(t *testing.T) { //nolint:paralleltest
 	// Stupid attempt at reducing coverage flakes.
 	for range 20 {
 		testQueueStress(t)
@@ -241,7 +243,7 @@ func testQueueStress(t *testing.T) { //nolint:thelper
 	}
 }
 
-func TestQueueStressCancel(t *testing.T) {
+func TestQueueStressCancel(t *testing.T) { //nolint:paralleltest
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](1000)

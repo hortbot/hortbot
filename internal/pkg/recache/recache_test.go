@@ -11,6 +11,7 @@ import (
 const pattern = `.*\Qwinlan\E.*`
 
 func TestCompile(t *testing.T) {
+	t.Parallel()
 	c := recache.New()
 
 	r, err := c.Compile(pattern)

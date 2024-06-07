@@ -8,6 +8,7 @@ import (
 )
 
 func TestPool(t *testing.T) {
+	t.Parallel()
 	p := pool.NewPool(func() int { return 42 })
 	x := p.Get()
 	defer p.Put(x)

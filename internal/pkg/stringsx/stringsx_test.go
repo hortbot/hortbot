@@ -21,8 +21,10 @@ var splitByteTests = []struct {
 }
 
 func TestSplitByte(t *testing.T) {
+	t.Parallel()
 	for _, test := range splitByteTests {
 		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
 			gotA, gotB := stringsx.SplitByte(test.input, test.sep)
 			assert.Equal(t, test.a, gotA)
 			assert.Equal(t, test.b, gotB)
@@ -31,8 +33,10 @@ func TestSplitByte(t *testing.T) {
 }
 
 func TestSplitOnByte(t *testing.T) {
+	t.Parallel()
 	for _, test := range splitByteTests {
 		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
 			gotA, gotB := stringsx.Split(test.input, string(test.sep))
 			assert.Equal(t, test.a, gotA)
 			assert.Equal(t, test.b, gotB)
@@ -54,8 +58,10 @@ var splitTests = []struct {
 }
 
 func TestSplit(t *testing.T) {
+	t.Parallel()
 	for _, test := range splitTests {
 		t.Run(test.input, func(t *testing.T) {
+			t.Parallel()
 			gotA, gotB := stringsx.Split(test.input, test.sep)
 			assert.Equal(t, test.a, gotA)
 			assert.Equal(t, test.b, gotB)

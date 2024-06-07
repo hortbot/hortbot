@@ -10,6 +10,7 @@ import (
 )
 
 func TestFromWith(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	id := correlation.FromContext(ctx)
@@ -27,6 +28,7 @@ func TestFromWith(t *testing.T) {
 }
 
 func TestFromWithID(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	id1 := xid.New()
@@ -48,6 +50,7 @@ func TestFromWithID(t *testing.T) {
 }
 
 func TestFromWithIDNil(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	ctx = correlation.WithID(ctx, xid.NilID())

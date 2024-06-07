@@ -8,6 +8,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	addr, cleanup, err := dnsq.New()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)

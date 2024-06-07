@@ -20,6 +20,7 @@ func readerFor(v any) io.Reader {
 }
 
 func TestDecodeSingleOK(t *testing.T) {
+	t.Parallel()
 	want := map[string]any{
 		"foo": "bar",
 		"x":   true,
@@ -32,18 +33,21 @@ func TestDecodeSingleOK(t *testing.T) {
 }
 
 func TestDecodeSingleTwo(t *testing.T) {
+	t.Parallel()
 	var got any
 	err := jsonx.DecodeSingle(strings.NewReader("{}{}"), &got)
 	assert.Equal(t, err, jsonx.ErrMoreThanOne)
 }
 
 func TestDecodeSingleIncomplete(t *testing.T) {
+	t.Parallel()
 	var got any
 	err := jsonx.DecodeSingle(strings.NewReader("{"), &got)
 	assert.ErrorContains(t, err, "unexpected EOF")
 }
 
 func TestUnmarshallable(t *testing.T) {
+	t.Parallel()
 	v := jsonx.Unmarshallable()
 
 	_, err := v.MarshalJSON()

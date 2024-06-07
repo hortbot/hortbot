@@ -11,6 +11,7 @@ import (
 )
 
 func TestFind(t *testing.T) {
+	t.Parallel()
 	tests := []struct {
 		message   string
 		whitelist []string

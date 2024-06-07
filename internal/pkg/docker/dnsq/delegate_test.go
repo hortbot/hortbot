@@ -3,6 +3,7 @@ package dnsq
 import "testing"
 
 func TestNopDelegate(t *testing.T) {
+	t.Parallel()
 	var delegate *nopDelegate
 
 	// Ensure these don't actually do anything.

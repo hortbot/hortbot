@@ -15,9 +15,11 @@ import (
 )
 
 func TestSearchGame(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	t.Run("OK", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
@@ -87,6 +89,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("All no times", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
@@ -153,6 +156,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("Passes query", func(t *testing.T) {
+		t.Parallel()
 		const query = "Half-Life Alyx"
 
 		mt := httpmockx.NewMockTransport(t)
@@ -176,6 +180,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("No results", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
@@ -189,6 +194,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("404 code", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
@@ -202,6 +208,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("500 code", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
@@ -215,6 +222,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("Empty response", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder(
 			"POST",
@@ -228,6 +236,7 @@ func TestSearchGame(t *testing.T) {
 	})
 
 	t.Run("Client error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 
 		errTest := errors.New("test error")

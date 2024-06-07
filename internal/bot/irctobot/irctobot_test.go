@@ -12,11 +12,13 @@ import (
 )
 
 func TestIRCToMessageNil(t *testing.T) {
+	t.Parallel()
 	msg := irctobot.ToMessage("origin", nil)
 	assert.Equal(t, msg, bot.Message(nil))
 }
 
 func TestIRCToMessageNotPrivmsg(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{Command: "NOTPRIVMSG"}
 	assertx.Panic(t, func() {
 		irctobot.ToMessage("origin", m)
@@ -24,6 +26,7 @@ func TestIRCToMessageNotPrivmsg(t *testing.T) {
 }
 
 func TestIRCToMessage(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags: map[string]string{
@@ -52,6 +55,7 @@ func TestIRCToMessage(t *testing.T) {
 }
 
 func TestIRCToMessageAction(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command:  "PRIVMSG",
 		Tags:     map[string]string{"tag": "value"},
@@ -70,6 +74,7 @@ func TestIRCToMessageAction(t *testing.T) {
 }
 
 func TestBroadcasterLoginNoParams(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command:  "PRIVMSG",
 		Tags:     map[string]string{"tag": "value"},
@@ -84,6 +89,7 @@ func TestBroadcasterLoginNoParams(t *testing.T) {
 }
 
 func TestBroadcasterLoginNoChannel(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command:  "PRIVMSG",
 		Tags:     map[string]string{"tag": "value"},
@@ -99,6 +105,7 @@ func TestBroadcasterLoginNoChannel(t *testing.T) {
 }
 
 func TestMessageNonActionCTCP(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command:  "PRIVMSG",
 		Tags:     map[string]string{"tag": "value"},
@@ -114,6 +121,7 @@ func TestMessageNonActionCTCP(t *testing.T) {
 }
 
 func TestNoBroadcasterID(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value"},
@@ -126,6 +134,7 @@ func TestNoBroadcasterID(t *testing.T) {
 }
 
 func TestBadBroadcasterID(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value", "room-id": "notanint"},
@@ -138,6 +147,7 @@ func TestBadBroadcasterID(t *testing.T) {
 }
 
 func TestNoUserID(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value"},
@@ -150,6 +160,7 @@ func TestNoUserID(t *testing.T) {
 }
 
 func TestBadUserID(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value", "user-id": "notanint"},
@@ -162,6 +173,7 @@ func TestBadUserID(t *testing.T) {
 }
 
 func TestEmoteCountEmpty(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value"},
@@ -172,6 +184,7 @@ func TestEmoteCountEmpty(t *testing.T) {
 }
 
 func TestEmoteCount(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value", "emotes": "0:1-2"},
@@ -182,6 +195,7 @@ func TestEmoteCount(t *testing.T) {
 }
 
 func TestTimestamp(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value", "tmi-sent-ts": "123456789"},
@@ -192,6 +206,7 @@ func TestTimestamp(t *testing.T) {
 }
 
 func TestTimestampEmpty(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value"},
@@ -202,6 +217,7 @@ func TestTimestampEmpty(t *testing.T) {
 }
 
 func TestIDEmpty(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value"},
@@ -212,6 +228,7 @@ func TestIDEmpty(t *testing.T) {
 }
 
 func TestID(t *testing.T) {
+	t.Parallel()
 	m := &irc.Message{
 		Command: "PRIVMSG",
 		Tags:    map[string]string{"tag": "value", "id": "123"},

@@ -11,6 +11,7 @@ import (
 )
 
 func TestGetGameLinks(t *testing.T) {
+	t.Parallel()
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
@@ -25,6 +26,7 @@ func TestGetGameLinks(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	t.Run("Success", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -42,6 +44,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -50,6 +53,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -58,6 +62,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Empty 404 1", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -66,6 +71,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Empty 404 2", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -74,6 +80,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -82,6 +89,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -90,6 +98,7 @@ func TestGetGameLinks(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 

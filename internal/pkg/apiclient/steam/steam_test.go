@@ -14,12 +14,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	assertx.Panic(t, func() {
 		steam.New("", nil)
 	}, "empty apiKey")
 }
 
 func TestGetPlayerSummary(t *testing.T) {
+	t.Parallel()
 	const (
 		apiKey = "THISISTHEAPIKEY123456789"
 		id     = "12730127017230123"
@@ -30,6 +32,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Good", func(t *testing.T) {
+		t.Parallel()
 		const response = `{
 			"response": {
 				"players": [
@@ -62,6 +65,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
+		t.Parallel()
 		const response = `{
 			"response": {
 				"players": []
@@ -78,6 +82,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "{"))
 
@@ -88,6 +93,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, "{}"))
 
@@ -98,6 +104,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
@@ -108,6 +115,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
@@ -118,6 +126,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
@@ -128,6 +137,7 @@ func TestGetPlayerSummary(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		testErr := errors.New("testing error")
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))
@@ -140,6 +150,7 @@ func TestGetPlayerSummary(t *testing.T) {
 }
 
 func TestGetOwnedGames(t *testing.T) {
+	t.Parallel()
 	const (
 		apiKey = "THISISTHEAPIKEY123456789"
 		id     = "12730127017230123"
@@ -150,6 +161,7 @@ func TestGetOwnedGames(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Good", func(t *testing.T) {
+		t.Parallel()
 		const response = `{
 			"response": {
 				"games": [
@@ -186,6 +198,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "{"))
 
@@ -196,6 +209,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, "{}"))
 
@@ -206,6 +220,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
@@ -216,6 +231,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
@@ -226,6 +242,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
@@ -236,6 +253,7 @@ func TestGetOwnedGames(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		testErr := errors.New("testing error")
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))

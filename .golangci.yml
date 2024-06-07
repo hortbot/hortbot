@@ -33,7 +33,6 @@ linters:
     - nestif
     - nlreturn
     - nonamedreturns # No.
-    - paralleltest
     - revive # redundant
     - sqlclosecheck
     - stylecheck

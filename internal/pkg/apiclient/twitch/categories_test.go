@@ -11,6 +11,7 @@ import (
 )
 
 func TestSearchCategories(t *testing.T) {
+	t.Parallel()
 	ft := newFakeTwitch(t)
 	cli := ft.client()
 
@@ -25,6 +26,7 @@ func TestSearchCategories(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	t.Run("Success", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -38,6 +40,7 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -46,6 +49,7 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Empty 404", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -54,6 +58,7 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -62,6 +67,7 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -70,6 +76,7 @@ func TestSearchCategories(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -79,6 +86,7 @@ func TestSearchCategories(t *testing.T) {
 }
 
 func TestGetGame(t *testing.T) {
+	t.Parallel()
 	tok := &oauth2.Token{
 		AccessToken: uuid.Must(uuid.NewV4()).String(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
@@ -86,6 +94,7 @@ func TestGetGame(t *testing.T) {
 	}
 
 	t.Run("Success name", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -99,6 +108,7 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Success name", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -112,6 +122,7 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -123,6 +134,7 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -134,6 +146,7 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 
@@ -145,6 +158,7 @@ func TestGetGame(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		ctx, cancel := testContext(t)
 		defer cancel()
 

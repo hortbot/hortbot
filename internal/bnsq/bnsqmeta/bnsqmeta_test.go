@@ -10,6 +10,7 @@ import (
 )
 
 func TestTimestamp(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 
 	ts := bnsqmeta.Timestamp(ctx)

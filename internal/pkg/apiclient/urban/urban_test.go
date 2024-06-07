@@ -14,6 +14,7 @@ import (
 )
 
 func TestDefine(t *testing.T) {
+	t.Parallel()
 	const (
 		apiURL = "https://api.urbandictionary.com/v0/define"
 		phrase = "something"
@@ -24,6 +25,7 @@ func TestDefine(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("Good", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, `{"list": [{"definition": "This is [some] definition. [Wow]."}, {"definition": "This is a [second] definition. [Wow]."}]}`))
 
@@ -35,6 +37,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		testErr := errors.New("testing error")
 
 		mt := httpmockx.NewMockTransport(t)
@@ -47,6 +50,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(404, ""))
 
@@ -57,6 +61,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Empty", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, "{}"))
 
@@ -67,6 +72,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(500, ""))
 
@@ -77,6 +83,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Unknown error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(418, ""))
 
@@ -87,6 +94,7 @@ func TestDefine(t *testing.T) {
 	})
 
 	t.Run("Bad JSON", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", apiURL, query, httpmock.NewStringResponder(200, "}"))
 

@@ -14,10 +14,12 @@ import (
 )
 
 func TestPlaintext(t *testing.T) {
+	t.Parallel()
 	ctx := context.Background()
 	const apiURL = "https://example.com/something"
 
 	t.Run("Good", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(200, "This is some text."))
 
@@ -29,6 +31,7 @@ func TestPlaintext(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		testErr := errors.New("testing error")
 
 		mt := httpmockx.NewMockTransport(t)
@@ -41,6 +44,7 @@ func TestPlaintext(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(404, "not found"))
 
@@ -52,6 +56,7 @@ func TestPlaintext(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponder("GET", apiURL, httpmock.NewStringResponder(500, "error!"))
 
@@ -63,6 +68,7 @@ func TestPlaintext(t *testing.T) {
 	})
 
 	t.Run("Limit", func(t *testing.T) {
+		t.Parallel()
 		text := strings.Repeat("x", 513)
 
 		mt := httpmockx.NewMockTransport(t)
@@ -76,6 +82,7 @@ func TestPlaintext(t *testing.T) {
 	})
 
 	t.Run("ReadAll error", func(t *testing.T) {
+		t.Parallel()
 		response := httpmock.NewStringResponse(200, "") //nolint:bodyclose
 		response.Body = (*badBody)(nil)
 

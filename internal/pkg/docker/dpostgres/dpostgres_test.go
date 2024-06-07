@@ -8,6 +8,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	db, connStr, cleanup, err := dpostgres.New()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)
@@ -26,6 +27,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestNoMigrate(t *testing.T) {
+	t.Parallel()
 	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)

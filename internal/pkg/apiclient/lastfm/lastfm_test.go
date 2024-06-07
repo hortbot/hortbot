@@ -16,12 +16,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	assertx.Panic(t, func() {
 		lastfm.New("", nil)
 	}, "empty apiKey")
 }
 
 func TestRecentTracks(t *testing.T) {
+	t.Parallel()
 	const (
 		apiKey = "this_is_the_api_key"
 		user   = "1"
@@ -34,6 +36,7 @@ func TestRecentTracks(t *testing.T) {
 	ctx := context.Background()
 
 	t.Run("OK", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, apiResponse))
 
@@ -60,6 +63,7 @@ func TestRecentTracks(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(404, api404))
 
@@ -70,6 +74,7 @@ func TestRecentTracks(t *testing.T) {
 	})
 
 	t.Run("Bad response", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(200, "<"))
 
@@ -80,6 +85,7 @@ func TestRecentTracks(t *testing.T) {
 	})
 
 	t.Run("Server error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(500, "{}"))
 
@@ -90,6 +96,7 @@ func TestRecentTracks(t *testing.T) {
 	})
 
 	t.Run("Not authorized", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(403, "{}"))
 
@@ -100,6 +107,7 @@ func TestRecentTracks(t *testing.T) {
 	})
 
 	t.Run("Unknown", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewStringResponder(418, "{}"))
 
@@ -110,6 +118,7 @@ func TestRecentTracks(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		testErr := errors.New("testing error")
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", url, query, httpmock.NewErrorResponder(testErr))

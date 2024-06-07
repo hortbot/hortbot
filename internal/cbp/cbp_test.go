@@ -10,9 +10,11 @@ import (
 )
 
 func TestParse(t *testing.T) {
+	t.Parallel()
 	runTest := func(name string, input string, malformed bool, result ...cbp.Node) {
 		t.Helper()
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			c, gotMalformed := cbp.Parse(input)
 			assert.Check(t, cmp.DeepEqual(result, c, cmpopts.EquateEmpty()))
 			assert.Check(t, cmp.Equal(malformed, gotMalformed))
@@ -154,6 +156,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
+	t.Parallel()
 	n := cbp.TextNode("foo")
 	assert.Check(t, cmp.Equal("foo", n.String()))
 

@@ -9,7 +9,9 @@ import (
 )
 
 func TestPanic(t *testing.T) {
+	t.Parallel()
 	t.Run("No panic", func(t *testing.T) {
+		t.Parallel()
 		fake := &assertxmocks.TestingTMock{
 			HelperFunc:  func() {},
 			FailFunc:    func() {},
@@ -24,6 +26,7 @@ func TestPanic(t *testing.T) {
 	})
 
 	t.Run("Panic pass", func(t *testing.T) {
+		t.Parallel()
 		fake := &assertxmocks.TestingTMock{
 			HelperFunc:  func() {},
 			FailFunc:    func() {},
@@ -41,6 +44,7 @@ func TestPanic(t *testing.T) {
 	})
 
 	t.Run("Panic fail", func(t *testing.T) {
+		t.Parallel()
 		fake := &assertxmocks.TestingTMock{
 			HelperFunc:  func() {},
 			LogFunc:     func(args ...any) {},

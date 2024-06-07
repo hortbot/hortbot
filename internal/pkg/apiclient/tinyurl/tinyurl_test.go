@@ -14,12 +14,14 @@ import (
 )
 
 func TestShorten(t *testing.T) {
+	t.Parallel()
 	const longURL = "https://github.com/hortbot/hortbot"
 	query := "url=" + url.QueryEscape(longURL)
 
 	ctx := context.Background()
 
 	t.Run("Good", func(t *testing.T) {
+		t.Parallel()
 		const shortURL = "https://tinyurl.com/2tx"
 
 		mt := httpmockx.NewMockTransport(t)
@@ -33,6 +35,7 @@ func TestShorten(t *testing.T) {
 	})
 
 	t.Run("Request error", func(t *testing.T) {
+		t.Parallel()
 		testErr := errors.New("testing error")
 
 		mt := httpmockx.NewMockTransport(t)
@@ -45,6 +48,7 @@ func TestShorten(t *testing.T) {
 	})
 
 	t.Run("Good", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", "https://tinyurl.com/api-create.php", query, httpmock.NewStringResponder(400, ""))
 
@@ -55,6 +59,7 @@ func TestShorten(t *testing.T) {
 	})
 
 	t.Run("ReadAll error", func(t *testing.T) {
+		t.Parallel()
 		response := httpmock.NewStringResponse(200, "") //nolint:bodyclose
 		response.Body = (*badBody)(nil)
 

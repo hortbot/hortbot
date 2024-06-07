@@ -12,6 +12,7 @@ import (
 )
 
 func TestGetUserForToken(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -43,6 +44,7 @@ func TestGetUserForToken(t *testing.T) {
 }
 
 func TestGetUserForTokenServerError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -70,6 +72,7 @@ func TestGetUserForTokenServerError(t *testing.T) {
 }
 
 func TestGetUserForTokenDecodeError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -96,6 +99,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 }
 
 func TestGetUserForTokenRequestError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -109,6 +113,7 @@ func TestGetUserForTokenRequestError(t *testing.T) {
 }
 
 func TestGetUserForUsername(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -135,6 +140,7 @@ func TestGetUserForUsername(t *testing.T) {
 }
 
 func TestGetUserForUsernameServerError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -156,6 +162,7 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 }
 
 func TestGetUserForUsernameNotFound(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -177,6 +184,7 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 }
 
 func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -198,6 +206,7 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 }
 
 func TestGetUserForUsernameDecodeError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -219,6 +228,7 @@ func TestGetUserForUsernameDecodeError(t *testing.T) {
 }
 
 func TestGetUserForUsernameRequestError(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -240,6 +250,7 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 }
 
 func TestGetUserForID(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -266,6 +277,7 @@ func TestGetUserForID(t *testing.T) {
 }
 
 func TestUserDispName(t *testing.T) {
+	t.Parallel()
 	u := &twitch.User{
 		Name: "somename",
 	}
@@ -277,6 +289,7 @@ func TestUserDispName(t *testing.T) {
 }
 
 func TestGetModeratedChannelsOK(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 
@@ -315,6 +328,7 @@ func TestGetModeratedChannelsOK(t *testing.T) {
 }
 
 func TestGetModeratedChannelsErrors(t *testing.T) {
+	t.Parallel()
 	ctx, cancel := testContext(t)
 	defer cancel()
 

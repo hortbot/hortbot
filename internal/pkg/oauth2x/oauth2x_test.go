@@ -210,6 +210,7 @@ func TestOnNewNil(t *testing.T) {
 }
 
 func TestEquals(t *testing.T) {
+	t.Parallel()
 	orig := &oauth2.Token{
 		AccessToken:  "access-token",
 		TokenType:    "bearer",

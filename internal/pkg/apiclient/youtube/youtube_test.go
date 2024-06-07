@@ -15,12 +15,14 @@ import (
 )
 
 func TestNew(t *testing.T) {
+	t.Parallel()
 	assertx.Panic(t, func() {
 		_ = youtube.New("", nil)
 	}, "empty apiKey")
 }
 
 func TestVideoTitle(t *testing.T) {
+	t.Parallel()
 	const (
 		apiKey    = "THISISTHEAPIKEY123456789"
 		id        = "90X5NJleYJQ"
@@ -43,6 +45,7 @@ func TestVideoTitle(t *testing.T) {
 
 	for _, u := range goodURLs {
 		t.Run(u, func(t *testing.T) {
+			t.Parallel()
 			mt := httpmockx.NewMockTransport(t)
 			mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, response))
 
@@ -72,6 +75,7 @@ func TestVideoTitle(t *testing.T) {
 	}
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, emptyResponse))
 
@@ -82,6 +86,7 @@ func TestVideoTitle(t *testing.T) {
 	})
 
 	t.Run("Not found", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewErrorResponder(errors.New("testing error")))
 
@@ -92,6 +97,7 @@ func TestVideoTitle(t *testing.T) {
 	})
 
 	t.Run("Decode error", func(t *testing.T) {
+		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
 		mt.RegisterResponderWithQuery("GET", baseURL, query, httpmock.NewStringResponder(200, "{"))
 

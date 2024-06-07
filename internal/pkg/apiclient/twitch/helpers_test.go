@@ -11,6 +11,7 @@ import (
 )
 
 func TestSetToken(t *testing.T) {
+	t.Parallel()
 	var newToken *oauth2.Token
 	tok := &oauth2.Token{}
 
@@ -25,6 +26,7 @@ func TestSetToken(t *testing.T) {
 }
 
 func TestIDStrUnmarshalError(t *testing.T) {
+	t.Parallel()
 	var id idstr.IDStr
 	err := json.Unmarshal([]byte("true"), &id)
 	assert.ErrorContains(t, err, "cannot unmarshal")
