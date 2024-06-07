@@ -43,6 +43,7 @@ require (
 	github.com/volatiletech/sqlboiler/v4 v4.16.2
 	github.com/volatiletech/strmangle v0.0.6
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
+	github.com/ybbus/httpretry v1.0.2
 	github.com/zikaeroh/ctxjoin v0.0.0-20240505042038-e54b3fa07c64
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
 	go.deanishe.net/fuzzy v1.0.0

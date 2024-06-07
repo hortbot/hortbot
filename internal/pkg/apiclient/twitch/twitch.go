@@ -135,7 +135,7 @@ func New(clientID, clientSecret, redirectURL string, cli *http.Client) *Twitch {
 			RedirectURL:  redirectURL,
 			Scopes:       UserScopes,
 		},
-		cli: httpx.NewClient(cli, "twitch"),
+		cli: httpx.NewClient(cli, "twitch", httpx.WithRetryOnServerError()),
 	}
 
 	cconf := &clientcredentials.Config{

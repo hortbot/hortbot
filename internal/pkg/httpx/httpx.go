@@ -4,11 +4,13 @@ package httpx
 import (
 	"context"
 	"net/http"
+	"testing"
 	"time"
 
 	"github.com/carlmjohnson/requests"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/useragent"
+	"github.com/ybbus/httpretry"
 	"golang.org/x/oauth2"
 )
 
@@ -16,8 +18,9 @@ import (
 //
 // This type is similar to ctxhttp's functions, but does not copy requests unnecessarily.
 type Client struct {
-	client    *http.Client
-	asBrowser bool
+	client             *http.Client
+	asBrowser          bool
+	retryOnServerError bool
 }
 
 func NewClient(cli *http.Client, name string, opts ...Option) Client {
@@ -25,27 +28,49 @@ func NewClient(cli *http.Client, name string, opts ...Option) Client {
 		panic("nil http.Client")
 	}
 
-	client := *cli
-
-	c := Client{
-		client: &client,
-	}
+	c := Client{}
 
 	for _, opt := range opts {
 		opt(&c)
 	}
 
-	transport := client.Transport
+	cli = copyClient(cli)
+	transport := cli.Transport
 	if transport == nil {
 		transport = http.DefaultTransport
 	}
-	client.Transport = &wrappedTransport{
+	transport = &wrappedTransport{
 		inner:     transport,
 		asBrowser: c.asBrowser,
 		name:      name,
 	}
 
+	cli.Transport = transport
+
+	if c.retryOnServerError {
+		httpOpts := []httpretry.Option{
+			httpretry.WithMaxRetryCount(1),
+			httpretry.WithRetryPolicy(func(statusCode int, err error) bool {
+				return statusCode >= 500
+			}),
+		}
+
+		if testing.Testing() {
+			httpOpts = append(httpOpts, httpretry.WithBackoffPolicy(func(attemptCount int) time.Duration {
+				return time.Millisecond
+			}))
+		}
+
+		cli = httpretry.NewCustomClient(cli, httpOpts...)
+	}
+
+	c.client = cli
 	return c
+}
+
+func copyClient(cli *http.Client) *http.Client {
+	cpy := *cli
+	return &cpy
 }
 
 type Option func(*Client)
@@ -53,6 +78,12 @@ type Option func(*Client)
 func WithBrowserUserAgent() Option {
 	return func(c *Client) {
 		c.asBrowser = true
+	}
+}
+
+func WithRetryOnServerError() Option {
+	return func(c *Client) {
+		c.retryOnServerError = true
 	}
 }
 
