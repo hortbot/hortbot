@@ -1,6 +1,7 @@
 package irctobot
 
 import (
+	"encoding/json"
 	"strconv"
 	"strings"
 	"testing"
@@ -27,6 +28,18 @@ func ToMessage(origin string, m *irc.Message) bot.Message {
 		origin: origin,
 		m:      m,
 	}
+}
+
+func (m *ircMessage) MarshalJSON() ([]byte, error) {
+	value := struct {
+		Origin string       `json:"origin"`
+		M      *irc.Message `json:"m"`
+	}{
+		Origin: m.origin,
+		M:      m.m,
+	}
+
+	return json.Marshal(&value) //nolint:wrapcheck
 }
 
 func (m *ircMessage) Origin() string { return m.origin }

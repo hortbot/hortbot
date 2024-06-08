@@ -2,6 +2,7 @@ package bot
 
 import (
 	"context"
+	"encoding/json"
 	"math/rand/v2"
 	"time"
 )
@@ -9,6 +10,7 @@ import (
 //go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Rand EventsubUpdateNotifier
 
 type Message interface {
+	json.Marshaler
 	Origin() string
 	ID() string
 	Timestamp() time.Time

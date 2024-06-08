@@ -1,6 +1,7 @@
 package eventsubtobot
 
 import (
+	"encoding/json"
 	"strings"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 
 type eventMessage struct {
 	origin       string
+	message      *eventsub.WebsocketMessage
 	metadata     *eventsub.WebsocketMessageMetadata
 	subscription *eventsub.Subscription
 	condition    *eventsub.ChatMessageSubscriptionCondition
@@ -29,11 +31,24 @@ func ToMessage(originMap map[int64]string, m *eventsub.WebsocketMessage) bot.Mes
 
 	return &eventMessage{
 		origin:       originMap[int64(condition.UserID)],
+		message:      m,
 		metadata:     m.Metadata,
 		subscription: subscription,
 		condition:    condition,
 		event:        event,
 	}
+}
+
+func (m *eventMessage) MarshalJSON() ([]byte, error) {
+	value := struct {
+		Origin  string                     `json:"origin"`
+		Message *eventsub.WebsocketMessage `json:"message"`
+	}{
+		Origin:  m.origin,
+		Message: m.message,
+	}
+
+	return json.Marshal(&value) //nolint:wrapcheck
 }
 
 func (m *eventMessage) Origin() string { return m.origin }
