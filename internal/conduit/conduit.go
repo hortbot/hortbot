@@ -181,18 +181,17 @@ func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, on
 	}
 	defer c.CloseNow() //nolint:errcheck
 
-	var retErr error
+	reconnecting := false
 
 readLoop:
 	for ctx.Err() == nil {
 		beforeRead := time.Now()
 		var raw json.RawMessage
 		if err := wsjson.Read(ctx, c, &raw); err != nil {
-			ctxlog.Warn(ctx, "websocket read error", zap.Error(err))
-			if retErr == nil {
-				retErr = err
+			if reconnecting {
+				return errWebsocketClosedForReconnect
 			}
-			break readLoop
+			return fmt.Errorf("read websocket: %w", err)
 		}
 		metricWebsocketReadDuration.Observe(time.Since(beforeRead).Seconds())
 
@@ -222,7 +221,7 @@ readLoop:
 			}
 		case *eventsub.SessionReconnectPayload:
 			metricReconnects.Inc()
-			retErr = errWebsocketClosedForReconnect
+			reconnecting = true
 			s.g.Go(func(ctx context.Context) error {
 				return s.runWebsocket(ctx, *payload.Session.ReconnectURL, shard, cancel)
 			})
@@ -238,7 +237,12 @@ readLoop:
 	if err := c.Close(websocket.StatusNormalClosure, ""); err != nil {
 		ctxlog.Debug(ctx, "websocket close error", zap.Error(err))
 	}
-	return retErr
+
+	if reconnecting {
+		return errWebsocketClosedForReconnect
+	}
+
+	return nil
 }
 
 var possibleStatuses = []string{
