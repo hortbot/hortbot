@@ -142,12 +142,16 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 				ctxlog.Info(ctx, "websocket closed for reconnect")
 				return nil
 			}
-			ctxlog.Error(ctx, "websocket error, restarting", zap.Error(err))
+			ctxlog.Warn(ctx, "websocket error, restarting", zap.Error(err))
 			// Reset the URL; the reconnect URL is not going to work.
 			url = initialWebsocketURL
 		}
 		onWelcome = nil
 		metricDisconnects.Inc()
+
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
 
 		const wait = 5 * time.Second
 		ctxlog.Info(ctx, "waiting before reconnect", zap.Duration("wait", wait))
@@ -155,7 +159,6 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 		select {
 		case <-time.After(wait):
 		case <-ctx.Done():
-			return ctx.Err()
 		}
 	}
 
