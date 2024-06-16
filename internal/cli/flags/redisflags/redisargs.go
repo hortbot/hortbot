@@ -17,6 +17,7 @@ var Default = Redis{}
 // Client creates a new redis client from the configured flags.
 func (args *Redis) Client() *redis.DB {
 	return redis.New(goredis.NewClient(&goredis.Options{
-		Addr: args.Addr,
+		Addr:         args.Addr,
+		MinIdleConns: 1,
 	}))
 }
