@@ -82,8 +82,10 @@ type scriptTester struct {
 	counts   map[string]int
 	idToName map[int64]string
 
-	ctx     context.Context
-	actions []func(context.Context)
+	ctx         context.Context
+	currLine    string
+	currLineNum int
+	actions     []action
 
 	sentBefore int
 	needNoSend bool
@@ -93,8 +95,18 @@ type scriptTester struct {
 	needPanic                        bool
 }
 
+type action struct {
+	number int
+	line   string
+	fn     func(context.Context)
+}
+
 func (st *scriptTester) addAction(fn func(context.Context)) {
-	st.actions = append(st.actions, fn)
+	st.actions = append(st.actions, action{
+		number: st.currLineNum,
+		line:   st.currLine,
+		fn:     fn,
+	})
 }
 
 func (st *scriptTester) ensureBot(ctx context.Context, t testing.TB) {
@@ -191,6 +203,8 @@ func (st *scriptTester) test(t testing.TB) {
 
 		line := scanner.Text()
 		line = strings.TrimLeftFunc(line, unicode.IsSpace)
+		st.currLine = line
+		st.currLineNum = lineNum
 
 		if line == "" || line[0] == '#' {
 			continue
@@ -241,7 +255,8 @@ func (st *scriptTester) test(t testing.TB) {
 				}
 			}()
 
-			action(st.ctx)
+			t.Logf("line %d: %s", action.number, action.line)
+			action.fn(st.ctx)
 		}()
 	}
 
