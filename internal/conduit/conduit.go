@@ -10,6 +10,8 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/coder/websocket"
+	"github.com/coder/websocket/wsjson"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
@@ -19,8 +21,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
-	"nhooyr.io/websocket"
-	"nhooyr.io/websocket/wsjson"
 )
 
 const initialWebsocketURL = "wss://eventsub.wss.twitch.tv/ws"
