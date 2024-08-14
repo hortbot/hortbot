@@ -31,7 +31,7 @@ A chat bot for Twitch.
 
 To build:
 
--   Go 1.22+
+-   Go 1.23+
 
 For development:
 

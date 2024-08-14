@@ -1,5 +1,5 @@
 x-golang-image: &golang-image
-  image: golang:1.22
+  image: golang:1.23
 
 services:
   bot:

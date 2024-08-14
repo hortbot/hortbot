@@ -332,13 +332,13 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 		column = models.ChannelColumns.FilterSymbolsPercentage
 
 	case "min":
-		min, err := strconv.Atoi(args)
-		if err != nil || min < 0 {
+		minValue, err := strconv.Atoi(args)
+		if err != nil || minValue < 0 {
 			return s.ReplyUsage(ctx, "min <int>")
 		}
 
-		s.Channel.FilterSymbolsMinSymbols = min
-		response = fmt.Sprintf("Symbols filter min symbols set to %d.", min)
+		s.Channel.FilterSymbolsMinSymbols = minValue
+		response = fmt.Sprintf("Symbols filter min symbols set to %d.", minValue)
 		column = models.ChannelColumns.FilterSymbolsMinSymbols
 
 	case "status":
@@ -435,13 +435,13 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 		column = models.ChannelColumns.FilterEmotes
 
 	case "max":
-		max, err := strconv.Atoi(args)
-		if err != nil || max < 0 {
+		maxValue, err := strconv.Atoi(args)
+		if err != nil || maxValue < 0 {
 			return s.ReplyUsage(ctx, "max <num>")
 		}
 
-		s.Channel.FilterEmotesMax = max
-		response = fmt.Sprintf("Emote filter max emotes set to %d.", max)
+		s.Channel.FilterEmotesMax = maxValue
+		response = fmt.Sprintf("Emote filter max emotes set to %d.", maxValue)
 		column = models.ChannelColumns.FilterEmotesMax
 
 	case "single":

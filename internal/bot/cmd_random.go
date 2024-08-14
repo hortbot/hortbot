@@ -35,10 +35,10 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 	builder.WriteString(" rolled: ")
 
 	var count int
-	var max int
+	var maxValue int
 
-	if n, _ := fmt.Sscanf(args, "%dd%d", &count, &max); n == 2 {
-		if count > 0 && max > 0 {
+	if n, _ := fmt.Sscanf(args, "%dd%d", &count, &maxValue); n == 2 {
+		if count > 0 && maxValue > 0 {
 			if count > 6 {
 				count = 6
 			}
@@ -48,7 +48,7 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 					builder.WriteString(", ")
 				}
 
-				v := s.Deps.Rand.Intn(max) + 1
+				v := s.Deps.Rand.Intn(maxValue) + 1
 				builder.WriteString(strconv.Itoa(v))
 			}
 
@@ -58,17 +58,17 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 
 	if args != "" {
 		var err error
-		max, err = strconv.Atoi(args)
+		maxValue, err = strconv.Atoi(args)
 		if err != nil {
-			max = s.Channel.RollDefault
+			maxValue = s.Channel.RollDefault
 		}
 	}
 
-	if max <= 0 {
-		max = 20
+	if maxValue <= 0 {
+		maxValue = 20
 	}
 
-	v := s.Deps.Rand.Intn(max) + 1
+	v := s.Deps.Rand.Intn(maxValue) + 1
 	builder.WriteString(strconv.Itoa(v))
 
 	return s.Reply(ctx, builder.String())

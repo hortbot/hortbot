@@ -713,24 +713,24 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 			return "0", nil
 		}
 
-		min, err := strconv.Atoi(minStr)
+		minValue, err := strconv.Atoi(minStr)
 		if err != nil {
 			return "0", nil //nolint:nilerr
 		}
 
-		max, err := strconv.Atoi(maxStr)
+		maxValue, err := strconv.Atoi(maxStr)
 		if err != nil {
 			return "0", nil //nolint:nilerr
 		}
 
 		switch {
-		case max < min:
+		case maxValue < minValue:
 			return "0", nil
-		case max == min:
-			return strconv.Itoa(max), nil
+		case maxValue == minValue:
+			return strconv.Itoa(maxValue), nil
 		}
 
-		x := s.Deps.Rand.Intn(max-min) + min
+		x := s.Deps.Rand.Intn(maxValue-minValue) + minValue
 		return strconv.Itoa(x), nil
 	}
 
@@ -739,12 +739,12 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 		return "0.0", nil
 	}
 
-	min, err := strconv.ParseFloat(minStr, 64)
+	minValue, err := strconv.ParseFloat(minStr, 64)
 	if err != nil {
 		return "0.0", nil //nolint:nilerr
 	}
 
-	max, err := strconv.ParseFloat(maxStr, 64)
+	maxValue, err := strconv.ParseFloat(maxStr, 64)
 	if err != nil {
 		return "0.0", nil //nolint:nilerr
 	}
@@ -752,13 +752,13 @@ func actionRandom(ctx context.Context, s *session, actionName, value string) (st
 	var x float64
 
 	switch {
-	case max < min:
+	case maxValue < minValue:
 		return "0.0", nil
-	case max == min:
-		x = max
+	case maxValue == minValue:
+		x = maxValue
 	default:
 		r := s.Deps.Rand.Float64()
-		x = r*(max-min) + min
+		x = r*(maxValue-minValue) + minValue
 	}
 
 	return strconv.FormatFloat(x, 'f', 1, 64), nil

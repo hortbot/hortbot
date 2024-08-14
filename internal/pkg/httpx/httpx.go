@@ -131,7 +131,7 @@ func (c *Client) NewRequest(url string) *requests.Builder {
 }
 
 func (c *Client) NewRequestToJSON(url string, v any) *requests.Builder {
-	return requests.URL(url).Client(c.client).Handle(ToJSON(v)) //nolint:bodyclose
+	return requests.URL(url).Client(c.client).Handle(ToJSON(v))
 }
 
 // ToJSON is like [requests.ToJSON] but verifies that only a single value is decoded.
