@@ -14,6 +14,7 @@ linters:
     - errchkjson # Redundant.
     - execinquery
     - exhaustruct # Pass.
+    - exportloopref
     - forcetypeassert
     - funlen
     - gci
