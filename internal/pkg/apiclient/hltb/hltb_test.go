@@ -14,6 +14,35 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+const homepage = `
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>HowLongToBeat.com | Game Lengths, Backlogs and more!</title>
+    <noscript data-n-css=""></noscript>
+    <script defer="" nomodule="" src="/_next/static/chunks/polyfills-78c92fac7aa8fdd8.js"></script>
+    <script src="/_next/static/chunks/webpack-5048efcf4fdbf09c.js" defer=""></script>
+    <script src="/_next/static/chunks/framework-0e8d27528ba61906.js" defer=""></script>
+    <script src="/_next/static/chunks/main-aea90f1fbff44cd9.js" defer=""></script>
+    <script src="/_next/static/chunks/pages/_app-dc15371670e97984.js" defer=""></script>
+    <script src="/_next/static/chunks/1822-a16690b87ca0d073.js" defer=""></script>
+    <script src="/_next/static/chunks/pages/index-ba39b60377d31700.js" defer=""></script>
+    <script src="/_next/static/QygRH1GUml5yMyFn9mJIM/_buildManifest.js" defer=""></script>
+    <script src="/_next/static/QygRH1GUml5yMyFn9mJIM/_ssgManifest.js" defer=""></script>
+  </head>
+  <body>
+    <div id="__next">
+    </div>
+  </body>
+</html>
+`
+
+const jsSource = `
+blahblahblah;fetch("/api/search/".concat("apiToken1234")).then(()=>{})
+`
+
 func TestSearchGame(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -21,9 +50,12 @@ func TestSearchGame(t *testing.T) {
 	t.Run("OK", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmock.NewStringResponder(200, `{
 				"color": "blue",
 				"title": "",
@@ -77,23 +109,28 @@ func TestSearchGame(t *testing.T) {
 
 		h := hltb.New(&http.Client{Transport: mt})
 
-		game, err := h.SearchGame(ctx, "Half-Life Alyx")
-		assert.NilError(t, err)
-		assert.DeepEqual(t, game, &hltb.Game{
-			Title:         "Half-Life: Alyx",
-			URL:           "https://howlongtobeat.com/game/72067",
-			MainStory:     "12 hours",
-			MainPlusExtra: "14 hours",
-			Completionist: "18.5 hours",
-		})
+		for range 2 {
+			game, err := h.SearchGame(ctx, "Half-Life Alyx")
+			assert.NilError(t, err)
+			assert.DeepEqual(t, game, &hltb.Game{
+				Title:         "Half-Life: Alyx",
+				URL:           "https://howlongtobeat.com/game/72067",
+				MainStory:     "12 hours",
+				MainPlusExtra: "14 hours",
+				Completionist: "18.5 hours",
+			})
+		}
 	})
 
 	t.Run("All no times", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmock.NewStringResponder(200, `{
 				"color": "blue",
 				"title": "",
@@ -160,9 +197,12 @@ func TestSearchGame(t *testing.T) {
 		const query = "Half-Life Alyx"
 
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmockx.ResponderFunc(func(r *http.Request) (*http.Response, error) {
 				assert.Assert(t, r.UserAgent() != useragent.Bot(), "wrong user agent: "+r.UserAgent())
 
@@ -182,9 +222,12 @@ func TestSearchGame(t *testing.T) {
 	t.Run("No results", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmock.NewStringResponder(200, `{"color":"blue","title":"","category":"games","pageCurrent":1,"pageTotal":null,"pageSize":20,"data":[],"displayModifier":null}`))
 
 		h := hltb.New(&http.Client{Transport: mt})
@@ -196,37 +239,46 @@ func TestSearchGame(t *testing.T) {
 	t.Run("404 code", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmock.NewStringResponder(404, `{"color":"blue","title":"","category":"games","pageCurrent":1,"pageTotal":null,"pageSize":20,"data":[],"displayModifier":null}`))
 
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.Error(t, err, "hltb: ErrValidator: response error for https://howlongtobeat.com/api/search: unexpected status: 404")
+		assert.Error(t, err, "hltb: ErrValidator: response error for https://howlongtobeat.com/api/search/apiToken1234: unexpected status: 404")
 	})
 
 	t.Run("500 code", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmock.NewStringResponder(500, `{}`))
 
 		h := hltb.New(&http.Client{Transport: mt})
 
 		_, err := h.SearchGame(ctx, "This is a fake game ignore me")
-		assert.Error(t, err, "hltb: ErrValidator: response error for https://howlongtobeat.com/api/search: unexpected status: 500")
+		assert.Error(t, err, "hltb: ErrValidator: response error for https://howlongtobeat.com/api/search/apiToken1234: unexpected status: 500")
 	})
 
 	t.Run("Empty response", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
+
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmock.NewStringResponder(200, ``))
 
 		h := hltb.New(&http.Client{Transport: mt})
@@ -238,12 +290,14 @@ func TestSearchGame(t *testing.T) {
 	t.Run("Client error", func(t *testing.T) {
 		t.Parallel()
 		mt := httpmockx.NewMockTransport(t)
+		mt.RegisterResponder("GET", "https://howlongtobeat.com", httpmock.NewStringResponder(200, homepage))
+		mt.RegisterResponder("GET", "https://howlongtobeat.com/_next/static/chunks/pages/_app-dc15371670e97984.js", httpmock.NewStringResponder(200, jsSource))
 
 		errTest := errors.New("test error")
 
 		mt.RegisterResponder(
 			"POST",
-			"https://howlongtobeat.com/api/search",
+			"https://howlongtobeat.com/api/search/apiToken1234",
 			httpmockx.ResponderFunc(func(_ *http.Request) (*http.Response, error) {
 				return nil, errTest
 			}),

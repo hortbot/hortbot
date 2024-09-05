@@ -2,15 +2,21 @@
 package hltb
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"math"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
+	"github.com/zikaeroh/ctxlog"
+	"golang.org/x/net/html"
 )
 
 //go:generate go run github.com/matryer/moq -fmt goimports -out hltbmocks/mocks.go -pkg hltbmocks . API
@@ -32,6 +38,9 @@ type Game struct {
 // HLTB is a HowLongToBeat client.
 type HLTB struct {
 	cli httpx.Client
+
+	mu       sync.Mutex
+	apiToken string
 }
 
 var _ API = &HLTB{}
@@ -48,6 +57,7 @@ type requestBody struct {
 	SearchTerms   []string `json:"searchTerms"`
 	SearchPage    int      `json:"searchPage"`
 	Size          int      `json:"size"`
+	UseCache      bool     `json:"useCache"`
 	SearchOptions struct {
 		Games struct {
 			UserID        int    `json:"userId"`
@@ -76,11 +86,45 @@ type requestBody struct {
 
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	if h.apiToken == "" {
+		apiToken, err := h.getAPIToken(ctx)
+		if err != nil {
+			return nil, err
+		}
+		h.apiToken = apiToken
+
+		return h.searchGame(ctx, query, apiToken)
+	}
+
+	g, err := h.searchGame(ctx, query, h.apiToken)
+	if err == nil {
+		return g, err
+	}
+
+	if apiErr, ok := apiclient.AsError(err); !ok || !apiErr.IsNotFound() {
+		return nil, err
+	}
+
+	apiToken, err := h.getAPIToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	h.apiToken = apiToken
+
+	return h.searchGame(ctx, query, apiToken)
+}
+
+func (h *HLTB) searchGame(ctx context.Context, query string, apiToken string) (*Game, error) {
 	requestBody := &requestBody{
 		SearchType:  "games",
 		SearchTerms: strings.Fields(query),
 		SearchPage:  1,
 		Size:        20,
+		UseCache:    true,
 	}
 	requestBody.SearchOptions.Games.SortCategory = "popular"
 	requestBody.SearchOptions.Games.RangeCategory = "main"
@@ -96,7 +140,7 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 		} `json:"data"`
 	}
 
-	req := h.cli.NewRequestToJSON("https://howlongtobeat.com/api/search", &body).
+	req := h.cli.NewRequestToJSON("https://howlongtobeat.com/api/search/"+apiToken, &body).
 		Header("Origin", "https://howlongtobeat.com").
 		Header("Referer", "https://howlongtobeat.com/?q=").
 		BodyJSON(requestBody).
@@ -119,6 +163,58 @@ func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
 		MainPlusExtra: timeToString(first.CompPlus),
 		Completionist: timeToString(first.Comp100),
 	}, nil
+}
+
+var apiTokenRegex = regexp.MustCompile(`"/api/search/".concat\("([a-zA-Z0-9]+)"\)`)
+
+func (h *HLTB) getAPIToken(ctx context.Context) (string, error) {
+	ctxlog.Debug(ctx, "refreshing HLTB API token")
+
+	var buf bytes.Buffer
+
+	req := h.cli.NewRequest("https://howlongtobeat.com").
+		Header("Origin", "https://howlongtobeat.com").
+		Header("Referer", "https://howlongtobeat.com/?q=").
+		ToBytesBuffer(&buf)
+
+	if err := req.Fetch(ctx); err != nil {
+		return "", apiclient.WrapRequestErr("hltb", err, nil)
+	}
+
+	page, err := html.Parse(&buf)
+	if err != nil {
+		return "", apiclient.WrapRequestErr("hltb", err, nil)
+	}
+
+	script, err := htmlquery.Query(page, "//script[contains(@src, '_app')]")
+	if err != nil {
+		ctxlog.Error(ctx, "Failed to find HLTB script tag")
+		return "", apiclient.WrapRequestErr("hltb", err, nil)
+	}
+
+	if script == nil {
+		return "", apiclient.NewStatusError("hltb", 404)
+	}
+
+	src := htmlquery.SelectAttr(script, "src")
+
+	var scriptSource string
+
+	req = h.cli.NewRequest("https://howlongtobeat.com"+src).
+		Header("Origin", "https://howlongtobeat.com").
+		Header("Referer", "https://howlongtobeat.com/?q=").
+		ToString(&scriptSource)
+
+	if err := req.Fetch(ctx); err != nil {
+		return "", apiclient.WrapRequestErr("hltb", err, nil)
+	}
+
+	matches := apiTokenRegex.FindStringSubmatch(scriptSource)
+	if len(matches) != 2 {
+		return "", apiclient.NewStatusError("hltb", 404)
+	}
+
+	return matches[1], nil
 }
 
 func timeToString(t int) string {
