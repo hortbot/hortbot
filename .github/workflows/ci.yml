@@ -17,6 +17,10 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
@@ -44,7 +48,7 @@ jobs:
       - name: Upload coverage report
         uses: codecov/codecov-action@e28ff129e5465c2c0dcc6f003fc735cb6ae0c673 # v4.5.0
         with:
-          token: ${{ secrets.CODECOV_TOKEN }} # required
+          use_oidc: true
           file: ./coverage.txt
 
   style:
