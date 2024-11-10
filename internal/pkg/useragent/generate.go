@@ -28,7 +28,7 @@ type choice struct {
 }
 
 const (
-	userAgentsURL = "https://unpkg.com/user-agents@1.1.216/src/user-agents.json.gz"
+	userAgentsURL = "https://unpkg.com/user-agents@1.1.354/src/user-agents.json.gz"
 	minThreshold  = 1000
 )
 
