@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime/debug"
+	"strings"
 
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
@@ -132,7 +133,7 @@ func sqlboilerVersion() string {
 			if mod.Replace != nil {
 				return ""
 			}
-			return mod.Version
+			return strings.TrimPrefix(mod.Version, "v")
 		}
 	}
 
