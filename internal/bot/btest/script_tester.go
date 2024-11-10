@@ -274,7 +274,7 @@ func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
 
 func (st *scriptTester) boilDebug(t testing.TB, _, _ string, _ int) {
 	st.addAction(func(_ context.Context) {
-		st.ctx = boil.WithDebug(st.ctx, true)
+		st.ctx = boil.WithDebug(st.ctx, true) //nolint:fatcontext
 		st.ctx = boil.WithDebugWriter(st.ctx, testutil.Writer{T: t})
 	})
 }
