@@ -79,9 +79,15 @@ func TestResetBroken(t *testing.T) {
 func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string)) {
 	t.Helper()
 
-	db, connStr, cleanup, err := dpostgres.New()
-	assert.NilError(t, err, "creating new db without migrations")
-	defer cleanup()
+	pdb, err := dpostgres.New()
+	assert.NilError(t, err, "creating new db")
+
+	db, err := pdb.Open()
+	assert.NilError(t, err, "opening db")
+
+	connStr := pdb.ConnStr()
+
+	defer pdb.Cleanup()
 
 	fn(t, db, connStr)
 }

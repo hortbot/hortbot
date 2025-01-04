@@ -20,13 +20,22 @@ func TestSetLocalLockTimeoutBad(t *testing.T) {
 	}, "duration must be positive")
 }
 
+func openDB(t *testing.T) *sql.DB {
+	t.Helper()
+	pdb, err := dpostgres.New()
+	assert.NilError(t, err)
+	t.Cleanup(pdb.Cleanup)
+	db, err := pdb.Open()
+	assert.NilError(t, err)
+	t.Cleanup(func() { _ = db.Close() })
+	return db
+}
+
 func TestTransactGood(t *testing.T) {
 	t.Parallel()
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	err = dbx.Transact(context.Background(), db,
@@ -52,11 +61,9 @@ func TestTransactGood(t *testing.T) {
 
 func TestTransactNoFns(t *testing.T) {
 	t.Parallel()
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	assertx.Panic(t, func() { _ = dbx.Transact(context.Background(), db) }, "no fns")
@@ -64,11 +71,9 @@ func TestTransactNoFns(t *testing.T) {
 
 func TestTransactErr(t *testing.T) {
 	t.Parallel()
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	testErr := errors.New("test error")
@@ -88,11 +93,9 @@ func TestTransactErr(t *testing.T) {
 
 func TestTransactPanic(t *testing.T) {
 	t.Parallel()
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	testErr := errors.New("test error")
@@ -113,11 +116,9 @@ func TestTransactPanic(t *testing.T) {
 
 func TestTransactErr2(t *testing.T) {
 	t.Parallel()
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	testErr := errors.New("test error")
@@ -148,11 +149,9 @@ func TestTransactErrCancel(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	err = dbx.Transact(ctx, db,
@@ -182,11 +181,9 @@ func TestTransactErrCancelStart(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 
-	db, _, cleanup, err := dpostgres.New()
-	assert.NilError(t, err)
-	t.Cleanup(cleanup)
+	db := openDB(t)
 
-	_, err = db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
+	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
 	err = dbx.Transact(ctx, db,

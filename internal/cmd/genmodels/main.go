@@ -30,22 +30,18 @@ func main() {
 
 func mainErr() error {
 	fmt.Println("Creating postgres database")
-	db, connStr, cleanup, err := dpostgres.New()
+	db, err := dpostgres.New()
 	if err != nil {
 		return fmt.Errorf("creating database: %w", err)
 	}
-	defer cleanup()
-
-	if err := db.Close(); err != nil {
-		return fmt.Errorf("closing initial database connection: %w", err)
-	}
+	defer db.Cleanup()
 
 	fmt.Println("Migrating database up")
-	if err := migrations.Up(connStr, migrateLogf); err != nil {
+	if err := migrations.Up(db.ConnStr(), migrateLogf); err != nil {
 		return fmt.Errorf("migrating database: %w", err)
 	}
 
-	pgConf, err := pgconn.ParseConfig(connStr)
+	pgConf, err := pgconn.ParseConfig(db.ConnStr())
 	if err != nil {
 		return fmt.Errorf("parsing database config: %w", err)
 	}

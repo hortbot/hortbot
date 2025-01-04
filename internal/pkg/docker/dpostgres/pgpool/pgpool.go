@@ -11,6 +11,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/driver"
+	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"gotest.tools/v3/assert"
 )
@@ -22,9 +23,10 @@ type Pool struct {
 	once sync.Once
 	err  error
 
+	pdb *dpostgres.DB
+
 	db      *sql.DB
 	connStr string
-	cleanup func()
 
 	num atomic.Int64
 }
@@ -35,9 +37,20 @@ func (p *Pool) init(t testing.TB) {
 	p.once.Do(func() {
 		p.err = func() error {
 			var err error
-			p.db, p.connStr, p.cleanup, err = dpostgres.NewMigrated()
+			p.pdb, err = dpostgres.New()
 			if err != nil {
 				return fmt.Errorf("creating database: %w", err)
+			}
+
+			p.connStr = p.pdb.ConnStr()
+
+			if err := migrations.Up(p.connStr, t.Logf); err != nil {
+				return fmt.Errorf("migrating database: %w", err)
+			}
+
+			p.db, err = p.pdb.Open()
+			if err != nil {
+				return fmt.Errorf("opening database: %w", err)
 			}
 
 			// Create another database as a template because keeping the main connection
@@ -59,8 +72,8 @@ func (p *Pool) Cleanup() {
 		p.err = errors.New("pgpool: cleaned up")
 	})
 
-	if c := p.cleanup; c != nil {
-		c()
+	if p.pdb != nil {
+		p.pdb.Cleanup()
 	}
 }
 
