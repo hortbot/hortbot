@@ -114,25 +114,25 @@ func BenchmarkHostAndPath(b *testing.B) {
 	assert.NilError(b, err)
 
 	b.Run("Wrong domain", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			linkmatch.HostAndPath("example.com/*/clip", u)
 		}
 	})
 
 	b.Run("Match no path", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			linkmatch.HostAndPath("twitch.tv", u)
 		}
 	})
 
 	b.Run("Match path prefix", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			linkmatch.HostAndPath("twitch.tv/coestar", u)
 		}
 	})
 
 	b.Run("Middle glob", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			linkmatch.HostAndPath("twitch.tv/*/clip", u)
 		}
 	})

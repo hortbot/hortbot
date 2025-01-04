@@ -169,7 +169,7 @@ func BenchmarkFind(b *testing.B) {
 	for _, test := range tests {
 		b.Run(test.name, func(b *testing.B) {
 			b.ReportAllocs()
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				findlinks.Find(test.message)
 			}
 		})

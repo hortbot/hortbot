@@ -173,7 +173,7 @@ func TestString(t *testing.T) {
 func BenchmarkParse(b *testing.B) {
 	runBenchmark := func(name string, input string) {
 		b.Run(name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				_, _ = cbp.Parse(input)
 			}
 		})

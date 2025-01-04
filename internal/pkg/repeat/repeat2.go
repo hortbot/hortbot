@@ -283,7 +283,7 @@ func (m *manager) queueReset() {
 }
 
 // A priority queue sorted by deadline.
-type queue []*item
+type queue []*item //nolint:recvcheck
 
 type item struct {
 	index    int

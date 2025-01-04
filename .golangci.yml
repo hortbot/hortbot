@@ -12,7 +12,6 @@ linters:
     - durationcheck
     - err113
     - errchkjson # Redundant.
-    - execinquery
     - exhaustruct # Pass.
     - exportloopref
     - forcetypeassert
@@ -24,7 +23,6 @@ linters:
     - goconst
     - godot
     - godox
-    - gomnd
     - inamedparam
     - interfacebloat # nope
     - ireturn # Noisy.

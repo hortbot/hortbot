@@ -28,13 +28,13 @@ func BenchmarkCompile(b *testing.B) {
 	c := recache.New()
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, _ = c.Compile(pattern)
 	}
 }
 
 func BenchmarkCompileNative(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, _ = regexp.Compile(pattern) //nolint:gocritic
 	}
 }

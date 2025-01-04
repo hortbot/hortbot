@@ -60,7 +60,7 @@ func BenchmarkHandleNop(b *testing.B) {
 	m := privMSG(botName, name, userID, name, userID, "test")
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
@@ -150,7 +150,7 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	m := privMSG(botName, name, userID, name, userID, "!pan working command")
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
@@ -211,7 +211,7 @@ func BenchmarkHandleMixed(b *testing.B) {
 	l := len(ms)
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for i := range b.N {
 		m := ms[i%l]
 		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
@@ -260,7 +260,7 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	}
 
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		bb.Handle(ctx, privMSG(botName, name, userID, "someone", 9999999, "nothing interesting"))
 		rServer.FastForward(time.Minute)
 	}
