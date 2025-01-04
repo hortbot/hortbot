@@ -7,9 +7,9 @@ import (
 	"gotest.tools/v3/assert"
 )
 
-func TestNew(t *testing.T) {
+func TestNewMigrated(t *testing.T) {
 	t.Parallel()
-	db, connStr, cleanup, err := dpostgres.New()
+	db, connStr, cleanup, err := dpostgres.NewMigrated()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)
 	defer cleanup()
@@ -26,9 +26,9 @@ func TestNew(t *testing.T) {
 	assert.Equal(t, count, 1)
 }
 
-func TestNoMigrate(t *testing.T) {
+func TestNew(t *testing.T) {
 	t.Parallel()
-	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
+	db, connStr, cleanup, err := dpostgres.New()
 	assert.NilError(t, err)
 	assert.Assert(t, cleanup != nil)
 	defer cleanup()

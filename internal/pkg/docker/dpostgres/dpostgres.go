@@ -10,13 +10,13 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/docker"
 )
 
-// New creates and starts a fresh PostgreSQL server, migrated up.
-func New() (db *sql.DB, connStr string, cleanup func(), retErr error) {
+// NewMigrated creates and starts a fresh PostgreSQL server, migrated up.
+func NewMigrated() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 	return newDB(true)
 }
 
-// NewNoMigrate creates and starts a fresh PostgreSQL server, without migrations.
-func NewNoMigrate() (db *sql.DB, connStr string, cleanup func(), retErr error) {
+// New creates and starts a fresh PostgreSQL server, without migrations.
+func New() (db *sql.DB, connStr string, cleanup func(), retErr error) {
 	return newDB(false)
 }
 

@@ -35,7 +35,7 @@ func (p *Pool) init(t testing.TB) {
 	p.once.Do(func() {
 		p.err = func() error {
 			var err error
-			p.db, p.connStr, p.cleanup, err = dpostgres.New()
+			p.db, p.connStr, p.cleanup, err = dpostgres.NewMigrated()
 			if err != nil {
 				return fmt.Errorf("creating database: %w", err)
 			}

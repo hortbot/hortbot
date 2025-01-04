@@ -30,7 +30,7 @@ func main() {
 
 func mainErr() error {
 	fmt.Println("Creating postgres database")
-	db, connStr, cleanup, err := dpostgres.NewNoMigrate()
+	db, connStr, cleanup, err := dpostgres.New()
 	if err != nil {
 		return fmt.Errorf("creating database: %w", err)
 	}
