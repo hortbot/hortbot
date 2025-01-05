@@ -1,6 +1,6 @@
 # hortbot
 
-[![](https://github.com/hortbot/hortbot/workflows/CI/badge.svg?branch=master)](https://github.com/hortbot/hortbot/actions?query=workflow%3ACI+branch%3Amaster)
+[![CI](https://github.com/hortbot/hortbot/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/hortbot/hortbot/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/hortbot/hortbot/branch/master/graph/badge.svg)](https://codecov.io/gh/hortbot/hortbot)
 
 A chat bot for Twitch.
