@@ -16,7 +16,7 @@ type Container struct {
 	Tag        string
 	Cmd        []string
 	Env        []string
-	Mounts     []string
+	Mounts     []HostMount
 	Ports      []string
 
 	Ready        func(*Container) error
@@ -27,6 +27,8 @@ type Container struct {
 	pool     *dockertest.Pool
 	resource *dockertest.Resource
 }
+
+type HostMount = docker.HostMount
 
 // Start starts the container.
 func (c *Container) Start() (retErr error) {
@@ -42,7 +44,6 @@ func (c *Container) Start() (retErr error) {
 		Tag:        c.Tag,
 		Cmd:        c.Cmd,
 		Env:        c.Env,
-		Mounts:     c.Mounts,
 	}, func(hc *docker.HostConfig) {
 		// There's some sort of bug in dockertest, the docker API, or the docker daemon
 		// where auto-publishing ports leads to some containers sharing the same ports
@@ -62,6 +63,7 @@ func (c *Container) Start() (retErr error) {
 			p := docker.Port(port)
 			hc.PortBindings[p] = []docker.PortBinding{{HostIP: "0.0.0.0", HostPort: "0/" + p.Proto()}}
 		}
+		hc.Mounts = c.Mounts
 	})
 	if err != nil {
 		return fmt.Errorf("starting container: %w", err)

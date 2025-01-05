@@ -103,6 +103,12 @@ func newDB() (*DB, error) {
 		Cmd:        []string{"-F", "-c", "fsync=off"},
 		Ports:      []string{port},
 		Env:        []string{"POSTGRES_PASSWORD=" + password},
+		Mounts: []docker.HostMount{
+			{
+				Type:   "tmpfs",
+				Target: "/var/lib/postgresql/data",
+			},
+		},
 		Ready: func(container *docker.Container) error {
 			return (&DB{container: container}).checkReady()
 		},
