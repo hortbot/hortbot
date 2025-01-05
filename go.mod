@@ -35,6 +35,7 @@ require (
 	github.com/mroth/weightedrand/v2 v2.1.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.11.0
+	github.com/peterldowns/pgtestdb v0.1.1
 	github.com/prometheus/client_golang v1.20.5
 	github.com/redis/go-redis/v9 v9.7.0
 	github.com/robfig/cron/v3 v3.0.1

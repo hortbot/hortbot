@@ -2,14 +2,19 @@
 package migrations
 
 import (
+	"context"
+	"database/sql"
 	"embed"
 	"errors"
 	"fmt"
+	"sync"
 
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/hortbot/hortbot/internal/pkg/must"
+	"github.com/peterldowns/pgtestdb"
+	"github.com/peterldowns/pgtestdb/migrators/common"
 )
 
 //go:embed static
@@ -84,4 +89,22 @@ func (l LoggerFunc) Printf(format string, v ...any) {
 // Verbose implements migrate.Logger.
 func (l LoggerFunc) Verbose() bool {
 	return false
+}
+
+var hashDirs = sync.OnceValues(func() (string, error) {
+	return common.HashDirs(static, "*.sql", "static")
+})
+
+func NewPGTestDBMigrator() pgtestdb.Migrator {
+	return &pgtestdbMigrator{}
+}
+
+type pgtestdbMigrator struct{}
+
+func (p *pgtestdbMigrator) Hash() (string, error) {
+	return hashDirs()
+}
+
+func (*pgtestdbMigrator) Migrate(_ context.Context, _ *sql.DB, c pgtestdb.Config) error {
+	return Up(c.URL(), nil)
 }

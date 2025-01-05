@@ -4,6 +4,7 @@ package dpostgres
 import (
 	"database/sql"
 	"fmt"
+	"net"
 
 	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/pkg/docker"
@@ -17,12 +18,44 @@ const (
 	options  = "sslmode=disable"
 )
 
+type Info struct {
+	DriverName string
+	User       string
+	Password   string
+	Host       string
+	Port       string
+	Database   string
+	Options    string
+}
+
+func (i *Info) String() string {
+	return "postgres://" + i.User + ":" + i.Password + "@" + i.Host + ":" + i.Port + "/" + i.Database + "?" + i.Options
+}
+
 type DB struct {
 	container *docker.Container
 }
 
+func (d *DB) Info() *Info {
+	hostPort := d.container.GetHostPort(port)
+	host, port, err := net.SplitHostPort(hostPort)
+	if err != nil {
+		panic(err)
+	}
+
+	return &Info{
+		DriverName: driver.Name,
+		User:       user,
+		Password:   password,
+		Host:       host,
+		Port:       port,
+		Database:   database,
+		Options:    options,
+	}
+}
+
 func (d *DB) ConnStr() string {
-	return "postgres://" + user + ":" + password + "@" + d.container.GetHostPort(port) + "/" + database + "?" + options
+	return d.Info().String()
 }
 
 func (d *DB) Open() (*sql.DB, error) {
@@ -65,10 +98,11 @@ func New() (*DB, error) {
 
 func newDB() (*DB, error) {
 	container := &docker.Container{
-		Repository: "ghcr.io/zikaeroh/postgres-initialized",
+		Repository: "postgres",
 		Tag:        "16",
-		Cmd:        []string{"-F"},
+		Cmd:        []string{"-F", "-c", "fsync=off"},
 		Ports:      []string{port},
+		Env:        []string{"POSTGRES_PASSWORD=" + password},
 		Ready: func(container *docker.Container) error {
 			return (&DB{container: container}).checkReady()
 		},

@@ -31,7 +31,6 @@ jobs:
 
       - name: Pull docker images
         run: |
-          docker pull ghcr.io/zikaeroh/postgres-initialized:16
           docker pull nsqio/nsq
 
       - name: Run tests

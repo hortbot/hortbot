@@ -12,7 +12,7 @@ import (
 func TestPool(t *testing.T) {
 	t.Parallel()
 	var pool pgpool.Pool
-	defer pool.Cleanup()
+	t.Cleanup(pool.Cleanup)
 
 	db := pool.FreshDB(t)
 	assert.Assert(t, db != nil)
