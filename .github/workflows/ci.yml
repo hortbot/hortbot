@@ -31,7 +31,8 @@ jobs:
 
       - name: Pull docker images
         run: |
-          docker pull nsqio/nsq
+          docker pull postgres:16
+          docker pull nsqio/nsq:latest
 
       - name: Run tests
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
