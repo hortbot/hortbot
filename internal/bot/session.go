@@ -241,7 +241,12 @@ func (s *session) DeleteMessage(ctx context.Context) error {
 
 	newToken, err := s.Deps.Twitch.DeleteChatMessage(ctx, s.Channel.TwitchID, botID, tok, s.ID)
 	if err != nil {
-		logTwitchModerationError(ctx, err, "delete")
+		if ae, ok := apiclient.AsError(err); ok && ae.IsNotFound() {
+			err = nil
+		}
+		if err != nil {
+			logTwitchModerationError(ctx, err, "delete")
+		}
 	}
 
 	if newToken != nil {
