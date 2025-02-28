@@ -38,7 +38,7 @@ func TestTransactGood(t *testing.T) {
 	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
-	err = dbx.Transact(context.Background(), db,
+	err = dbx.Transact(t.Context(), db,
 		dbx.SetLocalLockTimeout(time.Minute),
 		func(ctx context.Context, tx *sql.Tx) error {
 			_, err := tx.Exec("INSERT INTO test (value) VALUES ('a')")
@@ -66,7 +66,7 @@ func TestTransactNoFns(t *testing.T) {
 	_, err := db.Exec("CREATE TABLE test (id SERIAL PRIMARY KEY, value TEXT)")
 	assert.NilError(t, err)
 
-	assertx.Panic(t, func() { _ = dbx.Transact(context.Background(), db) }, "no fns")
+	assertx.Panic(t, func() { _ = dbx.Transact(t.Context(), db) }, "no fns")
 }
 
 func TestTransactErr(t *testing.T) {
@@ -78,7 +78,7 @@ func TestTransactErr(t *testing.T) {
 
 	testErr := errors.New("test error")
 
-	err = dbx.Transact(context.Background(), db, func(ctx context.Context, tx *sql.Tx) error {
+	err = dbx.Transact(t.Context(), db, func(ctx context.Context, tx *sql.Tx) error {
 		_, err := tx.Exec("INSERT INTO test (value) VALUES ('a')")
 		assert.NilError(t, err)
 		return testErr
@@ -101,7 +101,7 @@ func TestTransactPanic(t *testing.T) {
 	testErr := errors.New("test error")
 
 	assertx.Panic(t, func() {
-		_ = dbx.Transact(context.Background(), db, func(ctx context.Context, tx *sql.Tx) error {
+		_ = dbx.Transact(t.Context(), db, func(ctx context.Context, tx *sql.Tx) error {
 			_, err := tx.Exec("INSERT INTO test (value) VALUES ('a')")
 			assert.NilError(t, err)
 			panic(testErr)
@@ -123,7 +123,7 @@ func TestTransactErr2(t *testing.T) {
 
 	testErr := errors.New("test error")
 
-	err = dbx.Transact(context.Background(), db,
+	err = dbx.Transact(t.Context(), db,
 		func(ctx context.Context, tx *sql.Tx) error {
 			_, err := tx.Exec("INSERT INTO test (value) VALUES ('a')")
 			assert.NilError(t, err)
@@ -146,7 +146,7 @@ func TestTransactErr2(t *testing.T) {
 func TestTransactErrCancel(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	defer cancel()
 
 	db := openDB(t)
@@ -178,7 +178,7 @@ func TestTransactErrCancel(t *testing.T) {
 func TestTransactErrCancelStart(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	cancel()
 
 	db := openDB(t)

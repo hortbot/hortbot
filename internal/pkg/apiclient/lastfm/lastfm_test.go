@@ -1,7 +1,6 @@
 package lastfm_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strconv"
@@ -33,7 +32,7 @@ func TestRecentTracks(t *testing.T) {
 
 	query := "api_key=" + apiKey + "&limit=" + strconv.Itoa(limit) + "&method=user.getRecentTracks&user=" + user
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("OK", func(t *testing.T) {
 		t.Parallel()

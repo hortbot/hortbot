@@ -11,7 +11,7 @@ import (
 
 func TestSetEmpty(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	_, c, cleanup, err := miniredistest.New()
@@ -36,7 +36,7 @@ func TestSetEmpty(t *testing.T) {
 
 func TestSetAdd(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	_, c, cleanup, err := miniredistest.New()
@@ -68,7 +68,7 @@ func TestSetAdd(t *testing.T) {
 
 func TestSetClear(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	_, c, cleanup, err := miniredistest.New()
@@ -96,7 +96,7 @@ func TestSetClear(t *testing.T) {
 
 func TestSetPop(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -136,7 +136,7 @@ func TestSetPop(t *testing.T) {
 
 func TestSetPopN(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()

@@ -1,7 +1,6 @@
 package extralife_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -55,7 +54,7 @@ func TestGetDonationAmount(t *testing.T) {
 		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
-		amount, err := el.GetDonationAmount(context.Background(), 200)
+		amount, err := el.GetDonationAmount(t.Context(), 200)
 		assert.NilError(t, err)
 		assert.Equal(t, amount, float64(123.45))
 	})
@@ -64,7 +63,7 @@ func TestGetDonationAmount(t *testing.T) {
 		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
-		_, err := el.GetDonationAmount(context.Background(), 404)
+		_, err := el.GetDonationAmount(t.Context(), 404)
 		assert.Error(t, err, "extralife: ErrValidator: response error for https://www.extra-life.org/api/participants/404: unexpected status: 404")
 	})
 
@@ -72,7 +71,7 @@ func TestGetDonationAmount(t *testing.T) {
 		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
-		_, err := el.GetDonationAmount(context.Background(), 500)
+		_, err := el.GetDonationAmount(t.Context(), 500)
 		assert.Error(t, err, "extralife: ErrValidator: response error for https://www.extra-life.org/api/participants/500: unexpected status: 500")
 	})
 
@@ -80,7 +79,7 @@ func TestGetDonationAmount(t *testing.T) {
 		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
-		_, err := el.GetDonationAmount(context.Background(), 777)
+		_, err := el.GetDonationAmount(t.Context(), 777)
 		e, ok := apiclient.AsError(err)
 		if !ok {
 			t.Fatalf("error has type %T", err)
@@ -95,7 +94,7 @@ func TestGetDonationAmount(t *testing.T) {
 		t.Parallel()
 		el := extralife.New(&http.Client{Transport: mt})
 
-		_, err := el.GetDonationAmount(context.Background(), 999)
+		_, err := el.GetDonationAmount(t.Context(), 999)
 		assert.ErrorContains(t, err, errTest.Error())
 	})
 }

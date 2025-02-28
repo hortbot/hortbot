@@ -11,7 +11,7 @@ import (
 
 func TestMarkThenCheck(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -47,7 +47,7 @@ func TestMarkThenCheck(t *testing.T) {
 
 func TestCheckAndMarkThenCheck(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -85,7 +85,7 @@ func TestCheckAndMarkThenCheck(t *testing.T) {
 
 func TestCheckAndMarkTwiceThenCheck(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -123,7 +123,7 @@ func TestCheckAndMarkTwiceThenCheck(t *testing.T) {
 
 func TestMarkAndDelete(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -159,7 +159,7 @@ func TestMarkAndDelete(t *testing.T) {
 
 func TestRefresh(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()
@@ -197,7 +197,7 @@ func TestRefresh(t *testing.T) {
 
 func TestMarkOrDelete(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
 
 	s, c, cleanup, err := miniredistest.New()

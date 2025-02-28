@@ -193,7 +193,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 		Expiry:       expiry,
 		Scopes:       twitch.BotScopes,
 	}
-	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
+	assert.NilError(t, modelsx.UpsertToken(t.Context(), st.db, &tt), "line %d", lineNum)
 
 	tt = models.TwitchToken{
 		TwitchID:     int64(userID),
@@ -203,7 +203,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 		Expiry:       expiry,
 		Scopes:       twitch.UserScopes,
 	}
-	assert.NilError(t, modelsx.UpsertToken(context.TODO(), st.db, &tt), "line %d", lineNum)
+	assert.NilError(t, modelsx.UpsertToken(t.Context(), st.db, &tt), "line %d", lineNum)
 
 	m := irctobot.ToMessage(botName, &irc.Message{
 		Tags: map[string]string{

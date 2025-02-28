@@ -1,7 +1,6 @@
 package xkcd_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -62,7 +61,7 @@ func TestGetComic(t *testing.T) {
 		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
-		comic, err := x.GetComic(context.Background(), 1)
+		comic, err := x.GetComic(t.Context(), 1)
 		assert.NilError(t, err)
 		assert.DeepEqual(t, comic, &xkcd.Comic{
 			Title: "Barrel - Part 1",
@@ -75,7 +74,7 @@ func TestGetComic(t *testing.T) {
 		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
-		_, err := x.GetComic(context.Background(), 77777)
+		_, err := x.GetComic(t.Context(), 77777)
 		assert.Error(t, err, "xkcd: ErrValidator: response error for https://xkcd.com/77777/info.0.json: unexpected status: 404")
 	})
 
@@ -83,7 +82,7 @@ func TestGetComic(t *testing.T) {
 		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
-		_, err := x.GetComic(context.Background(), 99999)
+		_, err := x.GetComic(t.Context(), 99999)
 		assert.ErrorContains(t, err, errTest.Error())
 	})
 
@@ -91,7 +90,7 @@ func TestGetComic(t *testing.T) {
 		t.Parallel()
 		x := xkcd.New(&http.Client{Transport: mt})
 
-		_, err := x.GetComic(context.Background(), 88888)
+		_, err := x.GetComic(t.Context(), 88888)
 		assert.ErrorContains(t, err, "unexpected EOF")
 	})
 }

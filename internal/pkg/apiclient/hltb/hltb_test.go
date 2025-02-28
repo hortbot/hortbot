@@ -1,7 +1,6 @@
 package hltb_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -45,7 +44,7 @@ blahblahblah;fetch("/api/search/".concat("apiToken1234")).then(()=>{})
 
 func TestSearchGame(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("OK", func(t *testing.T) {
 		t.Parallel()

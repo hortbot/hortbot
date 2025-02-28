@@ -19,7 +19,7 @@ func BenchmarkQueueSameName(b *testing.B) {
 		b.Run(fmt.Sprintf("%d workers", workers), func(b *testing.B) {
 			q := wqueue.NewQueue[string](16)
 
-			ctx, cancel := context.WithCancel(context.Background())
+			ctx, cancel := context.WithCancel(b.Context())
 			defer cancel()
 
 			var workerWG sync.WaitGroup
@@ -60,7 +60,7 @@ func BenchmarkQueueManyNames(b *testing.B) {
 		b.Run(fmt.Sprintf("%d workers", workers), func(b *testing.B) {
 			q := wqueue.NewQueue[string](16)
 
-			ctx, cancel := context.WithCancel(context.Background())
+			ctx, cancel := context.WithCancel(b.Context())
 			defer cancel()
 
 			var workerWG sync.WaitGroup

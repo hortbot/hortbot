@@ -1,7 +1,6 @@
 package bnsqmeta_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -11,7 +10,7 @@ import (
 
 func TestTimestamp(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	ts := bnsqmeta.Timestamp(ctx)
 	assert.Assert(t, ts.IsZero())

@@ -162,7 +162,7 @@ func (st *scriptTester) test(t testing.TB) {
 	st.simple = &simplemocks.APIMock{}
 	st.hltb = &hltbmocks.APIMock{}
 
-	st.ctx = ctxlog.WithLogger(context.Background(), testutil.Logger(t))
+	st.ctx = ctxlog.WithLogger(t.Context(), testutil.Logger(t))
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(t, err)

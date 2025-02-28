@@ -1,7 +1,6 @@
 package pgpool_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -18,7 +17,7 @@ func TestPool(t *testing.T) {
 	assert.Assert(t, db != nil)
 	defer db.Close()
 
-	count, err := models.Channels().Count(context.Background(), db)
+	count, err := models.Channels().Count(t.Context(), db)
 	assert.NilError(t, err)
 	assert.Equal(t, count, int64(0))
 }

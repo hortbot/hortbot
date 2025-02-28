@@ -1,7 +1,6 @@
 package simple_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"strings"
@@ -15,7 +14,7 @@ import (
 
 func TestPlaintext(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	ctx := t.Context()
 	const apiURL = "https://example.com/something"
 
 	t.Run("Good", func(t *testing.T) {

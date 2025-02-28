@@ -1,7 +1,6 @@
 package tinyurl_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -18,7 +17,7 @@ func TestShorten(t *testing.T) {
 	const longURL = "https://github.com/hortbot/hortbot"
 	query := "url=" + url.QueryEscape(longURL)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("Good", func(t *testing.T) {
 		t.Parallel()

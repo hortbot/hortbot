@@ -30,7 +30,7 @@ func TestQueueNoWorker(t *testing.T) {
 	t.Parallel()
 
 	q := wqueue.NewQueue[string](10)
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
 	defer cancel()
 
 	const key = "key"
@@ -52,7 +52,7 @@ func TestQueueHitLimit(t *testing.T) {
 	t.Parallel()
 
 	q := wqueue.NewQueue[string](2)
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
 	defer cancel()
 
 	const key = "key"
@@ -72,7 +72,7 @@ func TestQueueNilWork(t *testing.T) {
 	t.Parallel()
 
 	q := wqueue.NewQueue[string](2)
-	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(t.Context(), 50*time.Millisecond)
 	defer cancel()
 
 	assertx.Panic(t, func() {
@@ -84,7 +84,7 @@ func TestQueue(t *testing.T) { //nolint:paralleltest
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](10)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 	defer cancel()
 
 	g := errgroupx.FromContext(ctx)
@@ -111,7 +111,7 @@ func TestQueue(t *testing.T) { //nolint:paralleltest
 	var count2 int
 	const key2 = "key2"
 	fn2 := func(attach wqueue.Attacher) {
-		ctx, cancel := attach(context.Background())
+		ctx, cancel := attach(t.Context())
 		defer cancel()
 
 		select {
@@ -152,7 +152,7 @@ func TestQueuePanic(t *testing.T) { //nolint:paralleltest
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](10)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), time.Second)
 	defer cancel()
 
 	g := errgroupx.FromContext(ctx)
@@ -199,7 +199,7 @@ func testQueueStress(t *testing.T) { //nolint:thelper
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](1000)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 
 	g := errgroupx.FromContext(ctx)
@@ -247,7 +247,7 @@ func TestQueueStressCancel(t *testing.T) { //nolint:paralleltest
 	defer leaktest.Check(t)()
 
 	q := wqueue.NewQueue[string](1000)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(t.Context(), 10*time.Second)
 	defer cancel()
 
 	g := errgroupx.FromContext(ctx)

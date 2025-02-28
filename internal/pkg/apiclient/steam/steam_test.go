@@ -1,7 +1,6 @@
 package steam_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -29,7 +28,7 @@ func TestGetPlayerSummary(t *testing.T) {
 		query  = "key=" + apiKey + "&format=json&steamids=" + id
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("Good", func(t *testing.T) {
 		t.Parallel()
@@ -158,7 +157,7 @@ func TestGetOwnedGames(t *testing.T) {
 		query  = "key=" + apiKey + "&format=json&steamid=" + id + "&include_appinfo=1"
 	)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("Good", func(t *testing.T) {
 		t.Parallel()

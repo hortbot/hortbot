@@ -12,7 +12,7 @@ type contextKey string
 
 func TestAttachNoDone(t *testing.T) {
 	t.Parallel()
-	wCtx := context.Background()
+	wCtx := context.Background() //nolint:usetesting
 	ctx := context.WithValue(wCtx, contextKey("something"), 1234)
 
 	fn := attachFunc(wCtx)
@@ -25,7 +25,7 @@ func TestAttachNoDone(t *testing.T) {
 
 func TestDeadline(t *testing.T) {
 	t.Parallel()
-	base := context.Background()
+	base := context.Background() //nolint:usetesting
 	hasCancel, cancel := context.WithCancel(base)
 	defer cancel()
 
@@ -60,9 +60,9 @@ func TestDeadline(t *testing.T) {
 
 func TestValue(t *testing.T) {
 	t.Parallel()
-	base := context.WithValue(context.Background(), contextKey("base"), 1234)
+	base := context.WithValue(context.Background(), contextKey("base"), 1234) //nolint:usetesting
 	base = context.WithValue(base, contextKey("base2"), "value")
-	other := context.WithValue(context.Background(), contextKey("other"), true)
+	other := context.WithValue(context.Background(), contextKey("other"), true) //nolint:usetesting
 	other = context.WithValue(other, contextKey("base"), 7890)
 	other, cancel := context.WithCancel(other)
 	defer cancel()
@@ -79,8 +79,8 @@ func TestDoneErr(t *testing.T) {
 	t.Parallel()
 	t.Run("No cancel", func(t *testing.T) {
 		t.Parallel()
-		a, cancelA := context.WithCancel(context.Background())
-		b, cancelB := context.WithCancel(context.Background())
+		a, cancelA := context.WithCancel(context.Background()) //nolint:usetesting
+		b, cancelB := context.WithCancel(context.Background()) //nolint:usetesting
 
 		ctx, cancel := attachFunc(a)(b)
 		defer cancel()
@@ -92,8 +92,8 @@ func TestDoneErr(t *testing.T) {
 
 	t.Run("Inner canceled", func(t *testing.T) {
 		t.Parallel()
-		a, cancelA := context.WithCancel(context.Background())
-		b, cancelB := context.WithCancel(context.Background())
+		a, cancelA := context.WithCancel(context.Background()) //nolint:usetesting
+		b, cancelB := context.WithCancel(context.Background()) //nolint:usetesting
 
 		ctx, cancel := attachFunc(a)(b)
 		defer cancel()
@@ -108,8 +108,8 @@ func TestDoneErr(t *testing.T) {
 
 	t.Run("Outer canceled", func(t *testing.T) {
 		t.Parallel()
-		a, cancelA := context.WithCancel(context.Background())
-		b, cancelB := context.WithCancel(context.Background())
+		a, cancelA := context.WithCancel(context.Background()) //nolint:usetesting
+		b, cancelB := context.WithCancel(context.Background()) //nolint:usetesting
 
 		ctx, cancel := attachFunc(a)(b)
 		defer cancel()

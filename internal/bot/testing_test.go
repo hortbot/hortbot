@@ -1,7 +1,6 @@
 package bot
 
 import (
-	"context"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
@@ -20,7 +19,7 @@ func TestTestingHelper(t *testing.T) {
 		logs = append(logs, e.Message)
 		return nil
 	}))
-	ctx := ctxlog.WithLogger(context.Background(), logger)
+	ctx := ctxlog.WithLogger(t.Context(), logger)
 
 	helper := &testingHelper{}
 

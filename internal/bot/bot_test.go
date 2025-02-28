@@ -1,7 +1,6 @@
 package bot_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
@@ -68,6 +67,6 @@ func TestBotNotInit(t *testing.T) {
 	t.Parallel()
 	assertx.Panic(t, func() {
 		b := &bot.Bot{}
-		b.Handle(context.Background(), privMSG("asdasd", "", 0, "", 0, ""))
+		b.Handle(t.Context(), privMSG("asdasd", "", 0, "", 0, ""))
 	}, "bot is not initialized")
 }

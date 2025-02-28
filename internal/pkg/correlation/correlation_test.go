@@ -1,7 +1,6 @@
 package correlation_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
@@ -11,7 +10,7 @@ import (
 
 func TestFromWith(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	id := correlation.FromContext(ctx)
 	assert.Assert(t, id.IsNil())
@@ -29,7 +28,7 @@ func TestFromWith(t *testing.T) {
 
 func TestFromWithID(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	id1 := xid.New()
 	ctx = correlation.WithID(ctx, id1)
@@ -51,7 +50,7 @@ func TestFromWithID(t *testing.T) {
 
 func TestFromWithIDNil(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
+	ctx := t.Context()
 
 	ctx = correlation.WithID(ctx, xid.NilID())
 

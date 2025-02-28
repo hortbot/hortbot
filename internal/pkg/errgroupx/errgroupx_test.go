@@ -18,7 +18,7 @@ type contextKey string
 func TestNormal(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx := context.Background()
+	ctx := t.Context()
 	ctx = context.WithValue(ctx, contextKey("key"), 1234)
 
 	var done atomic.Bool
@@ -40,7 +40,7 @@ func TestNormal(t *testing.T) {
 func TestStop(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	g := errgroupx.FromContext(ctx)
 
@@ -60,7 +60,7 @@ func TestStop(t *testing.T) {
 func TestStopIgnored(t *testing.T) {
 	defer leaktest.Check(t)()
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	g := errgroupx.FromContext(ctx)
 
@@ -82,7 +82,7 @@ func TestWaitIgnoreWithError(t *testing.T) {
 
 	testErr := errors.New("test error")
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	g := errgroupx.FromContext(ctx)
 

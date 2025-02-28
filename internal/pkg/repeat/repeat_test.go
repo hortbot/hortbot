@@ -27,7 +27,7 @@ func newMock(t testing.TB) *clock.Mock {
 
 func testContext(t testing.TB) (context.Context, context.CancelFunc) {
 	logger := testutil.Logger(t)
-	ctx := ctxlog.WithLogger(context.Background(), logger)
+	ctx := ctxlog.WithLogger(t.Context(), logger)
 	return context.WithTimeout(ctx, 5*time.Second)
 }
 

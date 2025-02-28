@@ -10,7 +10,7 @@ import (
 func TestGetState2(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 
 	a := make(chan int, 1)
 	b := make(chan int, 1)
@@ -36,7 +36,7 @@ func TestGetState2(t *testing.T) {
 func TestGetState4(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 
 	a := make(chan int, 1)
 	b := make(chan int, 1)

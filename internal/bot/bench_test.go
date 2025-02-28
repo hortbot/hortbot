@@ -29,7 +29,7 @@ func BenchmarkHandleNop(b *testing.B) {
 	db := pool.FreshDB(b)
 	defer db.Close()
 
-	ctx := context.Background()
+	ctx := b.Context()
 
 	rServer, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(b, err)
@@ -73,7 +73,7 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	db := pool.FreshDB(b)
 	defer db.Close()
 
-	ctx := context.Background()
+	ctx := b.Context()
 
 	_, rClient, rCleanup, err := miniredistest.New()
 	assert.NilError(b, err)
@@ -122,7 +122,7 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	db := pool.FreshDB(b)
 	defer db.Close()
 
-	ctx := context.Background()
+	ctx := b.Context()
 
 	userID, name := getNextUserID()
 
@@ -167,7 +167,7 @@ func BenchmarkHandleMixed(b *testing.B) {
 	db := pool.FreshDB(b)
 	defer db.Close()
 
-	ctx := context.Background()
+	ctx := b.Context()
 
 	userID, name := getNextUserID()
 
@@ -229,7 +229,7 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	db := pool.FreshDB(b)
 	defer db.Close()
 
-	ctx := context.Background()
+	ctx := b.Context()
 
 	userID, name := getNextUserID()
 

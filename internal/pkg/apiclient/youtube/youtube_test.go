@@ -1,7 +1,6 @@
 package youtube_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -41,7 +40,7 @@ func TestVideoTitle(t *testing.T) {
 		"https://www.youtube.com/embed/" + id,
 	}
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	for _, u := range goodURLs {
 		t.Run(u, func(t *testing.T) {

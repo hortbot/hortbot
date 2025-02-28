@@ -13,7 +13,6 @@ linters:
     - err113
     - errchkjson # Redundant.
     - exhaustruct # Pass.
-    - exportloopref
     - forcetypeassert
     - funlen
     - gci
@@ -43,6 +42,7 @@ linters:
     - unparam
     - varnamelen # Silly.
     - wsl
+    - tenv
 
     # - staticcheck
 

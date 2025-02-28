@@ -1,7 +1,6 @@
 package urban_test
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -22,7 +21,7 @@ func TestDefine(t *testing.T) {
 
 	query := "term=" + url.QueryEscape(phrase)
 
-	ctx := context.Background()
+	ctx := t.Context()
 
 	t.Run("Good", func(t *testing.T) {
 		t.Parallel()
