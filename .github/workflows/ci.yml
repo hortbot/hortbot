@@ -35,7 +35,7 @@ jobs:
           docker pull nsqio/nsq:latest
 
       - name: Run tests
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: 15
           max_attempts: 5
@@ -46,7 +46,7 @@ jobs:
         run: go test -run=- -bench . -benchtime=1x ./...
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@1e68e06f1dbfde0e4cefc87efeba9e4643565303 # v5.1.2
+        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
         with:
           use_oidc: true
           files: ./coverage.txt
@@ -117,7 +117,7 @@ jobs:
         with:
           cache-name: ko
 
-      - uses: imjasonh/setup-ko@3aebd0597dc1e9d1a26bcfdb7cbeb19c131d3037 # v0.7
+      - uses: imjasonh/setup-ko@d982fec422852203cfb2053a8ec6ad302280d04d # v0.8
 
       # TODO: Let ko push directly to registry? (Need to find a way to omit the hash-based tags.)
       - name: Build image
