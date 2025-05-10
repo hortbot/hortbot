@@ -280,10 +280,7 @@ func (s *session) UserForModAction() (name string, display string, do bool) {
 }
 
 func actionParameter(ctx context.Context, s *session, actionName, value string) (string, error) {
-	upper := false
-	if strings.HasSuffix(actionName, "_CAPS") {
-		upper = true
-	}
+	upper := strings.HasSuffix(actionName, "_CAPS")
 
 	if p := s.NextParameter(); p != nil {
 		if upper {

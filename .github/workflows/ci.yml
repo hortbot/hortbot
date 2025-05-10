@@ -9,8 +9,8 @@ on:
       - master
 
 env:
-  # renovate: datasource=go depName=github.com/golangci/golangci-lint
-  GOLANGCI_LINT_VERSION: "v1.64.5"
+  # renovate: datasource=go depName=github.com/golangci/golangci-lint/v2
+  GOLANGCI_LINT_VERSION: "v2.1.6"
 
 jobs:
   test:
@@ -70,7 +70,7 @@ jobs:
 
       - name: golangci-lint
         run: |
-          go run github.com/golangci/golangci-lint/cmd/golangci-lint@${{ env.GOLANGCI_LINT_VERSION }} run --timeout 10m
+          go run github.com/golangci/golangci-lint/cmd/golangci-lint@${{ env.GOLANGCI_LINT_VERSION }} run
 
   generate:
     name: go generate

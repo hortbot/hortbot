@@ -80,7 +80,7 @@ func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Bullet)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if reset {
@@ -114,7 +114,7 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Prefix)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if reset {
@@ -148,7 +148,7 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 	s.Channel.Cooldown = cooldown
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Cooldown)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if reset {
@@ -193,7 +193,7 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.LastFM)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if args == "off" {
@@ -265,7 +265,7 @@ func cmdSettingTimeoutDuration(ctx context.Context, s *session, cmd string, args
 	s.Channel.TimeoutDuration = dur
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.TimeoutDuration)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if dur == 0 {
@@ -291,7 +291,7 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 	s.Channel.ExtraLifeID = int(id)
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ExtraLifeID)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if id == 0 {
@@ -348,7 +348,7 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 	s.Channel.Mode = newModePG
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Mode)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	return s.Replyf(ctx, "Mode set to %s.", newModePG)
@@ -386,7 +386,7 @@ func updateBoolean(
 	set(v)
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if v {
@@ -451,7 +451,7 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	return s.Reply(ctx, reply)
@@ -474,7 +474,7 @@ func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) 
 	s.Channel.SteamID = id
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.SteamID)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if id == "" {
@@ -511,7 +511,7 @@ func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) e
 	s.Channel.Tweet = args
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Tweet)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	return s.Replyf(ctx, `Tweet set to: "%s"%s`, args, warning)

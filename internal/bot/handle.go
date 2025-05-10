@@ -334,7 +334,7 @@ func handleSession(ctx context.Context, s *session) error {
 		if len(fixup) > 0 {
 			fixup = append(fixup, models.ChannelColumns.UpdatedAt)
 			if err := channel.Update(ctx, s.Tx, boil.Whitelist(fixup...)); err != nil {
-				return fmt.Errorf("updating channel: %w:", err)
+				return fmt.Errorf("updating channel: %w", err)
 			}
 		}
 
@@ -375,7 +375,7 @@ func handleSession(ctx context.Context, s *session) error {
 	s.Channel.LastSeen = s.Deps.Clock.Now()
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount, models.ChannelColumns.LastSeen)); err != nil {
-		return fmt.Errorf("updating channel: %w:", err)
+		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if ok, err := tryCommand(ctx, s); ok || err != nil {

@@ -1,21 +1,19 @@
-# yaml-language-server: $schema=https://golangci-lint.run/jsonschema/golangci.jsonschema.json
-
+version: "2"
 linters:
-  enable-all: true
+  default: all
   disable:
-    - containedctx # Silly.
-    - contextcheck # Inaccurate.
+    - containedctx
+    - contextcheck
     - cyclop
     - depguard
     - dogsled
     - dupl
     - durationcheck
     - err113
-    - errchkjson # Redundant.
-    - exhaustruct # Pass.
+    - errchkjson
+    - exhaustruct
     - forcetypeassert
     - funlen
-    - gci
     - gochecknoglobals
     - gochecknoinits
     - gocognit
@@ -23,70 +21,89 @@ linters:
     - godot
     - godox
     - inamedparam
-    - interfacebloat # nope
-    - ireturn # Noisy.
+    - interfacebloat
+    - ireturn
     - lll
     - mnd
-    - musttag # issues errors in the stdlib
+    - musttag
     - nestif
     - nlreturn
-    - nolintlint # Broken?
-    - nonamedreturns # No.
-    - revive # redundant
+    - nolintlint
+    - nonamedreturns
+    - revive
     - sqlclosecheck
-    - stylecheck
     - tagalign
     - tagliatelle
     - testpackage
-    - thelper # Broken and racy.
+    - thelper
     - unparam
-    - varnamelen # Silly.
+    - varnamelen
     - wsl
-    - tenv
-
-    # - staticcheck
-
-linters-settings:
-  wrapcheck:
-    ignoreSigs:
-      - .Errorf(
-      - errors.New(
-      - errors.Unwrap(
-      - errors.Join(
-      - .Wrap(
-      - .Wrapf(
-      - .WithMessage(
-      - .WithMessagef(
-      - .WithStack(
-      - github.com/hortbot/hortbot/internal/pkg/apiclient.NewStatusError(
-      - github.com/hortbot/hortbot/internal/pkg/apiclient.NewNonStatusError(
-      - github.com/hortbot/hortbot/internal/pkg/apiclient.WrapRequestErr(
-    ignorePackageGlobs:
-      - context
-      - github.com/hortbot/hortbot/internal/birc/breq
-      - github.com/hortbot/hortbot/internal/pkg/dbx
-      - github.com/hortbot/hortbot/internal/pkg/errgroupx
-      - github.com/hortbot/hortbot/internal/pkg/repeat
-      - github.com/hortbot/hortbot/internal/pkg/wqueue
-      - github.com/jarcoal/httpmock
-      - github.com/redis/go-redis/v9
-
-  forbidigo:
-    forbid:
-      - ^http\.NewRequest$
-      - ^http\.NewRequestWithContext$
-      - ^http\.(Client\.)?Do$
-      - ^http\.(Client\.)?Get$
-      - ^http\.(Client\.)?Head$
-      - ^http\.(Client\.)?Post$
-      - ^http\.(Client\.)?PostForm$
-    analyze-types: true
-
+    - funcorder
+    - gosmopolitan
+  settings:
+    forbidigo:
+      forbid:
+        - pattern: ^http\.NewRequest$
+        - pattern: ^http\.NewRequestWithContext$
+        - pattern: ^http\.(Client\.)?Do$
+        - pattern: ^http\.(Client\.)?Get$
+        - pattern: ^http\.(Client\.)?Head$
+        - pattern: ^http\.(Client\.)?Post$
+        - pattern: ^http\.(Client\.)?PostForm$
+      analyze-types: true
+    wrapcheck:
+      ignore-sigs:
+        - .Errorf(
+        - errors.New(
+        - errors.Unwrap(
+        - errors.Join(
+        - .Wrap(
+        - .Wrapf(
+        - .WithMessage(
+        - .WithMessagef(
+        - .WithStack(
+        - github.com/hortbot/hortbot/internal/pkg/apiclient.NewStatusError(
+        - github.com/hortbot/hortbot/internal/pkg/apiclient.NewNonStatusError(
+        - github.com/hortbot/hortbot/internal/pkg/apiclient.WrapRequestErr(
+      ignore-package-globs:
+        - context
+        - github.com/hortbot/hortbot/internal/birc/breq
+        - github.com/hortbot/hortbot/internal/pkg/dbx
+        - github.com/hortbot/hortbot/internal/pkg/errgroupx
+        - github.com/hortbot/hortbot/internal/pkg/repeat
+        - github.com/hortbot/hortbot/internal/pkg/wqueue
+        - github.com/jarcoal/httpmock
+        - github.com/redis/go-redis/v9
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - path: (.+)\.go$
+        text: ^could not import
+      - path: (.+)\.go$
+        text: '^: #'
+      - path: (.+)\.go$
+        text: imported and not used$
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
   max-issues-per-linter: 0
   max-same-issues: 0
-
-  exclude:
-    - "^could not import"
-    - "^: #"
-    - "imported and not used$"
+formatters:
+  enable:
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
