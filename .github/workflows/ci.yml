@@ -46,7 +46,7 @@ jobs:
         run: go test -run=- -bench . -benchtime=1x ./...
 
       - name: Upload coverage report
-        uses: codecov/codecov-action@0565863a31f2c772f9f0395002a31e3f06189574 # v5.4.0
+        uses: codecov/codecov-action@ad3126e916f78f00edff4ed0317cf185271ccc2d # v5.4.2
         with:
           use_oidc: true
           files: ./coverage.txt
@@ -117,7 +117,7 @@ jobs:
         with:
           cache-name: ko
 
-      - uses: imjasonh/setup-ko@d982fec422852203cfb2053a8ec6ad302280d04d # v0.8
+      - uses: imjasonh/setup-ko@d006021bd0c28d1ce33a07e7943d48b079944c8d # v0.9
 
       # TODO: Let ko push directly to registry? (Need to find a way to omit the hash-based tags.)
       - name: Build image
@@ -136,7 +136,7 @@ jobs:
 
       - name: Docker login
         if: ${{ github.repository == 'hortbot/hortbot' && github.event_name == 'push' && github.ref == 'refs/heads/master' }}
-        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567 # v3.3.0
+        uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # v3.4.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
