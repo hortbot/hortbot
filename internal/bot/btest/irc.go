@@ -9,6 +9,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/irctobot"
@@ -16,7 +17,6 @@ import (
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/jakebailey/irc"
-	"github.com/volatiletech/null/v8"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )

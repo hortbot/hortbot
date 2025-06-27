@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 // ExportByName exports a channel's full configuration, keyed on channel name.

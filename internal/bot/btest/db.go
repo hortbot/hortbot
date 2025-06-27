@@ -6,9 +6,9 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 	"gotest.tools/v3/assert"
 )
 

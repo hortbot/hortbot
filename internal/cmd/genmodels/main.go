@@ -13,12 +13,12 @@ import (
 	"runtime/debug"
 	"strings"
 
+	"github.com/aarondl/sqlboiler/v4/boilingcore"
+	_ "github.com/aarondl/sqlboiler/v4/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
+	"github.com/aarondl/sqlboiler/v4/importers"
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/volatiletech/sqlboiler/v4/boilingcore"
-	_ "github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
-	"github.com/volatiletech/sqlboiler/v4/importers"
 )
 
 func main() {
@@ -125,7 +125,7 @@ func sqlboilerVersion() string {
 	}
 
 	for _, mod := range info.Deps {
-		if mod.Path == "github.com/volatiletech/sqlboiler/v4" {
+		if mod.Path == "github.com/aarondl/sqlboiler/v4" {
 			if mod.Replace != nil {
 				return ""
 			}

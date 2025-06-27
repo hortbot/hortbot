@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aarondl/null/v8"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
@@ -19,7 +20,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
-	"github.com/volatiletech/null/v8"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"

@@ -7,10 +7,10 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 var filterCommands = newHandlerMap(map[string]handlerFunc{

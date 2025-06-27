@@ -12,6 +12,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/araddon/dateparse"
 	"github.com/dghubble/trie"
 	"github.com/hako/durafmt"
@@ -22,7 +23,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"github.com/zikaeroh/ctxlog"
 )
 

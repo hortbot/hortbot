@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/aarondl/null/v8"
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
-	"github.com/volatiletech/null/v8"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 func cmdHighlight(ctx context.Context, s *session, cmd string, args string) error {

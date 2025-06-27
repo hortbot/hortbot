@@ -5,9 +5,9 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args string) error {

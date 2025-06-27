@@ -15,6 +15,7 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/alicebob/miniredis/v2"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botmocks"
@@ -32,7 +33,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/leononame/clock"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"

@@ -9,6 +9,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -16,8 +18,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/pool"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
-	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )

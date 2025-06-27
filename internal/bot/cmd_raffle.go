@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
 var raffleCommands = newHandlerMap(map[string]handlerFunc{

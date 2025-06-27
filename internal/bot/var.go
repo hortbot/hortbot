@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/volatiletech/sqlboiler/v4/boil"
-	"github.com/volatiletech/sqlboiler/v4/queries"
 )
 
 func (s *session) VarGet(ctx context.Context, name string) (string, bool, error) {
