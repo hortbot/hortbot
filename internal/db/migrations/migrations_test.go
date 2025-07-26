@@ -70,7 +70,7 @@ func TestResetBroken(t *testing.T) {
 	t.Parallel()
 
 	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
-		_, err := db.Exec(`CREATE TABLE "schema_migrations" (bad text)`)
+		_, err := db.ExecContext(t.Context(), `CREATE TABLE "schema_migrations" (bad text)`)
 		assert.NilError(t, err)
 		assert.ErrorContains(t, migrations.Reset(connStr, t.Logf), "schema_migrations")
 	})
@@ -106,7 +106,7 @@ func tableNames(t *testing.T, db *sql.DB) []string {
 	t.Helper()
 
 	query := `SELECT table_name FROM information_schema.tables WHERE table_schema=(SELECT current_schema()) AND table_type='BASE TABLE'`
-	rows, err := db.Query(query)
+	rows, err := db.QueryContext(t.Context(), query)
 	assert.NilError(t, err)
 	defer rows.Close()
 

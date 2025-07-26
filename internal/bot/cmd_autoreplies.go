@@ -354,7 +354,7 @@ func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args strin
 		return usage()
 	}
 
-	result, err := s.Tx.Exec(autoreplyCompactQuery, s.Channel.ID, num)
+	result, err := s.Tx.ExecContext(ctx, autoreplyCompactQuery, s.Channel.ID, num)
 	if err != nil {
 		return fmt.Errorf("compacting autoreplies: %w", err)
 	}

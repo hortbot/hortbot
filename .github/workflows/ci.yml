@@ -10,7 +10,7 @@ on:
 
 env:
   # renovate: datasource=go depName=github.com/golangci/golangci-lint/v2
-  GOLANGCI_LINT_VERSION: "v2.1.6"
+  GOLANGCI_LINT_VERSION: "v2.3.0"
 
 jobs:
   test:

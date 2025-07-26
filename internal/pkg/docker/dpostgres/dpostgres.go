@@ -2,6 +2,7 @@
 package dpostgres
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net"
@@ -69,11 +70,11 @@ func (d *DB) checkReady() error {
 	}
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
+	if err := db.PingContext(context.TODO()); err != nil {
 		return fmt.Errorf("pinging database: %w", err)
 	}
 
-	rows, err := db.Query("SELECT * FROM pg_catalog.pg_tables")
+	rows, err := db.QueryContext(context.TODO(), "SELECT * FROM pg_catalog.pg_tables")
 	if err != nil {
 		return fmt.Errorf("querying database: %w", err)
 	}

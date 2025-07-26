@@ -41,6 +41,9 @@ linters:
     - wsl
     - funcorder
     - gosmopolitan
+    - wsl_v5
+    - noinlineerr
+    - embeddedstructfieldcheck
   settings:
     forbidigo:
       forbid:

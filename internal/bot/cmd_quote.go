@@ -351,7 +351,7 @@ func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) e
 		return usage()
 	}
 
-	result, err := s.Tx.Exec(quoteCompactQuery, s.Channel.ID, num)
+	result, err := s.Tx.ExecContext(ctx, quoteCompactQuery, s.Channel.ID, num)
 	if err != nil {
 		return fmt.Errorf("compacting quotes: %w", err)
 	}
