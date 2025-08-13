@@ -1,8 +1,6 @@
 module github.com/hortbot/hortbot
 
-go 1.24
-
-toolchain go1.24.0
+go 1.25
 
 require (
 	github.com/aarondl/null/v8 v8.1.3
