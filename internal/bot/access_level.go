@@ -6,7 +6,7 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 )
 
-//go:generate go run golang.org/x/tools/cmd/stringer -type=AccessLevel -trimprefix=AccessLevel
+//go:generate go tool golang.org/x/tools/cmd/stringer -type=AccessLevel -trimprefix=AccessLevel
 
 type AccessLevel int
 

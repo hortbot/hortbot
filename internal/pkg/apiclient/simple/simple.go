@@ -14,7 +14,7 @@ const (
 	plaintextLimit = 512
 )
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out simplemocks/mocks.go -pkg simplemocks . API
+//go:generate go tool github.com/matryer/moq -fmt goimports -out simplemocks/mocks.go -pkg simplemocks . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {

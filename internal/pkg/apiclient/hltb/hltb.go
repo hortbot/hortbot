@@ -19,7 +19,7 @@ import (
 	"golang.org/x/net/html"
 )
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out hltbmocks/mocks.go -pkg hltbmocks . API
+//go:generate go tool github.com/matryer/moq -fmt goimports -out hltbmocks/mocks.go -pkg hltbmocks . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {

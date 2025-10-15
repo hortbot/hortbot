@@ -32,7 +32,6 @@ require (
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/joho/godotenv v1.5.1
 	github.com/leononame/clock v0.1.6
-	github.com/matryer/moq v0.6.0
 	github.com/mroth/weightedrand/v2 v2.1.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.12.0
@@ -52,7 +51,6 @@ require (
 	golang.org/x/net v0.46.0
 	golang.org/x/oauth2 v0.32.0
 	golang.org/x/sync v0.17.0
-	golang.org/x/tools v0.38.0
 	gotest.tools/v3 v3.5.2
 	mvdan.cc/xurls/v2 v2.6.0
 )
@@ -96,6 +94,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magefile/mage v1.10.0 // indirect
+	github.com/matryer/moq v0.6.0 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/moby/docker-image-spec v1.3.1 // indirect
@@ -123,7 +122,14 @@ require (
 	golang.org/x/mod v0.29.0 // indirect
 	golang.org/x/sys v0.37.0 // indirect
 	golang.org/x/text v0.30.0 // indirect
+	golang.org/x/tools v0.38.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/protobuf v1.36.8 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
+)
+
+tool (
+	github.com/matryer/moq
+	github.com/valyala/quicktemplate/qtc
+	golang.org/x/tools/cmd/stringer
 )

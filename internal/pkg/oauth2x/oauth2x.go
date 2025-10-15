@@ -8,7 +8,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out oauth2xmocks/mocks.go -pkg oauth2xmocks . TokenSource
+//go:generate go tool github.com/matryer/moq -fmt goimports -out oauth2xmocks/mocks.go -pkg oauth2xmocks . TokenSource
 
 type TokenSource = oauth2.TokenSource
 

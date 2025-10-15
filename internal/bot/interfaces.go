@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Rand EventsubUpdateNotifier
+//go:generate go tool github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Rand EventsubUpdateNotifier
 
 type Message interface {
 	json.Marshaler

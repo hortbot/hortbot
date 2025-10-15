@@ -11,7 +11,7 @@ import (
 
 type externalGameType uint8
 
-//go:generate go run golang.org/x/tools/cmd/stringer -type=GameLinkType -trimprefix=GameLink
+//go:generate go tool golang.org/x/tools/cmd/stringer -type=GameLinkType -trimprefix=GameLink
 
 type GameLinkType uint8
 

@@ -58,7 +58,7 @@ var twitchEndpoint = oauth2.Endpoint{
 
 const helixRoot = "https://api.twitch.tv/helix"
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out twitchmocks/mocks.go -pkg twitchmocks . API
+//go:generate go tool github.com/matryer/moq -fmt goimports -out twitchmocks/mocks.go -pkg twitchmocks . API
 
 // API covers the main API methods for Twitch.
 type API interface {

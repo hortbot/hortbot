@@ -17,7 +17,7 @@ type Comic struct {
 	Alt   string `json:"alt"`
 }
 
-//go:generate go run github.com/matryer/moq -fmt goimports -out xkcdmocks/mocks.go -pkg xkcdmocks . API
+//go:generate go tool github.com/matryer/moq -fmt goimports -out xkcdmocks/mocks.go -pkg xkcdmocks . API
 
 // API represents the supported API functions. It's defined for fake generation.
 type API interface {

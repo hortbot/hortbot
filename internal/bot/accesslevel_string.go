@@ -23,8 +23,9 @@ const _AccessLevel_name = "UnknownEveryoneSubscriberVIPModeratorBroadcasterAdmin
 var _AccessLevel_index = [...]uint8{0, 7, 15, 25, 28, 37, 48, 53, 63}
 
 func (i AccessLevel) String() string {
-	if i < 0 || i >= AccessLevel(len(_AccessLevel_index)-1) {
+	idx := int(i) - 0
+	if i < 0 || idx >= len(_AccessLevel_index)-1 {
 		return "AccessLevel(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _AccessLevel_name[_AccessLevel_index[i]:_AccessLevel_index[i+1]]
+	return _AccessLevel_name[_AccessLevel_index[idx]:_AccessLevel_index[idx+1]]
 }

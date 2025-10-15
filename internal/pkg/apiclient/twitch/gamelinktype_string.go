@@ -20,9 +20,9 @@ const _GameLinkType_name = "SteamEpicGOGItchOfficial"
 var _GameLinkType_index = [...]uint8{0, 5, 9, 12, 16, 24}
 
 func (i GameLinkType) String() string {
-	i -= 1
-	if i >= GameLinkType(len(_GameLinkType_index)-1) {
-		return "GameLinkType(" + strconv.FormatInt(int64(i+1), 10) + ")"
+	idx := int(i) - 1
+	if i < 1 || idx >= len(_GameLinkType_index)-1 {
+		return "GameLinkType(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
-	return _GameLinkType_name[_GameLinkType_index[i]:_GameLinkType_index[i+1]]
+	return _GameLinkType_name[_GameLinkType_index[idx]:_GameLinkType_index[idx+1]]
 }
