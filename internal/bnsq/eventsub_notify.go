@@ -32,7 +32,7 @@ func (p *EventsubNotifyPublisher) Run(ctx context.Context) error {
 	return p.publisher.run(ctx)
 }
 
-// Publish publishes an EventsubNotify message, returning when the message has finished
+// NotifyEventsubUpdates publishes an EventsubNotify message, returning when the message has finished
 // publishing or the context is canceled.
 func (p *EventsubNotifyPublisher) NotifyEventsubUpdates(ctx context.Context) error {
 	return p.publisher.publish(ctx, EventsubNotifyTopic, &EventsubNotify{})

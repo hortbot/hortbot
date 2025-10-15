@@ -293,7 +293,7 @@ func handleSession(ctx context.Context, s *session) error {
 	channel := getChannel()
 	defer putChannel(channel)
 
-	err := queries.Raw(`SELECT * FROM channels WHERE twitch_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel)
+	err := queries.Raw(`SELECT * FROM channels WHERE twitch_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel) //nolint:unqueryvet
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			ctxlog.Debug(ctx, "channel not found in database")
