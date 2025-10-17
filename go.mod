@@ -32,7 +32,6 @@ require (
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/joho/godotenv v1.5.1
 	github.com/leononame/clock v0.1.6
-	github.com/mroth/weightedrand/v2 v2.1.0
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.12.0
 	github.com/peterldowns/pgtestdb v0.1.1

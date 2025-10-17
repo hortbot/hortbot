@@ -13,9 +13,3 @@ func TestBot(t *testing.T) {
 	agent := useragent.Bot()
 	assert.Assert(t, strings.HasPrefix(agent, "HortBot"))
 }
-
-func TestBrowser(t *testing.T) {
-	t.Parallel()
-	agent := useragent.Browser()
-	assert.Assert(t, strings.HasPrefix(agent, "Mozilla"))
-}
