@@ -7,7 +7,6 @@ require (
 	github.com/aarondl/sqlboiler/v4 v4.19.5
 	github.com/aarondl/strmangle v0.0.9
 	github.com/alicebob/miniredis/v2 v2.35.0
-	github.com/antchfx/htmlquery v1.3.4
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.9.1
 	github.com/carlmjohnson/requests v0.25.1
@@ -15,6 +14,7 @@ require (
 	github.com/dghubble/trie v0.1.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/felixge/httpsnoop v1.0.4
+	github.com/forbiddencoding/howlongtobeat v0.0.0-20251016180900-5654719fd057
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.2.3
@@ -67,7 +67,6 @@ require (
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/aarondl/inflect v0.0.2 // indirect
 	github.com/aarondl/randomize v0.0.2 // indirect
-	github.com/antchfx/xpath v1.3.3 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
@@ -80,7 +79,6 @@ require (
 	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
 	github.com/google/uuid v1.6.0 // indirect
