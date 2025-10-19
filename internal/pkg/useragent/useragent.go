@@ -1,10 +1,8 @@
 package useragent
 
-
 import (
 	"github.com/hortbot/hortbot/internal/version"
 )
-
 
 var botUserAgent = "HortBot/" + version.Version()
 
