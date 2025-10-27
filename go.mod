@@ -1,6 +1,6 @@
 module github.com/hortbot/hortbot
 
-go 1.25
+go 1.25.0
 
 require (
 	github.com/aarondl/null/v8 v8.1.3
@@ -35,6 +35,7 @@ require (
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/ory/dockertest/v3 v3.12.0
 	github.com/peterldowns/pgtestdb v0.1.1
+	github.com/petoem/cleanurl v0.1.0
 	github.com/prometheus/client_golang v1.23.2
 	github.com/redis/go-redis/v9 v9.14.0
 	github.com/robfig/cron/v3 v3.0.1

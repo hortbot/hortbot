@@ -6,7 +6,9 @@ import (
 	"net/http"
 	"sort"
 
+	"github.com/goware/urlx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/petoem/cleanurl"
 )
 
 type externalGameType uint8
@@ -179,10 +181,16 @@ func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]Game
 
 	links := make([]GameLink, 0, len(linkMap))
 
-	for typ, url := range linkMap {
+	for typ, u := range linkMap {
+		parsed, err := urlx.Parse(u)
+		if err == nil {
+			cleanurl.CleanURL(parsed)
+			u = parsed.String()
+		}
+
 		links = append(links, GameLink{
 			Type: typ,
-			URL:  url,
+			URL:  u,
 		})
 	}
 

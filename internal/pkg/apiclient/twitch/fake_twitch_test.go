@@ -552,7 +552,7 @@ const igdbSuccessResponse = `[
             {
                 "id": 1728356,
                 "external_game_source": 1,
-                "url": "https://store.steampowered.com/app/1119980"
+                "url": "https://store.steampowered.com/app/1119980?utm_source=TwitchDBLink"
             },
             {
                 "id": 1883089,
@@ -599,7 +599,7 @@ const igdbSuccessResponse = `[
             {
                 "id": 114698,
                 "type": 13,
-                "url": "https://store.steampowered.com/app/1119980"
+                "url": "https://store.steampowered.com/app/1119980?utm_source=TwitchDBLink"
             },
             {
                 "id": 148717,

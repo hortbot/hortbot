@@ -213,6 +213,8 @@ github.com/peterldowns/pgtestdb v0.1.1 h1:+hBCD1DcbKeg5Sfg0G+5WNIy/Cm0ORgwMkF4yg
 github.com/peterldowns/pgtestdb v0.1.1/go.mod h1:yVWInWV0dxvmLdL2ao3nXDzWZ9+G6EhJ4gRwvI1Ozeg=
 github.com/peterldowns/testy v0.0.1 h1:9a6LzvnKcL52Crzud1z7jbsAojTntCh89ho6mgsr4KU=
 github.com/peterldowns/testy v0.0.1/go.mod h1:J4sm75UEzbfBIcq0zbrshWWjsJQiJ5RrhTPYKVY2Ww8=
+github.com/petoem/cleanurl v0.1.0 h1:mkMLYNj9vjNg73cVgc47J+VI14w1R6IxmBe266vX9eE=
+github.com/petoem/cleanurl v0.1.0/go.mod h1:eHLJOtoJFwvYUAb2iZXTsU6qjL32rEJyGOYUWnp/rLE=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pkg/errors v0.9.1 h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=
