@@ -3,7 +3,7 @@ package bot
 import (
 	"context"
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -126,8 +126,8 @@ func cmdRaffleWinner(ctx context.Context, s *session, cmd string, args string) e
 		return s.Replyf(ctx, "Winner is %s!", winners[0])
 	}
 
-	sort.Slice(winners, func(i, j int) bool {
-		return strings.ToLower(winners[i]) < strings.ToLower(winners[j])
+	slices.SortFunc(winners, func(a, b string) int {
+		return strings.Compare(strings.ToLower(a), strings.ToLower(b))
 	})
 
 	var sb strings.Builder

@@ -2,7 +2,7 @@ package bot
 
 import (
 	"context"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/aarondl/sqlboiler/v4/boil"
@@ -81,7 +81,7 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 			return s.Replyf(ctx, "There are no %s.", cmds)
 		}
 
-		sort.Strings(existing)
+		slices.Sort(existing)
 
 		return s.Replyf(ctx, "%s: %s", cmds, strings.Join(existing, ", "))
 

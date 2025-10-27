@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -255,8 +255,8 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 		return s.Reply(ctx, "There are no scheduled commands.")
 	}
 
-	sort.Slice(scheduleds, func(i, j int) bool {
-		return scheduleds[i].R.CommandInfo.Name < scheduleds[j].R.CommandInfo.Name
+	slices.SortFunc(scheduleds, func(a, b *models.ScheduledCommand) int {
+		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
 	var builder strings.Builder

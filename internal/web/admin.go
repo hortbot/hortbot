@@ -1,6 +1,7 @@
 package web
 
 import (
+	"cmp"
 	"context"
 	"database/sql"
 	"encoding/json"
@@ -8,7 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -161,11 +162,11 @@ func writeStatsResponse(w io.Writer, stats map[string]string) {
 		pairs = append(pairs, pair{key: k, value: value})
 	}
 
-	sort.Slice(pairs, func(i, j int) bool {
-		if pairs[i].value == pairs[j].value {
-			return pairs[i].key < pairs[j].key
+	slices.SortFunc(pairs, func(a, b pair) int {
+		if c := strings.Compare(b.key, a.key); c != 0 {
+			return c
 		}
-		return pairs[i].value > pairs[j].value
+		return cmp.Compare(b.value, a.value)
 	})
 
 	for _, p := range pairs {

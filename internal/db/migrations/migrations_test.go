@@ -2,7 +2,7 @@ package migrations_test
 
 import (
 	"database/sql"
-	"sort"
+	"slices"
 	"testing"
 
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -94,10 +94,10 @@ func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string
 
 func assertTableNames(t *testing.T, db *sql.DB, names ...string) {
 	t.Helper()
-	sort.Strings(names)
+	slices.Sort(names)
 
 	tables := tableNames(t, db)
-	sort.Strings(tables)
+	slices.Sort(tables)
 
 	assert.Check(t, cmp.DeepEqual(names, tables, cmpopts.EquateEmpty()))
 }

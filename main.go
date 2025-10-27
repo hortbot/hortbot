@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"sort"
+	"slices"
 	"strings"
 
 	"github.com/hortbot/hortbot/internal/cli"
@@ -35,7 +35,7 @@ func main() {
 			names = append(names, name)
 		}
 
-		sort.Strings(names)
+		slices.Sort(names)
 
 		fmt.Fprintln(os.Stderr, "Available subcommands:", strings.Join(names, ", "))
 		os.Exit(2)

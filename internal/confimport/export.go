@@ -3,7 +3,8 @@ package confimport
 import (
 	"context"
 	"fmt"
-	"sort"
+	"slices"
+	"strings"
 
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -44,8 +45,8 @@ func export(ctx context.Context, exec boil.ContextExecutor, mod qm.QueryMod) (*C
 		}
 	}
 
-	sort.Slice(commands, func(i, j int) bool {
-		return commands[i].Info.Name < commands[j].Info.Name
+	slices.SortFunc(commands, func(a, b *Command) int {
+		return strings.Compare(a.Info.Name, b.Info.Name)
 	})
 
 	return &Config{

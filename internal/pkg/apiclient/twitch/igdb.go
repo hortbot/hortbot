@@ -1,10 +1,11 @@
 package twitch
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"net/http"
-	"sort"
+	"slices"
 
 	"github.com/goware/urlx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
@@ -198,7 +199,9 @@ func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]Game
 		return nil, apiclient.NewStatusError("twitch", http.StatusNotFound)
 	}
 
-	sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })
+	slices.SortFunc(links, func(a, b GameLink) int {
+		return cmp.Compare(a.Type, b.Type)
+	})
 
 	return links, nil
 }

@@ -8,7 +8,7 @@ import (
 	"io/fs"
 	"net"
 	"net/http"
-	"sort"
+	"slices"
 	"strings"
 	"time"
 
@@ -430,8 +430,8 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sort.Slice(commands, func(i, j int) bool {
-		return commands[i].R.CommandInfo.Name < commands[j].R.CommandInfo.Name
+	slices.SortFunc(commands, func(a, b *models.CustomCommand) int {
+		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
 	page := &templates.ChannelCommandsPage{
@@ -491,8 +491,8 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sort.Slice(lists, func(i, j int) bool {
-		return lists[i].R.CommandInfo.Name < lists[j].R.CommandInfo.Name
+	slices.SortFunc(lists, func(a, b *models.CommandList) int {
+		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
 	page := &templates.ChannelListsPage{
@@ -543,20 +543,18 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sort.Slice(repeated, func(i, j int) bool {
-		if repeated[i].Enabled != repeated[j].Enabled {
-			return repeated[i].Enabled
+	slices.SortFunc(repeated, func(a, b *models.RepeatedCommand) int {
+		if c := cmpBool(a.Enabled, b.Enabled); c != 0 {
+			return c
 		}
-
-		return repeated[i].R.CommandInfo.Name < repeated[j].R.CommandInfo.Name
+		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
-	sort.Slice(scheduled, func(i, j int) bool {
-		if scheduled[i].Enabled != scheduled[j].Enabled {
-			return scheduled[i].Enabled
+	slices.SortFunc(scheduled, func(a, b *models.ScheduledCommand) int {
+		if c := cmpBool(a.Enabled, b.Enabled); c != 0 {
+			return c
 		}
-
-		return scheduled[i].R.CommandInfo.Name < scheduled[j].R.CommandInfo.Name
+		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
 	page := &templates.ChannelScheduledPage{
@@ -566,6 +564,16 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	}
 
 	templates.WritePageTemplate(w, page)
+}
+
+func cmpBool(a, b bool) int {
+	if a == b {
+		return 0
+	}
+	if a {
+		return 1
+	}
+	return -1
 }
 
 func (a *App) channelVariables(w http.ResponseWriter, r *http.Request) {

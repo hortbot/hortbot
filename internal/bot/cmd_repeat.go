@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -259,8 +259,8 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 		return s.Reply(ctx, "There are no repeated commands.")
 	}
 
-	sort.Slice(repeats, func(i, j int) bool {
-		return repeats[i].R.CommandInfo.Name < repeats[j].R.CommandInfo.Name
+	slices.SortFunc(repeats, func(a, b *models.RepeatedCommand) int {
+		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
 	var builder strings.Builder

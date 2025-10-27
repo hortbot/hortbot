@@ -1,12 +1,13 @@
 package bot
 
 import (
+	"cmp"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"net/url"
-	"sort"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -591,7 +592,10 @@ func (s *session) GameLinks(ctx context.Context) ([]twitch.GameLink, error) {
 			return nil, fmt.Errorf("getting game links: %w", err)
 		}
 
-		sort.Slice(links, func(i, j int) bool { return links[i].Type < links[j].Type })
+		slices.SortFunc(links, func(a, b twitch.GameLink) int {
+			return cmp.Compare(a.Type, b.Type)
+		})
+
 		return links, nil
 	})
 }
