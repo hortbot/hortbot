@@ -37,7 +37,7 @@ require (
 	github.com/peterldowns/pgtestdb v0.1.1
 	github.com/petoem/cleanurl v0.1.0
 	github.com/prometheus/client_golang v1.23.2
-	github.com/redis/go-redis/v9 v9.14.0
+	github.com/redis/go-redis/v9 v9.16.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.6.0
 	github.com/tomwright/queryparam/v4 v4.1.0
