@@ -551,84 +551,84 @@ const igdbSuccessResponse = `[
         "external_games": [
             {
                 "id": 1728356,
-                "category": 1,
+                "external_game_source": 1,
                 "url": "https://store.steampowered.com/app/1119980"
             },
             {
                 "id": 1883089,
-                "category": 14,
+                "external_game_source": 14,
                 "url": "https://www.twitch.tv/directory/game/In%20Sound%20Mind"
             },
             {
                 "id": 2070779,
-                "category": 5,
+                "external_game_source": 5,
                 "url": "https://www.gog.com/game/in_sound_mind"
             },
             {
                 "id": 2071943,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.com/dp/B0987SBLFL"
             },
             {
                 "id": 2071976,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.de/dp/B098BLJDMY"
             },
             {
                 "id": 2071978,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.co.uk/dp/B098BJY9YK"
             },
             {
                 "id": 2072070,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.fr/dp/B098BR9T58"
             },
             {
                 "id": 2124403,
-                "category": 26,
+                "external_game_source": 26,
                 "url": "https://www.epicgames.com/store/p/in-sound-mind"
             },
             {
                 "id": 2125622,
-                "category": 11,
+                "external_game_source": 11,
                 "url": "https://www.microsoft.com/en-us/p/-1-/9PKDNVFFZCWX"
             }
         ],
         "websites": [
             {
                 "id": 114698,
-                "category": 13,
+                "type": 13,
                 "url": "https://store.steampowered.com/app/1119980"
             },
             {
                 "id": 148717,
-                "category": 5,
+                "type": 5,
                 "url": "https://twitter.com/insoundmindgame"
             },
             {
                 "id": 182350,
-                "category": 17,
+                "type": 17,
                 "url": "https://www.gog.com/game/in_sound_mind"
             },
             {
                 "id": 215595,
-                "category": 1,
+                "type": 1,
                 "url": "https://modusgames.com/in-sound-mind"
             },
             {
                 "id": 228911,
-                "category": 16,
+                "type": 16,
                 "url": "https://www.epicgames.com/store/p/in-sound-mind"
             },
             {
                 "id": 228912,
-                "category": 6,
+                "type": 6,
                 "url": "https://www.twitch.tv/modus_games"
             },
             {
                 "id": 228913,
-                "category": 18,
+                "type": 18,
                 "url": "https://discord.gg/modus"
             }
         ]
@@ -641,39 +641,39 @@ const igdbNoGamesResponse = `[
         "external_games": [
             {
                 "id": 2071943,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.com/dp/B0987SBLFL"
             },
             {
                 "id": 2071976,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.de/dp/B098BLJDMY"
             },
             {
                 "id": 2071978,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.co.uk/dp/B098BJY9YK"
             },
             {
                 "id": 2072070,
-                "category": 20,
+                "external_game_source": 20,
                 "url": "https://amazon.fr/dp/B098BR9T58"
             },
             {
                 "id": 2125622,
-                "category": 11,
+                "external_game_source": 11,
                 "url": "https://www.microsoft.com/en-us/p/-1-/9PKDNVFFZCWX"
             }
         ],
         "websites": [
             {
                 "id": 228912,
-                "category": 6,
+                "type": 6,
                 "url": "https://www.twitch.tv/modus_games"
             },
             {
                 "id": 228913,
-                "category": 18,
+                "type": 18,
                 "url": "https://discord.gg/modus"
             }
         ]
@@ -692,19 +692,19 @@ func (f *fakeTwitch) igdbGames(req *http.Request) (*http.Response, error) {
 	bodyString := string(body)
 
 	switch bodyString {
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "518088"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "518088"; limit 1;`:
 		return httpmock.NewStringResponse(200, igdbSuccessResponse), nil
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4040"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "4040"; limit 1;`:
 		return httpmock.NewStringResponse(200, `[{"id": 1234, "external_games": []}]`), nil
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "4041"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "4041"; limit 1;`:
 		return httpmock.NewStringResponse(200, `[]`), nil
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "404"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "404"; limit 1;`:
 		return httpmock.NewStringResponse(404, ""), nil
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "777"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "777"; limit 1;`:
 		return httpmock.NewStringResponse(200, igdbNoGamesResponse), nil
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "500"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "500"; limit 1;`:
 		return httpmock.NewStringResponse(500, ""), nil
-	case `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = 14 & external_games.uid = "700"; limit 1;`:
+	case `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = 14 & external_games.uid = "700"; limit 1;`:
 		return httpmock.NewStringResponse(200, "{"), nil
 	default:
 		return nil, errTestBadRequest

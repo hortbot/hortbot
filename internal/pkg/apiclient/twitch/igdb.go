@@ -30,8 +30,8 @@ type GameLink struct {
 }
 
 // Most of these are undocumented, but discoverable by doing something like:
-// fields external_games.category, external_games.url;
-// where external_games.category = 6;
+// fields external_games.external_game_source, external_games.url;
+// where external_games.external_game_source = 6;
 // limit 10;
 
 const (
@@ -79,8 +79,8 @@ func externalGameToLink(g externalGameType) GameLinkType {
 }
 
 type externalGame struct {
-	Type externalGameType `json:"category"`
-	URL  string           `json:"url"`
+	ExternalGameSource externalGameType `json:"external_game_source"`
+	URL                string           `json:"url"`
 }
 
 type gameWebsiteType uint8
@@ -108,7 +108,7 @@ const (
 )
 
 type gameWebsite struct {
-	Type gameWebsiteType `json:"category"`
+	Type gameWebsiteType `json:"type"`
 	URL  string          `json:"url"`
 }
 
@@ -128,7 +128,7 @@ func websiteToLink(g gameWebsiteType) GameLinkType {
 	return 0
 }
 
-const gameLinkQuery = `fields websites.category, websites.url, external_games.category, external_games.url; where external_games.category = %d & external_games.uid = "%d"; limit 1;`
+const gameLinkQuery = `fields websites.type, websites.url, external_games.external_game_source, external_games.url; where external_games.external_game_source = %d & external_games.uid = "%d"; limit 1;`
 
 // GetGameLinks gets a Twitch game's links to other services. Results are returned in this order,
 // with unknown matches removed:
@@ -169,7 +169,7 @@ func (t *Twitch) GetGameLinks(ctx context.Context, twitchCategory int64) ([]Game
 	}
 
 	for _, e := range body[0].ExternalGames {
-		typ := externalGameToLink(e.Type)
+		typ := externalGameToLink(e.ExternalGameSource)
 		if e.URL != "" && typ != 0 {
 			if _, ok := linkMap[typ]; !ok {
 				linkMap[typ] = e.URL
