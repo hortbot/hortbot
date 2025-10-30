@@ -662,7 +662,7 @@ func (a *App) showVar(w http.ResponseWriter, r *http.Request) {
 	}
 
 	themes := make(map[string]bool)
-	for _, theme := range strings.Fields(query.Themes) {
+	for theme := range strings.FieldsSeq(query.Themes) {
 		themes[theme] = true
 	}
 

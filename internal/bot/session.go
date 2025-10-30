@@ -31,7 +31,7 @@ const maxResponseLen = 500
 type sessionType int
 
 const (
-	sessionUnknown sessionType = iota //nolint:varcheck,deadcode
+	sessionUnknown sessionType = iota
 	sessionNormal
 	sessionRepeat
 	sessionAutoreply
@@ -102,8 +102,8 @@ func (s *session) formatResponse(response string) (message string, announce bool
 
 	if strings.HasPrefix(response, "/me ") || strings.HasPrefix(response, ".me ") {
 		addBullet = false
-	} else if strings.HasPrefix(response, "/announce ") {
-		response = strings.TrimPrefix(response, "/announce ")
+	} else if after, ok := strings.CutPrefix(response, "/announce "); ok {
+		response = after
 		if s.Type != sessionAutoreply && (s.UserLevel.CanAccess(AccessLevelModerator) || s.Type == sessionRepeat) {
 			announce = true
 		}

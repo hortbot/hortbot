@@ -3,6 +3,7 @@ package findlinks
 
 import (
 	"net/url"
+	"slices"
 
 	"github.com/goware/urlx"
 	"mvdan.cc/xurls/v2"
@@ -38,10 +39,5 @@ func Find(message string, schemeWhitelist ...string) []*url.URL {
 }
 
 func inWhitelist(s string, whitelist []string) bool {
-	for _, w := range whitelist {
-		if s == w {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(whitelist, s)
 }

@@ -13,7 +13,7 @@ import (
 )
 
 func BenchmarkQueueSameName(b *testing.B) {
-	for workers := 0; workers < 6; workers++ {
+	for workers := range 6 {
 		workers := int(math.Pow(2, float64(workers)))
 
 		b.Run(fmt.Sprintf("%d workers", workers), func(b *testing.B) {
@@ -54,7 +54,7 @@ func BenchmarkQueueSameName(b *testing.B) {
 func BenchmarkQueueManyNames(b *testing.B) {
 	const names = 200
 
-	for workers := 0; workers < 6; workers++ {
+	for workers := range 6 {
 		workers := int(math.Pow(2, float64(workers)))
 
 		b.Run(fmt.Sprintf("%d workers", workers), func(b *testing.B) {

@@ -162,8 +162,8 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		return fn(ctx, s, action)
 	}
 
-	if strings.HasSuffix(action, "_COUNT") {
-		name := strings.TrimSuffix(action, "_COUNT")
+	if before, ok := strings.CutSuffix(action, "_COUNT"); ok {
+		name := before
 		name = cleanCommandName(name)
 
 		info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).One(ctx, s.Tx)
@@ -703,8 +703,8 @@ func actionBotHelp(ctx context.Context, s *session, actionName, value string) (s
 }
 
 func actionRandom(ctx context.Context, s *session, actionName, value string) (string, error) {
-	if strings.HasPrefix(value, "INT_") {
-		value = strings.TrimPrefix(value, "INT_")
+	if after, ok := strings.CutPrefix(value, "INT_"); ok {
+		value = after
 		minStr, maxStr := stringsx.SplitByte(value, '_')
 		if minStr == "" || maxStr == "" {
 			return "0", nil

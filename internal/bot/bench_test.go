@@ -59,8 +59,7 @@ func BenchmarkHandleNop(b *testing.B) {
 
 	m := privMSG(botName, name, userID, name, userID, "test")
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
@@ -149,8 +148,7 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 
 	m := privMSG(botName, name, userID, name, userID, "!pan working command")
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		bb.Handle(ctx, m)
 		rServer.FastForward(time.Minute)
 	}
@@ -259,8 +257,7 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 		bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter banphrase add "+randomString(10)))
 	}
 
-	b.ResetTimer()
-	for range b.N {
+	for b.Loop() {
 		bb.Handle(ctx, privMSG(botName, name, userID, "someone", 9999999, "nothing interesting"))
 		rServer.FastForward(time.Minute)
 	}
