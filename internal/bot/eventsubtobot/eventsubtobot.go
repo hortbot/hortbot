@@ -101,7 +101,7 @@ func (m *eventMessage) UserAccessLevel() bot.AccessLevel {
 	switch {
 	case badges["broadcaster"]:
 		return bot.AccessLevelBroadcaster
-	case badges["moderator"]:
+	case badges["moderator"], badges["lead_moderator"]:
 		return bot.AccessLevelModerator
 	case badges["vip"]:
 		return bot.AccessLevelVIP
