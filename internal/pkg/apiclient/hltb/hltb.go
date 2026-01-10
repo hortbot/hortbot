@@ -49,9 +49,11 @@ func New(cli *http.Client) *HLTB {
 
 // SearchGame performs a search on HLTB and returns the first result.
 func (h *HLTB) SearchGame(ctx context.Context, query string) (*Game, error) {
-	search, err := h.hltb.Search(ctx, query, howlongtobeat.SearchModifierHideDLC, &howlongtobeat.SearchGamePagination{
-		Page:     1,
-		PageSize: 1,
+	search, err := h.hltb.Search(ctx, query, howlongtobeat.SearchModifierHideDLC, &howlongtobeat.SearchOptions{
+		Pagination: &howlongtobeat.SearchGamePagination{
+			Page:     1,
+			PageSize: 1,
+		},
 	})
 	if err != nil {
 		return nil, apiclient.WrapRequestErr("hltb", err, nil)
