@@ -44,6 +44,7 @@ linters:
     - wsl_v5
     - noinlineerr
     - embeddedstructfieldcheck
+    - unqueryvet
   settings:
     forbidigo:
       forbid:

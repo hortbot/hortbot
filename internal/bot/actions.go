@@ -313,9 +313,9 @@ func actionParameterIndex(ctx context.Context, s *session, actionName, value str
 	or := false
 	orV := ""
 
-	if i := strings.Index(value, orStr); i >= 0 {
-		is = value[:i]
-		orV = value[i+len(orStr):]
+	if before, after, ok := strings.Cut(value, orStr); ok {
+		is = before
+		orV = after
 		or = true
 	} else if strings.HasSuffix(is, "_CAPS") {
 		upper = true
