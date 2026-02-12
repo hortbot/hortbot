@@ -67,7 +67,3 @@ func pgLock(ctx context.Context, tx *sql.Tx, twitchID int64) error {
 	_, err := tx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", twitchID)
 	return err //nolint:wrapcheck
 }
-
-func ptrTo[T any](v T) *T {
-	return &v
-}

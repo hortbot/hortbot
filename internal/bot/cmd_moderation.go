@@ -139,17 +139,17 @@ func cmdChangeMode(command, message string) func(ctx context.Context, s *session
 
 		switch command {
 		case "slow":
-			patch.SlowMode = ptrTo(true)
+			patch.SlowMode = new(true)
 		case "slowoff":
-			patch.SlowMode = ptrTo(false)
+			patch.SlowMode = new(false)
 		case "subscribers":
-			patch.SubscriberMode = ptrTo(true)
+			patch.SubscriberMode = new(true)
 		case "subscribersoff":
-			patch.SubscriberMode = ptrTo(false)
+			patch.SubscriberMode = new(false)
 		case "r9kbeta":
-			patch.UniqueChatMode = ptrTo(true)
+			patch.UniqueChatMode = new(true)
 		case "r9kbetaoff":
-			patch.UniqueChatMode = ptrTo(false)
+			patch.UniqueChatMode = new(false)
 		default:
 			panic("unknown cmdChangeMode command: " + command)
 		}

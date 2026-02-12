@@ -386,10 +386,6 @@ func TestClearChatErrors(t *testing.T) {
 	}
 }
 
-func ptrTo[T any](v T) *T {
-	return &v
-}
-
 func TestUpdateChatSettings(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := testContext(t)
@@ -405,7 +401,7 @@ func TestUpdateChatSettings(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, modID)
 
 	newToken, err := tw.UpdateChatSettings(ctx, broadcasterID, modID, tok, &twitch.ChatSettingsPatch{
-		EmoteMode: ptrTo(true),
+		EmoteMode: new(true),
 	})
 
 	assert.NilError(t, err)
@@ -435,19 +431,19 @@ func TestUpdateChatSettingsBadParameters(t *testing.T) {
 	assert.Error(t, err, "twitch: unexpected status: 400")
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, tok, &twitch.ChatSettingsPatch{
-		FollowerModeDuration: ptrTo(int64(30)),
+		FollowerModeDuration: new(int64(30)),
 	})
 
 	assert.Error(t, err, "twitch: unexpected status: 400")
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, nil, &twitch.ChatSettingsPatch{
-		EmoteMode: ptrTo(true),
+		EmoteMode: new(true),
 	})
 
 	assert.Error(t, err, "twitch: unexpected status: 401")
 
 	_, err = tw.UpdateChatSettings(ctx, broadcasterID, modID, &oauth2.Token{}, &twitch.ChatSettingsPatch{
-		EmoteMode: ptrTo(true),
+		EmoteMode: new(true),
 	})
 
 	assert.Error(t, err, "twitch: unexpected status: 401")
@@ -467,7 +463,7 @@ func TestUpdateChatSettingsErrors(t *testing.T) {
 	tok := tokFor(ctx, t, tw, ft, modID)
 
 	banRequest := &twitch.ChatSettingsPatch{
-		EmoteMode: ptrTo(true),
+		EmoteMode: new(true),
 	}
 
 	_, err := tw.UpdateChatSettings(ctx, 777, modID, tok, banRequest)

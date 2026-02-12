@@ -131,7 +131,7 @@ func TestModifyChannel(t *testing.T) {
 
 		const id = 1234
 		tok := tokFor(ctx, t, tw, ft, id)
-		newToken, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
+		newToken, err := tw.ModifyChannel(ctx, id, tok, new("some new title"), nil)
 		assert.NilError(t, err)
 		assert.Assert(t, newToken == nil)
 	})
@@ -144,7 +144,7 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 5678
 		tok := tokFor(ctx, t, tw, ft, id)
-		newToken, err := tw.ModifyChannel(ctx, id, tok, nil, int64Ptr(9876))
+		newToken, err := tw.ModifyChannel(ctx, id, tok, nil, new(int64(9876)))
 		assert.NilError(t, err)
 		assert.Assert(t, newToken == nil)
 	})
@@ -157,7 +157,7 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 500
 		tok := tokFor(ctx, t, tw, ft, id)
-		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
+		_, err := tw.ModifyChannel(ctx, id, tok, new("some new title"), nil)
 		assert.Error(t, err, "twitch: ErrValidator: response error for https://api.twitch.tv/helix/channels: unexpected status: 500")
 	})
 
@@ -169,7 +169,7 @@ func TestModifyChannel(t *testing.T) {
 		ft, tw := createTester(t)
 		const id = 900
 		tok := tokFor(ctx, t, tw, ft, id)
-		_, err := tw.ModifyChannel(ctx, id, tok, strPtr("some new title"), nil)
+		_, err := tw.ModifyChannel(ctx, id, tok, new("some new title"), nil)
 		assert.ErrorContains(t, err, errTestBadRequest.Error())
 	})
 
@@ -180,7 +180,7 @@ func TestModifyChannel(t *testing.T) {
 
 		_, tw := createTester(t)
 		const id = 900
-		_, err := tw.ModifyChannel(ctx, id, nil, strPtr("some new title"), nil)
+		_, err := tw.ModifyChannel(ctx, id, nil, new("some new title"), nil)
 		assert.Error(t, err, "twitch: unexpected status: 401")
 	})
 
@@ -195,7 +195,7 @@ func TestModifyChannel(t *testing.T) {
 		_, err := tw.ModifyChannel(ctx, id, tok, nil, nil)
 		assert.Error(t, err, "twitch: unexpected status: 400")
 
-		_, err = tw.ModifyChannel(ctx, id, tok, strPtr(""), nil)
+		_, err = tw.ModifyChannel(ctx, id, tok, new(""), nil)
 		assert.Error(t, err, "twitch: unexpected status: 400")
 	})
 }
