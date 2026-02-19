@@ -1,6 +1,10 @@
 {
     "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-    "extends": ["config:recommended", "helpers:pinGitHubActionDigests", "regexManagers:githubActionsVersions"],
+    "extends": [
+        "config:recommended",
+        "helpers:pinGitHubActionDigests",
+        "customManagers:githubActionsVersions"
+    ],
     "packageRules": [
         {
             "matchManagers": ["github-actions"],
@@ -8,11 +12,11 @@
             "groupSlug": "github-actions"
         },
         {
-            "managers": ["docker-compose"],
+            "matchManagers": ["docker-compose"],
             "enabled": false
         },
         {
-            "managers": ["gomod"],
+            "matchManagers": ["gomod"],
             "enabled": false
         }
     ]
