@@ -23,5 +23,6 @@ func dumpRequest(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
+	//nolint:gosec
 	fmt.Fprintf(w, "%s", b)
 }

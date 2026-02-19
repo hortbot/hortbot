@@ -18,6 +18,7 @@ func SetLocalLockTimeout(timeout time.Duration) func(context.Context, *sql.Tx) e
 
 	ms := timeout.Milliseconds()
 	// Postgres refuses to allow "$1" in the SET statement, so construct this as a string.
+	//nolint:gosec
 	query := "SET LOCAL lock_timeout = " + strconv.FormatInt(ms, 10)
 
 	return func(ctx context.Context, tx *sql.Tx) error {

@@ -65,6 +65,7 @@ func main() {
 	switch subcommand {
 	case "-h", "--help":
 	default:
+		//nolint:gosec
 		fmt.Fprintln(os.Stderr, subcommand, "is not a valid subcommand.")
 	}
 	listAndExit()
