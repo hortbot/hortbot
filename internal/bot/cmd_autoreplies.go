@@ -16,7 +16,6 @@ import (
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/hortbot/hortbot/internal/cbp"
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 )
 
 var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
@@ -319,7 +318,7 @@ func (s *session) patternToTrigger(pattern string) (string, error) {
 
 func (s *session) replyBadPattern(ctx context.Context, err error) error {
 	var errStr string
-	if reErr, ok := errorsx.As[*syntax.Error](err); ok {
+	if reErr, ok := errors.AsType[*syntax.Error](err); ok {
 		errStr = reErr.Code.String()
 	} else {
 		errStr = err.Error()

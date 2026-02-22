@@ -18,7 +18,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -202,7 +201,7 @@ readLoop:
 		if err := json.Unmarshal(raw, &msg); err != nil {
 			field := "unknown"
 			value := "unknown"
-			if ue, ok := errorsx.As[*eventsub.UnknownTypeError](err); ok {
+			if ue, ok := errors.AsType[*eventsub.UnknownTypeError](err); ok {
 				field = ue.Field
 				value = ue.Value
 			}

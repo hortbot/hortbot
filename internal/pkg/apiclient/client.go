@@ -2,13 +2,13 @@
 package apiclient
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/carlmjohnson/requests"
-	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 )
 
 // Error is an HTTP error response type, returned by an API.
@@ -62,7 +62,7 @@ func WrapRequestErr(apiName string, err error, secrets []string) error {
 	if err == nil {
 		return nil
 	}
-	if re, ok := errorsx.As[*requests.ResponseError](err); ok {
+	if re, ok := errors.AsType[*requests.ResponseError](err); ok {
 		return &Error{API: apiName, Err: err, StatusCode: re.StatusCode, secrets: secrets}
 	}
 	return &Error{API: apiName, Err: err, secrets: secrets}
@@ -77,5 +77,5 @@ func NewNonStatusError(apiName string, err error) error {
 }
 
 func AsError(err error) (*Error, bool) {
-	return errorsx.As[*Error](err)
+	return errors.AsType[*Error](err)
 }

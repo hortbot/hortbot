@@ -3,13 +3,13 @@ package twitch
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/carlmjohnson/requests"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
-	"github.com/hortbot/hortbot/internal/pkg/errorsx"
 	"github.com/hortbot/hortbot/internal/pkg/httpx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/zikaeroh/ctxlog"
@@ -26,7 +26,7 @@ type httpClient struct {
 func (h *httpClient) finishRequest(ctx context.Context, req *requests.Builder) (*requests.Builder, error) {
 	tok, err := h.ts.Token()
 	if err != nil {
-		if oauthErr, ok := errorsx.As[*oauth2.RetrieveError](err); ok {
+		if oauthErr, ok := errors.AsType[*oauth2.RetrieveError](err); ok {
 			var body struct {
 				Error   string `json:"error"`
 				Status  int    `json:"status"`
