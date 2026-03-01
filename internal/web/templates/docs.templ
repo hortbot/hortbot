@@ -56,33 +56,41 @@ templ docsMeta() {
 }
 
 templ docsScripts() {
-	@jqueryScript()
-	@gumshoeScript()
 	<script>
-	$(function() {
-		document.addEventListener("gumshoeActivate", function(event) {
-			$(event.detail.link).addClass("is-active");
-		}, false);
-		document.addEventListener("gumshoeDeactivate", function(event) {
-			$(event.detail.link).removeClass("is-active");
-		}, false);
-
-		var header = document.querySelector("#header");
-		spy = new Gumshoe("#sidebar a", {
-			navClass: "is-active",
-			contentClass: "is-active",
-			offset: function() {
-				return header.getBoundingClientRect().height;
-			},
-			events: true
+	document.addEventListener('DOMContentLoaded', function() {
+		var links = document.querySelectorAll('#sidebar a');
+		var sections = [];
+		links.forEach(function(link) {
+			var hash = link.getAttribute('href');
+			if (hash && hash.startsWith('#')) {
+				var section = document.getElementById(hash.substring(1));
+				if (section) sections.push({ link: link, section: section });
+			}
 		});
 
-		spy.setup();
-		spy.detect();
+		var current = null;
+		var main = document.getElementById('main');
+		var header = document.querySelector('#header');
+		var offset = header ? header.getBoundingClientRect().height : 0;
 
-		$("#main").scroll(function() {
-			spy.detect();
-		});
+		function detect() {
+			var found = null;
+			for (var i = sections.length - 1; i >= 0; i--) {
+				var rect = sections[i].section.getBoundingClientRect();
+				if (rect.top <= offset + 10) {
+					found = sections[i];
+					break;
+				}
+			}
+			if (found && found.link !== current) {
+				if (current) current.classList.remove('is-active');
+				current = found.link;
+				current.classList.add('is-active');
+			}
+		}
+
+		main.addEventListener('scroll', detect);
+		detect();
 	});
 	</script>
 }

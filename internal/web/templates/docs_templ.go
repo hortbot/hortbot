@@ -224,15 +224,7 @@ func docsScripts() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = jqueryScript().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = gumshoeScript().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<script>\n\t$(function() {\n\t\tdocument.addEventListener(\"gumshoeActivate\", function(event) {\n\t\t\t$(event.detail.link).addClass(\"is-active\");\n\t\t}, false);\n\t\tdocument.addEventListener(\"gumshoeDeactivate\", function(event) {\n\t\t\t$(event.detail.link).removeClass(\"is-active\");\n\t\t}, false);\n\n\t\tvar header = document.querySelector(\"#header\");\n\t\tspy = new Gumshoe(\"#sidebar a\", {\n\t\t\tnavClass: \"is-active\",\n\t\t\tcontentClass: \"is-active\",\n\t\t\toffset: function() {\n\t\t\t\treturn header.getBoundingClientRect().height;\n\t\t\t},\n\t\t\tevents: true\n\t\t});\n\n\t\tspy.setup();\n\t\tspy.detect();\n\n\t\t$(\"#main\").scroll(function() {\n\t\t\tspy.detect();\n\t\t});\n\t});\n\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, "<script>\n\tdocument.addEventListener('DOMContentLoaded', function() {\n\t\tvar links = document.querySelectorAll('#sidebar a');\n\t\tvar sections = [];\n\t\tlinks.forEach(function(link) {\n\t\t\tvar hash = link.getAttribute('href');\n\t\t\tif (hash && hash.startsWith('#')) {\n\t\t\t\tvar section = document.getElementById(hash.substring(1));\n\t\t\t\tif (section) sections.push({ link: link, section: section });\n\t\t\t}\n\t\t});\n\n\t\tvar current = null;\n\t\tvar main = document.getElementById('main');\n\t\tvar header = document.querySelector('#header');\n\t\tvar offset = header ? header.getBoundingClientRect().height : 0;\n\n\t\tfunction detect() {\n\t\t\tvar found = null;\n\t\t\tfor (var i = sections.length - 1; i >= 0; i--) {\n\t\t\t\tvar rect = sections[i].section.getBoundingClientRect();\n\t\t\t\tif (rect.top <= offset + 10) {\n\t\t\t\t\tfound = sections[i];\n\t\t\t\t\tbreak;\n\t\t\t\t}\n\t\t\t}\n\t\t\tif (found && found.link !== current) {\n\t\t\t\tif (current) current.classList.remove('is-active');\n\t\t\t\tcurrent = found.link;\n\t\t\t\tcurrent.classList.add('is-active');\n\t\t\t}\n\t\t}\n\n\t\tmain.addEventListener('scroll', detect);\n\t\tdetect();\n\t});\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -268,7 +260,7 @@ func docsBody() templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(getBrand(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 147, Col: 63}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 155, Col: 63}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -297,7 +289,7 @@ func docsBody() templ.Component {
 			var templ_7745c5c3_Var11 string
 			templ_7745c5c3_Var11, templ_7745c5c3_Err = templ.JoinStringErrs(getBrand(ctx))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 157, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 165, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var11))
 			if templ_7745c5c3_Err != nil {
@@ -332,7 +324,7 @@ func docsBody() templ.Component {
 			var templ_7745c5c3_Var13 string
 			templ_7745c5c3_Var13, templ_7745c5c3_Err = templ.JoinStringErrs(getBrand(ctx))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 160, Col: 30}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 168, Col: 30}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var13))
 			if templ_7745c5c3_Err != nil {
@@ -1483,7 +1475,7 @@ func docsBody() templ.Component {
 		var templ_7745c5c3_Var64 string
 		templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(getBrand(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 402, Col: 46}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/docs.templ`, Line: 410, Col: 46}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 		if templ_7745c5c3_Err != nil {

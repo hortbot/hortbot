@@ -47,11 +47,3 @@ templ bootstrapTableBulmaScript() {
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.18.2/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha512-0WE6w7cM26L/zrrfAvL8h6wslqj3ywElmoQEtArOlCCqqzxojUyjESVaF0P1J0iZhE7uIPQMNuv15Te/EqKcYw==" crossorigin="anonymous"></script>
 	}
 }
-
-var gumshoeHandle = templ.NewOnceHandle()
-
-templ gumshoeScript() {
-	@gumshoeHandle.Once() {
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/gumshoe/5.1.1/gumshoe.polyfills.min.js" integrity="sha256-nxQlu6aVkhkHICQuYc1Ga85x2MX+FpvJYV1F+O8Awy8=" crossorigin="anonymous"></script>
-	}
-}
