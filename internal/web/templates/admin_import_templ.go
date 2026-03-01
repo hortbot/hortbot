@@ -58,11 +58,7 @@ func adminImportScripts() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = jqueryScript().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script>\n\t$(function() {\n\t\t$(\"#import-form\").submit(function(event) {\n\t\t\tevent.preventDefault();\n\n\t\t\t$.ajax({\n\t\t\t\ttype: \"POST\",\n\t\t\t\turl: \"/admin/import\",\n\t\t\t\tdata: $(\"#import-data\").val(),\n\t\t\t\tcontentType: \"application/json\"\n\t\t\t}).done(function(result) {\n\t\t\t\t$(\"#output\").prepend($(\"<pre>\").text(result));\n\t\t\t}).fail(function(jqXHR) {\n\t\t\t\t$(\"#output\").prepend($(\"<pre>\").text(jqXHR.responseText));\n\t\t\t})\n\t\t});\n\t});\n\t</script>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "<script>\n\tdocument.addEventListener('DOMContentLoaded', function() {\n\t\tdocument.getElementById('import-form').addEventListener('submit', function(event) {\n\t\t\tevent.preventDefault();\n\n\t\t\tfetch('/admin/import', {\n\t\t\t\tmethod: 'POST',\n\t\t\t\theaders: { 'Content-Type': 'application/json' },\n\t\t\t\tbody: document.getElementById('import-data').value\n\t\t\t}).then(function(res) {\n\t\t\t\treturn res.text().then(function(text) {\n\t\t\t\t\tvar pre = document.createElement('pre');\n\t\t\t\t\tpre.textContent = text;\n\t\t\t\t\tvar output = document.getElementById('output');\n\t\t\t\t\toutput.insertBefore(pre, output.firstChild);\n\t\t\t\t});\n\t\t\t});\n\t\t});\n\t});\n\t</script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

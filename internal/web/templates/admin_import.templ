@@ -9,22 +9,23 @@ templ adminImportMeta() {
 }
 
 templ adminImportScripts() {
-	@jqueryScript()
 	<script>
-	$(function() {
-		$("#import-form").submit(function(event) {
+	document.addEventListener('DOMContentLoaded', function() {
+		document.getElementById('import-form').addEventListener('submit', function(event) {
 			event.preventDefault();
 
-			$.ajax({
-				type: "POST",
-				url: "/admin/import",
-				data: $("#import-data").val(),
-				contentType: "application/json"
-			}).done(function(result) {
-				$("#output").prepend($("<pre>").text(result));
-			}).fail(function(jqXHR) {
-				$("#output").prepend($("<pre>").text(jqXHR.responseText));
-			})
+			fetch('/admin/import', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: document.getElementById('import-data').value
+			}).then(function(res) {
+				return res.text().then(function(text) {
+					var pre = document.createElement('pre');
+					pre.textContent = text;
+					var output = document.getElementById('output');
+					output.insertBefore(pre, output.firstChild);
+				});
+			});
 		});
 	});
 	</script>

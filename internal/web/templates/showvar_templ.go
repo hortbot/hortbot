@@ -110,51 +110,43 @@ func ShowVarPage(channel, varName string, refresh int, themesStr string, themes 
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = jqueryScript().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "<script>\n\t\t\tvar channel = ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 9, "</div><script>\n\t\t\tvar channel = ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Var7, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(channel)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/showvar.templ`, Line: 20, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/showvar.templ`, Line: 19, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ";\n\t\t\tvar varName = ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, ";\n\t\t\tvar varName = ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Var8, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(varName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/showvar.templ`, Line: 21, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/showvar.templ`, Line: 20, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var8)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ";\n\t\t\tvar refresh = ")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 11, ";\n\t\t\tvar refresh = ")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Var9, templ_7745c5c3_Err := templruntime.ScriptContentOutsideStringLiteral(refresh)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/showvar.templ`, Line: 22, Col: 27}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/showvar.templ`, Line: 21, Col: 27}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ_7745c5c3_Var9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, ";\n\n\t\t\tvar currValue = null;\n\n\t\t\tfunction updateNumber() {\n\t\t\t\t$.ajax({\n\t\t\t\t  url: \"/api/v1/vars/get/\" + varName + \"/\" + channel,\n\t\t\t\t  method: \"GET\",\n\t\t\t\t  dataType: \"json\",\n\t\t\t\t  cache: false\n\t\t\t\t}).done(function(json) {\n\t\t\t\t\tvar txt = json.value;\n\n\t\t\t\t\tif (currValue == null || currValue == txt) $('body').removeClass('updated');\n\t\t\t\t\telse $('body').addClass('updated');\n\n\t\t\t\t\tcurrValue = txt;\n\t\t\t\t\t$(\"#value\").text(currValue);\n\t\t\t\t});\n\t\t\t}\n\n\t\t\tsetInterval(updateNumber, refresh);\n\t\t\tupdateNumber();\n\t\t\t</script></body></html>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 12, ";\n\n\t\t\tvar currValue = null;\n\n\t\t\tfunction updateNumber() {\n\t\t\t\tfetch(\"/api/v1/vars/get/\" + varName + \"/\" + channel, { cache: \"no-store\" })\n\t\t\t\t\t.then(function(res) { return res.json(); })\n\t\t\t\t\t.then(function(json) {\n\t\t\t\t\t\tvar txt = json.value;\n\n\t\t\t\t\t\tif (currValue == null || currValue == txt) document.body.classList.remove('updated');\n\t\t\t\t\t\telse document.body.classList.add('updated');\n\n\t\t\t\t\t\tcurrValue = txt;\n\t\t\t\t\t\tdocument.getElementById(\"value\").textContent = currValue;\n\t\t\t\t\t});\n\t\t\t}\n\n\t\t\tsetInterval(updateNumber, refresh);\n\t\t\tupdateNumber();\n\t\t\t</script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -183,7 +175,7 @@ func showVarStyles() templ.Component {
 			templ_7745c5c3_Var10 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 14, "<style>\n\n\t/******************\n\t * THEME: BASIC\n\t ******************/\n\thtml.basic * {\n\t\tfont-weight: bold;\n\t\tcolor: white;\n\t\ttext-shadow: 2px 2px 10px black;\n\t\ttext-align: center;\n\t\tfont-family: sans-serif;\n\t}\n\n\thtml.basic #value {\n\t\tfont-size: 72px;\n\t}\n\n\thtml.basic #value:empty:after {\n\t\tcontent: '...';\n\t}\n\n\thtml.basic #label {\n\t\tfont-size: 24px;\n\t\tline-height: 50%;\n\t}\n\n\n\t/******************\n\t * THEME: GUUDE\n\t ******************/\n\thtml.guude #guude {\n\t\tposition: fixed;\n\t\tleft: 50%;\n\t\theight: 100px;\n\t\twidth: 87px;\n\t\tmargin-left: -43px;\n\t\tdisplay: none;\n\t}\n\n\thtml.guude .updated #guude {\n\t\tdisplay: inline;\n\t\topacity: 0;\n\t\tanimation: blood_fadeInOut 3s 1 ease-out;\n\t\t-webkit-animation: blood_fadeInOut 3s 1 ease-out;\n\t}\n\n\n\t/******************\n\t * THEME: POOSE\n\t ******************/\n\thtml.poose #poose {\n\t\tposition: fixed;\n\t\tleft: 50%;\n\t\theight: 100px;\n\t\twidth: 87px;\n\t\tmargin-left: -43px;\n\t\tdisplay: none;\n\t}\n\n\thtml.poose .updated #poose {\n\t\tdisplay: inline;\n\t\topacity: 0;\n\t\tanimation: blood_fadeInOut 3s 1 ease-out;\n\t\t-webkit-animation: blood_fadeInOut 3s 1 ease-out;\n\t}\n\n\n\t/******************\n\t * THEME: BLOOD\n\t ******************/\n\thtml.blood * {\n\t\tfont-weight: bold;\n\t\tcolor:#a00;\n\t\ttext-shadow: 2px 2px 10px black;\n\t\ttext-align:center;\n\t}\n\n\thtml.blood #value {\n\t\tfont-family: Chiller, 'Trade Winds', serif;\n\t\tfont-size: 72px;\n\t\tline-height: 90%;\n\t}\n\n\thtml.blood #value:empty:after {\n\t\tcontent: '...';\n\t}\n\n\thtml.blood .updated #value {\n\t\tanimation: blood_flashWhite 3s 1 ease-out;\n\t\t-webkit-animation: blood_flashWhite 3s 1 ease-out;\n\t}\n\n\thtml.blood #label {\n\t\tfont-family: sans-serif;\n\t\tfont-size: 24px;\n\t\tline-height: 50%;\n\t}\n\n\n\t@keyframes blood_flashWhite {\n\t\t0%   {color: #a00;}\n\t\t50%  {color: #fff;}\n\t\t100% {color: #a00;}\n\t}\n\n\t@-webkit-keyframes blood_flashWhite {\n\t\t0%   {color: #a00;}\n\t\t50%  {color: #fff;}\n\t\t100% {color: #a00;}\n\t}\n\n\t@keyframes blood_fadeInOut {\n\t\t0%   {opacity: 0;}\n\t\t50%  {opacity: 1;}\n\t\t100% {opacity: 0;}\n\t}\n\n\t@-webkit-keyframes blood_fadeInOut {\n\t\t0%   {opacity: 0;}\n\t\t50%  {opacity: 1;}\n\t\t100% {opacity: 0;}\n\t}\n\n\n\t/******************\n\t * THEME: ARCADE\n\t ******************/\n\thtml.arcade * {\n\t\tfont-weight: bold;\n\t\tcolor: white;\n\t\ttext-shadow: 2px 2px 10px black;\n\t\ttext-align:center;\n\t\tfont-family: 'Press Start 2P', monospace;\n\t}\n\n\thtml.arcade #value {\n\t\tfont-size: 72px;\n\t}\n\n\thtml.arcade #value:empty:after {\n\t\tcontent: '...';\n\t}\n\n\thtml.arcade #label {\n\t\tfont-size: 24px;\n\t}\n\n\n\t/******************\n\t * THEME: EXZENTIA_BLOOD\n\t ******************/\n\thtml.exzentia_blood body.updated {\n\t\tbackground: url(https://i.imgur.com/AzMrQg7.gif) no-repeat fixed center top;\n\t}\n\n\n\t/******************\n\t * THEME: PLUMBERS\n\t ******************/\n\thtml.plumbers * {\n\t\tfont-weight: bold;\n\t\tcolor: #e75a10;\n\t\ttext-align:center;\n\t\tfont-family: 'Press Start 2P', monospace;\n\t}\n\n\thtml.plumbers #value {\n\t\tfont-size: 72px;\n\t\ttext-shadow: 9px 9px #000000;\n\t}\n\n\thtml.plumbers #value:empty:after {\n\t\tcontent: '?';\n\t}\n\n\thtml.plumbers #label {\n\t\tfont-size: 24px;\n\t\ttext-shadow: 3px 3px #000000;\n\t\tline-height: 150%;\n\t}\n\n\n\thtml.plumbers #mario {\n\t\tposition: fixed;\n\t\tleft: 50%;\n\t\theight: 100px;\n\t\twidth: 100px;\n\t\tmargin-left: -50px;\n\t\tdisplay: none;\n\t}\n\n\thtml.plumbers .updated #mario {\n\t\tdisplay: inline;\n\t\topacity:0;\n\t\tanimation: plumbers_marioJump 1.2s 1 linear;\n\t\t-webkit-animation: plumbers_marioJump 1.2s 1 linear;\n\t}\n\n\t@keyframes plumbers_marioJump {\n\t\t0%   {top: 60px; opacity:0;}\n\t\t50%  {top: 0px; opacity:1;}\n\t\t100% {top: 60px; opacity:0;}\n\t}\n\n\t@-webkit-keyframes plumbers_marioJump {\n\t\t0%   {top: 60px; opacity:0;}\n\t\t50%  {top: 0px; opacity:1;}\n\t\t100% {top: 60px; opacity:0;}\n\t}\n\t</style>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 13, "<style>\n\n\t/******************\n\t * THEME: BASIC\n\t ******************/\n\thtml.basic * {\n\t\tfont-weight: bold;\n\t\tcolor: white;\n\t\ttext-shadow: 2px 2px 10px black;\n\t\ttext-align: center;\n\t\tfont-family: sans-serif;\n\t}\n\n\thtml.basic #value {\n\t\tfont-size: 72px;\n\t}\n\n\thtml.basic #value:empty:after {\n\t\tcontent: '...';\n\t}\n\n\thtml.basic #label {\n\t\tfont-size: 24px;\n\t\tline-height: 50%;\n\t}\n\n\n\t/******************\n\t * THEME: GUUDE\n\t ******************/\n\thtml.guude #guude {\n\t\tposition: fixed;\n\t\tleft: 50%;\n\t\theight: 100px;\n\t\twidth: 87px;\n\t\tmargin-left: -43px;\n\t\tdisplay: none;\n\t}\n\n\thtml.guude .updated #guude {\n\t\tdisplay: inline;\n\t\topacity: 0;\n\t\tanimation: blood_fadeInOut 3s 1 ease-out;\n\t\t-webkit-animation: blood_fadeInOut 3s 1 ease-out;\n\t}\n\n\n\t/******************\n\t * THEME: POOSE\n\t ******************/\n\thtml.poose #poose {\n\t\tposition: fixed;\n\t\tleft: 50%;\n\t\theight: 100px;\n\t\twidth: 87px;\n\t\tmargin-left: -43px;\n\t\tdisplay: none;\n\t}\n\n\thtml.poose .updated #poose {\n\t\tdisplay: inline;\n\t\topacity: 0;\n\t\tanimation: blood_fadeInOut 3s 1 ease-out;\n\t\t-webkit-animation: blood_fadeInOut 3s 1 ease-out;\n\t}\n\n\n\t/******************\n\t * THEME: BLOOD\n\t ******************/\n\thtml.blood * {\n\t\tfont-weight: bold;\n\t\tcolor:#a00;\n\t\ttext-shadow: 2px 2px 10px black;\n\t\ttext-align:center;\n\t}\n\n\thtml.blood #value {\n\t\tfont-family: Chiller, 'Trade Winds', serif;\n\t\tfont-size: 72px;\n\t\tline-height: 90%;\n\t}\n\n\thtml.blood #value:empty:after {\n\t\tcontent: '...';\n\t}\n\n\thtml.blood .updated #value {\n\t\tanimation: blood_flashWhite 3s 1 ease-out;\n\t\t-webkit-animation: blood_flashWhite 3s 1 ease-out;\n\t}\n\n\thtml.blood #label {\n\t\tfont-family: sans-serif;\n\t\tfont-size: 24px;\n\t\tline-height: 50%;\n\t}\n\n\n\t@keyframes blood_flashWhite {\n\t\t0%   {color: #a00;}\n\t\t50%  {color: #fff;}\n\t\t100% {color: #a00;}\n\t}\n\n\t@-webkit-keyframes blood_flashWhite {\n\t\t0%   {color: #a00;}\n\t\t50%  {color: #fff;}\n\t\t100% {color: #a00;}\n\t}\n\n\t@keyframes blood_fadeInOut {\n\t\t0%   {opacity: 0;}\n\t\t50%  {opacity: 1;}\n\t\t100% {opacity: 0;}\n\t}\n\n\t@-webkit-keyframes blood_fadeInOut {\n\t\t0%   {opacity: 0;}\n\t\t50%  {opacity: 1;}\n\t\t100% {opacity: 0;}\n\t}\n\n\n\t/******************\n\t * THEME: ARCADE\n\t ******************/\n\thtml.arcade * {\n\t\tfont-weight: bold;\n\t\tcolor: white;\n\t\ttext-shadow: 2px 2px 10px black;\n\t\ttext-align:center;\n\t\tfont-family: 'Press Start 2P', monospace;\n\t}\n\n\thtml.arcade #value {\n\t\tfont-size: 72px;\n\t}\n\n\thtml.arcade #value:empty:after {\n\t\tcontent: '...';\n\t}\n\n\thtml.arcade #label {\n\t\tfont-size: 24px;\n\t}\n\n\n\t/******************\n\t * THEME: EXZENTIA_BLOOD\n\t ******************/\n\thtml.exzentia_blood body.updated {\n\t\tbackground: url(https://i.imgur.com/AzMrQg7.gif) no-repeat fixed center top;\n\t}\n\n\n\t/******************\n\t * THEME: PLUMBERS\n\t ******************/\n\thtml.plumbers * {\n\t\tfont-weight: bold;\n\t\tcolor: #e75a10;\n\t\ttext-align:center;\n\t\tfont-family: 'Press Start 2P', monospace;\n\t}\n\n\thtml.plumbers #value {\n\t\tfont-size: 72px;\n\t\ttext-shadow: 9px 9px #000000;\n\t}\n\n\thtml.plumbers #value:empty:after {\n\t\tcontent: '?';\n\t}\n\n\thtml.plumbers #label {\n\t\tfont-size: 24px;\n\t\ttext-shadow: 3px 3px #000000;\n\t\tline-height: 150%;\n\t}\n\n\n\thtml.plumbers #mario {\n\t\tposition: fixed;\n\t\tleft: 50%;\n\t\theight: 100px;\n\t\twidth: 100px;\n\t\tmargin-left: -50px;\n\t\tdisplay: none;\n\t}\n\n\thtml.plumbers .updated #mario {\n\t\tdisplay: inline;\n\t\topacity:0;\n\t\tanimation: plumbers_marioJump 1.2s 1 linear;\n\t\t-webkit-animation: plumbers_marioJump 1.2s 1 linear;\n\t}\n\n\t@keyframes plumbers_marioJump {\n\t\t0%   {top: 60px; opacity:0;}\n\t\t50%  {top: 0px; opacity:1;}\n\t\t100% {top: 60px; opacity:0;}\n\t}\n\n\t@-webkit-keyframes plumbers_marioJump {\n\t\t0%   {top: 60px; opacity:0;}\n\t\t50%  {top: 0px; opacity:1;}\n\t\t100% {top: 60px; opacity:0;}\n\t}\n\t</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

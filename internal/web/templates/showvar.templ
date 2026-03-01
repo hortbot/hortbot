@@ -15,7 +15,6 @@ templ ShowVarPage(channel, varName string, refresh int, themesStr string, themes
 		<body>
 			<div id="value" style={ showVarValueStyle(valueFont, valueColor) }></div>
 			<div id="label" style={ showVarLabelStyle(labelFont, labelColor) }>{ label }</div>
-			@jqueryScript()
 			<script>
 			var channel = {{ channel }};
 			var varName = {{ varName }};
@@ -24,20 +23,17 @@ templ ShowVarPage(channel, varName string, refresh int, themesStr string, themes
 			var currValue = null;
 
 			function updateNumber() {
-				$.ajax({
-				  url: "/api/v1/vars/get/" + varName + "/" + channel,
-				  method: "GET",
-				  dataType: "json",
-				  cache: false
-				}).done(function(json) {
-					var txt = json.value;
+				fetch("/api/v1/vars/get/" + varName + "/" + channel, { cache: "no-store" })
+					.then(function(res) { return res.json(); })
+					.then(function(json) {
+						var txt = json.value;
 
-					if (currValue == null || currValue == txt) $('body').removeClass('updated');
-					else $('body').addClass('updated');
+						if (currValue == null || currValue == txt) document.body.classList.remove('updated');
+						else document.body.classList.add('updated');
 
-					currValue = txt;
-					$("#value").text(currValue);
-				});
+						currValue = txt;
+						document.getElementById("value").textContent = currValue;
+					});
 			}
 
 			setInterval(updateNumber, refresh);
