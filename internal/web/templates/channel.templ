@@ -170,24 +170,24 @@ templ channelLayout(channel *models.Channel, item string, subtitle string) {
 
 templ channelOverviewBody(channel *models.Channel) {
 	@channelLayout(channel, "overview", "") {
-		<a class="button is-outlined" href={ twitchURL(channel.Name) } target="_blank">
+		<a class="button is-outlined" href={ twitchURL(channel.Name) } target="_blank" rel="noopener noreferrer">
 			<span class="icon"><i class="fab fa-twitch"></i></span>
 			<span>Twitch</span>
 		</a>
 		if channel.LastFM != "" {
-			<a class="button is-outlined" href={ lastfmURL(channel.LastFM) } target="_blank">
+			<a class="button is-outlined" href={ lastfmURL(channel.LastFM) } target="_blank" rel="noopener noreferrer">
 				<span class="icon"><i class="fab fa-lastfm"></i></span>
 				<span>LastFM</span>
 			</a>
 		}
 		if channel.SteamID != "" {
-			<a class="button is-outlined" href={ steamURL(channel.SteamID) } target="_blank">
+			<a class="button is-outlined" href={ steamURL(channel.SteamID) } target="_blank" rel="noopener noreferrer">
 				<span class="icon"><i class="fab fa-steam"></i></span>
 				<span>Steam</span>
 			</a>
 		}
 		if channel.ExtraLifeID != 0 {
-			<a class="button is-outlined" href={ extraLifeURL(channel.ExtraLifeID) } target="_blank">
+			<a class="button is-outlined" href={ extraLifeURL(channel.ExtraLifeID) } target="_blank" rel="noopener noreferrer">
 				<span class="icon"><i class="fas fa-gamepad"></i></span>
 				<span>Extra-Life</span>
 			</a>

@@ -686,7 +686,7 @@ func docsBody() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</dl></section><section id=\"schedule\" class=\"page\"><h3 class=\"title\">Schedule</h3><p>The schedule command sets up a command repetition via a <a href=\"https://crontab.guru/\" target=\"_blank\">cron expression</a>. Like repeated commands, a message difference can be specified.</p><dl>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 36, "</dl></section><section id=\"schedule\" class=\"page\"><h3 class=\"title\">Schedule</h3><p>The schedule command sets up a command repetition via a <a href=\"https://crontab.guru/\" target=\"_blank\" rel=\"noopener noreferrer\">cron expression</a>. Like repeated commands, a message difference can be specified.</p><dl>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

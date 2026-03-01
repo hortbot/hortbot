@@ -562,7 +562,7 @@ func channelOverviewBody(channel *models.Channel) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" target=\"_blank\"><span class=\"icon\"><i class=\"fab fa-twitch\"></i></span> <span>Twitch</span></a> ")
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 35, "\" target=\"_blank\" rel=\"noopener noreferrer\"><span class=\"icon\"><i class=\"fab fa-twitch\"></i></span> <span>Twitch</span></a> ")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -580,7 +580,7 @@ func channelOverviewBody(channel *models.Channel) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" target=\"_blank\"><span class=\"icon\"><i class=\"fab fa-lastfm\"></i></span> <span>LastFM</span></a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 37, "\" target=\"_blank\" rel=\"noopener noreferrer\"><span class=\"icon\"><i class=\"fab fa-lastfm\"></i></span> <span>LastFM</span></a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -603,7 +603,7 @@ func channelOverviewBody(channel *models.Channel) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" target=\"_blank\"><span class=\"icon\"><i class=\"fab fa-steam\"></i></span> <span>Steam</span></a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 40, "\" target=\"_blank\" rel=\"noopener noreferrer\"><span class=\"icon\"><i class=\"fab fa-steam\"></i></span> <span>Steam</span></a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -626,7 +626,7 @@ func channelOverviewBody(channel *models.Channel) templ.Component {
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
-				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" target=\"_blank\"><span class=\"icon\"><i class=\"fas fa-gamepad\"></i></span> <span>Extra-Life</span></a>")
+				templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 43, "\" target=\"_blank\" rel=\"noopener noreferrer\"><span class=\"icon\"><i class=\"fas fa-gamepad\"></i></span> <span>Extra-Life</span></a>")
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
