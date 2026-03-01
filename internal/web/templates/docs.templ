@@ -18,7 +18,9 @@ templ docLevelTag(level string) {
 }
 
 templ docCommand(name, level string) {
-	<dt><code>{ name }</code> @docLevelTag(level)</dt>
+	<dt>
+		<code>{ name }</code> @docLevelTag(level)
+	</dt>
 	<dd>
 		{ children... }
 	</dd>
