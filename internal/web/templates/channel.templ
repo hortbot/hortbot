@@ -250,7 +250,7 @@ templ convertedCommand(s string) {
 		if node.Text != "" {
 			{ node.Text }
 		} else {
-			<code>({ "(_" }{ cbp.NodesString(node.Children) }{ "_)" })</code>
+			<code>(_{ cbp.NodesString(node.Children) }_)</code>
 		}
 	}
 }
