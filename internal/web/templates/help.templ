@@ -21,5 +21,7 @@ templ helpBody() {
 }
 
 templ HelpPage() {
-	@PageTemplate(getBrand(ctx)+" - Help", nil, nil, helpBody())
+	@PageTemplate(getBrand(ctx)+" - Help", nil, nil) {
+		@helpBody()
+	}
 }

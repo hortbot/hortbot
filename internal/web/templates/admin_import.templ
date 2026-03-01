@@ -59,5 +59,7 @@ templ adminImportBody() {
 }
 
 templ AdminImportPage() {
-	@PageTemplate(getBrand(ctx)+" - Import config", adminImportMeta(), adminImportScripts(), adminImportBody())
+	@PageTemplate(getBrand(ctx)+" - Import config", adminImportMeta(), adminImportScripts()) {
+		@adminImportBody()
+	}
 }

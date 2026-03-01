@@ -16,5 +16,7 @@ templ errorBody(message string, image string) {
 }
 
 templ ErrorPage(message string, image string) {
-	@PageTemplate(getBrand(ctx)+" - Error", nil, nil, errorBody(message, image))
+	@PageTemplate(getBrand(ctx)+" - Error", nil, nil) {
+		@errorBody(message, image)
+	}
 }

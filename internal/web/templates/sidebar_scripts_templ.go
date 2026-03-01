@@ -8,6 +8,8 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
+var sidebarStyleHandle = templ.NewOnceHandle()
+
 func sidebarStyle() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -29,7 +31,25 @@ func sidebarStyle() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\thtml {\n\t\toverflow-y: hidden;\n\t}\n\n\t.is-sidebar-menu {\n\t\tpadding: 2.5rem;\n\t\tbackground: #444444;\n\t\twidth: 20em;\n\t\toverflow-y: auto;\n\t\tborder-right: 1px solid #777777;\n\t\tmargin-top: 0.75rem;\n\t}\n\n\t.columns.is-fullheight {\n\t\tmin-height: calc(100vh - ( 4rem - .75rem ) );\n\t\tmax-height: calc(100vh - ( 4rem - .75rem ) );\n\t\theight: calc(100vh - ( 4rem - .75rem ) );\n\t\tdisplay: flex;\n\t\tflex-direction: row;\n\t\tjustify-content: stretch;\n\t\tmargin-bottom: 0;\n\t}\n\t.columns.is-fullheight .column {\n\t\toverflow-y: auto;\n\t}\n\n\t.is-main-content {\n\t\tmargin-top: 0.75rem;\n\t\tmargin-right: 0.75rem;\n\t\tpadding: 2.5rem;\n\t}\n\n\tol {\n\t\tlist-style-position: inside;\n\t}\n\t</style>")
+		templ_7745c5c3_Var2 := templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+			templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+			templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+			if !templ_7745c5c3_IsBuffer {
+				defer func() {
+					templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+					if templ_7745c5c3_Err == nil {
+						templ_7745c5c3_Err = templ_7745c5c3_BufErr
+					}
+				}()
+			}
+			ctx = templ.InitializeContext(ctx)
+			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<style>\n\thtml {\n\t\toverflow-y: hidden;\n\t}\n\n\t.is-sidebar-menu {\n\t\tpadding: 2.5rem;\n\t\tbackground: #444444;\n\t\twidth: 20em;\n\t\toverflow-y: auto;\n\t\tborder-right: 1px solid #777777;\n\t\tmargin-top: 0.75rem;\n\t}\n\n\t.columns.is-fullheight {\n\t\tmin-height: calc(100vh - ( 4rem - .75rem ) );\n\t\tmax-height: calc(100vh - ( 4rem - .75rem ) );\n\t\theight: calc(100vh - ( 4rem - .75rem ) );\n\t\tdisplay: flex;\n\t\tflex-direction: row;\n\t\tjustify-content: stretch;\n\t\tmargin-bottom: 0;\n\t}\n\t.columns.is-fullheight .column {\n\t\toverflow-y: auto;\n\t}\n\n\t.is-main-content {\n\t\tmargin-top: 0.75rem;\n\t\tmargin-right: 0.75rem;\n\t\tpadding: 2.5rem;\n\t}\n\n\tol {\n\t\tlist-style-position: inside;\n\t}\n\t</style>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			return nil
+		})
+		templ_7745c5c3_Err = sidebarStyleHandle.Once().Render(templ.WithChildren(ctx, templ_7745c5c3_Var2), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

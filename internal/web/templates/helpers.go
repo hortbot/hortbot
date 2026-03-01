@@ -1,10 +1,14 @@
 package templates
 
 import (
-	"fmt"
+	"regexp"
+	"strings"
 
 	"github.com/a-h/templ"
 )
+
+var validCSSFont = regexp.MustCompile(`^[a-zA-Z0-9 _\-',]+$`)
+var validCSSColor = regexp.MustCompile(`^[a-zA-Z0-9#(), .%]+$`)
 
 func showVarValueStyle(font, color string) templ.SafeCSS {
 	return buildStyle(font, color)
@@ -15,12 +19,16 @@ func showVarLabelStyle(font, color string) templ.SafeCSS {
 }
 
 func buildStyle(font, color string) templ.SafeCSS {
-	var css string
-	if font != "" {
-		css += fmt.Sprintf(`font-family: %q, sans-serif !important;`, font)
+	var b strings.Builder
+	if font != "" && validCSSFont.MatchString(font) {
+		b.WriteString(`font-family: "`)
+		b.WriteString(font)
+		b.WriteString(`", sans-serif !important;`)
 	}
-	if color != "" {
-		css += fmt.Sprintf("color: %s !important;", templ.EscapeString(color))
+	if color != "" && validCSSColor.MatchString(color) {
+		b.WriteString("color: ")
+		b.WriteString(color)
+		b.WriteString(" !important;")
 	}
-	return templ.SafeCSS(css)
+	return templ.SafeCSS(b.String())
 }

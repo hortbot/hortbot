@@ -1,6 +1,9 @@
 package templates
 
+var sidebarStyleHandle = templ.NewOnceHandle()
+
 templ sidebarStyle() {
+	@sidebarStyleHandle.Once() {
 	<style>
 	html {
 		overflow-y: hidden;
@@ -38,4 +41,5 @@ templ sidebarStyle() {
 		list-style-position: inside;
 	}
 	</style>
+	}
 }

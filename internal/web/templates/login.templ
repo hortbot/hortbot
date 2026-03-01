@@ -1,7 +1,5 @@
 package templates
 
-import "fmt"
-
 templ loginBody() {
 	<section class="section">
 		<div class="container content">
@@ -26,7 +24,9 @@ templ loginBody() {
 }
 
 templ LoginPage() {
-	@PageTemplate(getBrand(ctx)+" - Log in", nil, nil, loginBody())
+	@PageTemplate(getBrand(ctx)+" - Log in", nil, nil) {
+		@loginBody()
+	}
 }
 
 templ loginSuccessBody(name string, id int64, bot bool) {
@@ -41,7 +41,7 @@ templ loginSuccessBody(name string, id int64, bot bool) {
 						The bot is now authorized to access your Twitch account.
 					</p>
 					<p>
-						{ name } ({ fmt.Sprint(id) })
+						{ name } ({ id })
 						if bot {
 							as bot
 						}
@@ -53,7 +53,9 @@ templ loginSuccessBody(name string, id int64, bot bool) {
 }
 
 templ LoginSuccessPage(name string, id int64, bot bool) {
-	@PageTemplate(getBrand(ctx)+" - Log in - Success!", nil, nil, loginSuccessBody(name, id, bot))
+	@PageTemplate(getBrand(ctx)+" - Log in - Success!", nil, nil) {
+		@loginSuccessBody(name, id, bot)
+	}
 }
 
 templ MetaRedirect(url string) {

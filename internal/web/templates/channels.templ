@@ -29,5 +29,7 @@ templ channelsBody(channels models.ChannelSlice) {
 }
 
 templ ChannelsPage(channels models.ChannelSlice) {
-	@PageTemplate(getBrand(ctx)+" - Channels", nil, nil, channelsBody(channels))
+	@PageTemplate(getBrand(ctx)+" - Channels", nil, nil) {
+		@channelsBody(channels)
+	}
 }

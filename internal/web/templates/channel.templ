@@ -10,11 +10,33 @@ import (
 	"github.com/hortbot/hortbot/internal/db/models"
 )
 
-func isActive(a, b string) string {
-	if a == b {
-		return "is-active"
+type menuItem struct {
+	Key   string
+	Label string
+	Sub   string // empty for overview (uses channelURL)
+}
+
+var generalMenuItems = []menuItem{
+	{Key: "overview", Label: "Overview"},
+	{Key: "commands", Label: "Commands", Sub: "commands"},
+	{Key: "quotes", Label: "Quotes", Sub: "quotes"},
+	{Key: "lists", Label: "Lists", Sub: "lists"},
+	{Key: "autoreplies", Label: "Autoreplies", Sub: "autoreplies"},
+	{Key: "scheduled", Label: "Repeated / scheduled", Sub: "scheduled"},
+	{Key: "variables", Label: "Variables", Sub: "variables"},
+	{Key: "highlights", Label: "Highlights", Sub: "highlights"},
+}
+
+var settingsMenuItems = []menuItem{
+	{Key: "regulars", Label: "Regulars", Sub: "regulars"},
+	{Key: "chatrules", Label: "Chat rules", Sub: "chatrules"},
+}
+
+func menuItemURL(name string, mi menuItem) templ.SafeURL {
+	if mi.Sub == "" {
+		return channelURL(name)
 	}
-	return ""
+	return channelSubURL(name, mi.Sub)
 }
 
 func channelURL(name string) templ.SafeURL {
@@ -32,21 +54,17 @@ templ channelSidebar(channel *models.Channel, item string) {
 				General
 			</p>
 			<ul class="menu-list">
-				<li><a href={ channelURL(channel.Name) } class={ isActive(item, "overview") }>Overview</a></li>
-				<li><a href={ channelSubURL(channel.Name, "commands") } class={ isActive(item, "commands") }>Commands</a></li>
-				<li><a href={ channelSubURL(channel.Name, "quotes") } class={ isActive(item, "quotes") }>Quotes</a></li>
-				<li><a href={ channelSubURL(channel.Name, "lists") } class={ isActive(item, "lists") }>Lists</a></li>
-				<li><a href={ channelSubURL(channel.Name, "autoreplies") } class={ isActive(item, "autoreplies") }>Autoreplies</a></li>
-				<li><a href={ channelSubURL(channel.Name, "scheduled") } class={ isActive(item, "scheduled") }>Repeated / scheduled</a></li>
-				<li><a href={ channelSubURL(channel.Name, "variables") } class={ isActive(item, "variables") }>Variables</a></li>
-				<li><a href={ channelSubURL(channel.Name, "highlights") } class={ isActive(item, "highlights") }>Highlights</a></li>
+				for _, mi := range generalMenuItems {
+					<li><a href={ menuItemURL(channel.Name, mi) } class={ templ.KV("is-active", item == mi.Key) }>{ mi.Label }</a></li>
+				}
 			</ul>
 			<p class="menu-label">
 				Settings
 			</p>
 			<ul class="menu-list">
-				<li><a href={ channelSubURL(channel.Name, "regulars") } class={ isActive(item, "regulars") }>Regulars</a></li>
-				<li><a href={ channelSubURL(channel.Name, "chatrules") } class={ isActive(item, "chatrules") }>Chat rules</a></li>
+				for _, mi := range settingsMenuItems {
+					<li><a href={ menuItemURL(channel.Name, mi) } class={ templ.KV("is-active", item == mi.Key) }>{ mi.Label }</a></li>
+				}
 			</ul>
 		</aside>
 	</div>
@@ -56,32 +74,28 @@ templ channelSidebarMobile(channel *models.Channel, item string) {
 	<nav class="navbar is-hidden-tablet is-info" role="navigation" aria-label="main navigation">
 		<div class="navbar-brand">
 			<p class="navbar-item">Menu</p>
-			<a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="sidebarNav">
+			<button type="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="sidebarNav">
 				<span aria-hidden="true"></span>
 				<span aria-hidden="true"></span>
 				<span aria-hidden="true"></span>
-			</a>
+			</button>
 		</div>
 		<div id="sidebarNav" class="navbar-menu">
 			<div class="navbar-start">
 				<div class="navbar-item has-dropdown is-hoverable">
 					<p class="navbar-link">General</p>
 					<div class="navbar-dropdown">
-						<a href={ channelURL(channel.Name) } class={ "navbar-item", isActive(item, "overview") }>Overview</a>
-						<a href={ channelSubURL(channel.Name, "commands") } class={ "navbar-item", isActive(item, "commands") }>Commands</a>
-						<a href={ channelSubURL(channel.Name, "quotes") } class={ "navbar-item", isActive(item, "quotes") }>Quotes</a>
-						<a href={ channelSubURL(channel.Name, "lists") } class={ "navbar-item", isActive(item, "lists") }>Lists</a>
-						<a href={ channelSubURL(channel.Name, "autoreplies") } class={ "navbar-item", isActive(item, "autoreplies") }>Autoreplies</a>
-						<a href={ channelSubURL(channel.Name, "scheduled") } class={ "navbar-item", isActive(item, "scheduled") }>Repeated / scheduled</a>
-						<a href={ channelSubURL(channel.Name, "variables") } class={ "navbar-item", isActive(item, "variables") }>Variables</a>
-						<a href={ channelSubURL(channel.Name, "highlights") } class={ "navbar-item", isActive(item, "highlights") }>Highlights</a>
+						for _, mi := range generalMenuItems {
+							<a href={ menuItemURL(channel.Name, mi) } class={ "navbar-item", templ.KV("is-active", item == mi.Key) }>{ mi.Label }</a>
+						}
 					</div>
 				</div>
 				<div class="navbar-item has-dropdown is-hoverable">
 					<p class="navbar-link">Settings</p>
 					<div class="navbar-dropdown">
-						<a href={ channelSubURL(channel.Name, "regulars") } class={ "navbar-item", isActive(item, "regulars") }>Regulars</a>
-						<a href={ channelSubURL(channel.Name, "chatrules") } class={ "navbar-item", isActive(item, "chatrules") }>Chat rules</a>
+						for _, mi := range settingsMenuItems {
+							<a href={ menuItemURL(channel.Name, mi) } class={ "navbar-item", templ.KV("is-active", item == mi.Key) }>{ mi.Label }</a>
+						}
 					</div>
 				</div>
 			</div>
@@ -139,41 +153,50 @@ templ channelScripts() {
 	</script>
 }
 
-templ channelOverviewBody(channel *models.Channel) {
-	@channelSidebarMobile(channel, "overview")
+templ channelLayout(channel *models.Channel, item string, subtitle string) {
+	@channelSidebarMobile(channel, item)
 	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "overview")
+		@channelSidebar(channel, item)
 		<div class="column is-main-content content">
 			<span class="title is-1">{ displayNameFor(channel) }</span>
+			if subtitle != "" {
+				<span class="subtitle is-3">{ subtitle }</span>
+			}
 			<hr/>
-			<a class="button is-outlined" href={ twitchURL(channel.Name) } target="_blank">
-				<span class="icon"><i class="fab fa-twitch"></i></span>
-				<span>Twitch</span>
-			</a>
-			if channel.LastFM != "" {
-				<a class="button is-outlined" href={ lastfmURL(channel.LastFM) } target="_blank">
-					<span class="icon"><i class="fab fa-lastfm"></i></span>
-					<span>LastFM</span>
-				</a>
-			}
-			if channel.SteamID != "" {
-				<a class="button is-outlined" href={ steamURL(channel.SteamID) } target="_blank">
-					<span class="icon"><i class="fab fa-steam"></i></span>
-					<span>Steam</span>
-				</a>
-			}
-			if channel.ExtraLifeID != 0 {
-				<a class="button is-outlined" href={ extraLifeURL(channel.ExtraLifeID) } target="_blank">
-					<span class="icon"><i class="fas fa-gamepad"></i></span>
-					<span>Extra-Life</span>
-				</a>
-			}
-			<br/>
-			<br/>
-			<p><b>Bot name:</b> <code>{ channel.BotName }</code></p>
-			<p><b>Command prefix:</b> <code>{ channel.Prefix }</code></p>
+			{ children... }
 		</div>
 	</div>
+}
+
+templ channelOverviewBody(channel *models.Channel) {
+	@channelLayout(channel, "overview", "") {
+		<a class="button is-outlined" href={ twitchURL(channel.Name) } target="_blank">
+			<span class="icon"><i class="fab fa-twitch"></i></span>
+			<span>Twitch</span>
+		</a>
+		if channel.LastFM != "" {
+			<a class="button is-outlined" href={ lastfmURL(channel.LastFM) } target="_blank">
+				<span class="icon"><i class="fab fa-lastfm"></i></span>
+				<span>LastFM</span>
+			</a>
+		}
+		if channel.SteamID != "" {
+			<a class="button is-outlined" href={ steamURL(channel.SteamID) } target="_blank">
+				<span class="icon"><i class="fab fa-steam"></i></span>
+				<span>Steam</span>
+			</a>
+		}
+		if channel.ExtraLifeID != 0 {
+			<a class="button is-outlined" href={ extraLifeURL(channel.ExtraLifeID) } target="_blank">
+				<span class="icon"><i class="fas fa-gamepad"></i></span>
+				<span>Extra-Life</span>
+			</a>
+		}
+		<br/>
+		<br/>
+		<p><b>Bot name:</b> <code>{ channel.BotName }</code></p>
+		<p><b>Command prefix:</b> <code>{ channel.Prefix }</code></p>
+	}
 	<script>
 	var hash = window.location.hash;
 	var realPage = window.location.origin + window.location.pathname;
@@ -197,7 +220,9 @@ templ channelOverviewBody(channel *models.Channel) {
 }
 
 templ ChannelPage(channel *models.Channel) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelOverviewBody(channel))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelOverviewBody(channel)
+	}
 }
 
 // Access level helper
@@ -253,161 +278,149 @@ templ autoreplyPattern(s string) {
 
 // Commands page
 templ channelCommandsBody(channel *models.Channel, commands models.CustomCommandSlice) {
-	@channelSidebarMobile(channel, "commands")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "commands")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Commands</span>
-			<hr/>
-			if len(commands) == 0 {
-				<p>No commands.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="command"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+	@channelLayout(channel, "commands", "Commands") {
+		if len(commands) == 0 {
+			<p>No commands.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="command"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true" data-field="command">Command</th>
+						<th data-sortable="true">Access</th>
+						<th data-sortable="true">Response</th>
+						<th data-sortable="true">Count</th>
+						<th data-sortable="true">Editor</th>
+						<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, c := range commands {
 						<tr>
-							<th data-sortable="true" data-field="command">Command</th>
-							<th data-sortable="true">Access</th>
-							<th data-sortable="true">Response</th>
-							<th data-sortable="true">Count</th>
-							<th data-sortable="true">Editor</th>
-							<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+							<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
+							<td>
+								@accessLevel(c.R.CommandInfo.AccessLevel)
+							</td>
+							<td>
+								@convertedCommand(c.Message)
+							</td>
+							<td>{ c.R.CommandInfo.Count }</td>
+							<td>{ c.R.CommandInfo.Editor }</td>
+							<td>{ c.UpdatedAt.Format(time.RFC3339) }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, c := range commands {
-							<tr>
-								<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
-								<td>
-									@accessLevel(c.R.CommandInfo.AccessLevel)
-								</td>
-								<td>
-									@convertedCommand(c.Message)
-								</td>
-								<td>{ fmt.Sprint(c.R.CommandInfo.Count) }</td>
-								<td>{ c.R.CommandInfo.Editor }</td>
-								<td>{ c.UpdatedAt.Format(time.RFC3339) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ ChannelCommandsPage(channel *models.Channel, commands models.CustomCommandSlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelCommandsBody(channel, commands))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelCommandsBody(channel, commands)
+	}
 }
 
 // Quotes page
 templ channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) {
-	@channelSidebarMobile(channel, "quotes")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "quotes")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Quotes</span>
-			<hr/>
-			if len(quotes) == 0 {
-				<p>No quotes.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="number"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+	@channelLayout(channel, "quotes", "Quotes") {
+		if len(quotes) == 0 {
+			<p>No quotes.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="number"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true" data-field="number">#</th>
+						<th data-sortable="true">Quote</th>
+						<th data-sortable="true">Editor</th>
+						<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, q := range quotes {
 						<tr>
-							<th data-sortable="true" data-field="number">#</th>
-							<th data-sortable="true">Quote</th>
-							<th data-sortable="true">Editor</th>
-							<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+							<td>{ q.Num }</td>
+							<td>{ q.Quote }</td>
+							<td>{ q.Editor }</td>
+							<td>{ q.UpdatedAt.Format(time.RFC3339) }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, q := range quotes {
-							<tr>
-								<td>{ fmt.Sprint(q.Num) }</td>
-								<td>{ q.Quote }</td>
-								<td>{ q.Editor }</td>
-								<td>{ q.UpdatedAt.Format(time.RFC3339) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ ChannelQuotesPage(channel *models.Channel, quotes models.QuoteSlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelQuotesBody(channel, quotes))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelQuotesBody(channel, quotes)
+	}
 }
 
 // Autoreplies page
 templ channelAutorepliesBody(channel *models.Channel, autoreplies models.AutoreplySlice) {
-	@channelSidebarMobile(channel, "autoreplies")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "autoreplies")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Autoreplies</span>
-			<hr/>
-			if len(autoreplies) == 0 {
-				<p>No autoreplies.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="number"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+	@channelLayout(channel, "autoreplies", "Autoreplies") {
+		if len(autoreplies) == 0 {
+			<p>No autoreplies.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="number"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true" data-field="number">#</th>
+						<th data-sortable="true">Trigger</th>
+						<th data-sortable="true">Regex</th>
+						<th data-sortable="true">Response</th>
+						<th data-sortable="true">Count</th>
+						<th data-sortable="true">Editor</th>
+						<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, a := range autoreplies {
 						<tr>
-							<th data-sortable="true" data-field="number">#</th>
-							<th data-sortable="true">Trigger</th>
-							<th data-sortable="true">Regex</th>
-							<th data-sortable="true">Response</th>
-							<th data-sortable="true">Count</th>
-							<th data-sortable="true">Editor</th>
-							<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+							<td>{ a.Num }</td>
+							<td>
+								@autoreplyPattern(a.OrigPattern.String)
+							</td>
+							<td><code>{ a.Trigger }</code></td>
+							<td>
+								@convertedCommand(a.Response)
+							</td>
+							<td>{ a.Count }</td>
+							<td>{ a.Editor }</td>
+							<td>{ a.UpdatedAt.Format(time.RFC3339) }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, a := range autoreplies {
-							<tr>
-								<td>{ fmt.Sprint(a.Num) }</td>
-								<td>
-									@autoreplyPattern(a.OrigPattern.String)
-								</td>
-								<td><code>{ a.Trigger }</code></td>
-								<td>
-									@convertedCommand(a.Response)
-								</td>
-								<td>{ fmt.Sprint(a.Count) }</td>
-								<td>{ a.Editor }</td>
-								<td>{ a.UpdatedAt.Format(time.RFC3339) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ ChannelAutorepliesPage(channel *models.Channel, autoreplies models.AutoreplySlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelAutorepliesBody(channel, autoreplies))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelAutorepliesBody(channel, autoreplies)
+	}
 }
 
 // Lists page
@@ -420,51 +433,45 @@ func listsItems(lists models.CommandListSlice) [][]string {
 }
 
 templ channelListsBody(channel *models.Channel, lists models.CommandListSlice) {
-	@channelSidebarMobile(channel, "lists")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "lists")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Lists</span>
-			<hr/>
-			if len(lists) == 0 {
-				<p>No lists.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="command"
-					data-search="true"
-					data-sortable="true"
-					data-detail-view="true"
-					data-detail-formatter="detailFormatter"
-				>
-					<thead>
-						<tr>
-							<th data-sortable="true" data-field="command">Command</th>
-							<th data-sortable="true">Access</th>
-							<th data-sortable="true">Count</th>
-							<th data-sortable="true">Editor</th>
-							<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+	@channelLayout(channel, "lists", "Lists") {
+		if len(lists) == 0 {
+			<p>No lists.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="command"
+				data-search="true"
+				data-sortable="true"
+				data-detail-view="true"
+				data-detail-formatter="detailFormatter"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true" data-field="command">Command</th>
+						<th data-sortable="true">Access</th>
+						<th data-sortable="true">Count</th>
+						<th data-sortable="true">Editor</th>
+						<th data-sortable="true" data-formatter="timeFormatter" data-sorter="timeSorter">Edited</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, l := range lists {
+						<tr data-has-detail-view="true">
+							<td><code>{ channel.Prefix }{ l.R.CommandInfo.Name }</code></td>
+							<td>
+								@accessLevel(l.R.CommandInfo.AccessLevel)
+							</td>
+							<td>{ l.R.CommandInfo.Count }</td>
+							<td>{ l.R.CommandInfo.Editor }</td>
+							<td>{ l.UpdatedAt.Format(time.RFC3339) }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, l := range lists {
-							<tr data-has-detail-view="true">
-								<td><code>{ channel.Prefix }{ l.R.CommandInfo.Name }</code></td>
-								<td>
-									@accessLevel(l.R.CommandInfo.AccessLevel)
-								</td>
-								<td>{ fmt.Sprint(l.R.CommandInfo.Count) }</td>
-								<td>{ l.R.CommandInfo.Editor }</td>
-								<td>{ l.UpdatedAt.Format(time.RFC3339) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ channelListsScripts(lists models.CommandListSlice) {
@@ -497,71 +504,65 @@ templ channelListsScripts(lists models.CommandListSlice) {
 }
 
 templ ChannelListsPage(channel *models.Channel, lists models.CommandListSlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists), channelListsBody(channel, lists))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists)) {
+		@channelListsBody(channel, lists)
+	}
 }
 
 // Regulars page
 templ channelRegularsBody(channel *models.Channel) {
-	@channelSidebarMobile(channel, "regulars")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "regulars")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Regulars</span>
-			<hr/>
-			if len(channel.CustomRegulars) == 0 {
-				<p>No regulars.</p>
-			} else {
-				<p>The following users are considered regulars in chat:</p>
-				<ul>
-					for _, reg := range channel.CustomRegulars {
-						<li>{ reg }</li>
-					}
-				</ul>
-			}
-		</div>
-	</div>
+	@channelLayout(channel, "regulars", "Regulars") {
+		if len(channel.CustomRegulars) == 0 {
+			<p>No regulars.</p>
+		} else {
+			<p>The following users are considered regulars in chat:</p>
+			<ul>
+				for _, reg := range channel.CustomRegulars {
+					<li>{ reg }</li>
+				}
+			</ul>
+		}
+	}
 }
 
 templ ChannelRegularsPage(channel *models.Channel) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRegularsBody(channel))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelRegularsBody(channel)
+	}
 }
 
 // Chat rules page
 templ channelRulesBody(channel *models.Channel) {
-	@channelSidebarMobile(channel, "chatrules")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "chatrules")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Chat rules</span>
-			<hr/>
-			<h2>Allowed URLs</h2>
-			if len(channel.PermittedLinks) == 0 {
-				<p>No allowed URLs.</p>
-			} else {
-				<p>The following URL patterns are allowed:</p>
-				<ul>
-					for _, link := range channel.PermittedLinks {
-						<li><code>{ link }</code></li>
-					}
-				</ul>
-			}
-			<h2>Banned phrases</h2>
-			if len(channel.FilterBannedPhrasesPatterns) == 0 {
-				<p>No banned phrases.</p>
-			} else {
-				<p>The following phrases are banned:</p>
-				<ul>
-					for _, p := range channel.FilterBannedPhrasesPatterns {
-						<li><code>{ p }</code></li>
-					}
-				</ul>
-			}
-		</div>
-	</div>
+	@channelLayout(channel, "chatrules", "Chat rules") {
+		<h2>Allowed URLs</h2>
+		if len(channel.PermittedLinks) == 0 {
+			<p>No allowed URLs.</p>
+		} else {
+			<p>The following URL patterns are allowed:</p>
+			<ul>
+				for _, link := range channel.PermittedLinks {
+					<li><code>{ link }</code></li>
+				}
+			</ul>
+		}
+		<h2>Banned phrases</h2>
+		if len(channel.FilterBannedPhrasesPatterns) == 0 {
+			<p>No banned phrases.</p>
+		} else {
+			<p>The following phrases are banned:</p>
+			<ul>
+				for _, p := range channel.FilterBannedPhrasesPatterns {
+					<li><code>{ p }</code></li>
+				}
+			</ul>
+		}
+	}
 }
 
 templ ChannelRulesPage(channel *models.Channel) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRulesBody(channel))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelRulesBody(channel)
+	}
 }
 
 // Scheduled page
@@ -570,132 +571,124 @@ func formatDuration(delay int, unit time.Duration) string {
 }
 
 templ channelScheduledBody(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) {
-	@channelSidebarMobile(channel, "scheduled")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "scheduled")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Repeated / scheduled commands</span>
-			<hr/>
-			<h2>Repeated commands</h2>
-			if len(repeated) == 0 {
-				<p>No repeated commands.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="enabled"
-					data-sort-order="desc"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+	@channelLayout(channel, "scheduled", "Repeated / scheduled commands") {
+		<h2>Repeated commands</h2>
+		if len(repeated) == 0 {
+			<p>No repeated commands.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="enabled"
+				data-sort-order="desc"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true">Command</th>
+						<th data-sortable="true" data-field="enabled">Enabled</th>
+						<th data-sortable="true">Interval</th>
+						<th data-sortable="true">Message diff</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, c := range repeated {
 						<tr>
-							<th data-sortable="true">Command</th>
-							<th data-sortable="true" data-field="enabled">Enabled</th>
-							<th data-sortable="true">Interval</th>
-							<th data-sortable="true">Message diff</th>
+							<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
+							<td>
+								@yesNo(c.Enabled)
+							</td>
+							<td>Every { formatDuration(c.Delay, time.Second) }</td>
+							<td>{ c.MessageDiff }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, c := range repeated {
-							<tr>
-								<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
-								<td>
-									@yesNo(c.Enabled)
-								</td>
-								<td>Every { formatDuration(c.Delay, time.Second) }</td>
-								<td>{ fmt.Sprint(c.MessageDiff) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-			<h2>Scheduled commands</h2>
-			if len(scheduled) == 0 {
-				<p>No scheduled commands.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="enabled"
-					data-sort-order="desc"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+					}
+				</tbody>
+			</table>
+		}
+		<h2>Scheduled commands</h2>
+		if len(scheduled) == 0 {
+			<p>No scheduled commands.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="enabled"
+				data-sort-order="desc"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true">Command</th>
+						<th data-sortable="true" data-field="enabled">Enabled</th>
+						<th data-sortable="true">Cron expression</th>
+						<th data-sortable="true">Message diff</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, c := range scheduled {
 						<tr>
-							<th data-sortable="true">Command</th>
-							<th data-sortable="true" data-field="enabled">Enabled</th>
-							<th data-sortable="true">Cron expression</th>
-							<th data-sortable="true">Message diff</th>
+							<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
+							<td>
+								@yesNo(c.Enabled)
+							</td>
+							<td><code>{ c.CronExpression }</code></td>
+							<td>{ c.MessageDiff }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, c := range scheduled {
-							<tr>
-								<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
-								<td>
-									@yesNo(c.Enabled)
-								</td>
-								<td><code>{ c.CronExpression }</code></td>
-								<td>{ fmt.Sprint(c.MessageDiff) }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ ChannelScheduledPage(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelScheduledBody(channel, repeated, scheduled))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelScheduledBody(channel, repeated, scheduled)
+	}
 }
 
 // Variables page
 templ channelVariablesBody(channel *models.Channel, variables models.VariableSlice) {
-	@channelSidebarMobile(channel, "variables")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "variables")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Variables</span>
-			<hr/>
-			if len(variables) == 0 {
-				<p>No variables.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="name"
-					data-sort-order="asc"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+	@channelLayout(channel, "variables", "Variables") {
+		if len(variables) == 0 {
+			<p>No variables.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="name"
+				data-sort-order="asc"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true" data-field="name">Name</th>
+						<th data-sortable="true">Value</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, v := range variables {
 						<tr>
-							<th data-sortable="true" data-field="name">Name</th>
-							<th data-sortable="true">Value</th>
+							<td>{ v.Name }</td>
+							<td>{ v.Value }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, v := range variables {
-							<tr>
-								<td>{ v.Name }</td>
-								<td>{ v.Value }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ ChannelVariablesPage(channel *models.Channel, variables models.VariableSlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelVariablesBody(channel, variables))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelVariablesBody(channel, variables)
+	}
 }
 
 // Highlights page
@@ -707,48 +700,44 @@ func formatHighlightTimestamp(highlightedAt time.Time, startedAt time.Time, vali
 }
 
 templ channelHighlightsBody(channel *models.Channel, highlights models.HighlightSlice) {
-	@channelSidebarMobile(channel, "highlights")
-	<div class="columns is-fullheight is-clipped">
-		@channelSidebar(channel, "highlights")
-		<div class="column is-main-content content">
-			<span class="title is-1">{ displayNameFor(channel) }</span><span class="subtitle is-3">Highlights</span>
-			<hr/>
-			if len(highlights) == 0 {
-				<p>No highlights.</p>
-			} else {
-				<table
-					class="table is-striped is-hoverable is-fullwidth"
-					data-toggle="table"
-					data-sort-class="table-active"
-					data-sort-name="created_at"
-					data-sort-order="desc"
-					data-search="true"
-					data-sortable="true"
-				>
-					<thead>
+	@channelLayout(channel, "highlights", "Highlights") {
+		if len(highlights) == 0 {
+			<p>No highlights.</p>
+		} else {
+			<table
+				class="table is-striped is-hoverable is-fullwidth"
+				data-toggle="table"
+				data-sort-class="table-active"
+				data-sort-name="created_at"
+				data-sort-order="desc"
+				data-search="true"
+				data-sortable="true"
+			>
+				<thead>
+					<tr>
+						<th data-sortable="true" data-field="created_at" data-formatter="timeFormatter" data-sorter="timeSorter">Created at</th>
+						<th data-sortable="true">Timestamp</th>
+						<th data-sortable="true">Status</th>
+						<th data-sortable="true">Game</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, h := range highlights {
 						<tr>
-							<th data-sortable="true" data-field="created_at" data-formatter="timeFormatter" data-sorter="timeSorter">Created at</th>
-							<th data-sortable="true">Timestamp</th>
-							<th data-sortable="true">Status</th>
-							<th data-sortable="true">Game</th>
+							<td>{ h.HighlightedAt.Format(time.RFC3339) }</td>
+							<td>{ formatHighlightTimestamp(h.HighlightedAt, h.StartedAt.Time, h.StartedAt.Valid) }</td>
+							<td>{ h.Status }</td>
+							<td>{ h.Game }</td>
 						</tr>
-					</thead>
-					<tbody>
-						for _, h := range highlights {
-							<tr>
-								<td>{ h.HighlightedAt.Format(time.RFC3339) }</td>
-								<td>{ formatHighlightTimestamp(h.HighlightedAt, h.StartedAt.Time, h.StartedAt.Valid) }</td>
-								<td>{ h.Status }</td>
-								<td>{ h.Game }</td>
-							</tr>
-						}
-					</tbody>
-				</table>
-			}
-		</div>
-	</div>
+					}
+				</tbody>
+			</table>
+		}
+	}
 }
 
 templ ChannelHighlightsPage(channel *models.Channel, highlights models.HighlightSlice) {
-	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelHighlightsBody(channel, highlights))
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
+		@channelHighlightsBody(channel, highlights)
+	}
 }

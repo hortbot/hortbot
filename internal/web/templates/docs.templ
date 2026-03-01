@@ -1012,5 +1012,7 @@ templ docsBody() {
 }
 
 templ DocsPage() {
-	@PageTemplate(getBrand(ctx)+" - Documentation", docsMeta(), docsScripts(), docsBody())
+	@PageTemplate(getBrand(ctx)+" - Documentation", docsMeta(), docsScripts()) {
+		@docsBody()
+	}
 }

@@ -8,13 +8,6 @@ package templates
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func nonempty(s string) string {
-	if s == "" {
-		panic("empty string")
-	}
-	return s
-}
-
 func pageLogin() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
@@ -53,7 +46,7 @@ func pageLogin() templ.Component {
 			var templ_7745c5c3_Var2 string
 			templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinStringErrs(getUser(ctx))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/base.templ`, Line: 19, Col: 27}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/base.templ`, Line: 12, Col: 27}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 			if templ_7745c5c3_Err != nil {
@@ -72,7 +65,7 @@ func pageLogin() templ.Component {
 	})
 }
 
-func PageTemplate(title string, meta templ.Component, scripts templ.Component, body templ.Component) templ.Component {
+func PageTemplate(title string, meta templ.Component, scripts templ.Component) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -100,7 +93,7 @@ func PageTemplate(title string, meta templ.Component, scripts templ.Component, b
 		var templ_7745c5c3_Var4 string
 		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/base.templ`, Line: 44, Col: 17}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/base.templ`, Line: 37, Col: 17}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 		if templ_7745c5c3_Err != nil {
@@ -129,15 +122,15 @@ func PageTemplate(title string, meta templ.Component, scripts templ.Component, b
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var5 string
-		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(nonempty(getBrand(ctx)))
+		templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(getBrand(ctx))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/base.templ`, Line: 66, Col: 72}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/base.templ`, Line: 59, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</a> <a role=\"button\" class=\"navbar-burger burger\" aria-label=\"menu\" aria-expanded=\"false\" data-target=\"navMenu\"><span aria-hidden=\"true\"></span> <span aria-hidden=\"true\"></span> <span aria-hidden=\"true\"></span></a></div><div class=\"navbar-menu\" id=\"navMenu\"><div class=\"navbar-start\"><a class=\"navbar-item\" href=\"/channels\">Channels</a> <a class=\"navbar-item\" href=\"/docs\">Documentation</a> <a class=\"navbar-item\" href=\"/help\">Help</a> <a class=\"navbar-item\" href=\"https://discord.gg/V9Eza32\">Discord</a> <a class=\"navbar-item\" href=\"/about\">About</a></div>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 10, "</a> <button type=\"button\" class=\"navbar-burger burger\" aria-label=\"menu\" aria-expanded=\"false\" data-target=\"navMenu\"><span aria-hidden=\"true\"></span> <span aria-hidden=\"true\"></span> <span aria-hidden=\"true\"></span></button></div><div class=\"navbar-menu\" id=\"navMenu\"><div class=\"navbar-start\"><a class=\"navbar-item\" href=\"/channels\">Channels</a> <a class=\"navbar-item\" href=\"/docs\">Documentation</a> <a class=\"navbar-item\" href=\"/help\">Help</a> <a class=\"navbar-item\" href=\"https://discord.gg/V9Eza32\">Discord</a> <a class=\"navbar-item\" href=\"/about\">About</a></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -149,11 +142,9 @@ func PageTemplate(title string, meta templ.Component, scripts templ.Component, b
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if body != nil {
-			templ_7745c5c3_Err = body.Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = templ_7745c5c3_Var3.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = fontAwesomeScript().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
