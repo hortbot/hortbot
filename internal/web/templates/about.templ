@@ -2,7 +2,7 @@ package templates
 
 import "github.com/hortbot/hortbot/internal/version"
 
-templ aboutBody(brand string) {
+templ aboutBody() {
 	<section class="section">
 		<div class="container content">
 			<h1 class="title has-text-centered">
@@ -11,7 +11,7 @@ templ aboutBody(brand string) {
 			<div class="columns">
 				<div class="column is-8 is-offset-2 has-text-centered">
 					<p>
-						{ brand } is an instance of HortBot, a Twitch chat bot written in Go.
+						{ getBrand(ctx) } is an instance of HortBot, a Twitch chat bot written in Go.
 						You can find its source code on
 						<a href="https://github.com/hortbot/hortbot">GitHub here</a>.
 					</p>
@@ -24,6 +24,6 @@ templ aboutBody(brand string) {
 	</section>
 }
 
-templ AboutPage(base BasePage) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - About", nil, nil, aboutBody(base.Brand))
+templ AboutPage() {
+	@PageTemplate(getBrand(ctx)+" - About", nil, nil, aboutBody())
 }

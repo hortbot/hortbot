@@ -1039,7 +1039,7 @@ func channelOverviewBody(channel *models.Channel) templ.Component {
 	})
 }
 
-func ChannelPage(base BasePage, channel *models.Channel) templ.Component {
+func ChannelPage(channel *models.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1060,7 +1060,7 @@ func ChannelPage(base BasePage, channel *models.Channel) templ.Component {
 			templ_7745c5c3_Var73 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelOverviewBody(channel)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelOverviewBody(channel)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1452,7 +1452,7 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 	})
 }
 
-func ChannelCommandsPage(base BasePage, channel *models.Channel, commands models.CustomCommandSlice) templ.Component {
+func ChannelCommandsPage(channel *models.Channel, commands models.CustomCommandSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1473,7 +1473,7 @@ func ChannelCommandsPage(base BasePage, channel *models.Channel, commands models
 			templ_7745c5c3_Var90 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelCommandsBody(channel, commands)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelCommandsBody(channel, commands)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1613,7 +1613,7 @@ func channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) templ.
 	})
 }
 
-func ChannelQuotesPage(base BasePage, channel *models.Channel, quotes models.QuoteSlice) templ.Component {
+func ChannelQuotesPage(channel *models.Channel, quotes models.QuoteSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1634,7 +1634,7 @@ func ChannelQuotesPage(base BasePage, channel *models.Channel, quotes models.Quo
 			templ_7745c5c3_Var97 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelQuotesBody(channel, quotes)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelQuotesBody(channel, quotes)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1803,7 +1803,7 @@ func channelAutorepliesBody(channel *models.Channel, autoreplies models.Autorepl
 	})
 }
 
-func ChannelAutorepliesPage(base BasePage, channel *models.Channel, autoreplies models.AutoreplySlice) templ.Component {
+func ChannelAutorepliesPage(channel *models.Channel, autoreplies models.AutoreplySlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1824,7 +1824,7 @@ func ChannelAutorepliesPage(base BasePage, channel *models.Channel, autoreplies 
 			templ_7745c5c3_Var105 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelAutorepliesBody(channel, autoreplies)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelAutorepliesBody(channel, autoreplies)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2034,7 +2034,7 @@ func channelListsScripts(lists models.CommandListSlice) templ.Component {
 	})
 }
 
-func ChannelListsPage(base BasePage, channel *models.Channel, lists models.CommandListSlice) templ.Component {
+func ChannelListsPage(channel *models.Channel, lists models.CommandListSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2055,7 +2055,7 @@ func ChannelListsPage(base BasePage, channel *models.Channel, lists models.Comma
 			templ_7745c5c3_Var115 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists), channelListsBody(channel, lists)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists), channelListsBody(channel, lists)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2156,7 +2156,7 @@ func channelRegularsBody(channel *models.Channel) templ.Component {
 	})
 }
 
-func ChannelRegularsPage(base BasePage, channel *models.Channel) templ.Component {
+func ChannelRegularsPage(channel *models.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2177,7 +2177,7 @@ func ChannelRegularsPage(base BasePage, channel *models.Channel) templ.Component
 			templ_7745c5c3_Var119 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRegularsBody(channel)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRegularsBody(channel)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2316,7 +2316,7 @@ func channelRulesBody(channel *models.Channel) templ.Component {
 	})
 }
 
-func ChannelRulesPage(base BasePage, channel *models.Channel) templ.Component {
+func ChannelRulesPage(channel *models.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2337,7 +2337,7 @@ func ChannelRulesPage(base BasePage, channel *models.Channel) templ.Component {
 			templ_7745c5c3_Var124 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRulesBody(channel)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRulesBody(channel)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2566,7 +2566,7 @@ func channelScheduledBody(channel *models.Channel, repeated models.RepeatedComma
 	})
 }
 
-func ChannelScheduledPage(base BasePage, channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) templ.Component {
+func ChannelScheduledPage(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2587,7 +2587,7 @@ func ChannelScheduledPage(base BasePage, channel *models.Channel, repeated model
 			templ_7745c5c3_Var135 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelScheduledBody(channel, repeated, scheduled)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelScheduledBody(channel, repeated, scheduled)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2701,7 +2701,7 @@ func channelVariablesBody(channel *models.Channel, variables models.VariableSlic
 	})
 }
 
-func ChannelVariablesPage(base BasePage, channel *models.Channel, variables models.VariableSlice) templ.Component {
+func ChannelVariablesPage(channel *models.Channel, variables models.VariableSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2722,7 +2722,7 @@ func ChannelVariablesPage(base BasePage, channel *models.Channel, variables mode
 			templ_7745c5c3_Var140 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelVariablesBody(channel, variables)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelVariablesBody(channel, variables)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -2869,7 +2869,7 @@ func channelHighlightsBody(channel *models.Channel, highlights models.HighlightS
 	})
 }
 
-func ChannelHighlightsPage(base BasePage, channel *models.Channel, highlights models.HighlightSlice) templ.Component {
+func ChannelHighlightsPage(channel *models.Channel, highlights models.HighlightSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2890,7 +2890,7 @@ func ChannelHighlightsPage(base BasePage, channel *models.Channel, highlights mo
 			templ_7745c5c3_Var147 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelHighlightsBody(channel, highlights)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelHighlightsBody(channel, highlights)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

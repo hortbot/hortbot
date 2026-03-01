@@ -87,7 +87,7 @@ templ docsScripts() {
 	</script>
 }
 
-templ docsBody(brand string) {
+templ docsBody() {
 	<div class="columns is-fullheight is-clipped">
 		<div class="is-sidebar-menu is-hidden-mobile" id="sidebar">
 			<aside class="menu">
@@ -144,7 +144,7 @@ templ docsBody(brand string) {
 		<div class="column is-main-content content" id="main">
 			<h1 class="title">Documentation</h1>
 			<p>
-				This page contains documentation for all of { brand }'s features.
+				This page contains documentation for all of { getBrand(ctx) }'s features.
 				Note that <code>!</code> is used as a prefix in the documentation, but may differ
 				per channel.
 			</p>
@@ -154,10 +154,10 @@ templ docsBody(brand string) {
 				<h3 class="title">Commands</h3>
 				<dl>
 					@docCommand("!join", "everyone") {
-						<p>Tells { brand } to join your channel. Must be executed in the bot's channel.</p>
+						<p>Tells { getBrand(ctx) } to join your channel. Must be executed in the bot's channel.</p>
 					}
 					@docCommand("!part", "everyone") {
-						<p>Tells { brand } to leave your channel. In a non-bot channel, only the broadcaster may use this command.</p>
+						<p>Tells { getBrand(ctx) } to leave your channel. In a non-bot channel, only the broadcaster may use this command.</p>
 					}
 					@docCommand("!bothelp", "everyone") {
 						<p>Returns a helpful message.</p>
@@ -399,7 +399,7 @@ templ docsBody(brand string) {
 			<section id="ignores" class="page">
 				<h3 class="title">Ignores</h3>
 				<p>
-					Ignored users may not use { brand }, but will still be subject to filters.
+					Ignored users may not use { getBrand(ctx) }, but will still be subject to filters.
 				</p>
 				<dl>
 					@docCommand("!ignore add <user>", "mods") {
@@ -1011,6 +1011,6 @@ templ docsBody(brand string) {
 	</div>
 }
 
-templ DocsPage(base BasePage) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - Documentation", docsMeta(), docsScripts(), docsBody(base.Brand))
+templ DocsPage() {
+	@PageTemplate(getBrand(ctx)+" - Documentation", docsMeta(), docsScripts(), docsBody())
 }

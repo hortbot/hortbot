@@ -39,7 +39,7 @@ func loginBody() templ.Component {
 	})
 }
 
-func LoginPage(base BasePage) templ.Component {
+func LoginPage() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -60,7 +60,7 @@ func LoginPage(base BasePage) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - Log in", nil, nil, loginBody()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - Log in", nil, nil, loginBody()).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -133,7 +133,7 @@ func loginSuccessBody(name string, id int64, bot bool) templ.Component {
 	})
 }
 
-func LoginSuccessPage(base BasePage, name string, id int64, bot bool) templ.Component {
+func LoginSuccessPage(name string, id int64, bot bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -154,7 +154,7 @@ func LoginSuccessPage(base BasePage, name string, id int64, bot bool) templ.Comp
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - Log in - Success!", nil, nil, loginSuccessBody(name, id, bot)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - Log in - Success!", nil, nil, loginSuccessBody(name, id, bot)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

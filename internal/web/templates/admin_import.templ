@@ -58,6 +58,6 @@ templ adminImportBody() {
 	</section>
 }
 
-templ AdminImportPage(base BasePage) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - Import config", adminImportMeta(), adminImportScripts(), adminImportBody())
+templ AdminImportPage() {
+	@PageTemplate(getBrand(ctx)+" - Import config", adminImportMeta(), adminImportScripts(), adminImportBody())
 }

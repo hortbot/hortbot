@@ -20,6 +20,6 @@ templ helpBody() {
 	</section>
 }
 
-templ HelpPage(base BasePage) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - Help", nil, nil, helpBody())
+templ HelpPage() {
+	@PageTemplate(getBrand(ctx)+" - Help", nil, nil, helpBody())
 }

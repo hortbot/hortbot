@@ -2,16 +2,16 @@ package templates
 
 import "github.com/dustin/go-humanize"
 
-templ indexBody(brand string, channelCount int64, botCount int64) {
+templ indexBody(channelCount int64, botCount int64) {
 	<section class="section">
 		<div class="container">
 			<div class="tile is-ancestor is-vertical content">
 				<div class="tile">
 					<div class="tile is-parent">
 						<div class="tile is-child box">
-							<p class="title">{ brand }</p>
+							<p class="title">{ getBrand(ctx) }</p>
 							<p>
-								{ brand } is a Twitch chat bot, with:
+								{ getBrand(ctx) } is a Twitch chat bot, with:
 							</p>
 							<ul>
 								<li>Moderation</li>
@@ -63,6 +63,6 @@ templ indexBody(brand string, channelCount int64, botCount int64) {
 	</section>
 }
 
-templ IndexPage(base BasePage, channelCount int64, botCount int64) {
-	@PageTemplate(base.Brand, base.User, base.Brand, nil, nil, indexBody(base.Brand, channelCount, botCount))
+templ IndexPage(channelCount int64, botCount int64) {
+	@PageTemplate(getBrand(ctx), nil, nil, indexBody(channelCount, botCount))
 }

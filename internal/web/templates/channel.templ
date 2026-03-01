@@ -196,8 +196,8 @@ templ channelOverviewBody(channel *models.Channel) {
 	</script>
 }
 
-templ ChannelPage(base BasePage, channel *models.Channel) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelOverviewBody(channel))
+templ ChannelPage(channel *models.Channel) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelOverviewBody(channel))
 }
 
 // Access level helper
@@ -302,8 +302,8 @@ templ channelCommandsBody(channel *models.Channel, commands models.CustomCommand
 	</div>
 }
 
-templ ChannelCommandsPage(base BasePage, channel *models.Channel, commands models.CustomCommandSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelCommandsBody(channel, commands))
+templ ChannelCommandsPage(channel *models.Channel, commands models.CustomCommandSlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelCommandsBody(channel, commands))
 }
 
 // Quotes page
@@ -349,8 +349,8 @@ templ channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) {
 	</div>
 }
 
-templ ChannelQuotesPage(base BasePage, channel *models.Channel, quotes models.QuoteSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelQuotesBody(channel, quotes))
+templ ChannelQuotesPage(channel *models.Channel, quotes models.QuoteSlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelQuotesBody(channel, quotes))
 }
 
 // Autoreplies page
@@ -406,8 +406,8 @@ templ channelAutorepliesBody(channel *models.Channel, autoreplies models.Autorep
 	</div>
 }
 
-templ ChannelAutorepliesPage(base BasePage, channel *models.Channel, autoreplies models.AutoreplySlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelAutorepliesBody(channel, autoreplies))
+templ ChannelAutorepliesPage(channel *models.Channel, autoreplies models.AutoreplySlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelAutorepliesBody(channel, autoreplies))
 }
 
 // Lists page
@@ -496,8 +496,8 @@ templ channelListsScripts(lists models.CommandListSlice) {
 	</script>
 }
 
-templ ChannelListsPage(base BasePage, channel *models.Channel, lists models.CommandListSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists), channelListsBody(channel, lists))
+templ ChannelListsPage(channel *models.Channel, lists models.CommandListSlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists), channelListsBody(channel, lists))
 }
 
 // Regulars page
@@ -522,8 +522,8 @@ templ channelRegularsBody(channel *models.Channel) {
 	</div>
 }
 
-templ ChannelRegularsPage(base BasePage, channel *models.Channel) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRegularsBody(channel))
+templ ChannelRegularsPage(channel *models.Channel) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRegularsBody(channel))
 }
 
 // Chat rules page
@@ -560,8 +560,8 @@ templ channelRulesBody(channel *models.Channel) {
 	</div>
 }
 
-templ ChannelRulesPage(base BasePage, channel *models.Channel) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRulesBody(channel))
+templ ChannelRulesPage(channel *models.Channel) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelRulesBody(channel))
 }
 
 // Scheduled page
@@ -650,8 +650,8 @@ templ channelScheduledBody(channel *models.Channel, repeated models.RepeatedComm
 	</div>
 }
 
-templ ChannelScheduledPage(base BasePage, channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelScheduledBody(channel, repeated, scheduled))
+templ ChannelScheduledPage(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelScheduledBody(channel, repeated, scheduled))
 }
 
 // Variables page
@@ -694,8 +694,8 @@ templ channelVariablesBody(channel *models.Channel, variables models.VariableSli
 	</div>
 }
 
-templ ChannelVariablesPage(base BasePage, channel *models.Channel, variables models.VariableSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelVariablesBody(channel, variables))
+templ ChannelVariablesPage(channel *models.Channel, variables models.VariableSlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelVariablesBody(channel, variables))
 }
 
 // Highlights page
@@ -749,6 +749,6 @@ templ channelHighlightsBody(channel *models.Channel, highlights models.Highlight
 	</div>
 }
 
-templ ChannelHighlightsPage(base BasePage, channel *models.Channel, highlights models.HighlightSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelHighlightsBody(channel, highlights))
+templ ChannelHighlightsPage(channel *models.Channel, highlights models.HighlightSlice) {
+	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts(), channelHighlightsBody(channel, highlights))
 }

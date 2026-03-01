@@ -39,7 +39,7 @@ func (a *App) httpError(w http.ResponseWriter, r *http.Request, code int) {
 	}
 
 	w.WriteHeader(code)
-	renderTempl(w, r, templates.ErrorPage(a.basePage(r), e.message, e.image))
+	renderTempl(w, r, templates.ErrorPage(e.message, e.image))
 }
 
 func (a *App) notAuthorized(w http.ResponseWriter, r *http.Request, header bool) {

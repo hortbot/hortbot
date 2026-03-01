@@ -1,10 +1,5 @@
 package templates
 
-type BasePage struct {
-	Brand string
-	User  string
-}
-
 func nonempty(s string) string {
 	if s == "" {
 		panic("empty string")
@@ -12,16 +7,16 @@ func nonempty(s string) string {
 	return s
 }
 
-templ pageLogin(user string) {
+templ pageLogin() {
 	<div class="navbar-end">
-		if user == "" {
+		if getUser(ctx) == "" {
 			<a class="navbar-item" href="/login">
 				<span>Log in</span>
 				<span class="icon"><i class="fas fa-sign-in-alt"></i></span>
 			</a>
 		} else {
 			<span class="navbar-item">
-				Welcome, { user }.
+				Welcome, { getUser(ctx) }.
 			</span>
 			<a class="navbar-item" href="/logout">
 				<span>Log out</span>
@@ -31,7 +26,7 @@ templ pageLogin(user string) {
 	</div>
 }
 
-templ PageTemplate(brand string, user string, title string, meta templ.Component, scripts templ.Component, body templ.Component) {
+templ PageTemplate(title string, meta templ.Component, scripts templ.Component, body templ.Component) {
 	<!DOCTYPE html>
 	<html>
 		<head>
@@ -68,7 +63,7 @@ templ PageTemplate(brand string, user string, title string, meta templ.Component
 		<body>
 			<nav class="navbar" id="header">
 				<div class="navbar-brand">
-					<a class="navbar-item is-active" href="/">{ nonempty(brand) }</a>
+					<a class="navbar-item is-active" href="/">{ nonempty(getBrand(ctx)) }</a>
 					<a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navMenu">
 						<span aria-hidden="true"></span>
 						<span aria-hidden="true"></span>
@@ -83,7 +78,7 @@ templ PageTemplate(brand string, user string, title string, meta templ.Component
 						<a class="navbar-item" href="https://discord.gg/V9Eza32">Discord</a>
 						<a class="navbar-item" href="/about">About</a>
 					</div>
-					@pageLogin(user)
+					@pageLogin()
 				</div>
 			</nav>
 			if body != nil {

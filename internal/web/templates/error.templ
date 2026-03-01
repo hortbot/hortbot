@@ -15,6 +15,6 @@ templ errorBody(message string, image string) {
 	</section>
 }
 
-templ ErrorPage(base BasePage, message string, image string) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - Error", nil, nil, errorBody(message, image))
+templ ErrorPage(message string, image string) {
+	@PageTemplate(getBrand(ctx)+" - Error", nil, nil, errorBody(message, image))
 }

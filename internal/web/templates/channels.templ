@@ -9,7 +9,7 @@ func displayNameFor(channel *models.Channel) string {
 	return channel.Name
 }
 
-templ channelsBody(channels models.ChannelSlice, brand string) {
+templ channelsBody(channels models.ChannelSlice) {
 	<section class="section">
 		<div class="container">
 			<h1 class="title has-text-centered">
@@ -28,6 +28,6 @@ templ channelsBody(channels models.ChannelSlice, brand string) {
 	</section>
 }
 
-templ ChannelsPage(base BasePage, channels models.ChannelSlice) {
-	@PageTemplate(base.Brand, base.User, base.Brand+" - Channels", nil, nil, channelsBody(channels, base.Brand))
+templ ChannelsPage(channels models.ChannelSlice) {
+	@PageTemplate(getBrand(ctx)+" - Channels", nil, nil, channelsBody(channels))
 }

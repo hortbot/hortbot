@@ -63,7 +63,7 @@ func errorBody(message string, image string) templ.Component {
 	})
 }
 
-func ErrorPage(base BasePage, message string, image string) templ.Component {
+func ErrorPage(message string, image string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -84,7 +84,7 @@ func ErrorPage(base BasePage, message string, image string) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - Error", nil, nil, errorBody(message, image)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - Error", nil, nil, errorBody(message, image)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

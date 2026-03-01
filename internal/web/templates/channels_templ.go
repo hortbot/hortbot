@@ -17,7 +17,7 @@ func displayNameFor(channel *models.Channel) string {
 	return channel.Name
 }
 
-func channelsBody(channels models.ChannelSlice, brand string) templ.Component {
+func channelsBody(channels models.ChannelSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -82,7 +82,7 @@ func channelsBody(channels models.ChannelSlice, brand string) templ.Component {
 	})
 }
 
-func ChannelsPage(base BasePage, channels models.ChannelSlice) templ.Component {
+func ChannelsPage(channels models.ChannelSlice) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -103,7 +103,7 @@ func ChannelsPage(base BasePage, channels models.ChannelSlice) templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = PageTemplate(base.Brand, base.User, base.Brand+" - Channels", nil, nil, channelsBody(channels, base.Brand)).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - Channels", nil, nil, channelsBody(channels)).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
