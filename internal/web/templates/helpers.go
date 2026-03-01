@@ -16,8 +16,10 @@ func pageTitle(ctx context.Context, subtitle string) string {
 	return brand + " - " + subtitle
 }
 
-var validCSSFont = regexp.MustCompile(`^[a-zA-Z0-9 _\-',]+$`)
-var validCSSColor = regexp.MustCompile(`^[a-zA-Z0-9#(), .%]+$`)
+var (
+	validCSSFont  = regexp.MustCompile(`^[a-zA-Z0-9 _\-',]+$`)
+	validCSSColor = regexp.MustCompile(`^[a-zA-Z0-9#(), .%]+$`)
+)
 
 func showVarValueStyle(font, color string) templ.SafeCSS {
 	return buildStyle(font, color)
