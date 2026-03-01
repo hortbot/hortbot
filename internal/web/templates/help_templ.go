@@ -89,7 +89,7 @@ func HelpPage() templ.Component {
 			}
 			return nil
 		})
-		templ_7745c5c3_Err = PageTemplate(getBrand(ctx)+" - Help", nil, nil).Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = SimplePage("Help").Render(templ.WithChildren(ctx, templ_7745c5c3_Var4), templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

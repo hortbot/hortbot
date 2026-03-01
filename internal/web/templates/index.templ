@@ -64,7 +64,7 @@ templ indexBody(channelCount int64, botCount int64) {
 }
 
 templ IndexPage(channelCount int64, botCount int64) {
-	@PageTemplate(getBrand(ctx), nil, nil) {
+	@SimplePage("") {
 		@indexBody(channelCount, botCount)
 	}
 }

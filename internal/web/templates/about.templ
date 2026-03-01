@@ -25,7 +25,7 @@ templ aboutBody() {
 }
 
 templ AboutPage() {
-	@PageTemplate(getBrand(ctx)+" - About", nil, nil) {
+	@SimplePage("About") {
 		@aboutBody()
 	}
 }

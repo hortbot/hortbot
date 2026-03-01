@@ -5,7 +5,7 @@ templ errorBody(message string, image string) {
 		<div class="container content">
 			<div class="columns">
 				<div class="column is-8 is-offset-2 has-text-centered">
-					<img src={ image } style="max-width: 400px;"/>
+					<img class="error-image" src={ image }/>
 					<h3>
 						{ message }
 					</h3>
@@ -16,7 +16,7 @@ templ errorBody(message string, image string) {
 }
 
 templ ErrorPage(message string, image string) {
-	@PageTemplate(getBrand(ctx)+" - Error", nil, nil) {
+	@SimplePage("Error") {
 		@errorBody(message, image)
 	}
 }

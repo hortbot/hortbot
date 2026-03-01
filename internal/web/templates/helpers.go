@@ -1,11 +1,20 @@
 package templates
 
 import (
+	"context"
 	"regexp"
 	"strings"
 
 	"github.com/a-h/templ"
 )
+
+func pageTitle(ctx context.Context, subtitle string) string {
+	brand := getBrand(ctx)
+	if subtitle == "" {
+		return brand
+	}
+	return brand + " - " + subtitle
+}
 
 var validCSSFont = regexp.MustCompile(`^[a-zA-Z0-9 _\-',]+$`)
 var validCSSColor = regexp.MustCompile(`^[a-zA-Z0-9#(), .%]+$`)

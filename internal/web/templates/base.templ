@@ -48,6 +48,10 @@ templ PageTemplate(title string, meta templ.Component, scripts templ.Component) 
 				border-bottom-left-radius: 0px !important;
 				border-bottom-right-radius: 0px !important;
 			}
+
+			.error-image {
+				max-width: 400px;
+			}
 			</style>
 			if meta != nil {
 				@meta
@@ -79,21 +83,35 @@ templ PageTemplate(title string, meta templ.Component, scripts templ.Component) 
 			if scripts != nil {
 				@scripts
 			}
-			<script>
-				document.addEventListener('DOMContentLoaded', () => {
-					const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-					if ($navbarBurgers.length > 0) {
-						$navbarBurgers.forEach( el => {
-							el.addEventListener('click', () => {
-								const target = el.dataset.target;
-								const $target = document.getElementById(target);
-								el.classList.toggle('is-active');
-								$target.classList.toggle('is-active');
-							});
-						});
-					}
-				});
-			</script>
+			@navbarBurgerScript()
 		</body>
 	</html>
+}
+
+var navbarBurgerHandle = templ.NewOnceHandle()
+
+templ navbarBurgerScript() {
+	@navbarBurgerHandle.Once() {
+		<script>
+			document.addEventListener('DOMContentLoaded', () => {
+				const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+				if ($navbarBurgers.length > 0) {
+					$navbarBurgers.forEach( el => {
+						el.addEventListener('click', () => {
+							const target = el.dataset.target;
+							const $target = document.getElementById(target);
+							el.classList.toggle('is-active');
+							$target.classList.toggle('is-active');
+						});
+					});
+				}
+			});
+		</script>
+	}
+}
+
+templ SimplePage(subtitle string) {
+	@PageTemplate(pageTitle(ctx, subtitle), nil, nil) {
+		{ children... }
+	}
 }

@@ -14,6 +14,8 @@ templ docLevelTag(level string) {
 			<span class="tag is-black">Admins</span>
 		case "varies":
 			<span class="tag is-warning">Varies</span>
+		default:
+			<span class="tag">{ level }</span>
 	}
 }
 

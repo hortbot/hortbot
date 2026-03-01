@@ -24,7 +24,7 @@ templ loginBody() {
 }
 
 templ LoginPage() {
-	@PageTemplate(getBrand(ctx)+" - Log in", nil, nil) {
+	@SimplePage("Log in") {
 		@loginBody()
 	}
 }
@@ -53,7 +53,7 @@ templ loginSuccessBody(name string, id int64, bot bool) {
 }
 
 templ LoginSuccessPage(name string, id int64, bot bool) {
-	@PageTemplate(getBrand(ctx)+" - Log in - Success!", nil, nil) {
+	@SimplePage("Log in - Success!") {
 		@loginSuccessBody(name, id, bot)
 	}
 }
