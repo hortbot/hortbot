@@ -38,14 +38,8 @@ func (a *App) httpError(w http.ResponseWriter, r *http.Request, code int) {
 		return
 	}
 
-	page := &templates.ErrorPage{
-		BasePage: a.basePage(r),
-		Message:  e.message,
-		Image:    e.image,
-	}
-
 	w.WriteHeader(code)
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ErrorPage(a.basePage(r), e.message, e.image))
 }
 
 func (a *App) notAuthorized(w http.ResponseWriter, r *http.Request, header bool) {

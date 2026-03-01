@@ -1,0 +1,20 @@
+package templates
+
+templ errorBody(message string, image string) {
+	<section class="section">
+		<div class="container content">
+			<div class="columns">
+				<div class="column is-8 is-offset-2 has-text-centered">
+					<img src={ image } style="max-width: 400px;"/>
+					<h3>
+						{ message }
+					</h3>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ ErrorPage(base BasePage, message string, image string) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - Error", nil, nil, errorBody(message, image))
+}

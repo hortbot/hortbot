@@ -1,0 +1,72 @@
+package templates
+
+import "fmt"
+
+templ loginBody() {
+	<section class="section">
+		<div class="container content">
+			<h1 class="title has-text-centered">
+				Log in
+			</h1>
+			<div class="columns">
+				<div class="column is-8 is-offset-2 has-text-centered">
+					<p>
+						The full site is still a work in progress, but for now,
+						you can authorize the bot to access your Twitch account
+						by clicking here:
+					</p>
+					<a class="button is-large is-info is-focused" href="/auth/twitch">
+						<span class="icon is-small"><i class="fab fa-twitch"></i></span>
+						<span>Log in with Twitch</span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ LoginPage(base BasePage) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - Log in", nil, nil, loginBody())
+}
+
+templ loginSuccessBody(name string, id int64, bot bool) {
+	<section class="section">
+		<div class="container content">
+			<h1 class="title has-text-centered">
+				Success!
+			</h1>
+			<div class="columns">
+				<div class="column is-8 is-offset-2 has-text-centered">
+					<p>
+						The bot is now authorized to access your Twitch account.
+					</p>
+					<p>
+						{ name } ({ fmt.Sprint(id) })
+						if bot {
+							as bot
+						}
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ LoginSuccessPage(base BasePage, name string, id int64, bot bool) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - Log in - Success!", nil, nil, loginSuccessBody(name, id, bot))
+}
+
+templ MetaRedirect(url string) {
+	<!DOCTYPE html>
+	<html>
+		<head>
+			<style>
+			html {
+				background-color: #1f2424;
+			}
+			</style>
+			<meta http-equiv="Refresh" content={ "0; url=" + url }/>
+		</head>
+		<body></body>
+	</html>
+}

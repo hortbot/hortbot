@@ -1,0 +1,695 @@
+package templates
+
+templ docLevelTag(level string) {
+	switch level {
+		case "everyone":
+			<span class="tag is-light">Everyone</span>
+		case "subs":
+			<span class="tag is-info">Subs</span>
+		case "mods":
+			<span class="tag is-success">Mods</span>
+		case "broadcaster":
+			<span class="tag is-danger">Broadcaster</span>
+		case "admin":
+			<span class="tag is-black">Admins</span>
+		case "varies":
+			<span class="tag is-warning">Varies</span>
+	}
+}
+
+templ docCommand(name, desc, level string, extra ...string) {
+	<dt><code>{ name }</code></dt>
+	<dd>
+		<p>
+			@templ.Raw(desc)
+			@docLevelTag(level)
+		</p>
+		for _, ex := range extra {
+			<p>
+				@templ.Raw(ex)
+			</p>
+		}
+	</dd>
+}
+
+templ docAction(name, desc string, extra ...string) {
+	@docCommand("(_"+name+"_)", desc, "", extra...)
+}
+
+templ docsMeta() {
+	@sidebarStyle()
+	<style>
+	h3.title {
+		padding-top: 1rem;
+	}
+
+	dt {
+		padding-top: 1rem;
+	}
+
+	dd {
+		padding-top: 0.5rem;
+		padding-bottom: 0.5rem;
+	}
+
+	.tag {
+		margin-left: 1rem;
+		height: 1.5rem !important;
+		padding-left: 0.5rem !important;
+		padding-right: 0.5rem !important;
+	}
+	</style>
+}
+
+templ docsScripts() {
+	@jqueryScript()
+	@gumshoeScript()
+	<script>
+	$(function() {
+		document.addEventListener("gumshoeActivate", function(event) {
+			$(event.detail.link).addClass("is-active");
+		}, false);
+		document.addEventListener("gumshoeDeactivate", function(event) {
+			$(event.detail.link).removeClass("is-active");
+		}, false);
+
+		var header = document.querySelector("#header");
+		spy = new Gumshoe("#sidebar a", {
+			navClass: "is-active",
+			contentClass: "is-active",
+			offset: function() {
+				return header.getBoundingClientRect().height;
+			},
+			events: true
+		});
+
+		spy.setup();
+		spy.detect();
+
+		$("#main").scroll(function() {
+			spy.detect();
+		});
+	});
+	</script>
+}
+
+templ docsBody(brand string) {
+	<div class="columns is-fullheight is-clipped">
+		<div class="is-sidebar-menu is-hidden-mobile" id="sidebar">
+			<aside class="menu">
+				<p class="menu-label">General</p>
+				<ul class="menu-list">
+					<li><a href="#commands">Commands</a></li>
+				</ul>
+				<p class="menu-label">Custom commands</p>
+				<ul class="menu-list">
+					<li><a href="#triggers">Triggers</a></li>
+					<li><a href="#repeats">Repeats</a></li>
+					<li><a href="#schedule">Schedule</a></li>
+					<li><a href="#autoreplies">Autoreplies</a></li>
+					<li><a href="#lists">Lists</a></li>
+					<li><a href="#variables">Variables</a></li>
+				</ul>
+				<p class="menu-label">Moderation</p>
+				<ul class="menu-list">
+					<li><a href="#shortcuts">Shortcuts</a></li>
+					<li><a href="#ignores">Ignores</a></li>
+					<li><a href="#user-levels">User levels</a></li>
+				</ul>
+				<p class="menu-label">Fun</p>
+				<ul class="menu-list">
+					<li><a href="#general-fun">General fun</a></li>
+					<li><a href="#quotes">Quotes</a></li>
+				</ul>
+				<p class="menu-label">Utilities</p>
+				<ul class="menu-list">
+					<li><a href="#general-utilities">General utilities</a></li>
+					<li><a href="#twitch">Twitch</a></li>
+					<li><a href="#raffles">Raffles</a></li>
+				</ul>
+				<p class="menu-label">Settings</p>
+				<ul class="menu-list">
+					<li><a href="#general-settings">General settings</a></li>
+					<li><a href="#roll-settings">Roll</a></li>
+				</ul>
+				<p class="menu-label">Filters</p>
+				<ul class="menu-list">
+					<li><a href="#filters">General filters</a></li>
+					<li><a href="#filter-links">Links</a></li>
+					<li><a href="#filter-capitals">Capitals</a></li>
+					<li><a href="#filter-banned">Banned phrases</a></li>
+					<li><a href="#filter-symbols">Symbols</a></li>
+					<li><a href="#filter-emotes">Emotes</a></li>
+				</ul>
+				<p class="menu-label">Command actions</p>
+				<ul class="menu-list">
+					<li><a href="#actions">Actions</a></li>
+				</ul>
+			</aside>
+		</div>
+		<div class="column is-main-content content" id="main">
+			<h1 class="title">Documentation</h1>
+			<p>
+				This page contains documentation for all of { brand }'s features.
+				Note that <code>!</code> is used as a prefix in the documentation, but may differ
+				per channel.
+			</p>
+			<hr/>
+			<h2 class="title">General</h2>
+			<section id="commands" class="page">
+				<h3 class="title">Commands</h3>
+				<dl>
+					@docCommand("!join", "Tells "+brand+" to join your channel. Must be executed in the bot's channel.", "everyone")
+					@docCommand("!part", "Tells "+brand+" to leave your channel. In a non-bot channel, only the broadcaster may use this command.", "everyone")
+					@docCommand("!bothelp", "Returns a helpful message.", "everyone")
+				</dl>
+			</section>
+			<hr/>
+			<h2 class="title">Custom commands</h2>
+			<section id="triggers" class="page">
+				<h3 class="title">Triggers</h3>
+				<dl>
+					@docCommand("!commands", "Links to the list of commands for the channel.", "subs")
+					@docCommand(
+						"!command add <name> <text>",
+						"Creates a command <code>!name</code> that responds with the specified text.",
+						"mods",
+						"By default, commands are available to subs. Using <code>adda</code> or <code>addm</code> instead of <code>add</code> will pre-restrict the command to all users or moderators, respectively.",
+						"Example: <code>!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?</code> &mdash; Adds a command called \"pan\".",
+						"Example: <code>!command adda useful Here's some useful info: example.org</code> &mdash; Adds a command available to all users immediately.",
+					)
+					@docCommand(
+						"!command delete <name>",
+						"Deletes a command.",
+						"mods",
+						"Example: <code>!command delete pan</code> &mdash; Deletes the command called \"pan\".",
+					)
+					@docCommand(
+						"!command restrict <name> all|subs|vips|mods|owner",
+						"Restricts a command to a specific group.",
+						"mods",
+						"Example: <code>!command restrict pan mods</code> &mdash; Restricts \"pan\" to moderators and above.",
+					)
+					@docCommand(
+						"!command editor <name>",
+						"Gets the last editor of a command.",
+						"mods",
+						"Example: <code>!command editor pan</code> &mdash; Gets the last editor of the \"pan\" command.",
+					)
+					@docCommand(
+						"!command count <name>",
+						"Gets the number of times a command has been run.",
+						"mods",
+						"Example: <code>!command count pan</code> &mdash; Gets the number of times the \"pan\" command have been used.",
+					)
+					@docCommand(
+						"!command rename <old> <new>",
+						"Renames a command.",
+						"mods",
+						"Example: <code>!command rename pan oldpan</code> &mdash; Renames the command \"pan\" to \"oldpan\".",
+					)
+					@docCommand(
+						"!command get <name>",
+						"Gets the response for a command.",
+						"mods",
+						"Example: <code>!command get pan</code> &mdash; Gets the response for the \"pan\" command.",
+					)
+					@docCommand(
+						"!command clone #<channel> <name>",
+						"Clones a command from another channel into this channel.",
+						"mods",
+						"Example: <code>!command clone #coestar pan</code> &mdash; Clones the \"pan\" command into the current channel as \"pan\".",
+					)
+					@docCommand(
+						"!command exec <command string>",
+						"Executes the command string. Can be used to quickly test some commands before adding them",
+						"mods",
+						"Example: <code>!command exec The time in Chicago is (_TIME_America/Chicago_). </code>",
+					)
+				</dl>
+			</section>
+			<section id="repeats" class="page">
+				<h3 class="title">Repeats</h3>
+				<p>
+					The repeat command sets up a command repetition. When enabled,
+					the bot will repeat every X seconds so long as Y messages have
+					passed.
+				</p>
+				<dl>
+					@docCommand(
+						"!repeat add <name> <delay in seconds> [message difference]",
+						"Sets a command to repeat, and enables it.",
+						"mods",
+						"Example: <code>!repeat add discord 300 10</code> &mdash; Sets the command \"discord\" to repeat every 300 seconds if at least 10 messages have passed.",
+					)
+					@docCommand(
+						"!repeat delete <name>",
+						"Deletes a command's repeat info.",
+						"mods",
+						"Example: <code>!repeat delete discord</code> &mdash; Stops repeating the \"discord\" command and deletes its repeat info.",
+					)
+					@docCommand(
+						"!repeat on|off <name>",
+						"Enables or disables a command's repetition.",
+						"mods",
+						"Example: <code>!repeat on discord</code> &mdash; Enables repetition of the \"discord\" command.",
+					)
+					@docCommand("!repeat list", "Lists command repetition info.", "mods")
+				</dl>
+			</section>
+			<section id="schedule" class="page">
+				<h3 class="title">Schedule</h3>
+				<p>
+					The schedule command sets up a command repetition via a <a href="https://crontab.guru/" target="_blank">cron expression</a>.
+					Like repeated commands, a message difference can be specified.
+				</p>
+				<dl>
+					@docCommand(
+						"!schedule add <name> <pattern> [message difference]",
+						"Schedules a command, and enables it.",
+						"mods",
+						"Example: <code>!schedule add discord *_5_*_*_*</code> &mdash; Schedules the command \"discord\" to at 5AM every day.",
+						"Example: <code>!schedule add discord hourly 10</code> &mdash; Schedules the command \"discord\" to run hourly if at least 10 messages have passed.",
+					)
+					@docCommand(
+						"!schedule delete <name>",
+						"Deletes a command's schedule.",
+						"mods",
+						"Example: <code>!schedule delete discord</code> &mdash; Unschedules the \"discord\" command and deletes its schedule.",
+					)
+					@docCommand(
+						"!schedule on|off <name>",
+						"Enables or disables a command's repetition.",
+						"mods",
+						"Example: <code>!schedule on discord</code> &mdash; Enables the schedule of the \"discord\" command.",
+					)
+					@docCommand("!schedule list", "Lists command schedules.", "mods")
+				</dl>
+			</section>
+			<section id="autoreplies" class="page">
+				<h3 class="title">Autoreplies</h3>
+				<p>
+					Autoreplies are like custom commands, but are run when a message matches a pattern.
+				</p>
+				<dl>
+					@docCommand(
+						"!autoreply add <pattern> <response>",
+						"Adds an autoreply which will respond with the provided response when a message matches the pattern.",
+						"mods",
+						"In the pattern, spaces should be replaced with underscores.",
+						"Example: <code>!autoreply add *what*game* This is (_GAME_).</code> &mdash; Adds an autoreply that will reply with the current game if a message matches the pattern \"*what*game\".",
+						"Example: <code>!autoreply add REGEX:^too_many_[^_]+$ TOO MANY COOKS (_REGULARS_ONLY_)</code> &mdash; Adds an autoreply which uses a raw regex pattern.",
+					)
+					@docCommand(
+						"!autoreply delete <num>",
+						"Removes an autoreply.",
+						"mods",
+						"Note that deleting an autoreply that isn't the last does not shift the numbers down. Use <code>!autoreply compact</code> to do this.",
+					)
+					@docCommand("!autoreply editresponse <num> <response>", "Edits an autoreply's response.", "mods")
+					@docCommand(
+						"!autoreply editpattern <num> <pattern>",
+						"Edits an autoreply's pattern.",
+						"mods",
+						"In the pattern, spaces should be replaced with underscores.",
+					)
+					@docCommand(
+						"!autoreply compact <num>",
+						"Compacts autoreplies \"num\" and higher. This is useful after removing an autoreply in the middle of the list.",
+						"mods",
+					)
+					@docCommand("!autoreply list", "Links to the list of autoreplies for the channel.", "mods")
+				</dl>
+			</section>
+			<section id="lists" class="page">
+				<h3 class="title">Lists</h3>
+				<p>
+					Lists are collections of command-like responses, which can be accessed directly, or via the <code>(_LIST_&lt;name&gt;_RANDOM_)</code> action.
+					They share the same namespace as custom commands, and may contain command actions themselves.
+				</p>
+				<dl>
+					@docCommand(
+						"!list add <name>",
+						"Adds a list.",
+						"mods",
+						"By default, lists are available to subs. Using <code>adda</code> or <code>addm</code> instead of <code>add</code> will pre-restrict the list to all users or moderators, respectively.",
+						"Example: <code>!list add hatspells</code> &mdash; Adds a list called \"hatspells\".",
+					)
+					@docCommand("!list delete <name>", "Removes a list.", "mods")
+					@docCommand("!list restrict <name> all|subs|vips|mods|owner", "Restricts a list.", "mods")
+					@docCommand("!list rename <old> <new>", "Renames a list.", "mods")
+					@docCommand("!<name>", "Gets a random item from the list. Or use <code>!&lt;name&gt; random</code>.", "varies")
+					@docCommand(
+						"!<name> add <item>",
+						"Adds an item to the named list.",
+						"mods",
+						"Example: <code>!hatspells add Solar Eruption</code> &mdash; Adds \"Solar Eruption\" to the \"hatspells\" list.",
+					)
+					@docCommand(
+						"!<name> delete <item>",
+						"Removes an item from the named list.",
+						"mods",
+						"Example: <code>!hatspells remove Solar Eruption</code> &mdash; Removes \"Solar Eruption\" from the \"hatspells\" list.",
+					)
+					@docCommand("!<name> restrict", "Same as <code>!list restrict &lt;name&gt;</code>.", "mods")
+					@docCommand("!<name> get <num>", "Gets a specific item from the list.", "varies")
+				</dl>
+			</section>
+			<section id="variables" class="page">
+				<h3 class="title">Variables</h3>
+				<p>
+					Variables store persistent information between commands, and are accessible directly or through actions.
+				</p>
+				<dl>
+					@docCommand("!var set <name> <value>", "Sets a variable.", "mods")
+					@docCommand("!var get <name>", "Gets a variable's value.", "mods")
+					@docCommand("!var delete <name>", "Removes a variable.", "mods")
+					@docCommand("!var increment <name> <amount>", "Increments a variable as an integer.", "mods")
+					@docCommand("!var decrement <name> <amount>", "Decrements a variable as an integer.", "mods")
+				</dl>
+			</section>
+			<hr/>
+			<h2 class="title">Moderation</h2>
+			<section id="shortcuts" class="page">
+				<h3 class="title">Shortcuts</h3>
+				<dl>
+					@docCommand("+b <user>", "Bans a user.", "mods")
+					@docCommand("-b <user>", "Unbans a user.", "mods")
+					@docCommand("+t <user> [seconds]", "Times out a user (with an optional duration).", "mods")
+					@docCommand("-t <user>", "Removes a user's timeout.", "mods")
+					@docCommand("+p <user>", "Purges a user's messages.", "mods")
+					@docCommand("!permit <user>", "Permits a user to post one link.", "mods")
+					@docCommand("!clear", "Clears chat.", "mods")
+					@docCommand("+m", "Turns slow mode on.", "mods")
+					@docCommand("-m", "Turns slow mode off.", "mods")
+					@docCommand("+s", "Turns sub only mode on.", "mods")
+					@docCommand("-s", "Turns sub only mode off.", "mods")
+				</dl>
+			</section>
+			<section id="ignores" class="page">
+				<h3 class="title">Ignores</h3>
+				<p>
+					Ignored users may not use { brand }, but will still be subject to filters.
+				</p>
+				<dl>
+					@docCommand("!ignore add <user>", "Adds a user to the ignore list.", "mods")
+					@docCommand("!ignore delete <user>", "Removes a user from the ignore list.", "mods")
+					@docCommand("!ignore list", "Lists users in the ignore list.", "mods")
+				</dl>
+			</section>
+			<section id="user-levels" class="page">
+				<h3 class="title">User levels</h3>
+				<p>
+					Custom user levels reclassify users to have different levels. Regulars are equivalent
+					to subscribers, owners are equivalent to the channel broadcaster, and mods are mods.
+				</p>
+				<dl>
+					@docCommand("!regular list", "Lists regulars.", "mods")
+					@docCommand("!regular add|remove <user>", "Adds or removes a user from the regular list.", "mods")
+					@docCommand("!owner|mod list", "Lists users in that group.", "broadcaster")
+					@docCommand("!owner|mod add|remove <user>", "Adds or removes a user from a list.", "broadcaster")
+				</dl>
+			</section>
+			<hr/>
+			<h2 class="title">Fun</h2>
+			<section id="general-fun" class="page">
+				<h3 class="title">General fun</h3>
+				<dl>
+					@docCommand("!conch", "Magic 8 ball.", "subs")
+					@docCommand("!xkcd <num>", "Gets the requested XKCD comic.", "subs")
+					@docCommand("!random coin", "Flips a coin.", "varies")
+					@docCommand("!random <integer>", "Picks a random number.", "varies")
+					@docCommand("!roll <dice>", "Rolls the specified dice.", "varies", "Example: <code>!roll 2d20</code> &mdash; Rolls two D20s.")
+					@docCommand("!google <query>", "Googles something.", "subs")
+					@docCommand("!link <query>", "Links something.", "subs")
+					@docCommand("!me <phrase>", "Sends a /me command.", "mods")
+					@docCommand("!urban <phrase>", "Looks up something in the Urban Dictionary. Be warned, these are not filtered.", "subs")
+				</dl>
+			</section>
+			<section id="quotes" class="page">
+				<h3 class="title">Quotes</h3>
+				<dl>
+					@docCommand("!quote", "Gets a random quote.", "subs")
+					@docCommand(
+						"!quote add <quote>",
+						"Adds a quote.",
+						"mods",
+						"Example: <code>!quote add \"This is a quote!\"</code> &mdash; Adds a the quote \"This is a quote!\".",
+					)
+					@docCommand(
+						"!quote delete <num>",
+						"Removes a quote.",
+						"mods",
+						"Note that deleting a quote that isn't the last does not shift the numbers down. Use <code>!quote compact</code> to do this.",
+					)
+					@docCommand("!quote get <num>", "Gets a quote.", "subs")
+					@docCommand("!quote random", "Gets a random quote.", "subs")
+					@docCommand("!quote getindex <exact quote>", "Returns the number of the exact quote specified.", "subs")
+					@docCommand("!quote edit <num> <quote>", "Edts a quote.", "mods")
+					@docCommand("!quote search <phrase>", "Searches all quotes for a phrase.", "mods")
+					@docCommand("!quote editor <num>", "Gets the username of the last editor of the quote.", "subs")
+					@docCommand(
+						"!quote compact <num>",
+						"Compacts quotes \"num\" and higher. This is useful after removing a quote in the middle of the list.",
+						"mods",
+					)
+				</dl>
+			</section>
+			<hr/>
+			<h2 class="title">Utilities</h2>
+			<section id="general-utilities" class="page">
+				<h3 class="title">General utilities</h3>
+				<dl>
+					@docCommand("!lastfm", "Links to the channel's LastFM profile.", "everyone")
+					@docCommand("!music", "Gets the currently playing song.", "everyone")
+					@docCommand("!songlink", "Gets a link to the currently playing song.", "everyone")
+					@docCommand("!whatshouldiplay", "Picks a random game from the channel's Steam library.", "broadcaster")
+					@docCommand("!channelid", "Gets the channel's Twitch ID.", "everyone")
+					@docCommand("!ht", "Creates a highlight (viewable on the channel page).", "everyone")
+					@docCommand("!highlightthat", "Same as <code>!ht</code>.", "everyone")
+					@docCommand("!#<channel>/<command>", "Runs a command from another channel.", "broadcaster")
+					@docCommand("!hltb", "Fetches the HowLongToBeat time for the current game, or an arbitrary game with a parameter.", "subs")
+				</dl>
+			</section>
+			<section id="twitch" class="page">
+				<h3 class="title">Twitch</h3>
+				<dl>
+					@docCommand("!game", "Gets the current game.", "everyone")
+					@docCommand("!game <new game>", "Sets the current game. Only valid game names are allowed, but the bot will autocorrect or suggest game names when possible.", "mods")
+					@docCommand("!status", "Gets the current status.", "everyone")
+					@docCommand("!status <new status>", "Sets the current status.", "mods")
+					@docCommand("!uptime", "Gets the current uptime.", "everyone")
+					@docCommand("!viewers", "Gets the current viewer count.", "everyone")
+					@docCommand("!islive <user>", "Checks if a user is live.", "mods")
+					@docCommand("!statusgame <new status>", "Sets the current game to the current Steam game. and sets the status.", "mods")
+					@docCommand("!steamgame", "Sets the current game to the current Steam game.", "mods")
+				</dl>
+			</section>
+			<section id="raffles" class="page">
+				<h3 class="title">Raffles</h3>
+				<dl>
+					@docCommand("!raffle", "Enters into the active raffle.", "everyone")
+					@docCommand("!raffle enable|disable", "Enables/disables the raffle. Enabling the raffle clears the previous entries.", "mods")
+					@docCommand("!raffle reset", "Resets the raffle entries.", "mods")
+					@docCommand("!raffle count", "Counts the number of raffle entries.", "mods")
+					@docCommand("!raffle winner", "Picks a random winner.", "mods")
+					@docCommand("!raffle winner <X>", "Picks &lt;X&gt; random winners.", "mods")
+				</dl>
+			</section>
+			<hr/>
+			<h2 class="title">Settings</h2>
+			<section id="general-settings" class="page">
+				<h3 class="title">General settings</h3>
+				<dl>
+					@docCommand("!set prefix <prefix>", "Sets the prefix used to access commands.", "broadcaster")
+					@docCommand("!set bullet <bullet>", "Sets the bullet prepended to all bot messages.", "broadcaster")
+					@docCommand("!set cooldown <seconds>", "Sets the command cooldown.", "mods")
+					@docCommand("!set shouldModerate on|off", "Enables moderation.", "mods")
+					@docCommand("!set lastfm off|<name>", "Sets the channel's LastFM profile name.", "mods")
+					@docCommand("!set enableWarnings on|off", "Enable warnings before moderation actions.", "mods")
+					@docCommand("!set displayWarnings on|off", "Show warnings on warns.", "mods")
+					@docCommand("!set timeoutDuration <seconds>", "Sets the moderation timeout duration.", "mods")
+					@docCommand("!set extraLifeID <ID>", "Sets the Extra-Life ID.", "mods")
+					@docCommand("!set subsMayLink on|off", "Allow subscribers to link.", "mods")
+					@docCommand("!set mode all|subs|vips|mods|owner", "Sets the minimum user level for the bot to respond to.", "mods")
+					@docCommand("!set steam <ID>", "Sets the channel's Steam ID.", "mods")
+					@docCommand("!set urban on|off", "Enables/disables the urban command.", "mods")
+					@docCommand("!set tweet <message>", "Sets the ClickToTweet message.", "mods")
+				</dl>
+			</section>
+			<section id="roll-settings" class="page">
+				<h3 class="title">Roll</h3>
+				<dl>
+					@docCommand("!set roll default <num>", "Set the default roll amount.", "mods")
+					@docCommand("!set roll cooldown <seconds>", "Set the roll cooldown.", "mods")
+					@docCommand("!set roll userlevel all|subs|vips|mods|owner", "Set the minimum user level for roll/random.", "mods")
+				</dl>
+			</section>
+			<hr/>
+			<h2 class="title">Filters</h2>
+			<section id="general-filters" class="page">
+				<h3 class="title">General filters</h3>
+				<dl>
+					@docCommand("!filter on|off", "Enables/disables all filters.", "mods")
+					@docCommand("!filter status", "Shows the status of all filters.", "mods")
+					@docCommand("!filter me on|off", "Enables/disables the /me filter.", "mods")
+					@docCommand("!filter messagelength <length>", "Sets the maximum message length.", "mods")
+					@docCommand("!filter exempt all|subs|vips|mods|owner", "Sets the minimum user level that will be exempt from filters. Defaults to subs, and cannot be higher than mods. For historical reasons, link filtering is controlled by subsMayLink.", "mods")
+				</dl>
+			</section>
+			<section id="filter-links" class="page">
+				<h3 class="title">Links</h3>
+				<dl>
+					@docCommand("!filter links on|off", "Toggles link filtering.", "mods")
+					@docCommand(
+						"!filter pd add|delete <link pattern>",
+						"Toggles link filtering.",
+						"mods",
+						"Link patterns can just be domains, or contain wildcard characters.",
+						"Example: <code>!filter pd add clips.twitch.tv</code> &mdash; Allow old-style Twitch clip links.",
+						"Example: <code>!filter pd add twitch.tv/*/clips</code> &mdash; Allow new-style Twitch clip links.",
+					)
+					@docCommand("!filter pd list", "Lists permitted links.", "mods")
+				</dl>
+			</section>
+			<section id="filter-capitals" class="page">
+				<h3 class="title">Capitals</h3>
+				<dl>
+					@docCommand("!filter caps on|off", "Toggles caps filtering.", "mods")
+					@docCommand("!filter caps status", "Shows caps filter status.", "mods")
+					@docCommand("!filter percent <percent>", "Sets minimum caps percentage to be filtered.", "mods")
+					@docCommand("!filter mincaps <num>", "Sets minimum caps count to be filtered.", "mods")
+					@docCommand("!filter minchars <num>", "Sets minimum message length to be filtered.", "mods")
+				</dl>
+			</section>
+			<section id="filter-banned" class="page">
+				<h3 class="title">Banned phrases</h3>
+				<dl>
+					@docCommand("!filter banphrase on|off", "Toggles banned phrase filtering.", "mods")
+					@docCommand("!filter banphrase list", "Lists banned phrases.", "mods")
+					@docCommand("!filter banphrase add|delete <phrase>", "Adds/removes a banned phrase.", "mods")
+				</dl>
+			</section>
+			<section id="filter-symbols" class="page">
+				<h3 class="title">Symbols</h3>
+				<dl>
+					@docCommand("!filter symbols on|off", "Toggles symbol filtering.", "mods")
+					@docCommand("!filter symbols status", "Shows symbol filter status.", "mods")
+					@docCommand("!filter symbols percent <percent>", "Sets minimum symbol percentage to be filtered.", "mods")
+					@docCommand("!filter symbols min <num>", "Sets minimum symbol count to be filtered.", "mods")
+				</dl>
+			</section>
+			<section id="filter-emotes" class="page">
+				<h3 class="title">Emotes</h3>
+				<dl>
+					@docCommand("!filter emotes on|off", "Toggles emote filtering.", "mods")
+					@docCommand("!filter emotes max <num>", "Sets max emotes allowed per message.", "mods")
+					@docCommand("!filter emotes single on|off", "Toggles filter for single emote messages.", "mods")
+				</dl>
+			</section>
+			<hr/>
+			<section id="actions" class="page">
+				<h2 class="title">Actions</h2>
+				<p>
+					These actions can be used in custom commands and list commands. Actions may be nested, for example:
+				</p>
+				<pre>(_TEXTAPI_https://duckduckgo.com/?q=(_QESC_(_P_)_)_)</pre>
+				<h3>Common</h3>
+				<dl>
+					@docAction("PARAMETER", "The next command parameter (split by semicolon).")
+					@docAction("P", "Same as <code>PARAMETER</code>.")
+					@docAction("PARAMETER_CAPS", "The next command parameter, in all caps.")
+					@docAction("P_CAPS", "Same as <code>PARAMETER_CAPS</code>.")
+					@docAction("PARAMETER_OR_<DEFAULT>", "The next command parameter, or a default value if empty.")
+					@docAction("P_OR_<DEFAULT>", "Same as <code>PARAMETER_OR_&lt;DEFAULT&gt;</code>.")
+					@docAction("PARAMETER_<X>", "Parameter &lt;X&gt;.")
+					@docAction("P_<X>", "Same as <code>PARAMETER_&lt;X&gt;</code>.")
+					@docAction("PARAMETER_<X>_OR_<DEFAULT>", "Parameter &lt;X&gt;, or a default value if empty.")
+					@docAction("P_<X>_OR_<DEFAULT>", "Same as <code>PARAMETER_&lt;X&gt;_OR_&lt;DEFAULT&gt;</code>.")
+					@docAction("PARAMETER_<X>_CAPS", "Parameter &lt;X&gt;, in all caps.")
+					@docAction("P_<X>_CAPS", "Same as <code>PARAMETER_&lt;X&gt;_CAPS</code>.")
+					@docAction("CAPS_<X>", "Makes &lt;X&gt; all caps.")
+					@docAction("USER", "The user's name.")
+					@docAction("USER_DISPLAY", "The user's display name.")
+					@docAction("ONLINE_CHECK", "If offline, the command is disabled.")
+					@docAction("GAME", "The current game.")
+					@docAction("GAME_CLEAN", "The current game, URL-safe.")
+					@docAction("GAME_IS_<GAME>", "If present and the current game is not <code>&lt;GAME&gt;</code>, then the command will stop. Note that this cannot be used with nesting, e.g. you cannot do <code>(_GAME_IS_(_PARAMETER_)_)</code>.")
+					@docAction("GAME_IS_NOT_<GAME>", "Inverse of <code>GAME_IS_&lt;GAME&gt;</code>.")
+					@docAction("GAME_LINK", "A link to the current game, at its relevent game store.")
+					@docAction("STATUS", "The current stream status.")
+					@docAction("VIEWERS", "The current viewer count.")
+					@docAction("CHATTERS", "The current chatter count.")
+					@docAction("QUOTE", "A random quote.")
+					@docAction("RANDOM_<MIN>_<MAX>", "A random number between &lt;MIN&gt; and &lt;MIN&gt;, up to one decimal place.")
+					@docAction("RANDOM_INT_<MIN>_<MAX>", "A random integer between &lt;MIN&gt; and &lt;MIN&gt;.")
+					@docAction("QUIET_<X>", "Evaluates to the empty string, ignoring the value of &lt;X&gt;. Useful to silence actions with side effects, such as variable setting.")
+				</dl>
+				<h3>Moderation</h3>
+				<dl>
+					@docAction("SUBMODE_ON", "Enables submode.")
+					@docAction("SUBMODE_OFF", "Disables submode.")
+					@docAction("PURGE", "Purges the messages of the user in the first parameter, or the sender if used in an autoreply.")
+					@docAction("BAN", "Bans the user in the first parameter, or the sender if used in an autoreply, and returns the user.")
+					@docAction("TIMEOUT", "Times out the user in the first parameter, or the sender if used in an autoreply, and returns the user.")
+					@docAction("DELETE", "Deletes the message if used in an autoreply, and returns the user.")
+					@docAction("REGULARS_ONLY", "Only allow regulars (subs) to use the command.")
+				</dl>
+				<h3>Date and time</h3>
+				<dl>
+					@docAction("DATE", "The current date, UTC.")
+					@docAction("DATE_<TZ>", "The current date, in the specified timezone (like \"America/Chicago\" or \"MST\").")
+					@docAction("TIME", "The current time, UTC.")
+					@docAction("TIME_<TZ>", "The current time, in the specified timezone (like \"America/Chicago\" or \"MST\").")
+					@docAction("TIME24", "The current 24-hour time, UTC.")
+					@docAction("TIME24_<TZ>", "The current 24-hour time, in the specified timezone (like \"America/Chicago\" or \"MST\").")
+					@docAction("DATETIME", "The current date and time, UTC.")
+					@docAction("DATETIME_<TZ>", "The current date and time, in the specified timezone (like \"America/Chicago\" or \"MST\").")
+					@docAction("DATETIME24", "The current date and 24-hour time, UTC.")
+					@docAction("DATETIME24_<TZ>", "The current date and 24-hour time, in the specified timezone (like \"America/Chicago\" or \"MST\")..")
+					@docAction("UNTIL_<TIMESTAMP>", "Time until the specified timestamp (in RFC3339 or UNIX-timestamp form).")
+					@docAction("UNTILSHORT_<TIMESTAMP>", "Time until the specified timestamp (in RFC3339 or UNIX-timestamp form), short style.")
+					@docAction("UNTILLONG_<TIMESTAMP>", "Time until the specified timestamp (in RFC3339 or UNIX-timestamp form), long style.")
+				</dl>
+				<h3>Variables, lists, and commands</h3>
+				<dl>
+					@docAction("VARS_<NAME>_GET", "Gets a variable.")
+					@docAction("VARS_<NAME>_GET_<CHANNEL>", "Gets a variable from a specific channel.")
+					@docAction("VARS_<NAME>_SET_<VALUE>", "Set's a variable to a value.")
+					@docAction("VARS_<NAME>_INCREMENT_<NUM>", "Increments a variable if it is an integer.")
+					@docAction("VARS_<NAME>_DECREMENT_<NUM>", "Decrements a variable if it is an integer.")
+					@docAction("LIST_<NAME>_RANDOM", "A random item from a list.")
+					@docAction("COMMAND_<COMMAND>", "Insert the specified command's response.")
+					@docAction("<COMMAND>_COUNT", "The number of times a command has been used.")
+				</dl>
+				<h3>Meta</h3>
+				<dl>
+					@docAction("MESSAGE_COUNT", "The current message count in this channel.")
+					@docAction("SILENT", "Silences the message containing this action.")
+					@docAction("NUMCHANNELS", "The number of channels the bot is active in.")
+					@docAction("BOT_HELP", "The bot's help message.")
+					@docAction("CHANNEL_URL", "The current channel's URL.")
+				</dl>
+				<h3>Third-party APIs</h3>
+				<dl>
+					@docAction("SONG", "Current song.")
+					@docAction("SONG_URL", "Current song's URL.")
+					@docAction("LAST_SONG", "The previous song.")
+					@docAction("EXTRALIFE_AMOUNT", "The current Extra-Life amount.")
+					@docAction("STEAM_PROFILE", "The link to the channel's Steam profile.")
+					@docAction("STEAM_GAME", "The current Steam game.")
+					@docAction("STEAM_SERVER", "The current Steam game's server.")
+					@docAction("STEAM_STORE", "A link to the current Steam game.")
+					@docAction("TWEET_URL", "A link to Twitter which will send a tweet about the stream.")
+					@docAction("TEXTAPI_<URL>", "Sends a GET request to the provided URL and returns the resulting body.")
+					@docAction("PESC_<TEXT>", "Path-escapes the given text.")
+					@docAction("QESC_<TEXT>", "Query-escapes the given text.")
+				</dl>
+			</section>
+		</div>
+	</div>
+}
+
+templ DocsPage(base BasePage) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - Documentation", docsMeta(), docsScripts(), docsBody(base.Brand))
+}

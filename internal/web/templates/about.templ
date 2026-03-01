@@ -1,0 +1,29 @@
+package templates
+
+import "github.com/hortbot/hortbot/internal/version"
+
+templ aboutBody(brand string) {
+	<section class="section">
+		<div class="container content">
+			<h1 class="title has-text-centered">
+				About
+			</h1>
+			<div class="columns">
+				<div class="column is-8 is-offset-2 has-text-centered">
+					<p>
+						{ brand } is an instance of HortBot, a Twitch chat bot written in Go.
+						You can find its source code on
+						<a href="https://github.com/hortbot/hortbot">GitHub here</a>.
+					</p>
+					<p>
+						This site is currently running version <code>{ version.Version() }</code>.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ AboutPage(base BasePage) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - About", nil, nil, aboutBody(base.Brand))
+}

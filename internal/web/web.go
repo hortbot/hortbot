@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/a-h/templ"
 	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/go-chi/chi/v5"
@@ -194,6 +195,12 @@ func (a *App) basePage(r *http.Request) templates.BasePage {
 	}
 }
 
+func renderTempl(w http.ResponseWriter, r *http.Request, component templ.Component) {
+	if err := component.Render(r.Context(), w); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
 type authState struct {
 	Host     string
 	Bot      bool
@@ -279,7 +286,9 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 		u := *r.URL
 		u.Host = stateVal.Host
-		templates.WriteMetaRedirect(w, u.String())
+		if err := templates.MetaRedirect(u.String()).Render(ctx, w); err != nil {
+			ctxlog.Error(ctx, "error rendering meta redirect", zap.Error(err))
+		}
 		return
 	}
 
@@ -329,14 +338,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.LoginSuccessPage{
-		BasePage: a.basePage(r),
-		Name:     user.Name,
-		ID:       int64(user.ID),
-		Bot:      stateVal.Bot,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.LoginSuccessPage(a.basePage(r), user.Name, int64(user.ID), stateVal.Bot))
 }
 
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
@@ -349,34 +351,19 @@ func (a *App) index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.IndexPage{
-		BasePage:     a.basePage(r),
-		ChannelCount: int64(channelCount),
-		BotCount:     int64(botCount),
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.IndexPage(a.basePage(r), int64(channelCount), int64(botCount)))
 }
 
 func (a *App) about(w http.ResponseWriter, r *http.Request) {
-	page := &templates.AboutPage{
-		BasePage: a.basePage(r),
-	}
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.AboutPage(a.basePage(r)))
 }
 
 func (a *App) help(w http.ResponseWriter, r *http.Request) {
-	page := &templates.HelpPage{
-		BasePage: a.basePage(r),
-	}
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.HelpPage(a.basePage(r)))
 }
 
 func (a *App) docs(w http.ResponseWriter, r *http.Request) {
-	page := &templates.DocsPage{
-		BasePage: a.basePage(r),
-	}
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.DocsPage(a.basePage(r)))
 }
 
 func (a *App) channels(w http.ResponseWriter, r *http.Request) {
@@ -393,30 +380,14 @@ func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.ChannelsPage{
-		BasePage: a.basePage(r),
-		Channels: channels,
-	}
-
-	templates.WritePageTemplate(w, page)
-}
-
-func (a *App) channelPage(r *http.Request, channel *models.Channel) templates.ChannelPage {
-	return templates.ChannelPage{
-		BasePage: a.basePage(r),
-		Channel:  channel,
-	}
+	renderTempl(w, r, templates.ChannelsPage(a.basePage(r), channels))
 }
 
 func (a *App) channel(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	page := &templates.ChannelPage{
-		BasePage: a.basePage(r),
-		Channel:  channel,
-	}
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelPage(a.basePage(r), channel))
 }
 
 func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
@@ -434,12 +405,7 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
-	page := &templates.ChannelCommandsPage{
-		ChannelPage: a.channelPage(r, channel),
-		Commands:    commands,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelCommandsPage(a.basePage(r), channel, commands))
 }
 
 func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
@@ -453,12 +419,7 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.ChannelQuotesPage{
-		ChannelPage: a.channelPage(r, channel),
-		Quotes:      quotes,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelQuotesPage(a.basePage(r), channel, quotes))
 }
 
 func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
@@ -472,12 +433,7 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.ChannelAutorepliesPage{
-		ChannelPage: a.channelPage(r, channel),
-		Autoreplies: autoreplies,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelAutorepliesPage(a.basePage(r), channel, autoreplies))
 }
 
 func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
@@ -495,34 +451,21 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
-	page := &templates.ChannelListsPage{
-		ChannelPage: a.channelPage(r, channel),
-		Lists:       lists,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelListsPage(a.basePage(r), channel, lists))
 }
 
 func (a *App) channelRegulars(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	page := &templates.ChannelRegularsPage{
-		ChannelPage: a.channelPage(r, channel),
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelRegularsPage(a.basePage(r), channel))
 }
 
 func (a *App) channelChatRules(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	page := &templates.ChannelRulesPage{
-		ChannelPage: a.channelPage(r, channel),
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelRulesPage(a.basePage(r), channel))
 }
 
 func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
@@ -557,13 +500,7 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
 	})
 
-	page := &templates.ChannelScheduledPage{
-		ChannelPage: a.channelPage(r, channel),
-		Repeated:    repeated,
-		Scheduled:   scheduled,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelScheduledPage(a.basePage(r), channel, repeated, scheduled))
 }
 
 func cmpBool(a, b bool) int {
@@ -587,12 +524,7 @@ func (a *App) channelVariables(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.ChannelVariablesPage{
-		ChannelPage: a.channelPage(r, channel),
-		Variables:   variables,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelVariablesPage(a.basePage(r), channel, variables))
 }
 
 func (a *App) channelHighlights(w http.ResponseWriter, r *http.Request) {
@@ -611,20 +543,11 @@ func (a *App) channelHighlights(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	page := &templates.ChannelHighlightsPage{
-		ChannelPage: a.channelPage(r, channel),
-		Highlights:  highlights,
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.ChannelHighlightsPage(a.basePage(r), channel, highlights))
 }
 
 func (a *App) login(w http.ResponseWriter, r *http.Request) {
-	page := &templates.LoginPage{
-		BasePage: a.basePage(r),
-	}
-
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.LoginPage(a.basePage(r)))
 }
 
 func (a *App) logout(w http.ResponseWriter, r *http.Request) {
@@ -666,18 +589,16 @@ func (a *App) showVar(w http.ResponseWriter, r *http.Request) {
 		themes[theme] = true
 	}
 
-	p := &templates.ShowVarPage{
-		Channel:    query.Channel,
-		Var:        query.Var,
-		Refresh:    query.Refresh,
-		ThemesStr:  query.Themes,
-		Themes:     themes,
-		ValueFont:  query.ValueFont,
-		ValueColor: query.ValueColor,
-		LabelFont:  query.LabelFont,
-		LabelColor: query.LabelColor,
-		Label:      query.Label,
-	}
-
-	p.WriteRender(w)
+	renderTempl(w, r, templates.ShowVarPage(
+		query.Channel,
+		query.Var,
+		query.Refresh,
+		query.Themes,
+		themes,
+		query.ValueFont,
+		query.ValueColor,
+		query.LabelFont,
+		query.LabelColor,
+		query.Label,
+	))
 }

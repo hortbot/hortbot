@@ -1,0 +1,25 @@
+package templates
+
+templ helpBody() {
+	<section class="section">
+		<div class="container content">
+			<h1 class="title has-text-centered">
+				Need help?
+			</h1>
+			<div class="columns">
+				<div class="column is-8 is-offset-2 has-text-centered">
+					<p>
+						Head over to the <a href="https://discord.gg/V9Eza32">Discord server</a> { "for" } support.
+					</p>
+					<p>
+						Or, file an issue on our <a href="https://github.com/hortbot/hortbot/issues">issue tracker</a>.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ HelpPage(base BasePage) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - Help", nil, nil, helpBody())
+}

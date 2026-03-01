@@ -98,10 +98,7 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 }
 
 func (a *App) adminImport(w http.ResponseWriter, r *http.Request) {
-	page := &templates.AdminImportPage{
-		BasePage: a.basePage(r),
-	}
-	templates.WritePageTemplate(w, page)
+	renderTempl(w, r, templates.AdminImportPage(a.basePage(r)))
 }
 
 func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {

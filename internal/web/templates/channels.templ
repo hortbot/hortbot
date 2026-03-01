@@ -1,0 +1,33 @@
+package templates
+
+import "github.com/hortbot/hortbot/internal/db/models"
+
+func displayNameFor(channel *models.Channel) string {
+	if channel.DisplayName != "" {
+		return channel.DisplayName
+	}
+	return channel.Name
+}
+
+templ channelsBody(channels models.ChannelSlice, brand string) {
+	<section class="section">
+		<div class="container">
+			<h1 class="title has-text-centered">
+				Channels
+			</h1>
+			<div class="columns">
+				<div class="column is-8 is-offset-2">
+					<div class="list">
+						for _, channel := range channels {
+							<a class="list-item" href={ templ.URL("/c/" + channel.Name) }>{ displayNameFor(channel) }</a>
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+}
+
+templ ChannelsPage(base BasePage, channels models.ChannelSlice) {
+	@PageTemplate(base.Brand, base.User, base.Brand+" - Channels", nil, nil, channelsBody(channels, base.Brand))
+}

@@ -1,53 +1,54 @@
-{% code type ShowVarPage struct {
-    Channel string
-    Var string
-    Refresh int
-    ThemesStr string
-    Themes map[string]bool
-    ValueFont string
-    ValueColor string
-    LabelFont string
-    LabelColor string
-    Label string
-} %}
+package templates
 
-{% func (p *ShowVarPage) Render() %}
-<!doctype html>
-<html id="html" class="{%s p.ThemesStr %}">
-<head>
-    {% if p.Themes["blood"] %}
-    <link href='https://fonts.googleapis.com/css?family=Trade+Winds' rel='stylesheet' type='text/css'>
-    {% endif %}
-    {% if p.Themes["plumbers"] || p.Themes["arcade"] %}
-    <link href='https://fonts.googleapis.com/css?family=Press+Start+2P' rel='stylesheet' type='text/css'>
-    {% endif %}
+templ ShowVarPage(channel, varName string, refresh int, themesStr string, themes map[string]bool, valueFont, valueColor, labelFont, labelColor, label string) {
+	<!DOCTYPE html>
+	<html id="html" class={ themesStr }>
+		<head>
+			if themes["blood"] {
+				<link href="https://fonts.googleapis.com/css?family=Trade+Winds" rel="stylesheet" type="text/css"/>
+			}
+			if themes["plumbers"] || themes["arcade"] {
+				<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet" type="text/css"/>
+			}
+			@showVarStyles()
+		</head>
+		<body>
+			<div id="value" style={ showVarValueStyle(valueFont, valueColor) }></div>
+			<div id="label" style={ showVarLabelStyle(labelFont, labelColor) }>{ label }</div>
+			@jqueryScript()
+			<script>
+			var channel = {{ channel }};
+			var varName = {{ varName }};
+			var refresh = {{ refresh }};
+
+			var currValue = null;
+
+			function updateNumber() {
+				$.ajax({
+				  url: "/api/v1/vars/get/" + varName + "/" + channel,
+				  method: "GET",
+				  dataType: "json",
+				  cache: false
+				}).done(function(json) {
+					var txt = json.value;
+
+					if (currValue == null || currValue == txt) $('body').removeClass('updated');
+					else $('body').addClass('updated');
+
+					currValue = txt;
+					$("#value").text(currValue);
+				});
+			}
+
+			setInterval(updateNumber, refresh);
+			updateNumber();
+			</script>
+		</body>
+	</html>
+}
+
+templ showVarStyles() {
 	<style>
-
-
-    {% if p.ValueFont != "" || p.ValueColor != "" %}
-	#value {
-        {% if p.ValueFont != "" %}
-        font-family: "{%s p.ValueFont %}", sans-serif ! important;
-        {% endif %}
-        {% if p.ValueColor != "" %}
-        color: {%s p.ValueColor %} ! important;
-        {% endif %}
-	}
-    {% endif %}
-
-    {% if p.LabelFont != "" || p.LabelColor != "" %}
-	#label {
-        {% if p.LabelFont != "" %}
-        font-family: "{%s p.LabelFont %}", sans-serif ! important;
-        {% endif %}
-        {% if p.LabelColor != "" %}
-        color: {%s p.LabelColor %} ! important;
-        {% endif %}
-	}
-    {% endif %}
-
-
-
 
 	/******************
 	 * THEME: BASIC
@@ -74,9 +75,6 @@
 	}
 
 
-
-
-
 	/******************
 	 * THEME: GUUDE
 	 ******************/
@@ -97,9 +95,6 @@
 	}
 
 
-
-
-
 	/******************
 	 * THEME: POOSE
 	 ******************/
@@ -118,9 +113,6 @@
 		animation: blood_fadeInOut 3s 1 ease-out;
 		-webkit-animation: blood_fadeInOut 3s 1 ease-out;
 	}
-
-
-
 
 
 	/******************
@@ -156,31 +148,28 @@
 
 
 	@keyframes blood_flashWhite {
-    0%   {color: #a00;}
-    50%  {color: #fff;}
-    100% {color: #a00;}
-  }
+		0%   {color: #a00;}
+		50%  {color: #fff;}
+		100% {color: #a00;}
+	}
 
 	@-webkit-keyframes blood_flashWhite {
-    0%   {color: #a00;}
-    50%  {color: #fff;}
-    100% {color: #a00;}
-  }
+		0%   {color: #a00;}
+		50%  {color: #fff;}
+		100% {color: #a00;}
+	}
 
 	@keyframes blood_fadeInOut {
-    0%   {opacity: 0;}
-    50%  {opacity: 1;}
-    100% {opacity: 0;}
-  }
+		0%   {opacity: 0;}
+		50%  {opacity: 1;}
+		100% {opacity: 0;}
+	}
 
 	@-webkit-keyframes blood_fadeInOut {
-    0%   {opacity: 0;}
-    50%  {opacity: 1;}
-    100% {opacity: 0;}
-  }
-
-
-
+		0%   {opacity: 0;}
+		50%  {opacity: 1;}
+		100% {opacity: 0;}
+	}
 
 
 	/******************
@@ -207,18 +196,12 @@
 	}
 
 
-
-
-
 	/******************
 	 * THEME: EXZENTIA_BLOOD
 	 ******************/
 	html.exzentia_blood body.updated {
 		background: url(https://i.imgur.com/AzMrQg7.gif) no-repeat fixed center top;
 	}
-
-
-
 
 
 	/******************
@@ -264,65 +247,15 @@
 	}
 
 	@keyframes plumbers_marioJump {
-    0%   {top: 60px; opacity:0;}
-    50%  {top: 0px; opacity:1;}
-    100% {top: 60px; opacity:0;}
-  }
+		0%   {top: 60px; opacity:0;}
+		50%  {top: 0px; opacity:1;}
+		100% {top: 60px; opacity:0;}
+	}
 
 	@-webkit-keyframes plumbers_marioJump {
-    0%   {top: 60px; opacity:0;}
-    50%  {top: 0px; opacity:1;}
-    100% {top: 60px; opacity:0;}
-  }
+		0%   {top: 60px; opacity:0;}
+		50%  {top: 0px; opacity:1;}
+		100% {top: 60px; opacity:0;}
+	}
 	</style>
-</head>
-<body>
-	<div id="value"></div>
-	<div id="label">{%s p.Label %}</div>
-
-{%= jqueryScript() %}
-
-<script>
-var channel = "{%j p.Channel %}";
-var varName = "{%j p.Var %}";
-var refresh = {%d p.Refresh %};
-
-var currValue = null;
-
-function updateNumber() {
-	$.ajax({
-	  url: "/api/v1/vars/get/" + varName + "/" + channel,
-	  method: "GET",
-	  dataType: "json",
-	  cache: false
-	}).done(function(json) {
-        var txt = json.value;
-
-        if (currValue == null || currValue == txt) $('body').removeClass('updated');
-        else $('body').addClass('updated');
-
-        currValue = txt;
-        $("#value").text(currValue);
-    });
 }
-
-setInterval(updateNumber, refresh);
-updateNumber();
-
-// if ($('#html').hasClass("guude")) {
-// 	$('body').prepend('<img id="guude" src="/img/guude.png">');
-// }
-
-// if ($('#html').hasClass("poose")) {
-// 	$('body').prepend('<img id="poose" src="/img/poose.png">');
-// }
-
-// if ($('#html').hasClass("plumbers")) {
-// 	$('body').prepend('<img id="mario" src="/img/mario.png">');
-// }
-
-</script>
-</body>
-</html>
-
-{% endfunc %}
