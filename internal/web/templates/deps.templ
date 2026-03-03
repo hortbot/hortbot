@@ -47,3 +47,11 @@ templ bootstrapTableBulmaScript() {
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.24.2/themes/bulma/bootstrap-table-bulma.min.js" integrity="sha512-88ML9vhzi62vi89zlS9Xq5h1P5V1Qc0TSLSCsJBKeHhp9+rZnBFmQUSeqsfAwTgO8vAMBpavSwFB9Ejf3xr9gg==" crossorigin="anonymous"></script>
 	}
 }
+
+var htmxHandle = templ.NewOnceHandle()
+
+templ htmxScript() {
+	@htmxHandle.Once() {
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/htmx/2.0.7/htmx.min.js" integrity="sha512-IisGoumHahmfNIhP4wUV3OhgQZaaDBuD6IG4XlyjT77IUkwreZL3T3afO4xXuDanSalZ57Un+UlAbarQjNZCTQ==" crossorigin="anonymous"></script>
+	}
+}

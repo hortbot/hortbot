@@ -57,7 +57,7 @@ templ PageTemplate(title string, meta templ.Component, scripts templ.Component) 
 				@meta
 			}
 		</head>
-		<body>
+		<body hx-boost="true">
 			<nav class="navbar" id="header">
 				<div class="navbar-brand">
 					<a class="navbar-item is-active" href="/">{ getBrand(ctx) }</a>
@@ -79,6 +79,7 @@ templ PageTemplate(title string, meta templ.Component, scripts templ.Component) 
 				</div>
 			</nav>
 			{ children... }
+			@htmxScript()
 			@fontAwesomeScript()
 			if scripts != nil {
 				@scripts
