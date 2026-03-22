@@ -34,6 +34,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/leononame/clock v0.1.6
 	github.com/nsqio/go-nsq v1.1.0
+	github.com/nsqio/nsq v1.3.0
 	github.com/ory/dockertest/v3 v3.12.0
 	github.com/peterldowns/pgtestdb v0.1.1
 	github.com/petoem/cleanurl v0.1.1
@@ -70,6 +71,8 @@ require (
 	github.com/aarondl/randomize v0.0.2 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
+	github.com/blang/semver v3.5.1+incompatible // indirect
+	github.com/bmizerany/perks v0.0.0-20141205001514-d9a9656a3a4b // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cli/browser v1.3.0 // indirect
@@ -93,6 +96,7 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
+	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magefile/mage v1.10.0 // indirect
 	github.com/matryer/moq v0.7.1 // indirect
@@ -105,6 +109,7 @@ require (
 	github.com/moby/term v0.5.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
+	github.com/nsqio/go-diskqueue v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.0 // indirect
 	github.com/opencontainers/runc v1.2.3 // indirect

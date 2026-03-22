@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/bnsq"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/nsqio/go-nsq"
 	"gotest.tools/v3/assert"
@@ -16,9 +15,7 @@ import (
 func TestEventsubNotify(t *testing.T) {
 	t.Parallel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
-	defer cleanup()
+	addr := bnsq.NewTestNSQD(t)
 
 	ctx, cancel := testContext(t)
 	defer cancel()
@@ -76,9 +73,7 @@ func TestEventsubNotify(t *testing.T) {
 func TestEventsubNotifyBadDecode(t *testing.T) {
 	t.Parallel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
-	defer cleanup()
+	addr := bnsq.NewTestNSQD(t)
 
 	ctx, cancel := testContext(t)
 	defer cancel()

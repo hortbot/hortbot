@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/nsqio/go-nsq"
 	"gotest.tools/v3/assert"
@@ -18,9 +17,7 @@ func TestSubscriberBadMessage(t *testing.T) {
 	ctx, cancel := testContext(t)
 	defer cancel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
-	defer cleanup()
+	addr := NewTestNSQD(t)
 
 	producer, err := nsq.NewProducer(addr, defaultConfig())
 	assert.NilError(t, err)

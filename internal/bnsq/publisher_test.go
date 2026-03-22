@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
@@ -46,9 +45,7 @@ func TestPublishBadConfig(t *testing.T) {
 func TestPublishUnmarshalable(t *testing.T) {
 	t.Parallel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
-	defer cleanup()
+	addr := NewTestNSQD(t)
 
 	ctx, cancel := testContext(t)
 	defer cancel()
@@ -59,7 +56,7 @@ func TestPublishUnmarshalable(t *testing.T) {
 
 	g.Go(publisher.run)
 
-	err = publisher.publish(ctx, "topic", jsonx.Unmarshallable())
+	err := publisher.publish(ctx, "topic", jsonx.Unmarshallable())
 	assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
 
 	g.Stop()
@@ -69,8 +66,7 @@ func TestPublishUnmarshalable(t *testing.T) {
 func TestPublishNotConnected(t *testing.T) {
 	t.Parallel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
+	addr, stop := NewTestNSQDWithStop(t)
 
 	ctx, cancel := testContext(t)
 	defer cancel()
@@ -81,11 +77,11 @@ func TestPublishNotConnected(t *testing.T) {
 
 	g.Go(publisher.run)
 
-	err = publisher.publish(ctx, "topic", "some value")
+	err := publisher.publish(ctx, "topic", "some value")
 	assert.NilError(t, err)
 
 	time.Sleep(100 * time.Millisecond)
-	cleanup()
+	stop()
 
 	err = publisher.publish(ctx, "topic", "some value")
 	assert.Assert(t, err != nil)

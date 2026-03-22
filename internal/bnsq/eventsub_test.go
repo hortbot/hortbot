@@ -8,7 +8,6 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dnsq"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/nsqio/go-nsq"
 	"gotest.tools/v3/assert"
@@ -17,9 +16,7 @@ import (
 func TestIncomingWebsocketMessage(t *testing.T) {
 	t.Parallel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
-	defer cleanup()
+	addr := bnsq.NewTestNSQD(t)
 
 	ctx, cancel := testContext(t)
 	defer cancel()
@@ -98,9 +95,7 @@ func TestIncomingWebsocketMessage(t *testing.T) {
 func TestIncomingWebsocketMessageBadDecode(t *testing.T) {
 	t.Parallel()
 
-	addr, cleanup, err := dnsq.New()
-	assert.NilError(t, err)
-	defer cleanup()
+	addr := bnsq.NewTestNSQD(t)
 
 	ctx, cancel := testContext(t)
 	defer cancel()
