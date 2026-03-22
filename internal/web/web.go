@@ -157,7 +157,7 @@ func (a *App) Run(ctx context.Context) error {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	go func() {
+	go func() { //nolint:gosec
 		<-ctx.Done()
 		if err := srv.Shutdown(context.Background()); err != nil {
 			ctxlog.Error(ctx, "error shutting down server", zap.Error(err))
@@ -259,7 +259,7 @@ func (a *App) authTwitchBot(w http.ResponseWriter, r *http.Request) {
 func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	state := r.FormValue("state")
+	state := r.FormValue("state") //nolint:gosec
 	if state == "" {
 		a.httpError(w, r, http.StatusBadRequest)
 		return
@@ -295,7 +295,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tok, err := a.Twitch.Exchange(ctx, r.FormValue("code"))
+	tok, err := a.Twitch.Exchange(ctx, r.FormValue("code")) //nolint:gosec
 	if err != nil {
 		ctxlog.Error(ctx, "error exchanging code", zap.Error(err))
 		a.httpError(w, r, http.StatusBadRequest)
@@ -317,7 +317,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		botName = null.StringFrom(user.Name)
 	}
 
-	tt := modelsx.TokenToModel(tok, int64(user.ID), botName, strings.Fields(r.FormValue("scope")))
+	tt := modelsx.TokenToModel(tok, int64(user.ID), botName, strings.Fields(r.FormValue("scope"))) //nolint:gosec
 
 	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
 		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
