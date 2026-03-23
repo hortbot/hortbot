@@ -102,6 +102,7 @@ func newDB() (*DB, error) {
 		Port(port).
 		RuntimePath(dataDir).
 		BinariesPath(binariesPath).
+		StartParameters(map[string]string{"fsync": "off"}).
 		Logger(nil))
 
 	if err := pg.Start(); err != nil {
