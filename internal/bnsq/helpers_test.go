@@ -12,7 +12,8 @@ import (
 func testContext(t testing.TB) (context.Context, context.CancelFunc) {
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 
-	logger := testutil.Logger(t)
+	logger, stop := testutil.Logger(t)
+	t.Cleanup(stop)
 	ctx = ctxlog.WithLogger(ctx, logger)
 
 	return ctx, cancel

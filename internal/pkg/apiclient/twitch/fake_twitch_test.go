@@ -902,6 +902,8 @@ func createTester(t *testing.T) (*fakeTwitch, *twitch.Twitch) {
 
 func testContext(t testing.TB) (context.Context, context.CancelFunc) {
 	t.Helper()
-	ctx := ctxlog.WithLogger(t.Context(), testutil.Logger(t))
+	logger, stop := testutil.Logger(t)
+	t.Cleanup(stop)
+	ctx := ctxlog.WithLogger(t.Context(), logger)
 	return context.WithTimeout(ctx, 10*time.Minute)
 }

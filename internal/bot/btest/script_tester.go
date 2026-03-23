@@ -186,7 +186,9 @@ func (st *scriptTester) test(t testing.TB) {
 	st.simple = &simplemocks.APIMock{}
 	st.hltb = &hltbmocks.APIMock{}
 
-	st.ctx = ctxlog.WithLogger(t.Context(), testutil.Logger(t))
+	logger, stop := testutil.Logger(t)
+	t.Cleanup(stop)
+	st.ctx = ctxlog.WithLogger(t.Context(), logger)
 
 	st.redisServer.SetTime(time.Now())
 

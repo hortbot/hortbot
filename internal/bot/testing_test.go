@@ -15,7 +15,9 @@ func TestTestingHelper(t *testing.T) {
 
 	logs := []string{}
 
-	logger := testutil.Logger(t).WithOptions(zap.Hooks(func(e zapcore.Entry) error {
+	logger, stop := testutil.Logger(t)
+	defer stop()
+	logger = logger.WithOptions(zap.Hooks(func(e zapcore.Entry) error {
 		logs = append(logs, e.Message)
 		return nil
 	}))
