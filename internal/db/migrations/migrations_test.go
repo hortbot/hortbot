@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
 )
@@ -79,7 +79,7 @@ func TestResetBroken(t *testing.T) {
 func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string)) {
 	t.Helper()
 
-	pdb, err := dpostgres.New()
+	pdb, err := testpostgres.New()
 	assert.NilError(t, err, "creating new db")
 
 	db, err := pdb.Open()

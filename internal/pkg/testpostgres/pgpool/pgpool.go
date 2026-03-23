@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres"
 	"github.com/peterldowns/pgtestdb"
 	"gotest.tools/v3/assert"
 )
@@ -21,7 +21,7 @@ type Pool struct {
 	once sync.Once
 	err  error
 
-	pdb *dpostgres.DB
+	pdb *testpostgres.DB
 }
 
 func (p *Pool) init(t testing.TB) {
@@ -30,7 +30,7 @@ func (p *Pool) init(t testing.TB) {
 	p.once.Do(func() {
 		p.err = func() error {
 			var err error
-			p.pdb, err = dpostgres.New()
+			p.pdb, err = testpostgres.New()
 			if err != nil {
 				return fmt.Errorf("creating database: %w", err)
 			}

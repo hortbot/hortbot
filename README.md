@@ -35,5 +35,4 @@ To build:
 
 For development:
 
--   Docker (for tests and model generation)
 -   [golangci-lint](https://github.com/golangci/golangci-lint) (for linting; also run in CI)

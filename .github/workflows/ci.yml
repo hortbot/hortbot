@@ -29,11 +29,6 @@ jobs:
         with:
           cache-name: test
 
-      - name: Pull docker images
-        run: |
-          docker pull postgres:16
-          docker pull nsqio/nsq:latest
-
       - name: Run tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:

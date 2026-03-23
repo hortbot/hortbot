@@ -9,7 +9,7 @@ import (
 
 	"github.com/hortbot/hortbot/internal/pkg/assertx"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres"
 	"gotest.tools/v3/assert"
 )
 
@@ -22,7 +22,7 @@ func TestSetLocalLockTimeoutBad(t *testing.T) {
 
 func openDB(t *testing.T) *sql.DB {
 	t.Helper()
-	pdb, err := dpostgres.New()
+	pdb, err := testpostgres.New()
 	assert.NilError(t, err)
 	t.Cleanup(pdb.Cleanup)
 	db, err := pdb.Open()

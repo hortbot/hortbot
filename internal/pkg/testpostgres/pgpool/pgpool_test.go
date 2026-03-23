@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres/pgpool"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres/pgpool"
 	"gotest.tools/v3/assert"
 )
 

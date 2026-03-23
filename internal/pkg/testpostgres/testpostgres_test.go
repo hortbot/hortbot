@@ -1,15 +1,15 @@
-package dpostgres_test
+package testpostgres_test
 
 import (
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres"
 	"gotest.tools/v3/assert"
 )
 
 func TestNew(t *testing.T) {
 	t.Parallel()
-	pdb, err := dpostgres.New()
+	pdb, err := testpostgres.New()
 	assert.NilError(t, err)
 	defer pdb.Cleanup()
 	assert.Assert(t, pdb.ConnStr() != "", "got connStr: %s", pdb.ConnStr())
@@ -19,11 +19,4 @@ func TestNew(t *testing.T) {
 
 	_, err = db.Query("SELECT count(*) FROM schema_migrations")
 	assert.ErrorContains(t, err, "does not exist")
-}
-
-func TestNewBadDocker(t *testing.T) {
-	t.Setenv("DOCKER_URL", "tcp://[[[[[")
-
-	_, err := dpostgres.New()
-	assert.ErrorContains(t, err, "invalid endpoint")
 }

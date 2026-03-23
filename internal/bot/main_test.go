@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres/pgpool"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres/pgpool"
 )
 
 var pool pgpool.Pool

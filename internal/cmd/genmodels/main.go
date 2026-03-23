@@ -17,7 +17,7 @@ import (
 	_ "github.com/aarondl/sqlboiler/v4/drivers/sqlboiler-psql/driver" // For the SQLBoiler psql driver.
 	"github.com/aarondl/sqlboiler/v4/importers"
 	"github.com/hortbot/hortbot/internal/db/migrations"
-	"github.com/hortbot/hortbot/internal/pkg/docker/dpostgres"
+	"github.com/hortbot/hortbot/internal/pkg/testpostgres"
 	"github.com/jackc/pgx/v5/pgconn"
 )
 
@@ -30,7 +30,7 @@ func main() {
 
 func mainErr() error {
 	fmt.Println("Creating postgres database")
-	db, err := dpostgres.New()
+	db, err := testpostgres.New()
 	if err != nil {
 		return fmt.Errorf("creating database: %w", err)
 	}
