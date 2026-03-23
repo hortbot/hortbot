@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
@@ -35,7 +36,7 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 	}
 
 	info.Count++
-	info.LastUsed = null.TimeFrom(s.Deps.Clock.Now())
+	info.LastUsed = null.TimeFrom(time.Now())
 
 	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count, models.CommandInfoColumns.LastUsed)); err != nil {
 		return fmt.Errorf("update command info: %w", err)

@@ -579,7 +579,7 @@ func actionUntil(ctx context.Context, s *session, actionName, value string) (str
 		return actionMsgError, nil //nolint:nilerr
 	}
 
-	now := s.Deps.Clock.Now()
+	now := time.Now()
 
 	dur := t.Sub(now)
 	if dur == maxDuration || dur == minDuration {
@@ -836,7 +836,7 @@ func actionTime(timeFormat string) actionFunc {
 			loc = time.UTC // TODO: Default to a per-channel timezone.
 		}
 
-		now := s.Deps.Clock.Now().In(loc)
+		now := time.Now().In(loc)
 
 		return now.Format(timeFormat), nil
 	}

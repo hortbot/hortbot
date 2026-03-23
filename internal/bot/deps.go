@@ -17,13 +17,11 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
-	"github.com/leononame/clock"
 )
 
 type sharedDeps struct {
 	Redis                  *redis.DB
 	EventsubUpdateNotifier EventsubUpdateNotifier
-	Clock                  clock.Clock
 	Rand                   Rand
 
 	LastFM    lastfm.API

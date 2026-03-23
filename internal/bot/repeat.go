@@ -94,7 +94,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 	defer setMetricRepeatGauges(ctx, b.rep)
 
 	ctx = runner.withLog(ctx)
-	start := b.deps.Clock.Now()
+	start := time.Now()
 
 	err = dbx.Transact(ctx, b.db,
 		dbx.SetLocalLockTimeout(5*time.Second),

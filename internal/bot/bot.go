@@ -23,7 +23,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
-	"github.com/leononame/clock"
 )
 
 const (
@@ -36,7 +35,6 @@ type Config struct {
 	DB                     *sql.DB
 	Redis                  *redis.DB
 	EventsubUpdateNotifier EventsubUpdateNotifier
-	Clock                  clock.Clock
 	Rand                   Rand
 
 	LastFM    lastfm.API
@@ -89,10 +87,10 @@ type Bot struct {
 	deps *sharedDeps
 	rep  *repeat.Repeater
 
-	validateTokensTicker clock.Ticker
+	validateTokensTicker *time.Ticker
 	validateTokensManual chan struct{}
 
-	updateModeratedChannelsTicker clock.Ticker
+	updateModeratedChannelsTicker *time.Ticker
 	updateModeratedChannelsManual chan struct{}
 
 	testingHelper *testingHelper
@@ -143,12 +141,6 @@ func New(config *Config) *Bot {
 		GlobalIgnore:           make(map[string]bool),
 	}
 
-	if config.Clock != nil {
-		deps.Clock = config.Clock
-	} else {
-		deps.Clock = clock.New()
-	}
-
 	for _, name := range config.Admins {
 		deps.Admins[name] = true
 	}
@@ -180,22 +172,18 @@ func New(config *Config) *Bot {
 		db:                            config.DB,
 		deps:                          deps,
 		noDedupe:                      config.NoDedupe,
-		rep:                           repeat.New(deps.Clock),
+		rep:                           repeat.New(),
 		validateTokensManual:          make(chan struct{}, 1),
 		updateModeratedChannelsManual: make(chan struct{}, 1),
 		passthroughPanics:             config.PassthroughPanics,
 	}
 
 	if config.Cron.ValidateTokens {
-		b.validateTokensTicker = deps.Clock.NewTicker(time.Hour)
-	} else {
-		b.validateTokensTicker = noopTicker{}
+		b.validateTokensTicker = time.NewTicker(time.Hour)
 	}
 
 	if config.Cron.UpdateModeratedChannels {
-		b.updateModeratedChannelsTicker = deps.Clock.NewTicker(time.Hour)
-	} else {
-		b.updateModeratedChannelsTicker = noopTicker{}
+		b.updateModeratedChannelsTicker = time.NewTicker(time.Hour)
 	}
 
 	deps.AddRepeat = b.addRepeat
@@ -213,14 +201,6 @@ func New(config *Config) *Bot {
 
 	return b
 }
-
-var _ clock.Ticker = noopTicker{}
-
-type noopTicker struct{}
-
-func (noopTicker) Chan() <-chan time.Time { return nil }
-
-func (noopTicker) Stop() {}
 
 // Init initializes the bot, starting any underlying tasks. It should only be
 // called once.
@@ -244,6 +224,11 @@ func (b *Bot) Stop() {
 		if g := b.g; g != nil {
 			g.Stop()
 		}
-		b.validateTokensTicker.Stop()
+		if t := b.validateTokensTicker; t != nil {
+			t.Stop()
+		}
+		if t := b.updateModeratedChannelsTicker; t != nil {
+			t.Stop()
+		}
 	})
 }

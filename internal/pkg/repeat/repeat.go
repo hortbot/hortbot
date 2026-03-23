@@ -5,7 +5,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
 )
 
@@ -14,10 +13,10 @@ type Repeater struct {
 	m *manager
 }
 
-// New creates a new Repeater with the specified clock.
-func New(clock clock.Clock) *Repeater {
+// New creates a new Repeater.
+func New() *Repeater {
 	return &Repeater{
-		m: newManager(clock),
+		m: newManager(),
 	}
 }
 

@@ -3,6 +3,7 @@ package bot
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/aarondl/null/v8"
 	"github.com/aarondl/sqlboiler/v4/boil"
@@ -38,7 +39,7 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 
 	highlight := &models.Highlight{
 		ChannelID:     s.Channel.ID,
-		HighlightedAt: s.Deps.Clock.Now(),
+		HighlightedAt: time.Now(),
 		StartedAt:     null.NewTime(start, !start.IsZero()),
 		Status:        status,
 		Game:          gameName,

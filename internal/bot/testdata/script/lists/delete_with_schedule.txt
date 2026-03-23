@@ -16,12 +16,11 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 no_send
 
 checkpoint
-clock_forward 58m
+clock_forward 48m
 no_send
 
 checkpoint
-clock_forward 5m
-sleep 100ms
+clock_forward 15m
 send hortbot #foobar [HB] Something
 
 checkpoint

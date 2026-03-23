@@ -3,7 +3,6 @@ package bnsq
 import (
 	"context"
 	"strings"
-	"sync/atomic"
 	"time"
 
 	"github.com/nsqio/go-nsq"
@@ -11,20 +10,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
-
-type atomicDuration struct {
-	v atomic.Int64
-}
-
-func (a *atomicDuration) Load() time.Duration {
-	return time.Duration(a.v.Load())
-}
-
-func (a *atomicDuration) Store(d time.Duration) {
-	a.v.Store(int64(d))
-}
-
-var testingSleep atomicDuration
 
 func defaultConfig() *nsq.Config {
 	config := nsq.NewConfig()

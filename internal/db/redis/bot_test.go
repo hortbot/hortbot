@@ -5,10 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/alicebob/miniredis/v2"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"github.com/leononame/clock"
 	"gotest.tools/v3/assert"
 )
 
@@ -78,8 +76,6 @@ func TestLinkPermit(t *testing.T) {
 	defer cleanup()
 
 	db := redis.New(c)
-	clk := clock.NewMock()
-	s.SetTime(clk.Now())
 
 	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
 	defer cancel()
@@ -96,7 +92,7 @@ func TestLinkPermit(t *testing.T) {
 	err = db.LinkPermit(ctx, channel, user, 10*time.Second)
 	assert.NilError(t, err)
 
-	forward(s, clk, time.Hour)
+	s.FastForward(time.Hour)
 
 	allowed, err = db.HasLinkPermit(ctx, channel, user)
 	assert.NilError(t, err)
@@ -105,7 +101,7 @@ func TestLinkPermit(t *testing.T) {
 	err = db.LinkPermit(ctx, channel, user, 10*time.Second)
 	assert.NilError(t, err)
 
-	forward(s, clk, time.Second)
+	s.FastForward(time.Second)
 
 	allowed, err = db.HasLinkPermit(ctx, channel, user)
 	assert.NilError(t, err)
@@ -119,15 +115,9 @@ func TestLinkPermit(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, false)
 
-	forward(s, clk, time.Second)
+	s.FastForward(time.Second)
 
 	allowed, err = db.HasLinkPermit(ctx, channel, user)
 	assert.NilError(t, err)
 	assert.Equal(t, allowed, false)
-}
-
-func forward(s *miniredis.Miniredis, clk *clock.Mock, dur time.Duration) {
-	clk.Forward(dur)
-	s.FastForward(dur)
-	s.SetTime(clk.Now())
 }

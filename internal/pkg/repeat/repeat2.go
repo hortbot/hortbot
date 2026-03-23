@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/leononame/clock"
 	"github.com/robfig/cron/v3"
 )
 
@@ -53,7 +52,6 @@ func (c count) Add(other count) count {
 }
 
 type manager struct {
-	clock       clock.Clock
 	queue       queue
 	identToItem map[ident]*item
 
@@ -65,9 +63,8 @@ type manager struct {
 	counts count
 }
 
-func newManager(clock clock.Clock) *manager {
+func newManager() *manager {
 	return &manager{
-		clock:       clock,
 		identToItem: make(map[ident]*item),
 		addChan:     make(chan *job),
 		removeChan:  make(chan ident),
@@ -108,7 +105,7 @@ func (m *manager) run(ctx context.Context) error {
 
 		case job := <-m.addChan:
 			id := job.ident
-			now := m.clock.Now()
+			now := time.Now()
 			newDeadline := job.next(now)
 
 			if newDeadline.IsZero() {
@@ -178,9 +175,9 @@ func (m *manager) run(ctx context.Context) error {
 			currCount = count{reps: 1}
 		}
 
-		delay := m.clock.Until(currItem.deadline)
+		delay := time.Until(currItem.deadline)
 		if delay > 0 {
-			currReady = m.clock.After(delay)
+			currReady = time.After(delay)
 		} else {
 			// Already past the deadline, force the next iteration to run the job.
 			currReady = closedTimeChan

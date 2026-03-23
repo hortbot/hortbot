@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
-	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -15,7 +15,6 @@ import (
 type publisher struct {
 	ready    chan struct{}
 	addr     string
-	clk      clock.Clock
 	config   *nsq.Config
 	producer *nsq.Producer
 }
@@ -28,10 +27,6 @@ func newPublisher(addr string, opts ...PublisherOption) *publisher {
 
 	for _, opt := range opts {
 		opt.applyToPublisher(p)
-	}
-
-	if p.clk == nil {
-		p.clk = clock.New()
 	}
 
 	if p.config == nil {
@@ -79,7 +74,7 @@ func (p *publisher) publish(ctx context.Context, topic string, payload any) erro
 
 	m := &message{
 		Metadata: Metadata{
-			Timestamp:   p.clk.Now(),
+			Timestamp:   time.Now(),
 			Correlation: correlation.FromContext(ctx),
 		},
 		Payload: pl,

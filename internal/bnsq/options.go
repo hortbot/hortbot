@@ -3,7 +3,6 @@ package bnsq
 import (
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 )
 
@@ -21,24 +20,6 @@ type SubscriberOption interface {
 type Option interface {
 	PublisherOption
 	SubscriberOption
-}
-
-type clockOption struct {
-	clk clock.Clock
-}
-
-// WithClock sets the clock used internally. If not set or nil, a real clock
-// is used.
-func WithClock(clk clock.Clock) Option {
-	return clockOption{clk: clk}
-}
-
-func (c clockOption) applyToPublisher(p *publisher) {
-	p.clk = c.clk
-}
-
-func (c clockOption) applyToSubscriber(s *subscriber) {
-	s.clk = c.clk
 }
 
 type configOption struct {

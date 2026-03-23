@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/leononame/clock"
 	"github.com/nsqio/go-nsq"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -16,7 +15,6 @@ type subscriber struct {
 	addr    string
 	topic   string
 	channel string
-	clk     clock.Clock
 	config  *nsq.Config
 	maxAge  time.Duration
 }
@@ -30,10 +28,6 @@ func newSubscriber(addr string, topic string, channel string, opts ...Subscriber
 
 	for _, opt := range opts {
 		opt.applyToSubscriber(s)
-	}
-
-	if s.clk == nil {
-		s.clk = clock.New()
 	}
 
 	if s.config == nil {
@@ -57,10 +51,6 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 	consumer.SetLogger(nsqLoggerFrom(ctx), nsq.LogLevelInfo)
 
 	consumer.AddHandler(nsq.HandlerFunc(func(msg *nsq.Message) error {
-		if dur := testingSleep.Load(); dur != 0 {
-			s.clk.Sleep(dur)
-		}
-
 		m := &message{}
 
 		if err := json.Unmarshal(msg.Body, m); err != nil {
@@ -69,7 +59,7 @@ func (s *subscriber) run(ctx context.Context, fn func(m *message) error) error {
 		}
 
 		if s.maxAge > 0 {
-			since := s.clk.Since(m.Metadata.Timestamp)
+			since := time.Since(m.Metadata.Timestamp)
 			if since > s.maxAge {
 				ctxlog.Warn(ctx, "message too old, dropping", zap.Duration("since", since))
 				return nil

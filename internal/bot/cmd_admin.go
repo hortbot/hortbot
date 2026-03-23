@@ -205,7 +205,7 @@ func cmdAdminVersion(ctx context.Context, s *session, _ string, _ string) error 
 }
 
 func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) error {
-	before := s.Deps.Clock.Now()
+	before := time.Now()
 
 	if err := s.Deps.ReloadRepeats(ctx); err != nil {
 		return s.Replyf(ctx, "Error reloading repeats: %s", err.Error())
@@ -219,7 +219,7 @@ func cmdAdminReloadRepeats(ctx context.Context, s *session, _ string, _ string) 
 	repeatStr := pluralInt(repeats, "repeat", "repeats")
 	scheduleStr := pluralInt(schedules, "schedule", "schedules")
 
-	return s.Replyf(ctx, "Reloaded %d %s and %d %s in %v.", repeats, repeatStr, schedules, scheduleStr, s.Deps.Clock.Since(before))
+	return s.Replyf(ctx, "Reloaded %d %s and %d %s in %v.", repeats, repeatStr, schedules, scheduleStr, time.Since(before))
 }
 
 const deleteChannelConfirmDur = 10 * time.Second

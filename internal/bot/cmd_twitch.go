@@ -293,7 +293,7 @@ func cmdUptime(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	uptime := s.Deps.Clock.Since(stream.StartedAt).Truncate(time.Minute)
+	uptime := time.Since(stream.StartedAt).Truncate(time.Minute)
 	uStr := durafmt.Parse(uptime).String()
 
 	return s.Replyf(ctx, "Live for %s.", uStr)

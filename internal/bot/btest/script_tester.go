@@ -12,6 +12,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"testing/synctest"
 	"time"
 	"unicode"
 
@@ -32,23 +33,46 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube/youtubemocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"github.com/leononame/clock"
 	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
 
 // RunScript runs the a single script test.
-func RunScript(t testing.TB, filename string, freshDB func(t testing.TB) *sql.DB) {
+func RunScript(t *testing.T, filename string, freshDB func(t testing.TB) *sql.DB) {
 	db := freshDB(t)
-	defer db.Close()
+	// db.Close() must happen inside the synctest bubble (pgx creates timers
+	// that need to be drained while fake time is still active), but we keep
+	// a fallback here in case the bubble never runs.
+	dbClosed := false
+	defer func() {
+		if !dbClosed {
+			db.Close()
+		}
+	}()
 
-	st := scriptTester{
-		filename: filename,
-		db:       db,
-	}
+	// Create miniredis outside the synctest bubble so its
+	// network-accepting goroutines don't block fake time.
+	rServer, rClient, rCleanup, err := miniredistest.New()
+	assert.NilError(t, err)
+	defer rCleanup()
 
-	st.test(t)
+	// Capture the real wall-clock time before entering the synctest bubble.
+	realNow := time.Now()
+
+	synctest.Test(t, func(t *testing.T) {
+		defer func() { db.Close(); dbClosed = true }()
+
+		st := scriptTester{
+			filename:    filename,
+			db:          db,
+			redisServer: rServer,
+			redisDB:     redis.New(rClient),
+			realNow:     realNow,
+		}
+
+		st.test(t)
+	})
 }
 
 const (
@@ -60,10 +84,11 @@ type scriptTester struct {
 	filename string
 
 	db                     *sql.DB
-	redis                  *miniredis.Miniredis
+	redisServer            *miniredis.Miniredis
+	redisDB                *redis.DB
+	realNow                time.Time
 	sender                 *SenderMock
 	eventsubUpdateNotifier *botmocks.EventsubUpdateNotifierMock
-	clock                  *clock.Mock
 
 	lastFM    *lastfmmocks.APIMock
 	youtube   *youtubemocks.APIMock
@@ -133,7 +158,6 @@ func (st *scriptTester) test(t testing.TB) {
 	st.eventsubUpdateNotifier = &botmocks.EventsubUpdateNotifierMock{
 		NotifyEventsubUpdatesFunc: func(ctx context.Context) error { return nil },
 	}
-	st.clock = clock.NewMock()
 	st.lastFM = &lastfmmocks.APIMock{}
 	st.youtube = &youtubemocks.APIMock{}
 	st.xkcd = &xkcdmocks.APIMock{}
@@ -164,17 +188,12 @@ func (st *scriptTester) test(t testing.TB) {
 
 	st.ctx = ctxlog.WithLogger(t.Context(), testutil.Logger(t))
 
-	rServer, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(t, err)
-	defer rCleanup()
-
-	st.redis = rServer
+	st.redisServer.SetTime(time.Now())
 
 	st.bc = bot.Config{
 		DB:                     st.db,
-		Redis:                  redis.New(rClient),
+		Redis:                  st.redisDB,
 		EventsubUpdateNotifier: st.eventsubUpdateNotifier,
-		Clock:                  st.clock,
 		LastFM:                 st.lastFM,
 		YouTube:                st.youtube,
 		XKCD:                   st.xkcd,
@@ -188,8 +207,6 @@ func (st *scriptTester) test(t testing.TB) {
 		NoDedupe:               true,
 		PublicJoin:             true,
 	}
-
-	st.clock.Set(time.Now())
 
 	f, err := os.Open(st.filename)
 	assert.NilError(t, err)
@@ -257,6 +274,7 @@ func (st *scriptTester) test(t testing.TB) {
 
 			t.Logf("line %d: %s", action.number, action.line)
 			action.fn(st.ctx)
+			synctest.Wait()
 		}()
 	}
 
@@ -285,24 +303,12 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 	var bcj struct {
 		*bot.Config
 
-		Clock string
-		Rand  *int
+		Rand *int
 	}
 
 	bcj.Config = &st.bc
 
 	assert.NilError(t, json.Unmarshal([]byte(args), &bcj), "line %d", lineNum)
-
-	switch bcj.Clock {
-	case "real":
-		st.bc.Clock = clock.New()
-
-	case "", "mock":
-		st.bc.Clock = st.clock
-
-	default:
-		t.Fatalf("line %d: unknown clock type %s", lineNum, bcj.Clock)
-	}
 
 	if bcj.Rand != nil {
 		rng := rand.New(rand.NewSource(int64(*bcj.Rand))) //nolint:gosec
@@ -313,7 +319,7 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 
 		st.bc.Rand = fakeRand
 
-		st.redis.Seed(*bcj.Rand)
+		st.redisServer.Seed(*bcj.Rand)
 	}
 }
 
@@ -330,7 +336,7 @@ func (st *scriptTester) doCheckpoint() {
 
 func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(ctx context.Context) {
-		t.Logf("line %d:\n%s", lineNum, st.redis.Dump())
+		t.Logf("line %d:\n%s", lineNum, st.redisServer.Dump())
 	})
 }
 

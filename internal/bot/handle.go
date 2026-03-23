@@ -50,9 +50,9 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 
 	defer metricHandled.Inc()
 
-	start := b.deps.Clock.Now()
+	start := time.Now()
 	defer func() {
-		secs := b.deps.Clock.Since(start).Seconds()
+		secs := time.Since(start).Seconds()
 		metricHandleDuration.WithLabelValues("PRIVMSG").Observe(secs)
 	}()
 
@@ -106,7 +106,7 @@ func putSession(s *session) {
 }
 
 func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
-	start := b.deps.Clock.Now()
+	start := time.Now()
 
 	s := getSession()
 	defer putSession(s)
@@ -131,20 +131,20 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 	err := dbx.Transact(ctx, b.db,
 		dbx.SetLocalLockTimeout(5*time.Second),
 		func(ctx context.Context, tx *sql.Tx) error {
-			beforeHandle = b.deps.Clock.Now()
+			beforeHandle = time.Now()
 
 			s.Tx = tx
 			err := handleSession(ctx, s)
 			s.Tx = nil
 
-			afterHandle = b.deps.Clock.Now()
+			afterHandle = time.Now()
 			return err
 		})
 	if err != nil {
 		return err
 	}
 
-	afterCommit := b.deps.Clock.Now()
+	afterCommit := time.Now()
 
 	enqueued := bnsqmeta.Timestamp(ctx)
 	badEnqueue := false
@@ -372,7 +372,7 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	s.Channel.MessageCount++
-	s.Channel.LastSeen = s.Deps.Clock.Now()
+	s.Channel.LastSeen = time.Now()
 
 	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount, models.ChannelColumns.LastSeen)); err != nil {
 		return fmt.Errorf("updating channel: %w", err)

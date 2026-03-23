@@ -33,7 +33,6 @@ require (
 	github.com/jarcoal/httpmock v1.4.1
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/joho/godotenv v1.5.1
-	github.com/leononame/clock v0.1.6
 	github.com/nsqio/go-nsq v1.1.0
 	github.com/nsqio/nsq v1.3.0
 	github.com/peterldowns/pgtestdb v0.1.1

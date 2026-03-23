@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
@@ -24,7 +25,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 	}
 
 	logFn(ctx, "validating twitch tokens")
-	start := b.deps.Clock.Now()
+	start := time.Now()
 
 	tokens, err := models.TwitchTokens().All(ctx, b.db)
 	if err != nil {
@@ -86,7 +87,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 	}
 
 	logFn(ctx, "validated twitch tokens",
-		zap.Duration("duration", b.deps.Clock.Since(start)),
+		zap.Duration("duration", time.Since(start)),
 		zap.Int("total", len(tokens)),
 		zap.Int("validated", validated),
 		zap.Int("updated", updated),
@@ -101,7 +102,7 @@ func (b *Bot) runValidateTokens(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case <-b.validateTokensTicker.Chan():
+		case <-tickerChan(b.validateTokensTicker):
 		case <-b.validateTokensManual:
 			log = true
 		}
@@ -126,7 +127,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 	}
 
 	logFn(ctx, "updating moderated channels")
-	start := b.deps.Clock.Now()
+	start := time.Now()
 
 	conflictColumns := []string{
 		models.ModeratedChannelColumns.BotName,
@@ -147,7 +148,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 			return fmt.Errorf("locking moderated_channels: %w", err)
 		}
 
-		start := b.deps.Clock.Now()
+		start := time.Now()
 
 		for _, botToken := range botTokens {
 			botName := botToken.BotName.String
@@ -193,7 +194,7 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 	}
 
 	logFn(ctx, "updated moderated channels",
-		zap.Duration("duration", b.deps.Clock.Since(start)),
+		zap.Duration("duration", time.Since(start)),
 	)
 	return nil
 }
@@ -204,7 +205,7 @@ func (b *Bot) runUpdateModeratedChannels(ctx context.Context) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
-		case <-b.updateModeratedChannelsTicker.Chan():
+		case <-tickerChan(b.updateModeratedChannelsTicker):
 		case <-b.updateModeratedChannelsManual:
 			log = true
 		}
@@ -220,4 +221,11 @@ func (b *Bot) updateModeratedChannelsNow() {
 	case b.updateModeratedChannelsManual <- struct{}{}:
 	default:
 	}
+}
+
+func tickerChan(t *time.Ticker) <-chan time.Time {
+	if t == nil {
+		return nil
+	}
+	return t.C
 }

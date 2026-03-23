@@ -54,7 +54,14 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send hortbot #foobar [HB] 0 seconds
 
 
-clock_set 2010-06-13T12:19:42Z
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add until (_UNTIL_2010-06-13T14:25:42Z_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add untilshort (_UNTILSHORT_2010-06-13T14:25:42Z_)
+send_any
+
+handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add untillong (_UNTILLONG_2010-06-13T14:25:42Z_)
+send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!until
 send hortbot #foobar [HB] 1 hour 3 minutes
@@ -132,13 +139,13 @@ handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch
 send_any
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!until
-send hortbot #foobar [HB] 1 year 9 weeks 4 days 4 hours 25 minutes
+send hortbot #foobar [HB] 1 year 9 weeks 4 days 3 hours 22 minutes
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untilshort
-send hortbot #foobar [HB] 432d4h25m
+send hortbot #foobar [HB] 432d3h22m
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!untillong
-send hortbot #foobar [HB] 1 year 9 weeks 4 days 4 hours 25 minutes
+send hortbot #foobar [HB] 1 year 9 weeks 4 days 3 hours 22 minutes
 
 
 handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add until (_UNTIL_253370764800_)
