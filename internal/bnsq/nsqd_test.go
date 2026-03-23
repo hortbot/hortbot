@@ -7,6 +7,12 @@ import (
 	"github.com/nsqio/nsq/nsqd"
 )
 
+type nilLogger struct{}
+
+func (l nilLogger) Output(_ int, _ string) error {
+	return nil
+}
+
 // NewTestNSQD starts an in-process nsqd for testing and returns its TCP address.
 // The server is automatically stopped when the test completes.
 func NewTestNSQD(t testing.TB) string {
@@ -28,7 +34,7 @@ func newTestNSQD(t testing.TB) (string, func()) {
 	opts := nsqd.NewOptions()
 	opts.TCPAddress = "127.0.0.1:0"
 	opts.HTTPAddress = "127.0.0.1:0"
-	opts.Logger = nil
+	opts.Logger = nilLogger{}
 
 	opts.DataPath = t.TempDir()
 
