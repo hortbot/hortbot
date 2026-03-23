@@ -1,7 +1,6 @@
 package bnsq
 
 import (
-	"os"
 	"sync"
 	"testing"
 
@@ -31,23 +30,19 @@ func newTestNSQD(t testing.TB) (string, func()) {
 	opts.HTTPAddress = "127.0.0.1:0"
 	opts.Logger = nil
 
-	dataPath, err := os.MkdirTemp("", "nsqd-test-*")
-	if err != nil {
-		t.Fatalf("creating nsqd temp dir: %v", err)
-	}
-	opts.DataPath = dataPath
+	opts.DataPath = t.TempDir()
 
 	n, err := nsqd.New(opts)
 	if err != nil {
-		_ = os.RemoveAll(dataPath)
 		t.Fatalf("creating nsqd: %v", err)
 	}
 
-	go n.Main()
+	go func() {
+		_ = n.Main()
+	}()
 
 	stop := sync.OnceFunc(func() {
 		n.Exit()
-		_ = os.RemoveAll(dataPath)
 	})
 
 	t.Cleanup(stop)
