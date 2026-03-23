@@ -30,12 +30,7 @@ jobs:
           cache-name: test
 
       - name: Run tests
-        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
-        with:
-          timeout_minutes: 15
-          max_attempts: 5
-          command: go test -race -covermode=atomic -coverprofile=coverage.txt -coverpkg=./... ./...
-          on_retry_command: go clean -testcache
+        run: go test -race -covermode=atomic -coverprofile=coverage.txt -coverpkg=./... ./...
 
       - name: Run 1x benchmarks
         run: go test -run=- -bench . -benchtime=1x ./...
