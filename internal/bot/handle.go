@@ -84,6 +84,7 @@ func (b *Bot) handle(ctx context.Context, m Message) (retErr error) {
 				panic(r)
 			}
 			ctxlog.Error(ctx, "panic during handle", zap.Any("value", r), zap.Stack("stack"))
+			metricHandlePanic.Inc()
 			retErr = errPanicked
 		}
 	}()

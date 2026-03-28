@@ -80,6 +80,13 @@ var (
 		Help:      "Total number of handler errors.",
 	})
 
+	metricHandlePanic = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "bot",
+		Name:      "handle_panic_total",
+		Help:      "Total number of recovered panics during message handling.",
+	})
+
 	metricHandleTimingFromTwitch = promauto.NewHistogram(prometheus.HistogramOpts{
 		Namespace: "hortbot",
 		Subsystem: "bot",
