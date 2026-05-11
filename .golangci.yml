@@ -45,6 +45,7 @@ linters:
     - noinlineerr
     - embeddedstructfieldcheck
     - unqueryvet
+    - gomodguard
   settings:
     forbidigo:
       forbid:

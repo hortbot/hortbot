@@ -114,6 +114,7 @@ func (a *App) Run(ctx context.Context) error {
 						lp += "?" + r.URL.RawQuery
 					}
 
+					//nolint:gosec // G710: lp is derived from r.URL.Path which is router-controlled and always begins with "/".
 					http.Redirect(w, r, lp, http.StatusMovedPermanently)
 				})
 			})
