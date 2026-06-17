@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/ctxkey"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -22,7 +23,7 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 			ctx := r.Context()
 			name := chi.URLParamFromCtx(ctx, urlParam)
 
-			channel, err := models.Channels(models.ChannelWhere.Name.EQ(strings.ToLower(name))).One(ctx, a.DB)
+			channel, err := modelsx.GetActiveChannelByName(ctx, a.DB, strings.ToLower(name))
 			if err != nil {
 				if errors.Is(err, sql.ErrNoRows) {
 					a.httpError(w, r, http.StatusNotFound)

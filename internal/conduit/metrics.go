@@ -45,7 +45,14 @@ var (
 		Namespace: "hortbot",
 		Subsystem: "conduit",
 		Name:      "create_subscription_errors_total",
-		Help:      "Total number of subscription create.",
+		Help:      "Total number of subscription creation errors.",
+	})
+
+	metricDeleteSubscriptionErrors = promauto.NewCounter(prometheus.CounterOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "delete_subscription_errors_total",
+		Help:      "Total number of subscription deletion errors.",
 	})
 
 	metricDeletedSubscriptions = promauto.NewCounter(prometheus.CounterOpts{
@@ -59,15 +66,43 @@ var (
 		Namespace: "hortbot",
 		Subsystem: "conduit",
 		Name:      "subscriptions",
-		Help:      "Total number of subscriptions.",
+		Help:      "Total number of Twitch EventSub subscriptions returned by the API.",
 	})
 
 	metricSubscriptionTypes = promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: "hortbot",
 		Subsystem: "conduit",
 		Name:      "subscription_types",
-		Help:      "Number of subscriptions by type.",
+		Help:      "Number of Twitch EventSub subscriptions by status.",
 	}, []string{"type"})
+
+	metricWantedChatSubscriptions = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "wanted_chat_subscriptions",
+		Help:      "Number of chat subscriptions wanted for active EventSub-eligible channels.",
+	})
+
+	metricCurrentChatSubscriptions = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "current_chat_subscriptions",
+		Help:      "Number of chat subscriptions currently using this conduit.",
+	})
+
+	metricCreateChatSubscriptions = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "create_chat_subscriptions",
+		Help:      "Number of chat subscriptions to create in the current sync.",
+	})
+
+	metricDeleteChatSubscriptions = promauto.NewGauge(prometheus.GaugeOpts{
+		Namespace: "hortbot",
+		Subsystem: "conduit",
+		Name:      "delete_chat_subscriptions",
+		Help:      "Number of chat subscriptions to delete in the current sync.",
+	})
 
 	metricWebsockets = promauto.NewGauge(prometheus.GaugeOpts{
 		Namespace: "hortbot",

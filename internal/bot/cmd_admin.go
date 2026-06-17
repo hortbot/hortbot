@@ -120,12 +120,12 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 }
 
 func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) error {
-	count, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, s.Tx)
+	count, _, err := modelsx.CountActiveChannels(ctx, s.Tx)
 	if err != nil {
 		return fmt.Errorf("count channels: %w", err)
 	}
 
-	ch := pluralInt64(count, "channel", "channels")
+	ch := pluralInt(count, "channel", "channels")
 	return s.Replyf(ctx, "Currently in %d %s.", count, ch)
 }
 

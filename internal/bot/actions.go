@@ -431,11 +431,11 @@ func actionSilent(ctx context.Context, s *session, actionName, value string) (st
 }
 
 func actionNumChannels(ctx context.Context, s *session, actionName, value string) (string, error) {
-	count, err := models.Channels(models.ChannelWhere.Active.EQ(true)).Count(ctx, s.Tx)
+	count, _, err := modelsx.CountActiveChannels(ctx, s.Tx)
 	if err != nil {
 		return "", fmt.Errorf("finding channel count: %w", err)
 	}
-	return strconv.FormatInt(count, 10), nil
+	return strconv.Itoa(count), nil
 }
 
 func actionPurge(ctx context.Context, s *session, actionName, value string) (string, error) {

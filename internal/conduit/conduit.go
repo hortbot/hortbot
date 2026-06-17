@@ -300,6 +300,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 			}] = struct{}{}
 		}
 	}
+	metricWantedChatSubscriptions.Set(float64(len(wanted)))
 
 	allSubscriptions, err := s.twitch.GetSubscriptions(ctx)
 	if err != nil {
@@ -336,6 +337,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 			BotID:         int64(condition.UserID),
 		}] = sub.ID
 	}
+	metricCurrentChatSubscriptions.Set(float64(len(actual)))
 
 	for _, status := range possibleStatuses {
 		metricSubscriptionTypes.WithLabelValues(status).Set(float64(statuses[status]))
@@ -358,6 +360,8 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	// wanted now contains toCreate subscriptions, actual contains extra subscriptions
 	toCreate := wanted
 	toDelete := actual
+	metricCreateChatSubscriptions.Set(float64(len(toCreate)))
+	metricDeleteChatSubscriptions.Set(float64(len(toDelete)))
 
 	ctxlog.Debug(ctx, "synchronizing subscriptions",
 		zap.Int("subscriptions", len(allSubscriptions)),
@@ -366,9 +370,6 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 		zap.Any("add", keys(toCreate)),
 		zap.Any("remove", keys(toDelete)),
 	)
-
-	metricCreatedSubscriptions.Add(float64(len(toCreate)))
-	metricDeletedSubscriptions.Add(float64(len(toDelete)))
 
 	for sub := range toCreate {
 		if sub.BotID == 0 {
@@ -379,6 +380,8 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 		if err := s.twitch.CreateChatSubscription(ctx, s.conduitID, sub.BroadcasterID, sub.BotID); err != nil {
 			ctxlog.Warn(ctx, "create subscription error", zap.Error(err), zap.Any("subscription", sub))
 			metricCreateSubscriptionErrors.Inc()
+		} else {
+			metricCreatedSubscriptions.Inc()
 		}
 		if ctx.Err() != nil {
 			return ctx.Err()
@@ -388,6 +391,9 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	for sub, id := range toDelete {
 		if err := s.twitch.DeleteSubscription(ctx, id); err != nil {
 			ctxlog.Warn(ctx, "delete subscription error", zap.Error(err), zap.Any("subscription", sub), zap.String("id", id))
+			metricDeleteSubscriptionErrors.Inc()
+		} else {
+			metricDeletedSubscriptions.Inc()
 		}
 		if ctx.Err() != nil {
 			return ctx.Err()

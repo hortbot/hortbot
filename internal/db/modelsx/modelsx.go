@@ -173,6 +173,8 @@ WHERE c.active AND ('channel:bot' = ANY(tt.scopes) OR m.id IS NOT NULL)
 
 const listActiveChannelsQuery = `SELECT c.twitch_id, c.name, c.bot_name` + activeChannelsQuerySuffix
 
+// ListActiveChannels lists active channels that can receive EventSub chat
+// messages, grouped by bot account ID.
 func ListActiveChannels(ctx context.Context, exec boil.ContextExecutor) (botToChannels map[int64][]int64, err error) {
 	botNameToID, _, err := GetBots(ctx, exec)
 	if err != nil {
@@ -208,6 +210,8 @@ func ListActiveChannels(ctx context.Context, exec boil.ContextExecutor) (botToCh
 
 const countActiveChannelsQuery = `SELECT COUNT(*) as channel_count, COUNT(DISTINCT c.bot_name) as bot_count` + activeChannelsQuerySuffix
 
+// CountActiveChannels counts active channels that can receive EventSub chat
+// messages.
 func CountActiveChannels(ctx context.Context, exec boil.ContextExecutor) (channelCount int, botCount int, err error) {
 	var row struct {
 		ChannelCount int `boil:"channel_count"`
@@ -219,6 +223,30 @@ func CountActiveChannels(ctx context.Context, exec boil.ContextExecutor) (channe
 	}
 
 	return row.ChannelCount, row.BotCount, nil
+}
+
+const listActiveChannelModelsQuery = `SELECT c.name, c.display_name` + activeChannelsQuerySuffix + `ORDER BY c.name`
+
+// ListActiveChannelModels lists active channels that can receive EventSub chat
+// messages, with only the fields needed for public display.
+func ListActiveChannelModels(ctx context.Context, exec boil.ContextExecutor) (models.ChannelSlice, error) {
+	var channels models.ChannelSlice
+	if err := queries.Raw(listActiveChannelModelsQuery).Bind(ctx, exec, &channels); err != nil {
+		return nil, fmt.Errorf("listing active channel models: %w", err)
+	}
+	return channels, nil
+}
+
+const getActiveChannelByNameQuery = `SELECT c.*` + activeChannelsQuerySuffix + `AND c.name = $1`
+
+// GetActiveChannelByName gets an active channel that can receive EventSub chat
+// messages.
+func GetActiveChannelByName(ctx context.Context, exec boil.ContextExecutor, name string) (*models.Channel, error) {
+	channel := &models.Channel{}
+	if err := queries.Raw(getActiveChannelByNameQuery, name).Bind(ctx, exec, channel); err != nil {
+		return nil, fmt.Errorf("getting active channel by name: %w", err)
+	}
+	return channel, nil
 }
 
 const getActiveRepeatedCommandsQuery = `
