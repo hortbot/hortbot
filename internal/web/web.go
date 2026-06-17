@@ -40,7 +40,6 @@ var staticDir = must.Must(fs.Sub(static, "static"))
 // App is the HortBot webapp.
 type App struct {
 	Addr       string
-	RealIP     bool
 	SessionKey []byte
 	AdminAuth  map[string]string
 
@@ -72,10 +71,6 @@ func (a *App) Run(ctx context.Context) error {
 	logger := ctxlog.FromContext(ctx)
 	r.Use(mid.Logger(logger))
 	r.Use(mid.RequestID)
-
-	if a.RealIP {
-		r.Use(middleware.RealIP) //nolint:staticcheck // TODO: replace with trusted-proxy-aware real IP handling.
-	}
 
 	r.Use(func(next http.Handler) http.Handler {
 		return promhttp.InstrumentHandlerCounter(metricRequest, next)
