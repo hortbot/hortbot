@@ -29,7 +29,7 @@ func loginBody() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"section\"><div class=\"container content\"><h1 class=\"title has-text-centered\">Log in</h1><div class=\"columns\"><div class=\"column is-8 is-offset-2 has-text-centered\"><p>The full site is still a work in progress, but for now, you can authorize the bot to access your Twitch account by clicking here:</p><a class=\"button is-large is-info is-focused\" href=\"/auth/twitch\"><span class=\"icon is-small\"><i class=\"fab fa-twitch\"></i></span> <span>Log in with Twitch</span></a></div></div></div></section>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 1, "<section class=\"section\"><div class=\"container content\"><h1 class=\"title has-text-centered\">Log in</h1><div class=\"columns\"><div class=\"column is-8 is-offset-2 has-text-centered\"><p>The full site is still a work in progress, but for now, you can authorize the bot to access your Twitch account by clicking here:</p><a class=\"button is-large is-info is-focused\" href=\"/auth/twitch\" hx-boost=\"false\"><span class=\"icon is-small\"><i class=\"fab fa-twitch\"></i></span> <span>Log in with Twitch</span></a></div></div></div></section>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
