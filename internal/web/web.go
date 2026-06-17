@@ -74,7 +74,7 @@ func (a *App) Run(ctx context.Context) error {
 	r.Use(mid.RequestID)
 
 	if a.RealIP {
-		r.Use(middleware.RealIP)
+		r.Use(middleware.RealIP) //nolint:staticcheck // TODO: replace with trusted-proxy-aware real IP handling.
 	}
 
 	r.Use(func(next http.Handler) http.Handler {
