@@ -48,11 +48,16 @@ type App struct {
 
 	Debug bool
 
-	Redis  *redis.DB
-	DB     *sql.DB
-	Twitch twitch.API
+	Redis                  *redis.DB
+	DB                     *sql.DB
+	Twitch                 twitch.API
+	EventsubUpdateNotifier EventsubUpdateNotifier
 
 	store *sessions.CookieStore
+}
+
+type EventsubUpdateNotifier interface {
+	NotifyEventsubUpdates(ctx context.Context) error
 }
 
 // Run runs the webapp until the context is canceled.
@@ -330,6 +335,10 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		ctxlog.Error(ctx, "error saving session", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
+	}
+
+	if err := a.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
+		ctxlog.Error(ctx, "error notifying eventsub updates", zap.Error(err))
 	}
 
 	if stateVal.Redirect != "" {

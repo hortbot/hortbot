@@ -153,7 +153,10 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 
 	if channel.Active {
 		if channel.Name == name {
-			return s.Replyf(ctx, "%s, %s is already active in your channel with prefix '%s'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.", displayName, channel.BotName, channel.Prefix)
+			if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
+				return fmt.Errorf("notify eventsub updates: %w", err)
+			}
+			return s.Replyf(ctx, "%s, %s is already configured for your channel with prefix '%s'. I've requested a reconnect.", displayName, channel.BotName, channel.Prefix)
 		}
 
 		channel.Name = name

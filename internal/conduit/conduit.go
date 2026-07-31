@@ -41,6 +41,11 @@ type Service struct {
 	shardMu        sync.Mutex
 }
 
+type chatSubscription struct {
+	BroadcasterID int64
+	BotID         int64
+}
+
 func New(db *sql.DB, twitch twitch.API, syncInterval time.Duration, shards int) *Service {
 	return &Service{
 		db:           db,
@@ -285,16 +290,10 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 		return fmt.Errorf("list active eventsub channels: %w", err)
 	}
 
-	// exported fields for logging
-	type subscription struct {
-		BroadcasterID int64
-		BotID         int64
-	}
-
-	wanted := make(map[subscription]struct{})
+	wanted := make(map[chatSubscription]struct{})
 	for botID, broadcasterIDs := range channels {
 		for _, broadcasterID := range broadcasterIDs {
-			wanted[subscription{
+			wanted[chatSubscription{
 				BroadcasterID: broadcasterID,
 				BotID:         botID,
 			}] = struct{}{}
@@ -315,61 +314,47 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 
 	metricSubscriptions.Set(float64(len(allSubscriptions)))
 
-	statuses := make(map[string]int, len(allSubscriptions))
-
-	actual := make(map[subscription]string, len(allSubscriptions))
-	for _, sub := range allSubscriptions {
-		statuses[sub.Status]++
-
-		if sub.Transport.ConduitID != s.conduitID {
-			ctxlog.Warn(ctx, "subscription not using our conduit",
-				zap.String("id", sub.ID),
-				zap.Any("transport", sub.Transport),
-			)
-			continue
-		}
-		if sub.Type != eventsub.ChatMessageSubscriptionType {
-			continue
-		}
-		condition := sub.Condition.(*eventsub.ChatMessageSubscriptionCondition)
-		actual[subscription{
-			BroadcasterID: int64(condition.BroadcasterUserID),
-			BotID:         int64(condition.UserID),
-		}] = sub.ID
-	}
+	actual, stale, statuses := classifyChatSubscriptions(ctx, s.conduitID, allSubscriptions)
 	metricCurrentChatSubscriptions.Set(float64(len(actual)))
 
 	for _, status := range possibleStatuses {
 		metricSubscriptionTypes.WithLabelValues(status).Set(float64(statuses[status]))
 	}
 
-	for sub := range wanted {
-		if _, ok := actual[sub]; ok {
-			delete(actual, sub)
-			delete(wanted, sub)
-		}
-	}
-
 	for sub := range actual {
 		if _, ok := wanted[sub]; ok {
-			delete(actual, sub)
 			delete(wanted, sub)
+			delete(actual, sub)
 		}
 	}
 
-	// wanted now contains toCreate subscriptions, actual contains extra subscriptions
+	// wanted now contains subscriptions to create, actual contains enabled
+	// subscriptions to remove, and stale contains disabled or duplicate ones.
 	toCreate := wanted
 	toDelete := actual
 	metricCreateChatSubscriptions.Set(float64(len(toCreate)))
-	metricDeleteChatSubscriptions.Set(float64(len(toDelete)))
+	metricDeleteChatSubscriptions.Set(float64(len(stale) + len(toDelete)))
 
 	ctxlog.Debug(ctx, "synchronizing subscriptions",
 		zap.Int("subscriptions", len(allSubscriptions)),
 		zap.Int("add_count", len(toCreate)),
-		zap.Int("remove_count", len(toDelete)),
+		zap.Int("remove_count", len(stale)+len(toDelete)),
 		zap.Any("add", keys(toCreate)),
+		zap.Any("remove_stale", stale),
 		zap.Any("remove", keys(toDelete)),
 	)
+
+	for id, sub := range stale {
+		if err := s.twitch.DeleteSubscription(ctx, id); err != nil {
+			ctxlog.Warn(ctx, "delete subscription error", zap.Error(err), zap.Any("subscription", sub), zap.String("id", id))
+			metricDeleteSubscriptionErrors.Inc()
+		} else {
+			metricDeletedSubscriptions.Inc()
+		}
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+	}
 
 	for sub := range toCreate {
 		if sub.BotID == 0 {
@@ -401,6 +386,44 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+func classifyChatSubscriptions(ctx context.Context, conduitID string, subscriptions []*eventsub.Subscription) (actual map[chatSubscription]string, stale map[string]chatSubscription, statuses map[string]int) {
+	actual = make(map[chatSubscription]string, len(subscriptions))
+	stale = make(map[string]chatSubscription)
+	statuses = make(map[string]int, len(subscriptions))
+
+	for _, sub := range subscriptions {
+		statuses[sub.Status]++
+
+		if sub.Transport.ConduitID != conduitID {
+			ctxlog.Warn(ctx, "subscription not using our conduit",
+				zap.String("id", sub.ID),
+				zap.Any("transport", sub.Transport),
+			)
+			continue
+		}
+		if sub.Type != eventsub.ChatMessageSubscriptionType {
+			continue
+		}
+
+		condition := sub.Condition.(*eventsub.ChatMessageSubscriptionCondition)
+		chatSub := chatSubscription{
+			BroadcasterID: int64(condition.BroadcasterUserID),
+			BotID:         int64(condition.UserID),
+		}
+		if sub.Status != "enabled" {
+			stale[sub.ID] = chatSub
+			continue
+		}
+		if _, ok := actual[chatSub]; ok {
+			stale[sub.ID] = chatSub
+			continue
+		}
+		actual[chatSub] = sub.ID
+	}
+
+	return actual, stale, statuses
 }
 
 func keys[M ~map[K]V, K comparable, V any](m M) []K {

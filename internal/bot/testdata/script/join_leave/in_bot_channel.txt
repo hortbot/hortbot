@@ -33,8 +33,8 @@ send hortbot @1 [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
-send hortbot #hortbot [HB] foobar, hortbot is already active in your channel with prefix '+'. If the bot isn't responding and your channel is in follower-only mode, ensure you've modded the bot.
-no_notify_eventsub_updates
+send hortbot #hortbot [HB] foobar, hortbot is already configured for your channel with prefix '+'. I've requested a reconnect.
+notify_eventsub_updates
 
 handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
 send hortbot #hortbot [HB] foobar, hortbot will now leave your channel.
