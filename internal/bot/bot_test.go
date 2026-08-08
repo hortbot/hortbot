@@ -67,6 +67,6 @@ func TestBotNotInit(t *testing.T) {
 	t.Parallel()
 	assertx.Panic(t, func() {
 		b := &bot.Bot{}
-		b.Handle(t.Context(), privMSG("asdasd", "", 0, "", 0, ""))
+		b.Handle(t.Context(), chatMessage("asdasd", "", 0, "", 0, ""))
 	}, "bot is not initialized")
 }

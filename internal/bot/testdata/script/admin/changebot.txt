@@ -1,36 +1,36 @@
 upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 upsert_twitch_token {"twitch_id": 101, "bot_name": "otherbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
-handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot
+handle hortbot hortbot/999 admin/2 access=admin :!admin changebot
 send hortbot #hortbot [HB] Usage: !admin changebot <name> <botName>
 
-handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar
+handle hortbot hortbot/999 admin/2 access=admin :!admin changebot foobar
 send hortbot #hortbot [HB] Usage: !admin changebot <name> <botName>
 
-handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar otherbot
+handle hortbot hortbot/999 admin/2 access=admin :!admin changebot foobar otherbot
 send hortbot #hortbot [HB] No such user foobar.
 
 
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!command add something Something.
+handle hortbot foobar/1 admin/2 access=admin :!command add something Something.
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!something
+handle hortbot foobar/1 admin/2 access=admin :!something
 send hortbot #foobar [HB] Something.
 
 
-handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar hortbot
+handle hortbot hortbot/999 admin/2 access=admin :!admin changebot foobar hortbot
 send hortbot #hortbot [HB] foobar is already using hortbot.
 
-handle hortbot @id=__UUID__;room-id=999;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin changebot foobar otherbot
+handle hortbot hortbot/999 admin/2 access=admin :!admin changebot foobar otherbot
 notify_eventsub_updates
 send hortbot #hortbot [HB] Changed foobar's bot from hortbot to otherbot.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!something
+handle hortbot foobar/1 admin/2 access=admin :!something
 no_send
 
-handle otherbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!something
+handle otherbot foobar/1 admin/2 access=admin :!something
 send otherbot #foobar [HB] Something.

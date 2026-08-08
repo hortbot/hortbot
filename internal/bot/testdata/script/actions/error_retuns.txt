@@ -1,13 +1,13 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add error (_TESTING_ERROR_)
+handle hortbot foobar/1 foobar/1 :!command add error (_TESTING_ERROR_)
 send hortbot #foobar [HB] Command 'error' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!error hello
+handle hortbot foobar/1 foobar/1 :!error hello
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add nestederror (_HEY_(_TESTING_ERROR_)_)
+handle hortbot foobar/1 foobar/1 :!command add nestederror (_HEY_(_TESTING_ERROR_)_)
 send hortbot #foobar [HB] Command 'nestederror' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!nestederror hello
+handle hortbot foobar/1 foobar/1 :!nestederror hello
 no_send

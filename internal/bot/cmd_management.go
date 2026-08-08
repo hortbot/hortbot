@@ -50,7 +50,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 	userID := s.UserID
 
 	name = cleanUsername(name)
-	botName := strings.TrimLeft(s.Origin, "#")
+	botName := strings.TrimLeft(s.BotLogin, "#")
 
 	isAdmin := s.UserLevel.CanAccess(AccessLevelAdmin)
 	adminOverride := false

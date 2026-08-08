@@ -1,41 +1,41 @@
 join hortbot 999 foobar 1
 join hortbot 999 otherchan 9
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot foobar/1 foobar/1 :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+handle hortbot foobar/1 foobar/1 :!pan working command
 send hortbot #foobar [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!pan working command
+handle hortbot otherchan/9 otherchan/9 :!pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+handle hortbot otherchan/9 otherchan/9 :!#foobar/pan working command
 send hortbot #otherchan [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
-handle hortbot @id=__UUID__;room-id=9;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+handle hortbot otherchan/9 random/2 :!#foobar/pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=9;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+handle hortbot otherchan/9 random/2 access=subscriber :!#foobar/pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=9;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/pan working command
+handle hortbot otherchan/9 random/2 access=moderator :!#foobar/pan working command
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list add mylist
+handle hortbot foobar/1 foobar/1 :!list add mylist
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add thing 1
+handle hortbot foobar/1 foobar/1 :!mylist add thing 1
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mylist add thing 2
+handle hortbot foobar/1 foobar/1 :!mylist add thing 2
 send_any
 
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#foobar/mylist get 1
+handle hortbot otherchan/9 otherchan/9 :!#foobar/mylist get 1
 send hortbot #otherchan [HB] thing 1
 
 
-handle hortbot @id=__UUID__;room-id=9;user-id=9 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!#who/mylist get 1
+handle hortbot otherchan/9 otherchan/9 :!#who/mylist get 1
 send hortbot #otherchan [HB] Channel who does not exist.

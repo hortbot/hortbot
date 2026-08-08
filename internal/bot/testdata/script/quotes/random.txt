@@ -1,28 +1,28 @@
 join hortbot 2 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote random
+handle hortbot foobar/1 foobar/1 :!quote random
 send hortbot #foobar [HB] There are no quotes.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "quote 1"
+handle hortbot foobar/1 foobar/1 :!quote add "quote 1"
 send hortbot #foobar [HB] "quote 1" added as quote #1.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "quote 2"
+handle hortbot foobar/1 foobar/1 :!quote add "quote 2"
 send hortbot #foobar [HB] "quote 2" added as quote #2.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote random
+handle hortbot foobar/1 foobar/1 :!quote random
 send_match hortbot #foobar \[HB\] Quote #(1: "quote 1"|2: "quote 2")
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote random
+handle hortbot foobar/1 foobar/1 :!quote random
 send_match hortbot #foobar \[HB\] Quote #(1: "quote 1"|2: "quote 2")
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote
+handle hortbot foobar/1 foobar/1 :!quote
 send_match hortbot #foobar \[HB\] Quote #(1: "quote 1"|2: "quote 2")
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote
+handle hortbot foobar/1 foobar/1 :!quote
 send_match hortbot #foobar \[HB\] Quote #(1: "quote 1"|2: "quote 2")
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote
+handle hortbot foobar/1 random/3 :!quote
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote
+handle hortbot foobar/1 random/3 access=subscriber :!quote
 send_match hortbot #foobar \[HB\] Quote #(1: "quote 1"|2: "quote 2")

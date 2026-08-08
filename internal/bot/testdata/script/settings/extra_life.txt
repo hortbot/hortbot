@@ -1,22 +1,22 @@
 join hortbot 99 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid
+handle hortbot foobar/1 foobar/1 :!set extralifeid
 send hortbot #foobar [HB] Extra Life ID is not set.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid what
+handle hortbot foobar/1 foobar/1 :!set extralifeid what
 send hortbot #foobar [HB] Usage: !set extralifeid <participant ID>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid -1
+handle hortbot foobar/1 foobar/1 :!set extralifeid -1
 send hortbot #foobar [HB] Usage: !set extralifeid <participant ID>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid 123
+handle hortbot foobar/1 foobar/1 :!set extralifeid 123
 send hortbot #foobar [HB] Extra Life ID changed to 123.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid
+handle hortbot foobar/1 foobar/1 :!set extralifeid
 send hortbot #foobar [HB] Extra Life ID is set to 123.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid 0
+handle hortbot foobar/1 foobar/1 :!set extralifeid 0
 send hortbot #foobar [HB] Extra Life ID has been unset.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set extralifeid
+handle hortbot foobar/1 foobar/1 :!set extralifeid
 send hortbot #foobar [HB] Extra Life ID is not set.

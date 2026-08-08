@@ -1,24 +1,24 @@
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+whatprefix
+handle hortbot foobar/1 foobar/1 :+whatprefix
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+whatprefix
+handle hortbot foobar/1 foobar/1 access=admin :+whatprefix
 send hortbot #foobar [HB] The prefix for this channel is: !
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
+handle hortbot foobar/1 foobar/1 :!set prefix +
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+whatprefix
+handle hortbot foobar/1 foobar/1 :+whatprefix
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+whatprefix
+handle hortbot foobar/1 foobar/1 access=admin :+whatprefix
 send hortbot #foobar [HB] The prefix for this channel is: +
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+set prefix ?
+handle hortbot foobar/1 foobar/1 :+set prefix ?
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+whatprefix
+handle hortbot foobar/1 foobar/1 access=admin :+whatprefix
 send hortbot #foobar [HB] The prefix for this channel is: ?

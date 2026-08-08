@@ -1,16 +1,16 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command
+handle hortbot foobar/1 foobar/1 :!command
 send hortbot #foobar [HB] Usage: !command add|delete|restrict|...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add
+handle hortbot foobar/1 foobar/1 :!command add
 send hortbot #foobar [HB] Usage: !command add <name> <text>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan
+handle hortbot foobar/1 foobar/1 :!command add pan
 send hortbot #foobar [HB] Usage: !command add <name> <text>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan     
+handle hortbot foobar/1 foobar/1 :!command add pan     
 send hortbot #foobar [HB] Usage: !command add <name> <text>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS, HAVE YE?
+handle hortbot foobar/1 foobar/1 :!command add pan FOUND THE (_PARAMETER_CAPS, HAVE YE?
 send hortbot #foobar [HB] Command 'pan' added, restricted to subscribers and above. Warning: command contains stray (_ or _) separators and may not be processed correctly.

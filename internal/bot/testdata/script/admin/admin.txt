@@ -1,33 +1,33 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin
+handle hortbot foobar/1 foobar/1 :!admin
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin
+handle hortbot foobar/1 foobar/1 access=admin :!admin
 send hortbot #foobar [HB] Bad command
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin asdasd
+handle hortbot foobar/1 foobar/1 access=admin :!admin asdasd
 send hortbot #foobar [HB] Bad command asdasd
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin roundtrip
+handle hortbot foobar/1 foobar/1 access=admin :!admin roundtrip
 send_match hortbot #foobar ^\[HB\] fromTwitch=.*, inQueue=.*, begin=.*, handle=.*, commit=.*
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin color
+handle hortbot foobar/1 foobar/1 access=admin :!admin color
 send hortbot #foobar [HB] Usage: !admin color <color>
 
 twitch_set_chat_color {"UserID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Color": "green"}
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin color green
+handle hortbot foobar/1 foobar/1 access=admin :!admin color green
 send hortbot #foobar [HB] Color set to green.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined
+handle hortbot foobar/1 foobar/1 access=admin :!admin syncJoined
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined
+handle hortbot foobar/1 foobar/1 access=super-admin :!admin syncJoined
 notify_eventsub_updates
 send hortbot #foobar [HB] Triggered channel sync for hortbot.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-super-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!admin syncJoined SomeBot
+handle hortbot foobar/1 foobar/1 access=super-admin :!admin syncJoined SomeBot
 notify_eventsub_updates
 send hortbot #foobar [HB] Triggered channel sync for SomeBot.

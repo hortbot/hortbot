@@ -1,22 +1,22 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+set prefix reset
+handle hortbot foobar/1 foobar/1 :+set prefix reset
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
+handle hortbot foobar/1 foobar/1 :!set prefix +
 send hortbot #foobar [HB] Prefix changed to +
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+set prefix reset
+handle hortbot foobar/1 foobar/1 :+set prefix reset
 send hortbot #foobar [HB] Prefix reset to !
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix
+handle hortbot foobar/1 foobar/1 :!set prefix
 send hortbot #foobar [HB] Prefix is !
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix /me
+handle hortbot foobar/1 foobar/1 :!set prefix /me
 send hortbot #foobar [HB] Prefix cannot begin with /
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix .me
+handle hortbot foobar/1 foobar/1 :!set prefix .me
 send hortbot #foobar [HB] Prefix cannot begin with .
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix long
+handle hortbot foobar/1 foobar/1 :!set prefix long
 send hortbot #foobar [HB] Prefix may only be a single character.

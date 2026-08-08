@@ -1,11 +1,11 @@
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there! (_MESSAGE_COUNT_)
+handle hortbot foobar/1 foobar/1 :!command add repeatme Hello there! (_MESSAGE_COUNT_)
 send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 30 3
+handle hortbot foobar/1 foobar/1 :!repeat add repeatme 30 3
 send hortbot #foobar [HB] Command 'repeatme' will now repeat every 30 seconds if at least 3 messages have passed.
 
 checkpoint
@@ -22,10 +22,10 @@ clock_forward 20s
 sleep 100ms
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
 checkpoint
@@ -33,7 +33,7 @@ clock_forward 10s
 sleep 100ms
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
 checkpoint

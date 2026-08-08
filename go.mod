@@ -29,7 +29,6 @@ require (
 	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/golang-lru/v2 v2.0.7
 	github.com/jackc/pgx/v5 v5.10.0
-	github.com/jakebailey/irc v0.0.0-20230110182717-9144941a856a
 	github.com/jarcoal/httpmock v1.4.2
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/joho/godotenv v1.5.1

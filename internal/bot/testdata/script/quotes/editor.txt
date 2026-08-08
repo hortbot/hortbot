@@ -1,35 +1,35 @@
 join hortbot 2 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
+handle hortbot foobar/1 foobar/1 :!quote add "This is a test."
 send hortbot #foobar [HB] "This is a test." added as quote #1.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+handle hortbot foobar/1 foobar/1 :!quote editor 1
 send hortbot #foobar [HB] Quote #1 was last edited by foobar.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote edit 1 "This is a testerino."
+handle hortbot foobar/1 random/3 access=admin :!quote edit 1 "This is a testerino."
 send hortbot #foobar [HB] Quote #1 edited.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+handle hortbot foobar/1 foobar/1 :!quote editor 1
 send hortbot #foobar [HB] Quote #1 was last edited by random.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 0
+handle hortbot foobar/1 foobar/1 :!quote editor 0
 send hortbot #foobar [HB] Quote #0 does not exist.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor -1
+handle hortbot foobar/1 foobar/1 :!quote editor -1
 send hortbot #foobar [HB] Quote #-1 does not exist.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor 2
+handle hortbot foobar/1 foobar/1 :!quote editor 2
 send hortbot #foobar [HB] Quote #2 does not exist.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor
+handle hortbot foobar/1 foobar/1 :!quote editor
 send hortbot #foobar [HB] Usage: !quote editor <index>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote editor asd
+handle hortbot foobar/1 foobar/1 :!quote editor asd
 send hortbot #foobar [HB] Usage: !quote editor <index>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=4 :random2!random2@random2.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+handle hortbot foobar/1 random2/4 :!quote editor 1
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=4;subscriber=1 :random2!random2@random2.tmi.twitch.tv PRIVMSG #foobar :!quote editor 1
+handle hortbot foobar/1 random2/4 access=subscriber :!quote editor 1
 send hortbot #foobar [HB] Quote #1 was last edited by random.

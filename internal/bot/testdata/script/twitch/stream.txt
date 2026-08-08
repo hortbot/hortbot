@@ -4,44 +4,44 @@ clock_set 2000-10-01T03:11:22Z
 
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotFound"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+handle hortbot foobar/1 random/2 :!viewers
 send hortbot #foobar [HB] Stream is not live.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+handle hortbot foobar/1 random/2 :!uptime
 send hortbot #foobar [HB] Stream is not live.
 
 
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+handle hortbot foobar/1 random/2 :!viewers
 send hortbot #foobar [HB] A Twitch server error occurred.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+handle hortbot foobar/1 random/2 :!uptime
 send hortbot #foobar [HB] A Twitch server error occurred.
 
 
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotAuthorized"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+handle hortbot foobar/1 random/2 :!viewers
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+handle hortbot foobar/1 random/2 :!uptime
 no_send
 
 
 twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T00:00:11Z", "viewer_count": 1234}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+handle hortbot foobar/1 random/2 :!viewers
 send hortbot #foobar [HB] 1234 viewers.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+handle hortbot foobar/1 random/2 :!uptime
 send hortbot #foobar [HB] Live for 3 hours 11 minutes.
 
 
 twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-09-29T01:23:12Z", "viewer_count": 1}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!viewers
+handle hortbot foobar/1 random/2 :!viewers
 send hortbot #foobar [HB] 1 viewer.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!uptime
+handle hortbot foobar/1 random/2 :!uptime
 send hortbot #foobar [HB] Live for 2 days 1 hour 48 minutes.

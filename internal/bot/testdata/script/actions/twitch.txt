@@ -1,36 +1,36 @@
 join hortbot 99 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add teststatus (_STATUS_)
+handle hortbot foobar/1 foobar/1 :!command add teststatus (_STATUS_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add testviewers (_VIEWERS_)
+handle hortbot foobar/1 foobar/1 :!command add testviewers (_VIEWERS_)
 send_any
 
 twitch_get_channel_by_id {"ID": 1, "Channel": {"title": "This is the status!"}}
 twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T00:00:11Z", "viewer_count": 1234}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!teststatus
+handle hortbot foobar/1 foobar/1 :!teststatus
 send hortbot #foobar [HB] This is the status!
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testviewers
+handle hortbot foobar/1 foobar/1 :!testviewers
 send hortbot #foobar [HB] 1234
 
 
 twitch_get_channel_by_id {"ID": 1, "Channel": {"title": ""}}
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotFound"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!teststatus
+handle hortbot foobar/1 foobar/1 :!teststatus
 send hortbot #foobar [HB] (Not set)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testviewers
+handle hortbot foobar/1 foobar/1 :!testviewers
 send hortbot #foobar [HB] 0
 
 
 twitch_get_channel_by_id {"ID": 1, "Channel": null, "Err": "ErrServerError"}
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!teststatus
+handle hortbot foobar/1 foobar/1 :!teststatus
 send hortbot #foobar [HB] (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testviewers
+handle hortbot foobar/1 foobar/1 :!testviewers
 send hortbot #foobar [HB] 0

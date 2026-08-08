@@ -1,79 +1,79 @@
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!var
+handle hortbot foobar/1 random/2 :!var
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!var
+handle hortbot foobar/1 random/2 access=subscriber :!var
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var
+handle hortbot foobar/1 foobar/1 :!var
 send hortbot #foobar [HB] Usage: !var set|get|delete|increment|decrement
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var what
+handle hortbot foobar/1 foobar/1 :!var what
 send hortbot #foobar [HB] Usage: !var set|get|delete|increment|decrement
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var get
+handle hortbot foobar/1 foobar/1 :!var get
 send hortbot #foobar [HB] Usage: !var get <name>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var set
+handle hortbot foobar/1 foobar/1 :!var set
 send hortbot #foobar [HB] Usage: !var set <name> <value>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var get what
+handle hortbot foobar/1 foobar/1 :!var get what
 send hortbot #foobar [HB] Variable what does not exist.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var set what Hello there.
+handle hortbot foobar/1 foobar/1 :!var set what Hello there.
 send hortbot #foobar [HB] Variable what set to: Hello there.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var get what
+handle hortbot foobar/1 foobar/1 :!var get what
 send hortbot #foobar [HB] Variable what is set to: Hello there.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var delete
+handle hortbot foobar/1 foobar/1 :!var delete
 send hortbot #foobar [HB] Usage: !var delete <name>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var remove
+handle hortbot foobar/1 foobar/1 :!var remove
 send hortbot #foobar [HB] Usage: !var remove <name>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var delete what
+handle hortbot foobar/1 foobar/1 :!var delete what
 send hortbot #foobar [HB] Variable what has been deleted.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var remove what
+handle hortbot foobar/1 foobar/1 :!var remove what
 send hortbot #foobar [HB] Variable what has been deleted.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var increment
+handle hortbot foobar/1 foobar/1 :!var increment
 send hortbot #foobar [HB] Usage: !var increment <name> <value>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var decrement
+handle hortbot foobar/1 foobar/1 :!var decrement
 send hortbot #foobar [HB] Usage: !var decrement <name> <value>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var increment what huh
+handle hortbot foobar/1 foobar/1 :!var increment what huh
 send hortbot #foobar [HB] Usage: !var increment <name> <value>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var decrement what huh
+handle hortbot foobar/1 foobar/1 :!var decrement what huh
 send hortbot #foobar [HB] Usage: !var decrement <name> <value>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var increment what 1
+handle hortbot foobar/1 foobar/1 :!var increment what 1
 send hortbot #foobar [HB] Variable what has been incremented to 1.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var increment what 2
+handle hortbot foobar/1 foobar/1 :!var increment what 2
 send hortbot #foobar [HB] Variable what has been incremented to 3.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var decrement what 4
+handle hortbot foobar/1 foobar/1 :!var decrement what 4
 send hortbot #foobar [HB] Variable what has been decremented to -1.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var set what Hello there.
+handle hortbot foobar/1 foobar/1 :!var set what Hello there.
 send hortbot #foobar [HB] Variable what set to: Hello there.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var increment what 2
+handle hortbot foobar/1 foobar/1 :!var increment what 2
 send hortbot #foobar [HB] Variable what is not an integer.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var decrement what 4
+handle hortbot foobar/1 foobar/1 :!var decrement what 4
 send hortbot #foobar [HB] Variable what is not an integer.

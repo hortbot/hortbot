@@ -1,52 +1,52 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 2
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hello
+handle hortbot foobar/1 foobar/1 :hello
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 4
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hi there
+handle hortbot foobar/1 random/2 :hi there
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 6
 
 
 # Ignored messages do not increment count.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
+handle hortbot foobar/1 foobar/1 :!ignore add random
 send hortbot #foobar [HB] random added to ignored users.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hi there
+handle hortbot foobar/1 random/2 :hi there
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hi there
+handle hortbot foobar/1 random/2 :hi there
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 8
 
 
 # Filtered messages do not increment count.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
+handle hortbot foobar/1 foobar/1 :!filter links on
 send hortbot #foobar [HB] Link filter is now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 11
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "a8649dd0-95e0-11e9-b475-0800200c9a66"}
-handle hortbot @id=a8649dd0-95e0-11e9-b475-0800200c9a66;room-id=1;user-id=3 :other!other@other.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 other/3 message-id=a8649dd0-95e0-11e9-b475-0800200c9a66 :check out my cool website! example.com
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_message_count
+handle hortbot foobar/1 foobar/1 :!testing_message_count
 send hortbot #foobar [HB] 12

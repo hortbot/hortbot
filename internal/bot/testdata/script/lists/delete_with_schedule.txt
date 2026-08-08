@@ -2,17 +2,17 @@ join hortbot 999 foobar 1
 
 clock_set 2000-10-01T03:11:00Z
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list adda repeatme
+handle hortbot foobar/1 foobar/1 :!list adda repeatme
 send hortbot #foobar [HB] List 'repeatme' added, restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeatme add Something
+handle hortbot foobar/1 foobar/1 :!repeatme add Something
 send hortbot #foobar [HB] "Something" has been added to the list as item #1.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule add repeatme @hourly
+handle hortbot foobar/1 foobar/1 :!schedule add repeatme @hourly
 send hortbot #foobar [HB] Command 'repeatme' has been scheduled with '@hourly' and will run if at least 1 message has passed.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
 checkpoint
@@ -29,10 +29,10 @@ sleep 100ms
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!list delete repeatme
+handle hortbot foobar/1 foobar/1 :!list delete repeatme
 send hortbot #foobar [HB] List 'repeatme' and its repeat/schedule have been deleted.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
 checkpoint
@@ -41,5 +41,5 @@ sleep 100ms
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!schedule on repeatme
+handle hortbot foobar/1 foobar/1 :!schedule on repeatme
 send hortbot #foobar [HB] Command 'repeatme' does not exist.

@@ -10,8 +10,6 @@ import (
 	"golang.org/x/oauth2"
 )
 
-// This file contains API calls which previously were implemented as IRC commands.
-
 type BanRequest struct {
 	UserID   idstr.IDStr `json:"user_id"`
 	Duration int64       `json:"duration,omitempty"`

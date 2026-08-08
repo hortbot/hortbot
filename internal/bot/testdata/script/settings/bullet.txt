@@ -1,23 +1,23 @@
 bot_config {"BulletMap": {"hortbot": "WOW"}}
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot foobar/1 foobar/1 :!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot #foobar WOW Command 'pan' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set bullet COOL
+handle hortbot foobar/1 foobar/1 :!set bullet COOL
 send hortbot #foobar COOL Bullet changed to COOL
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set bullet
+handle hortbot foobar/1 foobar/1 :!set bullet
 send hortbot #foobar COOL Bullet is COOL
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set bullet reset
+handle hortbot foobar/1 foobar/1 :!set bullet reset
 send hortbot #foobar WOW Bullet reset to default.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set bullet
+handle hortbot foobar/1 foobar/1 :!set bullet
 send hortbot #foobar WOW Bullet is WOW (default)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set bullet /hack
+handle hortbot foobar/1 foobar/1 :!set bullet /hack
 send hortbot #foobar WOW Bullet cannot be a command.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set bullet .hack
+handle hortbot foobar/1 foobar/1 :!set bullet .hack
 send hortbot #foobar WOW Bullet cannot be a command.

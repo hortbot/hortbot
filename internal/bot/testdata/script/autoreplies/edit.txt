@@ -1,54 +1,54 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse
+handle hortbot foobar/1 foobar/1 :!autoreply editresponse
 send hortbot #foobar [HB] Usage: !autoreply editresponse <index> <response>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse what okok
+handle hortbot foobar/1 foobar/1 :!autoreply editresponse what okok
 send hortbot #foobar [HB] Usage: !autoreply editresponse <index> <response>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse 1
+handle hortbot foobar/1 foobar/1 :!autoreply editresponse 1
 send hortbot #foobar [HB] Usage: !autoreply editresponse <index> <response>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern
 send hortbot #foobar [HB] Usage: !autoreply editpattern <index> <pattern>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern what okok
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern what okok
 send hortbot #foobar [HB] Usage: !autoreply editpattern <index> <pattern>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern 1
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern 1
 send hortbot #foobar [HB] Usage: !autoreply editpattern <index> <pattern>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse 1 hey
+handle hortbot foobar/1 foobar/1 :!autoreply editresponse 1 hey
 send hortbot #foobar [HB] Autoreply #1 does not exist.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern 1 hey
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern 1 hey
 send hortbot #foobar [HB] Autoreply #1 does not exist.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add who_is_zik Nobody important.
+handle hortbot foobar/1 foobar/1 :!autoreply add who_is_zik Nobody important.
 send hortbot #foobar [HB] Autoreply #1 added.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse 1 Somebody.
+handle hortbot foobar/1 foobar/1 :!autoreply editresponse 1 Somebody.
 send hortbot #foobar [HB] Autoreply #1's response has been edited.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 1: ^who is zik$ -> Somebody.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern 1 REGEX:who.*is.*zik
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern 1 REGEX:who.*is.*zik
 send hortbot #foobar [HB] Autoreply #1's pattern has been edited.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 1: who.*is.*zik -> Somebody.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern 1 *
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern 1 *
 send hortbot #foobar [HB] Error parsing pattern: empty pattern
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editpattern 1 REGEX:*
+handle hortbot foobar/1 foobar/1 :!autoreply editpattern 1 REGEX:*
 send hortbot #foobar [HB] Error parsing pattern: missing argument to repetition operator
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply editresponse 1 (_
+handle hortbot foobar/1 foobar/1 :!autoreply editresponse 1 (_
 send hortbot #foobar [HB] Autoreply #1's response has been edited. Warning: response contains stray (_ or _) separators and may not be processed correctly.

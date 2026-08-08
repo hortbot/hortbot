@@ -1,93 +1,93 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+handle hortbot foobar/1 foobar/1 :!set displayWarnings on
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
+handle hortbot foobar/1 foobar/1 :!filter links on
 send hortbot #foobar [HB] Link filter is now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set subsmaylink on
+handle hortbot foobar/1 foobar/1 :!set subsmaylink on
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!permit random
+handle hortbot foobar/1 random/2 :!permit random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!permit random
+handle hortbot foobar/1 random/2 access=subscriber :!permit random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit
+handle hortbot foobar/1 foobar/1 :!permit
 send hortbot #foobar [HB] Usage: !permit <user>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+handle hortbot foobar/1 random/2 chatter-display=Random :this is a normal message
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+handle hortbot foobar/1 random/2 chatter-display=Random :this is a normal message
 no_send
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "e47c3f9a-c573-4044-afd1-c7750936b9d2"}
-handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 message-id=e47c3f9a-c573-4044-afd1-c7750936b9d2 chatter-display=Random :check out my cool website! example.com
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 clock_forward 3h
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit @random
+handle hortbot foobar/1 foobar/1 :!permit @random
 send hortbot #foobar [HB] random may now post one link within 5 minutes.
 
 clock_forward 10m
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "a3ef435b-13b8-4701-9e6e-4fe75241a2dc"}
-handle hortbot @id=a3ef435b-13b8-4701-9e6e-4fe75241a2dc;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 message-id=a3ef435b-13b8-4701-9e6e-4fe75241a2dc chatter-display=Random :check out my cool website! example.com
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit @Random
+handle hortbot foobar/1 foobar/1 :!permit @Random
 send hortbot #foobar [HB] random may now post one link within 5 minutes.
 
 clock_forward 30s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 chatter-display=Random :check out my cool website! example.com
 send hortbot #foobar [HB] Link permitted. (Random)
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "cdac822c-e6f5-4eda-ac42-e239cb71ab83"}
-handle hortbot @id=cdac822c-e6f5-4eda-ac42-e239cb71ab83;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 message-id=cdac822c-e6f5-4eda-ac42-e239cb71ab83 chatter-display=Random :check out my cool website! example.com
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
+handle hortbot foobar/1 foobar/1 :!permit random
 send hortbot #foobar [HB] random may now post one link within 5 minutes.
 
 clock_forward 4m
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
+handle hortbot foobar/1 foobar/1 :!permit random
 send hortbot #foobar [HB] random may now post one link within 5 minutes.
 
 clock_forward 3m
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 chatter-display=Random :check out my cool website! example.com
 send hortbot #foobar [HB] Link permitted. (Random)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 chatter-display=Random access=subscriber :check out my cool website! example.com
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links off
+handle hortbot foobar/1 foobar/1 :!filter links off
 send hortbot #foobar [HB] Link filter is now disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+handle hortbot foobar/1 random/2 chatter-display=Random :this is a normal message
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
+handle hortbot foobar/1 foobar/1 :!permit random
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
+handle hortbot foobar/1 foobar/1 :!filter links on
 send hortbot #foobar [HB] Link filter is now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off
+handle hortbot foobar/1 foobar/1 :!filter off
 send hortbot #foobar [HB] Filters are now disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!permit random
+handle hortbot foobar/1 foobar/1 :!permit random
 no_send

@@ -40,14 +40,14 @@ const (
 type session struct {
 	Type sessionType
 
-	Origin string
-	M      Message
+	BotLogin string
+	M        Message
 
 	Deps *sharedDeps
 	Tx   *sql.Tx
 
-	Start   time.Time
-	TMISent time.Time
+	Start  time.Time
+	SentAt time.Time
 
 	ID          string
 	RoomID      int64
@@ -135,7 +135,7 @@ func (s *session) bullet() string {
 
 func (s *session) defaultBullet() string {
 	if s.Deps.BulletMap != nil {
-		if b := s.Deps.BulletMap[s.Origin]; b != "" {
+		if b := s.Deps.BulletMap[s.BotLogin]; b != "" {
 			return b
 		}
 	}
@@ -212,7 +212,7 @@ func (s *session) parseUserLevel() AccessLevel {
 		return AccessLevelAdmin
 	}
 
-	accessLevel := s.M.UserAccessLevel()
+	accessLevel := s.M.ChatterAccessLevel()
 	if accessLevel != AccessLevelUnknown {
 		return accessLevel
 	}
@@ -306,7 +306,7 @@ func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.To
 }
 
 func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, error) {
-	botName := s.Origin
+	botName := s.BotLogin
 	if s.Channel != nil {
 		botName = s.Channel.BotName
 	}

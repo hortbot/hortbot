@@ -1,104 +1,104 @@
 join hortbot 999 foobar 1
 twitch_get_user_by_username {"whoever": {"id": 2, "login": "whoever"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda test (_SUBMODE_ON_)
+handle hortbot foobar/1 foobar/1 :!command adda test (_SUBMODE_ON_)
 send_any
 
 twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"subscriber_mode": true}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/2 :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_SUBMODE_OFF_)
+handle hortbot foobar/1 foobar/1 :!command add test (_SUBMODE_OFF_)
 send_any
 
 twitch_update_chat_settings {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Patch": {"subscriber_mode": false}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/2 :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_HOST_coestar_)
+handle hortbot foobar/1 foobar/1 :!command add test (_HOST_coestar_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] (_HOST_coestar_)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/2 :!test
 send hortbot #foobar [HB] (_HOST_coestar_)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_HOST_COESTAR_)
+handle hortbot foobar/1 foobar/1 :!command add test (_HOST_COESTAR_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] (_HOST_COESTAR_)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_UNHOST_)
+handle hortbot foobar/1 foobar/1 :!command add test (_UNHOST_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] (_UNHOST_)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/2 :!test
 send hortbot #foobar [HB] (_UNHOST_)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_PURGE_)
+handle hortbot foobar/1 foobar/1 :!command add test (_PURGE_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 no_send
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 1, "reason": "Purging chat messages"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 foobar/1 :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 random/2 :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 random/2 chatter-display=RaNDoM :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_TIMEOUT_)
+handle hortbot foobar/1 foobar/1 :!command add test (_TIMEOUT_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 no_send
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 600, "reason": "Timeout via command action"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test @WhoEver else
+handle hortbot foobar/1 foobar/1 :!test @WhoEver else
 send hortbot #foobar [HB] @WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 random/2 :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 random/2 chatter-display=RaNDoM :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_BAN_)
+handle hortbot foobar/1 foobar/1 :!command add test (_BAN_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 no_send
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 0, "reason": "Ban via command action"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 foobar/1 :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 random/2 :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=RaNDoM :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test WhoEver else
+handle hortbot foobar/1 random/2 chatter-display=RaNDoM :!test WhoEver else
 send hortbot #foobar [HB] WhoEver
 
 # DELETE only works in autoreplies.
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_DELETE_)
+handle hortbot foobar/1 foobar/1 :!command add test (_DELETE_)
 send_any
 
-handle hortbot @id=811f57a8-f392-4972-b3cf-753fb4aced22;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 message-id=811f57a8-f392-4972-b3cf-753fb4aced22 :!test
 no_send

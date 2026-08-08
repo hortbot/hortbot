@@ -148,7 +148,7 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				Start:       start,
 				UserLevel:   AccessLevelEveryone,
 				Channel:     channel,
-				Origin:      channel.BotName,
+				BotLogin:    channel.BotName,
 				ChannelName: channel.Name,
 				RoomID:      channel.TwitchID,
 				RoomIDOrig:  channel.TwitchID,

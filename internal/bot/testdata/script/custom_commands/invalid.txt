@@ -1,5 +1,5 @@
 join hortbot 999 foobar 1
 insert_custom_command {"channel_id": 1, "name": "pan", "message": "FOUND THE (_PARAMETER_CAPS, HAVE YE?", "access_level": "everyone"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!pan working command
+handle hortbot foobar/1 foobar/1 :!pan working command
 no_send

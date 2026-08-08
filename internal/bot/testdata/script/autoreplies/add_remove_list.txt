@@ -1,77 +1,77 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add
+handle hortbot foobar/1 foobar/1 :!autoreply add
 send hortbot #foobar [HB] Usage: !autoreply add <pattern> <response>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add what
+handle hortbot foobar/1 foobar/1 :!autoreply add what
 send hortbot #foobar [HB] Usage: !autoreply add <pattern> <response>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply delete
+handle hortbot foobar/1 foobar/1 :!autoreply delete
 send hortbot #foobar [HB] Usage: !autoreply delete <index>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply remove what
+handle hortbot foobar/1 foobar/1 :!autoreply remove what
 send hortbot #foobar [HB] Usage: !autoreply remove <index>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply delete 1
+handle hortbot foobar/1 foobar/1 :!autoreply delete 1
 send hortbot #foobar [HB] Autoreply #1 does not exist.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add * nope
+handle hortbot foobar/1 foobar/1 :!autoreply add * nope
 send hortbot #foobar [HB] Error parsing pattern: empty pattern
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add ** nope
+handle hortbot foobar/1 foobar/1 :!autoreply add ** nope
 send hortbot #foobar [HB] Error parsing pattern: empty pattern
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *** nope
+handle hortbot foobar/1 foobar/1 :!autoreply add *** nope
 send hortbot #foobar [HB] Error parsing pattern: empty pattern
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add REGEX: nope
+handle hortbot foobar/1 foobar/1 :!autoreply add REGEX: nope
 send hortbot #foobar [HB] Error parsing pattern: empty pattern
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add REGEX:) hey
+handle hortbot foobar/1 foobar/1 :!autoreply add REGEX:) hey
 send hortbot #foobar [HB] Error parsing pattern: unexpected )
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] There are no autoreplies.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add who_is_zik Nobody important.
+handle hortbot foobar/1 foobar/1 :!autoreply add who_is_zik Nobody important.
 send hortbot #foobar [HB] Autoreply #1 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *what_game* Garry's Mod!
+handle hortbot foobar/1 foobar/1 :!autoreply add *what_game* Garry's Mod!
 send hortbot #foobar [HB] Autoreply #2 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 1: ^who is zik$ -> Nobody important. ; 2: ^.*what game.*$ -> Garry's Mod!
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply remove 1
+handle hortbot foobar/1 foobar/1 :!autoreply remove 1
 send hortbot #foobar [HB] Autoreply #1 has been deleted.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 2: ^.*what game.*$ -> Garry's Mod!
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply remove 2
+handle hortbot foobar/1 foobar/1 :!autoreply remove 2
 send hortbot #foobar [HB] Autoreply #2 has been deleted.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] There are no autoreplies.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add REGEX:.*(a|b)[0-9]\d\s+ Wow cool.
+handle hortbot foobar/1 foobar/1 :!autoreply add REGEX:.*(a|b)[0-9]\d\s+ Wow cool.
 send hortbot #foobar [HB] Autoreply #1 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 1: .*(a|b)[0-9]\d\s+ -> Wow cool.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *hey*chat**peeps* hey
+handle hortbot foobar/1 foobar/1 :!autoreply add *hey*chat**peeps* hey
 send hortbot #foobar [HB] Autoreply #2 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+handle hortbot foobar/1 foobar/1 :!autoreply list
 send hortbot #foobar [HB] Autoreplies: 1: .*(a|b)[0-9]\d\s+ -> Wow cool. ; 2: ^.*hey.*chat.*peeps.*$ -> hey
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *foo* (_
+handle hortbot foobar/1 foobar/1 :!autoreply add *foo* (_
 send hortbot #foobar [HB] Autoreply #3 added. Warning: response contains stray (_ or _) separators and may not be processed correctly.

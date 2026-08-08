@@ -2,89 +2,89 @@ lastfm_recent_tracks {"foobar": [{"now_playing": true, "name": "Too Long", "arti
 
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastfm
+handle hortbot foobar/1 foobar/1 :!lastfm
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm foobar
+handle hortbot foobar/1 foobar/1 :!set lastfm foobar
 send hortbot #foobar [HB] LastFM user changed to foobar.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastfm
+handle hortbot foobar/1 foobar/1 :!lastfm
 send hortbot #foobar [HB] https://www.last.fm/user/foobar
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add np Now playing: (_SONG_)
+handle hortbot foobar/1 foobar/1 :!command add np Now playing: (_SONG_)
 send hortbot #foobar [HB] Command 'np' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add lastsong Previously playing: (_LAST_SONG_)
+handle hortbot foobar/1 foobar/1 :!command add lastsong Previously playing: (_LAST_SONG_)
 send hortbot #foobar [HB] Command 'lastsong' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add sl Song link: (_SONG_URL_)
+handle hortbot foobar/1 foobar/1 :!command add sl Song link: (_SONG_URL_)
 send hortbot #foobar [HB] Command 'sl' added, restricted to subscribers and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+handle hortbot foobar/1 foobar/1 :!np
 send hortbot #foobar [HB] Now playing: Too Long by Daft Punk
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastsong
+handle hortbot foobar/1 foobar/1 :!lastsong
 send hortbot #foobar [HB] Previously playing: No by Wax Tailor
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+handle hortbot foobar/1 foobar/1 :!songlink
 send hortbot #foobar [HB] Currently playing: Too Long by Daft Punk - example.com
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
+handle hortbot foobar/1 foobar/1 :!sl
 send hortbot #foobar [HB] Song link: example.com
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!music
+handle hortbot foobar/1 foobar/1 :!music
 send hortbot #foobar [HB] Currently playing: Too Long by Daft Punk
 
 
 lastfm_recent_tracks {"foobar": []}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+handle hortbot foobar/1 foobar/1 :!np
 send hortbot #foobar [HB] Now playing: (Nothing)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastsong
+handle hortbot foobar/1 foobar/1 :!lastsong
 send hortbot #foobar [HB] Previously playing: (Nothing)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+handle hortbot foobar/1 foobar/1 :!songlink
 send hortbot #foobar [HB] No songs scrobbled on LastFM.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
+handle hortbot foobar/1 foobar/1 :!sl
 send hortbot #foobar [HB] Song link: (Nothing)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!music
+handle hortbot foobar/1 foobar/1 :!music
 send hortbot #foobar [HB] No songs scrobbled on LastFM.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm error
+handle hortbot foobar/1 foobar/1 :!set lastfm error
 send hortbot #foobar [HB] LastFM user changed to error.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+handle hortbot foobar/1 foobar/1 :!np
 send hortbot #foobar [HB] Now playing: (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm foobar
+handle hortbot foobar/1 foobar/1 :!set lastfm foobar
 send hortbot #foobar [HB] LastFM user changed to foobar.
 
 
 lastfm_recent_tracks {"foobar": [{"now_playing": false, "name": "Too Long", "artist": "Daft Punk", "url": "example.com"}, {"now_playing": false, "name": "No", "artist": "Wax Tailor"}]}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+handle hortbot foobar/1 foobar/1 :!songlink
 send hortbot #foobar [HB] Last played: Too Long by Daft Punk - example.com
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set lastfm off
+handle hortbot foobar/1 foobar/1 :!set lastfm off
 send hortbot #foobar [HB] LastFM support has been disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!np
+handle hortbot foobar/1 foobar/1 :!np
 send hortbot #foobar [HB] Now playing: (Unknown)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!lastsong
+handle hortbot foobar/1 foobar/1 :!lastsong
 send hortbot #foobar [HB] Previously playing: (Unknown)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!songlink
+handle hortbot foobar/1 foobar/1 :!songlink
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!sl
+handle hortbot foobar/1 foobar/1 :!sl
 send hortbot #foobar [HB] Song link: (Unknown)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!music
+handle hortbot foobar/1 foobar/1 :!music
 no_send

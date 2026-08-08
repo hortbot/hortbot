@@ -1,161 +1,161 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+handle hortbot foobar/1 foobar/1 :!set displayWarnings on
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter caps
+handle hortbot foobar/1 random/2 :!filter caps
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter caps
+handle hortbot foobar/1 random/2 access=subscriber :!filter caps
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps what
+handle hortbot foobar/1 foobar/1 :!filter caps what
 send hortbot #foobar [HB] Usage: !filter caps on|off|percent|minchars|mincaps|status
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+handle hortbot foobar/1 random/2 chatter-display=Random :this is a normal message
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps status
+handle hortbot foobar/1 foobar/1 :!filter caps status
 send hortbot #foobar [HB] Caps filter=false, percent=50, minchars=0, mincaps=6
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps on
+handle hortbot foobar/1 foobar/1 :!filter caps on
 send hortbot #foobar [HB] Caps filter is now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps on
+handle hortbot foobar/1 foobar/1 :!filter caps on
 send hortbot #foobar [HB] Caps filter is already enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps off
+handle hortbot foobar/1 foobar/1 :!filter caps off
 send hortbot #foobar [HB] Caps filter is now disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps off
+handle hortbot foobar/1 foobar/1 :!filter caps off
 send hortbot #foobar [HB] Caps filter is already disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps on
+handle hortbot foobar/1 foobar/1 :!filter caps on
 send hortbot #foobar [HB] Caps filter is now enabled.
 
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "ed8a6d7d-ec32-45b4-937d-caf93a74b4c0"}
-handle hortbot @id=ed8a6d7d-ec32-45b4-937d-caf93a74b4c0;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHA THIS IS A TEST
+handle hortbot foobar/1 random/2 message-id=ed8a6d7d-ec32-45b4-937d-caf93a74b4c0 chatter-display=Random :HAHAHA THIS IS A TEST
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHA lol this is all okay
+handle hortbot foobar/1 random/2 chatter-display=Random :HAHAHAHA lol this is all okay
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HA
+handle hortbot foobar/1 random/2 chatter-display=Random :HA
 no_send
 
 
 # Caps percent
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent
+handle hortbot foobar/1 foobar/1 :!filter caps percent
 send hortbot #foobar [HB] Usage: !filter caps percent <0-100>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent 101
+handle hortbot foobar/1 foobar/1 :!filter caps percent 101
 send hortbot #foobar [HB] Usage: !filter caps percent <0-100>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent -1
+handle hortbot foobar/1 foobar/1 :!filter caps percent -1
 send hortbot #foobar [HB] Usage: !filter caps percent <0-100>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent 25
+handle hortbot foobar/1 foobar/1 :!filter caps percent 25
 send hortbot #foobar [HB] Caps filter percent set to 25%.
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "0ac5097e-c80a-4cdd-bf28-be19ad62a4f9"}
-handle hortbot @id=0ac5097e-c80a-4cdd-bf28-be19ad62a4f9;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHA uh huh ok cool
+handle hortbot foobar/1 random/2 message-id=0ac5097e-c80a-4cdd-bf28-be19ad62a4f9 chatter-display=Random :HAHAHA uh huh ok cool
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent 100
+handle hortbot foobar/1 foobar/1 :!filter caps percent 100
 send hortbot #foobar [HB] Caps filter percent set to 100%.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHAHAHAHAHAo
+handle hortbot foobar/1 random/2 chatter-display=Random :HAHAHAHAHAHAHAHAo
 no_send
 
 clock_forward 3h
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "dc38c963-96b5-4d70-9c22-97adf2373f89"}
-handle hortbot @id=dc38c963-96b5-4d70-9c22-97adf2373f89;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHAHAHAHA
+handle hortbot foobar/1 random/2 message-id=dc38c963-96b5-4d70-9c22-97adf2373f89 chatter-display=Random :HAHAHAHAHAHAHA
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps percent 50
+handle hortbot foobar/1 foobar/1 :!filter caps percent 50
 send hortbot #foobar [HB] Caps filter percent set to 50%.
 
 
 # Min chars
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps minchars
+handle hortbot foobar/1 foobar/1 :!filter caps minchars
 send hortbot #foobar [HB] Usage: !filter caps minchars <int>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps minchars -1
+handle hortbot foobar/1 foobar/1 :!filter caps minchars -1
 send hortbot #foobar [HB] Usage: !filter caps minchars <int>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps minchars 5
+handle hortbot foobar/1 foobar/1 :!filter caps minchars 5
 send hortbot #foobar [HB] Caps filter min chars set to 5.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHA
+handle hortbot foobar/1 random/2 chatter-display=Random :HAHA
 no_send
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "be48ba76-bcba-401b-8be5-45f00ac1f450"}
-handle hortbot @id=be48ba76-bcba-401b-8be5-45f00ac1f450;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHA WoW
+handle hortbot foobar/1 random/2 message-id=be48ba76-bcba-401b-8be5-45f00ac1f450 chatter-display=Random :HAHA WoW
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
 # Min caps
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps mincaps
+handle hortbot foobar/1 foobar/1 :!filter caps mincaps
 send hortbot #foobar [HB] Usage: !filter caps mincaps <int>
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps mincaps -1
+handle hortbot foobar/1 foobar/1 :!filter caps mincaps -1
 send hortbot #foobar [HB] Usage: !filter caps mincaps <int>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter caps mincaps 11
+handle hortbot foobar/1 foobar/1 :!filter caps mincaps 11
 send hortbot #foobar [HB] Caps filter min caps set to 11.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHAHA
+handle hortbot foobar/1 random/2 chatter-display=Random :HAHAHAHAHA
 no_send
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "b35fed82-d391-455e-acb3-b5a276bade71"}
-handle hortbot @id=b35fed82-d391-455e-acb3-b5a276bade71;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :HAHAHAHAHA HA
+handle hortbot foobar/1 random/2 message-id=b35fed82-d391-455e-acb3-b5a276bade71 chatter-display=Random :HAHAHAHAHA HA
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
 
 # Ignores and other
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
+handle hortbot foobar/1 foobar/1 :!ignore add random
 send hortbot #foobar [HB] random added to ignored users.
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "5b0a0f7d-625b-455c-8aee-0fd91c9ee67e"}
-handle hortbot @id=5b0a0f7d-625b-455c-8aee-0fd91c9ee67e;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :AAAAAAAAAAAAAAAAAAAAAAAAAA
+handle hortbot foobar/1 random/2 message-id=5b0a0f7d-625b-455c-8aee-0fd91c9ee67e chatter-display=Random :AAAAAAAAAAAAAAAAAAAAAAAAAA
 send hortbot #foobar [HB] Random, please don't shout or talk in all caps - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off
+handle hortbot foobar/1 foobar/1 :!filter off
 send hortbot #foobar [HB] Filters are now disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :AAAAAAAAAAAAAAAAAAAAAAAAAA
+handle hortbot foobar/1 random/2 chatter-display=Random :AAAAAAAAAAAAAAAAAAAAAAAAAA
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate off
+handle hortbot foobar/1 foobar/1 :!set shouldModerate off
 send hortbot #foobar [HB] hortbot will no longer attempt to moderate in this channel.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :AAAAAAAAAAAAAAAAAAAAAAAAAA
+handle hortbot foobar/1 random/2 chatter-display=Random :AAAAAAAAAAAAAAAAAAAAAAAAAA
 no_send

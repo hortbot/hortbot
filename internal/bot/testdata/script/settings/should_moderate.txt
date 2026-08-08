@@ -1,30 +1,30 @@
 join hortbot 999 foobar 1
 twitch_get_user_by_username {"random": {"id": 2, "login": "random"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate true
+handle hortbot foobar/1 foobar/1 :!set shouldModerate true
 send hortbot #foobar [HB] hortbot is already moderating.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate off
+handle hortbot foobar/1 foobar/1 :!set shouldModerate off
 send hortbot #foobar [HB] hortbot will no longer attempt to moderate in this channel.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate
+handle hortbot foobar/1 foobar/1 :!set shouldModerate
 send hortbot #foobar [HB] shouldModerate is set to false.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+b random
+handle hortbot foobar/1 foobar/1 :+b random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate 0
+handle hortbot foobar/1 foobar/1 :!set shouldModerate 0
 send hortbot #foobar [HB] hortbot is already not moderating.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate true
+handle hortbot foobar/1 foobar/1 :!set shouldModerate true
 send hortbot #foobar [HB] hortbot will attempt to moderate in this channel.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate
+handle hortbot foobar/1 foobar/1 :!set shouldModerate
 send hortbot #foobar [HB] shouldModerate is set to true.
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 0, "reason": "Banned via +b by foobar"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+b random
+handle hortbot foobar/1 foobar/1 :+b random
 send hortbot #foobar [HB] random has been banned.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate what
+handle hortbot foobar/1 foobar/1 :!set shouldModerate what
 send hortbot #foobar [HB] Usage: !set shouldmoderate on|off

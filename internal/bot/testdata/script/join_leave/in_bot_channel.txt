@@ -2,65 +2,65 @@ upsert_twitch_token {"twitch_id": 2, "bot_name": "hortbot", "access_token": "som
 
 bot_config {"WebAddr": "http://localhost:5000"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot foobar/1 foobar/1 :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 no_send
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+handle hortbot hortbot/2 foobar/1 :!join
 send hortbot #hortbot [HB] Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at http://localhost:5000/login and return here.
 no_notify_eventsub_updates
 
 upsert_twitch_token {"twitch_id": 1,"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+handle hortbot hortbot/2 foobar/1 :!join
 send hortbot #hortbot [HB] Thanks for your interest; before I can join your channel, you need to log in to the website to give me permission to join your chat. Please login at http://localhost:5000/login and return here.
 no_notify_eventsub_updates
 
 upsert_twitch_token {"twitch_id": 1,"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z", "scopes": ["channel:bot"]}
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+handle hortbot hortbot/2 foobar/1 :!join
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '!'.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set prefix +
+handle hortbot foobar/1 foobar/1 :!set prefix +
 send hortbot @1 [HB] Prefix changed to +
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
+handle hortbot foobar/1 foobar/1 :+command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?
 send hortbot @1 [HB] Command 'pan' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot foobar/1 foobar/1 :+pan working command
 send hortbot @1 [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
+handle hortbot hortbot/2 foobar/1 :+join
 send hortbot #hortbot [HB] foobar, hortbot is already configured for your channel with prefix '+'. I've requested a reconnect.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
+handle hortbot hortbot/2 foobar/1 :!leave
 send hortbot #hortbot [HB] foobar, hortbot will now leave your channel.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot foobar/1 foobar/1 :+pan working command
 no_send
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!leave
+handle hortbot hortbot/2 foobar/1 :!leave
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :+join
+handle hortbot hortbot/2 foobar/1 :+join
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '+'.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :+pan working command
+handle hortbot foobar/1 foobar/1 :+pan working command
 send hortbot @1 [HB] FOUND THE WORKING COMMAND, HAVE YE?
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=3 :nobody!nobody@nobody.tmi.twitch.tv PRIVMSG #hortbot :!leave
+handle hortbot hortbot/2 nobody/3 :!leave
 no_send
 no_notify_eventsub_updates
 
 twitch_get_user_by_username {"someone": {"id": 1234, "login": "someone", "display_name": "Someone"}}
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join Someone
+handle hortbot hortbot/2 foobar/1 access=admin :!join Someone
 send hortbot #hortbot [HB] The can no longer join channels without auth.
 no_notify_eventsub_updates

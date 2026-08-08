@@ -1,14 +1,14 @@
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown 5
+handle hortbot foobar/1 foobar/1 :!set cooldown 5
 send hortbot #foobar [HB] Cooldown changed to 5 seconds.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :+b someone
+handle hortbot foobar/1 what/3 :+b someone
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+handle hortbot foobar/1 what/3 :!testing_name
 send hortbot #foobar [HB] what
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+handle hortbot foobar/1 what/3 :!testing_name
 no_send

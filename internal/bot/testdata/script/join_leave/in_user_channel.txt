@@ -1,38 +1,38 @@
 upsert_twitch_token {"twitch_id": 999, "bot_name": "hortbot", "access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+handle hortbot foobar/1 foobar/1 :!testing_name
 no_send
 
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+handle hortbot foobar/1 foobar/1 :!testing_name
 send hortbot #foobar [HB] foobar
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!part
+handle hortbot foobar/1 random/2 access=moderator :!part
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!leave
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!leave
 send hortbot #foobar [HB] FooBar, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
 
 clock_forward 11s
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!leave
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!leave
 send hortbot #foobar [HB] FooBar, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
 
 clock_forward 2s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3;testing-admin=1;display-name=Admin :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!leave
+handle hortbot foobar/1 admin/3 chatter-display=Admin access=admin :!leave
 send hortbot #foobar [HB] Admin, if you are sure you want hortbot to leave this channel, run !leave again in the next 10 seconds.
 
 clock_forward 2s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!part
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!part
 send hortbot #foobar [HB] FooBar, hortbot will now leave your channel.
 notify_eventsub_updates
 
 clock_forward 2s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_name
+handle hortbot foobar/1 foobar/1 :!testing_name
 no_send

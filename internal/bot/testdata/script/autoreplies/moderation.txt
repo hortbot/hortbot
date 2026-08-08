@@ -1,31 +1,31 @@
 join hortbot 999 foobar 1
 twitch_get_user_by_username {"random": {"id": 2, "login": "random"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *purge_me* (_PURGE_)
+handle hortbot foobar/1 foobar/1 :!autoreply add *purge_me* (_PURGE_)
 send hortbot #foobar [HB] Autoreply #1 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *timeout_me* (_TIMEOUT_)
+handle hortbot foobar/1 foobar/1 :!autoreply add *timeout_me* (_TIMEOUT_)
 send hortbot #foobar [HB] Autoreply #2 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *ban_me* (_BAN_)
+handle hortbot foobar/1 foobar/1 :!autoreply add *ban_me* (_BAN_)
 send hortbot #foobar [HB] Autoreply #3 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *delete_me* (_DELETE_)
+handle hortbot foobar/1 foobar/1 :!autoreply add *delete_me* (_DELETE_)
 send hortbot #foobar [HB] Autoreply #4 added.
 
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 1, "duration": 1, "reason": "Purging chat messages"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :purge me
+handle hortbot foobar/1 foobar/1 :purge me
 send hortbot #foobar [HB] foobar
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 1, "duration": 600, "reason": "Timeout via command action"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :timeout me
+handle hortbot foobar/1 foobar/1 :timeout me
 send hortbot #foobar [HB] foobar
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 1, "duration": 0, "reason": "Ban via command action"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :ban me
+handle hortbot foobar/1 foobar/1 :ban me
 send hortbot #foobar [HB] foobar
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "d6429f96-838f-4422-a0c9-f45615057cf9"}
-handle hortbot @id=d6429f96-838f-4422-a0c9-f45615057cf9;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :delete me
+handle hortbot foobar/1 foobar/1 message-id=d6429f96-838f-4422-a0c9-f45615057cf9 :delete me
 send hortbot #foobar [HB] foobar

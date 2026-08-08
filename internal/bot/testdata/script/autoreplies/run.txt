@@ -1,39 +1,39 @@
 
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Wowee
+handle hortbot foobar/1 foobar/1 :Wowee
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add *who_is_zik* Nobody important.
+handle hortbot foobar/1 foobar/1 :!autoreply add *who_is_zik* Nobody important.
 send hortbot #foobar [HB] Autoreply #1 added.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Who is Zik?
+handle hortbot foobar/1 foobar/1 :Who is Zik?
 send hortbot #foobar [HB] Nobody important.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply add REGEX:(^|\b)wowee($|\b) Wowee
+handle hortbot foobar/1 foobar/1 :!autoreply add REGEX:(^|\b)wowee($|\b) Wowee
 send hortbot #foobar [HB] Autoreply #2 added.
 
-#handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!autoreply list
+#handle hortbot foobar/1 foobar/1 :!autoreply list
 #send hortbot #foobar [HB] Autoreplies: 1: ^who is zik$ -> Nobody important. ; 2: ^.*what game.*$ -> Garry's Mod!
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Wowee
+handle hortbot foobar/1 foobar/1 :Wowee
 send hortbot #foobar [HB] Wowee
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Wowee
+handle hortbot foobar/1 foobar/1 :Wowee
 no_send
 
 clock_forward 20s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Wowee
+handle hortbot foobar/1 foobar/1 :Wowee
 no_send
 
 clock_forward 20s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Wowee
+handle hortbot foobar/1 foobar/1 :Wowee
 send hortbot #foobar [HB] Wowee
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :Nothing.
+handle hortbot foobar/1 foobar/1 :Nothing.
 no_send

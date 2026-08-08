@@ -5,51 +5,51 @@ clock_set 2000-10-01T03:11:22Z
 twitch_get_game_by_id {"424242": {"Category": {"ID": 424242, "Name": "Garry's Mod"}}, "567890": {"Category": {"ID": 567890, "Name": "Retro"}}}
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
+handle hortbot foobar/1 random/2 :!testing_highlights
 send hortbot #foobar [HB] No highlights.
 
 
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrNotFound"}
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!ht
+handle hortbot foobar/1 random/2 :!ht
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
+handle hortbot foobar/1 random/2 :!testing_highlights
 send hortbot #foobar [HB] No highlights.
 
 twitch_get_stream_by_user_id {"ID": 1, "Err": "ErrServerError"}
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!ht
+handle hortbot foobar/1 random/2 :!ht
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
+handle hortbot foobar/1 random/2 :!testing_highlights
 send hortbot #foobar [HB] No highlights.
 
 clock_forward 2m
 
 
 twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T00:00:11Z", "viewer_count": 1234, "game_id": 567890}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ht
+handle hortbot foobar/1 foobar/1 :!ht
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ht
+handle hortbot foobar/1 foobar/1 :!ht
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
+handle hortbot foobar/1 foobar/1 :!testing_highlights
 send hortbot #foobar [HB] [2000-10-01 03:13:22 +0000 UTC, 2000-10-01 00:00:11 +0000 UTC, "", "Retro"]
 
 
 clock_forward 2m
 
 twitch_get_stream_by_user_id {"ID": 1, "Stream": {"started_at": "2000-10-01T01:11:11Z", "viewer_count": 1234, "game_id": "424242", "title": "Playing something cool"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!highlightthat
+handle hortbot foobar/1 random/2 :!highlightthat
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
+handle hortbot foobar/1 random/2 :!testing_highlights
 send hortbot #foobar [HB] [2000-10-01 03:13:22 +0000 UTC, 2000-10-01 00:00:11 +0000 UTC, "", "Retro"] [2000-10-01 03:15:22 +0000 UTC, 2000-10-01 01:11:11 +0000 UTC, "Playing something cool", "Garry's Mod"]
 
 clock_forward 30s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ht
+handle hortbot foobar/1 foobar/1 :!ht
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_highlights
+handle hortbot foobar/1 foobar/1 :!testing_highlights
 send hortbot #foobar [HB] [2000-10-01 03:13:22 +0000 UTC, 2000-10-01 00:00:11 +0000 UTC, "", "Retro"] [2000-10-01 03:15:22 +0000 UTC, 2000-10-01 01:11:11 +0000 UTC, "Playing something cool", "Garry's Mod"]

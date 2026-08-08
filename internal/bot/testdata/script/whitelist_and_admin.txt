@@ -5,21 +5,21 @@ upsert_twitch_token {"twitch_id": 1, "access_token": "some-access-token", "token
 
 twitch_get_user_by_username {"foobar": {"id": 1, "login": "foobar"}}
 
-handle hortbot @id=__UUID__;room-id=999;user-id=3;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!join foobar
+handle hortbot hortbot/999 admin/3 access=admin :!join foobar
 send hortbot #hortbot [HB] foobar, hortbot will join your channel soon with prefix '!'.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 foobar/1 :!testing_access_level
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;testing-admin=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 foobar/1 access=admin :!testing_access_level
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :whitelisted!whitelisted@whitelisted.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 whitelisted/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :admin!admin@admin.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 admin/3 :!testing_access_level
 send hortbot #foobar [HB] Admin
 
-handle hortbot @id=__UUID__;room-id=1;user-id=4 :superadmin!superadmin@superadmin.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 superadmin/4 :!testing_access_level
 send hortbot #foobar [HB] SuperAdmin

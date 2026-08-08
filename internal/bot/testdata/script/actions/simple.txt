@@ -1,52 +1,52 @@
 join hortbot 999 foobar 1
 twitch_get_user_by_username {"somebody": {"id": 2, "login": "somebody"}}
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_USER_)
+handle hortbot foobar/1 foobar/1 :!command add test (_USER_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] foobar
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_USER_DISPLAY_)
+handle hortbot foobar/1 foobar/1 :!command add test (_USER_DISPLAY_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] foobar
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_USER_DISPLAY_)
+handle hortbot foobar/1 foobar/1 :!command add test (_USER_DISPLAY_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!test
 send hortbot #foobar [HB] FooBar
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_CHANNEL_URL_)
+handle hortbot foobar/1 foobar/1 :!command add test (_CHANNEL_URL_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!test
 send hortbot #foobar [HB] twitch.tv/foobar
 
 # Meta action; converts to empty string.
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_REGULARS_ONLY_)
+handle hortbot foobar/1 foobar/1 :!command add test (_REGULARS_ONLY_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_SILENT_) (_BAN_)
+handle hortbot foobar/1 foobar/1 :!command add test (_SILENT_) (_BAN_)
 send_any
 
 twitch_ban {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "Req": {"user_id": 2, "duration": 0, "reason": "Ban via command action"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test somebody
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!test somebody
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_test_COUNT_)
+handle hortbot foobar/1 foobar/1 :!command add test (_test_COUNT_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!test
 send hortbot #foobar [HB] 6
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_test2_COUNT_)
+handle hortbot foobar/1 foobar/1 :!command add test (_test2_COUNT_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1;display-name=FooBar :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!test
 send hortbot #foobar [HB] (error)

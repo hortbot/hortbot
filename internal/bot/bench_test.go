@@ -2,9 +2,9 @@ package bot_test
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"math/rand/v2"
-	"strconv"
 	"strings"
 	"sync/atomic"
 	"testing"
@@ -12,13 +12,11 @@ import (
 
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/bot/irctobot"
 	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplemocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
-	"github.com/jakebailey/irc"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
@@ -55,9 +53,9 @@ func BenchmarkHandleNop(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, chatMessage(botName, botName, 1, name, userID, "!join"))
 
-	m := privMSG(botName, name, userID, name, userID, "test")
+	m := chatMessage(botName, name, userID, name, userID, "test")
 
 	for b.Loop() {
 		bb.Handle(ctx, m)
@@ -98,9 +96,9 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, chatMessage(botName, botName, 1, name, userID, "!join"))
 
-	m := privMSG(botName, name, userID, name, userID, "test")
+	m := chatMessage(botName, name, userID, name, userID, "test")
 
 	b.ResetTimer()
 	b.RunParallel(func(pb *testing.PB) {
@@ -143,10 +141,10 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
-	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
+	bb.Handle(ctx, chatMessage(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
 
-	m := privMSG(botName, name, userID, name, userID, "!pan working command")
+	m := chatMessage(botName, name, userID, name, userID, "!pan working command")
 
 	for b.Loop() {
 		bb.Handle(ctx, m)
@@ -187,23 +185,23 @@ func BenchmarkHandleMixed(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
-	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
-	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!autoreply add *who_is_zik* Nobody important."))
-	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, `!autoreply add REGEX:(^|\b)wowee($|\b) Wowee`))
+	bb.Handle(ctx, chatMessage(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, "!command add pan FOUND THE (_PARAMETER_CAPS_), HAVE YE?"))
+	bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, "!autoreply add *who_is_zik* Nobody important."))
+	bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, `!autoreply add REGEX:(^|\b)wowee($|\b) Wowee`))
 
 	ms := make([]bot.Message, 95, 96)
 
 	for i := range ms {
-		ms[i] = privMSG(botName, name, userID, "someone", 9999999, "nothing interesting")
+		ms[i] = chatMessage(botName, name, userID, "someone", 9999999, "nothing interesting")
 	}
 
 	ms = append(ms,
-		privMSG(botName, name, userID, name, userID, "!pan working command"),
-		privMSG(botName, name, userID, name, userID, "who is zik"),
-		privMSG(botName, name, userID, name, userID, "!who knows"),
-		privMSG(botName, name, userID, name, userID, "!admin"),
-		privMSG(botName, name, userID, name, userID, "!set prefix"),
+		chatMessage(botName, name, userID, name, userID, "!pan working command"),
+		chatMessage(botName, name, userID, name, userID, "who is zik"),
+		chatMessage(botName, name, userID, name, userID, "!who knows"),
+		chatMessage(botName, name, userID, name, userID, "!admin"),
+		chatMessage(botName, name, userID, name, userID, "!set prefix"),
 	)
 
 	l := len(ms)
@@ -249,16 +247,16 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	bb := bot.New(config)
 	assert.NilError(b, bb.Init(ctx))
 
-	bb.Handle(ctx, privMSG(botName, botName, 1, name, userID, "!join"))
-	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter on"))
-	bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter banphrase on"))
+	bb.Handle(ctx, chatMessage(botName, botName, 1, name, userID, "!join"))
+	bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, "!filter on"))
+	bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, "!filter banphrase on"))
 
 	for range 300 {
-		bb.Handle(ctx, privMSG(botName, name, userID, name, userID, "!filter banphrase add "+randomString(10)))
+		bb.Handle(ctx, chatMessage(botName, name, userID, name, userID, "!filter banphrase add "+randomString(10)))
 	}
 
 	for b.Loop() {
-		bb.Handle(ctx, privMSG(botName, name, userID, "someone", 9999999, "nothing interesting"))
+		bb.Handle(ctx, chatMessage(botName, name, userID, "someone", 9999999, "nothing interesting"))
 		rServer.FastForward(time.Minute)
 	}
 	b.StopTimer()
@@ -280,22 +278,47 @@ type nopNotifier struct{}
 func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
 func (nopNotifier) NotifyEventsubUpdates(ctx context.Context) error                { return nil }
 
-func privMSG(origin string, ch string, roomID int64, user string, userID int64, msg string) bot.Message {
-	return irctobot.ToMessage(origin, &irc.Message{
-		Tags: map[string]string{
-			"id":      uuid.Must(uuid.NewV4()).String(),
-			"room-id": strconv.FormatInt(roomID, 10),
-			"user-id": strconv.FormatInt(userID, 10),
+func chatMessage(botLogin, broadcasterLogin string, broadcasterID int64, chatterLogin string, chatterID int64, text string) bot.Message {
+	return benchmarkMessage{
+		botLogin: botLogin,
+		id:       uuid.Must(uuid.NewV4()).String(),
+		broadcaster: bot.ChatIdentity{
+			ID:    broadcasterID,
+			Login: broadcasterLogin,
 		},
-		Prefix: irc.Prefix{
-			Name: user,
-			User: user,
-			Host: user + "@tmi.twitch.tv",
+		chatter: bot.ChatIdentity{
+			ID:    chatterID,
+			Login: chatterLogin,
 		},
-		Command:  "PRIVMSG",
-		Params:   []string{"#" + ch},
-		Trailing: msg,
-	})
+		text: text,
+	}
+}
+
+type benchmarkMessage struct {
+	botLogin    string
+	id          string
+	broadcaster bot.ChatIdentity
+	chatter     bot.ChatIdentity
+	text        string
+}
+
+func (m benchmarkMessage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(m.text)
+}
+
+func (m benchmarkMessage) Bot() string                   { return m.botLogin }
+func (m benchmarkMessage) MessageID() string             { return m.id }
+func (benchmarkMessage) MessageTimestamp() time.Time     { return time.Time{} }
+func (m benchmarkMessage) Broadcaster() bot.ChatIdentity { return m.broadcaster }
+func (m benchmarkMessage) Chatter() bot.ChatIdentity     { return m.chatter }
+func (m benchmarkMessage) Text() string                  { return m.text }
+func (benchmarkMessage) IsAction() bool                  { return false }
+func (benchmarkMessage) CountEmotes() int                { return 0 }
+func (m benchmarkMessage) ChatterAccessLevel() bot.AccessLevel {
+	if m.broadcaster.ID == m.chatter.ID {
+		return bot.AccessLevelBroadcaster
+	}
+	return bot.AccessLevelUnknown
 }
 
 func randomString(n int) string {

@@ -83,7 +83,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	}
 
 	put := func(subCtx context.Context, metadata *bnsq.Metadata, mm bot.Message) error {
-		key := mm.BroadcasterLogin()
+		key := mm.Broadcaster().Login
 		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
 			ctx, cancel := attach(ctx)
 			defer cancel()
@@ -93,35 +93,34 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		})
 	}
 
-	// For now, the bot needs the login name of the bot for the "origin".
-	// Periodically get that mapping and use it when constructing messages.
-	// TODO: remove concept of "origin" once IRC is gone?
+	// EventSub identifies the receiving bot by user ID, while bot configuration
+	// and message sending use its login.
 	var mu sync.Mutex
-	var originMap map[int64]string
-	var originMapTimestamp time.Time
-	getOriginMap := func(ctx context.Context) (map[int64]string, error) {
+	var botLoginMap map[int64]string
+	var botLoginMapTimestamp time.Time
+	getBotLoginMap := func(ctx context.Context) (map[int64]string, error) {
 		mu.Lock()
 		defer mu.Unlock()
 
-		if originMap != nil || time.Since(originMapTimestamp) < 5*time.Minute {
-			return originMap, nil
+		if botLoginMap != nil || time.Since(botLoginMapTimestamp) < 5*time.Minute {
+			return botLoginMap, nil
 		}
 
 		var err error
-		_, originMap, err = modelsx.GetBots(ctx, db)
+		_, botLoginMap, err = modelsx.GetBots(ctx, db)
 		if err != nil {
 			return nil, fmt.Errorf("get bots: %w", err)
 		}
-		return originMap, nil
+		return botLoginMap, nil
 	}
 
 	eventsubSub := c.NSQ.NewIncomingWebsocketMessageSubscriber(15*time.Second, func(i *bnsq.IncomingWebsocketMessage, metadata *bnsq.Metadata) error {
-		originMap, err := getOriginMap(ctx)
+		botLoginMap, err := getBotLoginMap(ctx)
 		if err != nil {
 			return err
 		}
 
-		mm := eventsubtobot.ToMessage(originMap, i.Message)
+		mm := eventsubtobot.ToMessage(botLoginMap, i.Message)
 		return put(ctx, metadata, mm)
 	})
 

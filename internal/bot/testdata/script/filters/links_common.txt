@@ -1,47 +1,47 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+handle hortbot foobar/1 foobar/1 :!set displayWarnings on
 send_any
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter links on
+handle hortbot foobar/1 foobar/1 :!filter links on
 send hortbot #foobar [HB] Link filter is now enabled.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add clips.twitch.tv
+handle hortbot foobar/1 foobar/1 :!filter pd add clips.twitch.tv
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add twitch.tv/*/clip
+handle hortbot foobar/1 foobar/1 :!filter pd add twitch.tv/*/clip
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter pd add d.va
+handle hortbot foobar/1 foobar/1 :!filter pd add d.va
 send_any
 
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "e47c3f9a-c573-4044-afd1-c7750936b9d2"}
-handle hortbot @id=e47c3f9a-c573-4044-afd1-c7750936b9d2;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :check out my cool website! example.com
+handle hortbot foobar/1 random/2 message-id=e47c3f9a-c573-4044-afd1-c7750936b9d2 chatter-display=Random :check out my cool website! example.com
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :my favorite overwatch character is d.va
+handle hortbot foobar/1 random/2 chatter-display=Random :my favorite overwatch character is d.va
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :here: https://clips.twitch.tv/ModernDaintyZebraMikeHogu
+handle hortbot foobar/1 random/2 chatter-display=Random :here: https://clips.twitch.tv/ModernDaintyZebraMikeHogu
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :here: https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
+handle hortbot foobar/1 random/2 chatter-display=Random :here: https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :both https://clips.twitch.tv/ModernDaintyZebraMikeHogu https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
+handle hortbot foobar/1 random/2 chatter-display=Random :both https://clips.twitch.tv/ModernDaintyZebraMikeHogu https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :both https://clips.twitch.tv/ModernDaintyZebraMikeHogu d.va
+handle hortbot foobar/1 random/2 chatter-display=Random :both https://clips.twitch.tv/ModernDaintyZebraMikeHogu d.va
 no_send
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "a55ea676-5ed9-414d-ae49-13cdd52b9f47"}
-handle hortbot @id=a55ea676-5ed9-414d-ae49-13cdd52b9f47;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :mixed https://clips.twitch.tv/ModernDaintyZebraMikeHogu example.com https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
+handle hortbot foobar/1 random/2 message-id=a55ea676-5ed9-414d-ae49-13cdd52b9f47 chatter-display=Random :mixed https://clips.twitch.tv/ModernDaintyZebraMikeHogu example.com https://www.twitch.tv/coestar/clip/UglyBashfulEggnogLitFam?filter=clips&range=7d&sort=time
 send hortbot #foobar [HB] Random, please ask a moderator before posting links - warning

@@ -297,7 +297,7 @@ func cmdAdminSleep(ctx context.Context, s *session, _ string, args string) error
 func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) error {
 	botName, _ := splitSpace(args)
 	if botName == "" {
-		botName = s.Origin
+		botName = s.BotLogin
 	}
 
 	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {

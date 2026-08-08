@@ -1,43 +1,43 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;testing-admin=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=admin :!testing_access_level
 send hortbot #foobar [HB] Admin
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 foobar/1 :!testing_access_level
 send hortbot #foobar [HB] Broadcaster
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=0 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=moderator :!testing_access_level
 send hortbot #foobar [HB] Moderator
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=subscriber :!testing_access_level
 send hortbot #foobar [HB] Subscriber
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;user-type= :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;user-type=mod :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=moderator :!testing_access_level
 send hortbot #foobar [HB] Moderator
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=broadcaster :!testing_access_level
 send hortbot #foobar [HB] Broadcaster
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=broadcaster/1,subscriber/0 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=broadcaster :!testing_access_level
 send hortbot #foobar [HB] Broadcaster
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=subscriber/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=subscriber :!testing_access_level
 send hortbot #foobar [HB] Subscriber
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=vip/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=vip :!testing_access_level
 send hortbot #foobar [HB] VIP
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;badges=moderator/1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=moderator :!testing_access_level
 send hortbot #foobar [HB] Moderator
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;@badge-info=founder/9;badges=founder/0,hype-train/1;mod=0;subscriber=0;turbo=0;user-type= :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 access=subscriber :!testing_access_level
 send hortbot #foobar [HB] Subscriber

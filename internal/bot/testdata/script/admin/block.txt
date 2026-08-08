@@ -1,52 +1,52 @@
 twitch_get_user_by_username {"someone": {"id": 1234, "login": "someone", "display_name": "Someone"}, "foobar": {"id": 1, "login": "foobar"}}
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block
+handle hortbot hortbot/2 admin/7 access=admin :!admin block
 send hortbot #hortbot [HB] Usage: !admin block <username>
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block nobody
+handle hortbot hortbot/2 admin/7 access=admin :!admin block nobody
 send hortbot #hortbot [HB] Error getting ID from Twitch: twitch: unexpected status: 404
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock
+handle hortbot hortbot/2 admin/7 access=admin :!admin unblock
 send hortbot #hortbot [HB] Usage: !admin unblock <username>
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock nobody
+handle hortbot hortbot/2 admin/7 access=admin :!admin unblock nobody
 send hortbot #hortbot [HB] Error getting ID from Twitch: twitch: unexpected status: 404
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block foobar
+handle hortbot hortbot/2 admin/7 access=admin :!admin block foobar
 send hortbot #hortbot [HB] foobar (1) has been blocked.
 no_notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command
+handle hortbot foobar/1 foobar/1 :!command
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!join foobar
+handle hortbot hortbot/2 admin/7 access=admin :!join foobar
 no_send
 
-handle hortbot @id=__UUID__;room-id=2;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #hortbot :!join
+handle hortbot hortbot/2 foobar/1 :!join
 no_send
 
 
 join hortbot 2 someone 1234
 
-handle hortbot @id=__UUID__;room-id=1234;user-id=1234 :someone!someone@someone.tmi.twitch.tv PRIVMSG #someone :!command
+handle hortbot someone/1234 someone/1234 :!command
 send_any
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin block someone
+handle hortbot hortbot/2 admin/7 access=admin :!admin block someone
 send hortbot #hortbot [HB] Someone (1234) has been blocked.
 notify_eventsub_updates
 
-handle hortbot @id=__UUID__;room-id=1234;user-id=1234 :someone!someone@someone.tmi.twitch.tv PRIVMSG #someone :!command
+handle hortbot someone/1234 someone/1234 :!command
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=2;user-id=7;testing-admin=1 :admin!admin@admin.tmi.twitch.tv PRIVMSG #hortbot :!admin unblock someone
+handle hortbot hortbot/2 admin/7 access=admin :!admin unblock someone
 send hortbot #hortbot [HB] Someone (1234) has been unblocked.
 no_notify_eventsub_updates
 
 join hortbot 2 someone 1234
 
-handle hortbot @id=__UUID__;room-id=1234;user-id=1234 :someone!someone@someone.tmi.twitch.tv PRIVMSG #someone :!command
+handle hortbot someone/1234 someone/1234 :!command
 send_any

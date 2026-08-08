@@ -1,42 +1,42 @@
 join hortbot 2 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test."
+handle hortbot foobar/1 foobar/1 :!quote add "This is a test."
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a test?"
+handle hortbot foobar/1 foobar/1 :!quote add "This is a test?"
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "This is a TeSt."
+handle hortbot foobar/1 foobar/1 :!quote add "This is a TeSt."
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "Give 100%"
+handle hortbot foobar/1 foobar/1 :!quote add "Give 100%"
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote add "Give _ 110%"
+handle hortbot foobar/1 foobar/1 :!quote add "Give _ 110%"
 send_any
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search nothing
+handle hortbot foobar/1 foobar/1 :!quote search nothing
 send hortbot #foobar [HB] No quote contained that phrase.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search 100
+handle hortbot foobar/1 foobar/1 :!quote search 100
 send hortbot #foobar [HB] Phrase found in quote 4.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search test
+handle hortbot foobar/1 foobar/1 :!quote search test
 send hortbot #foobar [HB] Phrase found in quotes 1, 2, and 3.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search 0%
+handle hortbot foobar/1 foobar/1 :!quote search 0%
 send hortbot #foobar [HB] Phrase found in quotes 4 and 5.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search _ 11
+handle hortbot foobar/1 foobar/1 :!quote search _ 11
 send hortbot #foobar [HB] Phrase found in quote 5.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!quote search
+handle hortbot foobar/1 foobar/1 :!quote search
 send hortbot #foobar [HB] Usage: !quote search <phrase>
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote search test
+handle hortbot foobar/1 random/3 :!quote search test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!quote search test
+handle hortbot foobar/1 random/3 access=subscriber :!quote search test
 no_send

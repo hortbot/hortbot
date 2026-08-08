@@ -9,20 +9,23 @@ import (
 
 //go:generate go tool github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Rand EventsubUpdateNotifier
 
+type ChatIdentity struct {
+	ID          int64
+	Login       string
+	DisplayName string
+}
+
 type Message interface {
 	json.Marshaler
-	Origin() string
-	ID() string
-	Timestamp() time.Time
-	BroadcasterLogin() string
-	BroadcasterDisplay() string
-	BroadcasterID() int64
-	UserLogin() string
-	UserDisplay() string
-	UserID() int64
-	Message() (message string, me bool)
-	EmoteCount() int
-	UserAccessLevel() AccessLevel
+	Bot() string
+	MessageID() string
+	MessageTimestamp() time.Time
+	Broadcaster() ChatIdentity
+	Chatter() ChatIdentity
+	Text() string
+	IsAction() bool
+	CountEmotes() int
+	ChatterAccessLevel() AccessLevel
 }
 
 // EventsubUpdateNotifier sends notifications.

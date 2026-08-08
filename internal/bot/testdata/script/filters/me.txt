@@ -1,74 +1,74 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set displayWarnings on
+handle hortbot foobar/1 foobar/1 :!set displayWarnings on
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter me
+handle hortbot foobar/1 random/2 :!filter me
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!filter me
+handle hortbot foobar/1 random/2 access=subscriber :!filter me
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me what
+handle hortbot foobar/1 foobar/1 :!filter me what
 send hortbot #foobar [HB] Usage: !filter me on|off
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :this is a normal message
+handle hortbot foobar/1 random/2 chatter-display=Random :this is a normal message
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me on
+handle hortbot foobar/1 foobar/1 :!filter me on
 send hortbot #foobar [HB] Me filter is now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me on
+handle hortbot foobar/1 foobar/1 :!filter me on
 send hortbot #foobar [HB] Me filter is already enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me off
+handle hortbot foobar/1 foobar/1 :!filter me off
 send hortbot #foobar [HB] Me filter is now disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me off
+handle hortbot foobar/1 foobar/1 :!filter me off
 send hortbot #foobar [HB] Me filter is already disabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter me on
+handle hortbot foobar/1 foobar/1 :!filter me on
 send hortbot #foobar [HB] Me filter is now enabled.
 
 
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "f5b6adc3-e741-4661-b1e7-93372ef10098"}
-handle_me hortbot @id=f5b6adc3-e741-4661-b1e7-93372ef10098;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :hehe
+handle_me hortbot foobar/1 random/2 message-id=f5b6adc3-e741-4661-b1e7-93372ef10098 chatter-display=Random :hehe
 send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :ok
+handle hortbot foobar/1 random/2 chatter-display=Random :ok
 no_send
 
 
 # Ignores and other
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!ignore add random
+handle hortbot foobar/1 foobar/1 :!ignore add random
 send hortbot #foobar [HB] random added to ignored users.
 
 clock_forward 3h
 twitch_delete_chat_message {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "ID": "f5ceb6c5-83ce-4dc1-8501-a37eda3d7594"}
-handle_me hortbot @id=f5ceb6c5-83ce-4dc1-8501-a37eda3d7594;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
+handle_me hortbot foobar/1 random/2 message-id=f5ceb6c5-83ce-4dc1-8501-a37eda3d7594 chatter-display=Random :what
 send hortbot #foobar [HB] Random, "/me" is not allowed in this channel - warning
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter off
+handle hortbot foobar/1 foobar/1 :!filter off
 send hortbot #foobar [HB] Filters are now disabled.
 
-handle_me hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
+handle_me hortbot foobar/1 random/2 chatter-display=Random :what
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!filter on
+handle hortbot foobar/1 foobar/1 :!filter on
 send hortbot #foobar [HB] Filters are now enabled.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set shouldModerate off
+handle hortbot foobar/1 foobar/1 :!set shouldModerate off
 send hortbot #foobar [HB] hortbot will no longer attempt to moderate in this channel.
 
-handle_me hortbot @id=__UUID__;room-id=1;user-id=2;display-name=Random :random!random@random.tmi.twitch.tv PRIVMSG #foobar :what
+handle_me hortbot foobar/1 random/2 chatter-display=Random :what
 no_send

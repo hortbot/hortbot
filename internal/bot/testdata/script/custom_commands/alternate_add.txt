@@ -1,63 +1,63 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add sub1 test
+handle hortbot foobar/1 foobar/1 :!command add sub1 test
 send hortbot #foobar [HB] Command 'sub1' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adds sub2 test
+handle hortbot foobar/1 foobar/1 :!command adds sub2 test
 send hortbot #foobar [HB] Command 'sub2' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addsub sub3 test
+handle hortbot foobar/1 foobar/1 :!command addsub sub3 test
 send hortbot #foobar [HB] Command 'sub3' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addsubs sub4 test
+handle hortbot foobar/1 foobar/1 :!command addsubs sub4 test
 send hortbot #foobar [HB] Command 'sub4' added, restricted to subscribers and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addm mod1 test
+handle hortbot foobar/1 foobar/1 :!command addm mod1 test
 send hortbot #foobar [HB] Command 'mod1' added, restricted to moderators and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addmod mod2 test
+handle hortbot foobar/1 foobar/1 :!command addmod mod2 test
 send hortbot #foobar [HB] Command 'mod2' added, restricted to moderators and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addmods mod3 test
+handle hortbot foobar/1 foobar/1 :!command addmods mod3 test
 send hortbot #foobar [HB] Command 'mod3' added, restricted to moderators and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addall all1 test
+handle hortbot foobar/1 foobar/1 :!command addall all1 test
 send hortbot #foobar [HB] Command 'all1' added, restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda all2 test
+handle hortbot foobar/1 foobar/1 :!command adda all2 test
 send hortbot #foobar [HB] Command 'all2' added, restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addeveryone all3 test
+handle hortbot foobar/1 foobar/1 :!command addeveryone all3 test
 send hortbot #foobar [HB] Command 'all3' added, restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adde all4 test
+handle hortbot foobar/1 foobar/1 :!command adde all4 test
 send hortbot #foobar [HB] Command 'all4' added, restricted to everyone and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addo own1 test
+handle hortbot foobar/1 foobar/1 :!command addo own1 test
 send hortbot #foobar [HB] Command 'own1' added, restricted to broadcasters and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addowner own2 test
+handle hortbot foobar/1 foobar/1 :!command addowner own2 test
 send hortbot #foobar [HB] Command 'own2' added, restricted to broadcasters and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addb own3 test
+handle hortbot foobar/1 foobar/1 :!command addb own3 test
 send hortbot #foobar [HB] Command 'own3' added, restricted to broadcasters and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add own3 test
+handle hortbot foobar/1 foobar/1 :!command add own3 test
 send hortbot #foobar [HB] Command 'own3' updated, restricted to broadcasters and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adds own3 test
+handle hortbot foobar/1 foobar/1 :!command adds own3 test
 send hortbot #foobar [HB] Command 'own3' updated, restricted to subscribers and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addv vip1 test
+handle hortbot foobar/1 foobar/1 :!command addv vip1 test
 send hortbot #foobar [HB] Command 'vip1' added, restricted to vips and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addvip vip2 test
+handle hortbot foobar/1 foobar/1 :!command addvip vip2 test
 send hortbot #foobar [HB] Command 'vip2' added, restricted to vips and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command addvips vip3 test
+handle hortbot foobar/1 foobar/1 :!command addvips vip3 test
 send hortbot #foobar [HB] Command 'vip3' added, restricted to vips and above.

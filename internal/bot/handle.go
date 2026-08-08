@@ -31,8 +31,8 @@ var (
 	errDuplicate       = errors.New("bot: duplicate message")
 )
 
-// Handle handles a single message, sent via the specific origin. It always
-// succeeds, but may log information about any internal errors.
+// Handle handles a single chat message. It always succeeds, but may log
+// information about any internal errors.
 func (b *Bot) Handle(ctx context.Context, m Message) {
 	ctx = correlation.With(ctx)
 
@@ -48,12 +48,14 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 		return
 	}
 
+	ctx = ctxlog.With(ctx, messageLogFields(m)...)
+
 	defer metricHandled.Inc()
 
 	start := time.Now()
 	defer func() {
 		secs := time.Since(start).Seconds()
-		metricHandleDuration.WithLabelValues("PRIVMSG").Observe(secs)
+		metricHandleDuration.Observe(secs)
 	}()
 
 	err := b.handle(ctx, m)
@@ -76,20 +78,39 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 }
 
 func (b *Bot) handle(ctx context.Context, m Message) (retErr error) {
-	ctx = ctxlog.With(ctx, zap.String("origin", m.Origin()))
-
 	defer func() {
 		if r := recover(); r != nil {
 			if b.passthroughPanics {
 				panic(r)
 			}
-			ctxlog.Error(ctx, "panic during handle", zap.Any("value", r), zap.Stack("stack"))
+			ctxlog.Error(ctx, "panic during handle",
+				zap.Any("value", r),
+				zap.Any("message", m),
+				zap.Stack("stack"),
+			)
 			metricHandlePanic.Inc()
 			retErr = errPanicked
 		}
 	}()
 
-	return b.handlePrivMsg(ctx, m)
+	return b.handleChatMessage(ctx, m)
+}
+
+func messageLogFields(m Message) []zap.Field {
+	broadcaster := m.Broadcaster()
+	chatter := m.Chatter()
+
+	return []zap.Field{
+		zap.String("botLogin", m.Bot()),
+		zap.String("messageID", m.MessageID()),
+		zap.Time("messageTimestamp", m.MessageTimestamp()),
+		zap.Int64("broadcasterID", broadcaster.ID),
+		zap.String("broadcasterLogin", broadcaster.Login),
+		zap.Int64("chatterID", chatter.ID),
+		zap.String("chatterLogin", chatter.Login),
+		zap.String("messageText", m.Text()),
+		zap.Bool("isAction", m.IsAction()),
+	}
 }
 
 var sessionPool = pool.NewPool(func() *session {
@@ -106,7 +127,7 @@ func putSession(s *session) {
 	sessionPool.Put(s)
 }
 
-func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
+func (b *Bot) handleChatMessage(ctx context.Context, m Message) error {
 	start := time.Now()
 
 	s := getSession()
@@ -116,7 +137,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 		return err
 	}
 
-	if s.User == s.Origin {
+	if s.User == s.BotLogin {
 		return nil
 	}
 
@@ -155,7 +176,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 	}
 
 	var (
-		fromTwitch = enqueued.Sub(s.TMISent)
+		fromTwitch = enqueued.Sub(s.SentAt)
 		inQueue    = start.Sub(enqueued)
 		begin      = beforeHandle.Sub(start)
 		handle     = afterHandle.Sub(beforeHandle)
@@ -190,7 +211,7 @@ func (b *Bot) handlePrivMsg(ctx context.Context, m Message) error {
 }
 
 func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
-	id := m.ID()
+	id := m.MessageID()
 	if id == "" {
 		return errInvalidMessage
 	}
@@ -199,31 +220,36 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 		return err
 	}
 
-	user := m.UserLogin()
+	chatter := m.Chatter()
+	user := chatter.Login
 
 	if !b.deps.IsAllowed(user) {
 		return errNotAllowed
 	}
 
-	message, me := m.Message()
+	message := strings.TrimSpace(m.Text())
 	if message == "" {
 		return nil
 	}
 
 	s.Type = sessionNormal
-	s.Origin = m.Origin()
+	s.BotLogin = m.Bot()
 	s.M = m
 	s.Deps = b.deps
 	s.ID = id
 	s.User = user
 	s.Message = message
-	s.Me = me
-	s.UserDisplay = m.UserDisplay()
-	s.RoomID = m.BroadcasterID()
+	s.Me = m.IsAction()
+	s.UserDisplay = chatter.DisplayName
+	if s.UserDisplay == "" {
+		s.UserDisplay = user
+	}
+	broadcaster := m.Broadcaster()
+	s.RoomID = broadcaster.ID
 	s.RoomIDOrig = s.RoomID
-	s.UserID = m.UserID()
-	s.TMISent = m.Timestamp()
-	s.ChannelName = m.BroadcasterLogin()
+	s.UserID = chatter.ID
+	s.SentAt = m.MessageTimestamp()
+	s.ChannelName = broadcaster.Login
 
 	if s.RoomID == 0 {
 		ctxlog.Debug(ctx, "room ID cannot be zero")
@@ -286,7 +312,7 @@ func handleSession(ctx context.Context, s *session) error {
 
 	s.SetUserLevel()
 
-	if s.Origin == s.ChannelName {
+	if s.BotLogin == s.ChannelName {
 		return handleManagement(ctx, s)
 	}
 
@@ -311,10 +337,11 @@ func handleSession(ctx context.Context, s *session) error {
 
 		fixup := make([]string, 0, 3)
 
-		if channel.Name != s.M.BroadcasterLogin() {
+		broadcaster := s.M.Broadcaster()
+		if channel.Name != broadcaster.Login {
 			old := channel.Name
 			fixup = append(fixup, models.ChannelColumns.Name)
-			channel.Name = s.M.BroadcasterLogin()
+			channel.Name = broadcaster.Login
 			ctxlog.Warn(ctx, "channel name changed", zap.String("old", old), zap.String("new", channel.Name))
 		}
 
@@ -325,10 +352,10 @@ func handleSession(ctx context.Context, s *session) error {
 				channel.DisplayName = s.UserDisplay
 				ctxlog.Warn(ctx, "channel display name changed", zap.String("old", old), zap.String("new", channel.DisplayName))
 			}
-		} else if channel.DisplayName != s.M.BroadcasterDisplay() {
+		} else if channel.DisplayName != broadcaster.DisplayName {
 			old := channel.DisplayName
 			fixup = append(fixup, models.ChannelColumns.DisplayName)
-			channel.DisplayName = s.M.BroadcasterDisplay()
+			channel.DisplayName = broadcaster.DisplayName
 			ctxlog.Warn(ctx, "channel display name changed", zap.String("old", old), zap.String("new", channel.DisplayName))
 		}
 
@@ -339,10 +366,10 @@ func handleSession(ctx context.Context, s *session) error {
 			}
 		}
 
-		if channel.BotName != s.Origin {
+		if channel.BotName != s.BotLogin {
 			ctxlog.Warn(ctx, "bot name mismatch",
 				zap.String("expected", channel.BotName),
-				zap.String("origin", s.Origin),
+				zap.String("botLogin", s.BotLogin),
 			)
 			return nil
 		}

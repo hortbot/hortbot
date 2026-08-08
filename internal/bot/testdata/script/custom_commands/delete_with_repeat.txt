@@ -1,14 +1,14 @@
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add repeatme Hello there! (_MESSAGE_COUNT_)
+handle hortbot foobar/1 foobar/1 :!command add repeatme Hello there! (_MESSAGE_COUNT_)
 send hortbot #foobar [HB] Command 'repeatme' added, restricted to subscribers and above.
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat add repeatme 30
+handle hortbot foobar/1 foobar/1 :!repeat add repeatme 30
 send hortbot #foobar [HB] Command 'repeatme' will now repeat every 30 seconds if at least 1 message has passed.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
 checkpoint
@@ -26,10 +26,10 @@ sleep 100ms
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command delete repeatme
+handle hortbot foobar/1 foobar/1 :!command delete repeatme
 send hortbot #foobar [HB] Command 'repeatme' and its repeat/schedule have been deleted.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :hey
+handle hortbot foobar/1 foobar/1 :hey
 no_send
 
 checkpoint
@@ -38,5 +38,5 @@ sleep 100ms
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!repeat on repeatme
+handle hortbot foobar/1 foobar/1 :!repeat on repeatme
 send hortbot #foobar [HB] Command 'repeatme' does not exist.

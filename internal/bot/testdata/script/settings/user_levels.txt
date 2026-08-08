@@ -1,133 +1,133 @@
 join hortbot 999 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner
+handle hortbot foobar/1 foobar/1 :!owner
 send hortbot #foobar [HB] Usage: !owner list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner what
+handle hortbot foobar/1 foobar/1 :!owner what
 send hortbot #foobar [HB] Usage: !owner list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner list
+handle hortbot foobar/1 foobar/1 :!owner list
 send hortbot #foobar [HB] There are no owners.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner add random
+handle hortbot foobar/1 foobar/1 :!owner add random
 send hortbot #foobar [HB] random added to owners.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner add @AbCdEf
+handle hortbot foobar/1 foobar/1 :!owner add @AbCdEf
 send hortbot #foobar [HB] abcdef added to owners.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner add random
+handle hortbot foobar/1 foobar/1 :!owner add random
 send hortbot #foobar [HB] random is already in owners.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Broadcaster
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner list
+handle hortbot foobar/1 foobar/1 :!owner list
 send hortbot #foobar [HB] owners: abcdef, random
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner remove random
+handle hortbot foobar/1 foobar/1 :!owner remove random
 send hortbot #foobar [HB] random removed from owners.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!owner remove random
+handle hortbot foobar/1 foobar/1 :!owner remove random
 send hortbot #foobar [HB] random is not in owners.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!owner add random
+handle hortbot foobar/1 random/2 :!owner add random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!owner add random
+handle hortbot foobar/1 random/2 access=subscriber :!owner add random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!owner add random
+handle hortbot foobar/1 random/2 access=moderator :!owner add random
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod
+handle hortbot foobar/1 foobar/1 :!mod
 send hortbot #foobar [HB] Usage: !mod list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod what
+handle hortbot foobar/1 foobar/1 :!mod what
 send hortbot #foobar [HB] Usage: !mod list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod list
+handle hortbot foobar/1 foobar/1 :!mod list
 send hortbot #foobar [HB] There are no mods.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod add random
+handle hortbot foobar/1 foobar/1 :!mod add random
 send hortbot #foobar [HB] random added to mods.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod add random
+handle hortbot foobar/1 foobar/1 :!mod add random
 send hortbot #foobar [HB] random is already in mods.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod add @AbCdEf
+handle hortbot foobar/1 foobar/1 :!mod add @AbCdEf
 send hortbot #foobar [HB] abcdef added to mods.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Moderator
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod list
+handle hortbot foobar/1 foobar/1 :!mod list
 send hortbot #foobar [HB] mods: abcdef, random
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod remove random
+handle hortbot foobar/1 foobar/1 :!mod remove random
 send hortbot #foobar [HB] random removed from mods.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!mod remove random
+handle hortbot foobar/1 foobar/1 :!mod remove random
 send hortbot #foobar [HB] random is not in mods.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!mod add random
+handle hortbot foobar/1 random/2 :!mod add random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!mod add random
+handle hortbot foobar/1 random/2 access=subscriber :!mod add random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!mod add random
+handle hortbot foobar/1 random/2 access=moderator :!mod add random
 no_send
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular
+handle hortbot foobar/1 foobar/1 :!regular
 send hortbot #foobar [HB] Usage: !regular list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular what
+handle hortbot foobar/1 foobar/1 :!regular what
 send hortbot #foobar [HB] Usage: !regular list|add|remove ...
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular list
+handle hortbot foobar/1 foobar/1 :!regular list
 send hortbot #foobar [HB] There are no regulars.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular add random
+handle hortbot foobar/1 foobar/1 :!regular add random
 send hortbot #foobar [HB] random added to regulars.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular add random
+handle hortbot foobar/1 foobar/1 :!regular add random
 send hortbot #foobar [HB] random is already in regulars.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular add @AbCdEf
+handle hortbot foobar/1 foobar/1 :!regular add @AbCdEf
 send hortbot #foobar [HB] abcdef added to regulars.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Subscriber
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular list
+handle hortbot foobar/1 foobar/1 :!regular list
 send hortbot #foobar [HB] regulars: abcdef, random
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular remove random
+handle hortbot foobar/1 foobar/1 :!regular remove random
 send hortbot #foobar [HB] random removed from regulars.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!regular remove random
+handle hortbot foobar/1 foobar/1 :!regular remove random
 send hortbot #foobar [HB] random is not in regulars.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!testing_access_level
+handle hortbot foobar/1 random/2 :!testing_access_level
 send hortbot #foobar [HB] Everyone
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!regular add random
+handle hortbot foobar/1 random/2 :!regular add random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;subscriber=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!regular add random
+handle hortbot foobar/1 random/2 access=subscriber :!regular add random
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=2;mod=1 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!regular add random
+handle hortbot foobar/1 random/2 access=moderator :!regular add random
 send hortbot #foobar [HB] random added to regulars.

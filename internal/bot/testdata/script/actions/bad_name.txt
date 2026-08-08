@@ -1,21 +1,21 @@
 join hortbot 999 foobar 1
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add notexist (_THISDOESNTEXIST_)
+handle hortbot foobar/1 foobar/1 :!command add notexist (_THISDOESNTEXIST_)
 send hortbot #foobar [HB] Command 'notexist' added, restricted to subscribers and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!notexist hello
+handle hortbot foobar/1 foobar/1 :!notexist hello
 send hortbot #foobar [HB] (_THISDOESNTEXIST_)
 
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test "(_PARAMETERA_)"
+handle hortbot foobar/1 foobar/1 :!command add test "(_PARAMETERA_)"
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] "(_PARAMETERA_)"
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test "(_PARAMETER__)"
+handle hortbot foobar/1 foobar/1 :!command add test "(_PARAMETER__)"
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] "(_PARAMETER__)"

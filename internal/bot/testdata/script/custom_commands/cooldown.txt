@@ -1,29 +1,29 @@
 
 join hortbot 2 foobar 1
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!set cooldown 5
+handle hortbot foobar/1 foobar/1 :!set cooldown 5
 send hortbot #foobar [HB] Cooldown changed to 5 seconds.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command adda test test
+handle hortbot foobar/1 foobar/1 :!command adda test test
 send hortbot #foobar [HB] Command 'test' added, restricted to everyone and above.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] test
 
 clock_forward 10s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/3 :!test
 send hortbot #foobar [HB] test
 
 clock_forward 1s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/3 :!test
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] test
 
 clock_forward 5.5s
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :random!random@random.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 random/3 :!test
 send hortbot #foobar [HB] test

@@ -7,19 +7,18 @@ import (
 
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
-	"github.com/jakebailey/irc"
 )
 
-type eventMessage struct {
-	origin       string
-	message      *eventsub.WebsocketMessage
-	metadata     *eventsub.WebsocketMessageMetadata
-	subscription *eventsub.Subscription
-	condition    *eventsub.ChatMessageSubscriptionCondition
-	event        *eventsub.ChatMessageEvent
+type chatMessage struct {
+	botLogin string
+	sentAt   time.Time
+	text     string
+	isAction bool
+	event    *eventsub.ChatMessageEvent
+	raw      *eventsub.WebsocketMessage
 }
 
-func ToMessage(originMap map[int64]string, m *eventsub.WebsocketMessage) bot.Message {
+func ToMessage(botLoginMap map[int64]string, m *eventsub.WebsocketMessage) bot.Message {
 	if m == nil {
 		return nil
 	}
@@ -29,55 +28,51 @@ func ToMessage(originMap map[int64]string, m *eventsub.WebsocketMessage) bot.Mes
 	condition := subscription.Condition.(*eventsub.ChatMessageSubscriptionCondition)
 	event := notification.Event.(*eventsub.ChatMessageEvent)
 
-	return &eventMessage{
-		origin:       originMap[int64(condition.UserID)],
-		message:      m,
-		metadata:     m.Metadata,
-		subscription: subscription,
-		condition:    condition,
-		event:        event,
+	text, isAction := parseMessageText(event.Message.Text)
+
+	return &chatMessage{
+		botLogin: botLoginMap[int64(condition.UserID)],
+		sentAt:   m.Metadata.MessageTimestamp,
+		text:     text,
+		isAction: isAction,
+		event:    event,
+		raw:      m,
 	}
 }
 
-func (m *eventMessage) MarshalJSON() ([]byte, error) {
-	value := struct {
-		Origin  string                     `json:"origin"`
-		Message *eventsub.WebsocketMessage `json:"message"`
+func (m *chatMessage) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		BotLogin string                     `json:"bot_login"`
+		Message  *eventsub.WebsocketMessage `json:"message"`
 	}{
-		Origin:  m.origin,
-		Message: m.message,
-	}
-
-	return json.Marshal(&value) //nolint:wrapcheck
+		BotLogin: m.botLogin,
+		Message:  m.raw,
+	}) //nolint:wrapcheck
 }
 
-func (m *eventMessage) Origin() string { return m.origin }
+func (m *chatMessage) Bot() string                 { return m.botLogin }
+func (m *chatMessage) MessageID() string           { return m.event.MessageID }
+func (m *chatMessage) MessageTimestamp() time.Time { return m.sentAt }
+func (m *chatMessage) Text() string                { return m.text }
+func (m *chatMessage) IsAction() bool              { return m.isAction }
 
-func (m *eventMessage) ID() string                 { return m.event.MessageID }
-func (m *eventMessage) Timestamp() time.Time       { return m.metadata.MessageTimestamp }
-func (m *eventMessage) BroadcasterLogin() string   { return m.event.BroadcasterUserLogin }
-func (m *eventMessage) BroadcasterDisplay() string { return m.event.BroadcasterUserName }
-func (m *eventMessage) BroadcasterID() int64       { return int64(m.event.BroadcasterUserID) }
-func (m *eventMessage) UserLogin() string          { return m.event.ChatterUserLogin }
-func (m *eventMessage) UserDisplay() string        { return m.event.ChatterUserName }
-func (m *eventMessage) UserID() int64              { return int64(m.event.ChatterUserID) }
-
-func (m *eventMessage) Message() (message string, me bool) {
-	message = m.event.Message.Text
-
-	if c, a, ok := irc.ParseCTCP(message); ok {
-		if c != "ACTION" {
-			return "", false
-		}
-
-		message = a
-		me = true
+func (m *chatMessage) Broadcaster() bot.ChatIdentity {
+	return bot.ChatIdentity{
+		ID:          int64(m.event.BroadcasterUserID),
+		Login:       m.event.BroadcasterUserLogin,
+		DisplayName: m.event.BroadcasterUserName,
 	}
-
-	return strings.TrimSpace(message), me
 }
 
-func (m *eventMessage) EmoteCount() int {
+func (m *chatMessage) Chatter() bot.ChatIdentity {
+	return bot.ChatIdentity{
+		ID:          int64(m.event.ChatterUserID),
+		Login:       m.event.ChatterUserLogin,
+		DisplayName: m.event.ChatterUserName,
+	}
+}
+
+func (m *chatMessage) CountEmotes() int {
 	count := 0
 	for _, fragment := range m.event.Message.Fragments {
 		if fragment.Type == "emote" {
@@ -87,14 +82,29 @@ func (m *eventMessage) EmoteCount() int {
 	return count
 }
 
-func (m *eventMessage) UserAccessLevel() bot.AccessLevel {
-	if m.BroadcasterID() == m.UserID() {
+func (m *chatMessage) ChatterAccessLevel() bot.AccessLevel {
+	return accessLevel(m.event)
+}
+
+func parseMessageText(message string) (text string, isAction bool) {
+	if len(message) >= 2 && message[0] == '\x01' && message[len(message)-1] == '\x01' {
+		command, args, _ := strings.Cut(message[1:len(message)-1], " ")
+		if command != "ACTION" {
+			return "", false
+		}
+		return strings.TrimSpace(args), true
+	}
+	return strings.TrimSpace(message), false
+}
+
+func accessLevel(event *eventsub.ChatMessageEvent) bot.AccessLevel {
+	if event.BroadcasterUserID == event.ChatterUserID {
 		return bot.AccessLevelBroadcaster
 	}
 
 	badges := make(map[string]bool)
 
-	for _, badge := range m.event.Badges {
+	for _, badge := range event.Badges {
 		badges[badge.SetID] = true
 	}
 

@@ -2,10 +2,10 @@ join hortbot 999 foobar 1
 
 
 twitch_clear_chat {"BroadcasterID": 1, "ModID": 999, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}}
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!clear
+handle hortbot foobar/1 foobar/1 :!clear
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :!clear
+handle hortbot foobar/1 what/3 :!clear
 no_send
 
-handle hortbot @id=__UUID__;room-id=1;user-id=3;subscriber=1 :what!what@what.tmi.twitch.tv PRIVMSG #foobar :!clear
+handle hortbot foobar/1 what/3 access=subscriber :!clear
 no_send

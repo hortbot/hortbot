@@ -4,130 +4,130 @@ join hortbot 999 under_score 11
 
 
 # GET
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_what_GET_foobar_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_what_GET_foobar_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] =
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!var set what Hello there.
+handle hortbot foobar/1 foobar/1 :!var set what Hello there.
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = Hello there.
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_what_GET_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_what_GET_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = Hello there.
 
 
 # Cross channel GET
-handle hortbot @id=__UUID__;room-id=10;user-id=10 :otherchan!otherchan@otherchan.tmi.twitch.tv PRIVMSG #otherchan :!var set othervar Hi from otherchan!
+handle hortbot otherchan/10 otherchan/10 :!var set othervar Hi from otherchan!
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_othervar_GET_OtherChan_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_othervar_GET_OtherChan_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = Hi from otherchan!
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_nope_GET_OtherChan_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_nope_GET_OtherChan_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] =
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_othervar_GET_doesntexist_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_othervar_GET_doesntexist_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] =
 
 
-handle hortbot @id=__UUID__;room-id=11;user-id=11 :under_score!under_score@under_score.tmi.twitch.tv PRIVMSG #under_score :!var set othervar Hi from under_score!
+handle hortbot under_score/11 under_score/11 :!var set othervar Hi from under_score!
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_othervar_GET_Under_Score_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_othervar_GET_Under_Score_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = Hi from under_score!
 
 
 # SET
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test (_VARS_what_SET_this is a test_) == (_VARS_what_GET_foobar_)
+handle hortbot foobar/1 foobar/1 :!command add test (_VARS_what_SET_this is a test_) == (_VARS_what_GET_foobar_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] this is a test == this is a test
 
 
 # INCREMENT
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add rip Foobar has died (_VARS_game_INCREMENT_1_) times in game!
+handle hortbot foobar/1 foobar/1 :!command add rip Foobar has died (_VARS_game_INCREMENT_1_) times in game!
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!rip
+handle hortbot foobar/1 foobar/1 :!rip
 send hortbot #foobar [HB] Foobar has died 1 times in game!
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!rip
+handle hortbot foobar/1 foobar/1 :!rip
 send hortbot #foobar [HB] Foobar has died 2 times in game!
 
 
 # DECREMENT
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add unrip Foobar has died (_VARS_game_DECREMENT_1_) times in game!
+handle hortbot foobar/1 foobar/1 :!command add unrip Foobar has died (_VARS_game_DECREMENT_1_) times in game!
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!unrip
+handle hortbot foobar/1 foobar/1 :!unrip
 send hortbot #foobar [HB] Foobar has died 1 times in game!
 
 
 # Errors
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS__)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS__)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_huh_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_huh_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_huh__)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_huh__)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_huh_GET__)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_huh_GET__)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_huh_WOT_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_huh_WOT_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_game_INCREMENT__)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_game_INCREMENT__)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_game_INCREMENT_ok_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_game_INCREMENT_ok_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!command add test = (_VARS_what_INCREMENT_1_)
+handle hortbot foobar/1 foobar/1 :!command add test = (_VARS_what_INCREMENT_1_)
 send_any
 
-handle hortbot @id=__UUID__;room-id=1;user-id=1 :foobar!foobar@foobar.tmi.twitch.tv PRIVMSG #foobar :!test
+handle hortbot foobar/1 foobar/1 :!test
 send hortbot #foobar [HB] = (error)
