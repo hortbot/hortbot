@@ -303,7 +303,11 @@ type benchmarkMessage struct {
 }
 
 func (m benchmarkMessage) MarshalJSON() ([]byte, error) {
-	return json.Marshal(m.text)
+	data, err := json.Marshal(m.text)
+	if err != nil {
+		return nil, fmt.Errorf("marshal benchmark message: %w", err)
+	}
+	return data, nil
 }
 
 func (m benchmarkMessage) Bot() string                   { return m.botLogin }

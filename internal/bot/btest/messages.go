@@ -96,7 +96,7 @@ type testChatMessage struct {
 }
 
 func (m *testChatMessage) MarshalJSON() ([]byte, error) {
-	return json.Marshal(struct {
+	data, err := json.Marshal(struct {
 		BotLogin    string           `json:"bot_login"`
 		ID          string           `json:"id"`
 		SentAt      time.Time        `json:"sent_at"`
@@ -113,6 +113,10 @@ func (m *testChatMessage) MarshalJSON() ([]byte, error) {
 		Text:        m.text,
 		IsAction:    m.action,
 	})
+	if err != nil {
+		return nil, fmt.Errorf("marshal test chat message: %w", err)
+	}
+	return data, nil
 }
 
 func (m *testChatMessage) Bot() string                   { return m.botLogin }
