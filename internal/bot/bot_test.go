@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
@@ -18,7 +18,7 @@ func TestBotNewPanics(t *testing.T) {
 
 	config := &bot.Config{
 		DB:                     db,
-		Redis:                  &redis.DB{},
+		State:                  &botstate.Store{},
 		EventsubUpdateNotifier: &struct{ bot.EventsubUpdateNotifier }{},
 		Twitch:                 &struct{ twitch.API }{},
 		Simple:                 &struct{ simple.API }{},
@@ -35,10 +35,10 @@ func TestBotNewPanics(t *testing.T) {
 	assertx.Panic(t, checkPanic, "db is nil")
 	config.DB = db
 
-	oldRedis := config.Redis
-	config.Redis = nil
-	assertx.Panic(t, checkPanic, "redis is nil")
-	config.Redis = oldRedis
+	oldState := config.State
+	config.State = nil
+	assertx.Panic(t, checkPanic, "state is nil")
+	config.State = oldState
 
 	oldEventsub := config.EventsubUpdateNotifier
 	config.EventsubUpdateNotifier = nil

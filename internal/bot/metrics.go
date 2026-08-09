@@ -66,13 +66,6 @@ var (
 		Help:      "Total number of active scheduled commands.",
 	})
 
-	metricDuplicateMessage = promauto.NewCounter(prometheus.CounterOpts{
-		Namespace: "hortbot",
-		Subsystem: "bot",
-		Name:      "duplicate_total",
-		Help:      "Total number of duplicate messages ignored.",
-	})
-
 	metricHandleError = promauto.NewCounter(prometheus.CounterOpts{
 		Namespace: "hortbot",
 		Subsystem: "bot",
@@ -99,7 +92,7 @@ var (
 		Namespace: "hortbot",
 		Subsystem: "bot",
 		Name:      "handle_timing_in_queue_seconds",
-		Help:      "Time in NSQ to handler.",
+		Help:      "Time in the queue before handling.",
 		Buckets:   []float64{.00025, .0005, .001, .0025, .005, .01, .025, .05, .1, .25, .5, 1, 2.5, 5, 10},
 	})
 

@@ -17,10 +17,9 @@ import (
 	"unicode"
 
 	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/alicebob/miniredis/v2"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botmocks"
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifemocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmmocks"
@@ -32,7 +31,6 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd/xkcdmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube/youtubemocks"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -51,12 +49,6 @@ func RunScript(t *testing.T, filename string, freshDB func(t testing.TB) *sql.DB
 		}
 	}()
 
-	// Create miniredis outside the synctest bubble so its
-	// network-accepting goroutines don't block fake time.
-	rServer, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(t, err)
-	defer rCleanup()
-
 	// Capture the real wall-clock time before entering the synctest bubble.
 	realNow := time.Now()
 
@@ -64,11 +56,9 @@ func RunScript(t *testing.T, filename string, freshDB func(t testing.TB) *sql.DB
 		defer func() { db.Close(); dbClosed = true }()
 
 		st := scriptTester{
-			filename:    filename,
-			db:          db,
-			redisServer: rServer,
-			redisDB:     redis.New(rClient),
-			realNow:     realNow,
+			filename: filename,
+			db:       db,
+			realNow:  realNow,
 		}
 
 		st.test(t)
@@ -84,8 +74,6 @@ type scriptTester struct {
 	filename string
 
 	db                     *sql.DB
-	redisServer            *miniredis.Miniredis
-	redisDB                *redis.DB
 	realNow                time.Time
 	sender                 *SenderMock
 	eventsubUpdateNotifier *botmocks.EventsubUpdateNotifierMock
@@ -103,6 +91,9 @@ type scriptTester struct {
 
 	bc bot.Config
 	b  *bot.Bot
+
+	stateRandSeed    int
+	stateRandSeedSet bool
 
 	counts   map[string]int
 	idToName map[int64]string
@@ -136,10 +127,22 @@ func (st *scriptTester) addAction(fn func(context.Context)) {
 
 func (st *scriptTester) ensureBot(ctx context.Context, t testing.TB) {
 	if st.b == nil {
+		var stateOpts []botstate.Option
+		if st.stateRandSeedSet {
+			rng := rand.New(rand.NewSource(int64(st.stateRandSeed))) //nolint:gosec
+			stateOpts = append(stateOpts, botstate.WithRand(intnAdapter{rng}))
+		}
+		stateOpts = append(stateOpts, botstate.WithNow(time.Now))
+		st.bc.State = botstate.New(stateOpts...)
+
 		st.b = bot.New(&st.bc)
 		assert.NilError(t, st.b.Init(ctx))
 	}
 }
+
+type intnAdapter struct{ *rand.Rand }
+
+func (r intnAdapter) IntN(n int) int { return r.Intn(n) }
 
 func (st *scriptTester) test(t testing.TB) {
 	defer func() {
@@ -156,7 +159,7 @@ func (st *scriptTester) test(t testing.TB) {
 		SendMessageFunc: func(ctx context.Context, origin, target, message string) error { return nil },
 	}
 	st.eventsubUpdateNotifier = &botmocks.EventsubUpdateNotifierMock{
-		NotifyEventsubUpdatesFunc: func(ctx context.Context) error { return nil },
+		NotifyEventsubUpdatesFunc: func(ctx context.Context, exec boil.ContextExecutor) error { return nil },
 	}
 	st.lastFM = &lastfmmocks.APIMock{}
 	st.youtube = &youtubemocks.APIMock{}
@@ -190,11 +193,8 @@ func (st *scriptTester) test(t testing.TB) {
 	t.Cleanup(stop)
 	st.ctx = ctxlog.WithLogger(t.Context(), logger)
 
-	st.redisServer.SetTime(time.Now())
-
 	st.bc = bot.Config{
 		DB:                     st.db,
-		Redis:                  st.redisDB,
 		EventsubUpdateNotifier: st.eventsubUpdateNotifier,
 		LastFM:                 st.lastFM,
 		YouTube:                st.youtube,
@@ -206,7 +206,6 @@ func (st *scriptTester) test(t testing.TB) {
 		Urban:                  st.urban,
 		Simple:                 st.simple,
 		HLTB:                   st.hltb,
-		NoDedupe:               true,
 		PublicJoin:             true,
 	}
 
@@ -321,7 +320,8 @@ func (st *scriptTester) botConfig(t testing.TB, _, args string, lineNum int) {
 
 		st.bc.Rand = fakeRand
 
-		st.redisServer.Seed(*bcj.Rand)
+		st.stateRandSeed = *bcj.Rand
+		st.stateRandSeedSet = true
 	}
 }
 
@@ -336,9 +336,14 @@ func (st *scriptTester) doCheckpoint() {
 	st.notifyEventsubUpdatesCallsBefore = len(st.eventsubUpdateNotifier.NotifyEventsubUpdatesCalls())
 }
 
-func (st *scriptTester) dumpRedis(t testing.TB, _, _ string, lineNum int) {
+func (st *scriptTester) dumpState(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(ctx context.Context) {
-		t.Logf("line %d:\n%s", lineNum, st.redisServer.Dump())
+		dump, err := st.bc.State.Dump(ctx, st.db)
+		if err != nil {
+			t.Logf("line %d: dump state: %v", lineNum, err)
+			return
+		}
+		t.Logf("line %d:\n%s", lineNum, dump)
 	})
 }
 
@@ -352,7 +357,7 @@ var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, 
 	"skip":                          (*scriptTester).skip,
 	"boil_debug":                    (*scriptTester).boilDebug,
 	"bot_config":                    (*scriptTester).botConfig,
-	"dump_redis":                    (*scriptTester).dumpRedis,
+	"dump_state":                    (*scriptTester).dumpState,
 	"insert_channel":                (*scriptTester).insertChannel,
 	"insert_custom_command":         (*scriptTester).insertCustomCommand,
 	"insert_repeated_command":       (*scriptTester).insertRepeatedCommand,

@@ -14,15 +14,17 @@ import (
 
 	"github.com/a-h/templ"
 	"github.com/aarondl/null/v8"
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gofrs/uuid"
 	"github.com/gorilla/sessions"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
-	"github.com/hortbot/hortbot/internal/db/redis"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
+	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
@@ -48,7 +50,7 @@ type App struct {
 
 	Debug bool
 
-	Redis                  *redis.DB
+	State                  *botstate.Store
 	DB                     *sql.DB
 	Twitch                 twitch.API
 	EventsubUpdateNotifier EventsubUpdateNotifier
@@ -57,11 +59,14 @@ type App struct {
 }
 
 type EventsubUpdateNotifier interface {
-	NotifyEventsubUpdates(ctx context.Context) error
+	NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error
 }
 
 // Run runs the webapp until the context is canceled.
 func (a *App) Run(ctx context.Context) error {
+	requestCtx, cancelRequests := contextx.WithGracePeriod(ctx, 30*time.Second)
+	defer cancelRequests()
+
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
@@ -154,13 +159,15 @@ func (a *App) Run(ctx context.Context) error {
 	srv := http.Server{
 		Addr:              a.Addr,
 		Handler:           r,
-		BaseContext:       func(_ net.Listener) context.Context { return ctx },
+		BaseContext:       func(_ net.Listener) context.Context { return requestCtx },
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
 	go func() { //nolint:gosec
 		<-ctx.Done()
-		if err := srv.Shutdown(context.Background()); err != nil {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		if err := srv.Shutdown(shutdownCtx); err != nil {
 			ctxlog.Error(ctx, "error shutting down server", zap.Error(err))
 		}
 	}()
@@ -234,7 +241,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 
 	stateVal.Redirect = query.Redirect
 
-	if err := a.Redis.SetAuthState(ctx, state, stateVal, authTimeout); err != nil {
+	if err := a.State.SetAuthState(ctx, a.DB, state, stateVal, authTimeout); err != nil {
 		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
@@ -268,7 +275,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	var stateVal authState
 
-	ok, err := a.Redis.GetAuthState(ctx, state, &stateVal)
+	ok, err := a.State.GetAuthState(ctx, a.DB, state, &stateVal)
 	if err != nil {
 		ctxlog.Error(ctx, "error checking auth state", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
@@ -282,7 +289,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	if normalizeHost(stateVal.Host) != normalizeHost(r.Host) {
 		// This came to the wrong host. Put the state back and redirect.
-		if err := a.Redis.SetAuthState(ctx, state, &stateVal, authTimeout); err != nil {
+		if err := a.State.SetAuthState(ctx, a.DB, state, &stateVal, authTimeout); err != nil {
 			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 			a.httpError(w, r, http.StatusInternalServerError)
 			return
@@ -337,7 +344,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
+	if err := a.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx, a.DB); err != nil {
 		ctxlog.Error(ctx, "error notifying eventsub updates", zap.Error(err))
 	}
 

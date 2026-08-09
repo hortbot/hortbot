@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
@@ -33,7 +33,7 @@ const (
 // Config configures the bot.
 type Config struct {
 	DB                     *sql.DB
-	Redis                  *redis.DB
+	State                  *botstate.Store
 	EventsubUpdateNotifier EventsubUpdateNotifier
 	Rand                   Rand
 
@@ -59,8 +59,6 @@ type Config struct {
 
 	WebAddr    string
 	WebAddrMap map[string]string
-
-	NoDedupe bool
 
 	PublicJoin         bool
 	PublicJoinDisabled []string
@@ -95,7 +93,6 @@ type Bot struct {
 
 	testingHelper *testingHelper
 
-	noDedupe          bool
 	passthroughPanics bool
 }
 
@@ -104,8 +101,8 @@ func New(config *Config) *Bot {
 	switch {
 	case config.DB == nil:
 		panic("db is nil")
-	case config.Redis == nil:
-		panic("redis is nil")
+	case config.State == nil:
+		panic("state is nil")
 	case config.EventsubUpdateNotifier == nil:
 		panic("eventsub is nil")
 	case config.Twitch == nil:
@@ -117,7 +114,7 @@ func New(config *Config) *Bot {
 	}
 
 	deps := &sharedDeps{
-		Redis:                  config.Redis,
+		State:                  config.State,
 		EventsubUpdateNotifier: config.EventsubUpdateNotifier,
 		LastFM:                 config.LastFM,
 		BulletMap:              config.BulletMap,
@@ -171,7 +168,6 @@ func New(config *Config) *Bot {
 	b := &Bot{
 		db:                            config.DB,
 		deps:                          deps,
-		noDedupe:                      config.NoDedupe,
 		rep:                           repeat.New(),
 		validateTokensManual:          make(chan struct{}, 1),
 		updateModeratedChannelsManual: make(chan struct{}, 1),

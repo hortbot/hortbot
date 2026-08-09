@@ -52,9 +52,7 @@ func init() {
 				return "(_" + action + "_)", nil
 			}
 
-			if err := s.Deps.Redis.IncrementActionUsageStat(ctx, action); err != nil {
-				return "", fmt.Errorf("incrementing action usage stat: %w", err)
-			}
+			s.recordActionUsage(action)
 
 			return fn(ctx, s, name, "")
 		})
@@ -62,9 +60,7 @@ func init() {
 
 	addPrefix := func(prefix string, fn actionFunc) {
 		add(prefix, func(ctx context.Context, s *session, action string) (string, error) {
-			if err := s.Deps.Redis.IncrementActionUsageStat(ctx, prefix); err != nil {
-				return "", fmt.Errorf("incrementing action usage stat: %w", err)
-			}
+			s.recordActionUsage(prefix)
 
 			value := strings.TrimPrefix(action, prefix)
 			return fn(ctx, s, prefix, value)

@@ -61,6 +61,16 @@ func (d *DB) Open() (*sql.DB, error) {
 	return sql.Open(driver.Name, d.ConnStr()) //nolint:wrapcheck
 }
 
+// Stop stops the embedded PostgreSQL process without deleting its data.
+func (d *DB) Stop() error {
+	return d.pg.Stop() //nolint:wrapcheck
+}
+
+// Start restarts the embedded PostgreSQL process using its existing data.
+func (d *DB) Start() error {
+	return d.pg.Start() //nolint:wrapcheck
+}
+
 func (d *DB) Cleanup() {
 	if d.pg != nil {
 		_ = d.pg.Stop()
@@ -100,7 +110,8 @@ func newDB() (*DB, error) {
 		Password(password).
 		Database(database).
 		Port(port).
-		RuntimePath(dataDir).
+		RuntimePath(filepath.Join(dataDir, "runtime")).
+		DataPath(filepath.Join(dataDir, "data")).
 		BinariesPath(binariesPath).
 		StartParameters(map[string]string{"fsync": "off"}).
 		Logger(nil))

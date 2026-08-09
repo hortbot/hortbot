@@ -77,7 +77,7 @@ type repeatRunner interface {
 	status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error)
 	load(ctx context.Context, exec boil.ContextExecutor) error
 	channel() *models.Channel
-	allowed(ctx context.Context) (found bool, allowed bool, err error)
+	allowed(ctx context.Context, tx *sql.Tx) (found bool, allowed bool, err error)
 	updateCount(ctx context.Context, exec boil.ContextExecutor) error
 	info() *models.CommandInfo
 }
@@ -126,12 +126,12 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 			}
 
 			channel := runner.channel()
-			// TODO: Remove if possible by passing the top level wqueue down here.
+			// Serialize chat messages and repeat jobs for each channel.
 			if err := pgLock(ctx, tx, channel.TwitchID); err != nil {
 				return err
 			}
 
-			found, allowed, err := runner.allowed(ctx)
+			found, allowed, err := runner.allowed(ctx, tx)
 			readd = readd && found
 			if !allowed || err != nil {
 				return err //nolint:wrapcheck
@@ -216,7 +216,7 @@ WHERE
 	return status, nil
 }
 
-func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
+func (runner *repeatedCommandRunner) allowed(ctx context.Context, tx *sql.Tx) (found bool, allowed bool, err error) {
 	channel := runner.channel()
 	repeat := runner.repeat
 
@@ -231,7 +231,7 @@ func (runner *repeatedCommandRunner) allowed(ctx context.Context) (found bool, a
 	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
 	expiry := time.Duration(repeat.Delay-1) * time.Second
 
-	allowed, err = runner.deps.Redis.RepeatAllowed(ctx, roomIDStr, runner.id, expiry)
+	allowed, err = runner.deps.State.RepeatAllowed(ctx, tx, roomIDStr, runner.id, expiry)
 	if err != nil {
 		return true, false, fmt.Errorf("checking if allowed: %w", err)
 	}
@@ -305,7 +305,7 @@ WHERE
 	return status, nil
 }
 
-func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, allowed bool, err error) {
+func (runner *scheduledCommandRunner) allowed(ctx context.Context, tx *sql.Tx) (found bool, allowed bool, err error) {
 	channel := runner.channel()
 	scheduled := runner.scheduled
 
@@ -322,7 +322,7 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context) (found bool, 
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
 	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
-	allowed, err = runner.deps.Redis.ScheduledAllowed(ctx, roomIDStr, runner.id, 29*time.Second)
+	allowed, err = runner.deps.State.ScheduledAllowed(ctx, tx, roomIDStr, runner.id, 29*time.Second)
 	if err != nil {
 		return true, false, fmt.Errorf("checking if allowed: %w", err)
 	}

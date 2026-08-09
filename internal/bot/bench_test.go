@@ -10,16 +10,33 @@ import (
 	"testing"
 	"time"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplemocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
-	"github.com/hortbot/hortbot/internal/pkg/testutil/miniredistest"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
+
+type benchClock struct {
+	base   time.Time
+	offset atomic.Int64 // nanoseconds added to base
+}
+
+func newBenchClock() *benchClock {
+	return &benchClock{base: time.Now()}
+}
+
+func (c *benchClock) Now() time.Time {
+	return c.base.Add(time.Duration(c.offset.Load()))
+}
+
+func (c *benchClock) Advance(d time.Duration) {
+	c.offset.Add(int64(d))
+}
 
 func BenchmarkHandleNop(b *testing.B) {
 	const botName = "hortbot"
@@ -29,15 +46,14 @@ func BenchmarkHandleNop(b *testing.B) {
 
 	ctx := b.Context()
 
-	rServer, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(b, err)
-	defer rCleanup()
+	clk := newBenchClock()
+	state := botstate.New(botstate.WithNow(clk.Now))
 
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:                     db,
-		Redis:                  redis.New(rClient),
+		State:                  state,
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -46,7 +62,6 @@ func BenchmarkHandleNop(b *testing.B) {
 		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
-		NoDedupe:   true,
 		PublicJoin: true,
 	}
 
@@ -59,7 +74,7 @@ func BenchmarkHandleNop(b *testing.B) {
 
 	for b.Loop() {
 		bb.Handle(ctx, m)
-		rServer.FastForward(time.Minute)
+		clk.Advance(time.Minute)
 	}
 	b.StopTimer()
 }
@@ -72,15 +87,14 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 
 	ctx := b.Context()
 
-	_, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(b, err)
-	defer rCleanup()
+	clk := newBenchClock()
+	state := botstate.New(botstate.WithNow(clk.Now))
 
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:                     db,
-		Redis:                  redis.New(rClient),
+		State:                  state,
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -89,7 +103,6 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
-		NoDedupe:   true,
 		PublicJoin: true,
 	}
 
@@ -112,20 +125,19 @@ func BenchmarkHandleNopParallel(b *testing.B) {
 func BenchmarkHandleCustomCommand(b *testing.B) {
 	const botName = "hortbot"
 
-	rServer, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(b, err)
-	defer rCleanup()
-
 	db := pool.FreshDB(b)
 	defer db.Close()
 
 	ctx := b.Context()
 
+	clk := newBenchClock()
+	state := botstate.New(botstate.WithNow(clk.Now))
+
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:                     db,
-		Redis:                  redis.New(rClient),
+		State:                  state,
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -134,7 +146,6 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
-		NoDedupe:   true,
 		PublicJoin: true,
 	}
 
@@ -148,7 +159,7 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 
 	for b.Loop() {
 		bb.Handle(ctx, m)
-		rServer.FastForward(time.Minute)
+		clk.Advance(time.Minute)
 	}
 	b.StopTimer()
 }
@@ -156,20 +167,19 @@ func BenchmarkHandleCustomCommand(b *testing.B) {
 func BenchmarkHandleMixed(b *testing.B) {
 	const botName = "hortbot"
 
-	rServer, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(b, err)
-	defer rCleanup()
-
 	db := pool.FreshDB(b)
 	defer db.Close()
 
 	ctx := b.Context()
 
+	clk := newBenchClock()
+	state := botstate.New(botstate.WithNow(clk.Now))
+
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:                     db,
-		Redis:                  redis.New(rClient),
+		State:                  state,
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -178,7 +188,6 @@ func BenchmarkHandleMixed(b *testing.B) {
 		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
-		NoDedupe:   true,
 		PublicJoin: true,
 	}
 
@@ -210,7 +219,7 @@ func BenchmarkHandleMixed(b *testing.B) {
 	for i := range b.N {
 		m := ms[i%l]
 		bb.Handle(ctx, m)
-		rServer.FastForward(time.Minute)
+		clk.Advance(time.Minute)
 	}
 	b.StopTimer()
 }
@@ -218,20 +227,19 @@ func BenchmarkHandleMixed(b *testing.B) {
 func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 	const botName = "hortbot"
 
-	rServer, rClient, rCleanup, err := miniredistest.New()
-	assert.NilError(b, err)
-	defer rCleanup()
-
 	db := pool.FreshDB(b)
 	defer db.Close()
 
 	ctx := b.Context()
 
+	clk := newBenchClock()
+	state := botstate.New(botstate.WithNow(clk.Now))
+
 	userID, name := getNextUserID()
 
 	config := &bot.Config{
 		DB:                     db,
-		Redis:                  redis.New(rClient),
+		State:                  state,
 		EventsubUpdateNotifier: nopNotifier{},
 		Twitch: &twitchmocks.APIMock{
 			SendChatMessageFunc: func(ctx context.Context, broadcasterID, modID int64, modToken *oauth2.Token, message string) (*oauth2.Token, error) {
@@ -240,7 +248,6 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 		},
 		Simple:     &simplemocks.APIMock{},
 		HLTB:       &hltbmocks.APIMock{},
-		NoDedupe:   true,
 		PublicJoin: true,
 	}
 
@@ -257,7 +264,7 @@ func BenchmarkHandleManyBannedPhrases(b *testing.B) {
 
 	for b.Loop() {
 		bb.Handle(ctx, chatMessage(botName, name, userID, "someone", 9999999, "nothing interesting"))
-		rServer.FastForward(time.Minute)
+		clk.Advance(time.Minute)
 	}
 	b.StopTimer()
 }
@@ -276,7 +283,9 @@ func getNextUserID() (int64, string) {
 type nopNotifier struct{}
 
 func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
-func (nopNotifier) NotifyEventsubUpdates(ctx context.Context) error                { return nil }
+func (nopNotifier) NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error {
+	return nil
+}
 
 func chatMessage(botLogin, broadcasterLogin string, broadcasterID int64, chatterLogin string, chatterID int64, text string) bot.Message {
 	return benchmarkMessage{

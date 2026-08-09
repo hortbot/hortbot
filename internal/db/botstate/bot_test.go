@@ -1,0 +1,110 @@
+package botstate_test
+
+import (
+	"context"
+	"testing"
+	"time"
+
+	"gotest.tools/v3/assert"
+)
+
+func TestBot(t *testing.T) {
+	t.Parallel()
+
+	db, _ := freshStore(t)
+
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+
+	err := db.LinkPermit(ctx, "foo", "bar", time.Minute)
+	assert.NilError(t, err)
+
+	_, err = db.HasLinkPermit(ctx, "foo", "bar")
+	assert.NilError(t, err)
+
+	_, err = db.Confirm(ctx, "foo", "bar", "baz", time.Minute)
+	assert.NilError(t, err)
+
+	_, err = db.RepeatAllowed(ctx, "foo", 123, time.Minute)
+	assert.NilError(t, err)
+
+	_, err = db.ScheduledAllowed(ctx, "foo", 123, time.Minute)
+	assert.NilError(t, err)
+
+	_, err = db.AutoreplyAllowed(ctx, "foo", 123, time.Minute)
+	assert.NilError(t, err)
+
+	_, err = db.FilterWarned(ctx, "foo", "user", "filter", time.Minute)
+	assert.NilError(t, err)
+
+	err = db.RaffleAdd(ctx, "foo", "user")
+	assert.NilError(t, err)
+
+	err = db.RaffleReset(ctx, "foo")
+	assert.NilError(t, err)
+
+	_, _, err = db.RaffleWinner(ctx, "foo")
+	assert.NilError(t, err)
+
+	_, err = db.RaffleCount(ctx, "foo")
+	assert.NilError(t, err)
+
+	_, err = db.RaffleWinners(ctx, "foo", 10)
+	assert.NilError(t, err)
+
+	err = db.MarkCooldown(ctx, "foo", "bar", time.Minute)
+	assert.NilError(t, err)
+
+	_, err = db.CheckAndMarkCooldown(ctx, "foo", "bar", time.Minute)
+	assert.NilError(t, err)
+}
+
+func TestLinkPermit(t *testing.T) {
+	t.Parallel()
+
+	db, clk := freshStore(t)
+
+	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
+	defer cancel()
+
+	const (
+		channel = "1234"
+		user    = "user1"
+	)
+
+	allowed, err := db.HasLinkPermit(ctx, channel, user)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false)
+
+	err = db.LinkPermit(ctx, channel, user, 10*time.Second)
+	assert.NilError(t, err)
+
+	clk.Advance(time.Hour)
+
+	allowed, err = db.HasLinkPermit(ctx, channel, user)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false, "permit should have expired")
+
+	err = db.LinkPermit(ctx, channel, user, 10*time.Second)
+	assert.NilError(t, err)
+
+	clk.Advance(time.Second)
+
+	allowed, err = db.HasLinkPermit(ctx, channel, user)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, true)
+
+	allowed, err = db.HasLinkPermit(ctx, channel, "nobody")
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false)
+
+	allowed, err = db.HasLinkPermit(ctx, "nobody", user)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false)
+
+	clk.Advance(time.Second)
+
+	allowed, err = db.HasLinkPermit(ctx, channel, user)
+	assert.NilError(t, err)
+	assert.Equal(t, allowed, false, "permit was already consumed")
+}

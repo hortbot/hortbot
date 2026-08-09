@@ -24,17 +24,21 @@ import (
 
 const initialWebsocketURL = "wss://eventsub.wss.twitch.tv/ws"
 
+// NotificationHandler processes an EventSub notification before the websocket
+// reader accepts another message.
+type NotificationHandler func(context.Context, json.RawMessage, *eventsub.WebsocketMessage) error
+
 type Service struct {
-	db           *sql.DB
-	twitch       twitch.API
-	syncInterval time.Duration
-	shards       int
+	db                 *sql.DB
+	twitch             twitch.API
+	syncInterval       time.Duration
+	shards             int
+	handleNotification NotificationHandler
 
 	g *errgroupx.Group
 
 	started     chan struct{}
 	startedOnce sync.Once
-	incoming    chan *eventsub.WebsocketMessage
 
 	conduitID      string
 	websocketCount atomic.Int64
@@ -46,19 +50,24 @@ type chatSubscription struct {
 	BotID         int64
 }
 
-func New(db *sql.DB, twitch twitch.API, syncInterval time.Duration, shards int) *Service {
-	return &Service{
-		db:           db,
-		twitch:       twitch,
-		syncInterval: syncInterval,
-		shards:       shards,
-		started:      make(chan struct{}),
-		incoming:     make(chan *eventsub.WebsocketMessage, 10),
+func New(
+	db *sql.DB,
+	twitch twitch.API,
+	syncInterval time.Duration,
+	shards int,
+	handleNotification NotificationHandler,
+) *Service {
+	if handleNotification == nil {
+		panic("nil notification handler")
 	}
-}
-
-func (s *Service) Incoming() <-chan *eventsub.WebsocketMessage {
-	return s.incoming
+	return &Service{
+		db:                 db,
+		twitch:             twitch,
+		syncInterval:       syncInterval,
+		shards:             shards,
+		handleNotification: handleNotification,
+		started:            make(chan struct{}),
+	}
 }
 
 func (s *Service) Run(ctx context.Context) error {
@@ -157,7 +166,7 @@ func (s *Service) runWebsocket(ctx context.Context, url string, shard int, onWel
 			return ctx.Err()
 		}
 
-		const wait = 5 * time.Second
+		const wait = time.Second
 		ctxlog.Info(ctx, "waiting before reconnect", zap.Duration("wait", wait))
 
 		select {
@@ -182,21 +191,33 @@ func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, on
 	metricWebsockets.Set(float64(s.websocketCount.Add(1)))
 	defer func() { metricWebsockets.Set(float64(s.websocketCount.Add(-1))) }()
 
-	c, _, err := websocket.Dial(ctx, url, nil)
+	c, response, err := websocket.Dial(ctx, url, nil)
+	if response != nil && response.Body != nil {
+		_ = response.Body.Close()
+	}
 	if err != nil {
 		return fmt.Errorf("dial websocket: %w", err)
 	}
 	defer c.CloseNow() //nolint:errcheck
 
 	reconnecting := false
+	readTimeout := 30 * time.Second
 
-readLoop:
 	for ctx.Err() == nil {
 		beforeRead := time.Now()
 		var raw json.RawMessage
-		if err := wsjson.Read(ctx, c, &raw); err != nil {
+		readCtx, cancelRead := context.WithTimeout(ctx, readTimeout)
+		err := wsjson.Read(readCtx, c, &raw)
+		cancelRead()
+		if err != nil {
+			if ctx.Err() != nil {
+				break
+			}
 			if reconnecting {
 				return errWebsocketClosedForReconnect
+			}
+			if errors.Is(err, context.DeadlineExceeded) {
+				return fmt.Errorf("eventsub keepalive timed out after %s: %w", readTimeout, err)
 			}
 			return fmt.Errorf("read websocket: %w", err)
 		}
@@ -219,6 +240,9 @@ readLoop:
 
 		switch payload := msg.Payload.(type) {
 		case *eventsub.SessionWelcomePayload:
+			if payload.Session.KeepaliveTimeoutSeconds > 0 {
+				readTimeout = time.Duration(payload.Session.KeepaliveTimeoutSeconds)*time.Second + time.Second
+			}
 			if err := s.setConduitShardSession(ctx, shard, payload.Session.ID); err != nil {
 				return err
 			}
@@ -233,10 +257,8 @@ readLoop:
 				return s.runWebsocket(ctx, *payload.Session.ReconnectURL, shard, cancel)
 			})
 		case *eventsub.NotificationPayload:
-			select {
-			case s.incoming <- &msg:
-			case <-ctx.Done():
-				break readLoop
+			if err := s.handleNotification(ctx, raw, &msg); err != nil {
+				return fmt.Errorf("handle notification: %w", err)
 			}
 		}
 	}

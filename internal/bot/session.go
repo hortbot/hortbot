@@ -74,6 +74,10 @@ type session struct {
 
 	sendRoundtrip bool
 
+	builtinUsage            map[string]int64
+	actionUsage             map[string]int64
+	eventsubUpdateRequested bool
+
 	cache struct {
 		links         onced[[]*url.URL]
 		tracks        onced[[]lastfm.Track]
@@ -197,6 +201,24 @@ func (s *session) UsageContext(command string) func() {
 			do = false
 		}
 	}
+}
+
+func (s *session) recordBuiltinUsage(name string) {
+	if s.builtinUsage == nil {
+		s.builtinUsage = make(map[string]int64)
+	}
+	s.builtinUsage[name]++
+}
+
+func (s *session) recordActionUsage(name string) {
+	if s.actionUsage == nil {
+		s.actionUsage = make(map[string]int64)
+	}
+	s.actionUsage[name]++
+}
+
+func (s *session) requestEventsubUpdate() {
+	s.eventsubUpdateRequested = true
 }
 
 func (s *session) SetUserLevel() {

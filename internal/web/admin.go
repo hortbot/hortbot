@@ -126,7 +126,7 @@ func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	builtinStats, err := a.Redis.GetBuiltinUsageStats(ctx)
+	builtinStats, err := a.State.GetBuiltinUsageStats(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error fetching builtin usage statistics", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -136,7 +136,7 @@ func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Builtin command usage:")
 	writeStatsResponse(w, builtinStats)
 
-	actionStats, err := a.Redis.GetActionUsageStats(ctx)
+	actionStats, err := a.State.GetActionUsageStats(ctx, a.DB)
 	if err != nil {
 		ctxlog.Error(ctx, "error fetching builtin usage statistics", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)

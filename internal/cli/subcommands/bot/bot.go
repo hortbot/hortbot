@@ -8,20 +8,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/bnsq"
-	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/bot/eventsubtobot"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/botflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/redisflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
+	"github.com/hortbot/hortbot/internal/db/botstate"
+	"github.com/hortbot/hortbot/internal/db/chatqueue"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
-	"github.com/hortbot/hortbot/internal/pkg/wqueue"
+	"github.com/hortbot/hortbot/internal/pkg/eventsubsync"
+	"github.com/redis/go-redis/v9"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -30,24 +29,24 @@ type cmd struct {
 	cli.Common
 	SQL        sqlflags.SQL
 	Twitch     twitchflags.Twitch
-	Redis      redisflags.Redis
 	Bot        botflags.Bot
-	NSQ        nsqflags.NSQ
 	Prometheus promflags.Prometheus
 	HTTP       httpflags.HTTP
+
+	MessageMaxAge time.Duration `long:"message-max-age" env:"HB_MESSAGE_MAX_AGE" description:"Maximum age of a chat message before it is dropped"`
+	RedisAddr     string        `long:"redis-addr" env:"HB_REDIS_ADDR" description:"Legacy Redis address to import and clear; remove after the first successful startup"`
 }
 
 // Command returns a fresh bot command.
 func Command() cli.Command {
 	return &cmd{
-		Common:     cli.Default,
-		SQL:        sqlflags.Default,
-		Twitch:     twitchflags.Default,
-		Redis:      redisflags.Default,
-		Bot:        botflags.Default,
-		NSQ:        nsqflags.Default,
-		Prometheus: promflags.Default,
-		HTTP:       httpflags.Default,
+		Common:        cli.Default,
+		SQL:           sqlflags.Default,
+		Twitch:        twitchflags.Default,
+		Bot:           botflags.Default,
+		Prometheus:    promflags.Default,
+		HTTP:          httpflags.Default,
+		MessageMaxAge: 15 * time.Second,
 	}
 }
 
@@ -62,11 +61,30 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	untrustedClient := c.HTTP.UntrustedClient(ctx)
 	driverName := c.SQL.DriverName()
 	db := c.SQL.Open(ctx, driverName)
-	rdb := c.Redis.Client()
-	twitchAPI := c.Twitch.Client(httpClient)
-	eventsubNotifier := c.NSQ.NewEventsubNotifyPublisher()
+	defer db.Close() //nolint:errcheck
 
-	b := c.Bot.New(ctx, db, rdb, eventsubNotifier, twitchAPI, httpClient, untrustedClient)
+	workCtx, cancelWork := contextx.WithGracePeriod(ctx, 30*time.Second)
+	defer cancelWork()
+	state := botstate.New()
+	if c.RedisAddr != "" {
+		redisClient := redis.NewClient(&redis.Options{Addr: c.RedisAddr})
+		defer redisClient.Close() //nolint:errcheck
+
+		imported, err := importLegacyRedisState(ctx, db, state, redisStateClient{client: redisClient})
+		if err != nil {
+			ctxlog.Fatal(ctx, "error importing legacy Redis state", zap.Error(err))
+		}
+		ctxlog.Info(ctx, "imported legacy Redis state",
+			zap.Int("builtin_stats", imported.BuiltinStats),
+			zap.Int("action_stats", imported.ActionStats),
+			zap.Int("raffles", imported.Raffles),
+			zap.Int("raffle_users", imported.RaffleUsers),
+		)
+	}
+	twitchAPI := c.Twitch.Client(httpClient)
+	eventsubNotifier := eventsubsync.Requests{}
+
+	b := c.Bot.New(workCtx, db, state, eventsubNotifier, twitchAPI, httpClient, untrustedClient)
 	defer b.Stop()
 
 	g := errgroupx.FromContext(ctx)
@@ -76,22 +94,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		workers = runtime.GOMAXPROCS(0)
 	}
 
-	// TODO: pass the queue down to the bot to use internally
-	queue := wqueue.NewQueue[string](10 * workers)
-	for range workers {
-		g.Go(queue.Worker)
-	}
-
-	put := func(subCtx context.Context, metadata *bnsq.Metadata, mm bot.Message) error {
-		key := mm.Broadcaster().Login
-		return queue.Put(subCtx, key, func(attach wqueue.Attacher) {
-			ctx, cancel := attach(ctx)
-			defer cancel()
-
-			ctx = metadata.With(ctx)
-			b.Handle(ctx, mm)
-		})
-	}
+	queue := chatqueue.New(db, workers)
 
 	// EventSub identifies the receiving bot by user ID, while bot configuration
 	// and message sending use its login.
@@ -102,7 +105,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		mu.Lock()
 		defer mu.Unlock()
 
-		if botLoginMap != nil || time.Since(botLoginMapTimestamp) < 5*time.Minute {
+		if botLoginMap != nil && time.Since(botLoginMapTimestamp) < 5*time.Minute {
 			return botLoginMap, nil
 		}
 
@@ -111,21 +114,21 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		if err != nil {
 			return nil, fmt.Errorf("get bots: %w", err)
 		}
+		botLoginMapTimestamp = time.Now()
 		return botLoginMap, nil
 	}
 
-	eventsubSub := c.NSQ.NewIncomingWebsocketMessageSubscriber(15*time.Second, func(i *bnsq.IncomingWebsocketMessage, metadata *bnsq.Metadata) error {
-		botLoginMap, err := getBotLoginMap(ctx)
-		if err != nil {
-			return err
-		}
-
-		mm := eventsubtobot.ToMessage(botLoginMap, i.Message)
-		return put(ctx, metadata, mm)
+	g.Go(func(ctx context.Context) error {
+		return runQueueListener(ctx, queue, c.SQL.DB)
 	})
-
-	g.Go(eventsubNotifier.Run)
-	g.Go(eventsubSub.Run)
+	for range workers {
+		g.Go(func(ctx context.Context) error {
+			return runMessageWorker(ctx, workCtx, queue, b, c.MessageMaxAge, getBotLoginMap)
+		})
+	}
+	g.Go(func(ctx context.Context) error {
+		return runDatabaseMaintenance(ctx, db, state)
+	})
 
 	if err := g.WaitIgnoreStop(); err != nil {
 		ctxlog.Info(ctx, "exiting", zap.Error(err))

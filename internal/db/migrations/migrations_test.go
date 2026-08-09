@@ -28,7 +28,21 @@ func allTables() []string {
 		"command_lists",
 		"command_infos",
 		"highlights",
+		"bot_action_usage_stats",
+		"bot_autoreply_cooldowns",
+		"bot_builtin_usage_stats",
+		"bot_command_cooldowns",
+		"bot_confirmations",
+		"bot_filter_warnings",
+		"bot_link_permits",
+		"bot_raffle_entries",
+		"bot_repeat_cooldowns",
+		"bot_scheduled_command_cooldowns",
 		"moderated_channels",
+		"chat_message_queue_keys",
+		"chat_message_queue",
+		"eventsub_sync_requests",
+		"web_auth_states",
 	}
 }
 
@@ -38,8 +52,10 @@ func TestUp(t *testing.T) {
 	withDatabase(t, func(t *testing.T, db *sql.DB, connStr string) {
 		assert.NilError(t, migrations.Up(connStr, t.Logf))
 		assertTableNames(t, db, allTables()...)
+		assertBotStateTablesLogged(t, db)
 		assert.NilError(t, migrations.Up(connStr, t.Logf))
 		assertTableNames(t, db, allTables()...)
+		assertBotStateTablesLogged(t, db)
 	})
 }
 
@@ -123,6 +139,30 @@ func tableNames(t *testing.T, db *sql.DB) []string {
 	assert.NilError(t, rows.Err())
 
 	return names
+}
+
+func assertBotStateTablesLogged(t *testing.T, db *sql.DB) {
+	t.Helper()
+
+	rows, err := db.QueryContext(t.Context(), `
+		SELECT relname
+		FROM pg_class
+		WHERE relnamespace = current_schema()::regnamespace
+		  AND relkind = 'r'
+		  AND relpersistence <> 'p'
+		  AND (relname LIKE 'bot_%' OR relname = 'web_auth_states')
+	`)
+	assert.NilError(t, err)
+	defer rows.Close()
+
+	var unlogged []string
+	for rows.Next() {
+		var name string
+		assert.NilError(t, rows.Scan(&name))
+		unlogged = append(unlogged, name)
+	}
+	assert.NilError(t, rows.Err())
+	assert.DeepEqual(t, unlogged, []string(nil))
 }
 
 func TestBadConnStr(t *testing.T) {

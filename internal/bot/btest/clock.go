@@ -15,8 +15,6 @@ func (st *scriptTester) clockForward(t testing.TB, _, args string, lineNum int) 
 
 	st.addAction(func(ctx context.Context) {
 		time.Sleep(dur)
-		st.redisServer.FastForward(dur)
-		st.redisServer.SetTime(time.Now())
 		synctest.Wait()
 	})
 }
@@ -43,7 +41,6 @@ func (st *scriptTester) clockSet(t testing.TB, _, args string, lineNum int) {
 		if diff > 0 {
 			time.Sleep(diff)
 		}
-		st.redisServer.SetTime(time.Now())
 		synctest.Wait()
 	})
 }

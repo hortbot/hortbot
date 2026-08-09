@@ -9,6 +9,7 @@ import (
 	_ "net/http/pprof" //nolint:gosec
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/version"
@@ -59,7 +60,7 @@ var Default = Common{}
 // environment variable is set, the files listed in it will be loaded
 // before parsing, to allow for a simple layered configuration setup.
 func Run(cmd Command, args []string) {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 
 	parser := flags.NewNamedParser(cmd.Name(), flags.HelpFlag|flags.PassDoubleDash)

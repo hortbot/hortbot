@@ -7,6 +7,7 @@ import (
 	"context"
 	"sync"
 
+	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/bot"
 )
 
@@ -123,7 +124,7 @@ var _ bot.EventsubUpdateNotifier = &EventsubUpdateNotifierMock{}
 //
 //		// make and configure a mocked bot.EventsubUpdateNotifier
 //		mockedEventsubUpdateNotifier := &EventsubUpdateNotifierMock{
-//			NotifyEventsubUpdatesFunc: func(ctx context.Context) error {
+//			NotifyEventsubUpdatesFunc: func(ctx context.Context, exec boil.ContextExecutor) error {
 //				panic("mock out the NotifyEventsubUpdates method")
 //			},
 //		}
@@ -134,7 +135,7 @@ var _ bot.EventsubUpdateNotifier = &EventsubUpdateNotifierMock{}
 //	}
 type EventsubUpdateNotifierMock struct {
 	// NotifyEventsubUpdatesFunc mocks the NotifyEventsubUpdates method.
-	NotifyEventsubUpdatesFunc func(ctx context.Context) error
+	NotifyEventsubUpdatesFunc func(ctx context.Context, exec boil.ContextExecutor) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -142,25 +143,29 @@ type EventsubUpdateNotifierMock struct {
 		NotifyEventsubUpdates []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Exec is the exec argument value.
+			Exec boil.ContextExecutor
 		}
 	}
 	lockNotifyEventsubUpdates sync.RWMutex
 }
 
 // NotifyEventsubUpdates calls NotifyEventsubUpdatesFunc.
-func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Context) error {
+func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error {
 	if mock.NotifyEventsubUpdatesFunc == nil {
 		panic("EventsubUpdateNotifierMock.NotifyEventsubUpdatesFunc: method is nil but EventsubUpdateNotifier.NotifyEventsubUpdates was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
+		Ctx  context.Context
+		Exec boil.ContextExecutor
 	}{
-		Ctx: ctx,
+		Ctx:  ctx,
+		Exec: exec,
 	}
 	mock.lockNotifyEventsubUpdates.Lock()
 	mock.calls.NotifyEventsubUpdates = append(mock.calls.NotifyEventsubUpdates, callInfo)
 	mock.lockNotifyEventsubUpdates.Unlock()
-	return mock.NotifyEventsubUpdatesFunc(ctx)
+	return mock.NotifyEventsubUpdatesFunc(ctx, exec)
 }
 
 // NotifyEventsubUpdatesCalls gets all the calls that were made to NotifyEventsubUpdates.
@@ -168,10 +173,12 @@ func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Contex
 //
 //	len(mockedEventsubUpdateNotifier.NotifyEventsubUpdatesCalls())
 func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdatesCalls() []struct {
-	Ctx context.Context
+	Ctx  context.Context
+	Exec boil.ContextExecutor
 } {
 	var calls []struct {
-		Ctx context.Context
+		Ctx  context.Context
+		Exec boil.ContextExecutor
 	}
 	mock.lockNotifyEventsubUpdates.RLock()
 	calls = mock.calls.NotifyEventsubUpdates

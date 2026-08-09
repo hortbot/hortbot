@@ -94,9 +94,7 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 			return fmt.Errorf("update channel: %w", err)
 		}
 
-		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-			return fmt.Errorf("notify eventsub updates: %w", err)
-		}
+		s.requestEventsubUpdate()
 	}
 
 	return s.Replyf(ctx, "%s (%d) has been blocked.", u.DispName(), u.ID)
@@ -262,9 +260,7 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		return fmt.Errorf("delete channel: %w", err)
 	}
 
-	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return fmt.Errorf("notify eventsub updates: %w", err)
-	}
+	s.requestEventsubUpdate()
 
 	return s.Replyf(ctx, "User '%s' has been deleted.", user)
 }
@@ -300,9 +296,7 @@ func cmdAdminSyncJoined(ctx context.Context, s *session, _ string, args string) 
 		botName = s.BotLogin
 	}
 
-	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return fmt.Errorf("notify eventsub updates: %w", err)
-	}
+	s.requestEventsubUpdate()
 
 	return s.Replyf(ctx, "Triggered channel sync for %s.", botName)
 }
@@ -338,9 +332,7 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 		return fmt.Errorf("update channel: %w", err)
 	}
 
-	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return fmt.Errorf("notify eventsub updates: %w", err)
-	}
+	s.requestEventsubUpdate()
 
 	return s.Replyf(ctx, "Changed %s's bot from %s to %s.", name, oldBotName, botName)
 }

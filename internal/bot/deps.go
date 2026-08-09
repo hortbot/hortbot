@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
@@ -20,7 +20,7 @@ import (
 )
 
 type sharedDeps struct {
-	Redis                  *redis.DB
+	State                  *botstate.Store
 	EventsubUpdateNotifier EventsubUpdateNotifier
 	Rand                   Rand
 

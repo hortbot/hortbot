@@ -11,7 +11,6 @@ import (
 
 	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/aarondl/sqlboiler/v4/queries"
-	"github.com/hortbot/hortbot/internal/bnsq/bnsqmeta"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
@@ -28,12 +27,20 @@ var (
 	errBuiltinDisabled = errors.New("bot: builtin disabled")
 	errNotAllowed      = errors.New("bot: user not allowed")
 	errPanicked        = errors.New("bot: handler panicked")
-	errDuplicate       = errors.New("bot: duplicate message")
 )
 
 // Handle handles a single chat message. It always succeeds, but may log
 // information about any internal errors.
 func (b *Bot) Handle(ctx context.Context, m Message) {
+	_ = b.handleMessage(ctx, m, time.Time{})
+}
+
+// HandleQueued handles a message that entered the queue at enqueuedAt.
+func (b *Bot) HandleQueued(ctx context.Context, m Message, enqueuedAt time.Time) error {
+	return b.handleMessage(ctx, m, enqueuedAt)
+}
+
+func (b *Bot) handleMessage(ctx context.Context, m Message, enqueuedAt time.Time) error {
 	ctx = correlation.With(ctx)
 
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
@@ -45,7 +52,7 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 
 	if m == nil {
 		ctxlog.Error(ctx, "nil message")
-		return
+		return errInvalidMessage
 	}
 
 	ctx = ctxlog.With(ctx, messageLogFields(m)...)
@@ -58,26 +65,26 @@ func (b *Bot) Handle(ctx context.Context, m Message) {
 		metricHandleDuration.Observe(secs)
 	}()
 
-	err := b.handle(ctx, m)
+	err := b.handle(ctx, m, enqueuedAt)
 
 	if !testing.Testing() {
 		ctxlog.Debug(ctx, "handled message", zap.Duration("took", time.Since(start)))
 	}
 
 	if err == nil || errors.Is(err, errNotAllowed) {
-		return
+		return nil
 	}
 
-	if errors.Is(err, errPanicked) || errors.Is(err, errDuplicate) {
-		// Logged below with more info.
-		return
+	if errors.Is(err, errPanicked) {
+		return err
 	}
 
 	metricHandleError.Inc()
 	ctxlog.Error(ctx, "error during handle", zap.Error(err), zap.Any("message", m))
+	return err
 }
 
-func (b *Bot) handle(ctx context.Context, m Message) (retErr error) {
+func (b *Bot) handle(ctx context.Context, m Message, enqueuedAt time.Time) (retErr error) {
 	defer func() {
 		if r := recover(); r != nil {
 			if b.passthroughPanics {
@@ -93,7 +100,7 @@ func (b *Bot) handle(ctx context.Context, m Message) (retErr error) {
 		}
 	}()
 
-	return b.handleChatMessage(ctx, m)
+	return b.handleChatMessage(ctx, m, enqueuedAt)
 }
 
 func messageLogFields(m Message) []zap.Field {
@@ -127,7 +134,7 @@ func putSession(s *session) {
 	sessionPool.Put(s)
 }
 
-func (b *Bot) handleChatMessage(ctx context.Context, m Message) error {
+func (b *Bot) handleChatMessage(ctx context.Context, m Message, enqueuedAt time.Time) error {
 	start := time.Now()
 
 	s := getSession()
@@ -168,23 +175,23 @@ func (b *Bot) handleChatMessage(ctx context.Context, m Message) error {
 
 	afterCommit := time.Now()
 
-	enqueued := bnsqmeta.Timestamp(ctx)
-	badEnqueue := false
-	if enqueued.IsZero() {
-		enqueued = start
-		badEnqueue = true
+	b.flushDeferred(ctx, s)
+
+	wasQueued := !enqueuedAt.IsZero()
+	if !wasQueued {
+		enqueuedAt = start
 	}
 
 	var (
-		fromTwitch = enqueued.Sub(s.SentAt)
-		inQueue    = start.Sub(enqueued)
+		fromTwitch = enqueuedAt.Sub(s.SentAt)
+		inQueue    = start.Sub(enqueuedAt)
 		begin      = beforeHandle.Sub(start)
 		handle     = afterHandle.Sub(beforeHandle)
 		commit     = afterCommit.Sub(afterHandle)
 		total      = afterCommit.Sub(start)
 	)
 
-	if !badEnqueue {
+	if wasQueued {
 		metricHandleTimingFromTwitch.Observe(fromTwitch.Seconds())
 	}
 
@@ -210,14 +217,27 @@ func (b *Bot) handleChatMessage(ctx context.Context, m Message) error {
 	return nil
 }
 
+func (b *Bot) flushDeferred(ctx context.Context, s *session) {
+	if s.eventsubUpdateRequested {
+		if err := b.deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx, b.db); err != nil {
+			ctxlog.Error(ctx, "error notifying EventSub updates", zap.Error(err))
+		}
+	}
+
+	if len(s.builtinUsage) != 0 || len(s.actionUsage) != 0 {
+		err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+			return b.deps.State.AddUsageStats(ctx, tx, s.builtinUsage, s.actionUsage)
+		})
+		if err != nil {
+			ctxlog.Error(ctx, "error flushing usage stats", zap.Error(err))
+		}
+	}
+}
+
 func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 	id := m.MessageID()
 	if id == "" {
 		return errInvalidMessage
-	}
-
-	if err := b.dedupe(ctx, id); err != nil {
-		return err
 	}
 
 	chatter := m.Chatter()
@@ -269,26 +289,6 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 	return nil
 }
 
-func (b *Bot) dedupe(ctx context.Context, id string) error {
-	if b.noDedupe {
-		return nil
-	}
-
-	seen, err := b.deps.Redis.DedupeCheckAndMark(ctx, id, 5*time.Minute)
-	if err != nil {
-		ctxlog.Error(ctx, "error checking for duplicate", zap.Error(err), zap.String("id", id))
-		return fmt.Errorf("dedupe check: %w", err)
-	}
-
-	if seen {
-		ctxlog.Debug(ctx, "message already seen", zap.String("id", id))
-		metricDuplicateMessage.Inc()
-		return errDuplicate
-	}
-
-	return nil
-}
-
 var channelPool = pool.NewPool(func() *models.Channel {
 	return &models.Channel{}
 })
@@ -305,7 +305,7 @@ func putChannel(channel *models.Channel) {
 
 //nolint:gocyclo
 func handleSession(ctx context.Context, s *session) error {
-	// TODO: Remove if possible thanks to top-level wqueue.
+	// Serialize chat messages and repeat jobs for each channel.
 	if err := pgLock(ctx, s.Tx, s.RoomID); err != nil {
 		return err
 	}

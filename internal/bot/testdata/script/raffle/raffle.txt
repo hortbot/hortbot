@@ -103,10 +103,10 @@ handle hortbot foobar/1 user3/3 :!raffle
 handle hortbot foobar/1 user4/4 :!raffle
 
 handle hortbot foobar/1 foobar/1 :!raffle winner 2
-send hortbot #foobar [HB] Winners: user2, user4
+send hortbot #foobar [HB] Winners: user3, user4
 
 handle hortbot foobar/1 foobar/1 :!raffle winner 2
-send hortbot #foobar [HB] Winner is user3!
+send hortbot #foobar [HB] Winner is user2!
 
 handle hortbot foobar/1 foobar/1 :!raffle winner 10
 send hortbot #foobar [HB] Raffle has no entries.

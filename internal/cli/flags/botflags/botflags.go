@@ -8,7 +8,7 @@ import (
 	"runtime"
 
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
@@ -61,7 +61,7 @@ var Default = Bot{
 func (args *Bot) New(
 	ctx context.Context,
 	db *sql.DB,
-	rdb *redis.DB,
+	state *botstate.Store,
 	eventsubUpdateNotifier bot.EventsubUpdateNotifier,
 	twitchAPI twitch.API,
 	httpClient *http.Client,
@@ -90,7 +90,7 @@ func (args *Bot) New(
 
 	b := bot.New(&bot.Config{
 		DB:                     db,
-		Redis:                  rdb,
+		State:                  state,
 		EventsubUpdateNotifier: eventsubUpdateNotifier,
 		LastFM:                 lastFM,
 		YouTube:                youtubeAPI,

@@ -3,18 +3,22 @@ package conduit
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/bnsq"
 	"github.com/hortbot/hortbot/internal/cli"
 	"github.com/hortbot/hortbot/internal/cli/flags/httpflags"
-	"github.com/hortbot/hortbot/internal/cli/flags/nsqflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/promflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/sqlflags"
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/conduit"
+	"github.com/hortbot/hortbot/internal/db/chatqueue"
+	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
+	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/hortbot/hortbot/internal/pkg/eventsubsync"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -23,7 +27,6 @@ type cmd struct {
 	cli.Common
 	SQL        sqlflags.SQL
 	Twitch     twitchflags.Twitch
-	NSQ        nsqflags.NSQ
 	Prometheus promflags.Prometheus
 	HTTP       httpflags.HTTP
 
@@ -37,7 +40,6 @@ func Command() cli.Command {
 		Common:       cli.Default,
 		SQL:          sqlflags.Default,
 		Twitch:       twitchflags.Default,
-		NSQ:          nsqflags.Default,
 		Prometheus:   promflags.Default,
 		HTTP:         httpflags.Default,
 		SyncInterval: 5 * time.Minute,
@@ -54,69 +56,66 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 	driverName := c.SQL.DriverName()
 	db := c.SQL.Open(ctx, driverName)
+	defer db.Close() //nolint:errcheck
+
+	enqueueCtx, cancelEnqueue := contextx.WithGracePeriod(ctx, 30*time.Second)
+	defer cancelEnqueue()
 
 	twitchAPI := c.Twitch.Client(c.HTTP.Client())
 
-	incomingPub := c.NSQ.NewIncomingWebsocketMessagePublisher()
-
 	g := errgroupx.FromContext(ctx)
 
-	s := conduit.New(db, twitchAPI, c.SyncInterval, c.Shards)
+	queue := chatqueue.New(db, 1)
+	syncRequests := eventsubsync.Requests{}
+	s := conduit.New(db, twitchAPI, c.SyncInterval, c.Shards, newNotificationHandler(enqueueCtx, queue))
 
 	g.Go(s.Run)
+	g.Go(func(ctx context.Context) error {
+		return runQueueMaintenance(ctx, queue)
+	})
 
 	g.Go(func(ctx context.Context) error {
-		inc := s.Incoming()
+		syncTicker := time.NewTicker(c.SyncInterval)
+		defer syncTicker.Stop()
+		requestTicker := time.NewTicker(time.Second)
+		defer requestTicker.Stop()
+
+		var handledVersion int64 = -1
 
 		for {
-			select {
-			case <-ctx.Done():
-				return ctx.Err()
-
-			case m, ok := <-inc:
-				if !ok {
-					ctxlog.Debug(ctx, "incoming channel closed")
-					return nil
-				}
-
-				if err := incomingPub.Publish(ctx, m); err != nil {
-					ctxlog.Error(ctx, "error publishing incoming message", zap.Error(err))
+			version, err := syncRequests.Version(ctx, db)
+			if err != nil {
+				ctxlog.Error(ctx, "error reading EventSub sync version", zap.Error(err))
+				select {
+				case <-requestTicker.C:
+					continue
+				case <-ctx.Done():
+					return ctx.Err()
 				}
 			}
-		}
-	})
-
-	syncJoined := make(chan struct{}, 1)
-
-	notifySub := c.NSQ.NewEventsubNotifySubscriber(time.Minute, func(n *bnsq.EventsubNotify, metadata *bnsq.Metadata) error {
-		ctx := metadata.With(ctx)
-		select {
-		case syncJoined <- struct{}{}:
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-
-		return nil
-	})
-
-	g.Go(notifySub.Run)
-	g.Go(incomingPub.Run)
-
-	g.Go(func(ctx context.Context) error {
-		t := time.NewTicker(c.SyncInterval)
-		defer t.Stop()
-
-		for {
-			// Start with a synchronize, then wait for the interval.
-			if err := s.SynchronizeSubscriptions(ctx); err != nil {
-				return fmt.Errorf("initial synchronize: %w", err)
+			if version != handledVersion {
+				if handledVersion >= 0 {
+					timer := time.NewTimer(time.Second)
+					select {
+					case <-timer.C:
+					case <-ctx.Done():
+						timer.Stop()
+						return ctx.Err()
+					}
+				}
+				if err := s.SynchronizeSubscriptions(ctx); err != nil {
+					ctxlog.Error(ctx, "error synchronizing requested EventSub subscriptions", zap.Error(err))
+				} else {
+					handledVersion = version
+				}
 			}
 
 			select {
-			case <-t.C:
-			case <-syncJoined:
-				time.Sleep(time.Second) // The notification comes in before the transaction is complete.
+			case <-syncTicker.C:
+				if err := s.SynchronizeSubscriptions(ctx); err != nil {
+					ctxlog.Error(ctx, "error synchronizing EventSub subscriptions", zap.Error(err))
+				}
+			case <-requestTicker.C:
 			case <-ctx.Done():
 				return ctx.Err()
 			}
@@ -126,4 +125,108 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	if err := g.WaitIgnoreStop(); err != nil {
 		ctxlog.Info(ctx, "exiting", zap.Error(err))
 	}
+}
+
+func runQueueMaintenance(ctx context.Context, queue *chatqueue.Queue) error {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+
+	for {
+		now := time.Now()
+		for {
+			deleted, err := queue.Cleanup(
+				ctx,
+				now.Add(-chatqueue.PendingRetention),
+				now.Add(-chatqueue.DedupeDuration),
+				now.Add(-chatqueue.FailedRetention),
+				chatqueue.CleanupBatchSize,
+			)
+			if err != nil {
+				ctxlog.Error(ctx, "error cleaning up chat queue", zap.Error(err))
+				break
+			}
+			if deleted.Stale < chatqueue.CleanupBatchSize &&
+				deleted.Completed < chatqueue.CleanupBatchSize &&
+				deleted.Failed < chatqueue.CleanupBatchSize {
+				break
+			}
+		}
+
+		select {
+		case <-ticker.C:
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}
+}
+
+func newNotificationHandler(enqueueCtx context.Context, queue *chatqueue.Queue) conduit.NotificationHandler {
+	return func(ctx context.Context, raw json.RawMessage, message *eventsub.WebsocketMessage) error {
+		queued, err := queuedMessage(raw, message)
+		if err != nil {
+			return err
+		}
+		for {
+			inserted, err := queue.Enqueue(enqueueCtx, queued)
+			if err == nil {
+				if !inserted {
+					ctxlog.Debug(ctx, "duplicate incoming message ignored", zap.String("message_id", queued.ID))
+				}
+				return nil
+			}
+			if enqueueCtx.Err() != nil {
+				return fmt.Errorf("enqueue incoming message: %w", enqueueCtx.Err())
+			}
+			ctxlog.Warn(ctx, "error enqueueing incoming message; retrying",
+				zap.String("message_id", queued.ID),
+				zap.Duration("retry_in", time.Second),
+				zap.Error(err),
+			)
+			timer := time.NewTimer(time.Second)
+			select {
+			case <-timer.C:
+			case <-enqueueCtx.Done():
+				timer.Stop()
+				return fmt.Errorf("enqueue incoming message: %w", enqueueCtx.Err())
+			}
+		}
+	}
+}
+
+func queuedMessage(raw json.RawMessage, m *eventsub.WebsocketMessage) (chatqueue.Message, error) {
+	if m == nil || m.Metadata == nil {
+		return chatqueue.Message{}, errors.New("incoming message has nil metadata")
+	}
+
+	notification, ok := m.Payload.(*eventsub.NotificationPayload)
+	if !ok {
+		return chatqueue.Message{}, errors.New("incoming message has invalid notification payload")
+	}
+	event, ok := notification.Event.(*eventsub.ChatMessageEvent)
+	if !ok {
+		return chatqueue.Message{}, errors.New("incoming message has invalid chat event")
+	}
+	if m.Metadata.MessageID == "" {
+		return chatqueue.Message{}, errors.New("incoming eventsub message has empty message ID")
+	}
+	if event.MessageID == "" {
+		return chatqueue.Message{}, errors.New("incoming chat event has empty message ID")
+	}
+	if event.BroadcasterUserLogin == "" {
+		return chatqueue.Message{}, fmt.Errorf("incoming chat event %q has empty broadcaster login", event.MessageID)
+	}
+	if m.Metadata.MessageTimestamp.IsZero() {
+		return chatqueue.Message{}, fmt.Errorf("incoming chat event %q has zero timestamp", event.MessageID)
+	}
+	if !json.Valid(raw) {
+		return chatqueue.Message{}, fmt.Errorf("incoming chat event %q has invalid raw JSON", event.MessageID)
+	}
+
+	return chatqueue.Message{
+		ID:               m.Metadata.MessageID,
+		BroadcasterLogin: event.BroadcasterUserLogin,
+		MessageTimestamp: m.Metadata.MessageTimestamp,
+		EnqueuedAt:       time.Now(),
+		Payload:          raw,
+	}, nil
 }

@@ -144,18 +144,14 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 			return fmt.Errorf("inserting channel: %w", err)
 		}
 
-		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-			return fmt.Errorf("notify eventsub updates: %w", err)
-		}
+		s.requestEventsubUpdate()
 
 		return firstJoin(ctx)
 	}
 
 	if channel.Active {
 		if channel.Name == name {
-			if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-				return fmt.Errorf("notify eventsub updates: %w", err)
-			}
+			s.requestEventsubUpdate()
 			return s.Replyf(ctx, "%s, %s is already configured for your channel with prefix '%s'. I've requested a reconnect.", displayName, channel.BotName, channel.Prefix)
 		}
 
@@ -166,9 +162,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 			return fmt.Errorf("updating channel: %w", err)
 		}
 
-		if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-			return fmt.Errorf("notify eventsub updates: %w", err)
-		}
+		s.requestEventsubUpdate()
 
 		return s.Replyf(ctx, "%s, %s will now rejoin your channel with your new username.", displayName, channel.BotName)
 	}
@@ -182,9 +176,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
-	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return fmt.Errorf("notify eventsub updates: %w", err)
-	}
+	s.requestEventsubUpdate()
 
 	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, true); err != nil {
 		return err
@@ -244,9 +236,7 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
-	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return fmt.Errorf("notify eventsub updates: %w", err)
-	}
+	s.requestEventsubUpdate()
 
 	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, false); err != nil {
 		return err
@@ -279,9 +269,7 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
-	if err := s.Deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx); err != nil {
-		return fmt.Errorf("notify eventsub updates: %w", err)
-	}
+	s.requestEventsubUpdate()
 
 	repeated, err := s.Channel.RepeatedCommands().All(ctx, s.Tx)
 	if err != nil {

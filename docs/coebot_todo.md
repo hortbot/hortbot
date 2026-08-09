@@ -6,8 +6,8 @@
     -   MVP
     -   Need configuration setup
 -   [x] Multi process mode
-    -   [x] Messaging over NSQ
-    -   [x] Redis for k/v, dedupe, expiration, cooldowns
+    -   [x] Messaging over PostgreSQL
+    -   [x] PostgreSQL bot state, dedupe, expiration, cooldowns
     -   [x] No-downtime upgrades
     -   [x] Rate limiting
         -   [x] Needs to check userstate/badges/etc to "unlock" a faster rate.

@@ -77,9 +77,7 @@ linters:
         - github.com/hortbot/hortbot/internal/pkg/dbx
         - github.com/hortbot/hortbot/internal/pkg/errgroupx
         - github.com/hortbot/hortbot/internal/pkg/repeat
-        - github.com/hortbot/hortbot/internal/pkg/wqueue
         - github.com/jarcoal/httpmock
-        - github.com/redis/go-redis/v9
     gosec:
       excludes:
         - G117

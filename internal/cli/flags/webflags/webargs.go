@@ -4,7 +4,7 @@ package webflags
 import (
 	"database/sql"
 
-	"github.com/hortbot/hortbot/internal/db/redis"
+	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/web"
 )
@@ -26,7 +26,7 @@ var Default = Web{
 }
 
 // New creates a new Web app.
-func (args *Web) New(debug bool, rdb *redis.DB, db *sql.DB, tw *twitch.Twitch) *web.App {
+func (args *Web) New(debug bool, state *botstate.Store, db *sql.DB, tw *twitch.Twitch) *web.App {
 	return &web.App{
 		Addr:       args.Addr,
 		SessionKey: []byte(args.SessionKey),
@@ -34,7 +34,7 @@ func (args *Web) New(debug bool, rdb *redis.DB, db *sql.DB, tw *twitch.Twitch) *
 		Brand:      args.Brand,
 		BrandMap:   args.BrandMap,
 		Debug:      debug,
-		Redis:      rdb,
+		State:      state,
 		DB:         db,
 		Twitch:     tw,
 	}

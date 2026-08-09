@@ -33,17 +33,16 @@ func (args *SQL) Open(ctx context.Context, driverName string) *sql.DB {
 		ctxlog.Fatal(ctx, "error opening connection to database", zap.Error(err))
 	}
 
-	if err := db.PingContext(ctx); err != nil {
-		var perr error
-		for range 4 {
-			time.Sleep(100 * time.Millisecond)
-
-			if perr = db.PingContext(ctx); perr == nil {
-				break
-			}
+	for {
+		err := db.PingContext(ctx)
+		if err == nil {
+			break
 		}
-		if perr != nil {
-			ctxlog.Fatal(ctx, "error pinging database", zap.Error(err))
+		ctxlog.Warn(ctx, "error connecting to PostgreSQL; retrying", zap.Error(err))
+		select {
+		case <-time.After(time.Second):
+		case <-ctx.Done():
+			ctxlog.Fatal(ctx, "error connecting to database", zap.Error(ctx.Err()))
 		}
 	}
 

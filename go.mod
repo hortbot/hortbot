@@ -7,7 +7,6 @@ require (
 	github.com/aarondl/null/v8 v8.1.3
 	github.com/aarondl/sqlboiler/v4 v4.19.7
 	github.com/aarondl/strmangle v0.0.9
-	github.com/alicebob/miniredis/v2 v2.38.0
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
 	github.com/bmatcuk/doublestar/v4 v4.10.0
 	github.com/carlmjohnson/requests v0.25.1
@@ -32,8 +31,6 @@ require (
 	github.com/jarcoal/httpmock v1.4.2
 	github.com/jessevdk/go-flags v1.6.1
 	github.com/joho/godotenv v1.5.1
-	github.com/nsqio/go-nsq v1.1.0
-	github.com/nsqio/nsq v1.3.0
 	github.com/peterldowns/pgtestdb v0.1.1
 	github.com/petoem/cleanurl v0.1.1
 	github.com/prometheus/client_golang v1.24.1
@@ -43,7 +40,6 @@ require (
 	github.com/tomwright/queryparam/v4 v4.1.0
 	github.com/wader/filtertransport v0.0.0-20200316221534-bdd9e61eee78
 	github.com/ybbus/httpretry v1.0.2
-	github.com/zikaeroh/ctxjoin v0.0.0-20240505042038-e54b3fa07c64
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
 	go.deanishe.net/fuzzy v1.0.0
 	go.uber.org/zap v1.28.0
@@ -65,15 +61,12 @@ require (
 	github.com/aarondl/randomize v0.0.2 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/blang/semver v3.5.1+incompatible // indirect
-	github.com/bmizerany/perks v0.0.0-20141205001514-d9a9656a3a4b // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/cli/browser v1.3.0 // indirect
 	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
-	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect
@@ -81,7 +74,6 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
-	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/magefile/mage v1.10.0 // indirect
 	github.com/matryer/moq v0.7.1 // indirect
@@ -91,14 +83,12 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/natefinch/atomic v1.0.1 // indirect
-	github.com/nsqio/go-diskqueue v1.1.0 // indirect
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.70.1 // indirect
 	github.com/prometheus/procfs v0.21.1 // indirect
 	github.com/shopspring/decimal v1.3.1 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	github.com/yuin/gopher-lua v1.1.1 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.54.0 // indirect

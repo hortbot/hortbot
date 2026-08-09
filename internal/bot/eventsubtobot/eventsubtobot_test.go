@@ -62,9 +62,13 @@ func toMessage(event eventsub.ChatMessageEvent) bot.Message {
 	sentAt := time.Unix(123, 0)
 
 	return eventsubtobot.ToMessage(map[int64]string{botID: "hortbot"}, &eventsub.WebsocketMessage{
-		Metadata: &eventsub.WebsocketMessageMetadata{MessageTimestamp: sentAt},
+		Metadata: &eventsub.WebsocketMessageMetadata{
+			MessageType:      "notification",
+			MessageTimestamp: sentAt,
+		},
 		Payload: &eventsub.NotificationPayload{
 			Subscription: &eventsub.Subscription{
+				Type:      eventsub.ChatMessageSubscriptionType,
 				Condition: &eventsub.ChatMessageSubscriptionCondition{UserID: botID},
 			},
 			Event: &event,

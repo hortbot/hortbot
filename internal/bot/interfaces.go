@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"math/rand/v2"
 	"time"
+
+	"github.com/aarondl/sqlboiler/v4/boil"
 )
 
 //go:generate go tool github.com/matryer/moq -fmt goimports -out botmocks/mocks.go -pkg botmocks . Rand EventsubUpdateNotifier
@@ -30,7 +32,7 @@ type Message interface {
 
 // EventsubUpdateNotifier sends notifications.
 type EventsubUpdateNotifier interface {
-	NotifyEventsubUpdates(ctx context.Context) error
+	NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error
 }
 
 // Rand provides random number generation.
