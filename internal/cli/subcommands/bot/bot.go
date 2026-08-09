@@ -77,6 +77,8 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	}
 
 	queue := chatqueue.New(db, workers)
+	pollTicker := time.NewTicker(messageQueuePollInterval)
+	defer pollTicker.Stop()
 
 	// EventSub identifies the receiving bot by user ID, while bot configuration
 	// and message sending use its login.
@@ -105,7 +107,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	})
 	for range workers {
 		g.Go(func(ctx context.Context) error {
-			return runMessageWorker(ctx, workCtx, queue, b, c.MessageMaxAge, getBotLoginMap)
+			return runMessageWorker(ctx, workCtx, queue, b, c.MessageMaxAge, getBotLoginMap, pollTicker.C)
 		})
 	}
 	g.Go(func(ctx context.Context) error {

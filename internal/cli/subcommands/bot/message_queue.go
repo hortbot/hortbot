@@ -39,10 +39,8 @@ func runMessageWorker(
 	b *corebot.Bot,
 	maxAge time.Duration,
 	getBotLoginMap botLoginMapGetter,
+	poll <-chan time.Time,
 ) error {
-	pollTicker := time.NewTicker(messageQueuePollInterval)
-	defer pollTicker.Stop()
-
 	leaseDuration := max(30*time.Second, maxAge+15*time.Second)
 
 	for {
@@ -61,7 +59,7 @@ func runMessageWorker(
 		if lease == nil {
 			select {
 			case <-queue.Wake():
-			case <-pollTicker.C:
+			case <-poll:
 			case <-ctx.Done():
 				return ctx.Err()
 			}
