@@ -99,7 +99,7 @@ func (s *Store) Confirm(ctx context.Context, exec boil.ContextExecutor, channel,
 // FilterWarned reports whether the user has already been warned about
 // the given filter and refreshes the warning's expiry.
 //
-// The one-second initial expiry preserves the existing Redis behavior.
+// The one-second initial expiry preserves the existing confirmation behavior.
 // exec must be a transaction because the operation spans statements.
 func (s *Store) FilterWarned(ctx context.Context, exec boil.ContextExecutor, channel, user, filter string, expiry time.Duration) (bool, error) {
 	now, err := s.currentTime(ctx, exec)

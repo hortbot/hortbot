@@ -20,21 +20,18 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/eventsubsync"
-	"github.com/redis/go-redis/v9"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 
 type cmd struct {
 	cli.Common
-	SQL        sqlflags.SQL
-	Twitch     twitchflags.Twitch
-	Bot        botflags.Bot
-	Prometheus promflags.Prometheus
-	HTTP       httpflags.HTTP
-
+	SQL           sqlflags.SQL
+	Twitch        twitchflags.Twitch
+	Bot           botflags.Bot
+	Prometheus    promflags.Prometheus
+	HTTP          httpflags.HTTP
 	MessageMaxAge time.Duration `long:"message-max-age" env:"HB_MESSAGE_MAX_AGE" description:"Maximum age of a chat message before it is dropped"`
-	RedisAddr     string        `long:"redis-addr" env:"HB_REDIS_ADDR" description:"Legacy Redis address to import and clear; remove after the first successful startup"`
 }
 
 // Command returns a fresh bot command.
@@ -66,21 +63,6 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 	workCtx, cancelWork := contextx.WithGracePeriod(ctx, 30*time.Second)
 	defer cancelWork()
 	state := botstate.New()
-	if c.RedisAddr != "" {
-		redisClient := redis.NewClient(&redis.Options{Addr: c.RedisAddr})
-		defer redisClient.Close() //nolint:errcheck
-
-		imported, err := importLegacyRedisState(ctx, db, state, redisStateClient{client: redisClient})
-		if err != nil {
-			ctxlog.Fatal(ctx, "error importing legacy Redis state", zap.Error(err))
-		}
-		ctxlog.Info(ctx, "imported legacy Redis state",
-			zap.Int("builtin_stats", imported.BuiltinStats),
-			zap.Int("action_stats", imported.ActionStats),
-			zap.Int("raffles", imported.Raffles),
-			zap.Int("raffle_users", imported.RaffleUsers),
-		)
-	}
 	twitchAPI := c.Twitch.Client(httpClient)
 	eventsubNotifier := eventsubsync.Requests{}
 
