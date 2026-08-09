@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -16,7 +15,7 @@ func TestSearchCategories(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -88,7 +87,7 @@ func TestSearchCategories(t *testing.T) {
 func TestGetGame(t *testing.T) {
 	t.Parallel()
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}

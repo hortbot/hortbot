@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -218,7 +217,7 @@ func TestGetChannelByID(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}

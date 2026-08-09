@@ -3,6 +3,7 @@ package twitch_test
 import (
 	"bytes"
 	"context"
+	"crypto/rand"
 	"errors"
 	"io"
 	"net/http"
@@ -12,7 +13,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/httpmockx"
@@ -62,6 +62,10 @@ func newFakeTwitch(t testing.TB) *fakeTwitch {
 	return f
 }
 
+func randomToken() string {
+	return rand.Text()
+}
+
 func (f *fakeTwitch) client() *http.Client {
 	if f.mt == nil {
 		panic("MockTransport unset")
@@ -91,13 +95,13 @@ func (f *fakeTwitch) codeForUserAux(id int64, forceRefresh string) string {
 		return code
 	}
 
-	code = uuid.Must(uuid.NewV4()).String()
+	code = randomToken()
 	f.idToCode[id] = code
 
 	tok := &oauth2.Token{
-		AccessToken:  uuid.Must(uuid.NewV4()).String(),
+		AccessToken:  randomToken(),
 		TokenType:    "bearer",
-		RefreshToken: uuid.Must(uuid.NewV4()).String(),
+		RefreshToken: randomToken(),
 		Expiry:       time.Now().Add(time.Hour).Round(time.Second),
 	}
 

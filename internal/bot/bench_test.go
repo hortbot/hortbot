@@ -2,6 +2,7 @@ package bot_test
 
 import (
 	"context"
+	cryptorand "crypto/rand"
 	"encoding/json"
 	"fmt"
 	"math/rand/v2"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
@@ -290,7 +290,7 @@ func (nopNotifier) NotifyEventsubUpdates(ctx context.Context, exec boil.ContextE
 func chatMessage(botLogin, broadcasterLogin string, broadcasterID int64, chatterLogin string, chatterID int64, text string) bot.Message {
 	return benchmarkMessage{
 		botLogin: botLogin,
-		id:       uuid.Must(uuid.NewV4()).String(),
+		id:       cryptorand.Text(),
 		broadcaster: bot.ChatIdentity{
 			ID:    broadcasterID,
 			Login: broadcasterLogin,

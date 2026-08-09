@@ -20,7 +20,6 @@ require (
 	github.com/friendsofgo/errors v0.9.2
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/gobuffalo/flect v1.0.3
-	github.com/gofrs/uuid v4.4.0+incompatible
 	github.com/golang-migrate/migrate/v4 v4.19.1
 	github.com/google/go-cmp v0.7.0
 	github.com/gorilla/sessions v1.4.0
@@ -65,6 +64,7 @@ require (
 	github.com/ericlagergren/decimal v0.0.0-20211103172832-aca2edc11f73 // indirect
 	github.com/fatih/color v1.16.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
+	github.com/gofrs/uuid v4.2.0+incompatible // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/securecookie v1.1.2 // indirect
 	github.com/huandu/xstrings v1.3.2 // indirect

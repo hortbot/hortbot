@@ -3,6 +3,7 @@ package web
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
 	"embed"
 	"io/fs"
@@ -18,7 +19,6 @@ import (
 	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/gofrs/uuid"
 	"github.com/gorilla/sessions"
 	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/db/models"
@@ -223,7 +223,7 @@ const authTimeout = time.Hour
 func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 	ctx := r.Context()
 
-	state := uuid.Must(uuid.NewV4()).String()
+	state := rand.Text()
 
 	stateVal := &authState{
 		Host: r.Host, // Not normalized; needed for redirects.

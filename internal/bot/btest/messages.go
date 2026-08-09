@@ -2,6 +2,7 @@ package btest
 
 import (
 	"context"
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"regexp"
@@ -11,7 +12,6 @@ import (
 	"time"
 
 	"github.com/aarondl/null/v8"
-	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/db/modelsx"
@@ -44,7 +44,7 @@ func (st *scriptTester) handle(t testing.TB, directive, directiveArgs string, li
 	origin := fields[0]
 	m := &testChatMessage{
 		botLogin:    origin,
-		id:          uuid.Must(uuid.NewV4()).String(),
+		id:          rand.Text(),
 		broadcaster: parseIdentity(t, fields[1], lineNum),
 		chatter:     parseIdentity(t, fields[2], lineNum),
 		text:        text,
@@ -325,7 +325,7 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 
 	m := &testChatMessage{
 		botLogin: botName,
-		id:       uuid.Must(uuid.NewV4()).String(),
+		id:       rand.Text(),
 		broadcaster: bot.ChatIdentity{
 			ID:    int64(botID),
 			Login: botName,

@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/gofrs/uuid"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
@@ -121,7 +120,7 @@ func TestGetUserForUsername(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -148,7 +147,7 @@ func TestGetUserForUsernameServerError(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -170,7 +169,7 @@ func TestGetUserForUsernameNotFound(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -192,7 +191,7 @@ func TestGetUserForUsernameNotFoundEmpty(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -214,7 +213,7 @@ func TestGetUserForUsernameDecodeError(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -236,7 +235,7 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
@@ -258,7 +257,7 @@ func TestGetUserForID(t *testing.T) {
 	cli := ft.client()
 
 	tok := &oauth2.Token{
-		AccessToken: uuid.Must(uuid.NewV4()).String(),
+		AccessToken: randomToken(),
 		Expiry:      time.Now().Add(time.Hour).Round(time.Second),
 		TokenType:   "bearer",
 	}
