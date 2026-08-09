@@ -56,9 +56,7 @@ type Command interface {
 // Default contains the default flags. Make a copy of this, do not reuse.
 var Default = Common{}
 
-// Run parses the argument and runs the given command. If the ENV_FILE
-// environment variable is set, the files listed in it will be loaded
-// before parsing, to allow for a simple layered configuration setup.
+// Run parses the argument and runs the given command.
 func Run(cmd Command, args []string) {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()

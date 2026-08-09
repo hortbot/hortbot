@@ -11,12 +11,9 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/subcommands/conduit"
 	"github.com/hortbot/hortbot/internal/cli/subcommands/web"
 	"github.com/hortbot/hortbot/internal/version"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	_ = godotenv.Load(strings.Split(os.Getenv("ENV_FILE"), ",")...)
-
 	args := os.Args[1:]
 
 	subcommands := make(map[string]cli.Command)
