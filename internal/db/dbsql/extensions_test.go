@@ -1,6 +1,9 @@
 package dbsql_test
 
 import (
+	"reflect"
+	"slices"
+	"strings"
 	"testing"
 	"time"
 
@@ -11,6 +14,38 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"gotest.tools/v3/assert"
 )
+
+func TestSaveQueryModelCoverage(t *testing.T) {
+	t.Parallel()
+
+	channelFields := jsonFields(
+		reflect.TypeFor[dbsql.UpdateChannelMembershipParams](),
+		reflect.TypeFor[dbsql.UpdateChannelUserListsParams](),
+		reflect.TypeFor[dbsql.UpdateChannelRaffleEnabledParams](),
+		reflect.TypeFor[dbsql.UpdateChannelSettingsParams](),
+		reflect.TypeFor[dbsql.UpdateChannelActivityParams](),
+	)
+	expectedChannelFields := jsonFields(reflect.TypeFor[dbsql.Channel]())
+	expectedChannelFields = removeFields(expectedChannelFields,
+		"created_at",
+		"updated_at",
+		"twitch_id",
+		// These legacy fields have no mutation surface.
+		"sub_message",
+		"sub_message_enabled",
+		"resub_message",
+		"resub_message_enabled",
+	)
+	assert.DeepEqual(t, channelFields, expectedChannelFields)
+
+	tokenFields := jsonFields(reflect.TypeFor[dbsql.UpsertTwitchTokenParams]())
+	expectedTokenFields := removeFields(jsonFields(reflect.TypeFor[dbsql.TwitchToken]()),
+		"id",
+		"created_at",
+		"updated_at",
+	)
+	assert.DeepEqual(t, tokenFields, expectedTokenFields)
+}
 
 func TestDeleteChannelCascadeDeletesHighlights(t *testing.T) {
 	t.Parallel()
@@ -51,4 +86,32 @@ func TestDeleteChannelCascadeDeletesHighlights(t *testing.T) {
 	highlights, err := queries.ListHighlights(t.Context(), channel.ID)
 	assert.NilError(t, err)
 	assert.Equal(t, len(highlights), 0)
+}
+
+func jsonFields(types ...reflect.Type) []string {
+	fields := make(map[string]struct{})
+	for _, typ := range types {
+		for field := range typ.Fields() {
+			name := strings.Split(field.Tag.Get("json"), ",")[0]
+			if name != "" && name != "-" {
+				fields[name] = struct{}{}
+			}
+		}
+	}
+
+	names := make([]string, 0, len(fields))
+	for name := range fields {
+		names = append(names, name)
+	}
+	slices.Sort(names)
+	return names
+}
+
+func removeFields(fields []string, removed ...string) []string {
+	for _, field := range removed {
+		fields = slices.DeleteFunc(fields, func(value string) bool {
+			return value == field
+		})
+	}
+	return fields
 }
