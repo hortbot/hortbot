@@ -11,6 +11,15 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const deleteHighlightsByChannel = `-- name: DeleteHighlightsByChannel :exec
+DELETE FROM highlights WHERE channel_id = $1
+`
+
+func (q *Queries) DeleteHighlightsByChannel(ctx context.Context, channelID int64) error {
+	_, err := q.db.Exec(ctx, deleteHighlightsByChannel, channelID)
+	return err
+}
+
 const insertHighlight = `-- name: InsertHighlight :exec
 INSERT INTO highlights (
     channel_id,

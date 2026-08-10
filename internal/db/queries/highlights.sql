@@ -14,6 +14,9 @@ VALUES (
     sqlc.arg(game)
 );
 
+-- name: DeleteHighlightsByChannel :exec
+DELETE FROM highlights WHERE channel_id = sqlc.arg(channel_id);
+
 -- name: ListHighlights :many
 SELECT *
 FROM highlights

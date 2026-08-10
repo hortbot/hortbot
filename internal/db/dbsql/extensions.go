@@ -238,6 +238,7 @@ func (q *Queries) DeleteChannelCascade(ctx context.Context, id int64) error {
 		q.DeleteAutorepliesByChannel,
 		q.DeleteQuotesByChannel,
 		q.DeleteCustomCommandsByChannel,
+		q.DeleteHighlightsByChannel,
 		q.DeleteChannel,
 	}
 	for _, deleteRows := range deletes {
