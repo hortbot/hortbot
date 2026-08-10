@@ -93,7 +93,7 @@ func TestQueueListen(t *testing.T) {
 		assert.NilError(t, db.Close())
 	})
 
-	listener := chatqueue.New(db, 1)
+	listener := chatqueue.New(db, 3)
 	producer := chatqueue.New(db, 1)
 	ctx, cancel := context.WithCancel(t.Context())
 	errs := make(chan error, 1)
@@ -106,6 +106,7 @@ func TestQueueListen(t *testing.T) {
 	case <-time.After(5 * time.Second):
 		t.Fatal("listener did not become ready")
 	}
+	assertNoWake(t, listener.Wake())
 
 	inserted, err := producer.Enqueue(t.Context(), message("message", "channel", time.Now()))
 	assert.NilError(t, err)
@@ -115,9 +116,32 @@ func TestQueueListen(t *testing.T) {
 	case <-time.After(5 * time.Second):
 		t.Fatal("listener did not receive notification")
 	}
+	assertNoWake(t, listener.Wake())
 
 	cancel()
 	assert.ErrorIs(t, <-errs, context.Canceled)
+}
+
+func TestQueueClaimWakesNextWorker(t *testing.T) {
+	t.Parallel()
+
+	db := pool.FreshDB(t)
+	q := chatqueue.New(db, 2)
+	enqueue(t, q, message("message", "channel", time.Now()))
+
+	lease, err := q.Claim(t.Context(), time.Minute)
+	assert.NilError(t, err)
+	assert.Assert(t, lease != nil)
+
+	select {
+	case <-q.Wake():
+	case <-time.After(5 * time.Second):
+		t.Fatal("successful claim did not wake next worker")
+	}
+	assertNoWake(t, q.Wake())
+
+	assert.NilError(t, q.Complete(t.Context(), lease))
+	assertNoWake(t, q.Wake())
 }
 
 func TestQueueConcurrentClaimsSerializeKey(t *testing.T) {
@@ -154,6 +178,15 @@ func TestQueueConcurrentClaimsSerializeKey(t *testing.T) {
 	}
 	slices.Sort(ids)
 	assert.DeepEqual(t, ids, []string{"first", "other"})
+}
+
+func assertNoWake(t *testing.T, wake <-chan struct{}) {
+	t.Helper()
+	select {
+	case <-wake:
+		t.Fatal("unexpected worker wake")
+	default:
+	}
 }
 
 func TestQueueFailAndCleanup(t *testing.T) {

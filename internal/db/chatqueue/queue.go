@@ -139,13 +139,13 @@ func (q *Queue) Listen(ctx context.Context, connString string) error {
 	if _, err := conn.Exec(ctx, `LISTEN `+notificationChannel); err != nil {
 		return fmt.Errorf("listen for queued messages: %w", err)
 	}
-	q.notifyWorkers()
+	q.notifyWorker()
 
 	for {
 		if _, err := conn.WaitForNotification(ctx); err != nil {
 			return fmt.Errorf("wait for queued message notification: %w", err)
 		}
-		q.notifyWorkers()
+		q.notifyWorker()
 	}
 }
 
@@ -218,6 +218,9 @@ func (q *Queue) Claim(ctx context.Context, leaseDuration time.Duration) (*Lease,
 	if err != nil {
 		return nil, err
 	}
+	if lease != nil {
+		q.notifyWorker()
+	}
 	return lease, nil
 }
 
@@ -261,8 +264,6 @@ func (q *Queue) Complete(ctx context.Context, lease *Lease) error {
 	if err != nil {
 		return err
 	}
-
-	q.notifyWorkers()
 	return nil
 }
 
@@ -307,8 +308,6 @@ func (q *Queue) Fail(ctx context.Context, lease *Lease, cause error) error {
 	if err != nil {
 		return err
 	}
-
-	q.notifyWorkers()
 	return nil
 }
 
@@ -399,12 +398,9 @@ func (q *Queue) Wake() <-chan struct{} {
 	return q.wake
 }
 
-func (q *Queue) notifyWorkers() {
-	for range cap(q.wake) {
-		select {
-		case q.wake <- struct{}{}:
-		default:
-			return
-		}
+func (q *Queue) notifyWorker() {
+	select {
+	case q.wake <- struct{}{}:
+	default:
 	}
 }
