@@ -2,18 +2,15 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"slices"
 	"strings"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/hako/durafmt"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -82,7 +79,8 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		name = s.User
 	}
 
-	blocked, err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(userID)).Exists(ctx, s.Tx)
+	q := s.Queries
+	blocked, err := q.IsBlockedUser(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("checking blocked users: %w", err)
 	}
@@ -92,20 +90,19 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		return nil
 	}
 
-	channel, err := models.Channels(
-		models.ChannelWhere.TwitchID.EQ(userID),
-		qm.Load(models.ChannelRels.RepeatedCommands),
-		qm.Load(models.ChannelRels.ScheduledCommands),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	channelRow, err := q.GetChannelByTwitchIDForUpdate(ctx, userID)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return fmt.Errorf("getting channel: %w", err)
+	}
+	var channel *dbsql.Channel
+	if err == nil {
+		channel = &channelRow
 	}
 
 	hasToken := true
-	tt, authErr := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(userID)).One(ctx, s.Tx)
+	tt, authErr := q.GetTwitchTokenByID(ctx, userID)
 	if authErr != nil {
-		if !errors.Is(authErr, sql.ErrNoRows) {
+		if !errors.Is(authErr, pgx.ErrNoRows) {
 			return fmt.Errorf("getting token: %w", authErr)
 		}
 		hasToken = false
@@ -114,7 +111,10 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 
 	noAuth := !hasBotScope
 	if noAuth {
-		isModerator, err := models.ModeratedChannels(models.ModeratedChannelWhere.BroadcasterID.EQ(userID), models.ModeratedChannelWhere.BotName.EQ(botName)).Exists(ctx, s.Tx)
+		isModerator, err := q.IsModeratedChannel(ctx, dbsql.IsModeratedChannelParams{
+			BroadcasterID: userID,
+			BotName:       botName,
+		})
 		if err != nil {
 			return fmt.Errorf("checking moderated channels: %w", err)
 		}
@@ -137,12 +137,14 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		return s.Replyf(ctx, "%s, %s will join your channel soon with prefix '%s'.", displayName, botName, channel.Prefix)
 	}
 
-	if errors.Is(err, sql.ErrNoRows) {
-		channel = modelsx.NewChannel(userID, name, displayName, botName)
-
-		if err := channel.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+	if errors.Is(err, pgx.ErrNoRows) {
+		inserted, err := q.InsertDefaultChannel(ctx, dbsql.InsertDefaultChannelParams{
+			TwitchID: userID, Name: name, DisplayName: displayName, BotName: botName,
+		})
+		if err != nil {
 			return fmt.Errorf("inserting channel: %w", err)
 		}
+		channel = &inserted
 
 		s.requestEventsubUpdate()
 
@@ -158,7 +160,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 		channel.Name = name
 		channel.DisplayName = displayName
 
-		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Name, models.ChannelColumns.DisplayName)); err != nil {
+		if err := q.SaveChannelMembership(ctx, channel); err != nil {
 			return fmt.Errorf("updating channel: %w", err)
 		}
 
@@ -172,17 +174,25 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 	channel.Name = name
 	channel.DisplayName = displayName
 
-	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active, models.ChannelColumns.BotName, models.ChannelColumns.Name, models.ChannelColumns.DisplayName)); err != nil {
+	if err := q.SaveChannelMembership(ctx, channel); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	s.requestEventsubUpdate()
 
-	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, true); err != nil {
+	repeated, err := q.ListRepeatedCommands(ctx, channel.ID)
+	if err != nil {
+		return fmt.Errorf("getting repeated commands: %w", err)
+	}
+	if err := updateRepeating(ctx, s.Deps, repeated, true); err != nil {
 		return err
 	}
 
-	if err := updateScheduleds(ctx, s.Deps, channel.R.ScheduledCommands, true); err != nil {
+	scheduled, err := q.ListScheduledCommands(ctx, channel.ID)
+	if err != nil {
+		return fmt.Errorf("getting scheduled commands: %w", err)
+	}
+	if err := updateScheduleds(ctx, s.Deps, scheduled, true); err != nil {
 		return err
 	}
 
@@ -190,7 +200,7 @@ func handleJoin(ctx context.Context, s *session, name string) error { //nolint:g
 }
 
 func handleLeave(ctx context.Context, s *session, name string) error {
-	var channel *models.Channel
+	var channel *dbsql.Channel
 	var err error
 
 	name = cleanUsername(name)
@@ -198,23 +208,21 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 	displayName := name
 
 	if name != "" && s.UserLevel.CanAccess(AccessLevelAdmin) {
-		channel, err = models.Channels(
-			models.ChannelWhere.Name.EQ(name),
-			qm.Load(models.ChannelRels.RepeatedCommands),
-			qm.Load(models.ChannelRels.ScheduledCommands),
-			qm.For("UPDATE"),
-		).One(ctx, s.Tx)
+		row, queryErr := s.Queries.GetChannelByNameForUpdate(ctx, name)
+		err = queryErr
+		if queryErr == nil {
+			channel = &row
+		}
 	} else {
 		displayName = s.UserDisplay
-		channel, err = models.Channels(
-			models.ChannelWhere.TwitchID.EQ(s.UserID),
-			qm.Load(models.ChannelRels.RepeatedCommands),
-			qm.Load(models.ChannelRels.ScheduledCommands),
-			qm.For("UPDATE"),
-		).One(ctx, s.Tx)
+		row, queryErr := s.Queries.GetChannelByTwitchIDForUpdate(ctx, s.UserID)
+		err = queryErr
+		if queryErr == nil {
+			channel = &row
+		}
 	}
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return nil
 	}
 
@@ -232,17 +240,26 @@ func handleLeave(ctx context.Context, s *session, name string) error {
 
 	channel.Active = false
 
-	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
+	q := s.Queries
+	if err := q.UpdateChannelActive(ctx, dbsql.UpdateChannelActiveParams{Active: false, ID: channel.ID}); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	s.requestEventsubUpdate()
 
-	if err := updateRepeating(ctx, s.Deps, channel.R.RepeatedCommands, false); err != nil {
+	repeated, err := q.ListRepeatedCommands(ctx, channel.ID)
+	if err != nil {
+		return fmt.Errorf("getting repeated commands: %w", err)
+	}
+	if err := updateRepeating(ctx, s.Deps, repeated, false); err != nil {
 		return err
 	}
 
-	if err := updateScheduleds(ctx, s.Deps, channel.R.ScheduledCommands, false); err != nil {
+	scheduled, err := q.ListScheduledCommands(ctx, channel.ID)
+	if err != nil {
+		return fmt.Errorf("getting scheduled commands: %w", err)
+	}
+	if err := updateScheduleds(ctx, s.Deps, scheduled, false); err != nil {
 		return err
 	}
 
@@ -265,13 +282,14 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 
 	s.Channel.Active = false
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
+	q := s.Queries
+	if err := q.UpdateChannelActive(ctx, dbsql.UpdateChannelActiveParams{Active: false, ID: s.Channel.ID}); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	s.requestEventsubUpdate()
 
-	repeated, err := s.Channel.RepeatedCommands().All(ctx, s.Tx)
+	repeated, err := q.ListRepeatedCommands(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting repeated commands: %w", err)
 	}
@@ -280,7 +298,7 @@ func cmdLeave(ctx context.Context, s *session, cmd string, args string) error {
 		return err
 	}
 
-	scheduleds, err := s.Channel.ScheduledCommands().All(ctx, s.Tx)
+	scheduleds, err := q.ListScheduledCommands(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting scheduled commands: %w", err)
 	}

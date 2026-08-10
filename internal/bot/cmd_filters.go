@@ -7,9 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/gobuffalo/flect"
-	"github.com/hortbot/hortbot/internal/db/models"
 	"github.com/hortbot/hortbot/internal/pkg/linkmatch"
 )
 
@@ -55,13 +52,13 @@ func cmdFilterStatus(ctx context.Context, s *session, cmd string, args string) e
 	writeBool(builder, s.Channel.EnableWarnings)
 
 	builder.WriteString(", timeout duration: ")
-	builder.WriteString(strconv.Itoa(s.Channel.TimeoutDuration))
+	builder.WriteString(strconv.Itoa(int(s.Channel.TimeoutDuration)))
 
 	builder.WriteString(", display warnings: ")
 	writeBool(builder, s.Channel.DisplayWarnings)
 
 	builder.WriteString(", max message length: ")
-	builder.WriteString(strconv.Itoa(s.Channel.FilterMaxLength))
+	builder.WriteString(strconv.Itoa(int(s.Channel.FilterMaxLength)))
 
 	builder.WriteString(", me: ")
 	writeBool(builder, s.Channel.FilterMe)
@@ -97,7 +94,7 @@ func cmdFilterOnOff(enable bool) func(ctx context.Context, s *session, cmd strin
 
 		s.Channel.EnableFilters = enable
 
-		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.EnableFilters)); err != nil {
+		if err := s.updateChannelSettings(ctx); err != nil {
 			return fmt.Errorf("updating channel: %w", err)
 		}
 
@@ -129,7 +126,7 @@ func cmdFilterLinks(ctx context.Context, s *session, cmd string, args string) er
 
 	s.Channel.FilterLinks = enable
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterLinks)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -187,7 +184,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 
 		s.Channel.PermittedLinks = append(s.Channel.PermittedLinks, pd)
 
-		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.PermittedLinks)); err != nil {
+		if err := s.updateChannelSettings(ctx); err != nil {
 			return fmt.Errorf("updating channel: %w", err)
 		}
 
@@ -211,7 +208,7 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 		oldP := old[i]
 		s.Channel.PermittedLinks = append(old[:i], old[i+1:]...) //nolint:gocritic
 
-		if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.PermittedLinks)); err != nil {
+		if err := s.updateChannelSettings(ctx); err != nil {
 			return fmt.Errorf("updating channel: %w", err)
 		}
 
@@ -224,7 +221,6 @@ func cmdFilterPermittedLinks(ctx context.Context, s *session, cmd string, args s
 
 func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) error {
 	var response string
-	var column string
 
 	subcommand, args := splitSpace(args)
 
@@ -236,7 +232,6 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 
 		s.Channel.FilterCaps = true
 		response = "Caps filter is now enabled."
-		column = models.ChannelColumns.FilterCaps
 
 	case "off":
 		if !s.Channel.FilterCaps {
@@ -245,37 +240,33 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 
 		s.Channel.FilterCaps = false
 		response = "Caps filter is now disabled."
-		column = models.ChannelColumns.FilterCaps
 
 	case "percent":
-		percent, err := strconv.Atoi(args)
+		percent, err := parseInt32(args)
 		if err != nil || percent < 0 || percent > 100 {
 			return s.ReplyUsage(ctx, "percent <0-100>")
 		}
 
 		s.Channel.FilterCapsPercentage = percent
 		response = fmt.Sprintf("Caps filter percent set to %d%%.", percent)
-		column = models.ChannelColumns.FilterCapsPercentage
 
 	case "minchars":
-		minChars, err := strconv.Atoi(args)
+		minChars, err := parseInt32(args)
 		if err != nil || minChars < 0 {
 			return s.ReplyUsage(ctx, "minchars <int>")
 		}
 
 		s.Channel.FilterCapsMinChars = minChars
 		response = fmt.Sprintf("Caps filter min chars set to %d.", minChars)
-		column = models.ChannelColumns.FilterCapsMinChars
 
 	case "mincaps":
-		minCaps, err := strconv.Atoi(args)
+		minCaps, err := parseInt32(args)
 		if err != nil || minCaps < 0 {
 			return s.ReplyUsage(ctx, "mincaps <int>")
 		}
 
 		s.Channel.FilterCapsMinCaps = minCaps
 		response = fmt.Sprintf("Caps filter min caps set to %d.", minCaps)
-		column = models.ChannelColumns.FilterCapsMinCaps
 
 	case "status":
 		return s.Replyf(ctx, "Caps filter=%v, percent=%v, minchars=%v, mincaps=%v",
@@ -289,7 +280,7 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 		return s.ReplyUsage(ctx, "on|off|percent|minchars|mincaps|status")
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -298,7 +289,6 @@ func cmdFilterCaps(ctx context.Context, s *session, cmd string, args string) err
 
 func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) error {
 	var response string
-	var column string
 
 	subcommand, args := splitSpace(args)
 
@@ -310,7 +300,6 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 
 		s.Channel.FilterSymbols = true
 		response = "Symbols filter is now enabled."
-		column = models.ChannelColumns.FilterSymbols
 
 	case "off":
 		if !s.Channel.FilterSymbols {
@@ -319,27 +308,24 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 
 		s.Channel.FilterSymbols = false
 		response = "Symbols filter is now disabled."
-		column = models.ChannelColumns.FilterSymbols
 
 	case "percent":
-		percent, err := strconv.Atoi(args)
+		percent, err := parseInt32(args)
 		if err != nil || percent < 0 || percent > 100 {
 			return s.ReplyUsage(ctx, "percent <0-100>")
 		}
 
 		s.Channel.FilterSymbolsPercentage = percent
 		response = fmt.Sprintf("Symbols filter percent set to %d%%.", percent)
-		column = models.ChannelColumns.FilterSymbolsPercentage
 
 	case "min":
-		minValue, err := strconv.Atoi(args)
+		minValue, err := parseInt32(args)
 		if err != nil || minValue < 0 {
 			return s.ReplyUsage(ctx, "min <int>")
 		}
 
 		s.Channel.FilterSymbolsMinSymbols = minValue
 		response = fmt.Sprintf("Symbols filter min symbols set to %d.", minValue)
-		column = models.ChannelColumns.FilterSymbolsMinSymbols
 
 	case "status":
 		return s.Replyf(ctx, "Symbols filter=%v, percent=%v, min=%v",
@@ -352,7 +338,7 @@ func cmdFilterSymbols(ctx context.Context, s *session, cmd string, args string) 
 		return s.ReplyUsage(ctx, "on|off|percent|min|status")
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -380,7 +366,7 @@ func cmdFilterMe(ctx context.Context, s *session, cmd string, args string) error
 
 	s.Channel.FilterMe = enable
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterMe)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -395,14 +381,14 @@ func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args st
 		return s.Replyf(ctx, "Max message length set to %d.", s.Channel.FilterMaxLength)
 	}
 
-	n, err := strconv.Atoi(args)
+	n, err := parseInt32(args)
 	if err != nil || n < 0 {
 		return s.ReplyUsage(ctx, "<length>")
 	}
 
 	s.Channel.FilterMaxLength = n
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterMaxLength)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -411,7 +397,6 @@ func cmdFilterMessageLength(ctx context.Context, s *session, cmd string, args st
 
 func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) error {
 	var response string
-	var column string
 
 	subcommand, args := splitSpace(args)
 
@@ -423,7 +408,6 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 
 		s.Channel.FilterEmotes = true
 		response = "Emote filter is now enabled."
-		column = models.ChannelColumns.FilterEmotes
 
 	case "off":
 		if !s.Channel.FilterEmotes {
@@ -432,17 +416,15 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 
 		s.Channel.FilterEmotes = false
 		response = "Emote filter is now disabled."
-		column = models.ChannelColumns.FilterEmotes
 
 	case "max":
-		maxValue, err := strconv.Atoi(args)
+		maxValue, err := parseInt32(args)
 		if err != nil || maxValue < 0 {
 			return s.ReplyUsage(ctx, "max <num>")
 		}
 
 		s.Channel.FilterEmotesMax = maxValue
 		response = fmt.Sprintf("Emote filter max emotes set to %d.", maxValue)
-		column = models.ChannelColumns.FilterEmotesMax
 
 	case "single":
 		enabled := false
@@ -470,8 +452,6 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 			response = "Single emote filter is now disabled."
 		}
 
-		column = models.ChannelColumns.FilterEmotesSingle
-
 	case "status":
 		return s.Replyf(ctx, "Emote filter=%v, max=%v, single=%v",
 			s.Channel.FilterEmotes,
@@ -483,7 +463,7 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 		return s.ReplyUsage(ctx, "on|off|max|single|status")
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -492,7 +472,6 @@ func cmdFilterEmotes(ctx context.Context, s *session, cmd string, args string) e
 
 func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string) error {
 	var response string
-	var column string
 
 	subcommand, args := splitSpace(args)
 
@@ -503,7 +482,6 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		}
 
 		s.Channel.FilterBannedPhrases = true
-		column = models.ChannelColumns.FilterBannedPhrases
 		response = "Banned phrase filter is now enabled."
 
 	case "off":
@@ -512,12 +490,10 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		}
 
 		s.Channel.FilterBannedPhrases = false
-		column = models.ChannelColumns.FilterBannedPhrases
 		response = "Banned phrase filter is now disabled."
 
 	case "clear":
 		s.Channel.FilterBannedPhrasesPatterns = []string{}
-		column = models.ChannelColumns.FilterBannedPhrasesPatterns
 		response = "Banned phrases have been cleared."
 
 	case "add":
@@ -541,7 +517,6 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		}
 
 		s.Channel.FilterBannedPhrasesPatterns = append(s.Channel.FilterBannedPhrasesPatterns, pattern)
-		column = models.ChannelColumns.FilterBannedPhrasesPatterns
 		response = "Banned phrase added."
 
 	case "delete", "remove":
@@ -574,7 +549,6 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		l := s.Channel.FilterBannedPhrasesPatterns
 		l = append(l[:found], l[found+1:]...)
 		s.Channel.FilterBannedPhrasesPatterns = l
-		column = models.ChannelColumns.FilterBannedPhrasesPatterns
 		response = "Banned phrase removed."
 
 	case "list":
@@ -589,7 +563,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 		return s.ReplyUsage(ctx, "on|off|add|delete|clear|list")
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -598,7 +572,7 @@ func cmdFilterBanPhrase(ctx context.Context, s *session, cmd string, args string
 
 func cmdFilterExemptLevel(ctx context.Context, s *session, cmd string, args string) error {
 	if args == "" {
-		return s.Replyf(ctx, "Filter exempt level is set to %s.", flect.Pluralize(s.Channel.FilterExemptLevel))
+		return s.Replyf(ctx, "Filter exempt level is set to %s.", pluralAccessLevel(s.Channel.FilterExemptLevel))
 	}
 
 	newLevel := parseLevel(args)
@@ -609,14 +583,14 @@ func cmdFilterExemptLevel(ctx context.Context, s *session, cmd string, args stri
 	newLevelPG := newLevel.PGEnum()
 
 	if s.Channel.FilterExemptLevel == newLevelPG {
-		return s.Replyf(ctx, "Filter exempt level is already set to %s.", flect.Pluralize(newLevel.PGEnum()))
+		return s.Replyf(ctx, "Filter exempt level is already set to %s.", pluralAccessLevel(newLevel.PGEnum()))
 	}
 
 	s.Channel.FilterExemptLevel = newLevelPG
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.FilterExemptLevel)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
-	return s.Replyf(ctx, "Filter exempt level set to %s.", flect.Pluralize(newLevelPG))
+	return s.Replyf(ctx, "Filter exempt level set to %s.", pluralAccessLevel(newLevelPG))
 }

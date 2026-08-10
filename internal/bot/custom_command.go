@@ -6,20 +6,18 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
-func handleCustomCommand(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) (bool, error) {
+func handleCustomCommand(ctx context.Context, s *session, info *dbsql.CommandInfo, message string, update bool) (bool, error) {
 	if err := s.TryCooldown(ctx); err != nil {
 		return false, err
 	}
 	return true, runCommandAndCount(ctx, s, info, message, update)
 }
 
-func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInfo, message string, update bool) error {
+func runCommandAndCount(ctx context.Context, s *session, info *dbsql.CommandInfo, message string, update bool) error {
 	ctx = withCommandGuard(ctx, info.Name)
 
 	reply, err := processCommand(ctx, s, message)
@@ -36,9 +34,13 @@ func runCommandAndCount(ctx context.Context, s *session, info *models.CommandInf
 	}
 
 	info.Count++
-	info.LastUsed = null.TimeFrom(time.Now())
+	info.LastUsed = dbsql.TimestamptzFrom(time.Now())
 
-	if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count, models.CommandInfoColumns.LastUsed)); err != nil {
+	if err := s.Queries.UpdateCommandInfoUsage(ctx, dbsql.UpdateCommandInfoUsageParams{
+		Count:    info.Count,
+		LastUsed: info.LastUsed,
+		ID:       info.ID,
+	}); err != nil {
 		return fmt.Errorf("update command info: %w", err)
 	}
 

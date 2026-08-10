@@ -5,3 +5,4 @@ package main
 // consistent regardless of whether generation is triggered via "go generate" or
 // by running "templ generate" manually from the project root.
 //go:generate go tool github.com/a-h/templ/cmd/templ generate
+//go:generate go tool github.com/sqlc-dev/sqlc/cmd/sqlc generate

@@ -3,7 +3,6 @@ package web
 import (
 	"cmp"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -17,9 +16,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/hortbot/hortbot/internal/confimport"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/jsonx"
 	"github.com/hortbot/hortbot/internal/web/templates"
+	"github.com/jackc/pgx/v5"
 	"github.com/tomwright/queryparam/v4"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
@@ -64,9 +65,9 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channelName := chi.URLParam(r, "channel")
 
-	config, err := confimport.ExportByName(ctx, a.DB, strings.ToLower(channelName))
+	config, err := confimport.ExportByName(ctx, a.Queries, strings.ToLower(channelName))
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			http.NotFound(w, r)
 		} else {
 			ctxlog.Error(ctx, "error exporting channel", zap.Error(err))
@@ -111,8 +112,8 @@ func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 
 	err := dbx.Transact(r.Context(), a.DB,
 		dbx.SetLocalLockTimeout(5*time.Second),
-		func(ctx context.Context, tx *sql.Tx) error {
-			return config.Insert(ctx, tx)
+		func(ctx context.Context, tx pgx.Tx) error {
+			return config.Insert(ctx, dbsql.New(tx))
 		},
 	)
 	if err != nil {
@@ -126,7 +127,7 @@ func (a *App) adminImportPost(w http.ResponseWriter, r *http.Request) {
 func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	builtinStats, err := a.State.GetBuiltinUsageStats(ctx, a.DB)
+	builtinStats, err := a.State.GetBuiltinUsageStats(ctx, a.Queries)
 	if err != nil {
 		ctxlog.Error(ctx, "error fetching builtin usage statistics", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -136,7 +137,7 @@ func (a *App) adminStats(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Builtin command usage:")
 	writeStatsResponse(w, builtinStats)
 
-	actionStats, err := a.State.GetActionUsageStats(ctx, a.DB)
+	actionStats, err := a.State.GetActionUsageStats(ctx, a.Queries)
 	if err != nil {
 		ctxlog.Error(ctx, "error fetching builtin usage statistics", zap.Error(err))
 		http.Error(w, err.Error(), http.StatusInternalServerError)

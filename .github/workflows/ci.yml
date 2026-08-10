@@ -79,11 +79,6 @@ jobs:
           go generate ./...
           git diff --exit-code
 
-      - name: genmodels
-        run: |
-          go run ./internal/cmd/genmodels
-          git diff --exit-code
-
   ko:
     name: Ko
     runs-on: ubuntu-latest

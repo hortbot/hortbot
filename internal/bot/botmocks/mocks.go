@@ -7,8 +7,8 @@ import (
 	"context"
 	"sync"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/bot"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 // Ensure, that RandMock does implement bot.Rand.
@@ -124,7 +124,7 @@ var _ bot.EventsubUpdateNotifier = &EventsubUpdateNotifierMock{}
 //
 //		// make and configure a mocked bot.EventsubUpdateNotifier
 //		mockedEventsubUpdateNotifier := &EventsubUpdateNotifierMock{
-//			NotifyEventsubUpdatesFunc: func(ctx context.Context, exec boil.ContextExecutor) error {
+//			NotifyEventsubUpdatesFunc: func(ctx context.Context, queries *dbsql.Queries) error {
 //				panic("mock out the NotifyEventsubUpdates method")
 //			},
 //		}
@@ -135,7 +135,7 @@ var _ bot.EventsubUpdateNotifier = &EventsubUpdateNotifierMock{}
 //	}
 type EventsubUpdateNotifierMock struct {
 	// NotifyEventsubUpdatesFunc mocks the NotifyEventsubUpdates method.
-	NotifyEventsubUpdatesFunc func(ctx context.Context, exec boil.ContextExecutor) error
+	NotifyEventsubUpdatesFunc func(ctx context.Context, queries *dbsql.Queries) error
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -143,29 +143,29 @@ type EventsubUpdateNotifierMock struct {
 		NotifyEventsubUpdates []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// Exec is the exec argument value.
-			Exec boil.ContextExecutor
+			// Queries is the queries argument value.
+			Queries *dbsql.Queries
 		}
 	}
 	lockNotifyEventsubUpdates sync.RWMutex
 }
 
 // NotifyEventsubUpdates calls NotifyEventsubUpdatesFunc.
-func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error {
+func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Context, queries *dbsql.Queries) error {
 	if mock.NotifyEventsubUpdatesFunc == nil {
 		panic("EventsubUpdateNotifierMock.NotifyEventsubUpdatesFunc: method is nil but EventsubUpdateNotifier.NotifyEventsubUpdates was just called")
 	}
 	callInfo := struct {
-		Ctx  context.Context
-		Exec boil.ContextExecutor
+		Ctx     context.Context
+		Queries *dbsql.Queries
 	}{
-		Ctx:  ctx,
-		Exec: exec,
+		Ctx:     ctx,
+		Queries: queries,
 	}
 	mock.lockNotifyEventsubUpdates.Lock()
 	mock.calls.NotifyEventsubUpdates = append(mock.calls.NotifyEventsubUpdates, callInfo)
 	mock.lockNotifyEventsubUpdates.Unlock()
-	return mock.NotifyEventsubUpdatesFunc(ctx, exec)
+	return mock.NotifyEventsubUpdatesFunc(ctx, queries)
 }
 
 // NotifyEventsubUpdatesCalls gets all the calls that were made to NotifyEventsubUpdates.
@@ -173,12 +173,12 @@ func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdates(ctx context.Contex
 //
 //	len(mockedEventsubUpdateNotifier.NotifyEventsubUpdatesCalls())
 func (mock *EventsubUpdateNotifierMock) NotifyEventsubUpdatesCalls() []struct {
-	Ctx  context.Context
-	Exec boil.ContextExecutor
+	Ctx     context.Context
+	Queries *dbsql.Queries
 } {
 	var calls []struct {
-		Ctx  context.Context
-		Exec boil.ContextExecutor
+		Ctx     context.Context
+		Queries *dbsql.Queries
 	}
 	mock.lockNotifyEventsubUpdates.RLock()
 	calls = mock.calls.NotifyEventsubUpdates

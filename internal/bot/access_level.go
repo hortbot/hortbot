@@ -3,7 +3,8 @@ package bot
 import (
 	"fmt"
 
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/gobuffalo/flect"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 //go:generate go tool golang.org/x/tools/cmd/stringer -type=AccessLevel -trimprefix=AccessLevel
@@ -26,19 +27,19 @@ const (
 	levelMaxValid = AccessLevelSuperAdmin
 )
 
-func newAccessLevel(s string) AccessLevel {
+func newAccessLevel(s dbsql.AccessLevel) AccessLevel {
 	switch s {
-	case models.AccessLevelEveryone:
+	case dbsql.AccessLevelEveryone:
 		return AccessLevelEveryone
-	case models.AccessLevelSubscriber:
+	case dbsql.AccessLevelSubscriber:
 		return AccessLevelSubscriber
-	case models.AccessLevelVip:
+	case dbsql.AccessLevelVip:
 		return AccessLevelVIP
-	case models.AccessLevelModerator:
+	case dbsql.AccessLevelModerator:
 		return AccessLevelModerator
-	case models.AccessLevelBroadcaster:
+	case dbsql.AccessLevelBroadcaster:
 		return AccessLevelBroadcaster
-	case models.AccessLevelAdmin:
+	case dbsql.AccessLevelAdmin:
 		return AccessLevelAdmin
 	default:
 		return AccessLevelUnknown
@@ -61,24 +62,24 @@ func (a AccessLevel) CanAccess(resource AccessLevel) bool {
 	return a >= resource
 }
 
-func (a AccessLevel) CanAccessPG(s string) bool {
+func (a AccessLevel) CanAccessPG(s dbsql.AccessLevel) bool {
 	return a.CanAccess(newAccessLevel(s))
 }
 
-func (a AccessLevel) PGEnum() string {
+func (a AccessLevel) PGEnum() dbsql.AccessLevel {
 	switch a { //nolint:exhaustive
 	case AccessLevelEveryone:
-		return models.AccessLevelEveryone
+		return dbsql.AccessLevelEveryone
 	case AccessLevelSubscriber:
-		return models.AccessLevelSubscriber
+		return dbsql.AccessLevelSubscriber
 	case AccessLevelVIP:
-		return models.AccessLevelVip
+		return dbsql.AccessLevelVip
 	case AccessLevelModerator:
-		return models.AccessLevelModerator
+		return dbsql.AccessLevelModerator
 	case AccessLevelBroadcaster:
-		return models.AccessLevelBroadcaster
+		return dbsql.AccessLevelBroadcaster
 	case AccessLevelAdmin:
-		return models.AccessLevelAdmin
+		return dbsql.AccessLevelAdmin
 	default:
 		panic(fmt.Sprintf("cannot convert %v to enum value", a))
 	}
@@ -103,10 +104,14 @@ func parseLevel(s string) AccessLevel {
 	}
 }
 
-func parseLevelPG(s string) string {
+func parseLevelPG(s string) dbsql.AccessLevel {
 	l := parseLevel(s)
 	if l == AccessLevelUnknown {
 		return ""
 	}
 	return l.PGEnum()
+}
+
+func pluralAccessLevel(level dbsql.AccessLevel) string {
+	return flect.Pluralize(string(level))
 }

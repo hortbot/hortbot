@@ -19,10 +19,10 @@ func TestRunQueueListenerReconnects(t *testing.T) {
 	t.Cleanup(pdb.Cleanup)
 	assert.NilError(t, migrations.Up(pdb.ConnStr(), t.Logf))
 
-	db, err := pdb.Open()
+	db, err := pdb.Open(t.Context())
 	assert.NilError(t, err)
 	t.Cleanup(func() {
-		assert.NilError(t, db.Close())
+		db.Close()
 	})
 
 	listener := chatqueue.New(db, 1)
@@ -58,10 +58,10 @@ func TestCompleteHandledMessageIgnoresWorkerCancellation(t *testing.T) {
 	t.Cleanup(pdb.Cleanup)
 	assert.NilError(t, migrations.Up(pdb.ConnStr(), t.Logf))
 
-	db, err := pdb.Open()
+	db, err := pdb.Open(t.Context())
 	assert.NilError(t, err)
 	t.Cleanup(func() {
-		assert.NilError(t, db.Close())
+		db.Close()
 	})
 
 	queue := chatqueue.New(db, 1)

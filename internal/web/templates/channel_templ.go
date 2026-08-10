@@ -15,7 +15,7 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 type menuItem struct {
@@ -55,7 +55,7 @@ func channelSubURL(name, sub string) templ.SafeURL {
 	return templ.URL("/c/" + url.PathEscape(name) + "/" + sub)
 }
 
-func channelSidebar(channel *models.Channel, item string) templ.Component {
+func channelSidebar(channel *dbsql.Channel, item string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -200,7 +200,7 @@ func channelSidebar(channel *models.Channel, item string) templ.Component {
 	})
 }
 
-func channelSidebarMobile(channel *models.Channel, item string) templ.Component {
+func channelSidebarMobile(channel *dbsql.Channel, item string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -349,7 +349,7 @@ func steamURL(id string) templ.SafeURL {
 	return templ.URL("https://steamcommunity.com/profiles/" + url.PathEscape(id))
 }
 
-func extraLifeURL(id int) templ.SafeURL {
+func extraLifeURL(id int32) templ.SafeURL {
 	return templ.URL(fmt.Sprintf("https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID=%d", id))
 }
 
@@ -431,7 +431,7 @@ func channelScripts() templ.Component {
 	})
 }
 
-func channelLayout(channel *models.Channel, item string, subtitle string) templ.Component {
+func channelLayout(channel *dbsql.Channel, item string, subtitle string) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -516,7 +516,7 @@ func channelLayout(channel *models.Channel, item string, subtitle string) templ.
 	})
 }
 
-func channelOverviewBody(channel *models.Channel) templ.Component {
+func channelOverviewBody(channel *dbsql.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -675,7 +675,7 @@ func channelOverviewBody(channel *models.Channel) templ.Component {
 	})
 }
 
-func ChannelPage(channel *models.Channel) templ.Component {
+func ChannelPage(channel *dbsql.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -723,7 +723,7 @@ func ChannelPage(channel *models.Channel) templ.Component {
 }
 
 // Access level helper
-func accessLevel(level string) templ.Component {
+func accessLevel(level dbsql.AccessLevel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -745,32 +745,32 @@ func accessLevel(level string) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch level {
-		case models.AccessLevelEveryone:
+		case dbsql.AccessLevelEveryone:
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 48, "All")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		case models.AccessLevelSubscriber:
+		case dbsql.AccessLevelSubscriber:
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 49, "<span class=\"has-text-info\">Subs</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		case models.AccessLevelVip:
+		case dbsql.AccessLevelVip:
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 50, "<span class=\"has-text-warning\">VIPs</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		case models.AccessLevelModerator:
+		case dbsql.AccessLevelModerator:
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 51, "<span class=\"has-text-success\">Mods</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		case models.AccessLevelBroadcaster:
+		case dbsql.AccessLevelBroadcaster:
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 52, "<span class=\"has-text-danger\">Broadcaster</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-		case models.AccessLevelAdmin:
+		case dbsql.AccessLevelAdmin:
 			templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 53, "<span>Admins</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
@@ -932,7 +932,7 @@ func autoreplyPattern(s string) templ.Component {
 }
 
 // Commands page
-func channelCommandsBody(channel *models.Channel, commands models.CustomCommandSlice) templ.Component {
+func channelCommandsBody(channel *dbsql.Channel, commands []dbsql.ListCustomCommandsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -990,9 +990,9 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var44 string
-					templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(c.R.CommandInfo.Name)
+					templ_7745c5c3_Var44, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 306, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 306, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var44))
 					if templ_7745c5c3_Err != nil {
@@ -1002,7 +1002,7 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = accessLevel(c.R.CommandInfo.AccessLevel).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = accessLevel(c.AccessLevel).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -1019,9 +1019,9 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var45 string
-					templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(c.R.CommandInfo.Count)
+					templ_7745c5c3_Var45, templ_7745c5c3_Err = templ.JoinStringErrs(c.Count)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 313, Col: 34}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 313, Col: 20}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var45))
 					if templ_7745c5c3_Err != nil {
@@ -1032,9 +1032,9 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var46 string
-					templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(c.R.CommandInfo.Editor)
+					templ_7745c5c3_Var46, templ_7745c5c3_Err = templ.JoinStringErrs(c.Editor)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 314, Col: 35}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 314, Col: 21}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var46))
 					if templ_7745c5c3_Err != nil {
@@ -1045,9 +1045,9 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var47 string
-					templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(c.UpdatedAt.Format(time.RFC3339))
+					templ_7745c5c3_Var47, templ_7745c5c3_Err = templ.JoinStringErrs(c.UpdatedAt.Time.Format(time.RFC3339))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 315, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 315, Col: 50}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var47))
 					if templ_7745c5c3_Err != nil {
@@ -1073,7 +1073,7 @@ func channelCommandsBody(channel *models.Channel, commands models.CustomCommandS
 	})
 }
 
-func ChannelCommandsPage(channel *models.Channel, commands models.CustomCommandSlice) templ.Component {
+func ChannelCommandsPage(channel *dbsql.Channel, commands []dbsql.ListCustomCommandsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1121,7 +1121,7 @@ func ChannelCommandsPage(channel *models.Channel, commands models.CustomCommandS
 }
 
 // Quotes page
-func channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) templ.Component {
+func channelQuotesBody(channel *dbsql.Channel, quotes []dbsql.Quote) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1209,9 +1209,9 @@ func channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) templ.
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var55 string
-					templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(q.UpdatedAt.Format(time.RFC3339))
+					templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(q.UpdatedAt.Time.Format(time.RFC3339))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 358, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 358, Col: 50}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 					if templ_7745c5c3_Err != nil {
@@ -1237,7 +1237,7 @@ func channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) templ.
 	})
 }
 
-func ChannelQuotesPage(channel *models.Channel, quotes models.QuoteSlice) templ.Component {
+func ChannelQuotesPage(channel *dbsql.Channel, quotes []dbsql.Quote) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1285,7 +1285,7 @@ func ChannelQuotesPage(channel *models.Channel, quotes models.QuoteSlice) templ.
 }
 
 // Autoreplies page
-func channelAutorepliesBody(channel *models.Channel, autoreplies models.AutoreplySlice) templ.Component {
+func channelAutorepliesBody(channel *dbsql.Channel, autoreplies []dbsql.Autoreply) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1402,9 +1402,9 @@ func channelAutorepliesBody(channel *models.Channel, autoreplies models.Autorepl
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var64 string
-					templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(a.UpdatedAt.Format(time.RFC3339))
+					templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(a.UpdatedAt.Time.Format(time.RFC3339))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 411, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 411, Col: 50}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 					if templ_7745c5c3_Err != nil {
@@ -1430,7 +1430,7 @@ func channelAutorepliesBody(channel *models.Channel, autoreplies models.Autorepl
 	})
 }
 
-func ChannelAutorepliesPage(channel *models.Channel, autoreplies models.AutoreplySlice) templ.Component {
+func ChannelAutorepliesPage(channel *dbsql.Channel, autoreplies []dbsql.Autoreply) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1478,7 +1478,7 @@ func ChannelAutorepliesPage(channel *models.Channel, autoreplies models.Autorepl
 }
 
 // Lists page
-func listsItems(lists models.CommandListSlice) [][]string {
+func listsItems(lists []dbsql.ListCommandListsForWebRow) [][]string {
 	result := make([][]string, len(lists))
 	for i, l := range lists {
 		result[i] = l.Items
@@ -1486,7 +1486,7 @@ func listsItems(lists models.CommandListSlice) [][]string {
 	return result
 }
 
-func channelListsBody(channel *models.Channel, lists models.CommandListSlice) templ.Component {
+func channelListsBody(channel *dbsql.Channel, lists []dbsql.ListCommandListsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1544,9 +1544,9 @@ func channelListsBody(channel *models.Channel, lists models.CommandListSlice) te
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var70 string
-					templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(l.R.CommandInfo.Name)
+					templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(l.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 462, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 462, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 					if templ_7745c5c3_Err != nil {
@@ -1556,7 +1556,7 @@ func channelListsBody(channel *models.Channel, lists models.CommandListSlice) te
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
-					templ_7745c5c3_Err = accessLevel(l.R.CommandInfo.AccessLevel).Render(ctx, templ_7745c5c3_Buffer)
+					templ_7745c5c3_Err = accessLevel(l.AccessLevel).Render(ctx, templ_7745c5c3_Buffer)
 					if templ_7745c5c3_Err != nil {
 						return templ_7745c5c3_Err
 					}
@@ -1565,9 +1565,9 @@ func channelListsBody(channel *models.Channel, lists models.CommandListSlice) te
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var71 string
-					templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(l.R.CommandInfo.Count)
+					templ_7745c5c3_Var71, templ_7745c5c3_Err = templ.JoinStringErrs(l.Count)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 466, Col: 34}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 466, Col: 20}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var71))
 					if templ_7745c5c3_Err != nil {
@@ -1578,9 +1578,9 @@ func channelListsBody(channel *models.Channel, lists models.CommandListSlice) te
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var72 string
-					templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(l.R.CommandInfo.Editor)
+					templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(l.Editor)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 467, Col: 35}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 467, Col: 21}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 					if templ_7745c5c3_Err != nil {
@@ -1591,9 +1591,9 @@ func channelListsBody(channel *models.Channel, lists models.CommandListSlice) te
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var73 string
-					templ_7745c5c3_Var73, templ_7745c5c3_Err = templ.JoinStringErrs(l.UpdatedAt.Format(time.RFC3339))
+					templ_7745c5c3_Var73, templ_7745c5c3_Err = templ.JoinStringErrs(l.UpdatedAt.Time.Format(time.RFC3339))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 468, Col: 45}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 468, Col: 50}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var73))
 					if templ_7745c5c3_Err != nil {
@@ -1619,7 +1619,7 @@ func channelListsBody(channel *models.Channel, lists models.CommandListSlice) te
 	})
 }
 
-func channelListsScripts(lists models.CommandListSlice) templ.Component {
+func channelListsScripts(lists []dbsql.ListCommandListsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1664,7 +1664,7 @@ func channelListsScripts(lists models.CommandListSlice) templ.Component {
 	})
 }
 
-func ChannelListsPage(channel *models.Channel, lists models.CommandListSlice) templ.Component {
+func ChannelListsPage(channel *dbsql.Channel, lists []dbsql.ListCommandListsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1712,7 +1712,7 @@ func ChannelListsPage(channel *models.Channel, lists models.CommandListSlice) te
 }
 
 // Regulars page
-func channelRegularsBody(channel *models.Channel) templ.Component {
+func channelRegularsBody(channel *dbsql.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1789,7 +1789,7 @@ func channelRegularsBody(channel *models.Channel) templ.Component {
 	})
 }
 
-func ChannelRegularsPage(channel *models.Channel) templ.Component {
+func ChannelRegularsPage(channel *dbsql.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1837,7 +1837,7 @@ func ChannelRegularsPage(channel *models.Channel) templ.Component {
 }
 
 // Chat rules page
-func channelRulesBody(channel *models.Channel) templ.Component {
+func channelRulesBody(channel *dbsql.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1956,7 +1956,7 @@ func channelRulesBody(channel *models.Channel) templ.Component {
 	})
 }
 
-func ChannelRulesPage(channel *models.Channel) templ.Component {
+func ChannelRulesPage(channel *dbsql.Channel) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2004,11 +2004,11 @@ func ChannelRulesPage(channel *models.Channel) templ.Component {
 }
 
 // Scheduled page
-func formatDuration(delay int, unit time.Duration) string {
+func formatDuration(delay int32, unit time.Duration) string {
 	return durafmt.Parse(time.Duration(delay) * unit).String()
 }
 
-func channelScheduledBody(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) templ.Component {
+func channelScheduledBody(channel *dbsql.Channel, repeated []dbsql.ListRepeatedCommandsForWebRow, scheduled []dbsql.ListScheduledCommandsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2070,9 +2070,9 @@ func channelScheduledBody(channel *models.Channel, repeated models.RepeatedComma
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var92 string
-					templ_7745c5c3_Var92, templ_7745c5c3_Err = templ.JoinStringErrs(c.R.CommandInfo.Name)
+					templ_7745c5c3_Var92, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 599, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 599, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var92))
 					if templ_7745c5c3_Err != nil {
@@ -2151,9 +2151,9 @@ func channelScheduledBody(channel *models.Channel, repeated models.RepeatedComma
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var96 string
-					templ_7745c5c3_Var96, templ_7745c5c3_Err = templ.JoinStringErrs(c.R.CommandInfo.Name)
+					templ_7745c5c3_Var96, templ_7745c5c3_Err = templ.JoinStringErrs(c.Name)
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 634, Col: 57}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 634, Col: 43}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var96))
 					if templ_7745c5c3_Err != nil {
@@ -2213,7 +2213,7 @@ func channelScheduledBody(channel *models.Channel, repeated models.RepeatedComma
 	})
 }
 
-func ChannelScheduledPage(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) templ.Component {
+func ChannelScheduledPage(channel *dbsql.Channel, repeated []dbsql.ListRepeatedCommandsForWebRow, scheduled []dbsql.ListScheduledCommandsForWebRow) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2261,7 +2261,7 @@ func ChannelScheduledPage(channel *models.Channel, repeated models.RepeatedComma
 }
 
 // Variables page
-func channelVariablesBody(channel *models.Channel, variables models.VariableSlice) templ.Component {
+func channelVariablesBody(channel *dbsql.Channel, variables []dbsql.Variable) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2351,7 +2351,7 @@ func channelVariablesBody(channel *models.Channel, variables models.VariableSlic
 	})
 }
 
-func ChannelVariablesPage(channel *models.Channel, variables models.VariableSlice) templ.Component {
+func ChannelVariablesPage(channel *dbsql.Channel, variables []dbsql.Variable) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2406,7 +2406,7 @@ func formatHighlightTimestamp(highlightedAt time.Time, startedAt time.Time, vali
 	return durafmt.Parse(highlightedAt.Sub(startedAt).Truncate(time.Second)).String()
 }
 
-func channelHighlightsBody(channel *models.Channel, highlights models.HighlightSlice) templ.Component {
+func channelHighlightsBody(channel *dbsql.Channel, highlights []dbsql.Highlight) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -2455,9 +2455,9 @@ func channelHighlightsBody(channel *models.Channel, highlights models.HighlightS
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var109 string
-					templ_7745c5c3_Var109, templ_7745c5c3_Err = templ.JoinStringErrs(h.HighlightedAt.Format(time.RFC3339))
+					templ_7745c5c3_Var109, templ_7745c5c3_Err = templ.JoinStringErrs(h.HighlightedAt.Time.Format(time.RFC3339))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 727, Col: 49}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 727, Col: 54}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var109))
 					if templ_7745c5c3_Err != nil {
@@ -2468,9 +2468,9 @@ func channelHighlightsBody(channel *models.Channel, highlights models.HighlightS
 						return templ_7745c5c3_Err
 					}
 					var templ_7745c5c3_Var110 string
-					templ_7745c5c3_Var110, templ_7745c5c3_Err = templ.JoinStringErrs(formatHighlightTimestamp(h.HighlightedAt, h.StartedAt.Time, h.StartedAt.Valid))
+					templ_7745c5c3_Var110, templ_7745c5c3_Err = templ.JoinStringErrs(formatHighlightTimestamp(h.HighlightedAt.Time, h.StartedAt.Time, h.StartedAt.Valid))
 					if templ_7745c5c3_Err != nil {
-						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 728, Col: 91}
+						return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/web/templates/channel.templ`, Line: 728, Col: 96}
 					}
 					_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var110))
 					if templ_7745c5c3_Err != nil {
@@ -2522,7 +2522,7 @@ func channelHighlightsBody(channel *models.Channel, highlights models.HighlightS
 	})
 }
 
-func ChannelHighlightsPage(channel *models.Channel, highlights models.HighlightSlice) templ.Component {
+func ChannelHighlightsPage(channel *dbsql.Channel, highlights []dbsql.Highlight) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {

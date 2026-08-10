@@ -2,20 +2,16 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/jackc/pgx/v5"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -74,18 +70,19 @@ func (b *Bot) runScheduledCommand(ctx context.Context, id int64) (readd bool) {
 
 type repeatRunner interface {
 	withLog(ctx context.Context) context.Context
-	status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error)
-	load(ctx context.Context, exec boil.ContextExecutor) error
-	channel() *models.Channel
-	allowed(ctx context.Context, tx *sql.Tx) (found bool, allowed bool, err error)
-	updateCount(ctx context.Context, exec boil.ContextExecutor) error
-	info() *models.CommandInfo
+	status(ctx context.Context, queries *dbsql.Queries) (status repeatStatus, err error)
+	load(ctx context.Context, queries *dbsql.Queries) error
+	channel() *dbsql.Channel
+	allowed(ctx context.Context, queries *dbsql.Queries) (found bool, allowed bool, err error)
+	updateCount(ctx context.Context, queries *dbsql.Queries) error
+	info() *dbsql.CommandInfo
+	command() (string, []string)
 }
 
 type repeatStatus struct {
-	Enabled bool `boil:"enabled"`
-	Active  bool `boil:"active"`
-	Ready   bool `boil:"ready"`
+	Enabled bool
+	Active  bool
+	Ready   bool
 }
 
 func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, err error) {
@@ -98,10 +95,12 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 
 	err = dbx.Transact(ctx, b.db,
 		dbx.SetLocalLockTimeout(5*time.Second),
-		func(ctx context.Context, tx *sql.Tx) error {
-			status, err := runner.status(ctx, tx)
+		func(ctx context.Context, tx pgx.Tx) error {
+			queries := dbsql.New(tx)
+
+			status, err := runner.status(ctx, queries)
 			if err != nil {
-				if errors.Is(err, sql.ErrNoRows) {
+				if errors.Is(err, pgx.ErrNoRows) {
 					status = repeatStatus{}
 				} else {
 					return fmt.Errorf("getting status: %w", err)
@@ -117,8 +116,8 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 				return nil
 			}
 
-			if err := runner.load(ctx, tx); err != nil {
-				if errors.Is(err, sql.ErrNoRows) {
+			if err := runner.load(ctx, queries); err != nil {
+				if errors.Is(err, pgx.ErrNoRows) {
 					readd = false
 					return nil
 				}
@@ -127,24 +126,24 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 
 			channel := runner.channel()
 			// Serialize chat messages and repeat jobs for each channel.
-			if err := pgLock(ctx, tx, channel.TwitchID); err != nil {
+			if err := pgLock(ctx, queries, channel.TwitchID); err != nil {
 				return err
 			}
 
-			found, allowed, err := runner.allowed(ctx, tx)
+			found, allowed, err := runner.allowed(ctx, queries)
 			readd = readd && found
 			if !allowed || err != nil {
 				return err //nolint:wrapcheck
 			}
 
-			if err := runner.updateCount(ctx, tx); err != nil {
+			if err := runner.updateCount(ctx, queries); err != nil {
 				return fmt.Errorf("updating count: %w", err)
 			}
 
 			s := &session{
 				Type:        sessionRepeat,
 				Deps:        b.deps,
-				Tx:          tx,
+				Queries:     queries,
 				Start:       start,
 				UserLevel:   AccessLevelEveryone,
 				Channel:     channel,
@@ -158,25 +157,20 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 
 			info.Count++
 
-			if err := info.Update(ctx, s.Tx, boil.Whitelist(models.CommandInfoColumns.Count)); err != nil {
+			if err := s.Queries.UpdateCommandInfoCount(ctx, dbsql.UpdateCommandInfoCountParams{
+				Count: info.Count,
+				ID:    info.ID,
+			}); err != nil {
 				return fmt.Errorf("updating command info: %w", err)
 			}
 
 			ctx = ctxlog.With(ctx, zap.Int64("roomID", s.RoomID), zap.String("channel", s.ChannelName))
 
-			var message string
-
-			if command := info.R.CustomCommand; command != nil {
-				message = command.Message
-			} else {
-				items := info.R.CommandList.Items
-
-				if len(items) == 0 {
-					return nil
-				}
-
-				i := s.Deps.Rand.Intn(len(items))
-				message = items[i]
+			message, items := runner.command()
+			if len(items) != 0 {
+				message = items[s.Deps.Rand.Intn(len(items))]
+			} else if message == "" {
+				return nil
 			}
 
 			return runCommandAndCount(ctx, s, info, message, true)
@@ -186,9 +180,13 @@ func (b *Bot) runRepeat(ctx context.Context, runner repeatRunner) (readd bool, e
 }
 
 type repeatedCommandRunner struct {
-	id     int64
-	deps   *sharedDeps
-	repeat *models.RepeatedCommand
+	id            int64
+	deps          *sharedDeps
+	repeat        *dbsql.RepeatedCommand
+	loadedChannel *dbsql.Channel
+	loadedInfo    *dbsql.CommandInfo
+	message       string
+	items         []string
 }
 
 var _ repeatRunner = (*repeatedCommandRunner)(nil)
@@ -197,26 +195,15 @@ func (runner *repeatedCommandRunner) withLog(ctx context.Context) context.Contex
 	return ctxlog.With(ctx, zap.Int64("repeatedCommand", runner.id))
 }
 
-func (runner *repeatedCommandRunner) status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error) {
-	err = queries.Raw(`
-SELECT
-	r.enabled AS enabled,
-	c.active AS active,
-	c.message_count >= (r.last_count + r.message_diff) AS ready
-FROM
-	repeated_commands r
-JOIN
-	channels c ON c.id = r.channel_id
-WHERE
-	r.id = $1
-`, runner.id).Bind(ctx, exec, &status)
+func (runner *repeatedCommandRunner) status(ctx context.Context, queries *dbsql.Queries) (status repeatStatus, err error) {
+	row, err := queries.GetRepeatedCommandStatus(ctx, runner.id)
 	if err != nil {
 		return repeatStatus{}, fmt.Errorf("getting status: %w", err)
 	}
-	return status, nil
+	return repeatStatus(row), nil
 }
 
-func (runner *repeatedCommandRunner) allowed(ctx context.Context, tx *sql.Tx) (found bool, allowed bool, err error) {
+func (runner *repeatedCommandRunner) allowed(ctx context.Context, queries *dbsql.Queries) (found bool, allowed bool, err error) {
 	channel := runner.channel()
 	repeat := runner.repeat
 
@@ -231,53 +218,82 @@ func (runner *repeatedCommandRunner) allowed(ctx context.Context, tx *sql.Tx) (f
 	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
 	expiry := time.Duration(repeat.Delay-1) * time.Second
 
-	allowed, err = runner.deps.State.RepeatAllowed(ctx, tx, roomIDStr, runner.id, expiry)
+	allowed, err = runner.deps.State.RepeatAllowed(ctx, queries, roomIDStr, runner.id, expiry)
 	if err != nil {
 		return true, false, fmt.Errorf("checking if allowed: %w", err)
 	}
 	return true, allowed, nil
 }
 
-func (runner *repeatedCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
-	repeat, err := models.RepeatedCommands(
-		models.RepeatedCommandWhere.ID.EQ(runner.id),
-		models.RepeatedCommandWhere.Enabled.EQ(true),
-		qm.Load(models.RepeatedCommandRels.Channel),
-		qm.Load(models.RepeatedCommandRels.CommandInfo, qm.For("UPDATE")),
-		qm.Load(qm.Rels(models.RepeatedCommandRels.CommandInfo, models.CommandInfoRels.CustomCommand)),
-		qm.Load(qm.Rels(models.RepeatedCommandRels.CommandInfo, models.CommandInfoRels.CommandList)),
-		qm.For("UPDATE"),
-	).One(ctx, exec)
-
-	runner.repeat = repeat
+func (runner *repeatedCommandRunner) load(ctx context.Context, queries *dbsql.Queries) error {
+	row, err := queries.GetRepeatedCommandForRun(ctx, runner.id)
 	if err != nil {
 		return fmt.Errorf("loading repeat: %w", err)
 	}
-	return nil
+	runner.repeat = new(row)
+	return runner.loadRelations(ctx, queries)
 }
 
-func (runner *repeatedCommandRunner) channel() *models.Channel {
-	return runner.repeat.R.Channel
+func (runner *repeatedCommandRunner) channel() *dbsql.Channel {
+	return runner.loadedChannel
 }
 
-func (runner *repeatedCommandRunner) updateCount(ctx context.Context, exec boil.ContextExecutor) error {
+func (runner *repeatedCommandRunner) updateCount(ctx context.Context, queries *dbsql.Queries) error {
 	repeat := runner.repeat
 	repeat.LastCount = runner.channel().MessageCount
 
-	if err := repeat.Update(ctx, exec, boil.Whitelist(models.RepeatedCommandColumns.LastCount)); err != nil {
+	if err := queries.UpdateRepeatedCommandLastCount(ctx, dbsql.UpdateRepeatedCommandLastCountParams{
+		LastCount: repeat.LastCount,
+		ID:        repeat.ID,
+	}); err != nil {
 		return fmt.Errorf("updating count: %w", err)
 	}
 	return nil
 }
 
-func (runner *repeatedCommandRunner) info() *models.CommandInfo {
-	return runner.repeat.R.CommandInfo
+func (runner *repeatedCommandRunner) info() *dbsql.CommandInfo {
+	return runner.loadedInfo
+}
+
+func (runner *repeatedCommandRunner) command() (string, []string) {
+	return runner.message, runner.items
+}
+
+func (runner *repeatedCommandRunner) loadRelations(ctx context.Context, queries *dbsql.Queries) error {
+	channelRow, err := queries.GetChannelByID(ctx, runner.repeat.ChannelID)
+	if err != nil {
+		return fmt.Errorf("loading repeat channel: %w", err)
+	}
+	info, err := queries.GetCommandInfoByIDForUpdate(ctx, runner.repeat.CommandInfoID)
+	if err != nil {
+		return fmt.Errorf("loading repeat command info: %w", err)
+	}
+	runner.loadedChannel = &channelRow
+	runner.loadedInfo = &info
+	if info.CustomCommandID.Valid {
+		command, err := queries.GetCustomCommand(ctx, info.CustomCommandID.Int64)
+		if err != nil {
+			return fmt.Errorf("loading repeat command: %w", err)
+		}
+		runner.message = command.Message
+	} else {
+		list, err := queries.GetCommandList(ctx, info.CommandListID.Int64)
+		if err != nil {
+			return fmt.Errorf("loading repeat list: %w", err)
+		}
+		runner.items = list.Items
+	}
+	return nil
 }
 
 type scheduledCommandRunner struct {
-	id        int64
-	deps      *sharedDeps
-	scheduled *models.ScheduledCommand
+	id            int64
+	deps          *sharedDeps
+	scheduled     *dbsql.ScheduledCommand
+	loadedChannel *dbsql.Channel
+	loadedInfo    *dbsql.CommandInfo
+	message       string
+	items         []string
 }
 
 var _ repeatRunner = (*scheduledCommandRunner)(nil)
@@ -286,26 +302,15 @@ func (runner *scheduledCommandRunner) withLog(ctx context.Context) context.Conte
 	return ctxlog.With(ctx, zap.Int64("scheduledCommand", runner.id))
 }
 
-func (runner *scheduledCommandRunner) status(ctx context.Context, exec boil.ContextExecutor) (status repeatStatus, err error) {
-	err = queries.Raw(`
-SELECT
-	s.enabled AS enabled,
-	c.active AS active,
-	c.message_count >= (s.last_count + s.message_diff) AS ready
-FROM
-	scheduled_commands s
-JOIN
-	channels c ON c.id = s.channel_id
-WHERE
-	s.id = $1
-`, runner.id).Bind(ctx, exec, &status)
+func (runner *scheduledCommandRunner) status(ctx context.Context, queries *dbsql.Queries) (status repeatStatus, err error) {
+	row, err := queries.GetScheduledCommandStatus(ctx, runner.id)
 	if err != nil {
 		return repeatStatus{}, fmt.Errorf("getting status: %w", err)
 	}
-	return status, nil
+	return repeatStatus(row), nil
 }
 
-func (runner *scheduledCommandRunner) allowed(ctx context.Context, tx *sql.Tx) (found bool, allowed bool, err error) {
+func (runner *scheduledCommandRunner) allowed(ctx context.Context, queries *dbsql.Queries) (found bool, allowed bool, err error) {
 	channel := runner.channel()
 	scheduled := runner.scheduled
 
@@ -322,49 +327,72 @@ func (runner *scheduledCommandRunner) allowed(ctx context.Context, tx *sql.Tx) (
 	// offset. This prevents any given cron from running faster than every
 	// 30 seconds.
 	roomIDStr := strconv.FormatInt(channel.TwitchID, 10)
-	allowed, err = runner.deps.State.ScheduledAllowed(ctx, tx, roomIDStr, runner.id, 29*time.Second)
+	allowed, err = runner.deps.State.ScheduledAllowed(ctx, queries, roomIDStr, runner.id, 29*time.Second)
 	if err != nil {
 		return true, false, fmt.Errorf("checking if allowed: %w", err)
 	}
 	return true, allowed, nil
 }
 
-func (runner *scheduledCommandRunner) load(ctx context.Context, exec boil.ContextExecutor) error {
-	scheduled, err := models.ScheduledCommands(
-		models.ScheduledCommandWhere.ID.EQ(runner.id),
-		models.ScheduledCommandWhere.Enabled.EQ(true),
-		qm.Load(models.ScheduledCommandRels.Channel),
-		qm.Load(models.ScheduledCommandRels.CommandInfo, qm.For("UPDATE")),
-		qm.Load(qm.Rels(models.ScheduledCommandRels.CommandInfo, models.CommandInfoRels.CustomCommand)),
-		qm.Load(qm.Rels(models.ScheduledCommandRels.CommandInfo, models.CommandInfoRels.CommandList)),
-		qm.For("UPDATE"),
-	).One(ctx, exec)
-
-	runner.scheduled = scheduled
-
+func (runner *scheduledCommandRunner) load(ctx context.Context, queries *dbsql.Queries) error {
+	row, err := queries.GetScheduledCommandForRun(ctx, runner.id)
 	if err != nil {
 		return fmt.Errorf("loading scheduled: %w", err)
 	}
-
-	return nil
+	runner.scheduled = new(row)
+	return runner.loadRelations(ctx, queries)
 }
 
-func (runner *scheduledCommandRunner) channel() *models.Channel {
-	return runner.scheduled.R.Channel
+func (runner *scheduledCommandRunner) channel() *dbsql.Channel {
+	return runner.loadedChannel
 }
 
-func (runner *scheduledCommandRunner) updateCount(ctx context.Context, exec boil.ContextExecutor) error {
+func (runner *scheduledCommandRunner) updateCount(ctx context.Context, queries *dbsql.Queries) error {
 	scheduled := runner.scheduled
 	scheduled.LastCount = runner.channel().MessageCount
 
-	if err := scheduled.Update(ctx, exec, boil.Whitelist(models.ScheduledCommandColumns.LastCount)); err != nil {
+	if err := queries.UpdateScheduledCommandLastCount(ctx, dbsql.UpdateScheduledCommandLastCountParams{
+		LastCount: scheduled.LastCount,
+		ID:        scheduled.ID,
+	}); err != nil {
 		return fmt.Errorf("updating count: %w", err)
 	}
 	return nil
 }
 
-func (runner *scheduledCommandRunner) info() *models.CommandInfo {
-	return runner.scheduled.R.CommandInfo
+func (runner *scheduledCommandRunner) info() *dbsql.CommandInfo {
+	return runner.loadedInfo
+}
+
+func (runner *scheduledCommandRunner) command() (string, []string) {
+	return runner.message, runner.items
+}
+
+func (runner *scheduledCommandRunner) loadRelations(ctx context.Context, queries *dbsql.Queries) error {
+	channelRow, err := queries.GetChannelByID(ctx, runner.scheduled.ChannelID)
+	if err != nil {
+		return fmt.Errorf("loading scheduled channel: %w", err)
+	}
+	info, err := queries.GetCommandInfoByIDForUpdate(ctx, runner.scheduled.CommandInfoID)
+	if err != nil {
+		return fmt.Errorf("loading scheduled command info: %w", err)
+	}
+	runner.loadedChannel = &channelRow
+	runner.loadedInfo = &info
+	if info.CustomCommandID.Valid {
+		command, err := queries.GetCustomCommand(ctx, info.CustomCommandID.Int64)
+		if err != nil {
+			return fmt.Errorf("loading scheduled command: %w", err)
+		}
+		runner.message = command.Message
+	} else {
+		list, err := queries.GetCommandList(ctx, info.CommandListID.Int64)
+		if err != nil {
+			return fmt.Errorf("loading scheduled list: %w", err)
+		}
+		runner.items = list.Items
+	}
+	return nil
 }
 
 func (b *Bot) loadRepeats(ctx context.Context) error {
@@ -374,7 +402,7 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 		return err
 	}
 
-	repeats, err := modelsx.GetActiveRepeatedCommands(ctx, b.db)
+	repeats, err := b.queries.ListActiveRepeatedCommands(ctx)
 	if err != nil {
 		return fmt.Errorf("getting active repeated commands: %w", err)
 	}
@@ -383,7 +411,7 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 		return err
 	}
 
-	scheduleds, err := modelsx.GetActiveScheduledCommands(ctx, b.db)
+	scheduleds, err := b.queries.ListActiveScheduledCommands(ctx)
 	if err != nil {
 		return fmt.Errorf("getting active scheduled commands: %w", err)
 	}
@@ -391,7 +419,7 @@ func (b *Bot) loadRepeats(ctx context.Context) error {
 	return updateScheduleds(ctx, b.deps, scheduleds, true)
 }
 
-func updateRepeating(ctx context.Context, deps *sharedDeps, repeats []*models.RepeatedCommand, enable bool) error {
+func updateRepeating(ctx context.Context, deps *sharedDeps, repeats []dbsql.RepeatedCommand, enable bool) error {
 	for _, repeat := range repeats {
 		if !enable || !repeat.Enabled {
 			if err := deps.RemoveRepeat(ctx, repeat.ID); err != nil {
@@ -402,7 +430,7 @@ func updateRepeating(ctx context.Context, deps *sharedDeps, repeats []*models.Re
 
 		interval := time.Duration(repeat.Delay) * time.Second
 
-		start := repeat.UpdatedAt
+		start := repeat.UpdatedAt.Time
 		if repeat.InitTimestamp.Valid {
 			start = repeat.InitTimestamp.Time
 		}
@@ -415,7 +443,7 @@ func updateRepeating(ctx context.Context, deps *sharedDeps, repeats []*models.Re
 	return nil
 }
 
-func updateScheduleds(ctx context.Context, deps *sharedDeps, scheduleds []*models.ScheduledCommand, enable bool) error {
+func updateScheduleds(ctx context.Context, deps *sharedDeps, scheduleds []dbsql.ScheduledCommand, enable bool) error {
 	for _, scheduled := range scheduleds {
 		if !enable || !scheduled.Enabled {
 			if err := deps.RemoveScheduled(ctx, scheduled.ID); err != nil {

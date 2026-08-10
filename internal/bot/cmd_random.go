@@ -60,7 +60,7 @@ func cmdRandom(ctx context.Context, s *session, cmd string, args string) error {
 		var err error
 		maxValue, err = strconv.Atoi(args)
 		if err != nil {
-			maxValue = s.Channel.RollDefault
+			maxValue = int(s.Channel.RollDefault)
 		}
 	}
 

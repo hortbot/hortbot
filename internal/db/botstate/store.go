@@ -11,7 +11,7 @@ import (
 	"math/rand/v2"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 // Rand is the subset of math/rand/v2 used for raffle pops.
@@ -50,16 +50,16 @@ func New(opts ...Option) *Store {
 	return d
 }
 
-func (s *Store) currentTime(ctx context.Context, exec boil.ContextExecutor) (time.Time, error) {
+func (s *Store) currentTime(ctx context.Context, queries *dbsql.Queries) (time.Time, error) {
 	if s.now != nil {
 		return s.now(), nil
 	}
 
-	var now time.Time
-	if err := exec.QueryRowContext(ctx, `SELECT clock_timestamp()`).Scan(&now); err != nil {
+	now, err := queries.BotStateCurrentTime(ctx)
+	if err != nil {
 		return time.Time{}, fmt.Errorf("get database time: %w", err)
 	}
-	return now, nil
+	return now.Time, nil
 }
 
 type defaultRand struct{}

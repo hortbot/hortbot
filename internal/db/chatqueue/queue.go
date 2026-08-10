@@ -3,14 +3,15 @@ package chatqueue
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
 
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/xid"
 )
 
@@ -45,11 +46,11 @@ type CleanupResult struct {
 }
 
 type Queue struct {
-	db   *sql.DB
+	db   *pgxpool.Pool
 	wake chan struct{}
 }
 
-func New(db *sql.DB, workers int) *Queue {
+func New(db *pgxpool.Pool, workers int) *Queue {
 	if db == nil {
 		panic("nil db")
 	}
@@ -80,44 +81,32 @@ func (q *Queue) Enqueue(ctx context.Context, message Message) (bool, error) {
 
 	var inserted bool
 	err := dbx.Transact(ctx, q.db,
-		func(ctx context.Context, tx *sql.Tx) error {
-			_, err := tx.ExecContext(ctx, `
-				INSERT INTO chat_message_queue_keys (broadcaster_login)
-				VALUES ($1)
-				ON CONFLICT (broadcaster_login) DO NOTHING
-			`, message.BroadcasterLogin)
+		func(ctx context.Context, tx pgx.Tx) error {
+			err := dbsql.New(tx).ChatQueueEnsureKey(ctx, message.BroadcasterLogin)
 			if err != nil {
 				return fmt.Errorf("insert queue keys: %w", err)
 			}
 			return nil
 		},
-		func(ctx context.Context, tx *sql.Tx) error {
-			result, err := tx.ExecContext(ctx, `
-				INSERT INTO chat_message_queue (
-					message_id,
-					broadcaster_login,
-					message_timestamp,
-					enqueued_at,
-					payload
-				)
-				VALUES ($1, $2, $3, $4, $5::jsonb)
-				ON CONFLICT (message_id) DO NOTHING
-			`, message.ID, message.BroadcasterLogin, message.MessageTimestamp, message.EnqueuedAt, string(message.Payload))
+		func(ctx context.Context, tx pgx.Tx) error {
+			n, err := dbsql.New(tx).ChatQueueEnqueue(ctx, dbsql.ChatQueueEnqueueParams{
+				MessageID:        message.ID,
+				BroadcasterLogin: message.BroadcasterLogin,
+				MessageTimestamp: dbsql.TimestamptzFrom(message.MessageTimestamp),
+				EnqueuedAt:       dbsql.TimestamptzFrom(message.EnqueuedAt),
+				Payload:          message.Payload,
+			})
 			if err != nil {
 				return fmt.Errorf("insert queued message: %w", err)
-			}
-			n, err := result.RowsAffected()
-			if err != nil {
-				return fmt.Errorf("get inserted message count: %w", err)
 			}
 			inserted = n == 1
 			return nil
 		},
-		func(ctx context.Context, tx *sql.Tx) error {
+		func(ctx context.Context, tx pgx.Tx) error {
 			if !inserted {
 				return nil
 			}
-			if _, err := tx.ExecContext(ctx, `SELECT pg_notify($1, '')`, notificationChannel); err != nil {
+			if err := dbsql.New(tx).ChatQueueNotify(ctx, notificationChannel); err != nil {
 				return fmt.Errorf("notify queue workers: %w", err)
 			}
 			return nil
@@ -157,55 +146,37 @@ func (q *Queue) Claim(ctx context.Context, leaseDuration time.Duration) (*Lease,
 	token := xid.New().String()
 	var lease *Lease
 
-	err := dbx.Transact(ctx, q.db, func(ctx context.Context, tx *sql.Tx) error {
-		var message Message
-		err := tx.QueryRowContext(ctx, `
-			SELECT
-				q.message_id,
-				q.broadcaster_login,
-				q.message_timestamp,
-				q.enqueued_at,
-				q.payload
-			FROM chat_message_queue AS q
-			JOIN chat_message_queue_keys AS k USING (broadcaster_login)
-			WHERE q.completed_at IS NULL
-				AND q.failed_at IS NULL
-				AND (q.lease_until IS NULL OR q.lease_until <= NOW())
-				AND (k.lease_until IS NULL OR k.lease_until <= NOW())
-			ORDER BY q.enqueued_at, q.message_id
-			FOR UPDATE OF q, k SKIP LOCKED
-			LIMIT 1
-		`).Scan(
-			&message.ID,
-			&message.BroadcasterLogin,
-			&message.MessageTimestamp,
-			&message.EnqueuedAt,
-			&message.Payload,
-		)
-		if errors.Is(err, sql.ErrNoRows) {
+	err := dbx.Transact(ctx, q.db, func(ctx context.Context, tx pgx.Tx) error {
+		qtx := dbsql.New(tx)
+		row, err := qtx.ChatQueueClaim(ctx)
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil
 		}
 		if err != nil {
 			return fmt.Errorf("select queued message: %w", err)
 		}
+		message := Message{
+			ID:               row.MessageID,
+			BroadcasterLogin: row.BroadcasterLogin,
+			MessageTimestamp: row.MessageTimestamp.Time,
+			EnqueuedAt:       row.EnqueuedAt.Time,
+			Payload:          row.Payload,
+		}
 
-		var leaseUntil time.Time
-		if err := tx.QueryRowContext(ctx, `
-			UPDATE chat_message_queue_keys
-			SET
-				lease_token = $2,
-				lease_until = NOW() + ($3 * INTERVAL '1 microsecond')
-			WHERE broadcaster_login = $1
-			RETURNING lease_until
-		`, message.BroadcasterLogin, token, leaseDuration.Microseconds()).Scan(&leaseUntil); err != nil {
+		leaseUntil, err := qtx.ChatQueueLeaseKey(ctx, dbsql.ChatQueueLeaseKeyParams{
+			LeaseToken:        token,
+			LeaseMicroseconds: leaseDuration.Microseconds(),
+			BroadcasterLogin:  message.BroadcasterLogin,
+		})
+		if err != nil {
 			return fmt.Errorf("lease queue key: %w", err)
 		}
 
-		if _, err := tx.ExecContext(ctx, `
-			UPDATE chat_message_queue
-			SET lease_token = $2, lease_until = $3
-			WHERE message_id = $1
-		`, message.ID, token, leaseUntil); err != nil {
+		if err := qtx.ChatQueueLeaseMessage(ctx, dbsql.ChatQueueLeaseMessageParams{
+			LeaseToken: token,
+			LeaseUntil: leaseUntil,
+			MessageID:  message.ID,
+		}); err != nil {
 			return fmt.Errorf("lease queued message: %w", err)
 		}
 
@@ -229,34 +200,23 @@ func (q *Queue) Complete(ctx context.Context, lease *Lease) error {
 		panic("nil lease")
 	}
 
-	err := dbx.Transact(ctx, q.db, func(ctx context.Context, tx *sql.Tx) error {
-		result, err := tx.ExecContext(ctx, `
-			UPDATE chat_message_queue
-			SET
-				completed_at = NOW(),
-				lease_token = NULL,
-				lease_until = NULL
-			WHERE message_id = $1
-				AND lease_token = $2
-				AND completed_at IS NULL
-				AND failed_at IS NULL
-		`, lease.ID, lease.Token)
+	err := dbx.Transact(ctx, q.db, func(ctx context.Context, tx pgx.Tx) error {
+		qtx := dbsql.New(tx)
+		n, err := qtx.ChatQueueComplete(ctx, dbsql.ChatQueueCompleteParams{
+			MessageID:  lease.ID,
+			LeaseToken: lease.Token,
+		})
 		if err != nil {
 			return fmt.Errorf("complete queued message: %w", err)
-		}
-		n, err := result.RowsAffected()
-		if err != nil {
-			return fmt.Errorf("get completed message count: %w", err)
 		}
 		if n != 1 {
 			return ErrLeaseLost
 		}
 
-		if _, err := tx.ExecContext(ctx, `
-			UPDATE chat_message_queue_keys
-			SET lease_token = NULL, lease_until = NULL
-			WHERE broadcaster_login = $1 AND lease_token = $2
-		`, lease.BroadcasterLogin, lease.Token); err != nil {
+		if err := qtx.ChatQueueReleaseKey(ctx, dbsql.ChatQueueReleaseKeyParams{
+			BroadcasterLogin: lease.BroadcasterLogin,
+			LeaseToken:       lease.Token,
+		}); err != nil {
 			return fmt.Errorf("release queue key: %w", err)
 		}
 		return nil
@@ -275,32 +235,24 @@ func (q *Queue) Fail(ctx context.Context, lease *Lease, cause error) error {
 		panic("nil cause")
 	}
 
-	err := dbx.Transact(ctx, q.db, func(ctx context.Context, tx *sql.Tx) error {
-		result, err := tx.ExecContext(ctx, `
-			UPDATE chat_message_queue
-			SET
-				failed_at = NOW(),
-				last_error = $3,
-				lease_token = NULL,
-				lease_until = NULL
-			WHERE message_id = $1 AND lease_token = $2
-		`, lease.ID, lease.Token, cause.Error())
+	err := dbx.Transact(ctx, q.db, func(ctx context.Context, tx pgx.Tx) error {
+		qtx := dbsql.New(tx)
+		n, err := qtx.ChatQueueFail(ctx, dbsql.ChatQueueFailParams{
+			LastError:  cause.Error(),
+			MessageID:  lease.ID,
+			LeaseToken: lease.Token,
+		})
 		if err != nil {
 			return fmt.Errorf("fail queued message: %w", err)
-		}
-		n, err := result.RowsAffected()
-		if err != nil {
-			return fmt.Errorf("get failed message count: %w", err)
 		}
 		if n != 1 {
 			return ErrLeaseLost
 		}
 
-		if _, err := tx.ExecContext(ctx, `
-			UPDATE chat_message_queue_keys
-			SET lease_token = NULL, lease_until = NULL
-			WHERE broadcaster_login = $1 AND lease_token = $2
-		`, lease.BroadcasterLogin, lease.Token); err != nil {
+		if err := qtx.ChatQueueReleaseKey(ctx, dbsql.ChatQueueReleaseKeyParams{
+			BroadcasterLogin: lease.BroadcasterLogin,
+			LeaseToken:       lease.Token,
+		}); err != nil {
 			return fmt.Errorf("release failed queue key: %w", err)
 		}
 		return nil
@@ -318,76 +270,37 @@ func (q *Queue) Cleanup(ctx context.Context, staleCutoff, completedCutoff, faile
 
 	var result CleanupResult
 	err := dbx.Transact(ctx, q.db,
-		func(ctx context.Context, tx *sql.Tx) error {
-			dbResult, err := tx.ExecContext(ctx, `
-				WITH doomed AS (
-					SELECT message_id
-					FROM chat_message_queue
-					WHERE message_timestamp <= $1
-						AND completed_at IS NULL
-						AND failed_at IS NULL
-						AND (lease_until IS NULL OR lease_until <= NOW())
-					ORDER BY message_timestamp, message_id
-					FOR UPDATE SKIP LOCKED
-					LIMIT $2
-				)
-				DELETE FROM chat_message_queue AS q
-				USING doomed
-				WHERE q.message_id = doomed.message_id
-			`, staleCutoff, limit)
+		func(ctx context.Context, tx pgx.Tx) error {
+			n, err := dbsql.New(tx).ChatQueueDeleteStale(ctx, dbsql.ChatQueueDeleteStaleParams{
+				Cutoff:     dbsql.TimestamptzFrom(staleCutoff),
+				BatchLimit: int64(limit),
+			})
 			if err != nil {
 				return fmt.Errorf("delete stale queued messages: %w", err)
 			}
-			result.Stale, err = dbResult.RowsAffected()
-			if err != nil {
-				return fmt.Errorf("get stale message count: %w", err)
-			}
+			result.Stale = n
 			return nil
 		},
-		func(ctx context.Context, tx *sql.Tx) error {
-			dbResult, err := tx.ExecContext(ctx, `
-				WITH doomed AS (
-					SELECT message_id
-					FROM chat_message_queue
-					WHERE completed_at <= $1
-					ORDER BY completed_at, message_id
-					FOR UPDATE SKIP LOCKED
-					LIMIT $2
-				)
-				DELETE FROM chat_message_queue AS q
-				USING doomed
-				WHERE q.message_id = doomed.message_id
-			`, completedCutoff, limit)
+		func(ctx context.Context, tx pgx.Tx) error {
+			n, err := dbsql.New(tx).ChatQueueDeleteCompleted(ctx, dbsql.ChatQueueDeleteCompletedParams{
+				Cutoff:     dbsql.TimestamptzFrom(completedCutoff),
+				BatchLimit: int64(limit),
+			})
 			if err != nil {
 				return fmt.Errorf("delete completed message tombstones: %w", err)
 			}
-			result.Completed, err = dbResult.RowsAffected()
-			if err != nil {
-				return fmt.Errorf("get completed tombstone count: %w", err)
-			}
+			result.Completed = n
 			return nil
 		},
-		func(ctx context.Context, tx *sql.Tx) error {
-			dbResult, err := tx.ExecContext(ctx, `
-				WITH doomed AS (
-					SELECT message_id
-					FROM chat_message_queue
-					WHERE failed_at <= $1
-					ORDER BY failed_at, message_id
-					FOR UPDATE SKIP LOCKED
-					LIMIT $2
-				)
-				DELETE FROM chat_message_queue AS q
-				USING doomed
-				WHERE q.message_id = doomed.message_id
-			`, failedCutoff, limit)
+		func(ctx context.Context, tx pgx.Tx) error {
+			n, err := dbsql.New(tx).ChatQueueDeleteFailed(ctx, dbsql.ChatQueueDeleteFailedParams{
+				Cutoff:     dbsql.TimestamptzFrom(failedCutoff),
+				BatchLimit: int64(limit),
+			})
 			if err != nil {
 				return fmt.Errorf("delete failed messages: %w", err)
 			}
-			result.Failed, err = dbResult.RowsAffected()
-			if err != nil {
-				return fmt.Errorf("get failed message count: %w", err)
-			}
+			result.Failed = n
 			return nil
 		},
 	)

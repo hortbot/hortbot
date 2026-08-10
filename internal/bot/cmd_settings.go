@@ -7,12 +7,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/gobuffalo/flect"
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var settingCommands = newHandlerMap(map[string]handlerFunc{
@@ -74,12 +71,12 @@ func cmdSettingBullet(ctx context.Context, s *session, cmd string, args string) 
 	reset := strings.EqualFold(args, "reset")
 
 	if reset {
-		s.Channel.Bullet = null.String{}
+		s.Channel.Bullet = pgtype.Text{}
 	} else {
-		s.Channel.Bullet = null.StringFrom(args)
+		s.Channel.Bullet = dbsql.TextFrom(args)
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Bullet)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -105,7 +102,7 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 	reset := strings.EqualFold(args, "reset")
 
 	if reset {
-		s.Channel.Prefix = modelsx.DefaultPrefix
+		s.Channel.Prefix = DefaultChannelPrefix
 	} else {
 		if utf8.RuneCountInString(args) != 1 {
 			return s.Reply(ctx, "Prefix may only be a single character.")
@@ -113,7 +110,7 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 		s.Channel.Prefix = args
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Prefix)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -125,12 +122,12 @@ func cmdSettingPrefix(ctx context.Context, s *session, cmd string, args string) 
 }
 
 func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string) error {
-	var cooldown null.Int
+	var cooldown pgtype.Int4
 
 	if args == "" {
 		cooldown = s.Channel.Cooldown
 		if cooldown.Valid {
-			return s.Replyf(ctx, "Cooldown is %d seconds.", s.Channel.Cooldown.Int)
+			return s.Replyf(ctx, "Cooldown is %d seconds.", s.Channel.Cooldown.Int32)
 		}
 		return s.Replyf(ctx, "Cooldown is %d seconds (default).", s.Deps.DefaultCooldown)
 	}
@@ -138,24 +135,24 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 	reset := strings.EqualFold(args, "reset")
 
 	if !reset {
-		v, err := strconv.Atoi(args)
+		v, err := strconv.ParseInt(args, 10, 32)
 		if err != nil {
 			return s.Reply(ctx, "New cooldown must be an integer.")
 		}
-		cooldown = null.IntFrom(v)
+		cooldown = dbsql.Int4From(int32(v))
 	}
 
 	s.Channel.Cooldown = cooldown
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Cooldown)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
 	if reset {
-		return s.Replyf(ctx, "Cooldown reset to %d seconds (default).", cooldown.Int)
+		return s.Replyf(ctx, "Cooldown reset to %d seconds (default).", cooldown.Int32)
 	}
 
-	return s.Replyf(ctx, "Cooldown changed to %d seconds.", cooldown.Int)
+	return s.Replyf(ctx, "Cooldown changed to %d seconds.", cooldown.Int32)
 }
 
 func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args string) error {
@@ -163,7 +160,7 @@ func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args 
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.ShouldModerate },
 		func(v bool) { s.Channel.ShouldModerate = v },
-		models.ChannelColumns.ShouldModerate,
+		"",
 		"shouldModerate",
 		s.Channel.BotName+" is already moderating.",
 		s.Channel.BotName+" is already not moderating.",
@@ -192,7 +189,7 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 		s.Channel.LastFM = args
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.LastFM)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -208,7 +205,7 @@ func cmdSettingParseYoutube(ctx context.Context, s *session, cmd string, args st
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.ParseYoutube },
 		func(v bool) { s.Channel.ParseYoutube = v },
-		models.ChannelColumns.ParseYoutube,
+		"",
 		"parseYoutube",
 		"YouTube link parsing is already enabled.",
 		"YouTube link parsing is already disabled.",
@@ -222,7 +219,7 @@ func cmdSettingEnableWarnings(ctx context.Context, s *session, cmd string, args 
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.EnableWarnings },
 		func(v bool) { s.Channel.EnableWarnings = v },
-		models.ChannelColumns.EnableWarnings,
+		"",
 		"enableWarnings",
 		"Warnings are already enabled.",
 		"Warnings are already disabled.",
@@ -236,7 +233,7 @@ func cmdSettingDisplayWarnings(ctx context.Context, s *session, cmd string, args
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.DisplayWarnings },
 		func(v bool) { s.Channel.DisplayWarnings = v },
-		models.ChannelColumns.DisplayWarnings,
+		"",
 		"displayWarnings",
 		"Warning/timeout messages are already enabled.",
 		"Warning/timeout messages are already disabled.",
@@ -253,7 +250,7 @@ func cmdSettingTimeoutDuration(ctx context.Context, s *session, cmd string, args
 		return s.Replyf(ctx, "Timeout duration is set to %d seconds.", s.Channel.TimeoutDuration)
 	}
 
-	dur, err := strconv.Atoi(args)
+	dur, err := parseInt32(args)
 	if err != nil {
 		return s.ReplyUsage(ctx, "<seconds>")
 	}
@@ -264,7 +261,7 @@ func cmdSettingTimeoutDuration(ctx context.Context, s *session, cmd string, args
 
 	s.Channel.TimeoutDuration = dur
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.TimeoutDuration)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -288,9 +285,9 @@ func cmdSettingExtraLifeID(ctx context.Context, s *session, cmd string, args str
 		return s.ReplyUsage(ctx, "<participant ID>")
 	}
 
-	s.Channel.ExtraLifeID = int(id)
+	s.Channel.ExtraLifeID = int32(id)
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.ExtraLifeID)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -310,7 +307,7 @@ func cmdSettingSubsMayLink(ctx context.Context, s *session, cmd string, args str
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.SubsMayLink },
 		func(v bool) { s.Channel.SubsMayLink = v },
-		models.ChannelColumns.SubsMayLink,
+		"",
 		"subsMayLink",
 		"Subs already may post links.",
 		"Subs already may not post links.",
@@ -347,7 +344,7 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 
 	s.Channel.Mode = newModePG
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Mode)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -356,7 +353,7 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 
 func updateBoolean(
 	ctx context.Context, s *session, _ string, args string,
-	get func() bool, set func(v bool), column string,
+	get func() bool, set func(v bool), _ string,
 	name, alreadyTrue, alreadyFalse, setTrue, setFalse string,
 ) error {
 	args = strings.ToLower(args)
@@ -385,7 +382,7 @@ func updateBoolean(
 
 	set(v)
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -399,7 +396,6 @@ func updateBoolean(
 func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) error {
 	opt, args := splitSpace(args)
 
-	var column string
 	var reply string
 
 	switch opt {
@@ -408,32 +404,30 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 			return s.Replyf(ctx, "Default roll size is set to %d.", s.Channel.RollDefault)
 		}
 
-		def, err := strconv.Atoi(args)
+		def, err := parseInt32(args)
 		if err != nil || def <= 0 {
 			return s.ReplyUsage(ctx, "default <num>")
 		}
 
 		s.Channel.RollDefault = def
-		column = models.ChannelColumns.RollDefault
-		reply = "Default roll size set to " + strconv.Itoa(def) + "."
+		reply = "Default roll size set to " + strconv.Itoa(int(def)) + "."
 
 	case "cooldown":
 		if args == "" {
 			return s.Replyf(ctx, "Roll command cooldown is set to %d seconds.", s.Channel.RollCooldown)
 		}
 
-		cooldown, err := strconv.Atoi(args)
+		cooldown, err := parseInt32(args)
 		if err != nil || cooldown < 0 {
 			return s.ReplyUsage(ctx, "cooldown <seconds>")
 		}
 
 		s.Channel.RollCooldown = cooldown
-		column = models.ChannelColumns.RollCooldown
-		reply = "Roll command cooldown set to " + strconv.Itoa(cooldown) + " seconds."
+		reply = "Roll command cooldown set to " + strconv.Itoa(int(cooldown)) + " seconds."
 
 	case "userlevel":
 		if args == "" {
-			return s.Replyf(ctx, "Roll command is available to %s and above.", flect.Pluralize(s.Channel.RollLevel))
+			return s.Replyf(ctx, "Roll command is available to %s and above.", pluralAccessLevel(s.Channel.RollLevel))
 		}
 
 		args = strings.ToLower(args)
@@ -443,14 +437,13 @@ func cmdSettingsRoll(ctx context.Context, s *session, cmd string, args string) e
 		}
 
 		s.Channel.RollLevel = level
-		column = models.ChannelColumns.RollLevel
-		reply = "Roll command is now available to " + flect.Pluralize(level) + " and above."
+		reply = "Roll command is now available to " + pluralAccessLevel(level) + " and above."
 
 	default:
 		return s.ReplyUsage(ctx, "default|cooldown|userlevel ...")
 	}
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, column)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -473,7 +466,7 @@ func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) 
 
 	s.Channel.SteamID = id
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.SteamID)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -489,7 +482,7 @@ func cmdSettingUrban(ctx context.Context, s *session, cmd string, args string) e
 		ctx, s, cmd, args,
 		func() bool { return s.Channel.UrbanEnabled },
 		func(v bool) { s.Channel.UrbanEnabled = v },
-		models.ChannelColumns.UrbanEnabled,
+		"",
 		"urban",
 		"Urban Dictionary is already enabled.",
 		"Urban Dictionary is already disabled.",
@@ -510,7 +503,7 @@ func cmdSettingTweet(ctx context.Context, s *session, cmd string, args string) e
 
 	s.Channel.Tweet = args
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Tweet)); err != nil {
+	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 

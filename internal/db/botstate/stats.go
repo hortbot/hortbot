@@ -7,20 +7,20 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 // IncrementBuiltinUsageStat atomically adds one to the named builtin
 // usage counter, creating it if needed.
-func (*Store) IncrementBuiltinUsageStat(ctx context.Context, exec boil.ContextExecutor, name string) error {
-	return addBuiltinUsageStat(ctx, exec, name, 1)
+func (*Store) IncrementBuiltinUsageStat(ctx context.Context, queries *dbsql.Queries, name string) error {
+	return addBuiltinUsageStat(ctx, queries, name, 1)
 }
 
-func addBuiltinUsageStat(ctx context.Context, exec boil.ContextExecutor, name string, count int64) error {
-	_, err := exec.ExecContext(ctx, `
-		INSERT INTO bot_builtin_usage_stats (name, count) VALUES ($1, $2)
-		ON CONFLICT (name) DO UPDATE SET count = bot_builtin_usage_stats.count + EXCLUDED.count
-	`, name, count)
+func addBuiltinUsageStat(ctx context.Context, queries *dbsql.Queries, name string, count int64) error {
+	err := queries.BotStateAddBuiltinUsageStat(ctx, dbsql.BotStateAddBuiltinUsageStatParams{
+		Name:  name,
+		Count: count,
+	})
 	if err != nil {
 		return fmt.Errorf("increment builtin usage stat: %w", err)
 	}
@@ -28,21 +28,29 @@ func addBuiltinUsageStat(ctx context.Context, exec boil.ContextExecutor, name st
 }
 
 // GetBuiltinUsageStats returns all builtin usage counters.
-func (*Store) GetBuiltinUsageStats(ctx context.Context, exec boil.ContextExecutor) (map[string]string, error) {
-	return getUsageStats(ctx, exec, `SELECT name, count FROM bot_builtin_usage_stats`, "builtin")
+func (*Store) GetBuiltinUsageStats(ctx context.Context, queries *dbsql.Queries) (map[string]string, error) {
+	rows, err := queries.BotStateListBuiltinUsageStats(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("get builtin usage stats: %w", err)
+	}
+	out := make(map[string]string, len(rows))
+	for _, row := range rows {
+		out[row.Name] = strconv.FormatInt(row.Count, 10)
+	}
+	return out, nil
 }
 
 // IncrementActionUsageStat atomically adds one to the named action
 // usage counter.
-func (*Store) IncrementActionUsageStat(ctx context.Context, exec boil.ContextExecutor, name string) error {
-	return addActionUsageStat(ctx, exec, name, 1)
+func (*Store) IncrementActionUsageStat(ctx context.Context, queries *dbsql.Queries, name string) error {
+	return addActionUsageStat(ctx, queries, name, 1)
 }
 
-func addActionUsageStat(ctx context.Context, exec boil.ContextExecutor, name string, count int64) error {
-	_, err := exec.ExecContext(ctx, `
-		INSERT INTO bot_action_usage_stats (name, count) VALUES ($1, $2)
-		ON CONFLICT (name) DO UPDATE SET count = bot_action_usage_stats.count + EXCLUDED.count
-	`, name, count)
+func addActionUsageStat(ctx context.Context, queries *dbsql.Queries, name string, count int64) error {
+	err := queries.BotStateAddActionUsageStat(ctx, dbsql.BotStateAddActionUsageStatParams{
+		Name:  name,
+		Count: count,
+	})
 	if err != nil {
 		return fmt.Errorf("increment action usage stat: %w", err)
 	}
@@ -52,25 +60,23 @@ func addActionUsageStat(ctx context.Context, exec boil.ContextExecutor, name str
 // MergeUsageStats imports usage counters without reducing any existing count.
 func (*Store) MergeUsageStats(
 	ctx context.Context,
-	exec boil.ContextExecutor,
+	queries *dbsql.Queries,
 	builtins map[string]int64,
 	actions map[string]int64,
 ) error {
 	for _, name := range slices.Sorted(maps.Keys(builtins)) {
-		if _, err := exec.ExecContext(ctx, `
-			INSERT INTO bot_builtin_usage_stats (name, count) VALUES ($1, $2)
-			ON CONFLICT (name) DO UPDATE
-				SET count = GREATEST(bot_builtin_usage_stats.count, EXCLUDED.count)
-		`, name, builtins[name]); err != nil {
+		if err := queries.BotStateMergeBuiltinUsageStat(ctx, dbsql.BotStateMergeBuiltinUsageStatParams{
+			Name:  name,
+			Count: builtins[name],
+		}); err != nil {
 			return fmt.Errorf("merge builtin usage stat: %w", err)
 		}
 	}
 	for _, name := range slices.Sorted(maps.Keys(actions)) {
-		if _, err := exec.ExecContext(ctx, `
-			INSERT INTO bot_action_usage_stats (name, count) VALUES ($1, $2)
-			ON CONFLICT (name) DO UPDATE
-				SET count = GREATEST(bot_action_usage_stats.count, EXCLUDED.count)
-		`, name, actions[name]); err != nil {
+		if err := queries.BotStateMergeActionUsageStat(ctx, dbsql.BotStateMergeActionUsageStatParams{
+			Name:  name,
+			Count: actions[name],
+		}); err != nil {
 			return fmt.Errorf("merge action usage stat: %w", err)
 		}
 	}
@@ -80,19 +86,19 @@ func (*Store) MergeUsageStats(
 // AddUsageStats adds a message's accumulated usage counters.
 func (*Store) AddUsageStats(
 	ctx context.Context,
-	exec boil.ContextExecutor,
+	queries *dbsql.Queries,
 	builtins map[string]int64,
 	actions map[string]int64,
 ) error {
 	for _, name := range slices.Sorted(maps.Keys(builtins)) {
 		count := builtins[name]
-		if err := addBuiltinUsageStat(ctx, exec, name, count); err != nil {
+		if err := addBuiltinUsageStat(ctx, queries, name, count); err != nil {
 			return err
 		}
 	}
 	for _, name := range slices.Sorted(maps.Keys(actions)) {
 		count := actions[name]
-		if err := addActionUsageStat(ctx, exec, name, count); err != nil {
+		if err := addActionUsageStat(ctx, queries, name, count); err != nil {
 			return err
 		}
 	}
@@ -100,28 +106,14 @@ func (*Store) AddUsageStats(
 }
 
 // GetActionUsageStats returns all action usage counters.
-func (*Store) GetActionUsageStats(ctx context.Context, exec boil.ContextExecutor) (map[string]string, error) {
-	return getUsageStats(ctx, exec, `SELECT name, count FROM bot_action_usage_stats`, "action")
-}
-
-func getUsageStats(ctx context.Context, exec boil.ContextExecutor, query, kind string) (map[string]string, error) {
-	rows, err := exec.QueryContext(ctx, query)
+func (*Store) GetActionUsageStats(ctx context.Context, queries *dbsql.Queries) (map[string]string, error) {
+	rows, err := queries.BotStateListActionUsageStats(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("get %s usage stats: %w", kind, err)
+		return nil, fmt.Errorf("get action usage stats: %w", err)
 	}
-	defer rows.Close()
-
-	out := make(map[string]string)
-	for rows.Next() {
-		var name string
-		var count int64
-		if err := rows.Scan(&name, &count); err != nil {
-			return nil, fmt.Errorf("scan %s usage stat: %w", kind, err)
-		}
-		out[name] = strconv.FormatInt(count, 10)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, fmt.Errorf("%s usage stat rows: %w", kind, err)
+	out := make(map[string]string, len(rows))
+	for _, row := range rows {
+		out[row.Name] = strconv.FormatInt(row.Count, 10)
 	}
 	return out, nil
 }

@@ -2,18 +2,16 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -27,7 +25,7 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 	logFn(ctx, "validating twitch tokens")
 	start := time.Now()
 
-	tokens, err := models.TwitchTokens().All(ctx, b.db)
+	tokens, err := b.queries.ListTwitchTokens(ctx)
 	if err != nil {
 		return fmt.Errorf("getting tokens: %w", err)
 	}
@@ -37,17 +35,18 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 	deleted := 0
 
 	for _, tt := range tokens {
-		err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
+		err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx pgx.Tx) error {
+			q := dbsql.New(tx)
 			ctx = ctxlog.With(ctx, zap.Int64("twitch_id", tt.TwitchID))
 
 			ctxlog.Debug(ctx, "validating token")
-			token := modelsx.ModelToToken(tt)
+			token := tt.OAuth2Token()
 			validation, newToken, err := b.deps.Twitch.Validate(ctx, token)
 			if err != nil {
 				if te, ok := apiclient.AsError(err); ok {
 					if errors.Is(err, twitch.ErrDeadToken) || te.IsNotPermitted() || te.IsNotFound() {
-						ctxlog.Info(ctx, "deleting dead token", zap.Error(err), zap.Int64("twitch_id", tt.TwitchID), zap.Stringp("bot_name", tt.BotName.Ptr()))
-						if err := tt.Delete(ctx, b.db); err != nil {
+						ctxlog.Info(ctx, "deleting dead token", zap.Error(err), zap.Int64("twitch_id", tt.TwitchID), zap.String("bot_name", tt.BotName.String))
+						if err := q.DeleteTwitchTokenByID(ctx, tt.TwitchID); err != nil {
 							return fmt.Errorf("deleting dead token: %w", err)
 						}
 						metricDeletedTokens.Inc()
@@ -62,13 +61,16 @@ func (b *Bot) validateTokens(ctx context.Context, log bool) error {
 			}
 
 			if newToken != nil {
-				tt = modelsx.TokenToModel(newToken, tt.TwitchID, tt.BotName, validation.Scopes)
+				tt = *dbsql.NewTwitchToken(newToken, tt.TwitchID, pgtype.Text{
+					String: tt.BotName.String,
+					Valid:  tt.BotName.Valid,
+				}, validation.Scopes)
 			} else {
 				tt.Scopes = validation.Scopes
 			}
 
 			ctxlog.Debug(ctx, "token validated", zap.Bool("new_token", newToken != nil), zap.Strings("scopes", tt.Scopes))
-			if err := modelsx.UpsertToken(ctx, b.db, tt); err != nil {
+			if err := q.SaveTwitchToken(ctx, &tt); err != nil {
 				return fmt.Errorf("upserting token: %w", err)
 			}
 
@@ -129,22 +131,15 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 	logFn(ctx, "updating moderated channels")
 	start := time.Now()
 
-	conflictColumns := []string{
-		models.ModeratedChannelColumns.BotName,
-		models.ModeratedChannelColumns.BroadcasterID,
-	}
-
-	err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
-		botTokens, err := models.TwitchTokens(
-			models.TwitchTokenWhere.BotName.IsNotNull(),
-			qm.Where("scopes @> array['user:read:moderated_channels']"),
-		).All(ctx, tx)
+	err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx pgx.Tx) error {
+		q := dbsql.New(tx)
+		botTokens, err := q.ListModerationBotTwitchTokens(ctx)
 		if err != nil {
 			return fmt.Errorf("getting bot tokens: %w", err)
 		}
 
 		logFn(ctx, "locking moderated_channels table")
-		if _, err := tx.ExecContext(ctx, "LOCK TABLE moderated_channels IN EXCLUSIVE MODE"); err != nil {
+		if err := q.LockModeratedChannels(ctx); err != nil {
 			return fmt.Errorf("locking moderated_channels: %w", err)
 		}
 
@@ -154,11 +149,14 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 			botName := botToken.BotName.String
 
 			logFn(ctx, "updating bot", zap.String("bot_name", botName))
-			token := modelsx.ModelToToken(botToken)
+			token := botToken.OAuth2Token()
 			moderatedChannels, newToken, err := b.deps.Twitch.GetModeratedChannels(ctx, botToken.TwitchID, token)
 			if newToken != nil {
-				botToken := modelsx.TokenToModel(newToken, botToken.TwitchID, botToken.BotName, botToken.Scopes)
-				if err := modelsx.UpsertToken(ctx, tx, botToken); err != nil {
+				botToken := dbsql.NewTwitchToken(newToken, botToken.TwitchID, pgtype.Text{
+					String: botToken.BotName.String,
+					Valid:  botToken.BotName.Valid,
+				}, botToken.Scopes)
+				if err := dbsql.New(tx).SaveTwitchToken(ctx, botToken); err != nil {
 					return fmt.Errorf("upserting new token: %w", err)
 				}
 			}
@@ -167,22 +165,21 @@ func (b *Bot) updateModeratedChannels(ctx context.Context, log bool) error {
 			}
 
 			for _, channel := range moderatedChannels {
-				m := &models.ModeratedChannel{
+				if err := q.UpsertModeratedChannel(ctx, dbsql.UpsertModeratedChannelParams{
 					BotName:          botName,
 					BroadcasterID:    int64(channel.ID),
 					BroadcasterLogin: channel.Login,
 					BroadcasterName:  channel.Name,
-				}
-
-				if err := m.Upsert(ctx, tx, true, conflictColumns, boil.Blacklist(models.ModeratedChannelColumns.CreatedAt), boil.Infer()); err != nil {
+					UpdatedAt:        dbsql.TimestamptzFrom(start),
+				}); err != nil {
 					return fmt.Errorf("upserting moderated channel: %w", err)
 				}
 			}
 
-			if err := models.ModeratedChannels(
-				models.ModeratedChannelWhere.BotName.EQ(botName),
-				models.ModeratedChannelWhere.UpdatedAt.LT(start),
-			).DeleteAll(ctx, tx); err != nil {
+			if err := q.DeleteStaleModeratedChannels(ctx, dbsql.DeleteStaleModeratedChannelsParams{
+				BotName:       botName,
+				UpdatedBefore: dbsql.TimestamptzFrom(start),
+			}); err != nil {
 				return fmt.Errorf("deleting old moderated channels: %w", err)
 			}
 		}

@@ -1,16 +1,15 @@
 package web
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/queries"
 	"github.com/go-chi/chi/v5"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -24,11 +23,12 @@ func (a *App) apiV1VarsGet(w http.ResponseWriter, r *http.Request) {
 	varName := chi.URLParam(r, "varName")
 	channelName := strings.ToLower(chi.URLParam(r, "channel"))
 
-	variable := &models.Variable{}
-
-	err := queries.Raw("SELECT variables.* FROM variables JOIN channels ON variables.channel_id = channels.id WHERE variables.name = $1 AND channels.name = $2", varName, channelName).Bind(ctx, a.DB, variable)
+	variable, err := a.Queries.GetVariableByChannelName(ctx, dbsql.GetVariableByChannelNameParams{
+		ChannelName: channelName,
+		Name:        varName,
+	})
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			v1Error(w, http.StatusNotFound)
 			return
 		}
@@ -46,7 +46,7 @@ func (a *App) apiV1VarsGet(w http.ResponseWriter, r *http.Request) {
 		Channel:      channelName,
 		Var:          variable.Name,
 		Value:        variable.Value,
-		LastModified: variable.UpdatedAt,
+		LastModified: variable.UpdatedAt.Time,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

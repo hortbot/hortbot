@@ -44,9 +44,9 @@ func TestNotificationHandlerFinishesEnqueueAfterCallerCancellation(t *testing.T)
 	t.Cleanup(pdb.Cleanup)
 	assert.NilError(t, migrations.Up(pdb.ConnStr(), t.Logf))
 
-	db, err := pdb.Open()
+	db, err := pdb.Open(t.Context())
 	assert.NilError(t, err)
-	t.Cleanup(func() { assert.NilError(t, db.Close()) })
+	t.Cleanup(db.Close)
 
 	queue := chatqueue.New(db, 1)
 	handler := newNotificationHandler(t.Context(), queue)
@@ -72,9 +72,9 @@ func TestNotificationHandlerRetriesEnqueue(t *testing.T) {
 	t.Cleanup(pdb.Cleanup)
 	assert.NilError(t, migrations.Up(pdb.ConnStr(), t.Logf))
 
-	db, err := pdb.Open()
+	db, err := pdb.Open(t.Context())
 	assert.NilError(t, err)
-	t.Cleanup(func() { assert.NilError(t, db.Close()) })
+	t.Cleanup(db.Close)
 
 	queue := chatqueue.New(db, 1)
 	handler := newNotificationHandler(t.Context(), queue)

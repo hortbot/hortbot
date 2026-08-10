@@ -143,7 +143,7 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 
 	message := s.Message
 
-	if utf8.RuneCountInString(message) < s.Channel.FilterCapsMinChars {
+	if utf8.RuneCountInString(message) < int(s.Channel.FilterCapsMinChars) {
 		return false, nil
 	}
 
@@ -159,13 +159,13 @@ func filterCaps(ctx context.Context, s *session) (filtered bool, err error) {
 		}
 	}
 
-	if count < s.Channel.FilterCapsMinCaps {
+	if count < int(s.Channel.FilterCapsMinCaps) {
 		return false, nil
 	}
 
 	percent := float64(count) / float64(messageLen)
 
-	if int(percent*100) < s.Channel.FilterCapsPercentage {
+	if int(percent*100) < int(s.Channel.FilterCapsPercentage) {
 		return false, nil
 	}
 
@@ -204,13 +204,13 @@ func filterSymbols(ctx context.Context, s *session) (filtered bool, err error) {
 		}
 	}
 
-	if count < s.Channel.FilterSymbolsMinSymbols {
+	if count < int(s.Channel.FilterSymbolsMinSymbols) {
 		return false, nil
 	}
 
 	percent := float64(count) / float64(messageLen)
 
-	if int(percent*100) < s.Channel.FilterSymbolsPercentage {
+	if int(percent*100) < int(s.Channel.FilterSymbolsPercentage) {
 		return false, nil
 	}
 
@@ -226,7 +226,7 @@ func filterLength(ctx context.Context, s *session) (filtered bool, err error) {
 		return false, nil
 	}
 
-	if utf8.RuneCountInString(s.Message) < s.Channel.FilterMaxLength {
+	if utf8.RuneCountInString(s.Message) < int(s.Channel.FilterMaxLength) {
 		return false, nil
 	}
 
@@ -245,7 +245,7 @@ func filterEmotes(ctx context.Context, s *session) (filtered bool, err error) {
 	// TODO: BTTV/FFZ emotes.
 	count := s.M.CountEmotes()
 
-	if count > s.Channel.FilterEmotesMax {
+	if count > int(s.Channel.FilterEmotesMax) {
 		return true, filterDoPunish(ctx, s, "emotes", "please don't spam emotes")
 	}
 

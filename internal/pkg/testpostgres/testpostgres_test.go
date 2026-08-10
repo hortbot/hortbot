@@ -14,9 +14,10 @@ func TestNew(t *testing.T) {
 	defer pdb.Cleanup()
 	assert.Assert(t, pdb.ConnStr() != "", "got connStr: %s", pdb.ConnStr())
 
-	db, err := pdb.Open()
+	db, err := pdb.Open(t.Context())
 	assert.NilError(t, err)
+	defer db.Close()
 
-	_, err = db.Query("SELECT count(*) FROM schema_migrations")
+	_, err = db.Query(t.Context(), "SELECT count(*) FROM schema_migrations")
 	assert.ErrorContains(t, err, "does not exist")
 }

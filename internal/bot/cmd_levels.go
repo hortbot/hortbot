@@ -5,9 +5,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/gobuffalo/flect"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args string) error {
@@ -47,23 +46,23 @@ func cmdOwnerModRegularIgnore(ctx context.Context, s *session, cmd string, args 
 		switch cmd {
 		case "owner":
 			s.Channel.CustomOwners = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomOwners))
-
 		case "mod":
 			s.Channel.CustomMods = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomMods))
-
 		case "regular":
 			s.Channel.CustomRegulars = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.CustomRegulars))
-
 		case "ignore":
 			s.Channel.Ignored = v
-			return s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Ignored))
-
 		default:
 			panic("unreachable")
 		}
+
+		return s.Queries.UpdateChannelUserLists(ctx, dbsql.UpdateChannelUserListsParams{
+			CustomOwners:   s.Channel.CustomOwners,
+			CustomMods:     s.Channel.CustomMods,
+			CustomRegulars: s.Channel.CustomRegulars,
+			Ignored:        s.Channel.Ignored,
+			ID:             s.Channel.ID,
+		})
 	}
 
 	subcommand, args := splitSpace(args)

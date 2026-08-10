@@ -4,30 +4,26 @@ package web
 import (
 	"context"
 	"crypto/rand"
-	"database/sql"
 	"embed"
 	"io/fs"
 	"net"
 	"net/http"
-	"slices"
 	"strings"
 	"time"
 
 	"github.com/a-h/templ"
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/sessions"
 	"github.com/hortbot/hortbot/internal/db/botstate"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/web/mid"
 	"github.com/hortbot/hortbot/internal/web/templates"
+	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/tomwright/queryparam/v4"
 	"github.com/zikaeroh/ctxlog"
@@ -51,7 +47,8 @@ type App struct {
 	Debug bool
 
 	State                  *botstate.Store
-	DB                     *sql.DB
+	DB                     *pgxpool.Pool
+	Queries                *dbsql.Queries
 	Twitch                 twitch.API
 	EventsubUpdateNotifier EventsubUpdateNotifier
 
@@ -59,7 +56,7 @@ type App struct {
 }
 
 type EventsubUpdateNotifier interface {
-	NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error
+	NotifyEventsubUpdates(ctx context.Context, queries *dbsql.Queries) error
 }
 
 // Run runs the webapp until the context is canceled.
@@ -241,7 +238,7 @@ func (a *App) authTwitch(w http.ResponseWriter, r *http.Request, bot bool) {
 
 	stateVal.Redirect = query.Redirect
 
-	if err := a.State.SetAuthState(ctx, a.DB, state, stateVal, authTimeout); err != nil {
+	if err := a.State.SetAuthState(ctx, a.Queries, state, stateVal, authTimeout); err != nil {
 		ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
@@ -275,7 +272,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	var stateVal authState
 
-	ok, err := a.State.GetAuthState(ctx, a.DB, state, &stateVal)
+	ok, err := a.State.GetAuthState(ctx, a.Queries, state, &stateVal)
 	if err != nil {
 		ctxlog.Error(ctx, "error checking auth state", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
@@ -289,7 +286,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 
 	if normalizeHost(stateVal.Host) != normalizeHost(r.Host) {
 		// This came to the wrong host. Put the state back and redirect.
-		if err := a.State.SetAuthState(ctx, a.DB, state, &stateVal, authTimeout); err != nil {
+		if err := a.State.SetAuthState(ctx, a.Queries, state, &stateVal, authTimeout); err != nil {
 			ctxlog.Error(ctx, "error setting auth state", zap.Error(err))
 			a.httpError(w, r, http.StatusInternalServerError)
 			return
@@ -320,14 +317,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		tok = newToken
 	}
 
-	var botName null.String
+	var botName pgtype.Text
 	if stateVal.Bot {
-		botName = null.StringFrom(user.Name)
+		botName = dbsql.TextFrom(user.Name)
 	}
 
-	tt := modelsx.TokenToModel(tok, int64(user.ID), botName, strings.Fields(r.FormValue("scope"))) //nolint:gosec
+	tt := dbsql.NewTwitchToken(tok, int64(user.ID), botName, strings.Fields(r.FormValue("scope"))) //nolint:gosec
 
-	if err := modelsx.UpsertToken(ctx, a.DB, tt); err != nil {
+	if err := a.Queries.SaveTwitchToken(ctx, tt); err != nil {
 		ctxlog.Error(ctx, "error upserting token", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
@@ -344,7 +341,7 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := a.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx, a.DB); err != nil {
+	if err := a.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx, a.Queries); err != nil {
 		ctxlog.Error(ctx, "error notifying eventsub updates", zap.Error(err))
 	}
 
@@ -359,14 +356,14 @@ func (a *App) authTwitchCallback(w http.ResponseWriter, r *http.Request) {
 func (a *App) index(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	channelCount, botCount, err := modelsx.CountActiveChannels(ctx, a.DB)
+	counts, err := a.Queries.CountActiveChannelAssignments(ctx)
 	if err != nil {
 		ctxlog.Error(ctx, "error counting channels", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	renderTempl(w, r, templates.IndexPage(int64(channelCount), int64(botCount)))
+	renderTempl(w, r, templates.IndexPage(int64(counts.ChannelCount), int64(counts.BotCount)))
 }
 
 func (a *App) about(w http.ResponseWriter, r *http.Request) {
@@ -384,7 +381,7 @@ func (a *App) docs(w http.ResponseWriter, r *http.Request) {
 func (a *App) channels(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	channels, err := modelsx.ListActiveChannelModels(ctx, a.DB)
+	channels, err := a.Queries.ListPublicActiveChannels(ctx)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying channels", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
@@ -405,16 +402,12 @@ func (a *App) channelCommands(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	commands, err := channel.CustomCommands(qm.Load(models.CustomCommandRels.CommandInfo)).All(ctx, a.DB)
+	commands, err := a.Queries.ListCustomCommandsForWeb(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying custom commands", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	slices.SortFunc(commands, func(a, b *models.CustomCommand) int {
-		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
-	})
 
 	renderTempl(w, r, templates.ChannelCommandsPage(channel, commands))
 }
@@ -423,7 +416,7 @@ func (a *App) channelQuotes(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	quotes, err := channel.Quotes(qm.OrderBy(models.QuoteColumns.Num)).All(ctx, a.DB)
+	quotes, err := a.Queries.ListQuotes(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying quotes", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
@@ -437,7 +430,7 @@ func (a *App) channelAutoreplies(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	autoreplies, err := channel.Autoreplies(qm.OrderBy(models.AutoreplyColumns.Num)).All(ctx, a.DB)
+	autoreplies, err := a.Queries.ListAutoreplies(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying autoreplies", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
@@ -451,16 +444,12 @@ func (a *App) channelLists(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	lists, err := channel.CommandLists(qm.Load(models.CommandListRels.CommandInfo)).All(ctx, a.DB)
+	lists, err := a.Queries.ListCommandListsForWeb(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying command lists", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
-
-	slices.SortFunc(lists, func(a, b *models.CommandList) int {
-		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
-	})
 
 	renderTempl(w, r, templates.ChannelListsPage(channel, lists))
 }
@@ -483,52 +472,28 @@ func (a *App) channelScheduled(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	repeated, err := channel.RepeatedCommands(qm.Load(models.RepeatedCommandRels.CommandInfo)).All(ctx, a.DB)
+	repeated, err := a.Queries.ListRepeatedCommandsForWeb(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying repeated commands", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	scheduled, err := channel.ScheduledCommands(qm.Load(models.ScheduledCommandRels.CommandInfo)).All(ctx, a.DB)
+	scheduled, err := a.Queries.ListScheduledCommandsForWeb(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying scheduled commands", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
 		return
 	}
 
-	slices.SortFunc(repeated, func(a, b *models.RepeatedCommand) int {
-		if c := cmpBool(a.Enabled, b.Enabled); c != 0 {
-			return c
-		}
-		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
-	})
-
-	slices.SortFunc(scheduled, func(a, b *models.ScheduledCommand) int {
-		if c := cmpBool(a.Enabled, b.Enabled); c != 0 {
-			return c
-		}
-		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
-	})
-
 	renderTempl(w, r, templates.ChannelScheduledPage(channel, repeated, scheduled))
-}
-
-func cmpBool(a, b bool) int {
-	if a == b {
-		return 0
-	}
-	if a {
-		return 1
-	}
-	return -1
 }
 
 func (a *App) channelVariables(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	channel := getChannel(ctx)
 
-	variables, err := channel.Variables(qm.OrderBy(models.VariableColumns.Name)).All(ctx, a.DB)
+	variables, err := a.Queries.ListVariables(ctx, channel.ID)
 	if err != nil {
 		ctxlog.Error(ctx, "error querying variables", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)
@@ -544,10 +509,10 @@ func (a *App) channelHighlights(w http.ResponseWriter, r *http.Request) {
 
 	limit := time.Now().Add(-30 * 24 * time.Hour)
 
-	highlights, err := channel.Highlights(
-		models.HighlightWhere.HighlightedAt.GT(limit),
-		qm.OrderBy(models.HighlightColumns.HighlightedAt),
-	).All(ctx, a.DB)
+	highlights, err := a.Queries.ListRecentHighlights(ctx, dbsql.ListRecentHighlightsParams{
+		ChannelID:        channel.ID,
+		HighlightedAfter: dbsql.TimestamptzFrom(limit),
+	})
 	if err != nil {
 		ctxlog.Error(ctx, "error querying highlights", zap.Error(err))
 		a.httpError(w, r, http.StatusInternalServerError)

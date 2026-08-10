@@ -2,7 +2,6 @@ package conduit
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,12 +11,13 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -29,7 +29,8 @@ const initialWebsocketURL = "wss://eventsub.wss.twitch.tv/ws"
 type NotificationHandler func(context.Context, json.RawMessage, *eventsub.WebsocketMessage) error
 
 type Service struct {
-	db                 *sql.DB
+	db                 *pgxpool.Pool
+	queries            *dbsql.Queries
 	twitch             twitch.API
 	syncInterval       time.Duration
 	shards             int
@@ -51,7 +52,7 @@ type chatSubscription struct {
 }
 
 func New(
-	db *sql.DB,
+	db *pgxpool.Pool,
 	twitch twitch.API,
 	syncInterval time.Duration,
 	shards int,
@@ -62,6 +63,7 @@ func New(
 	}
 	return &Service{
 		db:                 db,
+		queries:            dbsql.New(db),
 		twitch:             twitch,
 		syncInterval:       syncInterval,
 		shards:             shards,
@@ -307,7 +309,7 @@ func (s *Service) SynchronizeSubscriptions(ctx context.Context) error {
 
 	ctxlog.Debug(ctx, "synchronizing subscriptions")
 
-	channels, err := modelsx.ListActiveChannels(ctx, s.db)
+	channels, err := s.queries.ActiveChannelsByBot(ctx)
 	if err != nil {
 		return fmt.Errorf("list active eventsub channels: %w", err)
 	}

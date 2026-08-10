@@ -98,7 +98,7 @@ func withDatabase(t *testing.T, fn func(t *testing.T, db *sql.DB, connStr string
 	pdb, err := testpostgres.New()
 	assert.NilError(t, err, "creating new db")
 
-	db, err := pdb.Open()
+	db, err := pdb.OpenSQL()
 	assert.NilError(t, err, "opening db")
 
 	connStr := pdb.ConnStr()

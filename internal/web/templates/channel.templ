@@ -7,7 +7,7 @@ import (
 
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 type menuItem struct {
@@ -47,7 +47,7 @@ func channelSubURL(name, sub string) templ.SafeURL {
 	return templ.URL("/c/" + url.PathEscape(name) + "/" + sub)
 }
 
-templ channelSidebar(channel *models.Channel, item string) {
+templ channelSidebar(channel *dbsql.Channel, item string) {
 	<div class="is-sidebar-menu is-hidden-mobile">
 		<aside class="menu">
 			<p class="menu-label">
@@ -70,7 +70,7 @@ templ channelSidebar(channel *models.Channel, item string) {
 	</div>
 }
 
-templ channelSidebarMobile(channel *models.Channel, item string) {
+templ channelSidebarMobile(channel *dbsql.Channel, item string) {
 	<nav class="navbar is-hidden-tablet is-info" role="navigation" aria-label="main navigation">
 		<div class="navbar-brand">
 			<p class="navbar-item">Menu</p>
@@ -115,7 +115,7 @@ func steamURL(id string) templ.SafeURL {
 	return templ.URL("https://steamcommunity.com/profiles/" + url.PathEscape(id))
 }
 
-func extraLifeURL(id int) templ.SafeURL {
+func extraLifeURL(id int32) templ.SafeURL {
 	return templ.URL(fmt.Sprintf("https://www.extra-life.org/index.cfm?fuseaction=donorDrive.participant&participantID=%d", id))
 }
 
@@ -153,7 +153,7 @@ templ channelScripts() {
 	</script>
 }
 
-templ channelLayout(channel *models.Channel, item string, subtitle string) {
+templ channelLayout(channel *dbsql.Channel, item string, subtitle string) {
 	@channelSidebarMobile(channel, item)
 	<div class="columns is-fullheight is-clipped">
 		@channelSidebar(channel, item)
@@ -168,7 +168,7 @@ templ channelLayout(channel *models.Channel, item string, subtitle string) {
 	</div>
 }
 
-templ channelOverviewBody(channel *models.Channel) {
+templ channelOverviewBody(channel *dbsql.Channel) {
 	@channelLayout(channel, "overview", "") {
 		<a class="button is-outlined" href={ twitchURL(channel.Name) } target="_blank" rel="noopener noreferrer">
 			<span class="icon"><i class="fab fa-twitch"></i></span>
@@ -219,26 +219,26 @@ templ channelOverviewBody(channel *models.Channel) {
 	</script>
 }
 
-templ ChannelPage(channel *models.Channel) {
+templ ChannelPage(channel *dbsql.Channel) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelOverviewBody(channel)
 	}
 }
 
 // Access level helper
-templ accessLevel(level string) {
+templ accessLevel(level dbsql.AccessLevel) {
 	switch level {
-		case models.AccessLevelEveryone:
+		case dbsql.AccessLevelEveryone:
 			All
-		case models.AccessLevelSubscriber:
+		case dbsql.AccessLevelSubscriber:
 			<span class="has-text-info">Subs</span>
-		case models.AccessLevelVip:
+		case dbsql.AccessLevelVip:
 			<span class="has-text-warning">VIPs</span>
-		case models.AccessLevelModerator:
+		case dbsql.AccessLevelModerator:
 			<span class="has-text-success">Mods</span>
-		case models.AccessLevelBroadcaster:
+		case dbsql.AccessLevelBroadcaster:
 			<span class="has-text-danger">Broadcaster</span>
-		case models.AccessLevelAdmin:
+		case dbsql.AccessLevelAdmin:
 			<span>Admins</span>
 		default:
 			Unknown
@@ -277,7 +277,7 @@ templ autoreplyPattern(s string) {
 }
 
 // Commands page
-templ channelCommandsBody(channel *models.Channel, commands models.CustomCommandSlice) {
+templ channelCommandsBody(channel *dbsql.Channel, commands []dbsql.ListCustomCommandsForWebRow) {
 	@channelLayout(channel, "commands", "Commands") {
 		if len(commands) == 0 {
 			<p>No commands.</p>
@@ -303,16 +303,16 @@ templ channelCommandsBody(channel *models.Channel, commands models.CustomCommand
 				<tbody>
 					for _, c := range commands {
 						<tr>
-							<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
+							<td><code>{ channel.Prefix }{ c.Name }</code></td>
 							<td>
-								@accessLevel(c.R.CommandInfo.AccessLevel)
+								@accessLevel(c.AccessLevel)
 							</td>
 							<td>
 								@convertedCommand(c.Message)
 							</td>
-							<td>{ c.R.CommandInfo.Count }</td>
-							<td>{ c.R.CommandInfo.Editor }</td>
-							<td>{ c.UpdatedAt.Format(time.RFC3339) }</td>
+							<td>{ c.Count }</td>
+							<td>{ c.Editor }</td>
+							<td>{ c.UpdatedAt.Time.Format(time.RFC3339) }</td>
 						</tr>
 					}
 				</tbody>
@@ -321,14 +321,14 @@ templ channelCommandsBody(channel *models.Channel, commands models.CustomCommand
 	}
 }
 
-templ ChannelCommandsPage(channel *models.Channel, commands models.CustomCommandSlice) {
+templ ChannelCommandsPage(channel *dbsql.Channel, commands []dbsql.ListCustomCommandsForWebRow) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelCommandsBody(channel, commands)
 	}
 }
 
 // Quotes page
-templ channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) {
+templ channelQuotesBody(channel *dbsql.Channel, quotes []dbsql.Quote) {
 	@channelLayout(channel, "quotes", "Quotes") {
 		if len(quotes) == 0 {
 			<p>No quotes.</p>
@@ -355,7 +355,7 @@ templ channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) {
 							<td>{ q.Num }</td>
 							<td>{ q.Quote }</td>
 							<td>{ q.Editor }</td>
-							<td>{ q.UpdatedAt.Format(time.RFC3339) }</td>
+							<td>{ q.UpdatedAt.Time.Format(time.RFC3339) }</td>
 						</tr>
 					}
 				</tbody>
@@ -364,14 +364,14 @@ templ channelQuotesBody(channel *models.Channel, quotes models.QuoteSlice) {
 	}
 }
 
-templ ChannelQuotesPage(channel *models.Channel, quotes models.QuoteSlice) {
+templ ChannelQuotesPage(channel *dbsql.Channel, quotes []dbsql.Quote) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelQuotesBody(channel, quotes)
 	}
 }
 
 // Autoreplies page
-templ channelAutorepliesBody(channel *models.Channel, autoreplies models.AutoreplySlice) {
+templ channelAutorepliesBody(channel *dbsql.Channel, autoreplies []dbsql.Autoreply) {
 	@channelLayout(channel, "autoreplies", "Autoreplies") {
 		if len(autoreplies) == 0 {
 			<p>No autoreplies.</p>
@@ -408,7 +408,7 @@ templ channelAutorepliesBody(channel *models.Channel, autoreplies models.Autorep
 							</td>
 							<td>{ a.Count }</td>
 							<td>{ a.Editor }</td>
-							<td>{ a.UpdatedAt.Format(time.RFC3339) }</td>
+							<td>{ a.UpdatedAt.Time.Format(time.RFC3339) }</td>
 						</tr>
 					}
 				</tbody>
@@ -417,14 +417,14 @@ templ channelAutorepliesBody(channel *models.Channel, autoreplies models.Autorep
 	}
 }
 
-templ ChannelAutorepliesPage(channel *models.Channel, autoreplies models.AutoreplySlice) {
+templ ChannelAutorepliesPage(channel *dbsql.Channel, autoreplies []dbsql.Autoreply) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelAutorepliesBody(channel, autoreplies)
 	}
 }
 
 // Lists page
-func listsItems(lists models.CommandListSlice) [][]string {
+func listsItems(lists []dbsql.ListCommandListsForWebRow) [][]string {
 	result := make([][]string, len(lists))
 	for i, l := range lists {
 		result[i] = l.Items
@@ -432,7 +432,7 @@ func listsItems(lists models.CommandListSlice) [][]string {
 	return result
 }
 
-templ channelListsBody(channel *models.Channel, lists models.CommandListSlice) {
+templ channelListsBody(channel *dbsql.Channel, lists []dbsql.ListCommandListsForWebRow) {
 	@channelLayout(channel, "lists", "Lists") {
 		if len(lists) == 0 {
 			<p>No lists.</p>
@@ -459,13 +459,13 @@ templ channelListsBody(channel *models.Channel, lists models.CommandListSlice) {
 				<tbody>
 					for _, l := range lists {
 						<tr data-has-detail-view="true">
-							<td><code>{ channel.Prefix }{ l.R.CommandInfo.Name }</code></td>
+							<td><code>{ channel.Prefix }{ l.Name }</code></td>
 							<td>
-								@accessLevel(l.R.CommandInfo.AccessLevel)
+								@accessLevel(l.AccessLevel)
 							</td>
-							<td>{ l.R.CommandInfo.Count }</td>
-							<td>{ l.R.CommandInfo.Editor }</td>
-							<td>{ l.UpdatedAt.Format(time.RFC3339) }</td>
+							<td>{ l.Count }</td>
+							<td>{ l.Editor }</td>
+							<td>{ l.UpdatedAt.Time.Format(time.RFC3339) }</td>
 						</tr>
 					}
 				</tbody>
@@ -474,7 +474,7 @@ templ channelListsBody(channel *models.Channel, lists models.CommandListSlice) {
 	}
 }
 
-templ channelListsScripts(lists models.CommandListSlice) {
+templ channelListsScripts(lists []dbsql.ListCommandListsForWebRow) {
 	@channelScripts()
 	<script>
 	var all = {{ listsItems(lists) }};
@@ -503,14 +503,14 @@ templ channelListsScripts(lists models.CommandListSlice) {
 	</script>
 }
 
-templ ChannelListsPage(channel *models.Channel, lists models.CommandListSlice) {
+templ ChannelListsPage(channel *dbsql.Channel, lists []dbsql.ListCommandListsForWebRow) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelListsScripts(lists)) {
 		@channelListsBody(channel, lists)
 	}
 }
 
 // Regulars page
-templ channelRegularsBody(channel *models.Channel) {
+templ channelRegularsBody(channel *dbsql.Channel) {
 	@channelLayout(channel, "regulars", "Regulars") {
 		if len(channel.CustomRegulars) == 0 {
 			<p>No regulars.</p>
@@ -525,14 +525,14 @@ templ channelRegularsBody(channel *models.Channel) {
 	}
 }
 
-templ ChannelRegularsPage(channel *models.Channel) {
+templ ChannelRegularsPage(channel *dbsql.Channel) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelRegularsBody(channel)
 	}
 }
 
 // Chat rules page
-templ channelRulesBody(channel *models.Channel) {
+templ channelRulesBody(channel *dbsql.Channel) {
 	@channelLayout(channel, "chatrules", "Chat rules") {
 		<h2>Allowed URLs</h2>
 		if len(channel.PermittedLinks) == 0 {
@@ -559,18 +559,18 @@ templ channelRulesBody(channel *models.Channel) {
 	}
 }
 
-templ ChannelRulesPage(channel *models.Channel) {
+templ ChannelRulesPage(channel *dbsql.Channel) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelRulesBody(channel)
 	}
 }
 
 // Scheduled page
-func formatDuration(delay int, unit time.Duration) string {
+func formatDuration(delay int32, unit time.Duration) string {
 	return durafmt.Parse(time.Duration(delay) * unit).String()
 }
 
-templ channelScheduledBody(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) {
+templ channelScheduledBody(channel *dbsql.Channel, repeated []dbsql.ListRepeatedCommandsForWebRow, scheduled []dbsql.ListScheduledCommandsForWebRow) {
 	@channelLayout(channel, "scheduled", "Repeated / scheduled commands") {
 		<h2>Repeated commands</h2>
 		if len(repeated) == 0 {
@@ -596,7 +596,7 @@ templ channelScheduledBody(channel *models.Channel, repeated models.RepeatedComm
 				<tbody>
 					for _, c := range repeated {
 						<tr>
-							<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
+							<td><code>{ channel.Prefix }{ c.Name }</code></td>
 							<td>
 								@yesNo(c.Enabled)
 							</td>
@@ -631,7 +631,7 @@ templ channelScheduledBody(channel *models.Channel, repeated models.RepeatedComm
 				<tbody>
 					for _, c := range scheduled {
 						<tr>
-							<td><code>{ channel.Prefix }{ c.R.CommandInfo.Name }</code></td>
+							<td><code>{ channel.Prefix }{ c.Name }</code></td>
 							<td>
 								@yesNo(c.Enabled)
 							</td>
@@ -645,14 +645,14 @@ templ channelScheduledBody(channel *models.Channel, repeated models.RepeatedComm
 	}
 }
 
-templ ChannelScheduledPage(channel *models.Channel, repeated models.RepeatedCommandSlice, scheduled models.ScheduledCommandSlice) {
+templ ChannelScheduledPage(channel *dbsql.Channel, repeated []dbsql.ListRepeatedCommandsForWebRow, scheduled []dbsql.ListScheduledCommandsForWebRow) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelScheduledBody(channel, repeated, scheduled)
 	}
 }
 
 // Variables page
-templ channelVariablesBody(channel *models.Channel, variables models.VariableSlice) {
+templ channelVariablesBody(channel *dbsql.Channel, variables []dbsql.Variable) {
 	@channelLayout(channel, "variables", "Variables") {
 		if len(variables) == 0 {
 			<p>No variables.</p>
@@ -685,7 +685,7 @@ templ channelVariablesBody(channel *models.Channel, variables models.VariableSli
 	}
 }
 
-templ ChannelVariablesPage(channel *models.Channel, variables models.VariableSlice) {
+templ ChannelVariablesPage(channel *dbsql.Channel, variables []dbsql.Variable) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelVariablesBody(channel, variables)
 	}
@@ -699,7 +699,7 @@ func formatHighlightTimestamp(highlightedAt time.Time, startedAt time.Time, vali
 	return durafmt.Parse(highlightedAt.Sub(startedAt).Truncate(time.Second)).String()
 }
 
-templ channelHighlightsBody(channel *models.Channel, highlights models.HighlightSlice) {
+templ channelHighlightsBody(channel *dbsql.Channel, highlights []dbsql.Highlight) {
 	@channelLayout(channel, "highlights", "Highlights") {
 		if len(highlights) == 0 {
 			<p>No highlights.</p>
@@ -724,8 +724,8 @@ templ channelHighlightsBody(channel *models.Channel, highlights models.Highlight
 				<tbody>
 					for _, h := range highlights {
 						<tr>
-							<td>{ h.HighlightedAt.Format(time.RFC3339) }</td>
-							<td>{ formatHighlightTimestamp(h.HighlightedAt, h.StartedAt.Time, h.StartedAt.Valid) }</td>
+							<td>{ h.HighlightedAt.Time.Format(time.RFC3339) }</td>
+							<td>{ formatHighlightTimestamp(h.HighlightedAt.Time, h.StartedAt.Time, h.StartedAt.Valid) }</td>
 							<td>{ h.Status }</td>
 							<td>{ h.Game }</td>
 						</tr>
@@ -736,7 +736,7 @@ templ channelHighlightsBody(channel *models.Channel, highlights models.Highlight
 	}
 }
 
-templ ChannelHighlightsPage(channel *models.Channel, highlights models.HighlightSlice) {
+templ ChannelHighlightsPage(channel *dbsql.Channel, highlights []dbsql.Highlight) {
 	@PageTemplate(getBrand(ctx)+" - "+displayNameFor(channel), channelMeta(), channelScripts()) {
 		@channelHighlightsBody(channel, highlights)
 	}

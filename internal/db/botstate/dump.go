@@ -6,80 +6,83 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 // Dump returns the contents of the TTL-bearing tables for debugging.
-func (*Store) Dump(ctx context.Context, exec boil.ContextExecutor) (string, error) {
+func (*Store) Dump(ctx context.Context, q *dbsql.Queries) (string, error) {
 	var sb strings.Builder
 
-	queries := []struct {
-		table string
-		query string
-	}{
-		{"bot_command_cooldowns", `
-			SELECT channel || '/' || command_key, ''::text, expires_at
-			FROM bot_command_cooldowns ORDER BY channel, command_key
-		`},
-		{"bot_repeat_cooldowns", `
-			SELECT channel || '/' || repeated_command_id, ''::text, expires_at
-			FROM bot_repeat_cooldowns ORDER BY channel, repeated_command_id
-		`},
-		{"bot_scheduled_command_cooldowns", `
-			SELECT channel || '/' || scheduled_command_id, ''::text, expires_at
-			FROM bot_scheduled_command_cooldowns ORDER BY channel, scheduled_command_id
-		`},
-		{"bot_autoreply_cooldowns", `
-			SELECT channel || '/' || autoreply_id, ''::text, expires_at
-			FROM bot_autoreply_cooldowns ORDER BY channel, autoreply_id
-		`},
-		{"bot_link_permits", `
-			SELECT channel || '/' || user_id, ''::text, expires_at
-			FROM bot_link_permits ORDER BY channel, user_id
-		`},
-		{"bot_confirmations", `
-			SELECT channel || '/' || user_id || '/' || confirmation_key, ''::text, expires_at
-			FROM bot_confirmations ORDER BY channel, user_id, confirmation_key
-		`},
-		{"bot_filter_warnings", `
-			SELECT channel || '/' || user_id || '/' || filter_name, ''::text, expires_at
-			FROM bot_filter_warnings ORDER BY channel, user_id, filter_name
-		`},
-		{"web_auth_states", `
-			SELECT key, encode(value, 'escape'), expires_at
-			FROM web_auth_states ORDER BY key
-		`},
+	commandCooldowns, err := q.BotStateDumpCommandCooldowns(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_command_cooldowns: %w", err)
 	}
+	appendDumpRows(&sb, "bot_command_cooldowns", commandCooldowns, func(row dbsql.BotStateDumpCommandCooldownsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
 
-	for _, q := range queries {
-		if err := dumpQuery(ctx, exec, &sb, q.table, q.query); err != nil {
-			return "", err
-		}
+	repeatCooldowns, err := q.BotStateDumpRepeatCooldowns(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_repeat_cooldowns: %w", err)
 	}
+	appendDumpRows(&sb, "bot_repeat_cooldowns", repeatCooldowns, func(row dbsql.BotStateDumpRepeatCooldownsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
+	scheduledCooldowns, err := q.BotStateDumpScheduledCooldowns(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_scheduled_command_cooldowns: %w", err)
+	}
+	appendDumpRows(&sb, "bot_scheduled_command_cooldowns", scheduledCooldowns, func(row dbsql.BotStateDumpScheduledCooldownsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
+	autoreplyCooldowns, err := q.BotStateDumpAutoreplyCooldowns(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_autoreply_cooldowns: %w", err)
+	}
+	appendDumpRows(&sb, "bot_autoreply_cooldowns", autoreplyCooldowns, func(row dbsql.BotStateDumpAutoreplyCooldownsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
+	linkPermits, err := q.BotStateDumpLinkPermits(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_link_permits: %w", err)
+	}
+	appendDumpRows(&sb, "bot_link_permits", linkPermits, func(row dbsql.BotStateDumpLinkPermitsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
+	confirmations, err := q.BotStateDumpConfirmations(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_confirmations: %w", err)
+	}
+	appendDumpRows(&sb, "bot_confirmations", confirmations, func(row dbsql.BotStateDumpConfirmationsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
+	filterWarnings, err := q.BotStateDumpFilterWarnings(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump bot_filter_warnings: %w", err)
+	}
+	appendDumpRows(&sb, "bot_filter_warnings", filterWarnings, func(row dbsql.BotStateDumpFilterWarningsRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
+	authStates, err := q.BotStateDumpAuthStates(ctx)
+	if err != nil {
+		return "", fmt.Errorf("dump web_auth_states: %w", err)
+	}
+	appendDumpRows(&sb, "web_auth_states", authStates, func(row dbsql.BotStateDumpAuthStatesRow) (string, string, time.Time) {
+		return row.Key, row.Value, row.ExpiresAt.Time
+	})
+
 	return sb.String(), nil
 }
 
-func dumpQuery(ctx context.Context, exec boil.ContextExecutor, sb *strings.Builder, table, query string) error {
-	rows, err := exec.QueryContext(ctx, query)
-	if err != nil {
-		return fmt.Errorf("dump %s: %w", table, err)
-	}
-
-	for rows.Next() {
-		var key, value string
-		var expiresAt time.Time
-		if err := rows.Scan(&key, &value, &expiresAt); err != nil {
-			_ = rows.Close()
-			return fmt.Errorf("dump %s row: %w", table, err)
-		}
+func appendDumpRows[T any](sb *strings.Builder, table string, rows []T, fields func(T) (string, string, time.Time)) {
+	for _, row := range rows {
+		key, value, expiresAt := fields(row)
 		fmt.Fprintf(sb, "%s\t%s\t%s\t%s\n", table, key, value, expiresAt.Format(time.RFC3339Nano))
 	}
-	if err := rows.Err(); err != nil {
-		_ = rows.Close()
-		return fmt.Errorf("dump %s rows: %w", table, err)
-	}
-	if err := rows.Close(); err != nil {
-		return fmt.Errorf("close %s dump: %w", table, err)
-	}
-	return nil
 }

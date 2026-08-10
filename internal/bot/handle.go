@@ -2,21 +2,18 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"strings"
 	"testing"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/correlation"
 	"github.com/hortbot/hortbot/internal/pkg/dbx"
 	"github.com/hortbot/hortbot/internal/pkg/pool"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
+	"github.com/jackc/pgx/v5"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -159,13 +156,15 @@ func (b *Bot) handleChatMessage(ctx context.Context, m Message, enqueuedAt time.
 
 	err := dbx.Transact(ctx, b.db,
 		dbx.SetLocalLockTimeout(5*time.Second),
-		func(ctx context.Context, tx *sql.Tx) error {
+		func(ctx context.Context, tx pgx.Tx) error {
 			beforeHandle = time.Now()
 
-			s.Tx = tx
-			err := handleSession(ctx, s)
-			s.Tx = nil
+			s.Queries = dbsql.New(tx)
+			defer func() {
+				s.Queries = nil
+			}()
 
+			err := handleSession(ctx, s)
 			afterHandle = time.Now()
 			return err
 		})
@@ -203,11 +202,12 @@ func (b *Bot) handleChatMessage(ctx context.Context, m Message, enqueuedAt time.
 	if s.sendRoundtrip {
 		err := dbx.Transact(ctx, b.db,
 			dbx.SetLocalLockTimeout(5*time.Second),
-			func(ctx context.Context, tx *sql.Tx) error {
-				s.Tx = tx
-				err := s.Replyf(ctx, "fromTwitch=%v, inQueue=%v, begin=%v, handle=%v, commit=%v; total=%v", fromTwitch, inQueue, begin, handle, commit, total)
-				s.Tx = nil
-				return err
+			func(ctx context.Context, tx pgx.Tx) error {
+				s.Queries = dbsql.New(tx)
+				defer func() {
+					s.Queries = nil
+				}()
+				return s.Replyf(ctx, "fromTwitch=%v, inQueue=%v, begin=%v, handle=%v, commit=%v; total=%v", fromTwitch, inQueue, begin, handle, commit, total)
 			})
 		if err != nil {
 			return fmt.Errorf("sending roundtrip message: %w", err)
@@ -219,14 +219,14 @@ func (b *Bot) handleChatMessage(ctx context.Context, m Message, enqueuedAt time.
 
 func (b *Bot) flushDeferred(ctx context.Context, s *session) {
 	if s.eventsubUpdateRequested {
-		if err := b.deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx, b.db); err != nil {
+		if err := b.deps.EventsubUpdateNotifier.NotifyEventsubUpdates(ctx, b.queries); err != nil {
 			ctxlog.Error(ctx, "error notifying EventSub updates", zap.Error(err))
 		}
 	}
 
 	if len(s.builtinUsage) != 0 || len(s.actionUsage) != 0 {
-		err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx *sql.Tx) error {
-			return b.deps.State.AddUsageStats(ctx, tx, s.builtinUsage, s.actionUsage)
+		err := dbx.Transact(ctx, b.db, func(ctx context.Context, tx pgx.Tx) error {
+			return b.deps.State.AddUsageStats(ctx, dbsql.New(tx), s.builtinUsage, s.actionUsage)
 		})
 		if err != nil {
 			ctxlog.Error(ctx, "error flushing usage stats", zap.Error(err))
@@ -289,24 +289,24 @@ func (b *Bot) buildSession(ctx context.Context, s *session, m Message) error {
 	return nil
 }
 
-var channelPool = pool.NewPool(func() *models.Channel {
-	return &models.Channel{}
+var channelPool = pool.NewPool(func() *dbsql.Channel {
+	return &dbsql.Channel{}
 })
 
-func getChannel() *models.Channel {
+func getChannel() *dbsql.Channel {
 	channel := channelPool.Get()
-	*channel = models.Channel{}
+	*channel = dbsql.Channel{}
 	return channel
 }
 
-func putChannel(channel *models.Channel) {
+func putChannel(channel *dbsql.Channel) {
 	channelPool.Put(channel)
 }
 
 //nolint:gocyclo
 func handleSession(ctx context.Context, s *session) error {
 	// Serialize chat messages and repeat jobs for each channel.
-	if err := pgLock(ctx, s.Tx, s.RoomID); err != nil {
+	if err := pgLock(ctx, s.Queries, s.RoomID); err != nil {
 		return err
 	}
 
@@ -320,14 +320,15 @@ func handleSession(ctx context.Context, s *session) error {
 	channel := getChannel()
 	defer putChannel(channel)
 
-	err := queries.Raw(`SELECT * FROM channels WHERE twitch_id = $1 FOR UPDATE`, s.RoomID).Bind(ctx, s.Tx, channel) //nolint:unqueryvet
+	row, err := s.Queries.GetChannelByTwitchIDForUpdate(ctx, s.RoomID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			ctxlog.Debug(ctx, "channel not found in database")
 			return nil
 		}
 		return fmt.Errorf("select channel: %w", err)
 	}
+	*channel = row
 
 	if !s.Imp {
 		if !channel.Active {
@@ -335,12 +336,12 @@ func handleSession(ctx context.Context, s *session) error {
 			return nil
 		}
 
-		fixup := make([]string, 0, 3)
+		identityChanged := false
 
 		broadcaster := s.M.Broadcaster()
 		if channel.Name != broadcaster.Login {
 			old := channel.Name
-			fixup = append(fixup, models.ChannelColumns.Name)
+			identityChanged = true
 			channel.Name = broadcaster.Login
 			ctxlog.Warn(ctx, "channel name changed", zap.String("old", old), zap.String("new", channel.Name))
 		}
@@ -348,20 +349,23 @@ func handleSession(ctx context.Context, s *session) error {
 		if s.ChannelName == s.User {
 			if channel.DisplayName != s.UserDisplay {
 				old := channel.DisplayName
-				fixup = append(fixup, models.ChannelColumns.DisplayName)
+				identityChanged = true
 				channel.DisplayName = s.UserDisplay
 				ctxlog.Warn(ctx, "channel display name changed", zap.String("old", old), zap.String("new", channel.DisplayName))
 			}
 		} else if channel.DisplayName != broadcaster.DisplayName {
 			old := channel.DisplayName
-			fixup = append(fixup, models.ChannelColumns.DisplayName)
+			identityChanged = true
 			channel.DisplayName = broadcaster.DisplayName
 			ctxlog.Warn(ctx, "channel display name changed", zap.String("old", old), zap.String("new", channel.DisplayName))
 		}
 
-		if len(fixup) > 0 {
-			fixup = append(fixup, models.ChannelColumns.UpdatedAt)
-			if err := channel.Update(ctx, s.Tx, boil.Whitelist(fixup...)); err != nil {
+		if identityChanged {
+			if err := s.Queries.UpdateChannelIdentity(ctx, dbsql.UpdateChannelIdentityParams{
+				Name:        channel.Name,
+				DisplayName: channel.DisplayName,
+				ID:          channel.ID,
+			}); err != nil {
 				return fmt.Errorf("updating channel: %w", err)
 			}
 		}
@@ -400,9 +404,13 @@ func handleSession(ctx context.Context, s *session) error {
 	}
 
 	s.Channel.MessageCount++
-	s.Channel.LastSeen = time.Now()
+	s.Channel.LastSeen = dbsql.TimestamptzFrom(time.Now())
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.MessageCount, models.ChannelColumns.LastSeen)); err != nil {
+	if err := s.Queries.UpdateChannelActivity(ctx, dbsql.UpdateChannelActivityParams{
+		MessageCount: s.Channel.MessageCount,
+		LastSeen:     s.Channel.LastSeen,
+		ID:           s.Channel.ID,
+	}); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 
@@ -486,17 +494,17 @@ func tryCommand(ctx context.Context, s *session) (bool, error) {
 
 	if !thisChannel {
 		foreignChannel = strings.ToLower(foreignChannel)
-		otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(foreignChannel)).One(ctx, s.Tx)
+		otherChannelID, err := s.Queries.GetChannelIDByName(ctx, foreignChannel)
 		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
+			if errors.Is(err, pgx.ErrNoRows) {
 				return true, s.Replyf(ctx, "Channel %s does not exist.", foreignChannel)
 			}
 			return true, fmt.Errorf("finding channel: %w", err)
 		}
-		channelID = otherChannel.ID
+		channelID = otherChannelID
 	}
 
-	info, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, channelID, name, thisChannel)
+	info, commandMsg, found, err := s.Queries.LookupCommand(ctx, channelID, name, thisChannel)
 	if err != nil {
 		ctxlog.Error(ctx, "error looking up command name in database", zap.Error(err))
 		return true, fmt.Errorf("finding command: %w", err)

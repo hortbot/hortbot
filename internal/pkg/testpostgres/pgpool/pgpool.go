@@ -2,7 +2,7 @@
 package pgpool
 
 import (
-	"database/sql"
+	"context"
 	"errors"
 	"fmt"
 	"sync"
@@ -10,6 +10,8 @@ import (
 
 	"github.com/hortbot/hortbot/internal/db/migrations"
 	"github.com/hortbot/hortbot/internal/pkg/testpostgres"
+	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jackc/pgx/v5/tracelog"
 	"github.com/peterldowns/pgtestdb"
 	"gotest.tools/v3/assert"
 )
@@ -22,6 +24,29 @@ type Pool struct {
 	err  error
 
 	pdb *testpostgres.DB
+}
+
+type debugLogger interface {
+	Helper()
+	Logf(format string, args ...any)
+}
+
+type debugLoggerKey struct{}
+
+// WithDebug logs pgx queries executed with the returned context.
+func WithDebug(ctx context.Context, logger debugLogger) context.Context {
+	return context.WithValue(ctx, debugLoggerKey{}, logger)
+}
+
+type contextLogger struct{}
+
+func (contextLogger) Log(ctx context.Context, _ tracelog.LogLevel, msg string, data map[string]any) {
+	logger, ok := ctx.Value(debugLoggerKey{}).(debugLogger)
+	if !ok {
+		return
+	}
+	logger.Helper()
+	logger.Logf("pgx %s: %v", msg, data)
 }
 
 func (p *Pool) init(t testing.TB) {
@@ -53,12 +78,12 @@ func (p *Pool) Cleanup() {
 }
 
 // FreshDB creates a new database, migrated up.
-func (p *Pool) FreshDB(t testing.TB) *sql.DB {
+func (p *Pool) FreshDB(t testing.TB) *pgxpool.Pool {
 	t.Helper()
 	p.init(t)
 
 	info := p.pdb.Info()
-	return pgtestdb.New(t, pgtestdb.Config{
+	sqlDB := pgtestdb.New(t, pgtestdb.Config{
 		DriverName: info.DriverName,
 		User:       info.User,
 		Password:   info.Password,
@@ -67,4 +92,16 @@ func (p *Pool) FreshDB(t testing.TB) *sql.DB {
 		Database:   info.Database,
 		Options:    info.Options,
 	}, migrations.NewPGTestDBMigrator())
+
+	assert.NilError(t, sqlDB.QueryRowContext(t.Context(), "SELECT current_database()").Scan(&info.Database))
+	config, err := pgxpool.ParseConfig(info.String())
+	assert.NilError(t, err)
+	config.ConnConfig.Tracer = &tracelog.TraceLog{
+		Logger:   contextLogger{},
+		LogLevel: tracelog.LogLevelInfo,
+	}
+	db, err := pgxpool.NewWithConfig(t.Context(), config)
+	assert.NilError(t, err)
+	t.Cleanup(db.Close)
+	return db
 }

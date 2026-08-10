@@ -7,10 +7,11 @@ import (
 	"embed"
 	"errors"
 	"fmt"
+	"net/url"
 	"sync"
 
 	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres" // golang-migrate postgres support
+	_ "github.com/golang-migrate/migrate/v4/database/pgx/v5" // golang-migrate pgx support
 	"github.com/golang-migrate/migrate/v4/source/iofs"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/peterldowns/pgtestdb"
@@ -60,7 +61,13 @@ func Reset(connStr string, logger LoggerFunc) error {
 }
 
 func newMigrate(connStr string, logger LoggerFunc) (*migrate.Migrate, error) {
-	m, err := migrate.NewWithSourceInstance("iofs", sourceDriver, connStr)
+	u, err := url.Parse(connStr)
+	if err != nil {
+		return nil, fmt.Errorf("no scheme: parsing connection string: %w", err)
+	}
+	u.Scheme = "pgx5"
+
+	m, err := migrate.NewWithSourceInstance("iofs", sourceDriver, u.String())
 	if err != nil {
 		return nil, fmt.Errorf("creating migrate instance: %w", err)
 	}

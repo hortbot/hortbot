@@ -3,11 +3,10 @@ package sqlflags
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
-	"github.com/hortbot/hortbot/internal/db/driver"
 	"github.com/hortbot/hortbot/internal/db/migrations"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -21,20 +20,15 @@ type SQL struct {
 // Default contains the default flags. Make a copy of this, do not reuse.
 var Default = SQL{}
 
-// DriverName returns the default driver name to connect to the database.
-func (args *SQL) DriverName() string {
-	return driver.Name
-}
-
-// Open opens a database connection given the specified driver name.
-func (args *SQL) Open(ctx context.Context, driverName string) *sql.DB {
-	db, err := sql.Open(driverName, args.DB)
+// Open opens a PostgreSQL connection pool.
+func (args *SQL) Open(ctx context.Context) *pgxpool.Pool {
+	db, err := pgxpool.New(ctx, args.DB)
 	if err != nil {
 		ctxlog.Fatal(ctx, "error opening connection to database", zap.Error(err))
 	}
 
 	for {
-		err := db.PingContext(ctx)
+		err := db.Ping(ctx)
 		if err == nil {
 			break
 		}

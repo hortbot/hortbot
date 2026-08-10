@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -12,7 +11,9 @@ import (
 	"github.com/hortbot/hortbot/internal/bot/eventsubtobot"
 	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/db/chatqueue"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -148,14 +149,15 @@ func finishQueueOperation(ctx context.Context, operation string, fn func(context
 
 func runDatabaseMaintenance(
 	ctx context.Context,
-	db *sql.DB,
+	db *pgxpool.Pool,
 	state *botstate.Store,
 ) error {
 	ticker := time.NewTicker(databaseMaintenanceInterval)
 	defer ticker.Stop()
+	queries := dbsql.New(db)
 
 	for {
-		if err := state.Cleanup(ctx, db); err != nil {
+		if err := state.Cleanup(ctx, queries); err != nil {
 			ctxlog.Error(ctx, "error cleaning up bot state", zap.Error(err))
 		}
 

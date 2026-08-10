@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/url"
@@ -12,13 +11,10 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/araddon/dateparse"
 	"github.com/dghubble/trie"
 	"github.com/hako/durafmt"
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/must"
@@ -162,12 +158,12 @@ func (s *session) doAction(ctx context.Context, action string) (string, error) {
 		name := before
 		name = cleanCommandName(name)
 
-		info, err := s.Channel.CommandInfos(models.CommandInfoWhere.Name.EQ(name)).One(ctx, s.Tx)
+		info, _, found, err := s.Queries.LookupCommand(ctx, s.Channel.ID, name, false)
 		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
-				return actionMsgError, nil
-			}
 			return "", fmt.Errorf("finding command info: %w", err)
+		}
+		if !found {
+			return actionMsgError, nil
 		}
 		return strconv.FormatInt(info.Count, 10), nil
 	}
@@ -385,7 +381,7 @@ func actionSong(ctx context.Context, s *session, actionName, value string) (stri
 }
 
 func actionQuote(ctx context.Context, s *session, actionName, value string) (string, error) {
-	q, ok, err := getRandomQuote(ctx, s.Tx, s.Channel)
+	q, ok, err := getRandomQuote(ctx, s.Queries, s.Channel.ID)
 	if err != nil {
 		return "", err
 	}
@@ -427,11 +423,11 @@ func actionSilent(ctx context.Context, s *session, actionName, value string) (st
 }
 
 func actionNumChannels(ctx context.Context, s *session, actionName, value string) (string, error) {
-	count, _, err := modelsx.CountActiveChannels(ctx, s.Tx)
+	counts, err := s.Queries.CountActiveChannelAssignments(ctx)
 	if err != nil {
 		return "", fmt.Errorf("finding channel count: %w", err)
 	}
-	return strconv.Itoa(count), nil
+	return strconv.Itoa(int(counts.ChannelCount)), nil
 }
 
 func actionPurge(ctx context.Context, s *session, actionName, value string) (string, error) {
@@ -474,7 +470,7 @@ func actionExtraLifeAmount(ctx context.Context, s *session, actionName, value st
 		return "?", nil
 	}
 
-	amount, err := s.Deps.ExtraLife.GetDonationAmount(ctx, s.Channel.ExtraLifeID)
+	amount, err := s.Deps.ExtraLife.GetDonationAmount(ctx, int(s.Channel.ExtraLifeID))
 	if err == nil {
 		return fmt.Sprintf("$%.2f", amount), nil
 	}
@@ -891,7 +887,7 @@ func actionCommand(ctx context.Context, s *session, prefix, name string) (string
 
 	ctx = withCommandGuard(ctx, name)
 
-	_, commandMsg, found, err := modelsx.FindCommand(ctx, s.Tx, s.Channel.ID, name, false)
+	_, commandMsg, found, err := s.Queries.LookupCommand(ctx, s.Channel.ID, name, false)
 	if err != nil {
 		return "", fmt.Errorf("finding command: %w", err)
 	}
@@ -920,22 +916,19 @@ func actionList(ctx context.Context, s *session, prefix, name string) (string, e
 
 	ctx = withCommandGuard(ctx, name)
 
-	info, err := s.Channel.CommandInfos(
-		models.CommandInfoWhere.Name.EQ(name),
-		qm.Load(models.CommandInfoRels.CommandList),
-	).One(ctx, s.Tx)
+	info, _, found, err := s.Queries.LookupCommand(ctx, s.Channel.ID, name, false)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return actionMsgError, nil
-		}
 		return "", fmt.Errorf("finding command info: %w", err)
 	}
-
-	if info.R.CommandList == nil {
+	if !found || !info.CommandListID.Valid {
 		return actionMsgError, nil
 	}
 
-	items := info.R.CommandList.Items
+	list, err := s.Queries.GetCommandList(ctx, info.CommandListID.Int64)
+	if err != nil {
+		return "", fmt.Errorf("finding command list: %w", err)
+	}
+	items := list.Items
 	if len(items) == 0 {
 		return "", nil
 	}

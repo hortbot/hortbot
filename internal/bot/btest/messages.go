@@ -11,10 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aarondl/null/v8"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"gotest.tools/v3/assert"
 	"gotest.tools/v3/assert/cmp"
@@ -302,26 +300,26 @@ func (st *scriptTester) join(t testing.TB, _, args string, lineNum int) {
 	expiry, err := time.Parse(time.RFC3339, "2050-10-01T03:11:00Z")
 	assert.NilError(t, err, "line %d", lineNum)
 
-	tt := models.TwitchToken{
+	tt := dbsql.TwitchToken{
 		TwitchID:     int64(botID),
-		BotName:      null.StringFrom(botName),
+		BotName:      dbsql.TextFrom(botName),
 		AccessToken:  "some-access-token",
 		TokenType:    "bearer",
 		RefreshToken: "some-refresh-token",
-		Expiry:       expiry,
+		Expiry:       dbsql.TimestamptzFrom(expiry),
 		Scopes:       twitch.BotScopes,
 	}
-	assert.NilError(t, modelsx.UpsertToken(t.Context(), st.db, &tt), "line %d", lineNum)
+	assert.NilError(t, st.queries.SaveTwitchToken(t.Context(), &tt), "line %d", lineNum)
 
-	tt = models.TwitchToken{
+	tt = dbsql.TwitchToken{
 		TwitchID:     int64(userID),
 		AccessToken:  "some-access-token",
 		TokenType:    "bearer",
 		RefreshToken: "some-refresh-token",
-		Expiry:       expiry,
+		Expiry:       dbsql.TimestamptzFrom(expiry),
 		Scopes:       twitch.UserScopes,
 	}
-	assert.NilError(t, modelsx.UpsertToken(t.Context(), st.db, &tt), "line %d", lineNum)
+	assert.NilError(t, st.queries.SaveTwitchToken(t.Context(), &tt), "line %d", lineNum)
 
 	m := &testChatMessage{
 		botLogin: botName,

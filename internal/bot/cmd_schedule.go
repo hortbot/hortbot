@@ -2,19 +2,16 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
+	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
-	"github.com/gobuffalo/flect"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/must"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/jackc/pgx/v5"
 )
 
 var scheduleCommands = newHandlerMap(map[string]handlerFunc{
@@ -85,7 +82,7 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		al := flect.Pluralize(info.AccessLevel)
+		al := pluralAccessLevel(info.AccessLevel)
 		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
@@ -96,33 +93,30 @@ func cmdScheduleAdd(ctx context.Context, s *session, cmd string, args string) er
 		scheduled.LastCount = s.Channel.MessageCount
 		scheduled.Editor = s.User
 
-		columns := boil.Whitelist(
-			models.ScheduledCommandColumns.UpdatedAt,
-			models.ScheduledCommandColumns.CronExpression,
-			models.ScheduledCommandColumns.MessageDiff,
-			models.ScheduledCommandColumns.Enabled,
-			models.ScheduledCommandColumns.LastCount,
-			models.ScheduledCommandColumns.Editor,
-		)
-
-		if err := scheduled.Update(ctx, s.Tx, columns); err != nil {
+		updated, err := s.Queries.UpdateScheduledCommand(ctx, dbsql.UpdateScheduledCommandParams{
+			Enabled: scheduled.Enabled, CronExpression: scheduled.CronExpression,
+			MessageDiff: scheduled.MessageDiff, LastCount: scheduled.LastCount,
+			Editor: scheduled.Editor, Now: dbsql.TimestamptzFrom(time.Now()), ID: scheduled.ID,
+		})
+		if err != nil {
 			return fmt.Errorf("updating scheduled command: %w", err)
 		}
+		scheduled.UpdatedAt = updated.UpdatedAt
 	} else {
-		scheduled = &models.ScheduledCommand{
+		inserted, err := s.Queries.InsertScheduledCommand(ctx, dbsql.InsertScheduledCommandParams{
+			Now:            dbsql.TimestamptzFrom(time.Now()),
 			ChannelID:      s.Channel.ID,
 			CommandInfoID:  info.ID,
-			Enabled:        true,
 			CronExpression: pattern,
 			MessageDiff:    messageDiff,
 			LastCount:      s.Channel.MessageCount,
 			Creator:        s.User,
 			Editor:         s.User,
-		}
-
-		if err := scheduled.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+		})
+		if err != nil {
 			return fmt.Errorf("inserting scheduled command: %w", err)
 		}
+		scheduled = new(inserted)
 	}
 
 	if err := s.Deps.AddScheduled(ctx, scheduled.ID, expr); err != nil {
@@ -159,11 +153,11 @@ func cmdScheduleDelete(ctx context.Context, s *session, cmd string, args string)
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		al := flect.Pluralize(info.AccessLevel)
+		al := pluralAccessLevel(info.AccessLevel)
 		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
-	if err := scheduled.Delete(ctx, s.Tx); err != nil {
+	if err := s.Queries.DeleteScheduledCommand(ctx, scheduled.ID); err != nil {
 		return fmt.Errorf("deleting scheduled command: %w", err)
 	}
 
@@ -198,7 +192,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		al := flect.Pluralize(info.AccessLevel)
+		al := pluralAccessLevel(info.AccessLevel)
 		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its schedule.", name, al, al)
 	}
 
@@ -213,16 +207,15 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 	scheduled.LastCount = s.Channel.MessageCount
 	scheduled.Editor = s.User
 
-	columns := boil.Whitelist(
-		models.ScheduledCommandColumns.UpdatedAt,
-		models.ScheduledCommandColumns.Enabled,
-		models.ScheduledCommandColumns.LastCount,
-		models.ScheduledCommandColumns.Editor,
-	)
-
-	if err := scheduled.Update(ctx, s.Tx, columns); err != nil {
+	updated, err := s.Queries.UpdateScheduledCommand(ctx, dbsql.UpdateScheduledCommandParams{
+		Enabled: scheduled.Enabled, CronExpression: scheduled.CronExpression,
+		MessageDiff: scheduled.MessageDiff, LastCount: scheduled.LastCount,
+		Editor: scheduled.Editor, Now: dbsql.TimestamptzFrom(time.Now()), ID: scheduled.ID,
+	})
+	if err != nil {
 		return fmt.Errorf("updating scheduled command: %w", err)
 	}
+	scheduled.UpdatedAt = updated.UpdatedAt
 
 	expr := must.Must(repeat.ParseCron(scheduled.CronExpression))
 
@@ -244,9 +237,7 @@ func cmdScheduleOnOff(ctx context.Context, s *session, cmd string, args string) 
 }
 
 func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) error {
-	scheduleds, err := s.Channel.ScheduledCommands(
-		qm.Load(models.ScheduledCommandRels.CommandInfo),
-	).All(ctx, s.Tx)
+	scheduleds, err := s.Queries.ListScheduledCommandsWithNames(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting scheduled commands: %w", err)
 	}
@@ -254,10 +245,6 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	if len(scheduleds) == 0 {
 		return s.Reply(ctx, "There are no scheduled commands.")
 	}
-
-	slices.SortFunc(scheduleds, func(a, b *models.ScheduledCommand) int {
-		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
-	})
 
 	var builder strings.Builder
 
@@ -267,7 +254,7 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 			builder.WriteString(", ")
 		}
 
-		builder.WriteString(scheduled.R.CommandInfo.Name)
+		builder.WriteString(scheduled.Name)
 		builder.WriteString(" [")
 
 		if scheduled.Enabled {
@@ -284,20 +271,20 @@ func cmdScheduleList(ctx context.Context, s *session, cmd string, args string) e
 	return s.Reply(ctx, builder.String())
 }
 
-func findScheduledCommand(ctx context.Context, name string, s *session) (*models.CommandInfo, *models.ScheduledCommand, error) {
-	info, err := s.Channel.CommandInfos(
-		models.CommandInfoWhere.Name.EQ(name),
-		qm.Load(models.CommandInfoRels.ScheduledCommand),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil, nil
-	}
-
+func findScheduledCommand(ctx context.Context, name string, s *session) (*dbsql.CommandInfo, *dbsql.ScheduledCommand, error) {
+	info, _, found, err := s.Queries.LookupCommand(ctx, s.Channel.ID, name, true)
 	if err != nil {
 		return nil, nil, fmt.Errorf("getting command info: %w", err)
 	}
-
-	return info, info.R.ScheduledCommand, nil
+	if !found {
+		return nil, nil, nil
+	}
+	scheduled, err := s.Queries.GetScheduledCommandByInfo(ctx, info.ID)
+	if err != nil && errors.Is(err, pgx.ErrNoRows) {
+		return info, nil, nil
+	}
+	if err != nil {
+		return nil, nil, fmt.Errorf("getting scheduled command: %w", err)
+	}
+	return info, new(scheduled), nil
 }

@@ -2,16 +2,13 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5"
 )
 
 var quoteCommands = newHandlerMap(map[string]handlerFunc{
@@ -52,32 +49,25 @@ func cmdQuoteAdd(ctx context.Context, s *session, cmd string, args string) error
 		return s.ReplyUsage(ctx, "<quote>")
 	}
 
-	var row struct {
-		MaxNum null.Int
-	}
-
-	err := s.Channel.Quotes(
-		qm.Select("max("+models.QuoteColumns.Num+") as max_num"),
-	).Bind(ctx, s.Tx, &row)
+	maxNum, err := s.Queries.GetMaxQuoteNumber(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting max quote num: %w", err)
 	}
 
-	nextNum := row.MaxNum.Int + 1
+	nextNum := maxNum + 1
 
 	return insertQuote(ctx, s, nextNum, args)
 }
 
-func insertQuote(ctx context.Context, s *session, num int, newQuote string) error {
-	quote := &models.Quote{
+func insertQuote(ctx context.Context, s *session, num int32, newQuote string) error {
+	err := s.Queries.InsertQuote(ctx, dbsql.InsertQuoteParams{
 		ChannelID: s.Channel.ID,
 		Num:       num,
 		Quote:     newQuote,
 		Creator:   s.User,
 		Editor:    s.User,
-	}
-
-	if err := quote.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+	})
+	if err != nil {
 		return fmt.Errorf("inserting quote: %w", err)
 	}
 
@@ -93,17 +83,17 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 		return usage()
 	}
 
-	num, err := strconv.Atoi(args)
+	num, err := parseInt32(args)
 	if err != nil {
 		return usage()
 	}
 
-	quote, err := s.Channel.Quotes(
-		models.QuoteWhere.Num.EQ(num),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
+	quote, err := s.Queries.GetQuoteByNumberForUpdate(ctx, dbsql.GetQuoteByNumberForUpdateParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
@@ -111,7 +101,7 @@ func cmdQuoteDelete(ctx context.Context, s *session, cmd string, args string) er
 		return fmt.Errorf("getting quote: %w", err)
 	}
 
-	if err := quote.Delete(ctx, s.Tx); err != nil {
+	if err := s.Queries.DeleteQuote(ctx, quote.ID); err != nil {
 		return fmt.Errorf("deleting quote: %w", err)
 	}
 
@@ -125,7 +115,7 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 
 	idx, newQuote := splitSpace(args)
 
-	num, err := strconv.Atoi(idx)
+	num, err := parseInt32(idx)
 	if err != nil {
 		return usage()
 	}
@@ -138,13 +128,17 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 		return s.Reply(ctx, "Quote number cannot be less than one.")
 	}
 
-	quote, err := s.Channel.Quotes(
-		models.QuoteWhere.Num.EQ(num),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
+	q := s.Queries
+	quote, err := q.GetQuoteByNumberForUpdate(ctx, dbsql.GetQuoteByNumberForUpdateParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
-		exists, err := s.Channel.Quotes(models.QuoteWhere.Num.GT(num)).Exists(ctx, s.Tx)
+	if errors.Is(err, pgx.ErrNoRows) {
+		exists, err := q.QuoteExistsAfterNumber(ctx, dbsql.QuoteExistsAfterNumberParams{
+			ChannelID: s.Channel.ID,
+			Num:       num,
+		})
 		if err != nil {
 			return fmt.Errorf("checking for quotes after index: %w", err)
 		}
@@ -162,10 +156,11 @@ func cmdQuoteEdit(ctx context.Context, s *session, cmd string, args string) erro
 		return fmt.Errorf("getting quote: %w", err)
 	}
 
-	quote.Quote = newQuote
-	quote.Editor = s.User
-
-	if err := quote.Update(ctx, s.Tx, boil.Whitelist(models.QuoteColumns.UpdatedAt, models.QuoteColumns.Quote, models.QuoteColumns.Editor)); err != nil {
+	if err := q.UpdateQuote(ctx, dbsql.UpdateQuoteParams{
+		Quote:  newQuote,
+		Editor: s.User,
+		ID:     quote.ID,
+	}); err != nil {
 		return fmt.Errorf("updating quote: %w", err)
 	}
 
@@ -177,11 +172,12 @@ func cmdQuoteGetIndex(ctx context.Context, s *session, cmd string, args string) 
 		return s.ReplyUsage(ctx, "<quote>")
 	}
 
-	quote, err := s.Channel.Quotes(
-		models.QuoteWhere.Quote.EQ(args),
-	).One(ctx, s.Tx)
+	quote, err := s.Queries.GetQuoteByText(ctx, dbsql.GetQuoteByTextParams{
+		ChannelID: s.Channel.ID,
+		Quote:     args,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Reply(ctx, "Quote not found; make sure your quote is exact.")
 	}
 
@@ -201,16 +197,17 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 		return usage()
 	}
 
-	num, err := strconv.Atoi(args)
+	num, err := parseInt32(args)
 	if err != nil {
 		return usage()
 	}
 
-	quote, err := s.Channel.Quotes(
-		models.QuoteWhere.Num.EQ(num),
-	).One(ctx, s.Tx)
+	quote, err := s.Queries.GetQuoteByNumber(ctx, dbsql.GetQuoteByNumberParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
@@ -221,19 +218,19 @@ func cmdQuoteGet(ctx context.Context, s *session, cmd string, args string) error
 	return s.Replyf(ctx, "Quote #%d: %s", quote.Num, quote.Quote)
 }
 
-func getRandomQuote(ctx context.Context, cx boil.ContextExecutor, channel *models.Channel) (quote *models.Quote, ok bool, err error) {
-	quote, err = channel.Quotes(qm.OrderBy("random()")).One(ctx, cx)
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, false, nil
+func getRandomQuote(ctx context.Context, exec *dbsql.Queries, channelID int64) (quote dbsql.Quote, ok bool, err error) {
+	quote, err = exec.GetRandomQuote(ctx, channelID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return dbsql.Quote{}, false, nil
 	}
 	if err != nil {
-		return nil, false, fmt.Errorf("getting random quote: %w", err)
+		return dbsql.Quote{}, false, fmt.Errorf("getting random quote: %w", err)
 	}
 	return quote, true, nil
 }
 
 func cmdQuoteRandom(ctx context.Context, s *session, cmd string, args string) error {
-	quote, ok, err := getRandomQuote(ctx, s.Tx, s.Channel)
+	quote, ok, err := getRandomQuote(ctx, s.Queries, s.Channel.ID)
 	if err != nil {
 		return err
 	}
@@ -254,14 +251,10 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 
 	pattern := "%" + likeEscaper.Replace(args) + "%"
 
-	var quotes []struct {
-		Num int
-	}
-
-	err := s.Channel.Quotes(
-		qm.Select(models.QuoteColumns.Num),
-		models.QuoteWhere.Quote.ILIKE(pattern),
-	).Bind(ctx, s.Tx, &quotes)
+	quotes, err := s.Queries.SearchQuoteNumbers(ctx, dbsql.SearchQuoteNumbersParams{
+		ChannelID: s.Channel.ID,
+		Pattern:   pattern,
+	})
 	if err != nil {
 		return fmt.Errorf("finding quote: %w", err)
 	}
@@ -270,15 +263,15 @@ func cmdQuoteSearch(ctx context.Context, s *session, cmd string, args string) er
 	case 0:
 		return s.Reply(ctx, "No quote contained that phrase.")
 	case 1:
-		return s.Replyf(ctx, "Phrase found in quote %d.", quotes[0].Num)
+		return s.Replyf(ctx, "Phrase found in quote %d.", quotes[0])
 	}
 
 	var builder strings.Builder
 	builder.WriteString("Phrase found in quotes ")
 
 	last := len(quotes) - 1
-	for i, q := range quotes {
-		builder.WriteString(strconv.Itoa(q.Num))
+	for i, quoteNum := range quotes {
+		builder.WriteString(strconv.Itoa(int(quoteNum)))
 
 		switch {
 		case i == last-1:
@@ -305,16 +298,17 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 		return usage()
 	}
 
-	num, err := strconv.Atoi(args)
+	num, err := parseInt32(args)
 	if err != nil {
 		return usage()
 	}
 
-	quote, err := s.Channel.Quotes(
-		models.QuoteWhere.Num.EQ(num),
-	).One(ctx, s.Tx)
+	quote, err := s.Queries.GetQuoteByNumber(ctx, dbsql.GetQuoteByNumberParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Replyf(ctx, "Quote #%d does not exist.", num)
 	}
 
@@ -325,18 +319,6 @@ func cmdQuoteEditor(ctx context.Context, s *session, cmd string, args string) er
 	return s.Replyf(ctx, "Quote #%d was last edited by %s.", quote.Num, quote.Editor)
 }
 
-const quoteCompactQuery = `
-UPDATE quotes q
-SET num = q3.new_num
-FROM (
-	SELECT q2.id, q2.num, (ROW_NUMBER() OVER ()) + $2 - 1 AS new_num
-	FROM quotes q2
-	WHERE q2.channel_id = $1 AND q2.num >= $2
-	ORDER BY q2.num ASC
-) q3
-WHERE q3.id = q.id AND q3.num != q3.new_num
-`
-
 func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage(ctx, "<num>")
@@ -346,19 +328,17 @@ func cmdQuoteCompact(ctx context.Context, s *session, cmd string, args string) e
 		return usage()
 	}
 
-	num, err := strconv.Atoi(args)
+	num, err := parseInt32(args)
 	if err != nil || num <= 0 {
 		return usage()
 	}
 
-	result, err := s.Tx.ExecContext(ctx, quoteCompactQuery, s.Channel.ID, num)
+	affected, err := s.Queries.CompactQuotes(ctx, dbsql.CompactQuotesParams{
+		StartNum:  num,
+		ChannelID: s.Channel.ID,
+	})
 	if err != nil {
 		return fmt.Errorf("compacting quotes: %w", err)
-	}
-
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("getting rows affected: %w", err)
 	}
 
 	return s.Replyf(ctx, "Compacted quotes %d and above (%d affected).", num, affected)

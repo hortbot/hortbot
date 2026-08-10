@@ -44,8 +44,7 @@ func (*cmd) Name() string {
 func (c *cmd) Main(ctx context.Context, _ []string) {
 	c.Prometheus.Run(ctx)
 
-	driverName := c.SQL.DriverName()
-	db := c.SQL.Open(ctx, driverName)
+	db := c.SQL.Open(ctx)
 	defer db.Close() //nolint:errcheck
 
 	state := botstate.New()

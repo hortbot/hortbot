@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"regexp"
@@ -11,11 +10,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/hortbot/hortbot/internal/cbp"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5"
 )
 
 var autoreplyCommands = newHandlerMap(map[string]handlerFunc{
@@ -66,34 +63,27 @@ func cmdAutoreplyAdd(ctx context.Context, s *session, cmd string, args string) e
 		warning += " Warning: response contains stray (_ or _) separators and may not be processed correctly."
 	}
 
-	var row struct {
-		MaxNum null.Int
-	}
-
-	err = s.Channel.Autoreplies(
-		qm.Select("max("+models.AutoreplyColumns.Num+") as max_num"),
-	).Bind(ctx, s.Tx, &row)
+	maxNum, err := s.Queries.GetMaxAutoreplyNumber(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting max autoreply num: %w", err)
 	}
 
-	nextNum := row.MaxNum.Int + 1
+	nextNum := maxNum + 1
 
-	autoreply := &models.Autoreply{
+	err = s.Queries.InsertAutoreply(ctx, dbsql.InsertAutoreplyParams{
 		ChannelID:   s.Channel.ID,
 		Num:         nextNum,
 		Trigger:     trigger,
-		OrigPattern: null.StringFrom(pattern),
+		OrigPattern: dbsql.TextFrom(pattern),
 		Response:    response,
 		Creator:     s.User,
 		Editor:      s.User,
-	}
-
-	if err := autoreply.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+	})
+	if err != nil {
 		return fmt.Errorf("inserting autoreply: %w", err)
 	}
 
-	return s.Replyf(ctx, "Autoreply #%d added.%s", autoreply.Num, warning)
+	return s.Replyf(ctx, "Autoreply #%d added.%s", nextNum, warning)
 }
 
 func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string) error {
@@ -105,17 +95,17 @@ func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string
 		return usage()
 	}
 
-	num, err := strconv.Atoi(args)
+	num, err := parseInt32(args)
 	if err != nil {
 		return usage()
 	}
 
-	autoreply, err := s.Channel.Autoreplies(
-		models.AutoreplyWhere.Num.EQ(num),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
+	autoreply, err := s.Queries.GetAutoreplyForUpdate(ctx, dbsql.GetAutoreplyForUpdateParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
@@ -123,7 +113,7 @@ func cmdAutoreplyDelete(ctx context.Context, s *session, cmd string, args string
 		return fmt.Errorf("getting autoreply: %w", err)
 	}
 
-	if err := autoreply.Delete(ctx, s.Tx); err != nil {
+	if err := s.Queries.DeleteAutoreply(ctx, autoreply.ID); err != nil {
 		return fmt.Errorf("deleting autoreply: %w", err)
 	}
 
@@ -141,7 +131,7 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		return usage()
 	}
 
-	num, err := strconv.Atoi(numStr)
+	num, err := parseInt32(numStr)
 	if err != nil {
 		return usage()
 	}
@@ -151,12 +141,12 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		warning += " Warning: response contains stray (_ or _) separators and may not be processed correctly."
 	}
 
-	autoreply, err := s.Channel.Autoreplies(
-		models.AutoreplyWhere.Num.EQ(num),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
+	autoreply, err := s.Queries.GetAutoreplyForUpdate(ctx, dbsql.GetAutoreplyForUpdateParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
@@ -164,10 +154,11 @@ func cmdAutoreplyEditResponse(ctx context.Context, s *session, cmd string, args 
 		return fmt.Errorf("getting autoreply: %w", err)
 	}
 
-	autoreply.Response = response
-	autoreply.Editor = s.User
-
-	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Response, models.AutoreplyColumns.Editor)); err != nil {
+	if err := s.Queries.UpdateAutoreplyResponse(ctx, dbsql.UpdateAutoreplyResponseParams{
+		Response: response,
+		Editor:   s.User,
+		ID:       autoreply.ID,
+	}); err != nil {
 		return fmt.Errorf("updating autoreply: %w", err)
 	}
 
@@ -185,7 +176,7 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 		return usage()
 	}
 
-	num, err := strconv.Atoi(numStr)
+	num, err := parseInt32(numStr)
 	if err != nil {
 		return usage()
 	}
@@ -195,12 +186,12 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 		return s.replyBadPattern(ctx, err)
 	}
 
-	autoreply, err := s.Channel.Autoreplies(
-		models.AutoreplyWhere.Num.EQ(num),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
+	autoreply, err := s.Queries.GetAutoreplyForUpdate(ctx, dbsql.GetAutoreplyForUpdateParams{
+		ChannelID: s.Channel.ID,
+		Num:       num,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return s.Replyf(ctx, "Autoreply #%d does not exist.", num)
 	}
 
@@ -208,11 +199,12 @@ func cmdAutoreplyEditPattern(ctx context.Context, s *session, cmd string, args s
 		return fmt.Errorf("getting autoreply: %w", err)
 	}
 
-	autoreply.Trigger = trigger
-	autoreply.OrigPattern = null.StringFrom(pattern)
-	autoreply.Editor = s.User
-
-	if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.UpdatedAt, models.AutoreplyColumns.Trigger, models.AutoreplyColumns.OrigPattern, models.AutoreplyColumns.Editor)); err != nil {
+	if err := s.Queries.UpdateAutoreplyPattern(ctx, dbsql.UpdateAutoreplyPatternParams{
+		Trigger:     trigger,
+		OrigPattern: dbsql.TextFrom(pattern),
+		Editor:      s.User,
+		ID:          autoreply.ID,
+	}); err != nil {
 		return fmt.Errorf("updating autoreply: %w", err)
 	}
 
@@ -224,9 +216,7 @@ func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) 
 		return s.Replyf(ctx, "You can find the list of autoreplies at: %s/c/%s/autoreplies", s.WebAddr(), s.ChannelName)
 	}
 
-	autoreplies, err := s.Channel.Autoreplies(
-		qm.OrderBy(models.AutoreplyColumns.Num),
-	).All(ctx, s.Tx)
+	autoreplies, err := s.Queries.ListAutoreplies(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting autoreplies: %w", err)
 	}
@@ -243,7 +233,7 @@ func cmdAutoreplyList(ctx context.Context, s *session, cmd string, args string) 
 			builder.WriteString(" ; ")
 		}
 
-		builder.WriteString(strconv.Itoa(autoreply.Num))
+		builder.WriteString(strconv.Itoa(int(autoreply.Num)))
 		builder.WriteString(": ")
 		builder.WriteString(autoreply.Trigger)
 		builder.WriteString(" -> ")
@@ -327,18 +317,6 @@ func (s *session) replyBadPattern(ctx context.Context, err error) error {
 	return s.Replyf(ctx, "Error parsing pattern: %s", errStr)
 }
 
-const autoreplyCompactQuery = `
-UPDATE autoreplies q
-SET num = q3.new_num
-FROM (
-	SELECT q2.id, q2.num, (ROW_NUMBER() OVER ()) + $2 - 1 AS new_num
-	FROM autoreplies q2
-	WHERE q2.channel_id = $1 AND q2.num >= $2
-	ORDER BY q2.num ASC
-) q3
-WHERE q3.id = q.id AND q3.id != q3.new_num
-`
-
 func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args string) error {
 	usage := func() error {
 		return s.ReplyUsage(ctx, "<num>")
@@ -348,19 +326,17 @@ func cmdAutoreplyCompact(ctx context.Context, s *session, cmd string, args strin
 		return usage()
 	}
 
-	num, err := strconv.Atoi(args)
+	num, err := parseInt32(args)
 	if err != nil || num <= 0 {
 		return usage()
 	}
 
-	result, err := s.Tx.ExecContext(ctx, autoreplyCompactQuery, s.Channel.ID, num)
+	affected, err := s.Queries.CompactAutoreplies(ctx, dbsql.CompactAutorepliesParams{
+		StartNum:  num,
+		ChannelID: s.Channel.ID,
+	})
 	if err != nil {
 		return fmt.Errorf("compacting autoreplies: %w", err)
-	}
-
-	affected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("getting rows affected: %w", err)
 	}
 
 	return s.Replyf(ctx, "Compacted autoreplies %d and above (%d affected).", num, affected)

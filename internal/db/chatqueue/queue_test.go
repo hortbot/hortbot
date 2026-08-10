@@ -87,10 +87,10 @@ func TestQueueListen(t *testing.T) {
 	t.Cleanup(pdb.Cleanup)
 	assert.NilError(t, migrations.Up(pdb.ConnStr(), t.Logf))
 
-	db, err := pdb.Open()
+	db, err := pdb.Open(t.Context())
 	assert.NilError(t, err)
 	t.Cleanup(func() {
-		assert.NilError(t, db.Close())
+		db.Close()
 	})
 
 	listener := chatqueue.New(db, 3)
@@ -218,7 +218,7 @@ func TestQueueFailAndCleanup(t *testing.T) {
 
 	var failedAt time.Time
 	var lastError string
-	err = db.QueryRowContext(t.Context(), `
+	err = db.QueryRow(t.Context(), `
 		SELECT failed_at, last_error
 		FROM chat_message_queue
 		WHERE message_id = 'stale'

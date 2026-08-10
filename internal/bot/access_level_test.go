@@ -3,7 +3,7 @@ package bot
 import (
 	"testing"
 
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"gotest.tools/v3/assert"
 )
 
@@ -11,37 +11,37 @@ func TestAccessLevelConversion(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		s string
+		s dbsql.AccessLevel
 		l AccessLevel
 	}{
 		{
-			s: models.AccessLevelEveryone,
+			s: dbsql.AccessLevelEveryone,
 			l: AccessLevelEveryone,
 		},
 		{
-			s: models.AccessLevelSubscriber,
+			s: dbsql.AccessLevelSubscriber,
 			l: AccessLevelSubscriber,
 		},
 		{
-			s: models.AccessLevelModerator,
+			s: dbsql.AccessLevelModerator,
 			l: AccessLevelModerator,
 		},
 		{
-			s: models.AccessLevelVip,
+			s: dbsql.AccessLevelVip,
 			l: AccessLevelVIP,
 		},
 		{
-			s: models.AccessLevelBroadcaster,
+			s: dbsql.AccessLevelBroadcaster,
 			l: AccessLevelBroadcaster,
 		},
 		{
-			s: models.AccessLevelAdmin,
+			s: dbsql.AccessLevelAdmin,
 			l: AccessLevelAdmin,
 		},
 	}
 
 	for _, test := range tests {
-		t.Run(test.s, func(t *testing.T) {
+		t.Run(string(test.s), func(t *testing.T) {
 			t.Parallel()
 			l := newAccessLevel(test.s)
 			assert.Equal(t, l, test.l)

@@ -2,11 +2,11 @@
 package webflags
 
 import (
-	"database/sql"
-
 	"github.com/hortbot/hortbot/internal/db/botstate"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/web"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // Web contains flags for the web server.
@@ -26,7 +26,7 @@ var Default = Web{
 }
 
 // New creates a new Web app.
-func (args *Web) New(debug bool, state *botstate.Store, db *sql.DB, tw *twitch.Twitch) *web.App {
+func (args *Web) New(debug bool, state *botstate.Store, db *pgxpool.Pool, tw *twitch.Twitch) *web.App {
 	return &web.App{
 		Addr:       args.Addr,
 		SessionKey: []byte(args.SessionKey),
@@ -36,6 +36,7 @@ func (args *Web) New(debug bool, state *botstate.Store, db *sql.DB, tw *twitch.T
 		Debug:      debug,
 		State:      state,
 		DB:         db,
+		Queries:    dbsql.New(db),
 		Twitch:     tw,
 	}
 }

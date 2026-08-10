@@ -1,0 +1,6 @@
+join hortbot 999 foobar 1234
+
+pgx_debug
+
+handle hortbot foobar/1234 foobar/1234 broadcaster-display=FooBar chatter-display=FooBar :hello
+no_send

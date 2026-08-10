@@ -2,7 +2,6 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"runtime"
@@ -10,12 +9,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/hako/durafmt"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/version"
+	"github.com/jackc/pgx/v5"
 )
 
 var adminCommands handlerMap
@@ -77,20 +74,21 @@ func cmdAdminBlock(ctx context.Context, s *session, cmd string, args string) err
 		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
 
-	bu := &models.BlockedUser{TwitchID: int64(u.ID)}
-	if err := bu.Upsert(ctx, s.Tx, false, []string{models.BlockedUserColumns.TwitchID}, boil.Blacklist(models.BlockedUserColumns.CreatedAt), boil.Infer()); err != nil {
+	if err := s.Queries.UpsertBlockedUser(ctx, int64(u.ID)); err != nil {
 		return fmt.Errorf("upsert blocked user: %w", err)
 	}
 
-	channel, err := models.Channels(models.ChannelWhere.TwitchID.EQ(int64(u.ID))).One(ctx, s.Tx)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+	q := s.Queries
+	channel, err := q.GetChannelByTwitchIDForUpdate(ctx, int64(u.ID))
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		return fmt.Errorf("get channel: %w", err)
 	}
 
-	if !errors.Is(err, sql.ErrNoRows) && channel.Active {
-		channel.Active = false
-
-		if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.Active)); err != nil {
+	if !errors.Is(err, pgx.ErrNoRows) && channel.Active {
+		if err := q.UpdateChannelActive(ctx, dbsql.UpdateChannelActiveParams{
+			Active: false,
+			ID:     channel.ID,
+		}); err != nil {
 			return fmt.Errorf("update channel: %w", err)
 		}
 
@@ -110,7 +108,7 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 		return s.Replyf(ctx, "Error getting ID from Twitch: %s", err.Error())
 	}
 
-	if err := models.BlockedUsers(models.BlockedUserWhere.TwitchID.EQ(int64(u.ID))).DeleteAll(ctx, s.Tx); err != nil {
+	if err := s.Queries.DeleteBlockedUser(ctx, int64(u.ID)); err != nil {
 		return fmt.Errorf("delete blocked user: %w", err)
 	}
 
@@ -118,13 +116,13 @@ func cmdAdminUnblock(ctx context.Context, s *session, cmd string, args string) e
 }
 
 func cmdAdminChannels(ctx context.Context, s *session, cmd string, args string) error {
-	count, _, err := modelsx.CountActiveChannels(ctx, s.Tx)
+	counts, err := s.Queries.CountActiveChannelAssignments(ctx)
 	if err != nil {
 		return fmt.Errorf("count channels: %w", err)
 	}
 
-	ch := pluralInt(count, "channel", "channels")
-	return s.Replyf(ctx, "Currently in %d %s.", count, ch)
+	ch := pluralInt(counts.ChannelCount, "channel", "channels")
+	return s.Replyf(ctx, "Currently in %d %s.", counts.ChannelCount, ch)
 }
 
 func cmdAdminColor(ctx context.Context, s *session, cmd string, args string) error {
@@ -183,9 +181,9 @@ func cmdAdminImp(ctx context.Context, s *session, cmd string, args string) error
 		return s.ReplyUsage(ctx, "<channel> <message>")
 	}
 
-	otherChannel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
+	otherChannel, err := s.Queries.GetChannelByNameForUpdate(ctx, name)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return s.Replyf(ctx, "Channel %s does not exist.", name)
 		}
 		return fmt.Errorf("get channel: %w", err)
@@ -236,12 +234,9 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		return s.Replyf(ctx, "'%s' may not be deleted from their own channel. Run this command in another channel.", user)
 	}
 
-	channel, err := models.Channels(
-		qm.Select(models.ChannelColumns.ID, models.ChannelColumns.BotName),
-		models.ChannelWhere.Name.EQ(user),
-	).One(ctx, s.Tx)
+	channel, err := s.Queries.GetChannelBotByName(ctx, user)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return s.Replyf(ctx, "User '%s' does not exist.", user)
 		}
 		return fmt.Errorf("get channel: %w", err)
@@ -256,7 +251,7 @@ func cmdAdminDeleteChannel(ctx context.Context, s *session, cmd string, args str
 		return s.Replyf(ctx, "If you are sure you want to delete channel '%s', run %s%s again in the next %s.", user, s.usageContext, user, deleteChannelConfirmDurReadable)
 	}
 
-	if err := modelsx.DeleteChannel(ctx, s.Tx, channel.ID); err != nil {
+	if err := s.Queries.DeleteChannelCascade(ctx, channel.ID); err != nil {
 		return fmt.Errorf("delete channel: %w", err)
 	}
 
@@ -312,9 +307,9 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 		return s.ReplyUsage(ctx, "<name> <botName>")
 	}
 
-	channel, err := models.Channels(models.ChannelWhere.Name.EQ(name)).One(ctx, s.Tx)
+	channel, err := s.Queries.GetChannelBotByName(ctx, name)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return s.Replyf(ctx, "No such user %s.", name)
 		}
 		return fmt.Errorf("get channel: %w", err)
@@ -326,9 +321,10 @@ func cmdAdminChangeBot(ctx context.Context, s *session, _ string, args string) e
 		return s.Replyf(ctx, "%s is already using %s.", name, botName)
 	}
 
-	channel.BotName = botName
-
-	if err := channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.BotName)); err != nil {
+	if err := s.Queries.UpdateChannelBotName(ctx, dbsql.UpdateChannelBotNameParams{
+		BotName: botName,
+		ID:      channel.ID,
+	}); err != nil {
 		return fmt.Errorf("update channel: %w", err)
 	}
 

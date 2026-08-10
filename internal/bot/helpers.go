@@ -2,10 +2,11 @@ package bot
 
 import (
 	"context"
-	"database/sql"
+	"strconv"
 	"strings"
 	"unicode"
 
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/stringsx"
 )
 
@@ -49,14 +50,18 @@ func cleanUsername(user string) string {
 	return strings.ToLower(user)
 }
 
-func pluralInt(n int, singular, plural string) string {
+func parseInt32(s string) (int32, error) {
+	value, err := strconv.ParseInt(s, 10, 32)
+	return int32(value), err
+}
+
+func pluralInt[T ~int | ~int32 | ~int64](n T, singular, plural string) string {
 	if n == 1 {
 		return singular
 	}
 	return plural
 }
 
-func pgLock(ctx context.Context, tx *sql.Tx, twitchID int64) error {
-	_, err := tx.ExecContext(ctx, "SELECT pg_advisory_xact_lock($1)", twitchID)
-	return err //nolint:wrapcheck
+func pgLock(ctx context.Context, queries *dbsql.Queries, twitchID int64) error {
+	return queries.AcquireTwitchAdvisoryLock(ctx, twitchID) //nolint:wrapcheck
 }

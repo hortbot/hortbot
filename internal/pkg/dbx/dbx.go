@@ -1,17 +1,19 @@
-// Package dbx provides helpers for the database/sql package.
+// Package dbx provides helpers for pgx transactions.
 package dbx
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"strconv"
 	"time"
+
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // SetLocalLockTimeout returns a transaction option which will set the lock
 // timeout for the transaction.
-func SetLocalLockTimeout(timeout time.Duration) func(context.Context, *sql.Tx) error {
+func SetLocalLockTimeout(timeout time.Duration) func(context.Context, pgx.Tx) error {
 	if timeout < 0 {
 		panic("duration must be positive")
 	}
@@ -21,8 +23,8 @@ func SetLocalLockTimeout(timeout time.Duration) func(context.Context, *sql.Tx) e
 	//nolint:gosec
 	query := "SET LOCAL lock_timeout = " + strconv.FormatInt(ms, 10)
 
-	return func(ctx context.Context, tx *sql.Tx) error {
-		if _, err := tx.ExecContext(ctx, query); err != nil {
+	return func(ctx context.Context, tx pgx.Tx) error {
+		if _, err := tx.Exec(ctx, query); err != nil {
 			return fmt.Errorf("set lock timeout: %w", err)
 		}
 		return nil
@@ -32,12 +34,12 @@ func SetLocalLockTimeout(timeout time.Duration) func(context.Context, *sql.Tx) e
 // Transact begins a transaction, executes a sequence of functions on that
 // transaction, and commits. If any of the functions returns a non-nil error
 // or panics, execution is halted and the transaction will be rolled back.
-func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql.Tx) error) (retErr error) {
+func Transact(ctx context.Context, db *pgxpool.Pool, fns ...func(context.Context, pgx.Tx) error) (retErr error) {
 	if len(fns) == 0 {
 		panic("no fns")
 	}
 
-	tx, err := db.BeginTx(ctx, nil)
+	tx, err := db.Begin(ctx)
 	if err != nil {
 		return fmt.Errorf("begin tx: %w", err)
 	}
@@ -46,7 +48,7 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 
 	defer func() {
 		if rollback {
-			if err := tx.Rollback(); retErr == nil && err != nil {
+			if err := tx.Rollback(context.WithoutCancel(ctx)); retErr == nil && err != nil {
 				retErr = fmt.Errorf("rollback: %w", err)
 			}
 		}
@@ -62,7 +64,7 @@ func Transact(ctx context.Context, db *sql.DB, fns ...func(context.Context, *sql
 	}
 
 	rollback = false
-	if err := tx.Commit(); err != nil {
+	if err := tx.Commit(ctx); err != nil {
 		return fmt.Errorf("commit: %w", err)
 	}
 	return nil

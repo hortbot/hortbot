@@ -16,7 +16,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/db/chatqueue"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/eventsubsync"
@@ -56,8 +56,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 	httpClient := c.HTTP.Client()
 	untrustedClient := c.HTTP.UntrustedClient(ctx)
-	driverName := c.SQL.DriverName()
-	db := c.SQL.Open(ctx, driverName)
+	db := c.SQL.Open(ctx)
 	defer db.Close() //nolint:errcheck
 
 	workCtx, cancelWork := contextx.WithGracePeriod(ctx, 30*time.Second)
@@ -94,7 +93,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		}
 
 		var err error
-		_, botLoginMap, err = modelsx.GetBots(ctx, db)
+		_, botLoginMap, err = dbsql.New(db).BotMaps(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("get bots: %w", err)
 		}

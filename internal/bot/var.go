@@ -2,20 +2,21 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5"
 )
 
 func (s *session) VarGet(ctx context.Context, name string) (string, bool, error) {
-	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
-	if errors.Is(err, sql.ErrNoRows) {
+	v, err := s.Queries.GetVariable(ctx, dbsql.GetVariableParams{
+		ChannelID: s.Channel.ID,
+		Name:      name,
+	})
+	if errors.Is(err, pgx.ErrNoRows) {
 		return "", false, nil
 	}
 
@@ -27,16 +28,12 @@ func (s *session) VarGet(ctx context.Context, name string) (string, bool, error)
 }
 
 func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string, bool, error) {
-	var v models.Variable
+	v, err := s.Queries.GetVariableByChannelName(ctx, dbsql.GetVariableByChannelNameParams{
+		ChannelName: strings.ToLower(ch),
+		Name:        name,
+	})
 
-	err := queries.Raw(`
-		SELECT variables.*
-		FROM variables
-		JOIN channels ON channels.id = variables.channel_id
-		WHERE channels.name = $1 AND variables.name = $2`,
-		strings.ToLower(ch), name).Bind(ctx, s.Tx, &v)
-
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return "", false, nil
 	}
 
@@ -47,19 +44,13 @@ func (s *session) VarGetByChannel(ctx context.Context, ch, name string) (string,
 	return v.Value, true, nil
 }
 
-var varConflictCols = []string{
-	models.VariableColumns.ChannelID,
-	models.VariableColumns.Name,
-}
-
 func (s *session) VarSet(ctx context.Context, name, value string) error {
-	v := &models.Variable{
+	err := s.Queries.UpsertVariable(ctx, dbsql.UpsertVariableParams{
 		ChannelID: s.Channel.ID,
 		Name:      name,
 		Value:     value,
-	}
-
-	if err := v.Upsert(ctx, s.Tx, true, varConflictCols, boil.Blacklist(models.VariableTableColumns.CreatedAt), boil.Infer()); err != nil {
+	})
+	if err != nil {
 		return fmt.Errorf("upserting variable: %w", err)
 	}
 
@@ -67,7 +58,10 @@ func (s *session) VarSet(ctx context.Context, name, value string) error {
 }
 
 func (s *session) VarDelete(ctx context.Context, name string) error {
-	if err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).DeleteAll(ctx, s.Tx); err != nil {
+	if err := s.Queries.DeleteVariable(ctx, dbsql.DeleteVariableParams{
+		ChannelID: s.Channel.ID,
+		Name:      name,
+	}); err != nil {
 		return fmt.Errorf("deleting variable: %w", err)
 	}
 
@@ -77,9 +71,12 @@ func (s *session) VarDelete(ctx context.Context, name string) error {
 func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n int64, badVar bool, err error) {
 	// TODO: Do this in a psql query, not in Go.
 
-	v, err := s.Channel.Variables(models.VariableWhere.Name.EQ(name)).One(ctx, s.Tx)
+	v, err := s.Queries.GetVariable(ctx, dbsql.GetVariableParams{
+		ChannelID: s.Channel.ID,
+		Name:      name,
+	})
 
-	if errors.Is(err, sql.ErrNoRows) {
+	if errors.Is(err, pgx.ErrNoRows) {
 		return inc, false, s.VarSet(ctx, name, strconv.FormatInt(inc, 10))
 	}
 
@@ -96,7 +93,10 @@ func (s *session) VarIncrement(ctx context.Context, name string, inc int64) (n i
 
 	v.Value = strconv.FormatInt(vInt, 10)
 
-	if err := v.Update(ctx, s.Tx, boil.Whitelist(models.VariableColumns.UpdatedAt, models.VariableColumns.Value)); err != nil {
+	if err := s.Queries.UpdateVariableValue(ctx, dbsql.UpdateVariableValueParams{
+		Value: v.Value,
+		ID:    v.ID,
+	}); err != nil {
 		return 0, false, fmt.Errorf("updating variable: %w", err)
 	}
 

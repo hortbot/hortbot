@@ -7,8 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 var raffleCommands = newHandlerMap(map[string]handlerFunc{
@@ -66,7 +65,10 @@ func cmdRaffleEnableDisable(ctx context.Context, s *session, cmd string, args st
 
 	s.Channel.RaffleEnabled = enable
 
-	if err := s.Channel.Update(ctx, s.Tx, boil.Whitelist(models.ChannelColumns.UpdatedAt, models.ChannelColumns.RaffleEnabled)); err != nil {
+	if err := s.Queries.UpdateChannelRaffleEnabled(ctx, dbsql.UpdateChannelRaffleEnabledParams{
+		RaffleEnabled: s.Channel.RaffleEnabled,
+		ID:            s.Channel.ID,
+	}); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
 	}
 

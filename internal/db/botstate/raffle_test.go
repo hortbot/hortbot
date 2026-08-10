@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/botstate"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"gotest.tools/v3/assert"
 )
 
@@ -160,11 +161,11 @@ func TestRaffleWinnersNonPositive(t *testing.T) {
 func freshStoreWithRand(t testing.TB, rng botstate.Rand) *testStore {
 	t.Helper()
 	sqlDB := pool.FreshDB(t)
-	sqlDB.SetMaxOpenConns(8)
 	t.Cleanup(func() { sqlDB.Close() })
 	return &testStore{
-		Store: botstate.New(botstate.WithRand(rng)),
-		exec:  sqlDB,
+		Store:   botstate.New(botstate.WithRand(rng)),
+		db:      sqlDB,
+		queries: dbsql.New(sqlDB),
 	}
 }
 

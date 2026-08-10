@@ -3,13 +3,13 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"github.com/hortbot/hortbot/internal/db/botstate"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
@@ -23,6 +23,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
 	"github.com/hortbot/hortbot/internal/pkg/recache"
 	"github.com/hortbot/hortbot/internal/pkg/repeat"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 const (
@@ -32,7 +33,7 @@ const (
 
 // Config configures the bot.
 type Config struct {
-	DB                     *sql.DB
+	DB                     *pgxpool.Pool
 	State                  *botstate.Store
 	EventsubUpdateNotifier EventsubUpdateNotifier
 	Rand                   Rand
@@ -81,9 +82,10 @@ type Bot struct {
 	stopOnce    sync.Once
 	g           *errgroupx.Group
 
-	db   *sql.DB
-	deps *sharedDeps
-	rep  *repeat.Repeater
+	db      *pgxpool.Pool
+	queries *dbsql.Queries
+	deps    *sharedDeps
+	rep     *repeat.Repeater
 
 	validateTokensTicker *time.Ticker
 	validateTokensManual chan struct{}
@@ -167,6 +169,7 @@ func New(config *Config) *Bot {
 
 	b := &Bot{
 		db:                            config.DB,
+		queries:                       dbsql.New(config.DB),
 		deps:                          deps,
 		rep:                           repeat.New(),
 		validateTokensManual:          make(chan struct{}, 1),

@@ -3,7 +3,6 @@ package bot
 import (
 	"cmp"
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"net/url"
@@ -12,15 +11,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aarondl/null/v8"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/steam"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/idstr"
 	"github.com/hortbot/hortbot/internal/pkg/findlinks"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 	"golang.org/x/oauth2"
@@ -43,8 +42,8 @@ type session struct {
 	BotLogin string
 	M        Message
 
-	Deps *sharedDeps
-	Tx   *sql.Tx
+	Deps    *sharedDeps
+	Queries *dbsql.Queries
 
 	Start  time.Time
 	SentAt time.Time
@@ -61,7 +60,7 @@ type session struct {
 	UserID      int64
 	UserLevel   AccessLevel
 
-	Channel *models.Channel
+	Channel *dbsql.Channel
 
 	CommandParams  string
 	parameters     *[]string
@@ -90,6 +89,13 @@ type session struct {
 		steamGames    onced[[]*steam.Game]
 		gameLinks     onced[[]twitch.GameLink]
 	}
+}
+
+func (s *session) updateChannelSettings(ctx context.Context) error {
+	if err := s.Queries.SaveChannelSettings(ctx, s.Channel); err != nil {
+		return fmt.Errorf("updating channel settings: %w", err)
+	}
+	return nil
 }
 
 type tokenAndUserID struct {
@@ -305,23 +311,23 @@ func (s *session) Tracks(ctx context.Context) ([]lastfm.Track, error) {
 
 func (s *session) ChannelTwitchToken(ctx context.Context) (*oauth2.Token, error) {
 	return s.cache.tok.get(func() (*oauth2.Token, error) {
-		tt, err := models.TwitchTokens(models.TwitchTokenWhere.TwitchID.EQ(s.Channel.TwitchID)).One(ctx, s.Tx)
+		tt, err := s.Queries.GetTwitchTokenByID(ctx, s.Channel.TwitchID)
 		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
+			if errors.Is(err, pgx.ErrNoRows) {
 				return nil, nil
 			}
 			return nil, fmt.Errorf("getting token: %w", err)
 		}
 
-		return modelsx.ModelToToken(tt), nil
+		return tt.OAuth2Token(), nil
 	})
 }
 
 func (s *session) SetChannelTwitchToken(ctx context.Context, newToken *oauth2.Token) error {
 	s.cache.tok.set(newToken, nil)
 
-	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, s.Channel.TwitchID)
-	if err := modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt); err != nil {
+	tt := dbsql.NewTwitchToken(newToken, s.Channel.TwitchID, pgtype.Text{}, nil)
+	if err := s.Queries.SaveTwitchTokenPreservingMetadata(ctx, tt); err != nil {
 		return fmt.Errorf("upserting token: %w", err)
 	}
 	return nil
@@ -334,16 +340,16 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 	}
 
 	pair, err := s.cache.botTok.get(func() (tokenAndUserID, error) {
-		tt, err := models.TwitchTokens(models.TwitchTokenWhere.BotName.EQ(null.StringFrom(botName))).One(ctx, s.Tx)
+		tt, err := s.Queries.GetTwitchTokenByBotName(ctx, botName)
 		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
+			if errors.Is(err, pgx.ErrNoRows) {
 				return tokenAndUserID{}, nil
 			}
 			return tokenAndUserID{}, fmt.Errorf("getting token: %w", err)
 		}
 
 		return tokenAndUserID{
-			tok: modelsx.ModelToToken(tt),
+			tok: tt.OAuth2Token(),
 			id:  tt.TwitchID,
 		}, nil
 	})
@@ -354,8 +360,8 @@ func (s *session) BotTwitchToken(ctx context.Context) (int64, *oauth2.Token, err
 func (s *session) SetBotTwitchToken(ctx context.Context, botID int64, newToken *oauth2.Token) error {
 	s.cache.botTok.set(tokenAndUserID{tok: newToken, id: botID}, nil)
 
-	tt := modelsx.TokenToModelWithoutPreservedColumns(newToken, botID)
-	if err := modelsx.UpsertTokenWithoutPreservedColumns(ctx, s.Tx, tt); err != nil {
+	tt := dbsql.NewTwitchToken(newToken, botID, pgtype.Text{}, nil)
+	if err := s.Queries.SaveTwitchTokenPreservingMetadata(ctx, tt); err != nil {
 		return fmt.Errorf("upserting token: %w", err)
 	}
 	return nil

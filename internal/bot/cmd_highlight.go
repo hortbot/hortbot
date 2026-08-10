@@ -5,10 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 func cmdHighlight(ctx context.Context, s *session, cmd string, args string) error {
@@ -37,15 +36,14 @@ func cmdHighlight(ctx context.Context, s *session, cmd string, args string) erro
 	start := stream.StartedAt
 	status := stream.Title
 
-	highlight := &models.Highlight{
+	err = s.Queries.InsertHighlight(ctx, dbsql.InsertHighlightParams{
 		ChannelID:     s.Channel.ID,
-		HighlightedAt: time.Now(),
-		StartedAt:     null.NewTime(start, !start.IsZero()),
+		HighlightedAt: dbsql.TimestamptzFrom(time.Now()),
+		StartedAt:     pgtype.Timestamptz{Time: start, Valid: !start.IsZero()},
 		Status:        status,
 		Game:          gameName,
-	}
-
-	if err := highlight.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+	})
+	if err != nil {
 		return fmt.Errorf("insert highlight: %w", err)
 	}
 

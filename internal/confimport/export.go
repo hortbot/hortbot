@@ -3,57 +3,127 @@ package confimport
 import (
 	"context"
 	"fmt"
-	"slices"
-	"strings"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 // ExportByName exports a channel's full configuration, keyed on channel name.
-func ExportByName(ctx context.Context, exec boil.ContextExecutor, name string) (*Config, error) {
-	return export(ctx, exec, models.ChannelWhere.Name.EQ(name))
-}
-
-func export(ctx context.Context, exec boil.ContextExecutor, mod qm.QueryMod) (*Config, error) {
-	channel, err := models.Channels(
-		mod,
-		qm.Load(models.ChannelRels.Autoreplies),
-		qm.Load(models.ChannelRels.CommandInfos),
-		qm.Load(qm.Rels(models.ChannelRels.CommandInfos, models.CommandInfoRels.CommandList)),
-		qm.Load(qm.Rels(models.ChannelRels.CommandInfos, models.CommandInfoRels.CustomCommand)),
-		qm.Load(qm.Rels(models.ChannelRels.CommandInfos, models.CommandInfoRels.RepeatedCommand)),
-		qm.Load(qm.Rels(models.ChannelRels.CommandInfos, models.CommandInfoRels.ScheduledCommand)),
-		qm.Load(models.ChannelRels.Quotes),
-		qm.Load(models.ChannelRels.Variables),
-	).One(ctx, exec)
+func ExportByName(ctx context.Context, queries *dbsql.Queries, name string) (*Config, error) {
+	channelRow, err := queries.GetChannelByName(ctx, name)
 	if err != nil {
-		return nil, fmt.Errorf("getting channels: %w", err)
+		return nil, fmt.Errorf("getting channel: %w", err)
+	}
+	channel := Channel(channelRow)
+
+	quoteRows, err := queries.ListQuotes(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting quotes: %w", err)
 	}
 
-	infos := channel.R.CommandInfos
-	commands := make([]*Command, len(infos))
-
-	for i, info := range infos {
-		commands[i] = &Command{
-			Info:          info,
-			CustomCommand: info.R.CustomCommand,
-			CommandList:   info.R.CommandList,
-			Repeat:        info.R.RepeatedCommand,
-			Schedule:      info.R.ScheduledCommand,
-		}
+	autoreplyRows, err := queries.ListAutoreplies(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting autoreplies: %w", err)
+	}
+	autoreplies := make([]*Autoreply, len(autoreplyRows))
+	for i := range autoreplyRows {
+		autoreplies[i] = (*Autoreply)(&autoreplyRows[i])
 	}
 
-	slices.SortFunc(commands, func(a, b *Command) int {
-		return strings.Compare(a.Info.Name, b.Info.Name)
-	})
+	variableRows, err := queries.ListVariables(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting variables: %w", err)
+	}
+
+	infoRows, err := queries.ListCommandInfos(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting command infos: %w", err)
+	}
+	customCommandRows, err := queries.ListCustomCommands(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting custom commands: %w", err)
+	}
+	commandListRows, err := queries.ListCommandLists(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting command lists: %w", err)
+	}
+	repeatedCommandRows, err := queries.ListRepeatedCommands(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting repeated commands: %w", err)
+	}
+	scheduledCommandRows, err := queries.ListScheduledCommands(ctx, channel.ID)
+	if err != nil {
+		return nil, fmt.Errorf("getting scheduled commands: %w", err)
+	}
+
+	commands, err := assembleCommands(
+		infoRows, customCommandRows, commandListRows,
+		repeatedCommandRows, scheduledCommandRows,
+	)
+	if err != nil {
+		return nil, err
+	}
 
 	return &Config{
-		Channel:     channel,
-		Quotes:      channel.R.Quotes,
-		Autoreplies: channel.R.Autoreplies,
-		Variables:   channel.R.Variables,
-		Commands:    commands,
+		Channel: &channel, Quotes: pointers(quoteRows), Commands: commands,
+		Autoreplies: autoreplies, Variables: pointers(variableRows),
 	}, nil
+}
+
+func assembleCommands(
+	infoRows []dbsql.CommandInfo,
+	customCommandRows []dbsql.CustomCommand,
+	commandListRows []dbsql.CommandList,
+	repeatedCommandRows []dbsql.RepeatedCommand,
+	scheduledCommandRows []dbsql.ScheduledCommand,
+) ([]*Command, error) {
+	customCommands := make(map[int64]*CustomCommand, len(customCommandRows))
+	for i := range customCommandRows {
+		customCommands[customCommandRows[i].ID] = &customCommandRows[i]
+	}
+	commandLists := make(map[int64]*CommandList, len(commandListRows))
+	for i := range commandListRows {
+		commandLists[commandListRows[i].ID] = &commandListRows[i]
+	}
+	repeatedCommands := make(map[int64]*RepeatedCommand, len(repeatedCommandRows))
+	for i := range repeatedCommandRows {
+		repeatedCommands[repeatedCommandRows[i].CommandInfoID] = (*RepeatedCommand)(&repeatedCommandRows[i])
+	}
+	scheduledCommands := make(map[int64]*ScheduledCommand, len(scheduledCommandRows))
+	for i := range scheduledCommandRows {
+		scheduledCommands[scheduledCommandRows[i].CommandInfoID] = &scheduledCommandRows[i]
+	}
+
+	commands := make([]*Command, len(infoRows))
+	for i := range infoRows {
+		info := (*CommandInfo)(&infoRows[i])
+		command := &Command{
+			Info:     info,
+			Repeat:   repeatedCommands[info.ID],
+			Schedule: scheduledCommands[info.ID],
+		}
+		switch {
+		case info.CustomCommandID.Valid:
+			command.CustomCommand = customCommands[info.CustomCommandID.Int64]
+			if command.CustomCommand == nil {
+				return nil, fmt.Errorf("command %q references missing custom command %d", info.Name, info.CustomCommandID.Int64)
+			}
+		case info.CommandListID.Valid:
+			command.CommandList = commandLists[info.CommandListID.Int64]
+			if command.CommandList == nil {
+				return nil, fmt.Errorf("command %q references missing command list %d", info.Name, info.CommandListID.Int64)
+			}
+		default:
+			return nil, fmt.Errorf("command %q has no implementation", info.Name)
+		}
+		commands[i] = command
+	}
+	return commands, nil
+}
+
+func pointers[T any](values []T) []*T {
+	out := make([]*T, len(values))
+	for i := range values {
+		out[i] = &values[i]
+	}
+	return out
 }

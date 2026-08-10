@@ -1,0 +1,39 @@
+version: "2"
+sql:
+  - engine: "postgresql"
+    schema: "internal/db/migrations/static"
+    queries: "internal/db/queries"
+    gen:
+      go:
+        package: "dbsql"
+        out: "internal/db/dbsql"
+        sql_package: "pgx/v5"
+        emit_empty_slices: true
+        emit_json_tags: true
+        initialisms:
+          - "API"
+          - "FM"
+          - "HTTP"
+          - "ID"
+          - "JSON"
+          - "URL"
+          - "VIP"
+        omit_unused_structs: true
+        rename:
+          autoreply_id: AutoreplyID
+          broadcaster_id: BroadcasterID
+          channel_id: ChannelID
+          class_id: ClassID
+          command_info_id: CommandInfoID
+          command_list_id: CommandListID
+          custom_command_id: CustomCommandID
+          extra_life_id: ExtraLifeID
+          id: ID
+          last_fm: LastFM
+          message_id: MessageID
+          object_id: ObjectID
+          repeated_command_id: RepeatedCommandID
+          scheduled_command_id: ScheduledCommandID
+          twitch_id: TwitchID
+          user_id: UserID
+          steam_id: SteamID

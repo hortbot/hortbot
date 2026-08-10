@@ -3,7 +3,6 @@ package botflags
 
 import (
 	"context"
-	"database/sql"
 	"net/http"
 	"runtime"
 
@@ -19,6 +18,7 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
@@ -60,7 +60,7 @@ var Default = Bot{
 // New creates a new Bot from the set flags and dependencies.
 func (args *Bot) New(
 	ctx context.Context,
-	db *sql.DB,
+	db *pgxpool.Pool,
 	state *botstate.Store,
 	eventsubUpdateNotifier bot.EventsubUpdateNotifier,
 	twitchAPI twitch.API,

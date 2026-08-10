@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/db/botstate"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/simple/simplemocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/twitchmocks"
@@ -283,7 +283,7 @@ func getNextUserID() (int64, string) {
 type nopNotifier struct{}
 
 func (nopNotifier) NotifyChannelUpdates(ctx context.Context, botName string) error { return nil }
-func (nopNotifier) NotifyEventsubUpdates(ctx context.Context, exec boil.ContextExecutor) error {
+func (nopNotifier) NotifyEventsubUpdates(ctx context.Context, queries *dbsql.Queries) error {
 	return nil
 }
 

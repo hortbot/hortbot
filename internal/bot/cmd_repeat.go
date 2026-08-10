@@ -2,19 +2,14 @@ package bot
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
-	"slices"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/aarondl/null/v8"
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
-	"github.com/gobuffalo/flect"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
+	"github.com/jackc/pgx/v5"
 )
 
 var repeatCommands = newHandlerMap(map[string]handlerFunc{
@@ -55,7 +50,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		return usage()
 	}
 
-	delay, err := strconv.Atoi(delayStr)
+	delay, err := parseInt32(delayStr)
 	if err != nil {
 		return usage()
 	}
@@ -87,7 +82,7 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		al := flect.Pluralize(info.AccessLevel)
+		al := pluralAccessLevel(info.AccessLevel)
 		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
 
@@ -97,39 +92,32 @@ func cmdRepeatAdd(ctx context.Context, s *session, cmd string, args string) erro
 		repeat.Enabled = true
 		repeat.LastCount = s.Channel.MessageCount
 		repeat.Editor = s.User
-		repeat.InitTimestamp = null.Time{}
-
-		columns := boil.Whitelist(
-			models.RepeatedCommandColumns.UpdatedAt,
-			models.RepeatedCommandColumns.Delay,
-			models.RepeatedCommandColumns.MessageDiff,
-			models.RepeatedCommandColumns.Enabled,
-			models.RepeatedCommandColumns.LastCount,
-			models.RepeatedCommandColumns.Editor,
-			models.RepeatedCommandColumns.InitTimestamp,
-		)
-
-		if err := repeat.Update(ctx, s.Tx, columns); err != nil {
+		updated, err := s.Queries.UpdateRepeatedCommand(ctx, dbsql.UpdateRepeatedCommandParams{
+			Enabled: repeat.Enabled, Delay: repeat.Delay, MessageDiff: repeat.MessageDiff,
+			LastCount: repeat.LastCount, Editor: repeat.Editor, Now: dbsql.TimestamptzFrom(time.Now()), ID: repeat.ID,
+		})
+		if err != nil {
 			return fmt.Errorf("updating repeated command: %w", err)
 		}
+		repeat.UpdatedAt = updated.UpdatedAt
 	} else {
-		repeat = &models.RepeatedCommand{
+		inserted, err := s.Queries.InsertRepeatedCommand(ctx, dbsql.InsertRepeatedCommandParams{
+			Now:           dbsql.TimestamptzFrom(time.Now()),
 			ChannelID:     s.Channel.ID,
 			CommandInfoID: info.ID,
-			Enabled:       true,
 			Delay:         delay,
 			MessageDiff:   messageDiff,
 			LastCount:     s.Channel.MessageCount,
 			Creator:       s.User,
 			Editor:        s.User,
-		}
-
-		if err := repeat.Insert(ctx, s.Tx, boil.Infer()); err != nil {
+		})
+		if err != nil {
 			return fmt.Errorf("inserting repeated command: %w", err)
 		}
+		repeat = new(inserted)
 	}
 
-	if err := s.Deps.AddRepeat(ctx, repeat.ID, repeat.UpdatedAt, time.Duration(delay)*time.Second); err != nil {
+	if err := s.Deps.AddRepeat(ctx, repeat.ID, repeat.UpdatedAt.Time, time.Duration(delay)*time.Second); err != nil {
 		return err
 	}
 
@@ -163,11 +151,11 @@ func cmdRepeatDelete(ctx context.Context, s *session, cmd string, args string) e
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		al := flect.Pluralize(info.AccessLevel)
+		al := pluralAccessLevel(info.AccessLevel)
 		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
 
-	if err := repeat.Delete(ctx, s.Tx); err != nil {
+	if err := s.Queries.DeleteRepeatedCommand(ctx, repeat.ID); err != nil {
 		return fmt.Errorf("deleting repeated command: %w", err)
 	}
 
@@ -202,7 +190,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	}
 
 	if !s.UserLevel.CanAccessPG(info.AccessLevel) {
-		al := flect.Pluralize(info.AccessLevel)
+		al := pluralAccessLevel(info.AccessLevel)
 		return s.Replyf(ctx, "Command '%s' is restricted to %s; only %s and above can modify its repeat.", name, al, al)
 	}
 
@@ -216,22 +204,17 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 	repeat.Enabled = enable
 	repeat.LastCount = s.Channel.MessageCount
 	repeat.Editor = s.User
-	repeat.InitTimestamp = null.Time{}
-
-	columns := boil.Whitelist(
-		models.RepeatedCommandColumns.UpdatedAt,
-		models.RepeatedCommandColumns.Enabled,
-		models.RepeatedCommandColumns.LastCount,
-		models.RepeatedCommandColumns.Editor,
-		models.RepeatedCommandColumns.InitTimestamp,
-	)
-
-	if err := repeat.Update(ctx, s.Tx, columns); err != nil {
+	updated, err := s.Queries.UpdateRepeatedCommand(ctx, dbsql.UpdateRepeatedCommandParams{
+		Enabled: repeat.Enabled, Delay: repeat.Delay, MessageDiff: repeat.MessageDiff,
+		LastCount: repeat.LastCount, Editor: repeat.Editor, Now: dbsql.TimestamptzFrom(time.Now()), ID: repeat.ID,
+	})
+	if err != nil {
 		return fmt.Errorf("updating repeated command: %w", err)
 	}
+	repeat.UpdatedAt = updated.UpdatedAt
 
 	if enable {
-		err = s.Deps.AddRepeat(ctx, repeat.ID, repeat.UpdatedAt, time.Duration(repeat.Delay)*time.Second)
+		err = s.Deps.AddRepeat(ctx, repeat.ID, repeat.UpdatedAt.Time, time.Duration(repeat.Delay)*time.Second)
 	} else {
 		err = s.Deps.RemoveRepeat(ctx, repeat.ID)
 	}
@@ -248,9 +231,7 @@ func cmdRepeatOnOff(ctx context.Context, s *session, cmd string, args string) er
 }
 
 func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) error {
-	repeats, err := s.Channel.RepeatedCommands(
-		qm.Load(models.RepeatedCommandRels.CommandInfo),
-	).All(ctx, s.Tx)
+	repeats, err := s.Queries.ListRepeatedCommandsWithNames(ctx, s.Channel.ID)
 	if err != nil {
 		return fmt.Errorf("getting repeated commands: %w", err)
 	}
@@ -258,10 +239,6 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 	if len(repeats) == 0 {
 		return s.Reply(ctx, "There are no repeated commands.")
 	}
-
-	slices.SortFunc(repeats, func(a, b *models.RepeatedCommand) int {
-		return strings.Compare(a.R.CommandInfo.Name, b.R.CommandInfo.Name)
-	})
 
 	var builder strings.Builder
 	builder.WriteString("Repeated commands: ")
@@ -271,7 +248,7 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 			builder.WriteString(", ")
 		}
 
-		builder.WriteString(repeat.R.CommandInfo.Name)
+		builder.WriteString(repeat.Name)
 		builder.WriteString(" [")
 
 		if repeat.Enabled {
@@ -281,27 +258,27 @@ func cmdRepeatList(ctx context.Context, s *session, cmd string, args string) err
 		}
 
 		builder.WriteString("] (")
-		builder.WriteString(strconv.Itoa(repeat.Delay))
+		builder.WriteString(strconv.Itoa(int(repeat.Delay)))
 		builder.WriteByte(')')
 	}
 
 	return s.Reply(ctx, builder.String())
 }
 
-func findRepeatedCommand(ctx context.Context, name string, s *session) (*models.CommandInfo, *models.RepeatedCommand, error) {
-	info, err := s.Channel.CommandInfos(
-		models.CommandInfoWhere.Name.EQ(name),
-		qm.Load(models.CommandInfoRels.RepeatedCommand),
-		qm.For("UPDATE"),
-	).One(ctx, s.Tx)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil, nil
-	}
-
+func findRepeatedCommand(ctx context.Context, name string, s *session) (*dbsql.CommandInfo, *dbsql.RepeatedCommand, error) {
+	info, _, found, err := s.Queries.LookupCommand(ctx, s.Channel.ID, name, true)
 	if err != nil {
 		return nil, nil, fmt.Errorf("getting command info: %w", err)
 	}
-
-	return info, info.R.RepeatedCommand, nil
+	if !found {
+		return nil, nil, nil
+	}
+	repeat, err := s.Queries.GetRepeatedCommandByInfo(ctx, info.ID)
+	if err != nil && errors.Is(err, pgx.ErrNoRows) {
+		return info, nil, nil
+	}
+	if err != nil {
+		return nil, nil, fmt.Errorf("getting repeated command: %w", err)
+	}
+	return info, new(repeat), nil
 }

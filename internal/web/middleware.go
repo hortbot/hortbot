@@ -2,20 +2,19 @@ package web
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"net/http"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/hortbot/hortbot/internal/db/models"
-	"github.com/hortbot/hortbot/internal/db/modelsx"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/ctxkey"
+	"github.com/jackc/pgx/v5"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 
-var channelKey = ctxkey.NewContextKey("channel", (*models.Channel)(nil))
+var channelKey = ctxkey.NewContextKey("channel", (*dbsql.Channel)(nil))
 
 func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -23,9 +22,9 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 			ctx := r.Context()
 			name := chi.URLParamFromCtx(ctx, urlParam)
 
-			channel, err := modelsx.GetActiveChannelByName(ctx, a.DB, strings.ToLower(name))
+			channel, err := a.Queries.GetActiveChannelByName(ctx, strings.ToLower(name))
 			if err != nil {
-				if errors.Is(err, sql.ErrNoRows) {
+				if errors.Is(err, pgx.ErrNoRows) {
 					a.httpError(w, r, http.StatusNotFound)
 				} else {
 					ctxlog.Error(ctx, "error querying channel", zap.Error(err))
@@ -34,7 +33,7 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 				return
 			}
 
-			ctx = channelKey.WithValue(ctx, channel)
+			ctx = channelKey.WithValue(ctx, &channel)
 			r = r.WithContext(ctx)
 
 			next.ServeHTTP(w, r)
@@ -42,6 +41,6 @@ func (a *App) channelMiddleware(urlParam string) func(http.Handler) http.Handler
 	}
 }
 
-func getChannel(ctx context.Context) *models.Channel {
+func getChannel(ctx context.Context) *dbsql.Channel {
 	return channelKey.Value(ctx)
 }

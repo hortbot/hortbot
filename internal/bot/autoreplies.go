@@ -6,21 +6,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
-	"github.com/aarondl/sqlboiler/v4/queries"
-	"github.com/hortbot/hortbot/internal/db/models"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/zikaeroh/ctxlog"
 	"go.uber.org/zap"
 )
 
 func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
-	var autoreplies models.AutoreplySlice
-	err := queries.Raw(`
-		SELECT autoreplies.id, autoreplies.trigger, autoreplies.response, autoreplies.count
-		FROM autoreplies
-		WHERE autoreplies.channel_id = $1
-		ORDER BY autoreplies.num ASC
-		`, s.Channel.ID).Bind(ctx, s.Tx, &autoreplies)
+	autoreplies, err := s.Queries.ListAutoreplyMatchers(ctx, s.Channel.ID)
 	if err != nil {
 		return true, fmt.Errorf("querying for autoreplies: %w", err)
 	}
@@ -56,7 +48,10 @@ func tryAutoreplies(ctx context.Context, s *session) (bool, error) {
 		}
 
 		autoreply.Count++
-		if err := autoreply.Update(ctx, s.Tx, boil.Whitelist(models.AutoreplyColumns.Count)); err != nil {
+		if err := s.Queries.UpdateAutoreplyCount(ctx, dbsql.UpdateAutoreplyCountParams{
+			Count: autoreply.Count,
+			ID:    autoreply.ID,
+		}); err != nil {
 			return true, fmt.Errorf("updating autoreply count: %w", err)
 		}
 

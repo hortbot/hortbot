@@ -4,7 +4,6 @@ package btest
 import (
 	"bufio"
 	"context"
-	"database/sql"
 	"encoding/json"
 	"math/rand"
 	"os"
@@ -16,10 +15,10 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
 	"github.com/hortbot/hortbot/internal/bot"
 	"github.com/hortbot/hortbot/internal/bot/botmocks"
 	"github.com/hortbot/hortbot/internal/db/botstate"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/extralife/extralifemocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/hltb/hltbmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/lastfm/lastfmmocks"
@@ -30,14 +29,16 @@ import (
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/urban/urbanmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/xkcd/xkcdmocks"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/youtube/youtubemocks"
+	testpgpool "github.com/hortbot/hortbot/internal/pkg/testpostgres/pgpool"
 	"github.com/hortbot/hortbot/internal/pkg/testutil"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zikaeroh/ctxlog"
 	"golang.org/x/oauth2"
 	"gotest.tools/v3/assert"
 )
 
 // RunScript runs the a single script test.
-func RunScript(t *testing.T, filename string, freshDB func(t testing.TB) *sql.DB) {
+func RunScript(t *testing.T, filename string, freshDB func(t testing.TB) *pgxpool.Pool) {
 	db := freshDB(t)
 	// db.Close() must happen inside the synctest bubble (pgx creates timers
 	// that need to be drained while fake time is still active), but we keep
@@ -58,6 +59,7 @@ func RunScript(t *testing.T, filename string, freshDB func(t testing.TB) *sql.DB
 		st := scriptTester{
 			filename: filename,
 			db:       db,
+			queries:  dbsql.New(db),
 			realNow:  realNow,
 		}
 
@@ -73,7 +75,8 @@ const (
 type scriptTester struct {
 	filename string
 
-	db                     *sql.DB
+	db                     *pgxpool.Pool
+	queries                *dbsql.Queries
 	realNow                time.Time
 	sender                 *SenderMock
 	eventsubUpdateNotifier *botmocks.EventsubUpdateNotifierMock
@@ -159,7 +162,7 @@ func (st *scriptTester) test(t testing.TB) {
 		SendMessageFunc: func(ctx context.Context, origin, target, message string) error { return nil },
 	}
 	st.eventsubUpdateNotifier = &botmocks.EventsubUpdateNotifierMock{
-		NotifyEventsubUpdatesFunc: func(ctx context.Context, exec boil.ContextExecutor) error { return nil },
+		NotifyEventsubUpdatesFunc: func(ctx context.Context, queries *dbsql.Queries) error { return nil },
 	}
 	st.lastFM = &lastfmmocks.APIMock{}
 	st.youtube = &youtubemocks.APIMock{}
@@ -291,10 +294,9 @@ func (st *scriptTester) skip(t testing.TB, _, reason string, lineNum int) {
 	}
 }
 
-func (st *scriptTester) boilDebug(t testing.TB, _, _ string, _ int) {
+func (st *scriptTester) pgxDebug(t testing.TB, _, _ string, _ int) {
 	st.addAction(func(_ context.Context) {
-		st.ctx = boil.WithDebug(st.ctx, true) //nolint:fatcontext
-		st.ctx = boil.WithDebugWriter(st.ctx, testutil.Writer{T: t})
+		st.ctx = testpgpool.WithDebug(st.ctx, t) //nolint:fatcontext
 	})
 }
 
@@ -338,7 +340,7 @@ func (st *scriptTester) doCheckpoint() {
 
 func (st *scriptTester) dumpState(t testing.TB, _, _ string, lineNum int) {
 	st.addAction(func(ctx context.Context) {
-		dump, err := st.bc.State.Dump(ctx, st.db)
+		dump, err := st.bc.State.Dump(ctx, st.queries)
 		if err != nil {
 			t.Logf("line %d: dump state: %v", lineNum, err)
 			return
@@ -355,7 +357,7 @@ func (st *scriptTester) shouldPanic(t testing.TB, _ string, _ string, lineNum in
 
 var directiveFuncs = map[string]func(st *scriptTester, t testing.TB, directive, args string, lineNum int){
 	"skip":                          (*scriptTester).skip,
-	"boil_debug":                    (*scriptTester).boilDebug,
+	"pgx_debug":                     (*scriptTester).pgxDebug,
 	"bot_config":                    (*scriptTester).botConfig,
 	"dump_state":                    (*scriptTester).dumpState,
 	"insert_channel":                (*scriptTester).insertChannel,

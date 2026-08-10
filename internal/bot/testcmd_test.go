@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+	"time"
 
-	"github.com/aarondl/sqlboiler/v4/queries/qm"
 	"github.com/hortbot/hortbot/internal/bot"
-	"github.com/hortbot/hortbot/internal/db/models"
 )
 
 func init() {
@@ -126,7 +125,7 @@ func init() {
 
 	bot.TestingBuiltin("testing_highlights",
 		func(ctx context.Context, s *bot.Session, _ string, _ string) error {
-			highlights, err := s.Channel.Highlights(qm.OrderBy(models.HighlightColumns.CreatedAt)).All(ctx, s.Tx)
+			highlights, err := s.Queries.ListHighlights(ctx, s.Channel.ID)
 			if err != nil {
 				return fmt.Errorf("getting highlights: %w", err)
 			}
@@ -141,13 +140,16 @@ func init() {
 					builder.WriteByte(' ')
 				}
 
-				startedAt := h.StartedAt.Ptr()
+				var startedAt *time.Time
+				if h.StartedAt.Valid {
+					startedAt = &h.StartedAt.Time
+				}
 				if startedAt != nil {
 					x := startedAt.UTC()
 					startedAt = &x
 				}
 
-				fmt.Fprintf(&builder, "[%v, %v, %q, %q]", h.HighlightedAt.UTC(), startedAt, h.Status, h.Game)
+				fmt.Fprintf(&builder, "[%v, %v, %q, %q]", h.HighlightedAt.Time.UTC(), startedAt, h.Status, h.Game)
 			}
 
 			return s.Reply(ctx, builder.String())

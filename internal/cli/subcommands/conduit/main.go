@@ -15,6 +15,7 @@ import (
 	"github.com/hortbot/hortbot/internal/cli/flags/twitchflags"
 	"github.com/hortbot/hortbot/internal/conduit"
 	"github.com/hortbot/hortbot/internal/db/chatqueue"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch/eventsub"
 	"github.com/hortbot/hortbot/internal/pkg/contextx"
 	"github.com/hortbot/hortbot/internal/pkg/errgroupx"
@@ -54,8 +55,7 @@ func (*cmd) Name() string {
 func (c *cmd) Main(ctx context.Context, _ []string) {
 	c.Prometheus.Run(ctx)
 
-	driverName := c.SQL.DriverName()
-	db := c.SQL.Open(ctx, driverName)
+	db := c.SQL.Open(ctx)
 	defer db.Close() //nolint:errcheck
 
 	enqueueCtx, cancelEnqueue := contextx.WithGracePeriod(ctx, 30*time.Second)
@@ -67,6 +67,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 
 	queue := chatqueue.New(db, 1)
 	syncRequests := eventsubsync.Requests{}
+	queries := dbsql.New(db)
 	s := conduit.New(db, twitchAPI, c.SyncInterval, c.Shards, newNotificationHandler(enqueueCtx, queue))
 
 	g.Go(s.Run)
@@ -83,7 +84,7 @@ func (c *cmd) Main(ctx context.Context, _ []string) {
 		var handledVersion int64 = -1
 
 		for {
-			version, err := syncRequests.Version(ctx, db)
+			version, err := syncRequests.Version(ctx, queries)
 			if err != nil {
 				ctxlog.Error(ctx, "error reading EventSub sync version", zap.Error(err))
 				select {

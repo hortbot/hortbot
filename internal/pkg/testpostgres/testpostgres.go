@@ -11,14 +11,16 @@ import (
 	"strconv"
 
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
-	"github.com/hortbot/hortbot/internal/db/driver"
+	"github.com/jackc/pgx/v5/pgxpool"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 const (
-	user     = "postgres"
-	password = "postgres"
-	database = "postgres"
-	options  = "sslmode=disable"
+	user       = "postgres"
+	password   = "postgres"
+	database   = "postgres"
+	options    = "sslmode=disable"
+	driverName = "pgx"
 )
 
 type Info struct {
@@ -43,7 +45,7 @@ type DB struct {
 
 func (d *DB) Info() *Info {
 	return &Info{
-		DriverName: driver.Name,
+		DriverName: driverName,
 		User:       user,
 		Password:   password,
 		Host:       "localhost",
@@ -57,8 +59,12 @@ func (d *DB) ConnStr() string {
 	return d.Info().String()
 }
 
-func (d *DB) Open() (*sql.DB, error) {
-	return sql.Open(driver.Name, d.ConnStr()) //nolint:wrapcheck
+func (d *DB) OpenSQL() (*sql.DB, error) {
+	return sql.Open(driverName, d.ConnStr()) //nolint:wrapcheck
+}
+
+func (d *DB) Open(ctx context.Context) (*pgxpool.Pool, error) {
+	return pgxpool.New(ctx, d.ConnStr()) //nolint:wrapcheck
 }
 
 // Stop stops the embedded PostgreSQL process without deleting its data.

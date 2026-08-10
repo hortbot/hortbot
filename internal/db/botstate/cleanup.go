@@ -4,22 +4,22 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aarondl/sqlboiler/v4/boil"
+	"github.com/hortbot/hortbot/internal/db/dbsql"
 )
 
 // Cleanup deletes expired rows using PostgreSQL's clock.
-func (*Store) Cleanup(ctx context.Context, exec boil.ContextExecutor) error {
-	for _, q := range []string{
-		`DELETE FROM bot_command_cooldowns           WHERE expires_at < now()`,
-		`DELETE FROM bot_repeat_cooldowns            WHERE expires_at < now()`,
-		`DELETE FROM bot_scheduled_command_cooldowns WHERE expires_at < now()`,
-		`DELETE FROM bot_autoreply_cooldowns         WHERE expires_at < now()`,
-		`DELETE FROM bot_link_permits                WHERE expires_at < now()`,
-		`DELETE FROM bot_confirmations               WHERE expires_at < now()`,
-		`DELETE FROM bot_filter_warnings             WHERE expires_at < now()`,
-		`DELETE FROM web_auth_states                 WHERE expires_at < now()`,
+func (*Store) Cleanup(ctx context.Context, q *dbsql.Queries) error {
+	for _, cleanup := range []func(context.Context) error{
+		q.BotStateCleanupCommandCooldowns,
+		q.BotStateCleanupRepeatCooldowns,
+		q.BotStateCleanupScheduledCooldowns,
+		q.BotStateCleanupAutoreplyCooldowns,
+		q.BotStateCleanupLinkPermits,
+		q.BotStateCleanupConfirmations,
+		q.BotStateCleanupFilterWarnings,
+		q.BotStateCleanupAuthStates,
 	} {
-		if _, err := exec.ExecContext(ctx, q); err != nil {
+		if err := cleanup(ctx); err != nil {
 			return fmt.Errorf("delete expired rows: %w", err)
 		}
 	}
