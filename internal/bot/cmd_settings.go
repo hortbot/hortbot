@@ -155,12 +155,9 @@ func cmdSettingCooldown(ctx context.Context, s *session, cmd string, args string
 	return s.Replyf(ctx, "Cooldown changed to %d seconds.", cooldown.Int32)
 }
 
-func cmdSettingShouldModerate(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingShouldModerate(ctx context.Context, s *session, _ string, args string) error {
 	return updateBoolean(
-		ctx, s, cmd, args,
-		func() bool { return s.Channel.ShouldModerate },
-		func(v bool) { s.Channel.ShouldModerate = v },
-		"",
+		ctx, s, args, &s.Channel.ShouldModerate,
 		"shouldModerate",
 		s.Channel.BotName+" is already moderating.",
 		s.Channel.BotName+" is already not moderating.",
@@ -200,12 +197,9 @@ func cmdSettingLastFM(ctx context.Context, s *session, cmd string, args string) 
 	return s.Replyf(ctx, "LastFM user changed to %s.", args)
 }
 
-func cmdSettingParseYoutube(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingParseYoutube(ctx context.Context, s *session, _ string, args string) error {
 	return updateBoolean(
-		ctx, s, cmd, args,
-		func() bool { return s.Channel.ParseYoutube },
-		func(v bool) { s.Channel.ParseYoutube = v },
-		"",
+		ctx, s, args, &s.Channel.ParseYoutube,
 		"parseYoutube",
 		"YouTube link parsing is already enabled.",
 		"YouTube link parsing is already disabled.",
@@ -214,12 +208,9 @@ func cmdSettingParseYoutube(ctx context.Context, s *session, cmd string, args st
 	)
 }
 
-func cmdSettingEnableWarnings(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingEnableWarnings(ctx context.Context, s *session, _ string, args string) error {
 	return updateBoolean(
-		ctx, s, cmd, args,
-		func() bool { return s.Channel.EnableWarnings },
-		func(v bool) { s.Channel.EnableWarnings = v },
-		"",
+		ctx, s, args, &s.Channel.EnableWarnings,
 		"enableWarnings",
 		"Warnings are already enabled.",
 		"Warnings are already disabled.",
@@ -228,12 +219,9 @@ func cmdSettingEnableWarnings(ctx context.Context, s *session, cmd string, args 
 	)
 }
 
-func cmdSettingDisplayWarnings(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingDisplayWarnings(ctx context.Context, s *session, _ string, args string) error {
 	return updateBoolean(
-		ctx, s, cmd, args,
-		func() bool { return s.Channel.DisplayWarnings },
-		func(v bool) { s.Channel.DisplayWarnings = v },
-		"",
+		ctx, s, args, &s.Channel.DisplayWarnings,
 		"displayWarnings",
 		"Warning/timeout messages are already enabled.",
 		"Warning/timeout messages are already disabled.",
@@ -302,12 +290,9 @@ func cmdSettingSubsRegsMinusLinks(ctx context.Context, s *session, cmd string, a
 	return s.Reply(ctx, "This option has been removed; use subsMayLink instead.")
 }
 
-func cmdSettingSubsMayLink(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingSubsMayLink(ctx context.Context, s *session, _ string, args string) error {
 	return updateBoolean(
-		ctx, s, cmd, args,
-		func() bool { return s.Channel.SubsMayLink },
-		func(v bool) { s.Channel.SubsMayLink = v },
-		"",
+		ctx, s, args, &s.Channel.SubsMayLink,
 		"subsMayLink",
 		"Subs already may post links.",
 		"Subs already may not post links.",
@@ -352,8 +337,7 @@ func cmdSettingMode(ctx context.Context, s *session, cmd string, args string) er
 }
 
 func updateBoolean(
-	ctx context.Context, s *session, _ string, args string,
-	get func() bool, set func(v bool), _ string,
+	ctx context.Context, s *session, args string, value *bool,
 	name, alreadyTrue, alreadyFalse, setTrue, setFalse string,
 ) error {
 	args = strings.ToLower(args)
@@ -362,17 +346,17 @@ func updateBoolean(
 
 	switch args {
 	case "":
-		return s.Replyf(ctx, "%s is set to %v.", name, get())
+		return s.Replyf(ctx, "%s is set to %v.", name, *value)
 
 	case "on", "enabled", "true", "1", "yes":
-		if get() {
+		if *value {
 			return s.Reply(ctx, alreadyTrue)
 		}
 
 		v = true
 
 	case "off", "disabled", "false", "0", "no":
-		if !get() {
+		if !*value {
 			return s.Reply(ctx, alreadyFalse)
 		}
 
@@ -380,7 +364,7 @@ func updateBoolean(
 		return s.ReplyUsage(ctx, "on|off")
 	}
 
-	set(v)
+	*value = v
 
 	if err := s.updateChannelSettings(ctx); err != nil {
 		return fmt.Errorf("updating channel: %w", err)
@@ -477,12 +461,9 @@ func cmdSettingsSteam(ctx context.Context, s *session, cmd string, args string) 
 	return s.Replyf(ctx, "Steam ID set to %s.", id)
 }
 
-func cmdSettingUrban(ctx context.Context, s *session, cmd string, args string) error {
+func cmdSettingUrban(ctx context.Context, s *session, _ string, args string) error {
 	return updateBoolean(
-		ctx, s, cmd, args,
-		func() bool { return s.Channel.UrbanEnabled },
-		func(v bool) { s.Channel.UrbanEnabled = v },
-		"",
+		ctx, s, args, &s.Channel.UrbanEnabled,
 		"urban",
 		"Urban Dictionary is already enabled.",
 		"Urban Dictionary is already disabled.",
