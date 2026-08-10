@@ -77,4 +77,4 @@ FROM (
       AND a2.num >= sqlc.arg(start_num)
 ) compacted
 WHERE compacted.id = a.id
-  AND compacted.id != compacted.new_num;
+  AND compacted.num != compacted.new_num;

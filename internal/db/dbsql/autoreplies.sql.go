@@ -23,7 +23,7 @@ FROM (
       AND a2.num >= $1
 ) compacted
 WHERE compacted.id = a.id
-  AND compacted.id != compacted.new_num
+  AND compacted.num != compacted.new_num
 `
 
 type CompactAutorepliesParams struct {
