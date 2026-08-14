@@ -3,6 +3,7 @@ package httpflags
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -18,7 +19,7 @@ type HTTP struct {
 	Timeout time.Duration `long:"http-timeout" env:"HB_HTTP_TIMEOUT" description:"HTTP client timeout"`
 
 	UntrustedTimeout       time.Duration `long:"http-untrusted-timeout" env:"HB_HTTP_UNTRUSTED_TIMEOUT" description:"Untrusted HTTP client timeout"`
-	UntrustedProxy         string        `long:"http-untrusted-proxy" env:"HB_HTTP_UNTRUSTED_PROXY" description:"Untrusted HTTP client proxy address"`
+	UntrustedProxy         string        `long:"http-untrusted-proxy" env:"HB_HTTP_UNTRUSTED_PROXY" description:"Untrusted HTTP client proxy URL"`
 	UntrustedProxyUser     string        `long:"http-untrusted-proxy-user" env:"HB_HTTP_UNTRUSTED_PROXY_USER" description:"Untrusted HTTP client proxy user"`
 	UntrustedProxyPassword string        `long:"http-untrusted-proxy-password" env:"HB_HTTP_UNTRUSTED_PROXY_PASSWORD" description:"Untrusted HTTP client proxy password"`
 }
@@ -44,9 +45,9 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 	}
 
 	if h.UntrustedProxy != "" {
-		u := &url.URL{
-			Scheme: "socks5",
-			Host:   h.UntrustedProxy,
+		u, err := parseProxyURL(h.UntrustedProxy)
+		if err != nil {
+			panic(fmt.Sprintf("invalid untrusted HTTP proxy: %v", err))
 		}
 
 		if h.UntrustedProxyUser != "" {
@@ -100,4 +101,25 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 	}
 
 	return cli
+}
+
+func parseProxyURL(rawURL string) (*url.URL, error) {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return nil, fmt.Errorf("parsing URL: %w", err)
+	}
+	if u.Host == "" {
+		return nil, errors.New("missing host")
+	}
+	if u.Path != "" {
+		return nil, errors.New("path is not supported")
+	}
+
+	switch u.Scheme {
+	case "http", "https", "socks5", "socks5h":
+	default:
+		return nil, fmt.Errorf("unsupported scheme %q", u.Scheme)
+	}
+
+	return u, nil
 }
