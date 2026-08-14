@@ -18,6 +18,7 @@ import (
 //
 // This type is similar to ctxhttp's functions, but does not copy requests unnecessarily.
 type Client struct {
+	userAgent          string
 	client             *http.Client
 	retryOnServerError bool
 }
@@ -27,7 +28,9 @@ func NewClient(cli *http.Client, name string, opts ...Option) Client {
 		panic("nil http.Client")
 	}
 
-	c := Client{}
+	c := Client{
+		userAgent: useragent.Bot(),
+	}
 
 	for _, opt := range opts {
 		opt(&c)
@@ -39,8 +42,9 @@ func NewClient(cli *http.Client, name string, opts ...Option) Client {
 		transport = http.DefaultTransport
 	}
 	transport = &wrappedTransport{
-		inner: transport,
-		name:  name,
+		inner:     transport,
+		name:      name,
+		userAgent: c.userAgent,
 	}
 
 	cli.Transport = transport
@@ -73,6 +77,12 @@ func copyClient(cli *http.Client) *http.Client {
 
 type Option func(*Client)
 
+func WithBrowserUserAgent() Option {
+	return func(c *Client) {
+		c.userAgent = useragent.Browser()
+	}
+}
+
 func WithRetryOnServerError() Option {
 	return func(c *Client) {
 		c.retryOnServerError = true
@@ -80,8 +90,9 @@ func WithRetryOnServerError() Option {
 }
 
 type wrappedTransport struct {
-	inner http.RoundTripper
-	name  string
+	inner     http.RoundTripper
+	name      string
+	userAgent string
 }
 
 func (w *wrappedTransport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
@@ -107,7 +118,7 @@ func (w *wrappedTransport) RoundTrip(req *http.Request) (resp *http.Response, er
 	const userAgentHeader = "User-Agent"
 
 	if _, ok := req.Header[userAgentHeader]; !ok {
-		req.Header.Set(userAgentHeader, useragent.Bot())
+		req.Header.Set(userAgentHeader, w.userAgent)
 	}
 
 	return w.inner.RoundTrip(req) //nolint:wrapcheck

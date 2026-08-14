@@ -12,7 +12,6 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/felixge/httpsnoop v1.1.0
 	github.com/fergusstrange/embedded-postgres v1.34.0
-	github.com/forbiddencoding/howlongtobeat v0.0.0-20260725183307-70eef4fcc2f6
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi/v5 v5.3.1
 	github.com/gobuffalo/flect v1.0.3
@@ -25,6 +24,7 @@ require (
 	github.com/jackc/pgx/v5 v5.10.0
 	github.com/jarcoal/httpmock v1.4.2
 	github.com/jessevdk/go-flags v1.6.1
+	github.com/mroth/weightedrand/v2 v2.1.0
 	github.com/peterldowns/pgtestdb v0.1.1
 	github.com/petoem/cleanurl v0.1.1
 	github.com/prometheus/client_golang v1.24.1
