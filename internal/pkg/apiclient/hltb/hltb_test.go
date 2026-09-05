@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	initURL   = `=~^https://howlongtobeat\.com/api/bleed/init\?t=[0-9]+$`
-	searchURL = "https://howlongtobeat.com/api/bleed"
+	initURL   = `=~^https://howlongtobeat\.com/api/search/site/init\?t=[0-9]+$`
+	searchURL = "https://howlongtobeat.com/api/search/site"
 )
 
 func TestSearchGame(t *testing.T) {

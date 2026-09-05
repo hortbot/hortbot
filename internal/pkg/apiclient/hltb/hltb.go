@@ -19,8 +19,8 @@ import (
 
 const (
 	baseURL        = "https://howlongtobeat.com"
-	initURL        = baseURL + "/api/bleed/init"
-	searchURL      = baseURL + "/api/bleed"
+	initURL        = baseURL + "/api/search/site/init"
+	searchURL      = baseURL + "/api/search/site"
 	searchPageSize = 1
 )
 
