@@ -52,7 +52,7 @@ func TestDeadToken(t *testing.T) {
 		const id = 1
 		tok := invalidRefreshTokFor(ctx, t, tw, ft, id, "decodeerror")
 		_, err := tw.ModifyChannel(ctx, id, tok, new("some new title"), nil)
-		assert.Error(t, err, "twitch: invalid character '}' looking for beginning of value")
+		assert.Error(t, err, "twitch: jsontext: invalid character '}' at start of value")
 	})
 }
 

@@ -1,7 +1,7 @@
 package eventsub_test
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"strconv"
 	"testing"
 
@@ -27,4 +27,39 @@ func TestUnmarshalBroken(t *testing.T) {
 			assert.NilError(t, err)
 		})
 	}
+}
+
+func TestUnmarshalOutOfOrder(t *testing.T) {
+	t.Parallel()
+
+	const raw = `{
+		"payload": {
+			"event": {
+				"broadcaster_user_id": "1",
+				"message_id": "message"
+			},
+			"subscription": {
+				"condition": {
+					"broadcaster_user_id": "1",
+					"user_id": "2"
+				},
+				"type": "channel.chat.message"
+			}
+		},
+		"metadata": {
+			"message_type": "notification"
+		}
+	}`
+
+	var message eventsub.WebsocketMessage
+	assert.NilError(t, json.Unmarshal([]byte(raw), &message))
+
+	payload := message.Payload.(*eventsub.NotificationPayload)
+	condition := payload.Subscription.Condition.(*eventsub.ChatMessageSubscriptionCondition)
+	event := payload.Event.(*eventsub.ChatMessageEvent)
+
+	assert.Equal(t, int64(condition.BroadcasterUserID), int64(1))
+	assert.Equal(t, int64(condition.UserID), int64(2))
+	assert.Equal(t, int64(event.BroadcasterUserID), int64(1))
+	assert.Equal(t, event.MessageID, "message")
 }

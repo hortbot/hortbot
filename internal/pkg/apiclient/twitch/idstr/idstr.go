@@ -1,7 +1,8 @@
 package idstr
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"fmt"
 	"strconv"
 )
 
@@ -9,17 +10,29 @@ import (
 // parsed as either a string or a raw integer.
 //
 // https://stackoverflow.com/a/31625512
-type IDStr int64
+type IDStr int64 //nolint:recvcheck // JSON encoding uses a value receiver while decoding must mutate a pointer.
 
-// MarshalJSON implements json.Marshaler for IDStr.
-func (v IDStr) MarshalJSON() ([]byte, error) {
-	return json.Marshal(strconv.FormatInt(int64(v), 10)) //nolint:wrapcheck
+// MarshalJSONTo implements json.MarshalerTo for IDStr.
+func (v IDStr) MarshalJSONTo(out *jsontext.Encoder) error {
+	return out.WriteToken(jsontext.String(strconv.FormatInt(int64(v), 10))) //nolint:wrapcheck
 }
 
-// UnmarshalJSON implements json.Unmarshaler for IDStr.
-func (v *IDStr) UnmarshalJSON(data []byte) error {
-	if len(data) >= 2 && data[0] == '"' && data[len(data)-1] == '"' {
-		data = data[1 : len(data)-1]
+// UnmarshalJSONFrom implements json.UnmarshalerFrom for IDStr.
+func (v *IDStr) UnmarshalJSONFrom(in *jsontext.Decoder) error {
+	token, err := in.ReadToken()
+	if err != nil {
+		return err //nolint:wrapcheck
 	}
-	return json.Unmarshal(data, (*int64)(v)) //nolint:wrapcheck
+	if token.Kind() == jsontext.KindNull {
+		return nil
+	}
+	if token.Kind() != jsontext.KindString && token.Kind() != jsontext.KindNumber {
+		return fmt.Errorf("cannot unmarshal %s into IDStr", token.Kind())
+	}
+	value, err := strconv.ParseInt(token.String(), 10, 64)
+	if err != nil {
+		return fmt.Errorf("parse IDStr: %w", err)
+	}
+	*v = IDStr(value)
+	return nil
 }

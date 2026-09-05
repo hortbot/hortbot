@@ -2,7 +2,8 @@ package conduit
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"testing"
 	"time"
 
@@ -27,7 +28,7 @@ func TestQueuedMessageRoundTrip(t *testing.T) {
 	assert.Equal(t, queued.ID, "notification")
 	assert.Equal(t, queued.BroadcasterLogin, "channel")
 	assert.Equal(t, queued.MessageTimestamp, timestamp)
-	assert.DeepEqual(t, queued.Payload, json.RawMessage(raw))
+	assert.DeepEqual(t, queued.Payload, jsontext.Value(raw))
 
 	var roundTrip eventsub.WebsocketMessage
 	assert.NilError(t, json.Unmarshal(queued.Payload, &roundTrip))

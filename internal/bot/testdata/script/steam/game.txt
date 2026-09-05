@@ -18,7 +18,7 @@ send_any
 
 
 steam_get_player_summary {"ID": "1234567890123456789", "Err": "ErrServerError"}
-twitch_get_game_by_name {"Garry's Mod": {"Category": {"ID": 473625, "Name": "Garry's Mod"}}}
+twitch_get_game_by_name {"Garry's Mod": {"Category": {"id": 473625, "name": "Garry's Mod"}}}
 
 handle hortbot foobar/1 foobar/1 chatter-display=FooBar :!steamgame
 send hortbot #foobar [HB] A Steam API error occurred.

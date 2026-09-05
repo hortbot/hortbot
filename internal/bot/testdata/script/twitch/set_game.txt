@@ -11,7 +11,7 @@ send hortbot #foobar [HB] Current game: Garry's Mod
 handle hortbot foobar/1 random/2 :!game Just Chatting
 send hortbot #foobar [HB] Current game: Garry's Mod
 
-twitch_get_game_by_name {"Just Chatting": {"Category": {"ID": 473625, "Name": "Just Chatting"}}}
+twitch_get_game_by_name {"Just Chatting": {"Category": {"id": 473625, "name": "Just Chatting"}}}
 twitch_search_categories {}
 
 delete_twitch_token 1
@@ -61,23 +61,23 @@ handle hortbot foobar/1 foobar/1 :!game PUBG
 send hortbot #foobar [HB] Could not find a valid game matching "PUBG".
 
 twitch_get_game_by_name {"PUBG": {"Err": "ErrNotFound"}}
-twitch_search_categories {"PUBG": {"Categories": [{"ID": 287491, "Name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}}
+twitch_search_categories {"PUBG": {"Categories": [{"id": 287491, "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}}
 handle hortbot foobar/1 foobar/1 :!game PUBG
 send hortbot #foobar [HB] Could not find a valid game matching "PUBG". Did you mean "PLAYERUNKNOWN's BATTLEGROUNDS"?
 
 twitch_get_game_by_name {"PUBG": {"Err": "ErrNotFound"}}
-twitch_search_categories {"PUBG": {"Categories": [{"ID": 287491, "Name": "PLAYERUNKNOWN's BATTLEGROUNDS"}, {"ID": 58730284, "Name": "PUBG MOBILE"}]}}
+twitch_search_categories {"PUBG": {"Categories": [{"id": 287491, "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}, {"id": 58730284, "name": "PUBG MOBILE"}]}}
 handle hortbot foobar/1 foobar/1 :!game PUBG
 send hortbot #foobar [HB] Could not find a valid game matching "PUBG". Did you mean "PUBG MOBILE" or "PLAYERUNKNOWN's BATTLEGROUNDS"?
 
 twitch_get_game_by_name {"playerunknown's battlegrounds": {"Err": "ErrNotFound"}}
-twitch_search_categories {"playerunknown's battlegrounds": {"Categories": [{"ID": 287491, "Name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}}
+twitch_search_categories {"playerunknown's battlegrounds": {"Categories": [{"id": 287491, "name": "PLAYERUNKNOWN's BATTLEGROUNDS"}]}}
 twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 287491}
 handle hortbot foobar/1 foobar/1 :!game playerunknown's battlegrounds
 send hortbot #foobar [HB] Game updated to: PLAYERUNKNOWN's BATTLEGROUNDS
 
 
-twitch_get_game_by_name {"K-Shoot Mania": {"Category": {"ID": 424242, "Name": "K-Shoot Mania"}}}
+twitch_get_game_by_name {"K-Shoot Mania": {"Category": {"id": 424242, "name": "K-Shoot Mania"}}}
 
 twitch_modify_channel {"ID": 1, "Tok": {"access_token": "some-access-token", "token_type": "bearer", "refresh_token": "some-refresh-token", "expiry": "2050-10-01T03:11:00Z"}, "GameID": 424242, "NewTok": {"access_token": "some-access-token2", "token_type": "bearer", "refresh_token": "some-refresh-token2", "expiry": "2060-10-01T03:11:00Z"}}
 handle hortbot foobar/1 foobar/1 :!game K-Shoot Mania

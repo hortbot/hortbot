@@ -2,7 +2,7 @@ package conduit
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -71,7 +71,7 @@ func TestWebsocketKeepaliveTimeout(t *testing.T) {
 			return
 		}
 
-		var raw json.RawMessage
+		var raw jsontext.Value
 		_ = wsjson.Read(r.Context(), conn, &raw)
 		serverErrors <- nil
 	}))
@@ -82,7 +82,7 @@ func TestWebsocketKeepaliveTimeout(t *testing.T) {
 			return nil
 		},
 	}
-	service := New(nil, api, time.Minute, 1, func(context.Context, json.RawMessage, *eventsub.WebsocketMessage) error {
+	service := New(nil, api, time.Minute, 1, func(context.Context, jsontext.Value, *eventsub.WebsocketMessage) error {
 		return nil
 	})
 	service.conduitID = "conduit"

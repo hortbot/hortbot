@@ -100,6 +100,6 @@ func TestDefine(t *testing.T) {
 		ti := urban.New(&http.Client{Transport: mt})
 
 		_, err := ti.Define(ctx, phrase)
-		assert.Error(t, err, "urban: ErrHandler: invalid character '}' looking for beginning of value")
+		assert.Error(t, err, "urban: ErrHandler: jsontext: invalid character '}' at start of value")
 	})
 }

@@ -1,7 +1,10 @@
 package eventsub
 
 import (
-	"encoding/json"
+	"bytes"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
+	"errors"
 	"fmt"
 	"time"
 
@@ -17,38 +20,91 @@ func (e *UnknownTypeError) Error() string {
 	return fmt.Sprintf("unknown %s: %q", e.Field, e.Value)
 }
 
+func unmarshalObject(in *jsontext.Decoder, field func(string, *jsontext.Decoder) error) error {
+	start, err := in.ReadToken()
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+	if start.Kind() == jsontext.KindNull {
+		return nil
+	}
+	if start.Kind() != jsontext.KindBeginObject {
+		return fmt.Errorf("expected object, got %s", start.Kind())
+	}
+
+	for in.PeekKind() != jsontext.KindEndObject {
+		name, err := in.ReadToken()
+		if err != nil {
+			return err //nolint:wrapcheck
+		}
+		if err := field(name.String(), in); err != nil {
+			return err
+		}
+	}
+	_, err = in.ReadToken()
+	return err //nolint:wrapcheck
+}
+
 type WebsocketMessage struct {
 	Metadata *WebsocketMessageMetadata `json:"metadata"`
 	Payload  any                       `json:"payload"`
 }
 
-func (w *WebsocketMessage) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Metadata *WebsocketMessageMetadata `json:"metadata"`
-		Payload  json.RawMessage           `json:"payload"`
+func (w *WebsocketMessage) UnmarshalJSONFrom(in *jsontext.Decoder) error {
+	var pendingPayload jsontext.Value
+	var payload any
+	var metadata *WebsocketMessageMetadata
+
+	err := unmarshalObject(in, func(name string, in *jsontext.Decoder) error {
+		switch name {
+		case "metadata":
+			return json.UnmarshalDecode(in, &metadata) //nolint:wrapcheck
+		case "payload":
+			if metadata == nil {
+				var err error
+				pendingPayload, err = in.ReadValue()
+				pendingPayload = pendingPayload.Clone()
+				return err //nolint:wrapcheck
+			}
+			return unmarshalPayload(in, metadata.MessageType, &payload)
+		default:
+			return in.SkipValue() //nolint:wrapcheck
+		}
+	})
+	if err != nil {
+		return fmt.Errorf("unmarshal websocket message: %w", err)
 	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshal raw metadata: %w", err)
+	if metadata == nil {
+		return errors.New("unmarshal websocket message: missing metadata")
+	}
+	if pendingPayload != nil {
+		if err := unmarshalPayload(jsontext.NewDecoder(bytes.NewReader(pendingPayload)), metadata.MessageType, &payload); err != nil {
+			return err
+		}
 	}
 
-	w.Metadata = raw.Metadata
-
-	if unmarshallPayload, ok := payloadFuncs[w.Metadata.MessageType]; ok {
-		return unmarshallPayload(raw.Payload, &w.Payload)
-	}
-	return &UnknownTypeError{Field: "message type", Value: w.Metadata.MessageType}
+	w.Metadata = metadata
+	w.Payload = payload
+	return nil
 }
 
-var payloadFuncs = map[string]func([]byte, *any) error{
+func unmarshalPayload(in *jsontext.Decoder, messageType string, target *any) error {
+	if unmarshal, ok := payloadFuncs[messageType]; ok {
+		return unmarshal(in, target)
+	}
+	return &UnknownTypeError{Field: "message type", Value: messageType}
+}
+
+var payloadFuncs = map[string]func(*jsontext.Decoder, *any) error{
 	"session_welcome":   unmarshallPointerToAny[SessionWelcomePayload],
 	"session_keepalive": unmarshallPointerToAny[SessionKeepalivePayload],
 	"session_reconnect": unmarshallPointerToAny[SessionReconnectPayload],
 	"notification":      unmarshallPointerToAny[NotificationPayload],
 }
 
-func unmarshallPointerToAny[T any](data []byte, target *any) error {
+func unmarshallPointerToAny[T any](in *jsontext.Decoder, target *any) error {
 	var v T
-	if err := json.Unmarshal(data, &v); err != nil {
+	if err := json.UnmarshalDecode(in, &v); err != nil {
 		return fmt.Errorf("unmarshal %T: %w", (*T)(nil), err)
 	}
 	*target = &v
@@ -90,29 +146,52 @@ type Subscription struct {
 	Transport *Transport `json:"transport"`
 }
 
-func (s *Subscription) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		ID        string          `json:"id"`
-		Status    string          `json:"status"`
-		Type      string          `json:"type"`
-		Version   string          `json:"version"`
-		Condition json.RawMessage `json:"condition"`
-		Transport *Transport      `json:"transport"`
+func (s *Subscription) UnmarshalJSONFrom(in *jsontext.Decoder) error {
+	var pendingCondition jsontext.Value
+	var condition any
+	var id, status, subscriptionType, version string
+	var transport *Transport
+
+	err := unmarshalObject(in, func(name string, in *jsontext.Decoder) error {
+		switch name {
+		case "id":
+			return json.UnmarshalDecode(in, &id) //nolint:wrapcheck
+		case "status":
+			return json.UnmarshalDecode(in, &status) //nolint:wrapcheck
+		case "type":
+			return json.UnmarshalDecode(in, &subscriptionType) //nolint:wrapcheck
+		case "version":
+			return json.UnmarshalDecode(in, &version) //nolint:wrapcheck
+		case "condition":
+			if subscriptionType == "" {
+				var err error
+				pendingCondition, err = in.ReadValue()
+				pendingCondition = pendingCondition.Clone()
+				return err //nolint:wrapcheck
+			}
+			return unmarshalSubscriptionCondition(in, subscriptionType, &condition)
+		case "transport":
+			return json.UnmarshalDecode(in, &transport) //nolint:wrapcheck
+		default:
+			return in.SkipValue() //nolint:wrapcheck
+		}
+	})
+	if err != nil {
+		return fmt.Errorf("unmarshal subscription: %w", err)
 	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshal raw subscription: %w", err)
+	if pendingCondition != nil {
+		if err := unmarshalSubscriptionCondition(jsontext.NewDecoder(bytes.NewReader(pendingCondition)), subscriptionType, &condition); err != nil {
+			return err
+		}
 	}
 
-	s.ID = raw.ID
-	s.Status = raw.Status
-	s.Type = raw.Type
-	s.Version = raw.Version
-	s.Transport = raw.Transport
-
-	if unmarshallCondition, ok := subscriptionConditionFuncs[s.Type]; ok {
-		return unmarshallCondition(raw.Condition, &s.Condition)
-	}
-	return &UnknownTypeError{Field: "subscription type", Value: s.Type}
+	s.ID = id
+	s.Status = status
+	s.Type = subscriptionType
+	s.Version = version
+	s.Condition = condition
+	s.Transport = transport
+	return nil
 }
 
 type ChatMessageSubscriptionCondition struct {
@@ -122,7 +201,14 @@ type ChatMessageSubscriptionCondition struct {
 
 const ChatMessageSubscriptionType = "channel.chat.message"
 
-var subscriptionConditionFuncs = map[string]func([]byte, *any) error{
+func unmarshalSubscriptionCondition(in *jsontext.Decoder, subscriptionType string, target *any) error {
+	if unmarshal, ok := subscriptionConditionFuncs[subscriptionType]; ok {
+		return unmarshal(in, target)
+	}
+	return &UnknownTypeError{Field: "subscription type", Value: subscriptionType}
+}
+
+var subscriptionConditionFuncs = map[string]func(*jsontext.Decoder, *any) error{
 	ChatMessageSubscriptionType: unmarshallPointerToAny[ChatMessageSubscriptionCondition],
 }
 
@@ -143,24 +229,52 @@ type NotificationPayload struct {
 	Event        any           `json:"event"`
 }
 
-func (n *NotificationPayload) UnmarshalJSON(data []byte) error {
-	var raw struct {
-		Subscription *Subscription   `json:"subscription"`
-		Event        json.RawMessage `json:"event"`
+func (n *NotificationPayload) UnmarshalJSONFrom(in *jsontext.Decoder) error {
+	var pendingEvent jsontext.Value
+	var event any
+	var subscription *Subscription
+
+	err := unmarshalObject(in, func(name string, in *jsontext.Decoder) error {
+		switch name {
+		case "subscription":
+			return json.UnmarshalDecode(in, &subscription) //nolint:wrapcheck
+		case "event":
+			if subscription == nil {
+				var err error
+				pendingEvent, err = in.ReadValue()
+				pendingEvent = pendingEvent.Clone()
+				return err //nolint:wrapcheck
+			}
+			return unmarshalSubscriptionEvent(in, subscription.Type, &event)
+		default:
+			return in.SkipValue() //nolint:wrapcheck
+		}
+	})
+	if err != nil {
+		return fmt.Errorf("unmarshal notification: %w", err)
 	}
-	if err := json.Unmarshal(data, &raw); err != nil {
-		return fmt.Errorf("unmarshal raw notification: %w", err)
+	if subscription == nil {
+		return errors.New("unmarshal notification: missing subscription")
+	}
+	if pendingEvent != nil {
+		if err := unmarshalSubscriptionEvent(jsontext.NewDecoder(bytes.NewReader(pendingEvent)), subscription.Type, &event); err != nil {
+			return err
+		}
 	}
 
-	n.Subscription = raw.Subscription
-
-	if unmarshallPayload, ok := subscriptionEventFuncs[n.Subscription.Type]; ok {
-		return unmarshallPayload(raw.Event, &n.Event)
-	}
-	return &UnknownTypeError{Field: "subscription type", Value: n.Subscription.Type}
+	n.Subscription = subscription
+	n.Event = event
+	return nil
 }
 
-var subscriptionEventFuncs = map[string]func([]byte, *any) error{
+func unmarshalSubscriptionEvent(in *jsontext.Decoder, subscriptionType string, target *any) error {
+	if unmarshal, ok := subscriptionEventFuncs[subscriptionType]; ok {
+		return unmarshal(in, target)
+	}
+	return &UnknownTypeError{Field: "subscription type", Value: subscriptionType}
+}
+
+var subscriptionEventFuncs = map[string]func(*jsontext.Decoder, *any) error{
 	ChatMessageSubscriptionType: unmarshallPointerToAny[ChatMessageEvent],
 }
 

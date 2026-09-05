@@ -2,7 +2,7 @@ package chatqueue_test
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"slices"
 	"sync"
@@ -313,6 +313,6 @@ func message(id, broadcaster string, timestamp time.Time) chatqueue.Message {
 		BroadcasterLogin: broadcaster,
 		MessageTimestamp: timestamp,
 		EnqueuedAt:       timestamp,
-		Payload:          json.RawMessage(`{"message":"` + id + `"}`),
+		Payload:          jsontext.Value(`{"message":"` + id + `"}`),
 	}
 }

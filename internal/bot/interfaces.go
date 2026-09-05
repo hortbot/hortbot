@@ -2,7 +2,7 @@ package bot
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"math/rand/v2"
 	"time"
 
@@ -18,7 +18,7 @@ type ChatIdentity struct {
 }
 
 type Message interface {
-	json.Marshaler
+	json.MarshalerTo
 	Bot() string
 	MessageID() string
 	MessageTimestamp() time.Time

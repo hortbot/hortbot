@@ -3,7 +3,8 @@ package web
 import (
 	"cmp"
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"io"
@@ -76,8 +77,6 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	enc := json.NewEncoder(w)
-
 	query := struct {
 		Pretty bool `queryparam:"pretty"`
 	}{}
@@ -87,13 +86,13 @@ func (a *App) adminExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if query.Pretty {
-		enc.SetIndent("", "    ")
-	}
-
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 
-	if err := enc.Encode(config); err != nil {
+	var opts []json.Options
+	if query.Pretty {
+		opts = append(opts, jsontext.WithIndent("    "))
+	}
+	if err := json.MarshalWrite(w, config, opts...); err != nil {
 		ctxlog.Error(ctx, "error encoding exported config", zap.Error(err))
 	}
 }

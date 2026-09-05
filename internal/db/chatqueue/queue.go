@@ -3,7 +3,7 @@ package chatqueue
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -31,7 +31,7 @@ type Message struct {
 	BroadcasterLogin string
 	MessageTimestamp time.Time
 	EnqueuedAt       time.Time
-	Payload          json.RawMessage
+	Payload          jsontext.Value
 }
 
 type Lease struct {
@@ -75,7 +75,7 @@ func (q *Queue) Enqueue(ctx context.Context, message Message) (bool, error) {
 		return false, fmt.Errorf("message %q has zero timestamp", message.ID)
 	case message.EnqueuedAt.IsZero():
 		return false, fmt.Errorf("message %q has zero enqueue time", message.ID)
-	case !json.Valid(message.Payload):
+	case !message.Payload.IsValid():
 		return false, fmt.Errorf("message %q has invalid JSON payload", message.ID)
 	}
 

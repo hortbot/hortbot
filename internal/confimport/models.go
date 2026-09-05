@@ -1,7 +1,8 @@
 package confimport
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"time"
 
@@ -10,9 +11,13 @@ import (
 )
 
 type (
-	Channel          dbsql.Channel
-	CommandInfo      dbsql.CommandInfo
-	RepeatedCommand  dbsql.RepeatedCommand
+	//nolint:recvcheck // JSON encoding uses a value receiver while decoding must mutate a pointer.
+	Channel dbsql.Channel
+	//nolint:recvcheck // JSON encoding uses a value receiver while decoding must mutate a pointer.
+	CommandInfo dbsql.CommandInfo
+	//nolint:recvcheck // JSON encoding uses a value receiver while decoding must mutate a pointer.
+	RepeatedCommand dbsql.RepeatedCommand
+	//nolint:recvcheck // JSON encoding uses a value receiver while decoding must mutate a pointer.
 	Autoreply        dbsql.Autoreply
 	Quote            = dbsql.Quote
 	CustomCommand    = dbsql.CustomCommand
@@ -21,9 +26,9 @@ type (
 	Variable         = dbsql.Variable
 )
 
-func (c Channel) MarshalJSON() ([]byte, error) {
+func (c Channel) MarshalJSONTo(out *jsontext.Encoder) error {
 	type alias Channel
-	return marshalJSON("channel", struct {
+	return marshalJSON(out, "channel", struct {
 		alias
 		Bullet   *string `json:"bullet"`
 		Cooldown *int32  `json:"cooldown"`
@@ -34,14 +39,14 @@ func (c Channel) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (c *Channel) UnmarshalJSON(data []byte) error {
+func (c *Channel) UnmarshalJSONFrom(in *jsontext.Decoder) error {
 	type alias Channel
 	value := struct {
 		*alias
 		Bullet   *string `json:"bullet"`
 		Cooldown *int32  `json:"cooldown"`
 	}{alias: (*alias)(c)}
-	if err := unmarshalJSON("channel", data, &value); err != nil {
+	if err := unmarshalJSON(in, "channel", &value); err != nil {
 		return err
 	}
 	c.Bullet = nullString(value.Bullet)
@@ -49,9 +54,9 @@ func (c *Channel) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c CommandInfo) MarshalJSON() ([]byte, error) {
+func (c CommandInfo) MarshalJSONTo(out *jsontext.Encoder) error {
 	type alias CommandInfo
-	return marshalJSON("command info", struct {
+	return marshalJSON(out, "command info", struct {
 		alias
 		LastUsed        *time.Time `json:"last_used"`
 		CustomCommandID *int64     `json:"custom_command_id"`
@@ -64,7 +69,7 @@ func (c CommandInfo) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (c *CommandInfo) UnmarshalJSON(data []byte) error {
+func (c *CommandInfo) UnmarshalJSONFrom(in *jsontext.Decoder) error {
 	type alias CommandInfo
 	value := struct {
 		*alias
@@ -72,7 +77,7 @@ func (c *CommandInfo) UnmarshalJSON(data []byte) error {
 		CustomCommandID *int64     `json:"custom_command_id"`
 		CommandListID   *int64     `json:"command_list_id"`
 	}{alias: (*alias)(c)}
-	if err := unmarshalJSON("command info", data, &value); err != nil {
+	if err := unmarshalJSON(in, "command info", &value); err != nil {
 		return err
 	}
 	c.LastUsed = nullTime(value.LastUsed)
@@ -81,9 +86,9 @@ func (c *CommandInfo) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (r RepeatedCommand) MarshalJSON() ([]byte, error) {
+func (r RepeatedCommand) MarshalJSONTo(out *jsontext.Encoder) error {
 	type alias RepeatedCommand
-	return marshalJSON("repeated command", struct {
+	return marshalJSON(out, "repeated command", struct {
 		alias
 		InitTimestamp *time.Time `json:"init_timestamp"`
 	}{
@@ -92,22 +97,22 @@ func (r RepeatedCommand) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (r *RepeatedCommand) UnmarshalJSON(data []byte) error {
+func (r *RepeatedCommand) UnmarshalJSONFrom(in *jsontext.Decoder) error {
 	type alias RepeatedCommand
 	value := struct {
 		*alias
 		InitTimestamp *time.Time `json:"init_timestamp"`
 	}{alias: (*alias)(r)}
-	if err := unmarshalJSON("repeated command", data, &value); err != nil {
+	if err := unmarshalJSON(in, "repeated command", &value); err != nil {
 		return err
 	}
 	r.InitTimestamp = nullTime(value.InitTimestamp)
 	return nil
 }
 
-func (a Autoreply) MarshalJSON() ([]byte, error) {
+func (a Autoreply) MarshalJSONTo(out *jsontext.Encoder) error {
 	type alias Autoreply
-	return marshalJSON("autoreply", struct {
+	return marshalJSON(out, "autoreply", struct {
 		alias
 		OrigPattern *string `json:"orig_pattern"`
 	}{
@@ -116,13 +121,13 @@ func (a Autoreply) MarshalJSON() ([]byte, error) {
 	})
 }
 
-func (a *Autoreply) UnmarshalJSON(data []byte) error {
+func (a *Autoreply) UnmarshalJSONFrom(in *jsontext.Decoder) error {
 	type alias Autoreply
 	value := struct {
 		*alias
 		OrigPattern *string `json:"orig_pattern"`
 	}{alias: (*alias)(a)}
-	if err := unmarshalJSON("autoreply", data, &value); err != nil {
+	if err := unmarshalJSON(in, "autoreply", &value); err != nil {
 		return err
 	}
 	a.OrigPattern = nullString(value.OrigPattern)
@@ -185,16 +190,15 @@ func nullTimePointer(value pgtype.Timestamptz) *time.Time {
 	return &value.Time
 }
 
-func marshalJSON(label string, value any) ([]byte, error) {
-	data, err := json.Marshal(value)
-	if err != nil {
-		return nil, fmt.Errorf("marshaling %s: %w", label, err)
+func marshalJSON(out *jsontext.Encoder, label string, value any) error {
+	if err := json.MarshalEncode(out, value); err != nil {
+		return fmt.Errorf("marshaling %s: %w", label, err)
 	}
-	return data, nil
+	return nil
 }
 
-func unmarshalJSON(label string, data []byte, value any) error {
-	if err := json.Unmarshal(data, value); err != nil {
+func unmarshalJSON(in *jsontext.Decoder, label string, value any) error {
+	if err := json.UnmarshalDecode(in, value); err != nil {
 		return fmt.Errorf("unmarshaling %s: %w", label, err)
 	}
 	return nil

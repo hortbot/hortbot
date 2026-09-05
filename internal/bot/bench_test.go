@@ -3,7 +3,8 @@ package bot_test
 import (
 	"context"
 	cryptorand "crypto/rand"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"math/rand/v2"
 	"strings"
@@ -311,12 +312,8 @@ type benchmarkMessage struct {
 	text        string
 }
 
-func (m benchmarkMessage) MarshalJSON() ([]byte, error) {
-	data, err := json.Marshal(m.text)
-	if err != nil {
-		return nil, fmt.Errorf("marshal benchmark message: %w", err)
-	}
-	return data, nil
+func (m benchmarkMessage) MarshalJSONTo(out *jsontext.Encoder) error {
+	return json.MarshalEncode(out, m.text) //nolint:wrapcheck
 }
 
 func (m benchmarkMessage) Bot() string                   { return m.botLogin }

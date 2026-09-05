@@ -3,7 +3,7 @@ package conduit
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
 	"errors"
 	"fmt"
 	"time"
@@ -162,7 +162,7 @@ func runQueueMaintenance(ctx context.Context, queue *chatqueue.Queue) error {
 }
 
 func newNotificationHandler(enqueueCtx context.Context, queue *chatqueue.Queue) conduit.NotificationHandler {
-	return func(ctx context.Context, raw json.RawMessage, message *eventsub.WebsocketMessage) error {
+	return func(ctx context.Context, raw jsontext.Value, message *eventsub.WebsocketMessage) error {
 		queued, err := queuedMessage(raw, message)
 		if err != nil {
 			return err
@@ -194,7 +194,7 @@ func newNotificationHandler(enqueueCtx context.Context, queue *chatqueue.Queue) 
 	}
 }
 
-func queuedMessage(raw json.RawMessage, m *eventsub.WebsocketMessage) (chatqueue.Message, error) {
+func queuedMessage(raw jsontext.Value, m *eventsub.WebsocketMessage) (chatqueue.Message, error) {
 	if m == nil || m.Metadata == nil {
 		return chatqueue.Message{}, errors.New("incoming message has nil metadata")
 	}
@@ -219,7 +219,7 @@ func queuedMessage(raw json.RawMessage, m *eventsub.WebsocketMessage) (chatqueue
 	if m.Metadata.MessageTimestamp.IsZero() {
 		return chatqueue.Message{}, fmt.Errorf("incoming chat event %q has zero timestamp", event.MessageID)
 	}
-	if !json.Valid(raw) {
+	if !raw.IsValid() {
 		return chatqueue.Message{}, fmt.Errorf("incoming chat event %q has invalid raw JSON", event.MessageID)
 	}
 

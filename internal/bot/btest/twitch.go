@@ -2,7 +2,7 @@ package btest
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"testing"
 
 	gocmp "github.com/google/go-cmp/cmp"

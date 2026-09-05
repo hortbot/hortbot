@@ -2,7 +2,8 @@ package conduit
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"sync"
@@ -10,7 +11,6 @@ import (
 	"time"
 
 	"github.com/coder/websocket"
-	"github.com/coder/websocket/wsjson"
 	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient"
 	"github.com/hortbot/hortbot/internal/pkg/apiclient/twitch"
@@ -26,7 +26,7 @@ const initialWebsocketURL = "wss://eventsub.wss.twitch.tv/ws"
 
 // NotificationHandler processes an EventSub notification before the websocket
 // reader accepts another message.
-type NotificationHandler func(context.Context, json.RawMessage, *eventsub.WebsocketMessage) error
+type NotificationHandler func(context.Context, jsontext.Value, *eventsub.WebsocketMessage) error
 
 type Service struct {
 	db                 *pgxpool.Pool
@@ -207,9 +207,8 @@ func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, on
 
 	for ctx.Err() == nil {
 		beforeRead := time.Now()
-		var raw json.RawMessage
 		readCtx, cancelRead := context.WithTimeout(ctx, readTimeout)
-		err := wsjson.Read(readCtx, c, &raw)
+		_, data, err := c.Read(readCtx)
 		cancelRead()
 		if err != nil {
 			if ctx.Err() != nil {
@@ -223,6 +222,7 @@ func (s *Service) runOneWebsocket(ctx context.Context, url string, shard int, on
 			}
 			return fmt.Errorf("read websocket: %w", err)
 		}
+		raw := jsontext.Value(data)
 		metricWebsocketReadDuration.Observe(time.Since(beforeRead).Seconds())
 
 		var msg eventsub.WebsocketMessage

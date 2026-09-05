@@ -2,7 +2,8 @@ package twitch
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"net/http"
@@ -63,7 +64,7 @@ func (h *httpClient) finishRequest(ctx context.Context, req *requests.Builder) (
 		}
 
 		// Status code was an error; try and read the body as JSON
-		var body json.RawMessage
+		var body jsontext.Value
 		if err := jsonx.DecodeSingle(r.Body, &body); err != nil {
 			return reqErr //nolint:wrapcheck
 		}

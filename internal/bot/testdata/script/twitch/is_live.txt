@@ -1,5 +1,5 @@
 twitch_get_user_by_username {"foobar": {"id": 1, "login": "foobar"}, "liveguy": {"id": 1234, "login": "liveguy", "display_name": "LiveGuy"}, "notlivegal": {"id": 1337, "login": "notlivegal"}}
-twitch_get_game_by_id {"424242": {"Category": {"ID": 424242, "Name": "Garry's Mod"}}}
+twitch_get_game_by_id {"424242": {"Category": {"id": 424242, "name": "Garry's Mod"}}}
 
 join hortbot 999 foobar 1
 

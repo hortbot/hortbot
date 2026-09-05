@@ -92,7 +92,7 @@ func jsonFields(types ...reflect.Type) []string {
 	fields := make(map[string]struct{})
 	for _, typ := range types {
 		for field := range typ.Fields() {
-			name := strings.Split(field.Tag.Get("json"), ",")[0]
+			name, _, _ := strings.Cut(field.Tag.Get("json"), ",")
 			if name != "" && name != "-" {
 				fields[name] = struct{}{}
 			}

@@ -43,11 +43,13 @@ linters:
     - wsl_v5
     - noinlineerr
     - embeddedstructfieldcheck
+    - exhaustruct
     - unqueryvet
     - gomodguard
   settings:
-    exhaustruct:
-      include:
+    exhaustruct_v5:
+      explicit-mode: true
+      enforce-patterns:
         - ^github\.com/hortbot/hortbot/internal/db/dbsql\..*Params$
     forbidigo:
       forbid:

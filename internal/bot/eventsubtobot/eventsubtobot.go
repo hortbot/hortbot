@@ -1,7 +1,8 @@
 package eventsubtobot
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"strings"
 	"time"
@@ -41,8 +42,8 @@ func ToMessage(botLoginMap map[int64]string, m *eventsub.WebsocketMessage) bot.M
 	}
 }
 
-func (m *chatMessage) MarshalJSON() ([]byte, error) {
-	data, err := json.Marshal(struct {
+func (m *chatMessage) MarshalJSONTo(out *jsontext.Encoder) error {
+	err := json.MarshalEncode(out, struct {
 		BotLogin string                     `json:"bot_login"`
 		Message  *eventsub.WebsocketMessage `json:"message"`
 	}{
@@ -50,9 +51,9 @@ func (m *chatMessage) MarshalJSON() ([]byte, error) {
 		Message:  m.raw,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("marshal chat message: %w", err)
+		return fmt.Errorf("marshal chat message: %w", err)
 	}
-	return data, nil
+	return nil
 }
 
 func (m *chatMessage) Bot() string                 { return m.botLogin }

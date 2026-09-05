@@ -3,7 +3,8 @@ package btest
 import (
 	"context"
 	"crypto/rand"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -93,8 +94,8 @@ type testChatMessage struct {
 	accessLevel bot.AccessLevel
 }
 
-func (m *testChatMessage) MarshalJSON() ([]byte, error) {
-	data, err := json.Marshal(struct {
+func (m *testChatMessage) MarshalJSONTo(out *jsontext.Encoder) error {
+	err := json.MarshalEncode(out, struct {
 		BotLogin    string           `json:"bot_login"`
 		ID          string           `json:"id"`
 		SentAt      time.Time        `json:"sent_at"`
@@ -112,9 +113,9 @@ func (m *testChatMessage) MarshalJSON() ([]byte, error) {
 		IsAction:    m.action,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("marshal test chat message: %w", err)
+		return fmt.Errorf("marshal test chat message: %w", err)
 	}
-	return data, nil
+	return nil
 }
 
 func (m *testChatMessage) Bot() string                   { return m.botLogin }

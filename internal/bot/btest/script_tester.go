@@ -4,7 +4,7 @@ package btest
 import (
 	"bufio"
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"math/rand"
 	"os"
 	"runtime/debug"

@@ -1,7 +1,7 @@
 package twitch_test
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"testing"
 	"time"
 
@@ -90,7 +90,7 @@ func TestGetStream(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetStreamByUsername(ctx, "decodeerror")
-		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
+		assert.Error(t, err, "twitch: ErrHandler: jsontext: invalid character '}' at start of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

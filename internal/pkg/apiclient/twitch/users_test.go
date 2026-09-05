@@ -94,7 +94,7 @@ func TestGetUserForTokenDecodeError(t *testing.T) {
 	assert.DeepEqual(t, tok, ft.tokenForCode(code), tokenCmp)
 
 	_, _, err = tw.GetUserByToken(ctx, tok)
-	assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
+	assert.Error(t, err, "twitch: ErrHandler: jsontext: invalid character '}' at start of value")
 }
 
 func TestGetUserForTokenRequestError(t *testing.T) {
@@ -245,7 +245,7 @@ func TestGetUserForUsernameRequestError(t *testing.T) {
 	tw := twitch.New(clientID, clientSecret, redirectURL, cli)
 
 	_, err := tw.GetUserByUsername(ctx, "decodeerror")
-	assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
+	assert.Error(t, err, "twitch: ErrHandler: jsontext: invalid character '}' at start of value")
 }
 
 func TestGetUserForID(t *testing.T) {
@@ -358,6 +358,6 @@ func TestGetModeratedChannelsErrors(t *testing.T) {
 	ft.setModerated(id, []*twitch.ModeratedChannel{})
 
 	_, newToken, err := tw.GetModeratedChannels(ctx, id, tok)
-	assert.Error(t, err, "twitch: ErrHandler: unexpected EOF")
+	assert.Error(t, err, "twitch: ErrHandler: jsontext: unexpected EOF after offset 1")
 	assert.Assert(t, newToken == nil)
 }

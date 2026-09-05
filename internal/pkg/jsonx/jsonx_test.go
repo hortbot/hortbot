@@ -2,7 +2,7 @@ package jsonx_test
 
 import (
 	"bytes"
-	"encoding/json"
+	"encoding/json/v2"
 	"io"
 	"strings"
 	"testing"
@@ -13,7 +13,7 @@ import (
 
 func readerFor(v any) io.Reader {
 	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(v); err != nil {
+	if err := json.MarshalWrite(&buf, v); err != nil {
 		panic(err)
 	}
 	return &buf

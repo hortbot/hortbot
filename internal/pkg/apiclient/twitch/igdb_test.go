@@ -93,7 +93,8 @@ func TestGetGameLinks(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetGameLinks(ctx, 700)
-		assert.Error(t, err, "twitch: ErrHandler: unexpected EOF")
+		assert.ErrorContains(t, err, "twitch: ErrHandler:")
+		assert.ErrorContains(t, err, "JSON object into Go slice")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

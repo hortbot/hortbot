@@ -2,7 +2,7 @@ package confimport
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"testing"
 
 	"github.com/hortbot/hortbot/internal/db/dbsql"

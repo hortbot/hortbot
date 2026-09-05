@@ -2,7 +2,7 @@ package bot_test
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/v2"
 	"fmt"
 	"strings"
 	"time"
@@ -106,7 +106,7 @@ func init() {
 			// pgx converts times back to the client timezone; convert to UTC for testing.
 			tok.Expiry = tok.Expiry.UTC()
 
-			j, err := json.Marshal(tok)
+			j, err := json.Marshal(tok, json.OmitZeroStructFields(true))
 			if err != nil {
 				return fmt.Errorf("marshalling token: %w", err)
 			}

@@ -79,7 +79,7 @@ func TestGetChannelModeratorsErrors(t *testing.T) {
 	ft.setMods(id, []*twitch.ChannelModerator{})
 
 	_, newToken, err := tw.GetChannelModerators(ctx, id, tok)
-	assert.Error(t, err, "twitch: ErrHandler: unexpected EOF")
+	assert.Error(t, err, "twitch: ErrHandler: jsontext: unexpected EOF after offset 1")
 	assert.Assert(t, newToken == nil)
 }
 
@@ -276,7 +276,7 @@ func TestGetChannelByID(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.GetChannelByID(ctx, 900)
-		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
+		assert.Error(t, err, "twitch: ErrHandler: jsontext: invalid character '}' at start of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

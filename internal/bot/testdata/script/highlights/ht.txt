@@ -2,7 +2,7 @@ join hortbot 999 foobar 1
 
 clock_set 2000-10-01T03:11:22Z
 
-twitch_get_game_by_id {"424242": {"Category": {"ID": 424242, "Name": "Garry's Mod"}}, "567890": {"Category": {"ID": 567890, "Name": "Retro"}}}
+twitch_get_game_by_id {"424242": {"Category": {"id": 424242, "name": "Garry's Mod"}}, "567890": {"Category": {"id": 567890, "name": "Retro"}}}
 
 
 handle hortbot foobar/1 random/2 :!testing_highlights

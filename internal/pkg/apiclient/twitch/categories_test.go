@@ -71,7 +71,7 @@ func TestSearchCategories(t *testing.T) {
 		defer cancel()
 
 		_, err := tw.SearchCategories(ctx, "decodeerror")
-		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
+		assert.Error(t, err, "twitch: ErrHandler: jsontext: invalid character '}' at start of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {
@@ -153,7 +153,7 @@ func TestGetGame(t *testing.T) {
 		ft.setClientTokens(tok)
 
 		_, err := tw.GetGameByName(ctx, "decodeerror")
-		assert.Error(t, err, "twitch: ErrHandler: invalid character '}' looking for beginning of value")
+		assert.Error(t, err, "twitch: ErrHandler: jsontext: invalid character '}' at start of value")
 	})
 
 	t.Run("Request error", func(t *testing.T) {

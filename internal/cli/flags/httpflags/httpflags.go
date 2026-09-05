@@ -58,7 +58,7 @@ func (h *HTTP) UntrustedClient(ctx context.Context) *http.Client {
 			}
 		}
 
-		transport := (http.DefaultTransport).(*http.Transport).Clone()
+		transport := http.DefaultTransport.(*http.Transport).Clone()
 		transport.Proxy = func(r *http.Request) (*url.URL, error) {
 			// Hack to pre-filter the address before handing it to the proxy.
 

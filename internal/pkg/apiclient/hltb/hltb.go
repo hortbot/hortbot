@@ -3,7 +3,8 @@ package hltb
 
 import (
 	"context"
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"errors"
 	"fmt"
 	"math"
@@ -107,33 +108,21 @@ type searchRequestLists struct {
 	SortCategory string `json:"sortCategory"`
 }
 
-func (r searchRequest) MarshalJSON() ([]byte, error) {
+func (r searchRequest) MarshalJSONTo(out *jsontext.Encoder) error {
 	type plainSearchRequest searchRequest
 
-	body, err := json.Marshal(plainSearchRequest(r))
-	if err != nil {
-		return nil, fmt.Errorf("marshaling search request: %w", err)
-	}
 	if r.hpKey == "" {
-		return body, nil
+		return json.MarshalEncode(out, plainSearchRequest(r)) //nolint:wrapcheck
 	}
 
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(body, &fields); err != nil {
-		return nil, fmt.Errorf("unmarshaling search request: %w", err)
+	value := struct {
+		plainSearchRequest `json:",embed"`
+		Honeypot           map[string]string `json:",embed"`
+	}{
+		plainSearchRequest: plainSearchRequest(r),
+		Honeypot:           map[string]string{r.hpKey: r.hpVal},
 	}
-
-	hpVal, err := json.Marshal(r.hpVal)
-	if err != nil {
-		return nil, fmt.Errorf("marshaling honeypot value: %w", err)
-	}
-	fields[r.hpKey] = hpVal
-
-	body, err = json.Marshal(fields)
-	if err != nil {
-		return nil, fmt.Errorf("marshaling search request fields: %w", err)
-	}
-	return body, nil
+	return json.MarshalEncode(out, value) //nolint:wrapcheck
 }
 
 type searchResponse struct {

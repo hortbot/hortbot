@@ -1,7 +1,8 @@
 package hltb_test
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"net/http"
 	"strconv"
 	"testing"
@@ -38,8 +39,8 @@ func TestSearchGame(t *testing.T) {
 		assert.Equal(t, req.Header.Get("X-Hp-Key"), "challenge")
 		assert.Equal(t, req.Header.Get("X-Hp-Val"), "answer")
 
-		var body map[string]json.RawMessage
-		assert.NilError(t, json.NewDecoder(req.Body).Decode(&body))
+		var body map[string]jsontext.Value
+		assert.NilError(t, json.UnmarshalRead(req.Body, &body))
 		assert.Equal(t, string(body["challenge"]), `"answer"`)
 		assert.Equal(t, string(body["searchTerms"]), `["Half-Life","Alyx"]`)
 		assert.Equal(t, string(body["size"]), `1`)

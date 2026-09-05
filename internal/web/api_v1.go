@@ -1,7 +1,7 @@
 package web
 
 import (
-	"encoding/json"
+	"encoding/json/v2"
 	"errors"
 	"net/http"
 	"strings"
@@ -50,7 +50,7 @@ func (a *App) apiV1VarsGet(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(v); err != nil {
+	if err := json.MarshalWrite(w, v); err != nil {
 		ctxlog.Error(ctx, "failed to write response", zap.Error(err))
 		return
 	}
@@ -64,5 +64,5 @@ func v1Error(w http.ResponseWriter, code int) {
 	}
 
 	w.WriteHeader(code)
-	_ = json.NewEncoder(w).Encode(v)
+	_ = json.MarshalWrite(w, v)
 }
