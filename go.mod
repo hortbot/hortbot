@@ -5,17 +5,17 @@ go 1.27.0
 require (
 	github.com/a-h/templ v0.3.1020
 	github.com/araddon/dateparse v0.0.0-20210429162001-6b43995a97de
-	github.com/bmatcuk/doublestar/v4 v4.10.0
+	github.com/bmatcuk/doublestar/v4 v4.10.2
 	github.com/carlmjohnson/requests v0.26.1
 	github.com/coder/websocket v1.8.15
 	github.com/dghubble/trie v0.1.0
-	github.com/dustin/go-humanize v1.0.1
+	github.com/dustin/go-humanize v1.1.0
 	github.com/felixge/httpsnoop v1.1.0
 	github.com/fergusstrange/embedded-postgres v1.34.0
 	github.com/fortytw2/leaktest v1.3.0
 	github.com/go-chi/chi/v5 v5.3.2
 	github.com/gobuffalo/flect v1.0.3
-	github.com/golang-migrate/migrate/v4 v4.19.1
+	github.com/golang-migrate/migrate/v4 v4.20.1
 	github.com/google/go-cmp v0.7.0
 	github.com/gorilla/sessions v1.4.0
 	github.com/goware/urlx v0.3.2
@@ -36,15 +36,15 @@ require (
 	github.com/zikaeroh/ctxlog v0.0.0-20210526021226-f475ac537d51
 	go.deanishe.net/fuzzy v1.0.0
 	go.uber.org/zap v1.28.0
-	golang.org/x/net v0.58.0
-	golang.org/x/oauth2 v0.36.0
-	golang.org/x/sync v0.22.0
+	golang.org/x/net v0.59.0
+	golang.org/x/oauth2 v0.37.0
+	golang.org/x/sync v0.23.0
 	gotest.tools/v3 v3.5.2
 	mvdan.cc/xurls/v2 v2.6.0
 )
 
 require (
-	cel.dev/expr v0.25.1 // indirect
+	cel.dev/expr v0.25.2 // indirect
 	filippo.io/edwards25519 v1.1.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
@@ -99,13 +99,13 @@ require (
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20250620022241-b7579e27df2b // indirect
-	golang.org/x/mod v0.39.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
-	golang.org/x/text v0.41.0 // indirect
-	golang.org/x/tools v0.49.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260120221211-b8f7ae30c516 // indirect
-	google.golang.org/grpc v1.80.0 // indirect
+	golang.org/x/mod v0.41.0 // indirect
+	golang.org/x/sys v0.48.0 // indirect
+	golang.org/x/text v0.42.0 // indirect
+	golang.org/x/tools v0.50.0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260630182238-925bb5da69e7 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7 // indirect
+	google.golang.org/grpc v1.82.0 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
