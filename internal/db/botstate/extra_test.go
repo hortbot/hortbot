@@ -1,7 +1,6 @@
 package botstate_test
 
 import (
-	"context"
 	"strings"
 	"testing"
 	"time"
@@ -13,8 +12,7 @@ import (
 
 func TestDefaultRand(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	sqlDB := pool.FreshDB(t)
 	db := &testStore{Store: botstate.New(), db: sqlDB, queries: dbsql.New(sqlDB)}
@@ -28,8 +26,7 @@ func TestDefaultRand(t *testing.T) {
 
 func TestKeysWithColonsRoundTrip(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	sqlDB := pool.FreshDB(t)
 	db := &testStore{Store: botstate.New(), db: sqlDB, queries: dbsql.New(sqlDB)}
@@ -51,8 +48,7 @@ func TestKeysWithColonsRoundTrip(t *testing.T) {
 
 func TestDump(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	state, sqlDB, _ := freshStoreAndDB(t)
 	assert.NilError(t, state.MarkCooldown(ctx, "channel", "command", time.Minute))

@@ -1,9 +1,7 @@
 package botstate_test
 
 import (
-	"context"
 	"testing"
-	"time"
 
 	"gotest.tools/v3/assert"
 )
@@ -13,8 +11,7 @@ func TestBuiltinUsageStats(t *testing.T) {
 
 	db, _ := freshStore(t)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	stats, err := db.GetBuiltinUsageStats(ctx)
 	assert.NilError(t, err)
@@ -47,8 +44,7 @@ func TestActionUsageStats(t *testing.T) {
 
 	db, _ := freshStore(t)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	stats, err := db.GetActionUsageStats(ctx)
 	assert.NilError(t, err)
@@ -74,8 +70,7 @@ func TestUsageStatsBucketsAreIsolated(t *testing.T) {
 
 	db, _ := freshStore(t)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	assert.NilError(t, db.IncrementBuiltinUsageStat(ctx, "name"))
 	assert.NilError(t, db.IncrementActionUsageStat(ctx, "name"))

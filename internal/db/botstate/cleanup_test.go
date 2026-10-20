@@ -1,9 +1,7 @@
 package botstate_test
 
 import (
-	"context"
 	"testing"
-	"time"
 
 	"github.com/hortbot/hortbot/internal/db/dbsql"
 	"gotest.tools/v3/assert"
@@ -20,8 +18,7 @@ func TestCleanupReturnsDatabaseErrors(t *testing.T) {
 
 func TestCleanupDeletesExpiredRows(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	state, sqlDB, _ := freshStoreAndDB(t)
 

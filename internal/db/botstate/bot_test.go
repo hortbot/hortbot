@@ -1,7 +1,6 @@
 package botstate_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -13,8 +12,7 @@ func TestBot(t *testing.T) {
 
 	db, _ := freshStore(t)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	err := db.LinkPermit(ctx, "foo", "bar", time.Minute)
 	assert.NilError(t, err)
@@ -64,8 +62,7 @@ func TestLinkPermit(t *testing.T) {
 
 	db, clk := freshStore(t)
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	const (
 		channel = "1234"

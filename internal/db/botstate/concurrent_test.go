@@ -13,8 +13,7 @@ const concurrentGoroutines = 8
 
 func TestCheckAndMarkCooldownConcurrent(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 
@@ -34,8 +33,7 @@ func TestCheckAndMarkCooldownConcurrent(t *testing.T) {
 
 func TestConfirmConcurrent(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 30*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 

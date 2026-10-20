@@ -5,12 +5,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
 	"strconv"
 
-	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
+	embeddedpostgres "github.com/fergusstrange/embedded-postgres/v2"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
@@ -39,6 +38,7 @@ func (i *Info) String() string {
 
 type DB struct {
 	pg      *embeddedpostgres.EmbeddedPostgres
+	config  embeddedpostgres.Config
 	port    uint32
 	dataDir string
 }
@@ -69,7 +69,11 @@ func (d *DB) Open(ctx context.Context) (*pgxpool.Pool, error) {
 
 // Stop stops the embedded PostgreSQL process without deleting its data.
 func (d *DB) Stop() error {
-	return d.pg.Stop() //nolint:wrapcheck
+	if err := d.pg.Stop(); err != nil {
+		return err //nolint:wrapcheck
+	}
+	d.pg = embeddedpostgres.NewDatabase(d.config)
+	return nil
 }
 
 // Start restarts the embedded PostgreSQL process using its existing data.
@@ -79,7 +83,7 @@ func (d *DB) Start() error {
 
 func (d *DB) Cleanup() {
 	if d.pg != nil {
-		_ = d.pg.Stop()
+		_ = d.pg.Close()
 	}
 	if d.dataDir != "" {
 		_ = os.RemoveAll(d.dataDir)
@@ -94,49 +98,37 @@ func New() (*DB, error) {
 func newDB() (*DB, error) {
 	const version = embeddedpostgres.V16
 
-	port, err := freePort()
-	if err != nil {
-		return nil, fmt.Errorf("finding free port: %w", err)
-	}
-
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return nil, fmt.Errorf("getting user cache dir: %w", err)
 	}
-	binariesPath := filepath.Join(cacheDir, "hortbot-testpostgres", string(version))
+	cachePath := filepath.Join(cacheDir, "hortbot-testpostgres", "v2")
 
 	dataDir, err := os.MkdirTemp("", "embedded-postgres-*")
 	if err != nil {
 		return nil, fmt.Errorf("creating temp dir: %w", err)
 	}
 
-	pg := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
+	config := embeddedpostgres.DefaultConfig().
 		Version(version).
 		Username(user).
 		Password(password).
 		Database(database).
-		Port(port).
-		RuntimePath(filepath.Join(dataDir, "runtime")).
-		DataPath(filepath.Join(dataDir, "data")).
-		BinariesPath(binariesPath).
+		Port(0).
+		Storage(embeddedpostgres.Storage{
+			CacheDir: cachePath,
+			WorkDir:  dataDir,
+			DataDir:  filepath.Join(dataDir, "data"),
+		}).
 		StartParameters(map[string]string{"fsync": "off"}).
-		Logger(nil))
+		Logger(nil)
+	pg := embeddedpostgres.NewDatabase(config)
 
 	if err := pg.Start(); err != nil {
 		_ = os.RemoveAll(dataDir)
 		return nil, fmt.Errorf("starting embedded postgres: %w", err)
 	}
 
-	return &DB{pg: pg, port: port, dataDir: dataDir}, nil
-}
-
-func freePort() (uint32, error) {
-	// Use net to find a free port, then close the listener immediately.
-	l, err := (&net.ListenConfig{}).Listen(context.Background(), "tcp", "127.0.0.1:0")
-	if err != nil {
-		return 0, fmt.Errorf("listening for free port: %w", err)
-	}
-	defer l.Close()
-	//nolint:gosec
-	return uint32(l.Addr().(*net.TCPAddr).Port), nil
+	port := pg.GetPort()
+	return &DB{pg: pg, config: config.Port(port), port: port, dataDir: dataDir}, nil
 }

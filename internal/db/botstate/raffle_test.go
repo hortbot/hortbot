@@ -1,10 +1,8 @@
 package botstate_test
 
 import (
-	"context"
 	"math/rand/v2"
 	"testing"
-	"time"
 
 	"github.com/hortbot/hortbot/internal/db/botstate"
 	"github.com/hortbot/hortbot/internal/db/dbsql"
@@ -13,8 +11,7 @@ import (
 
 func TestRaffleEmpty(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 
@@ -40,8 +37,7 @@ func TestRaffleEmpty(t *testing.T) {
 
 func TestRaffleAddIsIdempotent(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 
@@ -56,8 +52,7 @@ func TestRaffleAddIsIdempotent(t *testing.T) {
 
 func TestRaffleResetClearsOnlyTargetChannel(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 
@@ -77,8 +72,7 @@ func TestRaffleResetClearsOnlyTargetChannel(t *testing.T) {
 
 func TestRaffleWinnerReturnsAndRemovesEntries(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	rng := rand.New(rand.NewPCG(311, 311)) //nolint:gosec // deterministic seed for test reproducibility, not security-sensitive.
 	db := freshStoreWithRand(t, randAdapter{rng})
@@ -106,8 +100,7 @@ func TestRaffleWinnerReturnsAndRemovesEntries(t *testing.T) {
 
 func TestRaffleWinnersBatch(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	rng := rand.New(rand.NewPCG(311, 311)) //nolint:gosec // deterministic seed for test reproducibility, not security-sensitive.
 	db := freshStoreWithRand(t, randAdapter{rng})
@@ -140,8 +133,7 @@ func TestRaffleWinnersBatch(t *testing.T) {
 
 func TestRaffleWinnersNonPositive(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 

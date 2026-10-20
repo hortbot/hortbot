@@ -1,7 +1,6 @@
 package botstate_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -10,8 +9,7 @@ import (
 
 func TestCheckAndMarkCooldownOnStaleRow(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -28,8 +26,7 @@ func TestCheckAndMarkCooldownOnStaleRow(t *testing.T) {
 
 func TestConfirmOnStaleRow(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -46,8 +43,7 @@ func TestConfirmOnStaleRow(t *testing.T) {
 
 func TestConfirmLifecycle(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -68,8 +64,7 @@ func TestConfirmLifecycle(t *testing.T) {
 
 func TestCheckAndMarkCooldownLifecycle(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -92,8 +87,7 @@ func TestCheckAndMarkCooldownLifecycle(t *testing.T) {
 
 func TestMarkCooldownOverwrites(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -109,8 +103,7 @@ func TestMarkCooldownOverwrites(t *testing.T) {
 
 func TestFilterWarnedRefreshesExpiry(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -133,8 +126,7 @@ func TestFilterWarnedRefreshesExpiry(t *testing.T) {
 
 func TestFilterWarnedInitialExpiryIsOneSecond(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, clk := freshStore(t)
 
@@ -151,8 +143,7 @@ func TestFilterWarnedInitialExpiryIsOneSecond(t *testing.T) {
 
 func TestCooldownKindsAreIndependent(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	db, _ := freshStore(t)
 

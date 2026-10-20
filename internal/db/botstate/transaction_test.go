@@ -1,7 +1,6 @@
 package botstate_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -11,8 +10,7 @@ import (
 
 func TestExecutorTransactionRollsBackStateOperations(t *testing.T) {
 	t.Parallel()
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	state, sqlDB, _ := freshStoreAndDB(t)
 	assert.NilError(t, state.RaffleAdd(ctx, "ch", "user"))

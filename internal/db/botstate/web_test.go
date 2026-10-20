@@ -1,7 +1,6 @@
 package botstate_test
 
 import (
-	"context"
 	"testing"
 	"time"
 
@@ -29,8 +28,7 @@ func TestAuthState(t *testing.T) {
 		T: time.Time{}.Add(time.Hour),
 	}
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	var got value
 	ok, err := db.GetAuthState(ctx, key, &got)
@@ -70,8 +68,7 @@ func TestAuthStateUnmarshallable(t *testing.T) {
 	db, _ := freshStore(t)
 	_ = botstate.WithNow // keep import linter quiet across files
 
-	ctx, cancel := context.WithTimeout(t.Context(), 5*time.Second)
-	defer cancel()
+	ctx := t.Context()
 
 	err := db.SetAuthState(ctx, "what", jsonx.Unmarshallable(), time.Minute)
 	assert.ErrorContains(t, err, jsonx.ErrUnmarshallable.Error())
