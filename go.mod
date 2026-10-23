@@ -24,7 +24,7 @@ require (
 	github.com/jackc/pgx/v5 v5.11.0
 	github.com/jarcoal/httpmock v1.4.2
 	github.com/jessevdk/go-flags v1.6.1
-	github.com/mroth/weightedrand/v2 v2.1.0
+	github.com/mroth/weightedrand/v3 v3.0.0
 	github.com/peterldowns/pgtestdb v0.1.1
 	github.com/petoem/cleanurl v0.1.1
 	github.com/prometheus/client_golang v1.25.0

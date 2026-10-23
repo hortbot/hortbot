@@ -4,7 +4,7 @@ package useragent
 
 import (
 	"github.com/hortbot/hortbot/internal/pkg/must"
-	"github.com/mroth/weightedrand/v2"
+	"github.com/mroth/weightedrand/v3"
 )
 
 var (

@@ -81,7 +81,7 @@ func main() {
 	must.Must(f.WriteString("package useragent\n\n"))
 	must.Must(f.WriteString("import (\n"))
 	must.Must(f.WriteString("\t\"github.com/hortbot/hortbot/internal/pkg/must\"\n"))
-	must.Must(f.WriteString("\t\"github.com/mroth/weightedrand/v2\"\n"))
+	must.Must(f.WriteString("\t\"github.com/mroth/weightedrand/v3\"\n"))
 	must.Must(f.WriteString(")\n\n"))
 
 	must.Must(f.WriteString("var (\n"))
