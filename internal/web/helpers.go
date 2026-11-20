@@ -44,7 +44,7 @@ func (a *App) httpError(w http.ResponseWriter, r *http.Request, code int) {
 
 func (a *App) notAuthorized(w http.ResponseWriter, r *http.Request, header bool) {
 	if header {
-		w.Header().Add("Www-Authenticate", `Basic realm="hortbot"`)
+		w.Header().Add("WWW-Authenticate", `Basic realm="hortbot"`)
 	}
 	a.httpError(w, r, http.StatusUnauthorized)
 }
